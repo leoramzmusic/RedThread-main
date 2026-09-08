@@ -1,0 +1,105 @@
+﻿--- Verifying Discovery for Admin: admin@testemail.com ---
+
+==================== Curiosity Mode: False ====================
+
+Testing mode: SUGGESTED
+Calling get_discovery_queue(mode=suggested, curious=False)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DISCOVERY] Synced curiosity_mode=False to profile 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}, 'attraction_preferences': {'$in': ['man']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 10
+  [1] User (Age: 35) - Compatibility: 45.5%
+  [2] User (Age: 38) - Compatibility: 47.4%
+  [3] User (Age: 22) - Compatibility: 46.5%
+
+Testing mode: OPPOSITES
+Calling get_discovery_queue(mode=opposites, curious=False)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}, 'attraction_preferences': {'$in': ['man']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 10
+  [1] User (Age: 43) - Compatibility: 45.5%
+  [2] User (Age: 32) - Compatibility: 45.5%
+  [3] User (Age: 34) - Compatibility: 45.5%
+
+Testing mode: BLIND
+Calling get_discovery_queue(mode=blind, curious=False)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}, 'attraction_preferences': {'$in': ['man']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 0
+
+Testing mode: FREE
+Calling get_discovery_queue(mode=free, curious=False)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 10
+  [1] User (Age: 27) - Compatibility: 45.5%
+  [2] User (Age: 36) - Compatibility: 46.5%
+  [3] User (Age: 37) - Compatibility: 45.5%
+
+==================== Curiosity Mode: True ====================
+
+Testing mode: SUGGESTED
+Calling get_discovery_queue(mode=suggested, curious=True)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DISCOVERY] Synced curiosity_mode=True to profile 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 10
+  [1] User (Age: 43) - Compatibility: 46.5%
+  [2] User (Age: 26) - Compatibility: 45.5%
+  [3] User (Age: 40) - Compatibility: 45.5%
+
+Testing mode: OPPOSITES
+Calling get_discovery_queue(mode=opposites, curious=True)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 10
+  [1] User (Age: 45) - Compatibility: 45.5%
+  [2] User (Age: 26) - Compatibility: 45.5%
+  [3] User (Age: 27) - Compatibility: 45.5%
+
+Testing mode: BLIND
+Calling get_discovery_queue(mode=blind, curious=True)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 0
+
+Testing mode: FREE
+Calling get_discovery_queue(mode=free, curious=True)...
+[DEBUG] Starting get_discovery_queue for 692e0e109f953e9cf1c46597
+[DEBUG] Query building done: {'profile_visible': True, 'show_me_in_discovery': True, 'user_id': {'$nin': ['696ad7bd56b792fdc43a82cd', '696ad7bd56b792fdc43a82d0', '696ad7bd56b792fdc43a82cf', '696ad7bd56b792fdc43a82d2', '696adac5ade0375190471f94', '696ad7bd56b792fdc43a82d3', '696adac5ade0375190471f98', '692f158902a60279b0e3c3c4', '696ad7bd56b792fdc43a82d1', '696adac5ade0375190471f96', '696ad7bd56b792fdc43a82ce', '696ad7bd56b792fdc43a82d4', '692e0e109f953e9cf1c46597']}, 'gender': {'$in': ['male', 'female', 'non_binary', 'other']}}
+[DEBUG] Found 30 candidates
+[DEBUG] Calling ranker with 30 candidates
+[DEBUG] Ranker returned 20 results
+Type of results: <class 'list'>
+Results found: 10
+  [1] User (Age: 37) - Compatibility: 45.5%
+  [2] User (Age: 38) - Compatibility: 45.5%
+  [3] User (Age: 26) - Compatibility: 45.5%

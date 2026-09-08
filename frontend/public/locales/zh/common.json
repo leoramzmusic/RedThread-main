@@ -1,0 +1,47 @@
+{
+    "auth": {
+        "welcome": "欢迎回来！",
+        "join": "加入 ReTh",
+        "loginSubtitle": "登录以继续",
+        "registerSubtitle": "创建您的账户并开始连接",
+        "loginTab": "登录",
+        "registerTab": "注册",
+        "username": "用户名",
+        "email": "电子邮件地址",
+        "phone": "电话号码",
+        "identifierLabel": "电子邮件、用户名或电话",
+        "identifierPlaceholder": "name@example.com",
+        "password": "密码",
+        "confirmPassword": "确认密码",
+        "rememberMe": "记住我",
+        "forgotPassword": "忘记密码？",
+        "signIn": "登录",
+        "signUp": "创建账户",
+        "orJoinWith": "或使用以下方式加入 RETH",
+        "orLoginWith": "或使用以下方式登录 RETH",
+        "social": {
+            "loginWith": "使用 {{provider}} 登录",
+            "registerWith": "使用 {{provider}} 注册"
+        },
+        "passwordRequirements": {
+            "title": "安全要求：",
+            "minLength": "最少8个字符",
+            "uppercase": "一个大写字母",
+            "lowercase": "一个小写字母",
+            "number": "一个数字",
+            "symbol": "一个符号 (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ 用户名可用",
+        "usernameTaken": "此用户名已被使用",
+        "passwordsMatch": "密码匹配",
+        "passwordsDontMatch": "密码不匹配",
+        "invalidIdentifier": "请输入有效的电子邮件或电话号码",
+        "phoneFormat": "国际格式：+[代码][号码]",
+        "errors": {
+            "passwordMismatch": "密码不匹配",
+            "passwordRequirements": "密码不符合安全要求",
+            "usernameMin": "用户名必须至少包含 3 个字符",
+            "generic": "处理请求时出错。请重试。"
+        }
+    }
+}

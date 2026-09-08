@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "Karibu tena!",
+        "join": "Jiunge na ReTh",
+        "loginSubtitle": "Ingia ili kuendelea",
+        "registerSubtitle": "Unda akaunti yako na uanze kuunganisha",
+        "loginTab": "Ingia",
+        "registerTab": "Jisajili",
+        "username": "Jina la mtumiaji",
+        "email": "Anwani ya barua pepe",
+        "phone": "Nambari ya simu",
+        "identifierLabel": "Barua pepe, jina la mtumiaji au simu",
+        "identifierPlaceholder": "jina@mfano.com",
+        "password": "Nenosiri",
+        "confirmPassword": "Thibitisha nenosiri",
+        "rememberMe": "Nikumbuke",
+        "forgotPassword": "Umesahau nenosiri?",
+        "signIn": "Ingia",
+        "signUp": "Unda akaunti",
+        "orJoinWith": "AU JIUNGE NA RETH KWA",
+        "orLoginWith": "AU INGIA KWENYE RETH KWA",
+        "social": {
+            "loginWith": "Ingia kwa {{provider}}",
+            "registerWith": "Jisajili kwa {{provider}}"
+        },
+        "errors": {
+            "passwordMismatch": "Nenosiri hazifanani",
+            "passwordRequirements": "Nenosiri halikidhi mahitaji ya usalama",
+            "usernameMin": "Jina la mtumiaji lazima liwe na angalau herufi 3",
+            "generic": "Hitilafu katika kuchakata ombi. Tafadhali jaribu tena."
+        },
+        "passwordRequirements": {
+            "title": "Mahitaji ya Usalama",
+            "minLength": "Angalau herufi 8",
+            "uppercase": "Herufi kubwa moja",
+            "lowercase": "Herufi ndogo moja",
+            "number": "Nambari moja",
+            "special": "Herufi maalum moja"
+        },
+        "usernameAvailable": "Jina la mtumiaji linapatikana",
+        "usernameTaken": "Jina la mtumiaji tayari limechukuliwa",
+        "checkingUsername": "Inakagua...",
+        "passwordsMatch": "Manenosiri yanalingana",
+        "passwordsDontMatch": "Manenosiri hayalingani"
+    }
+}

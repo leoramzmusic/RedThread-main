@@ -1,0 +1,47 @@
+{
+    "auth": {
+        "welcome": "Willkommen zurück!",
+        "join": "Tritt ReTh bei",
+        "loginSubtitle": "Melde dich an, um fortzufahren",
+        "registerSubtitle": "Erstelle dein Konto und beginne dich zu vernetzen",
+        "loginTab": "Anmelden",
+        "registerTab": "Registrieren",
+        "username": "Benutzername",
+        "email": "E-Mail-Adresse",
+        "phone": "Telefonnummer",
+        "identifierLabel": "E-Mail, Benutzername oder Telefon",
+        "identifierPlaceholder": "name@beispiel.de",
+        "password": "Passwort",
+        "confirmPassword": "Passwort bestätigen",
+        "rememberMe": "Angemeldet bleiben",
+        "forgotPassword": "Passwort vergessen?",
+        "signIn": "Anmelden",
+        "signUp": "Konto erstellen",
+        "orJoinWith": "ODER TRITT RETH BEI MIT",
+        "orLoginWith": "ODER MELDE DICH BEI RETH AN MIT",
+        "social": {
+            "loginWith": "Anmelden mit {{provider}}",
+            "registerWith": "Registrieren mit {{provider}}"
+        },
+        "passwordRequirements": {
+            "title": "Sicherheitsanforderungen:",
+            "minLength": "Mindestens 8 Zeichen",
+            "uppercase": "Ein Großbuchstabe",
+            "lowercase": "Ein Kleinbuchstabe",
+            "number": "Eine Zahl",
+            "symbol": "Ein Symbol (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ Benutzername verfügbar",
+        "usernameTaken": "Dieser Benutzername ist bereits vergeben",
+        "passwordsMatch": "Passwörter stimmen überein",
+        "passwordsDontMatch": "Passwörter stimmen nicht überein",
+        "invalidIdentifier": "Geben Sie eine gültige E-Mail oder Telefonnummer ein",
+        "phoneFormat": "Internationales Format: +[Code][Nummer]",
+        "errors": {
+            "passwordMismatch": "Passwörter stimmen nicht überein",
+            "passwordRequirements": "Passwort erfüllt nicht die Sicherheitsanforderungen",
+            "usernameMin": "Benutzername muss mindestens 3 Zeichen lang sein",
+            "generic": "Fehler bei der Verarbeitung der Anfrage. Bitte versuche es erneut."
+        }
+    }
+}

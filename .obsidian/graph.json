@@ -1,0 +1,35 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "localJumps": 1,
+  "colorGroups": [
+    {
+      "query": "path:knowledge/adrs",
+      "color": {
+        "a": 1,
+        "rgb": 16766720
+      }
+    },
+    {
+      "query": "path:knowledge/audits",
+      "color": {
+        "a": 1,
+        "rgb": 52377
+      }
+    },
+    {
+      "query": "path:backend",
+      "color": {
+        "a": 1,
+        "rgb": 10040319
+      }
+    },
+    {
+      "query": "path:frontend",
+      "color": {
+        "a": 1,
+        "rgb": 3394815
+      }
+    }
+  ]
+}

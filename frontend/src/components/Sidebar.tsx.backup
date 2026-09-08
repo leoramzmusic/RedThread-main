@@ -1,0 +1,364 @@
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { APP_VERSION } from '../config/version';
+import {
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  IconButton,
+  Typography,
+  Divider,
+  Collapse,
+} from '@mui/material';
+import {
+  Menu as MenuIcon,
+  Dashboard as DashboardIcon,
+  Event as EventIcon,
+  People as PeopleIcon,
+  BarChart as BarChartIcon,
+  Settings as SettingsIcon,
+  Security as SecurityIcon,
+  Report as ReportIcon,
+  Flag as FlagIcon,
+  PersonOutline as UserIcon,
+  AttachMoney as MoneyIcon,
+  Campaign as CampaignIcon,
+  Support as SupportIcon,
+  ExpandLess,
+  ExpandMore,
+} from '@mui/icons-material';
+
+const DRAWER_WIDTH = 260;
+const DRAWER_WIDTH_COLLAPSED = 70;
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ReactElement;
+  path?: string;
+  children?: MenuItem[];
+}
+
+interface AdminSidebarProps {
+  open?: boolean;
+}
+
+export default function AdminSidebar({ open: externalOpen }: AdminSidebarProps) {
+  const router = useRouter();
+  const [collapsed, setCollapsed] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+
+  const menuItems: MenuItem[] = [
+    { id: 'home', label: 'Portal Home', icon: <DashboardIcon />, path: '/portal-redthread' },
+    {
+      id: 'eventos',
+      label: 'Eventos',
+      icon: <EventIcon />,
+      children: [
+        { id: 'eventos-crear', label: 'Crear evento', icon: <EventIcon />, path: '/portal-redthread/eventos/crear' },
+        { id: 'eventos-listar', label: 'Editar evento', icon: <EventIcon />, path: '/portal-redthread/eventos' },
+        { id: 'eventos-calendario', label: 'Calendario', icon: <EventIcon />, path: '/portal-redthread/eventos/calendario' },
+        { id: 'eventos-estadisticas', label: 'Estadísticas', icon: <BarChartIcon />, path: '/portal-redthread/eventos/estadisticas' },
+      ],
+    },
+    {
+      id: 'metricas',
+      label: 'Métricas',
+      icon: <BarChartIcon />,
+      children: [
+        { id: 'metricas-usuarios', label: 'Usuarios registrados', icon: <UserIcon />, path: '/portal-redthread/metricas/usuarios' },
+        { id: 'metricas-pais', label: 'Por país', icon: <BarChartIcon />, path: '/portal-redthread/metricas/pais' },
+        { id: 'metricas-ciudad', label: 'Por ciudad', icon: <BarChartIcon />, path: '/portal-redthread/metricas/ciudad' },
+        { id: 'metricas-crecimiento', label: 'Crecimiento mensual', icon: <BarChartIcon />, path: '/portal-redthread/metricas/crecimiento' },
+        { id: 'metricas-retencion', label: 'Retención', icon: <BarChartIcon />, path: '/portal-redthread/metricas/retencion' },
+      ],
+    },
+    {
+      id: 'denuncias',
+      label: 'Denuncias',
+      icon: <FlagIcon />,
+      children: [
+        { id: 'denuncias-listado', label: 'Listado', icon: <FlagIcon />, path: '/portal-redthread/denuncias' },
+        { id: 'denuncias-pendientes', label: 'Pendientes', icon: <FlagIcon />, path: '/portal-redthread/denuncias/pendientes' },
+        { id: 'denuncias-proceso', label: 'En proceso', icon: <FlagIcon />, path: '/portal-redthread/denuncias/proceso' },
+        { id: 'denuncias-historial', label: 'Historial', icon: <FlagIcon />, path: '/portal-redthread/denuncias/historial' },
+      ],
+    },
+    {
+      id: 'empleados',
+      label: 'Empleados',
+      icon: <PeopleIcon />,
+      children: [
+        { id: 'empleados-registrar', label: 'Registrar empleado', icon: <PeopleIcon />, path: '/portal-redthread/empleados/registrar' },
+        { id: 'empleados-roles', label: 'Roles y permisos', icon: <SecurityIcon />, path: '/portal-redthread/empleados/roles' },
+        { id: 'empleados-departamentos', label: 'Departamentos', icon: <PeopleIcon />, path: '/portal-redthread/empleados/departamentos' },
+        { id: 'empleados-desempeno', label: 'Desempeño', icon: <BarChartIcon />, path: '/portal-redthread/empleados/desempeno' },
+      ],
+    },
+    {
+      id: 'usuarios',
+      label: 'Usuarios',
+      icon: <UserIcon />,
+      children: [
+        { id: 'usuarios-listado', label: 'Listado', icon: <UserIcon />, path: '/portal-redthread/usuarios' },
+        { id: 'usuarios-suspendidos', label: 'Suspendidos', icon: <UserIcon />, path: '/portal-redthread/usuarios/suspendidos' },
+        { id: 'usuarios-actividad', label: 'Historial actividad', icon: <BarChartIcon />, path: '/portal-redthread/usuarios/actividad' },
+        { id: 'usuarios-sospechosos', label: 'Perfiles sospechosos', icon: <FlagIcon />, path: '/portal-redthread/usuarios/sospechosos' },
+      ],
+    },
+    {
+      id: 'finanzas',
+      label: 'Finanzas',
+      icon: <MoneyIcon />,
+      children: [
+        { id: 'finanzas-suscripciones', label: 'Suscripciones', icon: <MoneyIcon />, path: '/portal-redthread/finanzas/suscripciones' },
+        { id: 'finanzas-ingresos', label: 'Ingresos', icon: <MoneyIcon />, path: '/portal-redthread/finanzas/ingresos' },
+        { id: 'finanzas-balance', label: 'Balance', icon: <BarChartIcon />, path: '/portal-redthread/finanzas/balance' },
+        { id: 'finanzas-reportes', label: 'Reportes', icon: <ReportIcon />, path: '/portal-redthread/finanzas/reportes' },
+      ],
+    },
+    {
+      id: 'campanas',
+      label: 'Campañas',
+      icon: <CampaignIcon />,
+      children: [
+        { id: 'campanas-crear', label: 'Crear campaña', icon: <CampaignIcon />, path: '/portal-redthread/campanas/crear' },
+        { id: 'campanas-anunciantes', label: 'Anunciantes', icon: <PeopleIcon />, path: '/portal-redthread/campanas/anunciantes' },
+        { id: 'campanas-promociones', label: 'Promociones', icon: <CampaignIcon />, path: '/portal-redthread/campanas/promociones' },
+        { id: 'campanas-metricas', label: 'Métricas', icon: <BarChartIcon />, path: '/portal-redthread/campanas/metricas' },
+      ],
+    },
+    {
+      id: 'soporte',
+      label: 'Soporte Técnico',
+      icon: <SupportIcon />,
+      children: [
+        { id: 'soporte-tickets', label: 'Tickets', icon: <SupportIcon />, path: '/portal-redthread/soporte/tickets' },
+        { id: 'soporte-fallos', label: 'Fallos reportados', icon: <ReportIcon />, path: '/portal-redthread/soporte/fallos' },
+        { id: 'soporte-sla', label: 'Panel SLA', icon: <BarChartIcon />, path: '/portal-redthread/soporte/sla' },
+      ],
+    },
+    {
+      id: 'configuracion',
+      label: 'Configuración',
+      icon: <SettingsIcon />,
+      children: [
+        { id: 'config-general', label: 'General', icon: <SettingsIcon />, path: '/portal-redthread/configuracion/general' },
+        { id: 'config-seguridad', label: 'Seguridad', icon: <SecurityIcon />, path: '/portal-redthread/configuracion/seguridad' },
+        { id: 'config-integraciones', label: 'Integraciones', icon: <SettingsIcon />, path: '/portal-redthread/configuracion/integraciones' },
+      ],
+    },
+  ];
+
+  const handleToggleCollapse = () => {
+    setCollapsed(!collapsed);
+    if (!collapsed) {
+      setExpandedMenus([]); // Close all submenus when collapsing
+    }
+  };
+
+  const handleMenuClick = (item: MenuItem) => {
+    if (item.children) {
+      if (!collapsed) {
+        setExpandedMenus((prev) =>
+          prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id]
+        );
+      }
+    } else if (item.path) {
+      router.push(item.path);
+    }
+  };
+
+  const isActive = (path?: string) => {
+    if (!path) return false;
+    return router.pathname === path || router.pathname.startsWith(path + '/');
+  };
+
+  const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
+
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: drawerWidth,
+          boxSizing: 'border-box',
+          borderRight: '1px solid',
+          borderColor: 'divider',
+          transition: 'width 0.3s ease',
+          overflowX: 'hidden',
+          bgcolor: 'background.paper',
+        },
+      }}
+    >
+      {/* Header Section */}
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          gap: 2,
+          minHeight: 64,
+        }}
+      >
+        <IconButton
+          onClick={handleToggleCollapse}
+          sx={{
+            p: 1,
+            color: 'primary.main',
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        {!collapsed ? (
+          <Box
+            sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+            onClick={() => router.push('/portal-redthread')}
+          >
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              color="primary"
+              sx={{ lineHeight: 1.2, whiteSpace: 'nowrap' }}
+            >
+              RED THREAD
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ lineHeight: 1, whiteSpace: 'nowrap' }}
+            >
+              (Admin Portal)
+            </Typography>
+          </Box>
+        ) : (
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            color="primary"
+            sx={{ 
+              cursor: 'pointer', 
+              position: 'absolute', 
+              left: '50%', 
+              transform: 'translateX(-50%)',
+              mt: 6,
+              fontSize: '0.9rem'
+            }}
+            onClick={() => router.push('/portal-redthread')}
+          >
+            AP
+          </Typography>
+        )}
+      </Box>
+
+      <Divider />
+
+      {/* Menu Items */}
+      <List sx={{ px: 1, py: 1 }}>
+        {menuItems.map((item) => (
+          <Box key={item.id}>
+            <ListItem disablePadding sx={{ mb: 0.5 }}>
+              <ListItemButton
+                selected={isActive(item.path)}
+                onClick={() => handleMenuClick(item)}
+                sx={{
+                  borderRadius: 1,
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  px: collapsed ? 0 : 2,
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.light',
+                    '&:hover': {
+                      bgcolor: 'primary.light',
+                    },
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: collapsed ? 'auto' : 40,
+                    color: isActive(item.path) ? 'primary.main' : 'inherit',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {!collapsed && (
+                  <>
+                    <ListItemText primary={item.label} />
+                    {item.children && (
+                      expandedMenus.includes(item.id) ? <ExpandLess /> : <ExpandMore />
+                    )}
+                  </>
+                )}
+              </ListItemButton>
+            </ListItem>
+
+            {/* Submenu */}
+            {item.children && !collapsed && (
+              <Collapse in={expandedMenus.includes(item.id)} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {item.children.map((child) => (
+                    <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
+                      <ListItemButton
+                        selected={isActive(child.path)}
+                        onClick={() => child.path && router.push(child.path)}
+                        sx={{
+                          pl: 4,
+                          borderRadius: 1,
+                          '&.Mui-selected': {
+                            bgcolor: 'primary.light',
+                            '&:hover': {
+                              bgcolor: 'primary.light',
+                            },
+                          },
+                        }}
+                      >
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 40,
+                            color: isActive(child.path) ? 'primary.main' : 'inherit',
+                          }}
+                        >
+                          {child.icon}
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={child.label}
+                          primaryTypographyProps={{
+                            fontSize: '0.875rem',
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            )}
+          </Box>
+        ))}
+      </List>
+
+      <Divider sx={{ mt: 'auto' }} />
+
+      {/* Footer Info */}
+      {!collapsed && (
+        <Box sx={{ p: 2 }}>
+          <Typography variant="caption" color="text.secondary">
+            Portal de Administración
+          </Typography>
+          <Typography variant="caption" display="block" color="text.secondary">
+            v{APP_VERSION.admin}
+          </Typography>
+        </Box>
+      )}
+    </Drawer>
+  );
+}
+

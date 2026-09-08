@@ -1,0 +1,20 @@
+{
+    "title": "Radar de Proximité",
+    "subtitle": "Trouvez des personnes à proximité qui partagent vos intérêts",
+    "enableLocation": {
+        "title": "Activer la Localisation",
+        "description": "Pour voir qui est à proximité, vous devez activer le partage de localisation. Votre position n'est utilisée que pour calculer la distance et n'est jamais partagée précisément.",
+        "button": "Activer l'Accès à la Localisation"
+    },
+    "searchRadius": "Rayon de Recherche",
+    "locationSharing": "Partage de Localisation Actif",
+    "upgradeMessage": "Passez à Premium pour rechercher jusqu'à 50 km",
+    "noUsers": "Aucun utilisateur trouvé à proximité. Essayez d'augmenter votre rayon de recherche.",
+    "distance": {
+        "away": "km de distance"
+    },
+    "errors": {
+        "location": "Veuillez activer les services de localisation pour utiliser le Radar.",
+        "geolocation": "La géolocalisation n'est pas prise en charge par votre navigateur."
+    }
+}

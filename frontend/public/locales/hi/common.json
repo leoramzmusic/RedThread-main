@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "वापसी पर स्वागत है!",
+        "join": "ReTh में शामिल हों",
+        "loginSubtitle": "जारी रखने के लिए साइन इन करें",
+        "registerSubtitle": "अपना खाता बनाएं और जुड़ना शुरू करें",
+        "loginTab": "साइन इन करें",
+        "registerTab": "साइन अप करें",
+        "username": "उपयोगकर्ता नाम",
+        "email": "ईमेल पता",
+        "phone": "फ़ोन नंबर",
+        "identifierLabel": "ईमेल, उपयोगकर्ता नाम या फ़ोन",
+        "identifierPlaceholder": "name@example.com",
+        "password": "पासवर्ड",
+        "confirmPassword": "पासवर्ड की पुष्टि करें",
+        "rememberMe": "मुझे याद रखें",
+        "forgotPassword": "पासवर्ड भूल गए?",
+        "signIn": "साइन इन करें",
+        "signUp": "खाता बनाएं",
+        "orJoinWith": "या RETH में शामिल हों",
+        "orLoginWith": "या RETH में साइन इन करें",
+        "social": {
+            "loginWith": "{{provider}} के साथ साइन इन करें",
+            "registerWith": "{{provider}} के साथ साइन अप करें"
+        },
+        "errors": {
+            "passwordMismatch": "पासवर्ड मेल नहीं खाते",
+            "passwordRequirements": "पासवर्ड सुरक्षा आवश्यकताओं को पूरा नहीं करता",
+            "usernameMin": "उपयोगकर्ता नाम कम से कम 3 वर्ण का होना चाहिए",
+            "generic": "अनुरोध संसाधित करने में त्रुटि। कृपया पुनः प्रयास करें।"
+        },
+        "passwordRequirements": {
+            "title": "सुरक्षा आवश्यकताएं",
+            "minLength": "कम से कम 8 वर्ण",
+            "uppercase": "एक बड़ा अक्षर",
+            "lowercase": "एक छोटा अक्षर",
+            "number": "एक संख्या",
+            "special": "एक विशेष वर्ण"
+        },
+        "usernameAvailable": "उपयोगकर्ता नाम उपलब्ध है",
+        "usernameTaken": "उपयोगकर्ता नाम पहले से लिया गया है",
+        "checkingUsername": "जाँच हो रही है...",
+        "passwordsMatch": "पासवर्ड मेल खाते हैं",
+        "passwordsDontMatch": "पासवर्ड मेल नहीं खाते"
+    }
+}

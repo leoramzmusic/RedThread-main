@@ -1,0 +1,47 @@
+{
+    "auth": {
+        "welcome": "Bentornato!",
+        "join": "Unisciti a ReTh",
+        "loginSubtitle": "Accedi per continuare",
+        "registerSubtitle": "Crea il tuo account e inizia a connetterti",
+        "loginTab": "Accedi",
+        "registerTab": "Registrati",
+        "username": "Nome utente",
+        "email": "Indirizzo email",
+        "phone": "Numero di telefono",
+        "identifierLabel": "Email, nome utente o telefono",
+        "identifierPlaceholder": "nome@esempio.it",
+        "password": "Password",
+        "confirmPassword": "Conferma password",
+        "rememberMe": "Ricordami",
+        "forgotPassword": "Password dimenticata?",
+        "signIn": "Accedi",
+        "signUp": "Crea account",
+        "orJoinWith": "OPPURE UNISCITI A RETH CON",
+        "orLoginWith": "OPPURE ACCEDI A RETH CON",
+        "social": {
+            "loginWith": "Accedi con {{provider}}",
+            "registerWith": "Registrati con {{provider}}"
+        },
+        "passwordRequirements": {
+            "title": "Requisiti di sicurezza:",
+            "minLength": "Minimo 8 caratteri",
+            "uppercase": "Una lettera maiuscola",
+            "lowercase": "Una lettera minuscola",
+            "number": "Un numero",
+            "symbol": "Un simbolo (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ Nome utente disponibile",
+        "usernameTaken": "Questo nome utente è già in uso",
+        "passwordsMatch": "Le password corrispondono",
+        "passwordsDontMatch": "Le password non corrispondono",
+        "invalidIdentifier": "Inserisci un'email o un numero di telefono valido",
+        "phoneFormat": "Formato internazionale: +[codice][numero]",
+        "errors": {
+            "passwordMismatch": "Le password non corrispondono",
+            "passwordRequirements": "La password non soddisfa i requisiti di sicurezza",
+            "usernameMin": "Il nome utente deve contenere almeno 3 caratteri",
+            "generic": "Errore nell'elaborazione della richiesta. Riprova."
+        }
+    }
+}

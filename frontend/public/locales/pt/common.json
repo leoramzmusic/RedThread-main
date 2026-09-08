@@ -1,0 +1,216 @@
+{
+    "profile": {
+        "title": "Perfil",
+        "edit": "Editar Perfil",
+        "save": "Salvar Alterações",
+        "displayName": "Nome de exibição",
+        "bio": "Biografia",
+        "age": "Idade",
+        "height": "Altura (cm)",
+        "gender": "Gênero",
+        "orientation": "Orientação",
+        "occupation": "Ocupação",
+        "education": "Nível de Educação",
+        "activityPattern": "Padrão de Atividade",
+        "mood": "Humor",
+        "locationSharing": "Compartilhar localização",
+        "photos": "Fotos",
+        "uploadPhoto": "Enviar",
+        "interests": "Interesses",
+        "hobbies": "Hobbies",
+        "languages": "Idiomas",
+        "intentions": "Intenções",
+        "addInterest": "Adicionar interesse...",
+        "addHobby": "Adicionar hobby...",
+        "addLanguage": "Adicionar idioma...",
+        "add": "Adicionar"
+    },
+    "settings_title": "Configurações",
+    "settings_appearance_title": "Aparência",
+    "settings_appearance_visualTheme": "Tema Visual",
+    "settings_appearance_darkMode": "Modo Scuro",
+    "settings_appearance_darkModeOn": "Ativado",
+    "settings_appearance_darkModeOff": "Desactivado",
+    "settings_appearance_fontSize": "Tamanho da Fonte",
+    "settings_appearance_language": "Idioma / Language",
+    "settings_saveChanges": "Salvar Alterações",
+    "settings_saving": "Salvando...",
+    "settings_success": "Configurações salvas com sucesso",
+    "settings_language": "Idioma",
+    "settings_theme": "Tema",
+    "settings_themeLight": "Claro",
+    "settings_themeDark": "Escuro",
+    "settings_themeColor": "Cor do tema",
+    "settings_notifications": "Notificações",
+    "settings_privacy": "Privacidade",
+    "privacy_visibility_title": "Configurações de Visibilidade",
+    "privacy_profile_visibility": "Quem pode ver seu perfil completo",
+    "privacy_data_management": "Gestão de Dados Pessoais",
+    "privacy_consent_title": "Permissões e Consentimento",
+    "privacy_security_title": "Segurança e Autenticação",
+    "privacy_blocking_title": "Bloqueio e Denúncias",
+    "privacy_safe_mode_title": "Modo Seguro / Modo Privado",
+    "privacy_policy_title": "Política de Privacidade e Termos",
+    "settings_logout": "Sair",
+    "menu_profile": "Perfil",
+    "menu_settings": "Configurações",
+    "menu_preferences": "Preferências",
+    "menu_security": "Segurança",
+    "menu_language": "Idioma",
+    "menu_theme": "Tema",
+    "menu_notifications": "Notificações",
+    "menu_privacy": "Privacidad",
+    "settings_accessibility": "Acessibilidade",
+    "settings_advanced": "Configurações Avançadas",
+    "settings_security_password_title": "Alterar senha",
+    "settings_security_password_desc": "Atualize sua senha para manter sua conta segura",
+    "settings_security_password_new": "Nova senha",
+    "settings_security_password_confirm": "Confirmar nova senha",
+    "settings_security_password_submit": "Atualizar senha",
+    "settings_security_password_success": "Senha atualizada com sucesso",
+    "settings_security_password_error_mismatch": "As senhas não coincidem",
+    "settings_security_password_error_complexity": "A senha deve ter pelo menos 8 caracteres",
+    "settings_security_password_error_invalid": "A senha atual é inválida",
+    "settings_security_2fa_title": "Autenticação de dois fatores (2FA)",
+    "settings_security_2fa_desc": "Proteja sua conta com um segundo fator de segurança",
+    "settings_security_2fa_enable": "Ativar autenticação de dois fatores",
+    "settings_security_2fa_method": "Método de verificação",
+    "settings_security_2fa_email": "Endereço de e-mail",
+    "settings_security_2fa_email_desc": "Receber um código por e-mail",
+    "settings_security_2fa_sms": "SMS",
+    "settings_security_2fa_sms_desc": "Receber um código por SMS",
+    "settings_security_2fa_authenticator": "Aplicativo autenticador",
+    "settings_security_2fa_authenticator_desc": "Google Authenticator, Authy, etc.",
+    "settings_security_2fa_upcoming": "Em breve: Configuração por código QR",
+    "settings_security_suspend_title": "Suspender conta",
+    "settings_security_suspend_desc": "Você pode suspender temporariamente sua conta sem perder suas informações",
+    "settings_security_suspend_label": "Período de suspensão",
+    "settings_security_suspend_submit": "Suspender conta",
+    "settings_security_suspend_1d": "1 dia",
+    "settings_security_suspend_1w": "1 semana",
+    "settings_security_suspend_1m": "1 mês",
+    "settings_security_suspend_forever": "Até novo aviso",
+    "settings_security_delete_title": "Excluir conta",
+    "settings_security_delete_desc": "Excluir permanentemente sua conta e todos os seus dados",
+    "settings_security_delete_alert": "Esta ação é irreversível",
+    "settings_security_delete_talkToUs_button": "Falar com o suporte",
+    "settings_security_delete_reasonPlaceholder": "Por que você deseja excluir sua conta?",
+    "settings_security_delete_checkbox": "Entendo que esta ação é irreversível",
+    "settings_security_delete_submit": "Sim, tenho certeza absoluta",
+    "common": {
+        "loading": "Carregando...",
+        "error": "Erro",
+        "success": "Sucesso",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "understood": "Entendido"
+    },
+    "communityRules": {
+        "title": "🌐 Regras da Comunidade ReTh",
+        "welcome": "Bem-vindx ao ReTh !",
+        "intro1": "Aqui você não apenas se conecta com pessoas: aqui você tece fios de confiança, criatividade e colaboração. Cada interação pode abrir uma oportunidade, uma amizade, um projeto ou simplesmente uma boa conversa. As possibilidades são infinitas, desde que respeitemos este espaço.",
+        "intro2": "Queremos que o ReTh seja um ambiente seguro, inclusivo e autêntico, onde todxs possam se expressar livremente enquanto conhecem pessoas. Estas regras existem para marcar os limites claros do que é permitido e do que não é. Não segui-las pode ter consequências, desde advertências até a suspensão da conta.",
+        "rulesTitle": "📜 Regras do ReTh",
+        "rule1": {
+            "title": "Respeite os limites e o consentimento.",
+            "desc": "Nudez e conteúdo sexualmente explícito não são permitidos em perfis públicos. Em conversas privadas, qualquer troca íntima deve ser consensual por todas as partes. O consentimento é a base de toda interação."
+        },
+        "rule2": {
+            "title": "Proteja suas informações pessoais.",
+            "desc": "Não publique dados sensíveis como telefone, e-mail, redes sociais ou contas bancárias em seu perfil. Não peça nem compartilhe informações privadas de outras pessoas. Se alguém lhe pedir dinheiro ou investimentos, provavelmente é um golpe: denuncie."
+        },
+        "rule3": {
+            "title": "Zero violência.",
+            "desc": "Conteúdo violento, sangrento ou que glorifique danos a pessoas ou animais não é tolerado. Também não é permitido promover automutilação ou uso de armas. Se detectarmos risco de dano, podemos ativar protocolos de segurança e apoio."
+        },
+        "rule4": {
+            "title": "ReTh não é um mercado.",
+            "desc": "Não use o app para vender produtos, ganhar seguidores, arrecadar fundos ou fazer campanhas. Nem para serviços sexuais, relacionamentos compensados ou “sugar dating”."
+        },
+        "rule5": {
+            "title": "Seja autêntico.",
+            "desc": "Não crie contas falsas nem se passe por outras pessoas. A comunidade quer conhecer você, não um personagem inventado."
+        },
+        "rule6": {
+            "title": "Comunique-se com respeito.",
+            "desc": "Assédio, ameaças, intimidação, chantagem, sextorsão e doxing não são permitidos. Aqui não há espaço para racismo, intolerância, ódio ou discriminação por raça, gênero, orientação sexual, religião, deficiência, aparência ou estado de saúde. Se alguém não se encaixa nos seus critérios, simplesmente siga em frente."
+        },
+        "rule7": {
+            "title": "Não prejudique os outros.",
+            "desc": "Qualquer ação que sugira, incite ou cause danos físicos, emocionais ou digitais será levada muito a sério. Se alguém te machucar, cuide-se primeiro e depois decida se quer denunciar. Estamos aqui para te apoiar."
+        },
+        "rule8": {
+            "title": "Apenas para maiores de idade.",
+            "desc": "Você deve ter pelo menos 18 anos para usar o ReTh. Não são permitidas fotos de menores nem imagens de infância em contextos inadequados."
+        },
+        "rule9": {
+            "title": "Cumpra a lei.",
+            "desc": "Não use o ReTh para atividades ilegais: venda de drogas, produtos falsificados, tráfico de pessoas ou exploração de menores."
+        },
+        "rule10": {
+            "title": "Uma conta, uma pessoa.",
+            "desc": "Cada conta é individual. Não compartilhe seu acesso nem crie múltiplos perfis."
+        },
+        "rule11": {
+            "title": "Publique apenas seu próprio conteúdo.",
+            "desc": "Não compartilhe fotos, mensagens privadas ou material de outras pessoas sem o consentimento delas. Respeite direitos autorais e marcas registradas."
+        },
+        "rule12": {
+            "title": "Seja um membro exemplar.",
+            "desc": "Não espalhe informações falsas, spam ou links prejudiciais. Não manipule nem tente enganar a comunidade. Não use apps externos para alterar funções do ReTh."
+        },
+        "rule13": {
+            "title": "Mantenha-se ativo.",
+            "desc": "Se você não usar sua conta por dois anos, poderemos excluí-la por inatividade."
+        },
+        "reportTitle": "🚨 Denúncias",
+        "reportDesc": "Se alguém te incomodar, te prejudicar ou quebrar estas regras, denuncie. Suas denúncias são confidenciais e ajudam a proteger a comunidade.",
+        "impactTitle": "⚖️ Impacto",
+        "impactDesc": "Levamos estas regras muito a sério. Aplicamos advertências, suspensões ou banimentos dependendo da gravidade. Podemos investigar e cancelar contas sem reembolso se detectarmos mau uso do serviço, mesmo que ocorra fora do app mas envolva pessoas que você conheceu aqui."
+    },
+    "auth": {
+        "welcome": "Bem-vindo de volta!",
+        "join": "Junte-se ao ReTh",
+        "loginSubtitle": "Faça login para continuar",
+        "registerSubtitle": "Crie sua conta e comece a se conectar",
+        "loginTab": "Entrar",
+        "registerTab": "Cadastrar",
+        "username": "Nome de usuário",
+        "email": "Endereço de e-mail",
+        "phone": "Número de telefone",
+        "identifierLabel": "Email, usuário ou telefone",
+        "identifierPlaceholder": "nome@exemplo.com",
+        "password": "Senha",
+        "confirmPassword": "Confirmar senha",
+        "rememberMe": "Lembrar de mim",
+        "forgotPassword": "Esqueceu sua senha?",
+        "signIn": "Entrar",
+        "signUp": "Criar conta",
+        "orJoinWith": "OU JUNTE-SE AO RETH COM",
+        "orLoginWith": "OU FAÇA LOGIN NO RETH COM",
+        "social": {
+            "loginWith": "Entrar com {{provider}}",
+            "registerWith": "Cadastrar com {{provider}}"
+        },
+        "passwordRequirements": {
+            "title": "Requisitos de segurança:",
+            "minLength": "Mínimo 8 caracteres",
+            "uppercase": "Uma letra maiúscula",
+            "lowercase": "Uma letra minúscula",
+            "number": "Um número",
+            "symbol": "Um símbolo (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ Nome de usuário disponível",
+        "usernameTaken": "Este nome de usuário já está em uso",
+        "passwordsMatch": "As senhas coincidem",
+        "passwordsDontMatch": "As senhas não coincidem",
+        "invalidIdentifier": "Digite um e-mail ou número de telefone válido",
+        "phoneFormat": "Formato internacional: +[código][número]",
+        "errors": {
+            "passwordMismatch": "As senhas não coincidem",
+            "passwordRequirements": "A senha não atende aos requisitos de segurança",
+            "usernameMin": "O nome de usuário deve ter pelo menos 3 caracteres",
+            "generic": "Erro ao processar a solicitação. Tente novamente."
+        }
+    }
+}

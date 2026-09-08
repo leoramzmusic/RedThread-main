@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "Barka da dawowa!",
+        "join": "Shiga ReTh",
+        "loginSubtitle": "Shiga don ci gaba",
+        "registerSubtitle": "Ƙirƙiri asusun ku kuma fara haɗawa",
+        "loginTab": "Shiga",
+        "registerTab": "Yi rajista",
+        "username": "Sunan mai amfani",
+        "email": "Adireshin imel",
+        "phone": "Lambar waya",
+        "identifierLabel": "Imel, sunan mai amfani ko waya",
+        "identifierPlaceholder": "suna@misali.com",
+        "password": "Kalmar sirri",
+        "confirmPassword": "Tabbatar da kalmar sirri",
+        "rememberMe": "Ka tuna da ni",
+        "forgotPassword": "Ka manta da kalmar sirri?",
+        "signIn": "Shiga",
+        "signUp": "Ƙirƙiri asusu",
+        "orJoinWith": "KO SHIGA RETH DA",
+        "orLoginWith": "KO SHIGA ZUWA RETH DA",
+        "social": {
+            "loginWith": "Shiga da {{provider}}",
+            "registerWith": "Yi rajista da {{provider}}"
+        },
+        "errors": {
+            "passwordMismatch": "Kalmomin sirri ba su dace ba",
+            "passwordRequirements": "Kalmar sirri ba ta cika buƙatun tsaro ba",
+            "usernameMin": "Sunan mai amfani dole ne ya kasance aƙalla haruffa 3",
+            "generic": "Kuskure wajen aiwatar da buƙata. Da fatan za a sake gwadawa."
+        },
+        "passwordRequirements": {
+            "title": "Buƙatun Tsaro",
+            "minLength": "Aƙalla haruffa 8",
+            "uppercase": "Babban harafi ɗaya",
+            "lowercase": "Ƙaramin harafi ɗaya",
+            "number": "Lamba ɗaya",
+            "special": "Harafi na musamman ɗaya"
+        },
+        "usernameAvailable": "Sunan mai amfani yana samuwa",
+        "usernameTaken": "An riga an ɗauki sunan mai amfani",
+        "checkingUsername": "Ana dubawa...",
+        "passwordsMatch": "Kalmomin sirri sun dace",
+        "passwordsDontMatch": "Kalmomin sirri ba su dace ba"
+    }
+}

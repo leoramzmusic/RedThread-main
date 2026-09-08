@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "Nau mai anō!",
+        "join": "Uru mai ki ReTh",
+        "loginSubtitle": "Takiuru kia haere tonu",
+        "registerSubtitle": "Waihanga i tō pūkete me te tīmata ki te hono",
+        "loginTab": "Takiuru",
+        "registerTab": "Rēhita",
+        "username": "Ingoa kaiwhakamahi",
+        "email": "Wāhitau īmēra",
+        "phone": "Tau waea",
+        "identifierLabel": "Īmēra, ingoa kaiwhakamahi, waea rānei",
+        "identifierPlaceholder": "ingoa@tauira.com",
+        "password": "Kupuhipa",
+        "confirmPassword": "Whakaū kupuhipa",
+        "rememberMe": "Mahara mai ahau",
+        "forgotPassword": "Kua wareware te kupuhipa?",
+        "signIn": "Takiuru",
+        "signUp": "Waihanga pūkete",
+        "orJoinWith": "URU MAI KI RETH MĀ",
+        "orLoginWith": "TAKIURU KI RETH MĀ",
+        "social": {
+            "loginWith": "Takiuru mā {{provider}}",
+            "registerWith": "Rēhita mā {{provider}}"
+        },
+        "errors": {
+            "passwordMismatch": "Kāore e ōrite ngā kupuhipa",
+            "passwordRequirements": "Kāore te kupuhipa e tutuki i ngā whakaritenga haumaru",
+            "usernameMin": "Me kia 3 pūāhua te roa o te ingoa kaiwhakamahi",
+            "generic": "Hapa i te tukatuka tono. Tēnā ngana anō."
+        },
+        "passwordRequirements": {
+            "title": "Ngā Whakaritenga Haumaru",
+            "minLength": "Kia iti rawa 8 ngā pūāhua",
+            "uppercase": "Kotahi pūāhua matua",
+            "lowercase": "Kotahi pūāhua iti",
+            "number": "Kotahi tau",
+            "special": "Kotahi pūāhua motuhake"
+        },
+        "usernameAvailable": "Kei te wātea te ingoa kaiwhakamahi",
+        "usernameTaken": "Kua tangohia kē te ingoa kaiwhakamahi",
+        "checkingUsername": "E tirotiro ana...",
+        "passwordsMatch": "E ōrite ana ngā kupuhipa",
+        "passwordsDontMatch": "Kāore e ōrite ngā kupuhipa"
+    }
+}

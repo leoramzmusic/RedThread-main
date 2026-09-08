@@ -1,0 +1,29 @@
+{
+    "rules": {
+        "hotfix": {
+            "max_files": 20,
+            "increment": "none",
+            "description": "Hotfixes and very small changes"
+        },
+        "patch": {
+            "max_files": 50,
+            "increment": "patch",
+            "description": "Small changes and bug fixes"
+        },
+        "minor": {
+            "max_files": 500,
+            "increment": "minor",
+            "description": "Medium changes and new features"
+        },
+        "major": {
+            "max_files": 999999,
+            "increment": "major",
+            "description": "Large changes and breaking updates"
+        }
+    },
+    "tag_prefix": "v",
+    "changelog": "CHANGELOG.md",
+    "commit_message_template": "chore: bump version to {version} [skip ci]",
+    "auto_commit": true,
+    "auto_push": false
+}

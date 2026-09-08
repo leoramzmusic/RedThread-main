@@ -1,0 +1,61 @@
+{
+    "title": "Descubrir",
+    "subtitle": "Encuentra personas que comparten tu hilo",
+    "friendshipMode": {
+        "title": "Modo Amistad Activado",
+        "description": "Como estás en una relación, solo verás personas que buscan amistad o actividades."
+    },
+    "errors": {
+        "loadFailed": "Error al cargar perfiles. Por favor, intenta de nuevo más tarde.",
+        "updateFailed": "No pudimos actualizar tu perfil. Intenta de nuevo."
+    },
+    "match": {
+        "title": "¡Es un Match!",
+        "description": "Tú y {{name}} se gustan mutuamente"
+    },
+    "noProfiles": {
+        "title": "No hay más perfiles cercanos",
+        "description": "Amplía tus criterios de búsqueda o vuelve más tarde.",
+        "button": "Ajustar Filtros"
+    },
+    "filters": {
+        "title": "Ajustar Búsqueda",
+        "ageRange": "Rango de Edad",
+        "ageNoLimit": "Sin límite de edad",
+        "distance": {
+            "label": "Radio de búsqueda",
+            "unit": "km",
+            "unlimited": "Sin límite",
+            "syncMessage": "Este ajuste también se guardará en tu perfil.",
+            "currentLocation": "Buscando cerca de: "
+        },
+        "onlineOnly": "Mostrar solo usuarios conectados",
+        "mode": {
+            "label": "Modo de Exploración",
+            "suggested": "Coincidencias sugeridas",
+            "suggestedDesc": "Basado en tu hilo de compatibilidad",
+            "free": "Exploración libre",
+            "freeDesc": "Perfiles aleatorios cerca de ti"
+        },
+        "premium": {
+            "states": "Explorar por Estados (Premium)",
+            "countries": "Explorar por Países (Premium)",
+            "upsellTitle": "Explora más allá de tu zona",
+            "upsellDesc": "Suscríbete a ReTh Premium o VIP para buscar personas en cualquier estado o país.",
+            "upsellAction": "Ver Planes Premium"
+        },
+        "cancel": "Cancelar",
+        "apply": "Aplicar Filtros"
+    },
+    "emptyState": {
+        "title": "Aún no hay coincidencias...",
+        "subtitle": "Completa tu perfil para que podamos encontrar personas que compartan tu hilo.",
+        "progressLabel": "Tu perfil está al",
+        "keepGoing": "¡Falta poco!",
+        "complete": "¡Excelente!",
+        "buttonEdit": "Completar perfil",
+        "buttonExpand": "Explorar sin filtros",
+        "quickAdds": "AGREGA INTERESES RÁPIDAMENTE",
+        "interestAdded": "¡Interés añadido! Buscando nuevas coincidencias..."
+    }
+}

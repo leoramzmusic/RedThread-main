@@ -1,0 +1,47 @@
+{
+    "auth": {
+        "welcome": "Добро пожаловать!",
+        "join": "Присоединиться к ReTh",
+        "loginSubtitle": "Войдите, чтобы продолжить",
+        "registerSubtitle": "Создайте аккаунт и начните общаться",
+        "loginTab": "Войти",
+        "registerTab": "Регистрация",
+        "username": "Имя пользователя",
+        "email": "Адрес электронной почты",
+        "phone": "Номер телефона",
+        "identifierLabel": "Email, имя пользователя или телефон",
+        "identifierPlaceholder": "имя@пример.ru",
+        "password": "Пароль",
+        "confirmPassword": "Подтвердите пароль",
+        "rememberMe": "Запомнить меня",
+        "forgotPassword": "Забыли пароль?",
+        "signIn": "Войти",
+        "signUp": "Создать аккаунт",
+        "orJoinWith": "ИЛИ ПРИСОЕДИНИТЬСЯ К RETH С",
+        "orLoginWith": "ИЛИ ВОЙТИ В RETH С",
+        "social": {
+            "loginWith": "Войти через {{provider}}",
+            "registerWith": "Зарегистрироваться через {{provider}}"
+        },
+        "passwordRequirements": {
+            "title": "Требования безопасности:",
+            "minLength": "Минимум 8 символов",
+            "uppercase": "Одна заглавная буква",
+            "lowercase": "Одна строчная буква",
+            "number": "Одна цифра",
+            "symbol": "Один символ (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ Имя пользователя доступно",
+        "usernameTaken": "Это имя пользователя уже занято",
+        "passwordsMatch": "Пароли совпадают",
+        "passwordsDontMatch": "Пароли не совпадают",
+        "invalidIdentifier": "Введите действительный адрес электронной почты или номер телефона",
+        "phoneFormat": "Международный формат: +[код][номер]",
+        "errors": {
+            "passwordMismatch": "Пароли не совпадают",
+            "passwordRequirements": "Пароль не соответствует требованиям безопасности",
+            "usernameMin": "Имя пользователя должно содержать не менее 3 символов",
+            "generic": "Ошибка обработки запроса. Попробуйте еще раз."
+        }
+    }
+}

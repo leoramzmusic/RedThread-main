@@ -1,0 +1,47 @@
+{
+    "auth": {
+        "welcome": "Welkom terug!",
+        "join": "Word lid van ReTh",
+        "loginSubtitle": "Log in om door te gaan",
+        "registerSubtitle": "Maak je account aan en begin met verbinden",
+        "loginTab": "Inloggen",
+        "registerTab": "Registreren",
+        "username": "Gebruikersnaam",
+        "email": "E-mailadres",
+        "phone": "Telefoonnummer",
+        "identifierLabel": "E-mail, gebruikersnaam of telefoon",
+        "identifierPlaceholder": "naam@voorbeeld.nl",
+        "password": "Wachtwoord",
+        "confirmPassword": "Bevestig wachtwoord",
+        "rememberMe": "Onthoud mij",
+        "forgotPassword": "Wachtwoord vergeten?",
+        "signIn": "Inloggen",
+        "signUp": "Account aanmaken",
+        "orJoinWith": "OF WORD LID VAN RETH MET",
+        "orLoginWith": "OF LOG IN BIJ RETH MET",
+        "social": {
+            "loginWith": "Inloggen met {{provider}}",
+            "registerWith": "Registreren met {{provider}}"
+        },
+        "passwordRequirements": {
+            "title": "Beveiligingseisen:",
+            "minLength": "Minimaal 8 tekens",
+            "uppercase": "Eén hoofdletter",
+            "lowercase": "Eén kleine letter",
+            "number": "Eén cijfer",
+            "symbol": "Eén symbool (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ Gebruikersnaam beschikbaar",
+        "usernameTaken": "Deze gebruikersnaam is al in gebruik",
+        "passwordsMatch": "Wachtwoorden komen overeen",
+        "passwordsDontMatch": "Wachtwoorden komen niet overeen",
+        "invalidIdentifier": "Voer een geldig e-mailadres of telefoonnummer in",
+        "phoneFormat": "Internationaal formaat: +[code][nummer]",
+        "errors": {
+            "passwordMismatch": "Wachtwoorden komen niet overeen",
+            "passwordRequirements": "Wachtwoord voldoet niet aan de beveiligingseisen",
+            "usernameMin": "Gebruikersnaam moet minimaal 3 tekens bevatten",
+            "generic": "Fout bij verwerken van verzoek. Probeer het opnieuw."
+        }
+    }
+}

@@ -1,0 +1,796 @@
+/* Profile Section Style (Card-like adaptation) */
+/* Base Variables (defaults/light) */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #222222;
+  --accent-color: #007bff;
+
+  /* Section Variables */
+  --section-bg: #ffffff;
+  --section-text: #222222;
+  --section-accent: #007bff;
+  /* Theme Card Variables */
+  --theme-card-bg: #ffffff;
+  --theme-card-text: #222222;
+
+  /* Layout Variables */
+  --container-padding-left: 24px;
+  --container-padding-right: 24px;
+}
+
+/* Base Dark Mode */
+[data-mode="dark"] {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
+  --accent-color: #3B82F6;
+
+  --section-bg: #1a1a1a;
+  --section-text: #eeeeee;
+  --section-accent: #3B82F6;
+
+  /* Theme Card Variables */
+  --theme-card-bg: #1a1a1a;
+  --theme-card-text: #eeeeee;
+}
+
+/* Theme Data Attributes - Pastel Minimalist Palette */
+[data-theme="redThread"] {
+  --section-accent: #FD297B;
+  /* Vibrante rosa fucsia */
+  --banner-bg: #FF5864;
+  /* Coral intenso */
+  --btn-primary: #FF655B;
+  /* Coral suave para botones */
+  --btn-hover: #FF3E4D;
+  --bg-color-soft: #FFF0F0;
+}
+
+[data-theme="sakura"] {
+  --section-accent: #EEAAC0;
+  /* Rosa cereza suave */
+  --banner-bg: #EAD1D7;
+  /* Fondo rosado claro */
+  --btn-primary: #FB80C4;
+  /* Rosa vibrante para botones */
+  --btn-hover: #965357;
+  /* Tono cálido para hover */
+  --section-bg: #F7F3F5;
+  /* Fondo general pastel */
+  --section-text: #878793;
+  /* Gris lavanda para texto */
+}
+
+/* Specific vibrant button style */
+.btn-save {
+  background-color: var(--btn-primary, var(--section-accent));
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-save:hover {
+  background-color: var(--btn-hover, var(--section-accent));
+}
+
+[data-theme="premium"] {
+  --section-accent: #797979;
+  /* Gris medio elegante */
+  --banner-bg: #CECECE;
+  /* Plata suave para fondo superior */
+  --btn-primary: #C5C5C5;
+  /* Gris claro para botones */
+  --btn-hover: #878793;
+  /* Gris lavanda para hover */
+  --section-bg: #E5E5E5;
+  /* Fondo general claro */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+[data-theme="vip"] {
+  --section-accent: #efb810;
+  /* Dorado brillante para encabezados */
+  --banner-bg: #d3a007;
+  /* Fondo cálido tipo oro medio */
+  --btn-primary: #f9db4a;
+  /* Amarillo suave para botones */
+  --btn-hover: #b88900;
+  /* Mostaza oscuro para hover */
+  --section-bg: #ffff75;
+  /* Fondo general pastel */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+
+
+[data-theme="blue"] {
+  --section-accent: #0CB7F2;
+  /* Azul vibrante para encabezados */
+  --banner-bg: #53D4FF;
+  /* Azul brillante para fondo superior */
+  --btn-primary: #8FE3FF;
+  /* Azul claro para botones */
+  --btn-hover: #BCEEFF;
+  /* Azul pastel para hover */
+  --section-bg: #DEF7FF;
+  /* Fondo general muy claro */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+[data-theme="purple"] {
+  --section-accent: #7F4CA5;
+  /* Violeta medio para encabezados */
+  --banner-bg: #4B1C71;
+  /* Púrpura profundo para fondo superior */
+  --btn-primary: #B57EDC;
+  /* Lavanda vibrante para botones */
+  --btn-hover: #DBB6EE;
+  /* Lavanda suave para hover */
+  --section-bg: #FFF0FF;
+  /* Fondo general pastel rosado-lavanda */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+[data-theme="pink"] {
+  --section-accent: #FC6998;
+  /* Rosa medio para encabezados */
+  --banner-bg: #F74780;
+  /* Rosa intenso para fondo superior */
+  --btn-primary: #FA8FB1;
+  /* Rosa claro para botones */
+  --btn-hover: #FFC1D5;
+  /* Rosa pastel para hover */
+  --section-bg: #FFE4EC;
+  /* Fondo general muy claro */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+[data-theme="green"] {
+  --section-accent: #5CCB5F;
+  /* Verde claro para encabezados */
+  --banner-bg: #009929;
+  /* Verde brillante para fondo superior */
+  --btn-primary: #E8C39E;
+  /* Beige cálido para botones */
+  --btn-hover: #006414;
+  /* Verde oscuro para hover */
+  --section-bg: #F5E1CE;
+  /* Fondo general pastel */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+[data-theme="halloween"] {
+  --section-accent: #CC750D;
+  /* Naranja calabaza para encabezados */
+  --banner-bg: #2D2C36;
+  /* Gris oscuro para fondo superior */
+  --btn-primary: #EAB01F;
+  /* Amarillo brillante para botones */
+  --btn-hover: #844F29;
+  /* Marrón cálido para hover */
+  --section-bg: #12121C;
+  /* Fondo general oscuro */
+  --section-text: #F5E1CE;
+  /* Beige claro para contraste */
+}
+
+[data-theme="christmas"] {
+  --section-accent: #CC750D;
+  /* Naranja dorado para encabezados */
+  --banner-bg: #8B0000;
+  /* Rojo profundo para fondo superior */
+  --btn-primary: #EAB01F;
+  /* Amarillo brillante para botones */
+  --btn-hover: #844F29;
+  /* Marrón cálido para hover */
+  --section-bg: #FFF5F0;
+  /* Fondo general rosado claro */
+  --section-text: #4A4A4A;
+  /* Texto oscuro para contraste */
+}
+
+
+
+/* Profile Section (Modular) */
+.profile-section {
+  background-color: var(--section-bg);
+  color: var(--section-text);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  /* profundidad sutil */
+  border: none;
+  /* Ensure no border */
+}
+
+/* Visual Hierarchy */
+.profile-section h2,
+.profile-section h3,
+.profile-section h4,
+.profile-section h5,
+.profile-section h6,
+.profile-section .MuiTypography-h6 {
+  /* Target MUI titles */
+  font-size: 17px;
+  color: var(--section-accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.profile-section p,
+.profile-section .MuiTypography-body1,
+.profile-section .MuiTypography-body2,
+.profile-tags {
+  font-size: 14px;
+  color: var(--section-text);
+  line-height: 1.5;
+}
+
+.profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* Clean Wrapper (if used) */
+.profile-wrapper {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Font Size Scaling */
+/* Font Size Scaling using Variable */
+body[data-font-size="10"] {
+  --app-font-size: 10px;
+}
+
+body[data-font-size="11"] {
+  --app-font-size: 11px;
+}
+
+body[data-font-size="12"] {
+  --app-font-size: 12px;
+}
+
+body[data-font-size="13"] {
+  --app-font-size: 13px;
+}
+
+body[data-font-size="14"] {
+  --app-font-size: 14px;
+}
+
+body[data-font-size="15"] {
+  --app-font-size: 15px;
+}
+
+body[data-font-size="16"] {
+  --app-font-size: 16px;
+}
+
+body[data-font-size="17"] {
+  --app-font-size: 17px;
+}
+
+body[data-font-size="18"] {
+  --app-font-size: 18px;
+}
+
+body[data-font-size="19"] {
+  --app-font-size: 19px;
+}
+
+body[data-font-size="20"] {
+  --app-font-size: 20px;
+}
+
+body[data-font-size="21"] {
+  --app-font-size: 21px;
+}
+
+body[data-font-size="22"] {
+  --app-font-size: 22px;
+}
+
+body[data-font-size="23"] {
+  --app-font-size: 23px;
+}
+
+body[data-font-size="24"] {
+  --app-font-size: 24px;
+}
+
+body[data-font-size="25"] {
+  --app-font-size: 25px;
+}
+
+body[data-font-size="26"] {
+  --app-font-size: 26px;
+}
+
+body[data-font-size="27"] {
+  --app-font-size: 27px;
+}
+
+body[data-font-size="28"] {
+  --app-font-size: 28px;
+}
+
+body[data-font-size="29"] {
+  --app-font-size: 29px;
+}
+
+body[data-font-size="30"] {
+  --app-font-size: 30px;
+}
+
+body[data-font-size="31"] {
+  --app-font-size: 31px;
+}
+
+body[data-font-size="32"] {
+  --app-font-size: 32px;
+}
+
+body[data-font-size="33"] {
+  --app-font-size: 33px;
+}
+
+body[data-font-size="34"] {
+  --app-font-size: 34px;
+}
+
+body[data-font-size="35"] {
+  --app-font-size: 35px;
+}
+
+body[data-font-size="36"] {
+  --app-font-size: 36px;
+}
+
+body[data-font-size="37"] {
+  --app-font-size: 37px;
+}
+
+body[data-font-size="38"] {
+  --app-font-size: 38px;
+}
+
+body[data-font-size="39"] {
+  --app-font-size: 39px;
+}
+
+body[data-font-size="40"] {
+  --app-font-size: 40px;
+}
+
+/* Apply variable to body */
+body {
+  --app-font-size: 14px;
+  font-size: var(--app-font-size);
+}
+
+/* Force scaling on MUI Typography and other core text elements, excluding those with .no-scale */
+body[data-font-size] .MuiTypography-root:not(.no-scale),
+body[data-font-size] p:not(.no-scale),
+body[data-font-size] span:not(.no-scale),
+body[data-font-size] label:not(.no-scale),
+body[data-font-size] input:not(.no-scale),
+body[data-font-size] textarea:not(.no-scale) {
+  font-size: var(--app-font-size) !important;
+}
+
+.no-scale,
+.no-scale * {
+  font-size: 14px !important;
+}
+
+/* Global Typography */
+body {
+  font-family: 'Inter', 'Nunito', sans-serif;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  background-image: var(--texture);
+  background-size: cover;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-color);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e64a4a;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+/* Utility classes */
+.container-custom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-container {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Button styles */
+.btn-primary-custom {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #e64a4a 100%);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid rgba(255, 107, 107, 0.1);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container-custom {
+    padding: 0 15px;
+  }
+}
+
+/* Standard Action Buttons */
+.btn-cancel {
+  background-color: #ff4d4f !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #d9363e !important;
+}
+
+.btn-save {
+  background-color: #3B82F6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: none;
+}
+
+.btn-save:hover {
+  background-color: #2563EB !important;
+}
+
+/* Smart Floating Icons */
+.floating-actions {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.floating-actions .btn-save,
+.floating-actions .btn-cancel {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  /* Override padding from global .btn-save */
+}
+
+.floating-actions .btn-save {
+  background-color: #3B82F6 !important;
+}
+
+.floating-actions .btn-cancel {
+  background-color: #ff4d4f !important;
+}
+
+.floating-actions .btn-save:hover {
+  transform: scale(1.05);
+  background-color: #2563EB !important;
+}
+
+.floating-actions .btn-cancel:hover {
+  transform: scale(1.05);
+  background-color: #d9363e !important;
+}
+
+@media (max-width: 480px) {
+  .floating-actions {
+    top: auto;
+    bottom: 24px;
+    right: 24px !important;
+    /* Override inline style on mobile? User didn't specify, but usually desirable */
+    flex-direction: row;
+    transform: none;
+  }
+}
+
+.btn-cancel:active,
+.theme-card {
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background-color: var(--theme-card-bg);
+  color: var(--theme-card-text);
+  border: 2px solid transparent;
+  position: relative;
+  /* Needed for ::after positioning */
+  overflow: hidden;
+  /* Ensure rounded corners clip content */
+}
+
+.theme-card[data-active="true"] {
+  border: 2px solid #3B82F6;
+  /* azul fijo para consistencia */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.theme-card[data-active="true"]::after {
+  content: "Aplicado";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #3B82F6;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.theme-preview {
+  width: 100%;
+  height: 60px;
+  /* Slightly taller for better visibility */
+  border-radius: 6px;
+  margin-bottom: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Config Section Divider */
+.config-section {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.config-section h2,
+.config-section .section-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--section-accent);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Global Save Button (Fixed Color) */
+.btn-save-global {
+  background-color: #3B82F6 !important;
+  /* Azul moderno y accesible */
+  color: #ffffff !important;
+  border: none !important;
+  padding: 8px 14px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: none !important;
+}
+
+.btn-save-global:hover {
+  background-color: #2563EB !important;
+  /* Azul más profundo para hover */
+  transform: scale(1.03);
+}
+
+.btn-save-global:active {
+  transform: scale(0.97);
+}
+
+/* Toast Notification */
+.toast-success {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #3B82F6;
+  /* Azul moderno */
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 9999;
+  animation: fadeOutToast 4s ease forwards;
+}
+
+.toast-error {
+  background-color: #f44336;
+  /* Red for errors */
+}
+
+@keyframes fadeOutToast {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}

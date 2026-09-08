@@ -1,0 +1,50 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prod
+
+resources:
+- ../../base/backend-deployment.yaml
+- ../../base/frontend-deployment.yaml
+- ../../base/mongodb-statefulset.yaml
+- ../../base/configmap.yaml
+- ../../base/ingress.yaml
+
+configMapGenerator:
+- name: redthread-config
+  behavior: merge
+  literals:
+  - environment=prod
+  - api-url=https://api.redthread.example.com
+
+replicas:
+- name: redthread-backend
+  count: 3
+- name: redthread-frontend
+  count: 3
+
+images:
+- name: your-registry.azurecr.io/redthread-backend
+  newTag: prod-latest
+- name: your-registry.azurecr.io/redthread-frontend
+  newTag: prod-latest
+
+# Production-specific patches
+patchesStrategicMerge:
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: redthread-backend
+  spec:
+    template:
+      spec:
+        containers:
+        - name: redthread-backend
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"

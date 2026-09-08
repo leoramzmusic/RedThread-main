@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "እንኳን ደህና መጡ!",
+        "join": "ወደ ReTh ይቀላቀሉ",
+        "loginSubtitle": "ለመቀጠል ይግቡ",
+        "registerSubtitle": "መለያዎን ይፍጠሩ እና ማገናኘት ይጀምሩ",
+        "loginTab": "ግባ",
+        "registerTab": "ይመዝገቡ",
+        "username": "የተጠቃሚ ስም",
+        "email": "የኢሜይል አድራሻ",
+        "phone": "ስልክ ቁጥር",
+        "identifierLabel": "ኢሜይል፣ የተጠቃሚ ስም ወይም ስልክ",
+        "identifierPlaceholder": "ስም@ምሳሌ.com",
+        "password": "የይለፍ ቃል",
+        "confirmPassword": "የይለፍ ቃል ያረጋግጡ",
+        "rememberMe": "አስታውሰኝ",
+        "forgotPassword": "የይለፍ ቃልዎን ረስተዋል?",
+        "signIn": "ግባ",
+        "signUp": "መለያ ፍጠር",
+        "orJoinWith": "ወይም ከ RETH ጋር ይቀላቀሉ",
+        "orLoginWith": "ወይም ወደ RETH ይግቡ",
+        "social": {
+            "loginWith": "በ{{provider}} ይግቡ",
+            "registerWith": "በ{{provider}} ይመዝገቡ"
+        },
+        "errors": {
+            "passwordMismatch": "የይለፍ ቃሎች አይዛመዱም",
+            "passwordRequirements": "የይለፍ ቃል የደህንነት መስፈርቶችን አያሟላም",
+            "usernameMin": "የተጠቃሚ ስም ቢያንስ 3 ቁምፊዎች መሆን አለበት",
+            "generic": "ጥያቄን በማስኬድ ላይ ስህተት። እባክዎ እንደገና ይሞክሩ።"
+        },
+        "passwordRequirements": {
+            "title": "የደህንነት መስፈርቶች",
+            "minLength": "ቢያንስ 8 ቁምፊዎች",
+            "uppercase": "አንድ ትልቅ ፊደል",
+            "lowercase": "አንድ ትንሽ ፊደል",
+            "number": "አንድ ቁጥር",
+            "special": "አንድ ልዩ ቁምፊ"
+        },
+        "usernameAvailable": "የተጠቃሚ ስም ይገኛል",
+        "usernameTaken": "የተጠቃሚ ስም ቀድሞውኑ ተወስዷል",
+        "checkingUsername": "በማረጋገጥ ላይ...",
+        "passwordsMatch": "የይለፍ ቃላት ይዛመዳሉ",
+        "passwordsDontMatch": "የይለፍ ቃላት አይዛመዱም"
+    }
+}

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redthread-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redthread-backend
+  template:
+    metadata:
+      labels:
+        app: redthread-backend
+    spec:
+      containers:
+      - name: backend
+        image: redthreadregistry.azurecr.io/backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MONGODB_URL
+          valueFrom:
+            secretKeyRef:
+              name: redthread-secrets
+              key: mongodb-url
+        - name: REDIS_HOST
+          value: redthread-redis.redis.cache.windows.net
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redthread-backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: redthread-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redthread-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redthread-frontend
+  template:
+    metadata:
+      labels:
+        app: redthread-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: redthreadregistry.azurecr.io/frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "https://api.redthread.com"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redthread-frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: redthread-frontend

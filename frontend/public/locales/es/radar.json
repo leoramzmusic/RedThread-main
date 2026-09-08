@@ -1,0 +1,20 @@
+{
+    "title": "Radar de Proximidad",
+    "subtitle": "Encuentra personas cercanas que comparten tus intereses",
+    "enableLocation": {
+        "title": "Habilitar Ubicación",
+        "description": "Para ver quién está cerca, necesitas habilitar el uso compartido de ubicación. Tu ubicación solo se usa para calcular la distancia y nunca se comparte de forma precisa.",
+        "button": "Habilitar Acceso a Ubicación"
+    },
+    "searchRadius": "Radio de Búsqueda",
+    "locationSharing": "Compartir Ubicación Activo",
+    "upgradeMessage": "Actualiza a Premium para buscar hasta 50km",
+    "noUsers": "No se encontraron usuarios cercanos. Intenta aumentar tu radio de búsqueda.",
+    "distance": {
+        "away": "km de distancia"
+    },
+    "errors": {
+        "location": "Por favor habilita los servicios de ubicación para usar el Radar.",
+        "geolocation": "La geolocalización no es compatible con tu navegador."
+    }
+}

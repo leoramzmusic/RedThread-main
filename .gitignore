@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+.next/
+out/
+build/
+dist/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+config/local.env
+config/*.env
+
+# Kubernetes Secrets
+k8s/base/secrets.yaml
+k8s/overlays/*/secrets.yaml
+
+# Uploads
+backend/static/uploads/
+backend/uploads/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/

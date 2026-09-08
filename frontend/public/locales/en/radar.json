@@ -1,0 +1,20 @@
+{
+    "title": "Proximity Radar",
+    "subtitle": "Find people nearby who share your interests",
+    "enableLocation": {
+        "title": "Enable Location",
+        "description": "To see who's nearby, you need to enable location sharing. Your location is only used to calculate distance and is never shared precisely.",
+        "button": "Enable Location Access"
+    },
+    "searchRadius": "Search Radius",
+    "locationSharing": "Location Sharing Active",
+    "upgradeMessage": "Upgrade to Premium to search up to 50km",
+    "noUsers": "No users found nearby. Try increasing your range.",
+    "distance": {
+        "away": "km away"
+    },
+    "errors": {
+        "location": "Please enable location services to use Radar.",
+        "geolocation": "Geolocation is not supported by your browser."
+    }
+}

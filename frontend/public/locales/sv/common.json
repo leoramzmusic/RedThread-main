@@ -1,0 +1,47 @@
+{
+    "auth": {
+        "welcome": "Välkommen tillbaka!",
+        "join": "Gå med i ReTh",
+        "loginSubtitle": "Logga in för att fortsätta",
+        "registerSubtitle": "Skapa ditt konto och börja ansluta",
+        "loginTab": "Logga in",
+        "registerTab": "Registrera",
+        "username": "Användarnamn",
+        "email": "E-postadress",
+        "phone": "Telefonnummer",
+        "identifierLabel": "E-post, användarnamn eller telefon",
+        "identifierPlaceholder": "namn@exempel.se",
+        "password": "Lösenord",
+        "confirmPassword": "Bekräfta lösenord",
+        "rememberMe": "Kom ihåg mig",
+        "forgotPassword": "Glömt lösenord?",
+        "signIn": "Logga in",
+        "signUp": "Skapa konto",
+        "orJoinWith": "ELLER GÅ MED I RETH MED",
+        "orLoginWith": "ELLER LOGGA IN PÅ RETH MED",
+        "social": {
+            "loginWith": "Logga in med {{provider}}",
+            "registerWith": "Registrera med {{provider}}"
+        },
+        "passwordRequirements": {
+            "title": "Säkerhetskrav:",
+            "minLength": "Minst 8 tecken",
+            "uppercase": "En versal",
+            "lowercase": "En gemen",
+            "number": "Ett nummer",
+            "symbol": "En symbol (!@#$%^&*)"
+        },
+        "usernameAvailable": "✓ Användarnamn tillgängligt",
+        "usernameTaken": "Detta användarnamn är redan upptaget",
+        "passwordsMatch": "Lösenorden matchar",
+        "passwordsDontMatch": "Lösenorden matchar inte",
+        "invalidIdentifier": "Ange en giltig e-postadress eller telefonnummer",
+        "phoneFormat": "Internationellt format: +[kod][nummer]",
+        "errors": {
+            "passwordMismatch": "Lösenorden matchar inte",
+            "passwordRequirements": "Lösenordet uppfyller inte säkerhetskraven",
+            "usernameMin": "Användarnamnet måste vara minst 3 tecken",
+            "generic": "Fel vid bearbetning av begäran. Försök igen."
+        }
+    }
+}

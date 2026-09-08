@@ -1,0 +1,26 @@
+#!/bin/bash
+# Post-merge hook for automatic version bumping
+# Runs after git merge or git pull
+
+# Only run on main branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" != "main" ]; then
+    exit 0
+fi
+
+echo "🔍 Checking if version bump is needed..."
+
+# Run version bump script
+python3 scripts/bump_version.py
+
+# Check if version files changed
+if git diff --quiet VERSION frontend/package.json 2>/dev/null; then
+    echo "ℹ️  No version change needed"
+else
+    echo "✅ Version files updated"
+    
+    # Generate changelog
+    python3 scripts/generate_changelog.py
+    
+    # Note: Auto-commit is handled by bump_version.py if configured
+fi

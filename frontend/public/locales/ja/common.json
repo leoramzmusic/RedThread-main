@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "おかえりなさい！",
+        "join": "ReThに参加",
+        "loginSubtitle": "続行するにはサインインしてください",
+        "registerSubtitle": "アカウントを作成して接続を開始",
+        "loginTab": "サインイン",
+        "registerTab": "サインアップ",
+        "username": "ユーザー名",
+        "email": "メールアドレス",
+        "phone": "電話番号",
+        "identifierLabel": "メール、ユーザー名、または電話番号",
+        "identifierPlaceholder": "name@example.com",
+        "password": "パスワード",
+        "confirmPassword": "パスワードを確認",
+        "rememberMe": "ログイン状態を保持",
+        "forgotPassword": "パスワードをお忘れですか？",
+        "signIn": "サインイン",
+        "signUp": "アカウント作成",
+        "orJoinWith": "または次の方法でReThに参加",
+        "orLoginWith": "または次の方法でReThにサインイン",
+        "social": {
+            "loginWith": "{{provider}}でサインイン",
+            "registerWith": "{{provider}}でサインアップ"
+        },
+        "errors": {
+            "passwordMismatch": "パスワードが一致しません",
+            "passwordRequirements": "パスワードがセキュリティ要件を満たしていません",
+            "usernameMin": "ユーザー名は3文字以上である必要があります",
+            "generic": "リクエストの処理中にエラーが発生しました。もう一度お試しください。"
+        },
+        "passwordRequirements": {
+            "title": "セキュリティ要件",
+            "minLength": "8文字以上",
+            "uppercase": "大文字1文字",
+            "lowercase": "小文字1文字",
+            "number": "数字1文字",
+            "special": "特殊文字1文字"
+        },
+        "usernameAvailable": "ユーザー名は利用可能です",
+        "usernameTaken": "ユーザー名は既に使用されています",
+        "checkingUsername": "確認中...",
+        "passwordsMatch": "パスワードが一致します",
+        "passwordsDontMatch": "パスワードが一致しません"
+    }
+}

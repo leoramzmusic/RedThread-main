@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "আবার স্বাগতম!",
+        "join": "ReTh-এ যোগ দিন",
+        "loginSubtitle": "চালিয়ে যেতে সাইন ইন করুন",
+        "registerSubtitle": "আপনার অ্যাকাউন্ট তৈরি করুন এবং সংযোগ শুরু করুন",
+        "loginTab": "সাইন ইন করুন",
+        "registerTab": "সাইন আপ করুন",
+        "username": "ব্যবহারকারীর নাম",
+        "email": "ইমেল ঠিকানা",
+        "phone": "ফোন নম্বর",
+        "identifierLabel": "ইমেল, ব্যবহারকারীর নাম বা ফোন",
+        "identifierPlaceholder": "name@example.com",
+        "password": "পাসওয়ার্ড",
+        "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+        "rememberMe": "আমাকে মনে রাখুন",
+        "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+        "signIn": "সাইন ইন করুন",
+        "signUp": "অ্যাকাউন্ট তৈরি করুন",
+        "orJoinWith": "অথবা RETH-এ যোগ দিন",
+        "orLoginWith": "অথবা RETH-এ সাইন ইন করুন",
+        "social": {
+            "loginWith": "{{provider}} দিয়ে সাইন ইন করুন",
+            "registerWith": "{{provider}} দিয়ে সাইন আপ করুন"
+        },
+        "errors": {
+            "passwordMismatch": "পাসওয়ার্ড মিলছে না",
+            "passwordRequirements": "পাসওয়ার্ড নিরাপত্তা প্রয়োজনীয়তা পূরণ করে না",
+            "usernameMin": "ব্যবহারকারীর নাম কমপক্ষে 3 অক্ষরের হতে হবে",
+            "generic": "অনুরোধ প্রক্রিয়াকরণে ত্রুটি। আবার চেষ্টা করুন।"
+        },
+        "passwordRequirements": {
+            "title": "নিরাপত্তা প্রয়োজনীয়তা",
+            "minLength": "কমপক্ষে ৮ অক্ষর",
+            "uppercase": "একটি বড় হাতের অক্ষর",
+            "lowercase": "একটি ছোট হাতের অক্ষর",
+            "number": "একটি সংখ্যা",
+            "special": "একটি বিশেষ অক্ষর"
+        },
+        "usernameAvailable": "ব্যবহারকারীর নাম উপলব্ধ",
+        "usernameTaken": "ব্যবহারকারীর নাম ইতিমধ্যে নেওয়া হয়েছে",
+        "checkingUsername": "পরীক্ষা করা হচ্ছে...",
+        "passwordsMatch": "পাসওয়ার্ড মিলছে",
+        "passwordsDontMatch": "পাসওয়ার্ড মিলছে না"
+    }
+}

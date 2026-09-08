@@ -1,0 +1,46 @@
+{
+    "auth": {
+        "welcome": "Maligayang pagbabalik!",
+        "join": "Sumali sa ReTh",
+        "loginSubtitle": "Mag-sign in upang magpatuloy",
+        "registerSubtitle": "Lumikha ng iyong account at magsimulang kumonekta",
+        "loginTab": "Mag-sign in",
+        "registerTab": "Mag-sign up",
+        "username": "Username",
+        "email": "Email address",
+        "phone": "Numero ng telepono",
+        "identifierLabel": "Email, username o telepono",
+        "identifierPlaceholder": "pangalan@halimbawa.com",
+        "password": "Password",
+        "confirmPassword": "Kumpirmahin ang password",
+        "rememberMe": "Tandaan ako",
+        "forgotPassword": "Nakalimutan ang password?",
+        "signIn": "Mag-sign in",
+        "signUp": "Lumikha ng account",
+        "orJoinWith": "O SUMALI SA RETH GAMIT ANG",
+        "orLoginWith": "O MAG-SIGN IN SA RETH GAMIT ANG",
+        "social": {
+            "loginWith": "Mag-sign in gamit ang {{provider}}",
+            "registerWith": "Mag-sign up gamit ang {{provider}}"
+        },
+        "errors": {
+            "passwordMismatch": "Hindi tugma ang mga password",
+            "passwordRequirements": "Ang password ay hindi nakakatugon sa mga kinakailangan sa seguridad",
+            "usernameMin": "Ang username ay dapat na hindi bababa sa 3 character",
+            "generic": "Error sa pagproseso ng kahilingan. Pakisubukan muli."
+        },
+        "passwordRequirements": {
+            "title": "Mga Kinakailangan sa Seguridad",
+            "minLength": "Hindi bababa sa 8 character",
+            "uppercase": "Isang malaking titik",
+            "lowercase": "Isang maliit na titik",
+            "number": "Isang numero",
+            "special": "Isang espesyal na character"
+        },
+        "usernameAvailable": "Available ang username",
+        "usernameTaken": "Ginagamit na ang username",
+        "checkingUsername": "Sinusuri...",
+        "passwordsMatch": "Tumutugma ang mga password",
+        "passwordsDontMatch": "Hindi tumutugma ang mga password"
+    }
+}

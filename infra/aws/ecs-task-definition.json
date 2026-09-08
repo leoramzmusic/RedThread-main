@@ -1,0 +1,71 @@
+{
+    "family": "redthread-task",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "executionRoleArn": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::123456789012:role/ecsTaskRole",
+    "containerDefinitions": [
+        {
+            "name": "backend",
+            "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/redthread-backend:latest",
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "ENVIRONMENT",
+                    "value": "prod"
+                },
+                {
+                    "name": "MONGODB_URL",
+                    "value": "mongodb+srv://..."
+                },
+                {
+                    "name": "REDIS_HOST",
+                    "value": "redthread-redis.xxxxxx.clustercfg.use1.cache.amazonaws.com"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/redthread-backend",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        },
+        {
+            "name": "frontend",
+            "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/redthread-frontend:latest",
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "NEXT_PUBLIC_API_URL",
+                    "value": "https://api.redthread.com"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/redthread-frontend",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}
