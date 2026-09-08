@@ -15,9 +15,9 @@
               "state": {
                 "file": "redthread_architecture.canvas",
                 "viewState": {
-                  "x": 795.0660097785773,
-                  "y": 358.74740347148213,
-                  "zoom": -1.1666666666666667
+                  "x": 1270.649010955855,
+                  "y": 160.00759845176276,
+                  "zoom": -1.5894367922611048
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -194,6 +194,18 @@
   "active": "d3636e66fc7ba69f",
   "lastOpenFiles": [
     "README.md",
+    "redthread_architecture.canvas",
+    "knowledge/adrs/ADR-006-kafka-event-bus.md",
+    "backend/src/services/kafka_consumers/__pycache__/__init__.cpython-314.pyc",
+    "backend/src/services/kafka_consumers/__pycache__/match_consumer.cpython-314.pyc",
+    "backend/src/services/kafka_consumers/__pycache__/notification_consumer.cpython-314.pyc",
+    "backend/src/services/kafka_consumers/__pycache__/analytics_consumer.cpython-314.pyc",
+    "backend/src/services/kafka_consumers/__pycache__/chat_consumer.cpython-314.pyc",
+    "backend/src/services/kafka_consumers/__pycache__",
+    "backend/src/services/__pycache__/kafka_topics.cpython-314.pyc",
+    "backend/venv/Lib/site-packages/packaging/__pycache__/_structures.cpython-314.pyc",
+    "backend/venv/Lib/site-packages/packaging/__pycache__/version.cpython-314.pyc",
+    "backend/venv/Lib/site-packages/packaging/__pycache__/__init__.cpython-314.pyc",
     "FRESH_START_GUIDE.md",
     "DISCOVERY_RESUMEN.md",
     "OBSERVABILITY_SETUP.md",
@@ -201,7 +213,6 @@
     "SUBSCRIPTION_TIERS_TEST.md",
     "RUN_GUIDE.md",
     "RESUMEN_USUARIOS_PRUEBA.md",
-    "redthread_architecture.canvas",
     "ARCHITECTURE_GRAPH.md"
   ]
 }

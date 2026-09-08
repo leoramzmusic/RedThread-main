@@ -8,6 +8,8 @@ from src.models.match import Match, InteractionType, MatchStatus
 from src.api.auth import get_current_user
 from src.services.affinity import AffinityService
 from src.services.compatibility_service import CompatibilityService
+from src.services.kafka_service import kafka_service
+from src.services.kafka_topics import KafkaTopic, KafkaEventType
 import random
 
 # Import CARE Engine
@@ -746,6 +748,39 @@ async def swipe(
         
         await existing_match.save()
         await current_user.save() # Save user counters
+
+        # Emit Kafka events
+        try:
+            swipe_type = (
+                KafkaEventType.SWIPE_SUPERLIKE if request.interaction == InteractionType.SUPERLIKE
+                else (KafkaEventType.SWIPE_LIKE if request.interaction == InteractionType.LIKE else KafkaEventType.SWIPE_PASS)
+            )
+            await kafka_service.publish(
+                topic=KafkaTopic.SWIPES,
+                event_type=swipe_type,
+                payload={
+                    "swiper_id": str(current_user.id),
+                    "target_id": request.target_user_id,
+                    "interaction": request.interaction.value,
+                    "dwell_time_ms": request.dwell_time_ms,
+                    "is_blind_mode": request.is_blind_mode,
+                },
+                key=str(current_user.id),
+            )
+            if existing_match.status == MatchStatus.MATCHED:
+                await kafka_service.publish(
+                    topic=KafkaTopic.MATCHES_NEW,
+                    event_type=KafkaEventType.MATCH_CREATED,
+                    payload={
+                        "match_id": str(existing_match.id),
+                        "user_a_id": str(existing_match.user_id_1),
+                        "user_b_id": str(existing_match.user_id_2),
+                        "compatibility_score": existing_match.affinity_score or 0.0,
+                    },
+                    key=str(existing_match.id),
+                )
+        except Exception as k_err:
+            print(f"Kafka publish error in swipe (existing): {k_err}")
         
         return {
             "match_id": str(existing_match.id),
@@ -813,6 +848,27 @@ async def swipe(
         # Don't fail the swipe if CARE tracking fails
         print(f"CARE tracking error: {str(e)}")
     # ---------------------------
+
+    # Emit Kafka swipe event
+    try:
+        swipe_type = (
+            KafkaEventType.SWIPE_SUPERLIKE if request.interaction == InteractionType.SUPERLIKE
+            else (KafkaEventType.SWIPE_LIKE if request.interaction == InteractionType.LIKE else KafkaEventType.SWIPE_PASS)
+        )
+        await kafka_service.publish(
+            topic=KafkaTopic.SWIPES,
+            event_type=swipe_type,
+            payload={
+                "swiper_id": str(current_user.id),
+                "target_id": request.target_user_id,
+                "interaction": request.interaction.value,
+                "dwell_time_ms": request.dwell_time_ms,
+                "is_blind_mode": request.is_blind_mode,
+            },
+            key=str(current_user.id),
+        )
+    except Exception as k_err:
+        print(f"Kafka publish error in swipe (new): {k_err}")
     
     return {
         "match_id": str(match.id),

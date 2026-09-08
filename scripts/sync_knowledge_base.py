@@ -70,7 +70,7 @@ def build_unified_canvas():
             "label": "📜 DECISIONES DE ARQUITECTURA (@adr) & NOTAS TÉCNICAS",
             "x": -1150,
             "y": -580,
-            "width": 3700,
+            "width": 4200,
             "height": 450,
             "color": "3" # Yellow
         },
@@ -135,10 +135,20 @@ def build_unified_canvas():
             "color": "3"
         },
         {
+            "id": "adr-006",
+            "type": "text",
+            "text": "### @adr [[ADR-006]]\n**Apache Kafka Event Bus**\n- 6 tópicos desacoplados + 4 consumers.\n- acks='all', idempotencia, gzip.\n- [Ver nota](file:///knowledge/adrs/ADR-006-kafka-event-bus.md)",
+            "x": 1820,
+            "y": -520,
+            "width": 420,
+            "height": 220,
+            "color": "3"
+        },
+        {
             "id": "node-audit",
             "type": "text",
             "text": "### 🔍 [[Architecture_Audit]]\n**Auditoría de Salud Técnica**\n- 0 acoplamientos circulares.\n- Geoespacial indexado.\n- WebSockets con Redis Broker.\n- [Ver auditoría](file:///knowledge/audits/Architecture_Audit.md)",
-            "x": 1820,
+            "x": 2290,
             "y": -520,
             "width": 420,
             "height": 220,
@@ -363,6 +373,16 @@ def build_unified_canvas():
             "height": 140,
             "color": "3"
         },
+        {
+            "id": "srv-kafka",
+            "type": "text",
+            "text": "### Apache Kafka Service\n- `backend/src/services/kafka_service.py`\n- `src/services/kafka_topics.py`\n- Consumers: `src/services/kafka_consumers/`",
+            "x": 1250,
+            "y": 420,
+            "width": 350,
+            "height": 140,
+            "color": "3"
+        },
 
         # --- DATA MODELS GROUP ---
         {
@@ -433,7 +453,7 @@ def build_unified_canvas():
             "label": "🐳 INFRAESTRUCTURA & STORAGE",
             "x": 300,
             "y": 1100,
-            "width": 1400,
+            "width": 1850,
             "height": 380,
             "color": "1" # Red
         },
@@ -462,6 +482,16 @@ def build_unified_canvas():
             "type": "text",
             "text": "### Redis Cache & PubSub\n- Host: `localhost:6379` / DB: `0`",
             "x": 1280,
+            "y": 1160,
+            "width": 380,
+            "height": 120,
+            "color": "1"
+        },
+        {
+            "id": "inf-kafka",
+            "type": "text",
+            "text": "### Apache Kafka Broker\n- Host: `localhost:9092` / Zookeeper: `2181`",
+            "x": 1720,
             "y": 1160,
             "width": 380,
             "height": 120,
@@ -512,7 +542,14 @@ def build_unified_canvas():
         ("srv-core", "inf-mongo", "bottom", "top", "init_beanie()", "6"),
         ("srv-redis", "inf-redis", "bottom", "top", "redis.ping()", "6"),
         ("inf-docker", "inf-mongo", "right", "left", "provisions", "5"),
-        ("inf-docker", "inf-redis", "right", "left", "provisions", "5")
+        ("inf-docker", "inf-redis", "right", "left", "provisions", "5"),
+
+        # Kafka Event Bus connections
+        ("api-discovery", "srv-kafka", "bottom", "top", "publishes rt.swipes & rt.matches", "6"),
+        ("api-chat", "srv-kafka", "bottom", "top", "publishes rt.chat.messages", "6"),
+        ("api-auth", "srv-kafka", "bottom", "top", "publishes rt.user.events", "6"),
+        ("srv-kafka", "inf-kafka", "bottom", "top", "TCP 9092 : produce/consume", "6"),
+        ("inf-docker", "inf-kafka", "right", "left", "provisions", "5")
     ]
 
     for src, dst, s_side, d_side, lbl, clr in code_relations:
@@ -553,6 +590,10 @@ def build_unified_canvas():
         ("api-admin", "adr-005", "top", "bottom", "@adr [[ADR-005]] Role-based authorization", "3"),
         ("srv-employee", "adr-005", "top", "bottom", "@adr [[ADR-005]] Employee audit trails", "3"),
         ("mod-admin", "adr-005", "top", "bottom", "@adr [[ADR-005]] AdminUser RBAC schema", "3"),
+
+        # ADR-006: Apache Kafka Event Bus
+        ("srv-kafka", "adr-006", "top", "bottom", "@adr [[ADR-006]] Event Bus & Topics", "3"),
+        ("api-main", "adr-006", "top", "bottom", "@adr [[ADR-006]] Lifespan background consumers", "3"),
 
         # Architecture & Health Audit (Green - "4")
         ("node-audit", "srv-discovery", "bottom", "top", "Audits geo-spatial index", "4"),

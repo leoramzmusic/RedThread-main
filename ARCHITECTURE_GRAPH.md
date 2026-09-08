@@ -20,6 +20,8 @@ Este documento conecta los módulos clave de la arquitectura de RedThread con su
   - *Código*: [[frontend/src/pages/_app.tsx]], [[frontend/src/store/index.ts]], [[frontend/src/services/api.ts]]
 - [[knowledge/adrs/ADR-005-rbac-multi-tier-admin|ADR-005: Control de Acceso RBAC y Portal de Empleados]]
   - *Código*: [[backend/src/api/admin_portal.py]], [[backend/src/models/admin_rbac.py]], [[backend/src/models/employee.py]]
+- [[knowledge/adrs/ADR-006-kafka-event-bus|ADR-006: Integración de Apache Kafka como Event Bus Asíncrono]]
+  - *Código*: [[backend/src/services/kafka_service.py]], [[backend/src/services/kafka_topics.py]], [[backend/src/services/kafka_consumers/match_consumer.py]], [[backend/src/services/kafka_consumers/chat_consumer.py]], [[backend/src/services/kafka_consumers/analytics_consumer.py]], [[backend/src/services/kafka_consumers/notification_consumer.py]]
 
 ---
 
@@ -100,8 +102,27 @@ Este documento conecta los módulos clave de la arquitectura de RedThread con su
 - **Docker Compose**: [[docker/docker-compose.local.yml]]
 - **Variables de Entorno**: [[backend/config/local.env]]
 - **MongoDB**: `localhost:27017` / Base de datos: `redthread` (32 colecciones).
-- **Redis**: `localhost:6379` / Base de datos: `0`.
+- **Redis**: `localhost:6379` / Base de datos: `0` (Presencia, ratelimit, caché).
+- **Apache Kafka**: `localhost:9092` (Broker v4.1.1 en Docker).
+- **Zookeeper**: `localhost:2181` (Coordinador v3.8 en Docker).
 - **CodeGraph**: `.codegraph/codegraph.db` (Grafo estático y dinámico del repositorio).
+
+### 6. ⚡ Capa de Event Bus & Streaming Asíncrono (Apache Kafka)
+- **Servicio Central**: [[backend/src/services/kafka_service.py]]
+  - Producer asíncrono con `acks="all"`, `enable_idempotence=True`, compresión `gzip`.
+  - Mecanismo de degradación elegante (`KAFKA_ENABLED=true/false`).
+- **Definición de Tópicos & Eventos**: [[backend/src/services/kafka_topics.py]]
+  - `rt.swipes` (`swipe.like`, `swipe.pass`, `swipe.superlike`)
+  - `rt.matches.new` (`match.created`, `match.expired`)
+  - `rt.chat.messages` (`message.sent`, `message.read`, `message.deleted`)
+  - `rt.user.events` (`user.session.start`, `user.registered`)
+  - `rt.notifications` (`push.match`, `push.message`, `email.welcome`)
+  - `rt.moderation` (`moderation.user.reported`)
+- **Consumers Asíncronos (Lifespan Background Tasks)**:
+  - [[backend/src/services/kafka_consumers/match_consumer.py]] -> Notificaciones de match y presencia Redis.
+  - [[backend/src/services/kafka_consumers/chat_consumer.py]] -> Entrega en tiempo real y fallback offline.
+  - [[backend/src/services/kafka_consumers/analytics_consumer.py]] -> Cuotas diarias y señales CARE.
+  - [[backend/src/services/kafka_consumers/notification_consumer.py]] -> Despacho push, email y bandeja in-app.
 
 ---
 

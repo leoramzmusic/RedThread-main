@@ -9,6 +9,8 @@ from src.models.conversation import Conversation, ConversationType
 from src.models.relationship import Relationship, RelationshipType, RelationshipStatus
 from src.models.profile import Profile
 from src.api.auth import get_current_user
+from src.services.kafka_service import kafka_service
+from src.services.kafka_topics import KafkaTopic, KafkaEventType
 import json
 
 
@@ -123,6 +125,24 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     "message_id": str(message.id),
                     "temp_id": temp_id
                 })
+
+                # Publish to Kafka
+                try:
+                    await kafka_service.publish(
+                        topic=KafkaTopic.CHAT_MESSAGES,
+                        event_type=KafkaEventType.MESSAGE_SENT,
+                        payload={
+                            "message_id": str(message.id),
+                            "match_id": match_id,
+                            "sender_id": user_id,
+                            "recipient_id": receiver_id,
+                            "content": content,
+                            "created_at": message.created_at.isoformat(),
+                        },
+                        key=match_id or user_id,
+                    )
+                except Exception as k_err:
+                    print(f"Kafka publish error (ws chat): {k_err}")
             
             elif action == "typing":
                 # Handle typing indicator
@@ -160,6 +180,21 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                         "action": "message_read",
                         "message_id": message_id
                     })
+
+                    # Publish read event to Kafka
+                    try:
+                        await kafka_service.publish(
+                            topic=KafkaTopic.CHAT_MESSAGES,
+                            event_type=KafkaEventType.MESSAGE_READ,
+                            payload={
+                                "message_id": message_id,
+                                "match_id": message.match_id,
+                                "reader_id": user_id,
+                            },
+                            key=message.match_id or user_id,
+                        )
+                    except Exception as k_err:
+                        pass
     
     except WebSocketDisconnect:
         manager.disconnect(user_id)
@@ -380,6 +415,24 @@ async def send_message(
             "action": "new_message",
             "message": message.dict()
         })
+
+        # Publish to Kafka
+        try:
+            await kafka_service.publish(
+                topic=KafkaTopic.CHAT_MESSAGES,
+                event_type=KafkaEventType.MESSAGE_SENT,
+                payload={
+                    "message_id": str(message.id),
+                    "conversation_id": request.conversation_id,
+                    "sender_id": str(current_user.id),
+                    "recipient_id": receiver_id,
+                    "content": request.content,
+                    "created_at": message.created_at.isoformat(),
+                },
+                key=request.conversation_id or str(current_user.id),
+            )
+        except Exception as k_err:
+            print(f"Kafka publish error (http chat conv): {k_err}")
         
         return message
     
@@ -418,6 +471,24 @@ async def send_message(
             "action": "new_message",
             "message": message.dict()
         })
+
+        # Publish to Kafka
+        try:
+            await kafka_service.publish(
+                topic=KafkaTopic.CHAT_MESSAGES,
+                event_type=KafkaEventType.MESSAGE_SENT,
+                payload={
+                    "message_id": str(message.id),
+                    "match_id": request.match_id,
+                    "sender_id": str(current_user.id),
+                    "recipient_id": receiver_id,
+                    "content": request.content,
+                    "created_at": message.created_at.isoformat(),
+                },
+                key=request.match_id or str(current_user.id),
+            )
+        except Exception as k_err:
+            print(f"Kafka publish error (http chat match): {k_err}")
         
         return message
     

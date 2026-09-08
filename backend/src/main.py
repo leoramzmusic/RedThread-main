@@ -1,9 +1,18 @@
+import asyncio
 from fastapi import FastAPI, WebSocket, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from src.core.config import settings
 from src.core.database import init_db, close_db
 from src.services.redis_service import redis_service
+from src.services.kafka_service import kafka_service
+from src.services.kafka_topics import KafkaTopic
+from src.services.kafka_consumers import (
+    handle_match_event,
+    handle_chat_message,
+    handle_analytics_event,
+    handle_notification_event,
+)
 
 
 @asynccontextmanager
@@ -19,10 +28,19 @@ async def lifespan(app: FastAPI):
     # Initialize Redis
     await redis_service.connect()
     
+    # Initialize Kafka
+    await kafka_service.connect()
+    if settings.KAFKA_ENABLED:
+        asyncio.create_task(kafka_service.consume([KafkaTopic.MATCHES_NEW], handle_match_event))
+        asyncio.create_task(kafka_service.consume([KafkaTopic.CHAT_MESSAGES], handle_chat_message))
+        asyncio.create_task(kafka_service.consume([KafkaTopic.USER_EVENTS, KafkaTopic.SWIPES], handle_analytics_event))
+        asyncio.create_task(kafka_service.consume([KafkaTopic.NOTIFICATIONS], handle_notification_event))
+    
     yield
     
     # Shutdown
     print("🛑 Shutting down...")
+    await kafka_service.close()
     await close_db()
     await redis_service.close()
 
@@ -74,7 +92,8 @@ async def health_check():
     return {
         "status": "healthy",
         "database": "connected",
-        "redis": "connected"
+        "redis": "connected" if redis_service.is_connected() else "disconnected",
+        "kafka": kafka_service.status(),
     }
 
 

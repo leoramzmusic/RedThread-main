@@ -34,6 +34,10 @@ class RedisService:
             await self.client.close()
             print("✅ Redis connection closed")
     
+    def is_connected(self) -> bool:
+        """Check if Redis client is initialized"""
+        return self.client is not None
+    
     # User Presence
     async def set_user_online(self, user_id: str, ttl: int = 300):
         """Mark user as online (5 min TTL by default)"""

@@ -116,6 +116,14 @@ class Settings(BaseSettings):
     PASSWORD_RESET_TOKEN_EXPIRE_HOURS: int = 24
     FRONTEND_URL: str = "http://localhost:3000"
 
+    # Kafka - Event Bus
+    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
+    KAFKA_ENABLED: bool = True
+    KAFKA_GROUP_ID: str = "redthread-backend"
+    KAFKA_AUTO_OFFSET_RESET: str = "earliest"
+    KAFKA_MAX_BATCH_SIZE: int = 16384
+    KAFKA_LINGER_MS: int = 5
+
     class Config:
         env_file = "config/local.env"
         case_sensitive = True

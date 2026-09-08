@@ -301,6 +301,23 @@ async def register(request: RegisterRequest, response: Response):
         path="/"
     )
 
+    # Emit Kafka registration event
+    try:
+        from src.services.kafka_service import kafka_service
+        from src.services.kafka_topics import KafkaTopic, KafkaEventType
+        await kafka_service.publish(
+            topic=KafkaTopic.USER_EVENTS,
+            event_type=KafkaEventType.USER_REGISTERED,
+            payload={
+                "user_id": str(user.id),
+                "email": user.email,
+                "created_at": user.created_at.isoformat(),
+            },
+            key=str(user.id),
+        )
+    except Exception as k_err:
+        print(f"Kafka publish error (auth register): {k_err}")
+
     return RegisterResponse(
         message="User registered successfully",
         requires_verification=False,
@@ -509,6 +526,24 @@ async def login(request: LoginRequest, request_obj: Request, response: Response)
         max_age=refresh_days * 24 * 60 * 60,
         path="/"
     )
+
+    # Emit Kafka login event
+    try:
+        from src.services.kafka_service import kafka_service
+        from src.services.kafka_topics import KafkaTopic, KafkaEventType
+        await kafka_service.publish(
+            topic=KafkaTopic.USER_EVENTS,
+            event_type=KafkaEventType.USER_LOGIN,
+            payload={
+                "user_id": str(user.id),
+                "device_type": device_type,
+                "ip_address": ip_address,
+                "login_at": datetime.utcnow().isoformat(),
+            },
+            key=str(user.id),
+        )
+    except Exception as k_err:
+        print(f"Kafka publish error (auth login): {k_err}")
 
     return TokenResponse(
         access_token=access_token,
