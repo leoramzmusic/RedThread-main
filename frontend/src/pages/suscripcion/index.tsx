@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -92,6 +92,94 @@ const ICON_MAP: Record<string, any> = {
   all_inclusive: UnlimitedIcon,
   crown: CrownIcon,
 };
+
+function PhysicalPricingCard({
+  isVip,
+  accentColor,
+  children,
+}: {
+  isVip: boolean;
+  accentColor: string;
+  children: ReactNode;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [reduced] = useState(
+    () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  );
+  const [pressed, setPressed] = useState(false);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0, sheenX: 50, sheenY: 50, hovered: false });
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (reduced) return;
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    setTilt({
+      rx: (0.5 - py) * 8,
+      ry: (px - 0.5) * 8,
+      sheenX: px * 100,
+      sheenY: py * 100,
+      hovered: true,
+    });
+  };
+
+  const handleMouseEnter = () => {
+    if (reduced) return;
+    setTilt((prev) => ({ ...prev, hovered: true }));
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ rx: 0, ry: 0, sheenX: 50, sheenY: 50, hovered: false });
+    setPressed(false);
+  };
+
+  const transform = tilt.hovered && !reduced
+    ? `perspective(1100px) rotateX(${tilt.rx.toFixed(2)}deg) rotateY(${tilt.ry.toFixed(2)}deg) translateY(${pressed ? -3 : -12}px) scale(${pressed ? 0.98 : 1.02})`
+    : 'perspective(1100px) rotateX(0deg) rotateY(0deg) translateY(0px) scale(1)';
+
+  return (
+    <Card
+      ref={cardRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onMouseDown={() => !reduced && setPressed(true)}
+      onMouseUp={() => !reduced && setPressed(false)}
+      sx={{
+        borderRadius: 6,
+        overflow: 'visible',
+        position: 'relative',
+        transformStyle: 'preserve-3d',
+        border: isVip ? `2px solid ${accentColor}` : '1px solid rgba(255,255,255,0.1)',
+        bgcolor: 'background.paper',
+        boxShadow: isVip ? `0 20px 60px ${accentColor}15` : 'none',
+        transform,
+        transition: 'transform 0.18s ease-out, box-shadow 0.35s ease, border-color 0.35s ease',
+        '&:hover': {
+          borderColor: `${accentColor}66`,
+          boxShadow: `0 36px 90px ${accentColor}2e, 0 16px 36px rgba(0,0,0,0.4)`,
+        },
+        willChange: 'transform',
+      }}
+    >
+      <Box
+        aria-hidden="true"
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: 'inherit',
+          pointerEvents: 'none',
+          opacity: tilt.hovered && !reduced ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+          background: `radial-gradient(600px circle at ${tilt.sheenX.toFixed(1)}% ${tilt.sheenY.toFixed(1)}%, rgba(255,255,255,0.09), transparent 45%)`,
+        }}
+      />
+      {children}
+    </Card>
+  );
+}
 
 // Mock data removed, using backend data
 const MOCK_PRICING: PricingData = {
@@ -414,24 +502,20 @@ export default function Planes() {
                 const config = PLAN_CONFIGS[tier as SubscriptionTier];
                 return (
                   <Grid item xs={12} md={6} key={tier}>
-                    <Card sx={{
-                      borderRadius: 6,
-                      overflow: 'visible',
-                      position: 'relative',
-                      border: tier === 'vip' ? `2px solid ${config.color.primary}` : '1px solid rgba(255,255,255,0.1)',
-                      bgcolor: 'background.paper',
-                      boxShadow: tier === 'vip' ? `0 20px 60px ${config.color.primary}15` : 'none'
-                    }}>
+                    <PhysicalPricingCard
+                      isVip={tier === 'vip'}
+                      accentColor={config.color.primary}
+                    >
                       {tier === 'vip' && (
                         <Box sx={{
-                          position: 'absolute', top: -15, left: '50%', transform: 'translateX(-50%)',
+                          position: 'absolute', top: -15, left: '50%', transform: 'translateX(-50%) translateZ(50px)',
                           bgcolor: config.color.primary, color: 'black', px: 3, py: 0.5, borderRadius: 20,
                           fontWeight: 900, fontSize: '0.75rem', letterSpacing: '0.1em'
                         }}>
                           MÁXIMA EXPOSICIÓN
                         </Box>
                       )}
-                      <CardContent sx={{ p: 5 }}>
+                      <CardContent sx={{ p: 5, transform: 'translateZ(30px)' }}>
                         <Typography variant="h4" fontWeight={900} textAlign="center" gutterBottom>
                           {config.label.toUpperCase()}
                         </Typography>
@@ -473,7 +557,7 @@ export default function Planes() {
                           {processing ? <CircularProgress size={24} color="inherit" /> : `ACTIVAR ${config.label.toUpperCase()}`}
                         </Button>
                       </CardContent>
-                    </Card>
+                    </PhysicalPricingCard>
                   </Grid>
                 )
               })}

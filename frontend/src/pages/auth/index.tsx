@@ -21,8 +21,11 @@ export default function AuthPage() {
         }
     }, [isAuthenticated, router]);
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
+        if (newValue === 1) {
+            router.push('/auth/register');
+        }
     };
 
     return (
