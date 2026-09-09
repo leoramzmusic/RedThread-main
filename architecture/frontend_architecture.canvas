@@ -1,0 +1,27 @@
+{
+	"nodes":[
+		{"id":"hub-fn","type":"text","text":"### 🔵 FRONTEND — Next.js 16 + Turbopack\n**`frontend/src`**\nNodo raíz del módulo frontend. Cada página expande su lógica.","x":-700,"y":-980,"width":520,"height":150,"color":"5"},
+		{"id":"fn-app","type":"text","text":"🔥 **App Root & Providers**\n`pages/_app.tsx` · Redux Provider · MUI Theme · Auth Guard","x":-1200,"y":-830,"width":310,"height":110,"color":"5"},
+		{"id":"fn-store","type":"text","text":"🧮 **Redux Store**\n`store/index.ts` · `authSlice.ts` · `chatSlice.ts`","x":-840,"y":-830,"width":310,"height":110,"color":"5"},
+		{"id":"fn-api","type":"text","text":"🔌 **Axios API Client**\n`services/api.ts` · JWT Bearer · base `:8000`","x":-480,"y":-830,"width":310,"height":110,"color":"5"},
+		{"id":"fn-auth","type":"text","text":"🔐 **Auth Pages**\n`pages/auth/login.tsx` · Formik + Yup","x":-1200,"y":-650,"width":310,"height":110,"color":"5"},
+		{"id":"fn-disc","type":"text","text":"🧭 **Discovery & Radar**\n`pages/discover/index.tsx` · Leaflet + swiping","x":-840,"y":-650,"width":310,"height":110,"color":"5"},
+		{"id":"fn-chat","type":"text","text":"💬 **Chat UI & WS**\n`pages/chat/index.tsx` · WebSocket en tiempo real","x":-480,"y":-650,"width":310,"height":110,"color":"5"},
+		{"id":"fn-portal","type":"text","text":"🛠️ **Admin Portal UI**\n`pages/portal-redthread/index.tsx`","x":-1200,"y":-470,"width":310,"height":110,"color":"5"},
+		{"id":"fn-visits","type":"text","text":"👁️ **Visits UI**\n`pages/visits/index.tsx` · `pages/matches/index.tsx`","x":-840,"y":-470,"width":310,"height":110,"color":"5"},
+		{"id":"fn-home","type":"text","text":"📊 **Dashboard Home**\n`pages/home/index.tsx` · stat cards navegables","x":-480,"y":-470,"width":310,"height":110,"color":"5"},
+		{"id":"fn-sidebar","type":"text","text":"🧩 **Sidebar & Layout**\n`components/layout/Sidebar.tsx` · social menu","x":-840,"y":-290,"width":310,"height":110,"color":"5"}
+	],
+	"edges":[
+		{"id":"ef-app","fromNode":"hub-fn","fromSide":"left","toNode":"fn-app","toSide":"right","color":"5"},
+		{"id":"ef-store","fromNode":"hub-fn","fromSide":"top","toNode":"fn-store","toSide":"bottom","color":"5"},
+		{"id":"ef-api","fromNode":"hub-fn","fromSide":"right","toNode":"fn-api","toSide":"left","color":"5"},
+		{"id":"ef-auth","fromNode":"hub-fn","fromSide":"left","toNode":"fn-auth","toSide":"right","color":"5"},
+		{"id":"ef-disc","fromNode":"hub-fn","fromSide":"top","toNode":"fn-disc","toSide":"bottom","color":"5"},
+		{"id":"ef-chat","fromNode":"hub-fn","fromSide":"right","toNode":"fn-chat","toSide":"left","color":"5"},
+		{"id":"ef-portal","fromNode":"hub-fn","fromSide":"left","toNode":"fn-portal","toSide":"right","color":"5"},
+		{"id":"ef-visits","fromNode":"hub-fn","fromSide":"top","toNode":"fn-visits","toSide":"bottom","color":"5"},
+		{"id":"ef-home","fromNode":"hub-fn","fromSide":"right","toNode":"fn-home","toSide":"left","color":"5"},
+		{"id":"ef-side","fromNode":"hub-fn","fromSide":"top","toNode":"fn-sidebar","toSide":"bottom","color":"5"}
+	]
+}

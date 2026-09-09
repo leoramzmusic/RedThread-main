@@ -1,0 +1,21 @@
+{
+	"nodes":[
+		{"id":"hub-svc","type":"text","text":"### 🟣 SERVICES — Business & Realtime Logic\n**`backend/src/services/`**\nNodo raíz de servicios. Lógica transversal desacoplada de los routers.","x":-620,"y":-880,"width":520,"height":160,"color":"6"},
+		{"id":"svc-core","type":"text","text":"🧱 **Core Config & DB Init**\n`src/core/config.py` · `database.py` · `utils/security.py`","x":-1160,"y":-680,"width":320,"height":110,"color":"6"},
+		{"id":"svc-care","type":"text","text":"🧠 **CARE Matching**\n`services/matching_service.py` · `care/ranking/`\n🎬 [care_algorithm.canvas](file:///architecture/care_algorithm.canvas)","x":-780,"y":-680,"width":320,"height":130,"color":"6"},
+		{"id":"svc-chat","type":"text","text":"💬 **Realtime Chat**\n`services/chat/` · WebSocket broadcast","x":-400,"y":-680,"width":320,"height":110,"color":"6"},
+		{"id":"svc-kafka","type":"text","text":"🚇 **Kafka Service**\n`services/kafka_service.py` · `kafka_topics.py` · consumers","x":-1160,"y":-510,"width":320,"height":110,"color":"6"},
+		{"id":"svc-employee","type":"text","text":"🛠️ **Employee & RBAC**\n`services/employee_service.py` · permisos + auditoría","x":-780,"y":-510,"width":320,"height":110,"color":"6"},
+		{"id":"svc-redis","type":"text","text":"🔴 **Redis Service**\n`services/redis_service.py` · blacklist JWT, presencia, rate limit","x":-400,"y":-510,"width":320,"height":110,"color":"6"},
+		{"id":"svc-feedback","type":"text","text":"🔁 **CARE Feedback Jobs**\n`care/feedback/event_handler.py` · `batch_jobs.py`","x":-780,"y":-340,"width":320,"height":110,"color":"6"}
+	],
+	"edges":[
+		{"id":"es-core","fromNode":"hub-svc","fromSide":"left","toNode":"svc-core","toSide":"right","color":"6"},
+		{"id":"es-care","fromNode":"hub-svc","fromSide":"top","toNode":"svc-care","toSide":"bottom","color":"6"},
+		{"id":"es-chat","fromNode":"hub-svc","fromSide":"right","toNode":"svc-chat","toSide":"left","color":"6"},
+		{"id":"es-kafka","fromNode":"hub-svc","fromSide":"top","toNode":"svc-kafka","toSide":"bottom","color":"6"},
+		{"id":"es-employee","fromNode":"hub-svc","fromSide":"top","toNode":"svc-employee","toSide":"bottom","color":"6"},
+		{"id":"es-redis","fromNode":"hub-svc","fromSide":"top","toNode":"svc-redis","toSide":"bottom","color":"6"},
+		{"id":"es-feedback","fromNode":"hub-svc","fromSide":"top","toNode":"svc-feedback","toSide":"bottom","color":"6"}
+	]
+}

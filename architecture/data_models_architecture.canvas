@@ -1,0 +1,23 @@
+{
+	"nodes":[
+		{"id":"hub-mod","type":"text","text":"### 🟢 DATA MODELS — MongoDB / Beanie ODM\n**`backend/src/models/`**\nNodo raíz de modelos. Cada documento se persiste en su colección.","x":-620,"y":-880,"width":540,"height":160,"color":"4"},
+		{"id":"mod-user","type":"text","text":"👤 **User**\n`models/user.py` · colección: `users`","x":-1160,"y":-680,"width":320,"height":110,"color":"4"},
+		{"id":"mod-profile","type":"text","text":"📇 **Profile**\n`models/profile.py` · colección: `profiles` · GeoJSON Point","x":-780,"y":-680,"width":320,"height":110,"color":"4"},
+		{"id":"mod-match","type":"text","text":"💞 **Match & Relationship**\n`models/match.py` · `models/relationship.py`","x":-400,"y":-680,"width":320,"height":110,"color":"4"},
+		{"id":"mod-chat","type":"text","text":"💬 **Conversation & Message**\n`models/conversation.py` · `models/message.py`","x":-1160,"y":-510,"width":320,"height":110,"color":"4"},
+		{"id":"mod-admin","type":"text","text":"🛠️ **Admin & Employee RBAC**\n`models/admin_rbac.py` · `models/employee.py`","x":-780,"y":-510,"width":320,"height":110,"color":"4"},
+		{"id":"mod-visits","type":"text","text":"👁️ **ProfileVisit**\n`models/profile_visit.py` · colección: `profile_visits`","x":-400,"y":-510,"width":320,"height":110,"color":"4"},
+		{"id":"mod-inter","type":"text","text":"🎯 **InteractionLog (CARE)**\n`care/models/interaction_log.py` · acciones del usuario","x":-1160,"y":-340,"width":320,"height":110,"color":"4"},
+		{"id":"mod-sysp","type":"text","text":"⚖️ **SystemParams (CARE)**\n`care/models/system_params.py` · pesos 60/30/10","x":-780,"y":-340,"width":320,"height":110,"color":"4"}
+	],
+	"edges":[
+		{"id":"em-user","fromNode":"hub-mod","fromSide":"top","toNode":"mod-user","toSide":"bottom","color":"4"},
+		{"id":"em-profile","fromNode":"hub-mod","fromSide":"top","toNode":"mod-profile","toSide":"bottom","color":"4"},
+		{"id":"em-match","fromNode":"hub-mod","fromSide":"top","toNode":"mod-match","toSide":"bottom","color":"4"},
+		{"id":"em-chat","fromNode":"hub-mod","fromSide":"left","toNode":"mod-chat","toSide":"right","color":"4"},
+		{"id":"em-admin","fromNode":"hub-mod","fromSide":"top","toNode":"mod-admin","toSide":"bottom","color":"4"},
+		{"id":"em-visits","fromNode":"hub-mod","fromSide":"right","toNode":"mod-visits","toSide":"left","color":"4"},
+		{"id":"em-inter","fromNode":"hub-mod","fromSide":"top","toNode":"mod-inter","toSide":"bottom","color":"4"},
+		{"id":"em-sysp","fromNode":"hub-mod","fromSide":"top","toNode":"mod-sysp","toSide":"bottom","color":"4"}
+	]
+}

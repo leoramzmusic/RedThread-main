@@ -1,0 +1,18 @@
+{
+	"nodes":[
+		{"id":"hub-inf","type":"text","text":"### 🔴 INFRASTRUCTURE — Docker Local\nNodo raíz de infraestructura de desarrollo.","x":-620,"y":-360,"width":520,"height":150,"color":"1"},
+		{"id":"inf-docker","type":"text","text":"🐳 **Docker Compose**\n`docker/docker-compose.local.yml`","x":-1080,"y":-700,"width":320,"height":110,"color":"1"},
+		{"id":"inf-mongo","type":"text","text":"📦 **MongoDB**\n`localhost:27017` · DB: `redthread`","x":-680,"y":-700,"width":320,"height":110,"color":"1"},
+		{"id":"inf-redis","type":"text","text":"🔴 **Redis Cache & PubSub**\n`localhost:6379` · DB: `0`","x":-280,"y":-700,"width":320,"height":110,"color":"1"},
+		{"id":"inf-kafka","type":"text","text":"🚇 **Apache Kafka Broker**\n`localhost:9092` · Zookeeper: `2181`","x":-1080,"y":-520,"width":320,"height":110,"color":"1"}
+	],
+	"edges":[
+		{"id":"ei-hub-doc","fromNode":"hub-inf","fromSide":"top","toNode":"inf-docker","toSide":"bottom","color":"1"},
+		{"id":"ei-hub-mon","fromNode":"hub-inf","fromSide":"top","toNode":"inf-mongo","toSide":"bottom","color":"1"},
+		{"id":"ei-hub-red","fromNode":"hub-inf","fromSide":"right","toNode":"inf-redis","toSide":"left","color":"1"},
+		{"id":"ei-hub-kaf","fromNode":"hub-inf","fromSide":"left","toNode":"inf-kafka","toSide":"right","color":"1"},
+		{"id":"ei-doc-mon","fromNode":"inf-docker","fromSide":"bottom","toNode":"inf-mongo","toSide":"top","color":"5","label":"provisions"},
+		{"id":"ei-doc-red","fromNode":"inf-docker","fromSide":"bottom","toNode":"inf-redis","toSide":"top","color":"5","label":"provisions"},
+		{"id":"ei-doc-kaf","fromNode":"inf-docker","fromSide":"bottom","toNode":"inf-kafka","toSide":"top","color":"5","label":"provisions"}
+	]
+}

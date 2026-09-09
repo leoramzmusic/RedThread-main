@@ -1,0 +1,27 @@
+{
+	"nodes":[
+		{"id":"hub-be","type":"text","text":"### 🟠 BACKEND API — FastAPI\n**`backend/src/api/`**\nNodo raíz del módulo API. Cada router es un nodo (incluidos por `main.py`).","x":-700,"y":-880,"width":520,"height":160,"color":"2"},
+		{"id":"be-main","type":"text","text":"🚀 **FastAPI Main**\n`src/main.py` · lifespan · CORS · routers","x":-1250,"y":-680,"width":310,"height":110,"color":"2"},
+		{"id":"be-auth","type":"text","text":"🔐 **Auth Router**\n`src/api/auth.py` · login/register/refresh","x":-1250,"y":-520,"width":310,"height":110,"color":"2"},
+		{"id":"be-disc","type":"text","text":"🧭 **Discovery Router**\n`src/api/discovery.py` · candidates/radar","x":-870,"y":-520,"width":310,"height":110,"color":"2"},
+		{"id":"be-care","type":"text","text":"🎯 **CARE Recommendations**\n`src/api/discovery_care.py` · /care-recommendations","x":-490,"y":-520,"width":310,"height":110,"color":"2"},
+		{"id":"be-chat","type":"text","text":"💬 **Chat Router**\n`src/api/chat.py` · WS `/ws/chat/{id}`","x":-1250,"y":-360,"width":310,"height":110,"color":"2"},
+		{"id":"be-profiles","type":"text","text":"👤 **Profiles & Users**\n`src/api/profiles.py` · `src/api/users.py`","x":-870,"y":-360,"width":310,"height":110,"color":"2"},
+		{"id":"be-visits","type":"text","text":"👁️ **Visits Router**\n`src/api/visits.py` · visita + incógnito","x":-490,"y":-360,"width":310,"height":110,"color":"2"},
+		{"id":"be-admin","type":"text","text":"🛠️ **Admin & RBAC**\n`src/api/admin_portal.py` · `admin_usuarios.py`","x":-1250,"y":-200,"width":310,"height":110,"color":"2"},
+		{"id":"be-home","type":"text","text":"📊 **Dashboard Stats**\n`src/api/home.py` · /home/stats","x":-870,"y":-200,"width":310,"height":110,"color":"2"},
+		{"id":"be-settings","type":"text","text":"⚙️ **Settings**\n`src/api/settings.py` · hide_visit_activity","x":-490,"y":-200,"width":310,"height":110,"color":"2"}
+	],
+	"edges":[
+		{"id":"eb-main","fromNode":"hub-be","fromSide":"left","toNode":"be-main","toSide":"right","color":"2","label":"incluye routers"},
+		{"id":"eb-auth","fromNode":"hub-be","fromSide":"top","toNode":"be-auth","toSide":"bottom","color":"2"},
+		{"id":"eb-disc","fromNode":"hub-be","fromSide":"top","toNode":"be-disc","toSide":"bottom","color":"2"},
+		{"id":"eb-care","fromNode":"hub-be","fromSide":"right","toNode":"be-care","toSide":"left","color":"2"},
+		{"id":"eb-chat","fromNode":"hub-be","fromSide":"top","toNode":"be-chat","toSide":"bottom","color":"2"},
+		{"id":"eb-profiles","fromNode":"hub-be","fromSide":"top","toNode":"be-profiles","toSide":"bottom","color":"2"},
+		{"id":"eb-visits","fromNode":"hub-be","fromSide":"right","toNode":"be-visits","toSide":"left","color":"2"},
+		{"id":"eb-admin","fromNode":"hub-be","fromSide":"top","toNode":"be-admin","toSide":"bottom","color":"2"},
+		{"id":"eb-home","fromNode":"hub-be","fromSide":"top","toNode":"be-home","toSide":"bottom","color":"2"},
+		{"id":"eb-settings","fromNode":"hub-be","fromSide":"right","toNode":"be-settings","toSide":"left","color":"2"}
+	]
+}
