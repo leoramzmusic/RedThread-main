@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -13,7 +13,13 @@ import {
   CircularProgress,
   Paper,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Slide,
 } from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
 import {
   Favorite as FavoriteIcon,
   Message as MessageIcon,
@@ -28,7 +34,7 @@ import {
 import Layout from '../../components/layout/Layout';
 import apiClient from '../../services/api';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useTranslation } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next';
 
 interface DashboardStats {
   matches_count: number;
@@ -77,6 +83,24 @@ export default function Dashboard() {
   const [recentMatches, setRecentMatches] = useState<RecentMatch[]>([]);
   const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [careOpen, setCareOpen] = useState(false);
+  const [careDisabled, setCareDisabled] = useState(false);
+
+  const handleCareOpen = () => {
+    if (!careDisabled) setCareOpen(true);
+  };
+
+  const handleCareClose = () => {
+    setCareOpen(false);
+    setCareDisabled(true);
+  };
+
+  const CareTransition = React.forwardRef(function CareTransition(
+    props: TransitionProps & { children: React.ReactElement },
+    ref: React.Ref<unknown>
+  ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
   useEffect(() => {
     fetchDashboardData();
@@ -129,9 +153,9 @@ export default function Dashboard() {
   return (
     <Layout>
       <Container maxWidth="xl">
-        <Box display="flex" alignItems="center" gap={2} mb={4}>
+        <Box display="flex" alignItems="center" gap={2} mb={4} flexWrap="wrap">
           <Typography variant="h4" fontWeight={700}>
-            Dashboard
+            {t('dashboard.title')}
           </Typography>
           {user?.subscription_tier && user.subscription_tier !== 'free' && (
             <Chip
@@ -152,6 +176,7 @@ export default function Dashboard() {
           elevation={0}
           sx={{
             p: 3,
+            pb: { xs: 8, md: 3 },
             mb: 4,
             background: 'linear-gradient(135deg, #2A0E61 0%, #7B1FA2 100%)', // Cosmic Purple
             borderRadius: 3,
@@ -185,14 +210,50 @@ export default function Dashboard() {
             </Box>
             <Box>
               <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: '#E1BEE7' }}>
-                Hola, soy CARE
+                {t('dashboard.careGreeting')}
               </Typography>
-              <Typography variant="body1" sx={{ maxWidth: '800px', lineHeight: 1.6, opacity: 0.95 }}>
-                Mientras tú disfrutas explorando <strong>RETH</strong>, yo trabajo en segundo plano como tu asistente de inteligencia emocional.
-                Analizo la compatibilidad profunda, busco hilos conectores y cuido que cada interacción sea significativa.
+              <Typography variant="body1" sx={{ maxWidth: { xs: '100%', md: 'calc(100% - 120px)' }, lineHeight: 1.6, opacity: 0.95, pr: { xs: 0, md: 4 } }}>
+                <Trans i18nKey="dashboard.careIntro" />
               </Typography>
             </Box>
           </Box>
+
+          {/* Saber más - fijo en esquina inferior derecha */}
+          <Button
+            onClick={handleCareOpen}
+            disabled={careDisabled}
+            sx={{
+              position: 'absolute',
+              bottom: 14,
+              right: 20,
+              zIndex: 2,
+              color: '#fff',
+              bgcolor: 'rgba(255,255,255,0.08)',
+              borderRadius: 2,
+              px: 1.5,
+              py: 0.75,
+              minWidth: 0,
+              textTransform: 'none',
+              fontWeight: 700,
+              gap: 0.5,
+              whiteSpace: 'nowrap',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.18)' },
+              '&.Mui-disabled': { opacity: 0.5 },
+              '@keyframes careArrow': {
+                '0%, 100%': { transform: 'translateX(0)' },
+                '50%': { transform: 'translateX(5px)' },
+              },
+              '@media (prefers-reduced-motion: reduce)': {
+                '& .care-arrow': { animation: 'none' },
+              },
+            }}
+          >
+            {t('dashboard.careKnowMore')}
+            <ArrowForwardIcon
+              className="care-arrow"
+              sx={{ fontSize: 18, animation: 'careArrow 1.2s ease-in-out infinite' }}
+            />
+          </Button>
         </Paper>
 
         {/* Stats Cards */}
@@ -202,11 +263,11 @@ export default function Dashboard() {
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h3" fontWeight={700} color="white">
+                    <Typography variant="h2" fontWeight={700} color="white">
                       {stats?.matches_count || 0}
                     </Typography>
-                    <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
-                      Matches
+                    <Typography variant="body1" color="white" sx={{ opacity: 0.9, fontWeight: 500, fontSize: '1.125rem' }}>
+                      {t('dashboard.statMatches')}
                     </Typography>
                   </Box>
                   <FavoriteIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
@@ -220,11 +281,11 @@ export default function Dashboard() {
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h3" fontWeight={700} color="white">
+                    <Typography variant="h2" fontWeight={700} color="white">
                       {stats?.unread_messages || 0}
                     </Typography>
-                    <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
-                      Mensajes
+                    <Typography variant="body1" color="white" sx={{ opacity: 0.9, fontWeight: 500, fontSize: '1.125rem' }}>
+                      {t('dashboard.statMessages')}
                     </Typography>
                   </Box>
                   <MessageIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
@@ -238,11 +299,11 @@ export default function Dashboard() {
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h3" fontWeight={700} color="white">
+                    <Typography variant="h2" fontWeight={700} color="white">
                       {stats?.profile_completion || 0}%
                     </Typography>
-                    <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
-                      Perfil
+                    <Typography variant="body1" color="white" sx={{ opacity: 0.9, fontWeight: 500, fontSize: '1.125rem' }}>
+                      {t('dashboard.statProfile')}
                     </Typography>
                   </Box>
                   <PersonIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
@@ -256,11 +317,11 @@ export default function Dashboard() {
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
-                    <Typography variant="h3" fontWeight={700} color="white">
+                    <Typography variant="h2" fontWeight={700} color="white">
                       {stats?.likes_count || 0}
                     </Typography>
-                    <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
-                      Likes
+                    <Typography variant="body1" color="white" sx={{ opacity: 0.9, fontWeight: 500, fontSize: '1.125rem' }}>
+                      {t('dashboard.statLikes')}
                     </Typography>
                   </Box>
                   <ThumbUpIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
@@ -275,14 +336,14 @@ export default function Dashboard() {
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <Typography variant="h5" fontWeight={700} color="white" mb={1}>
-                ¿Listo para conectar?
+                {t('dashboard.quickReady')}
               </Typography>
               <Typography variant="body1" color="white" sx={{ opacity: 0.9 }}>
-                Conoce personas nuevas con intereses similares
+                {t('dashboard.quickReadyDesc')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Box display="flex" gap={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+              <Box display="flex" gap={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }} flexWrap="wrap">
                 <Button
                   variant="contained"
                   size="large"
@@ -293,9 +354,11 @@ export default function Dashboard() {
                     color: '#FF6B6B',
                     '&:hover': { bgcolor: '#f5f5f5' },
                     fontWeight: 600,
+                    width: { xs: '100%', sm: 'auto' },
+                    flex: { xs: '1 1 100%', sm: '0 1 auto' },
                   }}
                 >
-                  Ruleta
+                  {t('dashboard.quickRoulette')}
                 </Button>
                 <Button
                   variant="outlined"
@@ -306,9 +369,11 @@ export default function Dashboard() {
                     borderColor: 'white',
                     color: 'white',
                     '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+                    width: { xs: '100%', sm: 'auto' },
+                    flex: { xs: '1 1 100%', sm: '0 1 auto' },
                   }}
                 >
-                  Descubrir
+                  {t('dashboard.quickDiscover')}
                 </Button>
                 <Button
                   variant="outlined"
@@ -319,9 +384,11 @@ export default function Dashboard() {
                     borderColor: 'white',
                     color: 'white',
                     '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+                    width: { xs: '100%', sm: 'auto' },
+                    flex: { xs: '1 1 100%', sm: '0 1 auto' },
                   }}
                 >
-                  Chat
+                  {t('dashboard.quickChat')}
                 </Button>
               </Box>
             </Grid>
@@ -334,7 +401,7 @@ export default function Dashboard() {
             <Paper sx={{ p: 3 }}>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h6" fontWeight={600}>
-                  Matches Recientes
+                  {t('dashboard.recentMatches')}
                 </Typography>
                 <IconButton size="small" onClick={() => router.push('/discover')}>
                   <ArrowForwardIcon />
@@ -357,7 +424,7 @@ export default function Dashboard() {
                       >
                         {match.display_name[0]}
                       </Avatar>
-                      <Box flex={1}>
+                      <Box flex={1} minWidth={0}>
                         <Typography variant="body1" fontWeight={600}>
                           {match.display_name}
                         </Typography>
@@ -370,7 +437,7 @@ export default function Dashboard() {
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">
-                  No tienes matches recientes
+                  {t('dashboard.noRecentMatches')}
                 </Typography>
               )}
             </Paper>
@@ -381,7 +448,7 @@ export default function Dashboard() {
             <Paper sx={{ p: 3 }}>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h6" fontWeight={600}>
-                  Conversaciones
+                  {t('dashboard.conversations')}
                 </Typography>
                 <IconButton size="small" onClick={() => router.push('/chat')}>
                   <ArrowForwardIcon />
@@ -404,7 +471,7 @@ export default function Dashboard() {
                       >
                         {conv.display_name[0]}
                       </Avatar>
-                      <Box flex={1}>
+                      <Box flex={1} minWidth={0}>
                         <Typography variant="body1" fontWeight={600}>
                           {conv.display_name}
                         </Typography>
@@ -424,7 +491,7 @@ export default function Dashboard() {
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">
-                  No tienes conversaciones recientes
+                  {t('dashboard.noConversations')}
                 </Typography>
               )}
             </Paper>
@@ -434,7 +501,7 @@ export default function Dashboard() {
           <Grid item xs={12}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" fontWeight={600} mb={2}>
-                Sugerencias para ti
+                {t('dashboard.suggestions')}
               </Typography>
               <Grid container spacing={2}>
                 {suggestions.map((suggestion) => (
@@ -459,7 +526,7 @@ export default function Dashboard() {
                         }}
                       >
                         <Chip
-                          label={`${suggestion.affinity}% Match`}
+                          label={t('dashboard.matchAffinity', { affinity: suggestion.affinity })}
                           size="small"
                           sx={{
                             position: 'absolute',
@@ -483,7 +550,7 @@ export default function Dashboard() {
                             whiteSpace: 'nowrap',
                           }}
                         >
-                          {suggestion.bio || 'Sin biografía'}
+                          {suggestion.bio || t('dashboard.noBio')}
                         </Typography>
                         <Box display="flex" gap={0.5} mt={1} flexWrap="wrap">
                           {suggestion.interests.map((interest, idx) => (
@@ -497,13 +564,61 @@ export default function Dashboard() {
               </Grid>
               {suggestions.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
-                  No hay sugerencias disponibles
+                  {t('dashboard.noSuggestions')}
                 </Typography>
               )}
             </Paper>
           </Grid>
         </Grid>
       </Container>
+
+      {/* CARE Algorithm Modal */}
+      <Dialog
+        open={careOpen}
+        onClose={handleCareClose}
+        TransitionComponent={CareTransition}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          {t('dashboard.modalTitle')}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body1" paragraph>
+            <Trans i18nKey="dashboard.modalIntro" />
+          </Typography>
+          <Box component="ul" sx={{ pl: 3, m: 0 }}>
+            <Box component="li">
+              <Typography variant="body1">
+                <strong>{t('dashboard.modalContextLabel')}:</strong> {t('dashboard.modalContext')}
+              </Typography>
+            </Box>
+            <Box component="li">
+              <Typography variant="body1">
+                <strong>{t('dashboard.modalAttributesLabel')}:</strong> {t('dashboard.modalAttributes')}
+              </Typography>
+            </Box>
+            <Box component="li">
+              <Typography variant="body1">
+                <strong>{t('dashboard.modalRelevanceLabel')}:</strong> {t('dashboard.modalRelevance')}
+              </Typography>
+            </Box>
+            <Box component="li">
+              <Typography variant="body1">
+                <strong>{t('dashboard.modalEngagementLabel')}:</strong> {t('dashboard.modalEngagement')}
+              </Typography>
+            </Box>
+          </Box>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            {t('dashboard.modalClosing')}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCareClose} color="primary">
+            {t('dashboard.close')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Layout>
   );
 }

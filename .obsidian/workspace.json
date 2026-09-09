@@ -15,9 +15,9 @@
               "state": {
                 "file": "redthread_architecture.canvas",
                 "viewState": {
-                  "x": 697.1548355453658,
-                  "y": 798.6513770365748,
-                  "zoom": -3
+                  "x": 1320,
+                  "y": 910,
+                  "zoom": -1.8540050153564256
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -193,6 +193,9 @@
   },
   "active": "d3636e66fc7ba69f",
   "lastOpenFiles": [
+    "RESUMEN_USUARIOS_PRUEBA.md",
+    "redthread_architecture.canvas",
+    "README.md",
     "backend/src/services/__pycache__/data_privacy_service.cpython-312.pyc",
     "backend/src/__pycache__/check_admin_password.cpython-312.pyc",
     "frontend/node_modules/gsap/dist/InertiaPlugin.js",
@@ -203,10 +206,7 @@
     "frontend/node_modules/gsap/src/utils/paths.js",
     "frontend/node_modules/gsap/src/utils/PathEditor.js",
     "frontend/node_modules/gsap/src/utils/matrix.js",
-    "frontend/node_modules/gsap/src/utils",
     "frontend/node_modules/@gsap/react/README.md",
-    "README.md",
-    "redthread_architecture.canvas",
     "knowledge/adrs/ADR-006-kafka-event-bus.md",
     "FRESH_START_GUIDE.md",
     "DISCOVERY_RESUMEN.md",
@@ -214,7 +214,6 @@
     "OCR_IMPLEMENTATION_GUIDE.md",
     "SUBSCRIPTION_TIERS_TEST.md",
     "RUN_GUIDE.md",
-    "RESUMEN_USUARIOS_PRUEBA.md",
     "ARCHITECTURE_GRAPH.md"
   ]
 }
