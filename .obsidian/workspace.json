@@ -15,9 +15,9 @@
               "state": {
                 "file": "redthread_architecture.canvas",
                 "viewState": {
-                  "x": 1240.8233638350641,
-                  "y": 1278.87443593619,
-                  "zoom": 0
+                  "x": 697.1548355453658,
+                  "y": 798.6513770365748,
+                  "zoom": -3
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -193,6 +193,8 @@
   },
   "active": "d3636e66fc7ba69f",
   "lastOpenFiles": [
+    "backend/src/services/__pycache__/data_privacy_service.cpython-312.pyc",
+    "backend/src/__pycache__/check_admin_password.cpython-312.pyc",
     "frontend/node_modules/gsap/dist/InertiaPlugin.js",
     "frontend/node_modules/gsap/index.js",
     "frontend/node_modules/gsap/dist/GSDevTools.min.js",
@@ -202,8 +204,6 @@
     "frontend/node_modules/gsap/src/utils/PathEditor.js",
     "frontend/node_modules/gsap/src/utils/matrix.js",
     "frontend/node_modules/gsap/src/utils",
-    "frontend/node_modules/gsap/src/SplitText.ts",
-    "frontend/node_modules/gsap/src/TextPlugin.js",
     "frontend/node_modules/@gsap/react/README.md",
     "README.md",
     "redthread_architecture.canvas",

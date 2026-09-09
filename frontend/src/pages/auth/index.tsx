@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import AuthLayout from '../../components/auth/AuthLayout';
 import LoginForm from '../../components/auth/LoginForm';
@@ -11,9 +11,10 @@ import { RootState } from '../../store/store';
 
 export default function AuthPage() {
     const router = useRouter();
-    const [tabIndex, setTabIndex] = useState(0);
     const { t } = useTranslation('common');
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+    const tabIndex = router.query.tab === 'register' ? 1 : 0;
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -22,10 +23,11 @@ export default function AuthPage() {
     }, [isAuthenticated, router]);
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-        setTabIndex(newValue);
-        if (newValue === 1) {
-            router.push('/auth/register');
-        }
+        router.replace(
+            { pathname: '/auth', query: newValue === 1 ? { tab: 'register' } : {} },
+            undefined,
+            { shallow: true }
+        );
     };
 
     return (

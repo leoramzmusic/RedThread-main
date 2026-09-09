@@ -78,7 +78,7 @@ const DEFAULT_CONTENT: TranslatedContent = {
             description: '¿Buscas amistad, romance, socios de proyecto o compañeros de juego? Encuentra conexiones para cualquier propósito.'
         }
     },
-    footerText: '© 2025 Red Thread. Hecho con ❤️ para conexiones significativas.'
+    footerText: '© 2026 RETH. Hecho con ❤️ para conexiones significativas.'
 };
 
 const DEFAULT_THEME: LandingThemeConfig = {
@@ -94,7 +94,7 @@ const DEFAULT_THEME: LandingThemeConfig = {
             subtitle: 'Find your meaningful connections',
             description: 'Inspired by the legend of the red thread, connect with people who share your interests, passions, and values.',
             howItWorksTitle: 'How It Works',
-            footerText: '© 2025 Red Thread. Made with ❤️ for meaningful connections.',
+            footerText: '© 2026 RETH. Made with ❤️ for meaningful connections.',
             features: {
                 smartMatching: { title: 'Smart Matching', description: 'Our AI-powered affinity algorithm matches you with compatible people.' },
                 realTimeChat: { title: 'Real-Time Chat', description: 'Connect instantly with your matches through real-time messaging.' },
@@ -107,7 +107,7 @@ const DEFAULT_THEME: LandingThemeConfig = {
             subtitle: 'Encontre suas conexões significativas',
             description: 'Inspirado na lenda do fio vermelho, conecte-se com pessoas que compartilham seus interesses.',
             howItWorksTitle: 'Como Funciona',
-            footerText: '© 2025 Red Thread. Feito com ❤️ para conexões significativas.',
+            footerText: '© 2026 RETH. Feito com ❤️ para conexões significativas.',
             features: {
                 smartMatching: { title: 'Correspondência Inteligente', description: 'Nosso algoritmo de afinidade combina você com pessoas compatíveis.' },
                 realTimeChat: { title: 'Chat em Tempo Real', description: 'Conecte-se instantaneamente com suas correspondências.' },
@@ -120,7 +120,7 @@ const DEFAULT_THEME: LandingThemeConfig = {
             subtitle: 'Trouvez vos connexions significatives',
             description: 'Inspiré par la légende du fil rouge, connectez-vous avec des personnes qui partagent vos intérêts.',
             howItWorksTitle: 'Comment Ça Marche',
-            footerText: '© 2025 Red Thread. Fait avec ❤️ pour des connexions significatives.',
+            footerText: '© 2026 RETH. Fait avec ❤️ pour des connexions significatives.',
             features: {
                 smartMatching: { title: 'Correspondance Intelligente', description: 'Notre algorithme d\'affinité vous met en relation avec des personnes compatibles.' },
                 realTimeChat: { title: 'Chat en Temps Réel', description: 'Connectez-vous instantanément avec vos correspondances.' },

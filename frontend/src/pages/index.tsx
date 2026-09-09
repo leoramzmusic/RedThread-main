@@ -42,7 +42,7 @@ const translations = {
         description: '¿Buscas amistad, romance, socios de proyecto o compañeros de juego? Encuentra conexiones para cualquier propósito.'
       }
     },
-    footer: '© 2025 Red Thread. Hecho con ❤️ para conexiones significativas.'
+    footer: '© 2026 RETH. Hecho con ❤️ para conexiones significativas.'
   },
   en: {
     subtitle: 'Find your meaningful connections',
@@ -68,7 +68,7 @@ const translations = {
         description: 'Looking for friendship, romance, project partners, or gaming buddies? Find connections for any purpose.'
       }
     },
-    footer: '© 2025 Red Thread. Made with ❤️ for meaningful connections.'
+    footer: '© 2026 RETH. Made with ❤️ for meaningful connections.'
   },
   pt: {
     subtitle: 'Encontre suas conexões significativas',
@@ -94,7 +94,7 @@ const translations = {
         description: 'Procurando amizade, romance, parceiros de projeto ou companheiros de jogo? Encontre conexões para qualquer propósito.'
       }
     },
-    footer: '© 2025 Red Thread. Feito com ❤️ para conexões significativas.'
+    footer: '© 2026 RETH. Feito com ❤️ para conexões significativas.'
   },
   fr: {
     subtitle: 'Trouvez vos connexions significatives',
@@ -120,7 +120,7 @@ const translations = {
         description: 'Vous cherchez l\'amitié, la romance, des partenaires de projet ou des compagnons de jeu? Trouvez des connexions pour n\'importe quel objectif.'
       }
     },
-    footer: '© 2025 Red Thread. Fait avec ❤️ pour des connexions significatives.'
+    footer: '© 2026 RETH. Fait avec ❤️ pour des connexions significatives.'
   }
 };
 
