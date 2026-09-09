@@ -31,6 +31,9 @@ class UpdateSettingsRequest(BaseModel):
     two_factor_enabled: Optional[bool] = None
     two_factor_method: Optional[str] = None
     
+    # Privacidad
+    hide_visit_activity: Optional[bool] = None
+    
     # Accesibilidad
     high_contrast_mode: Optional[bool] = None
     screen_reader_enabled: Optional[bool] = None

@@ -6,6 +6,8 @@ from src.models.user import User
 from src.models.profile import Profile
 from src.api.auth import get_current_user, get_current_user_optional
 from src.core.utils.nickname_validator import validate_nickname
+from src.models.profile_visit import ProfileVisit
+from src.models.user_settings import UserSettings
 
 
 router = APIRouter()
@@ -267,6 +269,19 @@ async def get_user_by_nickname(
              status_code=status.HTTP_404_NOT_FOUND,
              detail="Profile not visible"
         )
+    
+    # Record a profile visit (authenticated users viewing another user's profile)
+    # Respect the viewer's privacy setting: hide_visit_activity = incognito mode
+    if current_user and str(current_user.id) != str(user.id):
+        viewer_settings = await UserSettings.find_one({"user_id": str(current_user.id)})
+        if not (viewer_settings and getattr(viewer_settings, "hide_visit_activity", False)):
+            try:
+                await ProfileVisit(
+                    viewer_id=str(current_user.id),
+                    viewed_user_id=str(user.id)
+                ).save()
+            except Exception as e:
+                print(f"[DEBUG] Failed to record profile visit for {user.id}: {e}")
     
     # Return flattened public information (exclude real_name, email, phone)
     return {

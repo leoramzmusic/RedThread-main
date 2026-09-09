@@ -3,9 +3,11 @@ from typing import List, Dict, Any
 from datetime import datetime, timedelta
 from src.models.user import User
 from src.models.profile import Profile
-from src.models.match import Match, MatchStatus
+from src.models.match import Match, MatchStatus, InteractionType
 from src.models.message import Message
+from src.models.profile_visit import ProfileVisit
 from src.api.auth import get_current_user
+from src.api.profiles import calculate_profile_completion
 
 
 router = APIRouter()
@@ -23,14 +25,22 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)) ->
             detail="Profile not found"
         )
     
-    # Get matches count (only MATCHED status)
-    matches = await Match.find(
+    # Get pending matches count (other user liked, current user hasn't decided yet)
+    pending_matches = await Match.find(
         {
             "$or": [
-                {"user_id_1": str(current_user.id)},
-                {"user_id_2": str(current_user.id)}
+                {
+                    "user_id_1": str(current_user.id),
+                    "user_1_interaction": None,
+                    "user_2_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
+                },
+                {
+                    "user_id_2": str(current_user.id),
+                    "user_2_interaction": None,
+                    "user_1_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
+                },
             ],
-            "status": MatchStatus.MATCHED
+            "status": MatchStatus.PENDING
         }
     ).to_list()
     
@@ -42,19 +52,16 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)) ->
         }
     ).to_list()
     
-    # Get likes received count (people who liked current user)
-    likes_received = await Match.find(
-        {
-            "matched_user_id": str(current_user.id),
-            "user_interaction": "like"
-        }
-    ).to_list()
+    # Get profile visits count (distinct authenticated viewers, self-visits excluded)
+    profile_visits = await ProfileVisit.get_motor_collection().distinct(
+        "viewer_id", {"viewed_user_id": str(current_user.id)}
+    )
     
     return {
-        "matches_count": len(matches),
+        "matches_count": len(pending_matches),
         "unread_messages": len(unread_messages),
-        "profile_completion": profile.profile_completion or 0,
-        "likes_count": len(likes_received)
+        "profile_completion": calculate_profile_completion(profile, current_user),
+        "profile_visits": len(profile_visits)
     }
 
 

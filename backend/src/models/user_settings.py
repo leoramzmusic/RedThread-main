@@ -43,6 +43,9 @@ class UserSettings(Document):
     two_factor_enabled: bool = False
     two_factor_method: str = "email"  # email, sms, authenticator
     
+    # 🔒 Privacidad
+    hide_visit_activity: bool = False  # If True, visits to other profiles are not recorded
+    
     # 🧠 Accesibilidad
     high_contrast_mode: bool = False
     screen_reader_enabled: bool = False

@@ -43,6 +43,7 @@ import {
   SportsEsports as GamingIcon,
   Assignment as PlansIcon,
   Hub as HubIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useUI } from '../../context/UIContext';
@@ -117,6 +118,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           threadId: 'goldth'
         },
         { id: 'chat', label: 'Chat', icon: <ChatIcon />, path: '/chat' },
+        { id: 'visits', label: 'Visitas', icon: <VisibilityIcon />, path: '/visits' },
       ]
     },
     {

@@ -15,9 +15,9 @@
               "state": {
                 "file": "redthread_architecture.canvas",
                 "viewState": {
-                  "x": 1320,
-                  "y": 910,
-                  "zoom": -1.8540050153564256
+                  "x": 2418.0994410890116,
+                  "y": 910.0637092935422,
+                  "zoom": -2.666666666666666
                 }
               },
               "icon": "lucide-layout-dashboard",
@@ -193,19 +193,20 @@
   },
   "active": "d3636e66fc7ba69f",
   "lastOpenFiles": [
+    "backend/src/api/__pycache__/visits.cpython-312.pyc",
+    "backend/src/api/__pycache__/visits.cpython-314.pyc",
+    "backend/src/api/visits.py",
+    "frontend/src/pages/visits/index.tsx",
+    "frontend/src/pages/visits",
+    "frontend/src/pages/matches/index.tsx",
+    "frontend/src/pages/matches",
+    "backend/src/models/__pycache__/profile_visit.cpython-314.pyc",
+    "backend/src/models/__pycache__/profile_visit.cpython-312.pyc",
+    "backend/src/models/profile_visit.py",
     "RESUMEN_USUARIOS_PRUEBA.md",
     "redthread_architecture.canvas",
     "README.md",
     "backend/src/services/__pycache__/data_privacy_service.cpython-312.pyc",
-    "backend/src/__pycache__/check_admin_password.cpython-312.pyc",
-    "frontend/node_modules/gsap/dist/InertiaPlugin.js",
-    "frontend/node_modules/gsap/index.js",
-    "frontend/node_modules/gsap/dist/GSDevTools.min.js",
-    "frontend/node_modules/gsap/src/utils/VelocityTracker.js",
-    "frontend/node_modules/gsap/src/utils/strings.js",
-    "frontend/node_modules/gsap/src/utils/paths.js",
-    "frontend/node_modules/gsap/src/utils/PathEditor.js",
-    "frontend/node_modules/gsap/src/utils/matrix.js",
     "frontend/node_modules/@gsap/react/README.md",
     "knowledge/adrs/ADR-006-kafka-event-bus.md",
     "FRESH_START_GUIDE.md",

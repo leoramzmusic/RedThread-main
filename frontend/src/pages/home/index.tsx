@@ -24,7 +24,7 @@ import {
   Favorite as FavoriteIcon,
   Message as MessageIcon,
   Person as PersonIcon,
-  ThumbUp as ThumbUpIcon,
+  Visibility as VisibilityIcon,
   Casino as CasinoIcon,
   Explore as ExploreIcon,
   Chat as ChatIcon,
@@ -40,7 +40,7 @@ interface DashboardStats {
   matches_count: number;
   unread_messages: number;
   profile_completion: number;
-  likes_count: number;
+  profile_visits: number;
 }
 
 interface RecentMatch {
@@ -204,9 +204,13 @@ export default function Dashboard() {
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              animation: 'rtBreathe 2.6s ease-in-out infinite',
             }}>
-              <AutoAwesomeIcon sx={{ fontSize: 32, color: '#E1BEE7' }} />
+              <AutoAwesomeIcon
+                className="care-spark"
+                sx={{ fontSize: 32, color: '#E1BEE7', transition: 'transform 0.3s ease, color 0.3s ease', '&:hover': { transform: 'scale(1.25) rotate(8deg)', color: '#fff' } }}
+              />
             </Box>
             <Box>
               <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: '#E1BEE7' }}>
@@ -258,8 +262,20 @@ export default function Dashboard() {
 
         {/* Stats Cards */}
         <Grid container spacing={3} mb={4}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)' }}>
+          <Grid item xs={12} sm={6} md={3} sx={{ transition: 'transform 0.2s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/matches')}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push('/matches'); } }}
+              sx={{
+                background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)',
+                animation: 'rtFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+                animationDelay: '0s',
+                cursor: 'pointer',
+                '&:hover .stat-icon': { transform: 'scale(1.2)', color: '#FF4081', opacity: 0.9 },
+              }}
+            >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
@@ -270,14 +286,31 @@ export default function Dashboard() {
                       {t('dashboard.statMatches')}
                     </Typography>
                   </Box>
-                  <FavoriteIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
+                  <Box sx={{ animation: 'rtHeartbeat 2.6s ease-in-out infinite', display: 'flex' }}>
+                    <FavoriteIcon
+                      className="stat-icon"
+                      sx={{ fontSize: 48, color: 'white', opacity: 0.3, transition: 'transform 0.3s ease, color 0.3s ease, opacity 0.3s ease' }}
+                    />
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'linear-gradient(135deg, #4ECDC4 0%, #7FD9D1 100%)' }}>
+          <Grid item xs={12} sm={6} md={3} sx={{ transition: 'transform 0.2s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/chat')}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push('/chat'); } }}
+              sx={{
+                background: 'linear-gradient(135deg, #4ECDC4 0%, #7FD9D1 100%)',
+                animation: 'rtFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+                animationDelay: '0.08s',
+                cursor: 'pointer',
+                '&:hover .stat-icon': { transform: 'scale(1.2)', color: '#64FFDA', opacity: 0.9 },
+              }}
+            >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
@@ -288,14 +321,31 @@ export default function Dashboard() {
                       {t('dashboard.statMessages')}
                     </Typography>
                   </Box>
-                  <MessageIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
+                  <Box sx={{ animation: 'rtHeartbeat 2.6s ease-in-out infinite', display: 'flex' }}>
+                    <MessageIcon
+                      className="stat-icon"
+                      sx={{ fontSize: 48, color: 'white', opacity: 0.3, transition: 'transform 0.3s ease, color 0.3s ease, opacity 0.3s ease' }}
+                    />
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'linear-gradient(135deg, #9B59B6 0%, #B47FD1 100%)' }}>
+          <Grid item xs={12} sm={6} md={3} sx={{ transition: 'transform 0.2s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push(`/profile/@${user?.nickname || user?.user_id}/modify-profile`)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/profile/@${user?.nickname || user?.user_id}/modify-profile`); } }}
+              sx={{
+                background: 'linear-gradient(135deg, #9B59B6 0%, #B47FD1 100%)',
+                animation: 'rtFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+                animationDelay: '0.16s',
+                cursor: 'pointer',
+                '&:hover .stat-icon': { transform: 'scale(1.2)', color: '#EA80FC', opacity: 0.9 },
+              }}
+            >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
@@ -306,25 +356,47 @@ export default function Dashboard() {
                       {t('dashboard.statProfile')}
                     </Typography>
                   </Box>
-                  <PersonIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
+                  <Box sx={{ animation: 'rtHeartbeat 2.6s ease-in-out infinite', display: 'flex' }}>
+                    <PersonIcon
+                      className="stat-icon"
+                      sx={{ fontSize: 48, color: 'white', opacity: 0.3, transition: 'transform 0.3s ease, color 0.3s ease, opacity 0.3s ease' }}
+                    />
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'linear-gradient(135deg, #3498DB 0%, #5DADE2 100%)' }}>
+          <Grid item xs={12} sm={6} md={3} sx={{ transition: 'transform 0.2s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/visits')}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push('/visits'); } }}
+              sx={{
+                background: 'linear-gradient(135deg, #3498DB 0%, #5DADE2 100%)',
+                animation: 'rtFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+                animationDelay: '0.24s',
+                cursor: 'pointer',
+                '&:hover .stat-icon': { transform: 'scale(1.2)', color: '#40C4FF', opacity: 0.9 },
+              }}
+            >
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
                   <Box>
                     <Typography variant="h2" fontWeight={700} color="white">
-                      {stats?.likes_count || 0}
+                      {stats?.profile_visits || 0}
                     </Typography>
                     <Typography variant="body1" color="white" sx={{ opacity: 0.9, fontWeight: 500, fontSize: '1.125rem' }}>
-                      {t('dashboard.statLikes')}
+                      {t('dashboard.statVisits')}
                     </Typography>
                   </Box>
-                  <ThumbUpIcon sx={{ fontSize: 48, color: 'white', opacity: 0.3 }} />
+                  <Box sx={{ animation: 'rtHeartbeat 2.6s ease-in-out infinite', display: 'flex' }}>
+                    <VisibilityIcon
+                      className="stat-icon"
+                      sx={{ fontSize: 48, color: 'white', opacity: 0.3, transition: 'transform 0.3s ease, color 0.3s ease, opacity 0.3s ease' }}
+                    />
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
@@ -332,7 +404,7 @@ export default function Dashboard() {
         </Grid>
 
         {/* Quick Actions */}
-        <Paper sx={{ p: 3, mb: 4, background: 'linear-gradient(135deg, #FF6B6B 0%, #E64A4A 100%)' }}>
+        <Paper sx={{ p: 3, mb: 4, background: 'linear-gradient(135deg, #FF6B6B 0%, #E64A4A 100%)', animation: 'rtFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both', animationDelay: '0.32s' }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <Typography variant="h5" fontWeight={700} color="white" mb={1}>
@@ -356,6 +428,8 @@ export default function Dashboard() {
                     fontWeight: 600,
                     width: { xs: '100%', sm: 'auto' },
                     flex: { xs: '1 1 100%', sm: '0 1 auto' },
+                    '& .MuiButton-startIcon svg': { transition: 'transform 0.3s ease' },
+                    '&:hover .MuiButton-startIcon svg': { transform: 'scale(1.2)' },
                   }}
                 >
                   {t('dashboard.quickRoulette')}
@@ -371,6 +445,8 @@ export default function Dashboard() {
                     '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
                     width: { xs: '100%', sm: 'auto' },
                     flex: { xs: '1 1 100%', sm: '0 1 auto' },
+                    '& .MuiButton-startIcon svg': { transition: 'transform 0.3s ease' },
+                    '&:hover .MuiButton-startIcon svg': { transform: 'scale(1.2)' },
                   }}
                 >
                   {t('dashboard.quickDiscover')}
@@ -386,6 +462,8 @@ export default function Dashboard() {
                     '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
                     width: { xs: '100%', sm: 'auto' },
                     flex: { xs: '1 1 100%', sm: '0 1 auto' },
+                    '& .MuiButton-startIcon svg': { transition: 'transform 0.3s ease' },
+                    '&:hover .MuiButton-startIcon svg': { transform: 'scale(1.2)' },
                   }}
                 >
                   {t('dashboard.quickChat')}
@@ -403,7 +481,7 @@ export default function Dashboard() {
                 <Typography variant="h6" fontWeight={600}>
                   {t('dashboard.recentMatches')}
                 </Typography>
-                <IconButton size="small" onClick={() => router.push('/discover')}>
+                <IconButton size="small" onClick={() => router.push('/discover')} sx={{ transition: 'transform 0.3s ease', '&:hover': { transform: 'translateX(3px) scale(1.1)' } }}>
                   <ArrowForwardIcon />
                 </IconButton>
               </Box>
@@ -450,7 +528,7 @@ export default function Dashboard() {
                 <Typography variant="h6" fontWeight={600}>
                   {t('dashboard.conversations')}
                 </Typography>
-                <IconButton size="small" onClick={() => router.push('/chat')}>
+                <IconButton size="small" onClick={() => router.push('/chat')} sx={{ transition: 'transform 0.3s ease', '&:hover': { transform: 'translateX(3px) scale(1.1)' } }}>
                   <ArrowForwardIcon />
                 </IconButton>
               </Box>

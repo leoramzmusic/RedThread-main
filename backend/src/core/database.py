@@ -33,6 +33,7 @@ from src.models.golth import GolthProfile, GolthInterest
 from src.models.appearance import AppearanceResource
 from src.models.appearance_history import AppearanceHistory
 from src.models.photo_metric import PhotoMetric
+from src.models.profile_visit import ProfileVisit
 
 
 async def init_db():
@@ -81,6 +82,7 @@ async def init_db():
             AppearanceResource,
             AppearanceHistory,
             PhotoMetric,
+            ProfileVisit,
         ]
     )
     

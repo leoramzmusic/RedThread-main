@@ -110,6 +110,7 @@ from src.api import (
     partners,
     roulette,
     radar,
+    visits,
     premium,
     moderation,
     options,
@@ -167,6 +168,7 @@ app.include_router(options.router, prefix="/options", tags=["System Options"])
 app.include_router(settings_router.router, prefix="/settings", tags=["Settings"])
 app.include_router(uploads.router, prefix="/uploads", tags=["Uploads"])
 app.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
+app.include_router(visits.router, prefix="/visits", tags=["Visits"])
 app.include_router(emotions.router, prefix="/emotions", tags=["Emotions"])  # New
 app.include_router(legal.router, prefix="/legal", tags=["Legal"])  # New
 app.include_router(help_router.router, prefix="/help", tags=["Help"])  # New
