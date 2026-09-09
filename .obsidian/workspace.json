@@ -11,17 +11,14 @@
             "id": "d3636e66fc7ba69f",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "architecture/services_architecture.canvas",
-                "viewState": {
-                  "x": -620,
-                  "y": -555,
-                  "zoom": 0
-                }
+                "file": "VERSIONING_GUIDE.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-layout-dashboard",
-              "title": "services_architecture"
+              "icon": "lucide-file",
+              "title": "VERSIONING_GUIDE"
             }
           }
         ]
@@ -102,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "architecture/services_architecture.canvas",
+                "file": "VERSIONING_GUIDE.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -192,33 +189,36 @@
   },
   "active": "d3636e66fc7ba69f",
   "lastOpenFiles": [
-    "architecture/redthread_architecture.canvas",
-    "architecture/infra_architecture.canvas",
-    "architecture/frontend_architecture.canvas",
-    "architecture/data_models_architecture.canvas",
-    "architecture/care_algorithm.canvas",
-    "architecture/backend_api_architecture.canvas",
-    "obsidian/redthread_architecture.canvas",
-    "architecture/services_architecture.canvas",
+    "TEST_CREDENTIALS.md",
+    "TESSERACT_INSTALLATION.md",
+    "SUBSCRIPTION_TIERS_TEST.md",
+    "RUN_GUIDE.md",
+    "JENKINS_SETUP.md",
+    "IDENTITY_VERIFICATION_INTEGRATION.md",
+    "IDENTITY_VERIFICATION_ENHANCEMENTS.md",
+    "FRESH_START_GUIDE.md",
+    "DISCOVERY_RESUMEN.md",
+    "DATA_GOVERNANCE_COMPLIANCE.md",
+    "CHANGELOG.md",
     "architecture/ARCHITECTURE_GRAPH.md",
+    "architecture/backend_api_architecture.canvas",
+    "architecture/care_algorithm.canvas",
+    "architecture/data_models_architecture.canvas",
+    "architecture/frontend_architecture.canvas",
+    "architecture/infra_architecture.canvas",
+    "architecture/redthread_architecture.canvas",
+    "architecture/services_architecture.canvas",
+    "obsidian/redthread_architecture.canvas",
     "architecture",
     "obsidian/services_architecture.canvas",
     "obsidian/infra_architecture.canvas",
-    "obsidian/frontend_architecture.canvas",
     "obsidian/ARCHITECTURE_GRAPH.md",
-    "FRESH_START_GUIDE.md",
-    "IDENTITY_VERIFICATION_ENHANCEMENTS.md",
-    "IDENTITY_VERIFICATION_INTEGRATION.md",
-    "JENKINS_SETUP.md",
     "K8S_DEPLOYMENT.md",
     "OBSERVABILITY_SETUP.md",
     "OCR_IMPLEMENTATION_GUIDE.md",
     "OCR_SYSTEM_COMPLETE.md",
     "README.md",
     "RESUMEN_USUARIOS_PRUEBA.md",
-    "RUN_GUIDE.md",
-    "TESSERACT_INSTALLATION.md",
-    "SUBSCRIPTION_TIERS_TEST.md",
     "TEST_USERS.md",
     "VERSIONING_GUIDE.md",
     "ARCHITECTURE_GRAPH.md",
@@ -232,7 +232,6 @@
     "frontend/src/pages/matches/index.tsx",
     "frontend/src/pages/matches",
     "frontend/node_modules/@gsap/react/README.md",
-    "knowledge/adrs/ADR-006-kafka-event-bus.md",
-    "DISCOVERY_RESUMEN.md"
+    "knowledge/adrs/ADR-006-kafka-event-bus.md"
   ]
 }

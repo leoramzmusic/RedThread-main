@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import apiClient from '../services/api';
+import adminApiClient from '../services/adminApi';
 
 type ThemeMode = 'light' | 'dark';
 type VisualTheme = 'redThread' | 'premium' | 'vip' | 'blue' | 'purple' | 'pink' | 'green' | 'sakura' | 'halloween' | 'christmas';
@@ -99,7 +100,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
 
     const loadAdminPrefs = async () => {
       try {
-        const response = await apiClient.get('/portal-redthread/auth/me');
+        const response = await adminApiClient.get('/portal-redthread/auth/me');
         if (response.data) {
           const data = response.data;
           if (data.admin_theme_mode) {
@@ -169,7 +170,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     // Save to database via API
     try {
       if (portalType === 'admin') {
-        const response = await apiClient.patch('/portal-redthread/auth/profile/theme', { admin_theme_mode: newMode });
+        const response = await adminApiClient.patch('/portal-redthread/auth/profile/theme', { admin_theme_mode: newMode });
         if (!response.data) console.error('Failed to save admin theme');
       } else {
         const response = await apiClient.patch('/profiles/theme', { theme_mode: newMode });
@@ -193,7 +194,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     // Save to database via API
     try {
       if (portalType === 'admin') {
-        const response = await apiClient.patch('/portal-redthread/auth/profile/theme', { admin_visual_theme: newTheme });
+        const response = await adminApiClient.patch('/portal-redthread/auth/profile/theme', { admin_visual_theme: newTheme });
         if (!response.data) console.error('Failed to save admin visual theme');
       } else {
         const response = await apiClient.patch('/profiles/theme', { visual_theme: newTheme });

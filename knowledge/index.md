@@ -7,11 +7,12 @@ Bienvenido a la base de conocimiento unificada de **RedThread**, donde la docume
 ## 🧭 Navegación Rápida
 
 ### 🎨 Visualización de Arquitectura
-- [[redthread_architecture.canvas|🗺️ Abrir RedThread Architecture Canvas]]
+- [[architecture/redthread_architecture.canvas|🗺️ Abrir RedThread Architecture Canvas]]
   - *Tipado visual*: 
     - 🟣 / 🔵 **Líneas Moradas / Azules**: Importaciones, llamadas a funciones y endpoints entre archivos de código.
     - 🟡 / 🟢 **Líneas Amarillas / Verdes**: Vínculos desde el código hacia decisiones de arquitectura (`@adr`) y notas técnicas.
-- [[ARCHITECTURE_GRAPH.md|🕸️ Vista de Grafo de Obsidian (Ctrl + G)]]
+  - *Sub-canvas expandibles por macro-módulo*: `frontend_architecture`, `backend_api_architecture`, `services_architecture`, `data_models_architecture`, `infra_architecture`, `care_algorithm`.
+- [[architecture/ARCHITECTURE_GRAPH.md|🕸️ Vista de Grafo de Obsidian (Ctrl + G)]]
 
 ### 📜 Decisiones de Arquitectura (@adr)
 - [[knowledge/adrs/ADR-001-fastapi-beanie-mongodb|ADR-001: FastAPI, Beanie ODM y MongoDB]]
