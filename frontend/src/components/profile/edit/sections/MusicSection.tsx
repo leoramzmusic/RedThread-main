@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Grid, Paper, Typography, Box, Button, Stack, FormControl, Select, MenuItem, TextField, CircularProgress, InputLabel, Avatar, IconButton, Card, CardMedia, CardContent, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Grid, Paper, Typography, Box, Button, Stack, FormControl, Select, MenuItem, TextField, CircularProgress, InputLabel, Avatar, IconButton, Card, CardMedia, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert } from '@mui/material';
 import { MusicNote, OpenInNew, CheckCircle, LinkOff, Add, Delete, PlayArrow, Pause, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Controller, useWatch } from 'react-hook-form';
 import { useAppTheme } from '../../../../context/ThemeContext';
@@ -91,6 +91,7 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
     const featuredSongs = Array.isArray(miHimno?.featured_songs) ? miHimno.featured_songs : [];
 
     const [isConnecting, setIsConnecting] = useState(false);
+    const [freeSpotifyAccount, setFreeSpotifyAccount] = useState(false);
 
     // Search Modal State
     const [searchOpen, setSearchOpen] = useState(false);
@@ -118,6 +119,7 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
                     if (!miHimno?.connected) {
                         setValue('mi_himno.connected', 'spotify');
                     }
+                    setFreeSpotifyAccount(response.data.product === 'free');
                 } else {
                     // Token is invalid or expired
                     // If we thought we were connected, we should disconnect (visually) 
@@ -125,6 +127,7 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
                     if (miHimno?.connected === 'spotify') {
                         setValue('mi_himno.connected', null);
                     }
+                    setFreeSpotifyAccount(false);
                 }
             } catch (error) {
                 console.error('Error checking Spotify connection:', error);
@@ -295,6 +298,16 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
                     <Grid container spacing={3}>
                         {/* Service Selector (Simplified for brevity, assuming only Spotify for this demo) */}
                         <Grid item xs={12}>
+                            {isConnected && freeSpotifyAccount && (
+                                <Alert severity="warning" sx={{ mb: 2 }}>
+                                    Estás usando la cuenta gratuita de Spotify. Algunas funciones (como reproducir canciones) pueden estar limitadas, pero esto no afecta tu experiencia dentro de RETH.
+                                </Alert>
+                            )}
+                            {!isConnected && (
+                                <Alert severity="info" sx={{ mb: 2 }}>
+                                    Al conectar tu cuenta de Spotify, algunas funciones (reproducir canciones, crear listas) dependerán de tu suscripción. Esto no afecta tu experiencia dentro de RETH.
+                                </Alert>
+                            )}
                             <Button
                                 variant="contained"
                                 fullWidth
@@ -347,6 +360,13 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
 
                         {(isConnected || getList(watch('mi_himno.favorite_artists')).length > 0 || featuredSongs.length > 0) && (
                             <>
+                                {freeSpotifyAccount && (
+                                    <Grid item xs={12}>
+                                        <Alert severity="info" sx={{ mb: 1, py: 0, '& .MuiAlert-message': { fontSize: '0.85rem' } }}>
+                                            Las funciones de "Añadir" están bloqueadas por tu cuenta gratuita de Spotify. Esto depende de tu suscripción a Spotify, no de RETH.
+                                        </Alert>
+                                    </Grid>
+                                )}
                                 {/* Favorite Artists */}
                                 <Grid item xs={12}>
                                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -358,6 +378,7 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
                                                 startIcon={<Add />}
                                                 size="small"
                                                 onClick={() => { setSearchType('artist'); setSearchOpen(true); }}
+                                                disabled={freeSpotifyAccount}
                                                 sx={{ color: 'text.primary' }}
                                             >
                                                 Añadir
@@ -410,7 +431,7 @@ export default function MusicSection({ control, watch, setValue }: BaseSectionPr
                                                 startIcon={<Add />}
                                                 size="small"
                                                 onClick={() => { setSearchType('track'); setSearchOpen(true); }}
-                                                disabled={featuredSongs.length >= 5}
+                                                disabled={freeSpotifyAccount || featuredSongs.length >= 5}
                                                 sx={{ color: 'text.primary' }}
                                             >
                                                 Añadir

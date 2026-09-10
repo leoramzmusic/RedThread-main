@@ -99,6 +99,7 @@ class User(Document):
     spotify_access_token: Optional[str] = None
     spotify_refresh_token: Optional[str] = None
     spotify_token_expires_at: Optional[datetime] = None
+    spotify_product: Optional[str] = None  # "free" | "premium" | None (desconocido)
     
     # Password Reset
     reset_token: Optional[str] = None

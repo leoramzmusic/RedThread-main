@@ -54,6 +54,7 @@ import QuickInterests from '../../components/discovery/QuickInterests';
 import { useSnackbar } from 'notistack';
 import { calculateProfileScore, calculateCompletionPercentage, getProfileSuggestions } from '../../utils/profileScoring';
 import AsyncLocationSelector from '../../components/common/AsyncLocationSelector';
+import { RADIUS_MARKS, RADIUS_MIN, RADIUS_MAX } from '../../utils/radius';
 
 const LocationMap = dynamic(() => import('../../components/common/LocationMap'), {
   ssr: false,
@@ -1661,9 +1662,11 @@ export default function Discover() {
                       </Box>
                       <Slider
                         value={distance}
-                        min={5}
-                        max={100}
-                        step={5}
+                        min={RADIUS_MIN}
+                        max={RADIUS_MAX}
+                        step={null}
+                        marks={RADIUS_MARKS}
+                        valueLabelDisplay="auto"
                         onChange={(_, val) => setDistance(val as number)}
                         size="small"
                         sx={{ color: 'primary.main', py: 1 }}

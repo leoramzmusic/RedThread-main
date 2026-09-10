@@ -176,7 +176,11 @@ export default function NeurodiversitySelector({
                         control={control}
                         defaultValue={[]}
                         render={({ field: neuroField }) => {
-                            const currentValues = neuroField.value || [];
+                            const currentValues = (neuroField.value || []).map((v: any) =>
+                                v !== null && typeof v === 'object'
+                                    ? String((v as any)?.value ?? (v as any)?.label ?? '')
+                                    : String(v ?? '')
+                            );
                             const isSpecialSelected = currentValues.some((v: string) => v === 'not_sure' || v === 'prefer_not_to_say');
 
                             // Find valid options for autocomplete (including custom conditions already in field.value)
@@ -231,19 +235,23 @@ export default function NeurodiversitySelector({
                                             />
                                         )}
                                         renderTags={(value, getTagProps) =>
-                                            value.map((option, index) => (
-                                                <Chip
-                                                    label={option.label}
-                                                    {...getTagProps({ index })}
-                                                    size="small"
-                                                    sx={{
-                                                        bgcolor: alpha(categoryColor, 0.1),
-                                                        color: categoryColor,
-                                                        fontWeight: 600,
-                                                        animation: `${popIn} 0.2s ease-out`
-                                                    }}
-                                                />
-                                            ))
+                                            value.map((option, index) => {
+                                                const raw = (option as any)?.label ?? (option as any)?.value ?? option ?? '';
+                                                const label = typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
+                                                return (
+                                                    <Chip
+                                                        label={label}
+                                                        {...getTagProps({ index })}
+                                                        size="small"
+                                                        sx={{
+                                                            bgcolor: alpha(categoryColor, 0.1),
+                                                            color: categoryColor,
+                                                            fontWeight: 600,
+                                                            animation: `${popIn} 0.2s ease-out`
+                                                        }}
+                                                    />
+                                                );
+                                            })
                                         }
                                         sx={{ mb: 2 }}
                                     />

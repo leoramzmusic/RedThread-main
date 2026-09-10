@@ -68,7 +68,7 @@ export default function PersonalitySection({ control, setValue }: PersonalitySec
                                     },
                                     {
                                         value: 'ambivert',
-                                        label: "Ambientado 🌿",
+                                        label: "Ambivertido 🌿",
                                         description: "Me adapto, pero también me engento."
                                     },
                                     {

@@ -12,7 +12,7 @@ router = APIRouter()
 # --- Spotify Configuration ---
 SPOTIFY_CLIENT_ID = settings.SPOTIFY_CLIENT_ID
 SPOTIFY_CLIENT_SECRET = settings.SPOTIFY_CLIENT_SECRET
-SPOTIFY_REDIRECT_URI = "http://127.0.0.1:8000/api/auth/spotify/callback" 
+SPOTIFY_REDIRECT_URI = settings.SPOTIFY_REDIRECT_URI 
 
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -76,20 +76,19 @@ async def get_auth_url_with_redirect(request: dict, current_user: User = Depends
     url = f"{SPOTIFY_AUTH_URL}?{urllib.parse.urlencode(params)}"
     return JSONResponse({"url": url})
 
-@router.get("/callback")
-async def callback(code: str, state: str):
-    """Handle Spotify OAuth callback"""
+async def handle_spotify_callback(code: str, state: str):
+    """Handle Spotify OAuth callback (shared by /callback routes)."""
     if not code:
         raise HTTPException(status_code=400, detail="Missing code parameter")
-    
+
     # Verify state token and get user data
     user_data = oauth_states.pop(state, None)
     if not user_data:
         raise HTTPException(status_code=400, detail="Invalid or expired state token")
-    
+
     user_id = user_data.get("user_id") if isinstance(user_data, dict) else user_data
     redirect_to = user_data.get("redirect_to", "/") if isinstance(user_data, dict) else "/"
-    
+
     async with httpx.AsyncClient() as client:
         try:
             # Exchange code for tokens
@@ -106,42 +105,70 @@ async def callback(code: str, state: str):
             )
             response.raise_for_status()
             token_data = response.json()
-            
+
             # Save tokens to user document
             user = await User.get(user_id)
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
-            
+
             user.spotify_access_token = token_data.get("access_token")
             user.spotify_refresh_token = token_data.get("refresh_token")
-            
+
             # Calculate expiration (usually 3600 seconds = 1 hour)
             expires_in = token_data.get("expires_in", 3600)
             user.spotify_token_expires_at = datetime.utcnow() + timedelta(seconds=expires_in)
-            
+
+            # Detect account product (free/premium) from Spotify /v1/me.
+            # Survives failures gracefully: product stays as-is if Spotify blocks the call.
+            try:
+                me_response = await client.get(
+                    "https://api.spotify.com/v1/me",
+                    headers={"Authorization": f"Bearer {user.spotify_access_token}"},
+                    timeout=10.0
+                )
+                if me_response.status_code == 200:
+                    me_data = me_response.json()
+                    user.spotify_product = me_data.get("product")
+            except Exception as e:
+                print(f"Could not detect Spotify product: {e}")
+
             await user.save()
-            
-            # Redirect back to the page user came from
-            return RedirectResponse(f"http://localhost:3000{redirect_to}")
-            
+
+            # Redirect back to the page user came from, flagging the connection
+            separator = "&" if "?" in redirect_to else "?"
+            return RedirectResponse(f"http://localhost:3000{redirect_to}{separator}spotify_connected=true")
+
         except httpx.HTTPStatusError as e:
+            print(f"Spotify Token Exchange Failed: {e}")
+            if e.response is not None:
+                print(f"Spotify response: {e.response.text}")
             raise HTTPException(status_code=400, detail=f"Spotify Token Exchange Failed: {e}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error saving token: {str(e)}")
+
+
+@router.get("/callback")
+async def callback(code: str, state: str):
+    """Handle Spotify OAuth callback (registered path: /api/auth/spotify/callback)"""
+    return await handle_spotify_callback(code, state)
 
 @router.get("/token")
 async def get_token(current_user: User = Depends(get_current_user)):
     """Get current user's Spotify access token"""
     # Check if token exists and is not expired
     if not current_user.spotify_access_token:
-        return JSONResponse({"authenticated": False, "token": None})
+        return JSONResponse({"authenticated": False, "token": None, "product": None})
     
     # Check expiration
     if current_user.spotify_token_expires_at and current_user.spotify_token_expires_at < datetime.utcnow():
         # Token expired - should refresh here in production
-        return JSONResponse({"authenticated": False, "token": None, "expired": True})
+        return JSONResponse({"authenticated": False, "token": None, "expired": True, "product": None})
     
-    return JSONResponse({"authenticated": True, "token": current_user.spotify_access_token})
+    return JSONResponse({
+        "authenticated": True,
+        "token": current_user.spotify_access_token,
+        "product": current_user.spotify_product
+    })
 
 @router.delete("/disconnect")
 async def disconnect(current_user: User = Depends(get_current_user)):
@@ -149,6 +176,7 @@ async def disconnect(current_user: User = Depends(get_current_user)):
     current_user.spotify_access_token = None
     current_user.spotify_refresh_token = None
     current_user.spotify_token_expires_at = None
+    current_user.spotify_product = None
     await current_user.save()
     
     return JSONResponse({"message": "Disconnected successfully"})
@@ -212,41 +240,48 @@ async def search_spotify(q: str, type: str = "track,artist", current_user: User 
     if not q:
         return JSONResponse({"items": []})
 
-    token = None
-    
-    # 1. Try User's Personal Token
-    if current_user.spotify_access_token:
-        # Check expiry (simple check, ideally refresh it)
-        if current_user.spotify_token_expires_at and current_user.spotify_token_expires_at > datetime.utcnow():
-            token = current_user.spotify_access_token
-    
-    # 2. Fallback to Client Credentials Token
-    if not token:
-        # print("User not connected to Spotify, using App Credentials...")
-        token = await _get_client_token()
-        
-    if not token:
-        return JSONResponse({"error": "No available Spotify token"}, status_code=503)
-
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(
+    async def _do_search(token: str):
+        async with httpx.AsyncClient() as client:
+            return await client.get(
                 "https://api.spotify.com/v1/search",
                 params={"q": q, "type": type, "limit": 10},
                 headers={"Authorization": f"Bearer {token}"},
                 timeout=10.0
             )
-            
-            if response.status_code == 401:
-                # Token might be expired (if user token), fallback to new client token?
-                # For simplicity, if user token failed, maybe we should try client token?
-                # But let's just error for now or keep it simple.
-                return JSONResponse({"error": "Spotify token expired"}, status_code=401)
-                
-            response.raise_for_status()
-            return response.json()
-            
-        except Exception as e:
-            print(f"Spotify Search Failed: {e}")
-            return JSONResponse({"error": str(e)}, status_code=500)
+
+    # 1. Try User's Personal Token
+    token = None
+    if current_user.spotify_access_token:
+        if current_user.spotify_token_expires_at and current_user.spotify_token_expires_at > datetime.utcnow():
+            token = current_user.spotify_access_token
+
+    response = None
+    if token:
+        response = await _do_search(token)
+        if response.status_code in (401, 403):
+            print(f"[SPOTIFY] User token rejected ({response.status_code}), falling back to Client Credentials")
+            token = None
+
+    # 2. Fallback to Client Credentials Token
+    if token is None:
+        token = await _get_client_token()
+        if not token:
+            return JSONResponse({"error": "No available Spotify token"}, status_code=503)
+        response = await _do_search(token)
+
+    try:
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPStatusError as e:
+        text = response.text[:300] if response is not None else str(e)
+        print(f"Spotify Search Failed ({response.status_code if response is not None else '?'}): {text}")
+        if response is not None and "premium subscription required" in response.text.lower():
+            error_msg = "La cuenta de Spotify propietaria de la app requiere una suscripcion Premium activa. Spotify tardara unas horas tras activarla."
+        else:
+            error_msg = f"Spotify API rejected request: {text}"
+        status = response.status_code if response is not None and response.status_code in (401, 403, 429) else 502
+        return JSONResponse({"error": error_msg}, status_code=status)
+    except Exception as e:
+        print(f"Spotify Search Failed: {e}")
+        return JSONResponse({"error": str(e)}, status_code=500)
 

@@ -91,6 +91,7 @@ const MOCK_ARTISTS: SpotifyArtist[] = [
 class SpotifyService {
     private token: string | null = null;
     private baseUrl = 'https://api.spotify.com/v1';
+    lastSearchError: string = '';
 
     setToken(token: string) {
         this.token = token;
@@ -101,6 +102,20 @@ class SpotifyService {
             Authorization: `Bearer ${this.token}`,
             'Content-Type': 'application/json'
         };
+    }
+
+    private async searchViaProxy(query: string, type: 'track' | 'artist'): Promise<SpotifyTrack[] | SpotifyArtist[]> {
+        try {
+            const response = await apiClient.get('/api/auth/spotify/search', {
+                params: { q: query, type }
+            });
+            this.lastSearchError = '';
+            return type === 'artist' ? (response.data.artists?.items || []) : (response.data.tracks?.items || []);
+        } catch (proxyError: any) {
+            this.lastSearchError = proxyError?.response?.data?.error || 'Spotify no está disponible en este momento';
+            console.error('Backend Proxy Search Error:', proxyError);
+            return [];
+        }
     }
 
     // New method to fetch token from backend proxy
@@ -123,18 +138,8 @@ class SpotifyService {
         
         if (!this.token) await this.fetchToken(); 
 
-        // If we still don't have a token, use the BACKEND PROXY which handles client_credentials
         if (!this.token) {
-            try {
-                // console.log('SpotifyService: Using Backend Proxy for Search (Disconnected)...');
-                const response = await apiClient.get('/api/auth/spotify/search', {
-                    params: { q: query, type: 'track' }
-                });
-                return response.data.tracks?.items || [];
-            } catch (proxyError) {
-                console.error('Backend Proxy Search Error:', proxyError);
-                return [];
-            }
+            return (await this.searchViaProxy(query, 'track')) as SpotifyTrack[];
         }
 
         // Standard User Token Search
@@ -143,10 +148,12 @@ class SpotifyService {
                 headers: this.getHeaders(),
                 params: { q: query, type: 'track', limit: 10 }
             });
+            this.lastSearchError = '';
             return response.data.tracks.items;
         } catch (error) {
-            console.error('Spotify Search Error:', error);
-            return [];
+            this.token = null;
+            console.warn('Direct Spotify track search failed, falling back to backend proxy:', error);
+            return (await this.searchViaProxy(query, 'track')) as SpotifyTrack[];
         }
     }
 
@@ -155,18 +162,8 @@ class SpotifyService {
 
         if (!this.token) await this.fetchToken();
 
-        // If we still don't have a token, use the BACKEND PROXY which handles client_credentials
         if (!this.token) {
-            try {
-                // console.log('SpotifyService: Using Backend Proxy for Artist Search (Disconnected)...');
-                const response = await apiClient.get('/api/auth/spotify/search', {
-                    params: { q: query, type: 'artist' }
-                });
-                return response.data.artists?.items || [];
-            } catch (proxyError) {
-                console.error('Backend Proxy Artist Search Error:', proxyError);
-                return [];
-            }
+            return (await this.searchViaProxy(query, 'artist')) as SpotifyArtist[];
         }
 
         // Standard User Token Search
@@ -175,10 +172,12 @@ class SpotifyService {
                 headers: this.getHeaders(),
                 params: { q: query, type: 'artist', limit: 10 }
             });
+            this.lastSearchError = '';
             return response.data.artists.items;
         } catch (error) {
-            console.error('Spotify Artist Search Error:', error);
-            return [];
+            this.token = null;
+            console.warn('Direct Spotify artist search failed, falling back to backend proxy:', error);
+            return (await this.searchViaProxy(query, 'artist')) as SpotifyArtist[];
         }
     }
 

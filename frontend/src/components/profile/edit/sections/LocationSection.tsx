@@ -14,6 +14,7 @@ import { useSnackbar } from 'notistack';
 
 import AsyncLocationSelector from '../../../common/AsyncLocationSelector';
 import { MapRegion } from '../../../common/LocationMap';
+import { RADIUS_MIN, RADIUS_MAX, RADIUS_MARKS, RADIUS_STEP_HELP } from '../../../../utils/radius';
 
 const LocationMap = dynamic(() => import('../../../common/LocationMap'), {
     ssr: false,
@@ -105,7 +106,7 @@ export default function LocationSection({
     const prevCountry = useRef<string | null>(null);
 
     const location = watch('location');
-    const radius = watch('search_radius_km') || watch('distance_preference_km') || 50;
+    const radius = watch('distance_preference_km') ?? watch('search_radius_km') ?? 50;
     const searchStates = watch('search_states') || [];
     const searchCountries = watch('search_countries') || [];
     const excludedStates = watch('excluded_states') || [];
@@ -619,15 +620,15 @@ export default function LocationSection({
                                         <Box sx={{ px: 2, mt: 3 }}>
                                             <Slider
                                                 {...field}
-                                                onChange={(_, value) => field.onChange(value)}
+                                                onChange={(_, value) => {
+                                                    field.onChange(value);
+                                                    setValue('search_radius_km', value as number);
+                                                }}
                                                 valueLabelDisplay="auto"
-                                                min={0}
-                                                max={100}
-                                                step={5}
-                                                marks={Array.from({ length: 21 }, (_, i) => ({
-                                                    value: i * 5,
-                                                    label: i === 0 ? '0' : `${i * 5} `
-                                                }))}
+                                                min={RADIUS_MIN}
+                                                max={RADIUS_MAX}
+                                                step={null}
+                                                marks={RADIUS_MARKS}
                                                 sx={{
                                                     height: 8,
                                                     color: isDiscovery ? 'gold' : 'primary.main',
@@ -635,6 +636,10 @@ export default function LocationSection({
                                                     '& .MuiSlider-rail': { bgcolor: isDiscovery ? 'rgba(255,255,255,0.1)' : 'inherit' }
                                                 }}
                                             />
+
+                                            <Typography variant="caption" display="block" sx={{ color: isDiscovery ? 'rgba(255,255,255,0.5)' : 'text.secondary', mt: 0.5 }}>
+                                                {RADIUS_STEP_HELP}
+                                            </Typography>
 
                                             <Box mt={3} p={2} borderRadius={2} bgcolor={isDiscovery ? 'rgba(255,215,0,0.05)' : alpha('#9333EA', 0.05)} border="1px dashed" borderColor={isDiscovery ? 'rgba(255,215,0,0.2)' : alpha('#9333EA', 0.3)}>
                                                 <Typography variant="subtitle2" fontWeight="bold" gutterBottom sx={{ color: isDiscovery ? 'gold' : 'primary.main' }}>

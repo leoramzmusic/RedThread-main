@@ -426,13 +426,14 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         } : null,
         favorite_songs: data.favorite_songs || [],
         spotify_playlists: data.spotify_playlists || [],
+        music_genres: data.music_genres || [],
 
         // Location
         location: data.location,
         city: citySearch || data.city,
         location_sharing_enabled: data.location_sharing_enabled,
-        distance_preference_km: data.distance_preference_km || data.search_radius_km,
-        search_radius_km: data.distance_preference_km || data.search_radius_km,
+        distance_preference_km: data.distance_preference_km || data.search_radius_km || 50,
+        search_radius_km: data.distance_preference_km || data.search_radius_km || 50,
 
         // Preferences / Search Settings
         attraction_preferences: data.attraction_preferences,
@@ -528,8 +529,18 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   );
 
   // Suggestion navigation
+  // sectionId is a logical section key (also used by DiscoveryRefinementCard);
+  // DOM anchors may differ (fields grouped inside profile sections)
+  const SECTION_ANCHOR_MAP: Record<string, string> = {
+    'section-relationship-type': 'section-additional',
+    'section-height': 'section-additional',
+    'section-zodiac': 'section-additional',
+    'section-education': 'section-professional',
+    'section-music-genres': 'section-music',
+  };
   const handleSuggestionClick = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
+    const targetId = SECTION_ANCHOR_MAP[sectionId] || sectionId;
+    const element = document.getElementById(targetId);
     if (element) {
       // Offset for sticky header if needed
       const headerOffset = 100;

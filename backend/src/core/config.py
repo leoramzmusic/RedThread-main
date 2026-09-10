@@ -64,6 +64,7 @@ class Settings(BaseSettings):
     # Spotify API
     SPOTIFY_CLIENT_ID: Optional[str] = None
     SPOTIFY_CLIENT_SECRET: Optional[str] = None
+    SPOTIFY_REDIRECT_URI: str = "http://127.0.0.1:8000/callback"
     
     # Instagram API
     INSTAGRAM_CLIENT_ID: Optional[str] = None

@@ -112,7 +112,7 @@ export const calculateProfileScore = (profile: any): number => {
   
   // Additional
   check('height_cm', hasValue(profile.height_cm), PROFILE_WEIGHTS.height_cm);
-  check('zodiac', hasValue(profile.zodiac), PROFILE_WEIGHTS.zodiac);
+  check('zodiac', hasValue(profile.zodiac) || profile.zodiac_relevant === false, PROFILE_WEIGHTS.zodiac);
   check('relationship_type', hasValue(profile.relationship_type), PROFILE_WEIGHTS.relationship_type);
   
 
@@ -183,7 +183,7 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
     
     // Check fields (Prioritized by weight/importance)
     add(profile.sexual_orientation, 15, "Define tu orientación sexual", "section-identity");
-    add(profile.relationship_goals, 12, "Define qué tipo de relación buscas", "section-goals");
+    add(hasValue(profile.relationship_goals), 12, "Define qué tipo de relación buscas", "section-goals");
     add(profile.nickname || profile.display_name, 10, "Agrega un nickname", "section-basic");
     add(profile.age, 10, "Ingresa tu edad", "section-basic");
     add(hasValue(profile.gender), 10, "Selecciona tu género", "section-basic");
@@ -197,11 +197,12 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
     add(profile.relationship_status, 2, "¿Cuál es tu estado civil?", "section-status");
     add(profile.relationship_type, 2, "¿Qué tipo de relación prefieres?", "section-relationship-type");
     add(profile.height_cm, 2, "¿Cuánto mides?", "section-height");
-    add(profile.zodiac, 2, "Agrega tu signo zodiacal", "section-zodiac");
+    add(hasValue(profile.zodiac) || profile.zodiac_relevant === false, 2, "Agrega tu signo zodiacal", "section-zodiac");
     add(profile.education_level, 2, "Completa tu nivel educativo", "section-education");
     add(profile.occupation, 2, "Añade tu profesión", "section-professional");
     add(profile.city, 2, "Indica dónde vives", "section-location");
     add(profile.education_center, 2, "¿Dónde estudiaste?", "section-education");
+    add(profile.work_company, 2, "Indica dónde trabajas", "section-professional");
     add(hasValue(profile.languages), 1, "¿Qué idiomas hablas?", "section-languages");
     add(profile.pronouns, 1, "Agrega tus pronombres", "section-pronouns");
 

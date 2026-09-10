@@ -32,15 +32,15 @@ export default function PhotosSection({ profile, smartPhotos, setSmartPhotos }: 
                         <Typography variant="h6">Fotos</Typography>
                     </Box>
                 </AccordionSummary>
-                <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+                <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
                     <MediaManager userId={profile.user_id} />
 
                     <Box
                         display="flex"
                         justifyContent="space-between"
                         alignItems="center"
-                        mt={2}
-                        p={2}
+                        mt={1.5}
+                        p={1.5}
                         bgcolor="action.hover"
                         borderRadius="12px"
                         border="1px solid"

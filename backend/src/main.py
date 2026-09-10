@@ -19,8 +19,8 @@ from src.services.kafka_consumers import (
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
-    print(f"🚀 Starting {settings.APP_NAME} v{settings.APP_VERSION}")
-    print(f"📍 Environment: {settings.ENVIRONMENT}")
+    print(f"[START] {settings.APP_NAME} v{settings.APP_VERSION}")
+    print(f"[ENV] {settings.ENVIRONMENT}")
     
     # Initialize database
     await init_db()
@@ -149,6 +149,8 @@ from src.routers import boost  # Boost System
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(spotify_auth.router, prefix="/api/auth/spotify", tags=["Spotify Auth"]) # New
+# Root callback route to match the registered Spotify Redirect URI
+app.add_api_route("/callback", spotify_auth.handle_spotify_callback, methods=["GET"], tags=["Spotify Auth"])
 app.include_router(admin_auth.router, tags=["Admin Auth"])  # Employee authentication
 app.include_router(users.router, prefix="/users", tags=["Users"])  # New
 app.include_router(home.router, prefix="/home", tags=["Home"])

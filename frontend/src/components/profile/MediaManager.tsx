@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, IconButton, Paper, CircularProgress, Chip, Accordion, AccordionSummary, AccordionDetails, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import VideoCallIcon from '@mui/icons-material/VideoCall';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
@@ -47,12 +48,16 @@ function SortableMediaItem({
   item,
   index,
   onDelete,
-  isMainPhoto
+  isMainPhoto,
+  onView,
+  width
 }: {
   item: MediaItem;
   index: number;
   onDelete: (id: string) => void;
   isMainPhoto?: boolean;
+  onView?: (item: MediaItem) => void;
+  width?: number;
 }) {
   const {
     attributes,
@@ -79,7 +84,8 @@ function SortableMediaItem({
       sx={{
         cursor: 'grab',
         position: 'relative',
-        touchAction: 'none' // Important for dnd-kit on mobile
+        touchAction: 'none', // Important for dnd-kit on mobile
+        width: width ?? undefined,
       }}
     >
       <Paper
@@ -92,6 +98,13 @@ function SortableMediaItem({
           boxShadow: (theme) => theme.palette.mode === 'dark'
             ? '0 0 8px rgba(255,255,255,0.05)'
             : '0 2px 8px rgba(0,0,0,0.05)',
+          cursor: onView ? 'zoom-in' : 'pointer',
+          '&:hover': onView ? { opacity: 0.95 } : {},
+        }}
+        onClick={(e) => {
+          if (isDragging) return;
+          e.stopPropagation();
+          onView?.(item);
         }}
       >
         <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
@@ -151,6 +164,9 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [mediaToDelete, setMediaToDelete] = useState<string | null>(null);
   const [showTips, setShowTips] = useState(false);
+
+  // Preview Modal State
+  const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
 
   // Error Modal State
   const [errorOpen, setErrorOpen] = useState(false);
@@ -293,6 +309,13 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
   const photos = mediaItems.filter(item => item.type === MediaType.PHOTO);
   const videos = mediaItems.filter(item => item.type === MediaType.VIDEO);
 
+  // Only one add box: shown from 0 to 8 photos, hidden once the 9th is loaded
+  const photoAddSlots = photos.length >= 9 ? 0 : 1;
+
+  // Same adaptive behavior for videos (max 3): compact row of 2 when empty, grows to the full 3-slot grid
+  const videoAddSlots = videos.length === 3 ? 0 : Math.max(1, 2 - videos.length);
+  const videoTotalSlots = videos.length + videoAddSlots;
+
   // Separate reorder handlers for each section to prevent cross-type dragging issues
   const handleReorder = (oldIndex: number, newIndex: number, type: MediaType) => {
     // Find the items in the global list
@@ -313,8 +336,8 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" gap={1} mb={3} className="section-header">
-        <Typography variant="h6" fontWeight="bold">
+      <Box display="flex" alignItems="center" gap={1} mb={2} className="section-header">
+        <Typography variant="subtitle1" fontWeight="bold">
           {t('profile.mediaGallery', 'Galería Multimedia')}
         </Typography>
         <Tooltip title="Puedes subir hasta 9 fotos y 3 videos.">
@@ -363,9 +386,12 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
               }}
             >
               <Box
-                display="grid"
-                gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-                gap="16px"
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                  gap: '12px',
+                  justifyContent: 'flex-start',
+                }}
               >
                 <SortableContext
                   items={photos.map(item => item._id)}
@@ -376,20 +402,24 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
                       key={item._id}
                       item={item}
                       index={index}
+                      width={84}
                       onDelete={handleDeleteClick}
+                      onView={setPreviewItem}
                       isMainPhoto={index === 0}
                     />
                   ))}
                 </SortableContext>
 
-                {/* Add Photo Dashed Box */}
-                {photos.length < 9 && (
+                {/* Add Photo Dashed Boxes */}
+                {Array.from({ length: photoAddSlots }, (_, slotIndex) => (
                   <Box
+                    key={`add-photo-${slotIndex}`}
                     component="label"
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      width: 84,
                       // Aspect ratio trick for grid item
                       aspectRatio: '1/1',
                       position: 'relative',
@@ -407,10 +437,10 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                       <AddPhotoAlternateIcon sx={{ fontSize: 24, color: 'text.secondary', mb: 0.5 }} />
                       <Typography variant="caption" color="text.secondary">Agregar</Typography>
-                      <input type="file" hidden accept="image/*" onChange={(e) => handleFileUpload(e, MediaType.PHOTO)} disabled={loading} />
+                      <input type="file" hidden accept="image/*" id={`media-photo-add-${slotIndex}`} onChange={(e) => handleFileUpload(e, MediaType.PHOTO)} disabled={loading} />
                     </Box>
                   </Box>
-                )}
+                ))}
               </Box>
             </DndContext>
           </AccordionDetails>
@@ -443,8 +473,9 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
             >
               <Box
                 display="grid"
-                gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-                gap="16px"
+                gridTemplateColumns="repeat(auto-fit, minmax(80px, 1fr))"
+                gap="12px"
+                maxWidth={videoTotalSlots <= 2 ? 360 : '100%'}
               >
                 <SortableContext
                   items={videos.map(item => item._id)}
@@ -456,13 +487,15 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
                       item={item}
                       index={index}
                       onDelete={handleDeleteClick}
+                      onView={setPreviewItem}
                     />
                   ))}
                 </SortableContext>
 
-                {/* Add Video Dashed Box */}
-                {videos.length < 3 && (
+                {/* Add Video Dashed Boxes */}
+                {Array.from({ length: videoAddSlots }, (_, slotIndex) => (
                   <Box
+                    key={`add-video-${slotIndex}`}
                     component="label"
                     sx={{
                       display: 'flex',
@@ -484,10 +517,10 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                       <VideoCallIcon sx={{ fontSize: 24, color: 'text.secondary', mb: 0.5 }} />
                       <Typography variant="caption" color="text.secondary">Agregar</Typography>
-                      <input type="file" hidden accept="video/*" onChange={(e) => handleFileUpload(e, MediaType.VIDEO)} disabled={loading} />
+                      <input type="file" hidden accept="video/*" id={`media-video-add-${slotIndex}`} onChange={(e) => handleFileUpload(e, MediaType.VIDEO)} disabled={loading} />
                     </Box>
                   </Box>
-                )}
+                ))}
               </Box>
             </DndContext>
           </AccordionDetails>
@@ -517,6 +550,54 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
       </DragOverlay>
 
       <VisualTipsSheet open={showTips} onClose={() => setShowTips(false)} />
+
+      {/* Media Preview Modal */}
+      <Dialog
+        open={!!previewItem}
+        onClose={() => setPreviewItem(null)}
+        maxWidth="lg"
+        PaperProps={{
+          sx: {
+            borderRadius: '12px',
+            bgcolor: 'black',
+            backgroundImage: 'none',
+            overflow: 'hidden',
+            width: 'min(90vw, 900px)',
+            m: 0,
+          },
+        }}
+      >
+        <IconButton
+          size="small"
+          onClick={() => setPreviewItem(null)}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 1,
+            bgcolor: 'rgba(0,0,0,0.6)',
+            color: 'white',
+            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+        {previewItem?.type === MediaType.PHOTO && (
+          <img
+            src={previewItem.url}
+            alt="Vista previa"
+            style={{ width: '100%', height: 'auto', maxHeight: '85vh', objectFit: 'contain', display: 'block' }}
+          />
+        )}
+        {previewItem?.type === MediaType.VIDEO && (
+          <video
+            src={previewItem.url}
+            controls
+            autoPlay
+            style={{ width: '100%', maxHeight: '85vh', display: 'block' }}
+          />
+        )}
+      </Dialog>
 
       <Dialog
         open={deleteConfirmationOpen}

@@ -22,12 +22,16 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
     const [debouncedQuery] = useDebounce(query, 500);
     const [results, setResults] = useState<(SpotifyTrack | SpotifyArtist)[]>([]);
     const [loading, setLoading] = useState(false);
+    const [searchError, setSearchError] = useState('');
 
     useEffect(() => {
         if (debouncedQuery.length < 2) {
             setResults([]);
+            setSearchError('');
             return;
         }
+
+        setSearchError('');
 
         const fetchResults = async () => {
             setLoading(true);
@@ -42,6 +46,7 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
                     console.log('SpotifySearchModal: received artists:', artists);
                     setResults(artists);
                 }
+                setSearchError(spotifyService.lastSearchError || '');
             } finally {
                 setLoading(false);
             }
@@ -172,9 +177,15 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
                                 );
                             })}
                             {!loading && query.length >= 2 && results.length === 0 && (
-                                <Typography color="text.secondary" align="center" mt={4}>
-                                    No se encontraron resultados
-                                </Typography>
+                                searchError ? (
+                                    <Typography color="error" align="center" mt={3} sx={{ px: 2 }}>
+                                        {searchError}
+                                    </Typography>
+                                ) : (
+                                    <Typography color="text.secondary" align="center" mt={4}>
+                                        No se encontraron resultados
+                                    </Typography>
+                                )
                             )}
                         </List>
                     )}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File, Form, Query
 import json
-from pydantic import BaseModel, HttpUrl, EmailStr
+from pydantic import BaseModel, HttpUrl, EmailStr, field_validator
 from typing import List, Optional
 from datetime import datetime
 from src.models.user import User
@@ -12,6 +12,8 @@ from src.api.dtos.user_dtos import UserProfileResponseDTO
 
 
 router = APIRouter()
+
+ALLOWED_RADIUS_KM = {5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100}
 
 # Global persistent cache and semaphore for GeoJSON results to avoid hitting Nominatim too hard
 import os
@@ -196,6 +198,7 @@ class UpdateProfileRequest(BaseModel):
     mi_himno: Optional[MiHimno] = None
     favorite_songs: Optional[List[dict]] = None
     spotify_playlists: Optional[List[str]] = None
+    music_genres: Optional[List[str]] = None
     
     # Contact
     phone: Optional[str] = None
@@ -260,6 +263,13 @@ class UpdateProfileRequest(BaseModel):
     personal_soundtrack: Optional[List[dict]] = None
     personal_soundtrack_text: Optional[str] = None
 
+    @field_validator('distance_preference_km', 'search_radius_km')
+    @classmethod
+    def validate_search_radius(cls, v):
+        if v is not None and v not in ALLOWED_RADIUS_KM:
+            raise ValueError(f"Radio de exploración debe ser uno de {sorted(ALLOWED_RADIUS_KM)} km")
+        return v
+
 
 class UpdateLocationRequest(BaseModel):
     latitude: float
@@ -273,6 +283,13 @@ class UpdateDistanceRequest(BaseModel):
     distance_km: int
     search_states: Optional[List[str]] = None
     search_countries: Optional[List[str]] = None
+
+    @field_validator('distance_km')
+    @classmethod
+    def validate_distance_km(cls, v):
+        if v not in ALLOWED_RADIUS_KM:
+            raise ValueError(f"Radio de exploración debe ser uno de {sorted(ALLOWED_RADIUS_KM)} km")
+        return v
 
 
 @router.get("/me")
@@ -614,13 +631,18 @@ async def update_user_theme(
 async def reverse_geocode(latitude: float, longitude: float):
     """Reverse geocode coordinates to get address using multiple providers"""
     import httpx
-    
+
+    # Photon and BigDataCloud reject or redirect requests without a browser-like
+    # User-Agent (403/307), so send one to avoid bogus 503s.
+    _headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+    }
+
     # Try Photon API first (Komoot's geocoding service, no rate limits)
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=10.0, headers=_headers, follow_redirects=True, trust_env=False) as client:
             response = await client.get(
                 f"https://photon.komoot.io/reverse?lat={latitude}&lon={longitude}",
-                timeout=5.0
             )
             response.raise_for_status()
             data = response.json()
@@ -647,12 +669,13 @@ async def reverse_geocode(latitude: float, longitude: float):
     except Exception as e:
         print(f"Photon geocoding failed: {e}")
     
-    # Fallback to BigDataCloud (free, no API key needed)
+    # Fallback to BigDataCloud (free, no API key needed).
+    # api.bigdatacloud.net now 307-redirects to api-bdc.io; use it directly
+    # so httpx never has to chase a redirect inside raise_for_status().
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=10.0, headers=_headers, follow_redirects=True, trust_env=False) as client:
             response = await client.get(
-                f"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={latitude}&longitude={longitude}&localityLanguage=es",
-                timeout=5.0
+                f"https://api-bdc.io/data/reverse-geocode-client?latitude={latitude}&longitude={longitude}&localityLanguage=es",
             )
             response.raise_for_status()
             data = response.json()

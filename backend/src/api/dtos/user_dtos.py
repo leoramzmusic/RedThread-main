@@ -313,6 +313,7 @@ class UserProfileResponseDTO(BaseModel):
     mi_himno: Optional[dict] = None
     favorite_songs: List[dict] = []
     spotify_playlists: List[str] = []
+    music_genres: List[str] = []
     loops: List[str] = []
     instagram_photos: List[str] = []
     
@@ -463,6 +464,7 @@ class UserProfileResponseDTO(BaseModel):
             mi_himno=profile.mi_himno.model_dump(mode='json') if profile and profile.mi_himno else None,
             favorite_songs=profile.favorite_songs if profile else [],
             spotify_playlists=profile.spotify_playlists if profile else [],
+            music_genres=profile.music_genres if profile else [],
             loops=profile.loops if profile else [],
             instagram_photos=profile.instagram_photos if profile else [],
             show_age=profile.show_age if profile else True,
