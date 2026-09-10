@@ -33,6 +33,7 @@ async def main() -> None:
             "AVISO: TELEGRAM_BOT_TOKEN vacío. "
             "Configúralo en backend/config/local.env."
         )
+        return
     telegram = TelegramClient(
         automation_settings.TELEGRAM_BOT_TOKEN,
         automation_settings.TELEGRAM_API_BASE,
@@ -46,7 +47,7 @@ async def main() -> None:
 
     offset = 0
     print("🤖 Escuchando comandos de Telegram... Ctrl+C para salir.")
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=httpx.Timeout(POLL_TIMEOUT + 5)) as client:
         while True:
             try:
                 updates = await telegram.get_updates(
