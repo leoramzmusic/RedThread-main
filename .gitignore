@@ -41,6 +41,8 @@ Thumbs.db
 .env.*.local
 config/local.env
 config/*.env
+backend/config/local.env
+backend/config/*.env
 
 # Kubernetes Secrets
 k8s/base/secrets.yaml
