@@ -3,7 +3,7 @@ from src.automation.config.settings import AutomationSettings
 
 
 def test_defaults_empty():
-    settings = AutomationSettings()
+    settings = AutomationSettings(_env_file=None)
     assert settings.TELEGRAM_BOT_TOKEN == ""
     assert settings.GITHUB_TOKEN == ""
     assert settings.GITHUB_REPO == ""

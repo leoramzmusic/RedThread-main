@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AutomationSettings(BaseSettings):
@@ -15,10 +15,11 @@ class AutomationSettings(BaseSettings):
     TELEGRAM_API_BASE: str = "https://api.telegram.org"
     GITHUB_API_BASE: str = "https://api.github.com"
 
-    class Config:
-        env_file = "config/local.env"
-        case_sensitive = True
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        env_file="config/local.env",
+        case_sensitive=True,
+        extra="ignore",
+    )
 
     @property
     def allowed_user_ids(self) -> List[int]:
