@@ -21,6 +21,11 @@ from src.automation.telegram.client import TelegramClient  # noqa: E402
 
 POLL_TIMEOUT = 30
 
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except (AttributeError, ValueError):
+    pass
+
 
 async def main() -> None:
     if not automation_settings.TELEGRAM_BOT_TOKEN:
