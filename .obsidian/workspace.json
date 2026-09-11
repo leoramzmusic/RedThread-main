@@ -13,15 +13,15 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "architecture/infra_architecture.canvas",
+                "file": "architecture/care_algorithm.canvas",
                 "viewState": {
-                  "x": -520,
-                  "y": -455,
-                  "zoom": 0
+                  "x": 80,
+                  "y": -55,
+                  "zoom": -1.4134953344704384
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "infra_architecture"
+              "title": "care_algorithm"
             }
           }
         ]
@@ -102,7 +102,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "architecture/infra_architecture.canvas",
+                "file": "architecture/care_algorithm.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -192,22 +192,31 @@
   },
   "active": "d3636e66fc7ba69f",
   "lastOpenFiles": [
+    "architecture/backend_api_architecture.canvas",
+    "architecture/infra_architecture.canvas",
+    "frontend/src/components/landing/RedThreadLogo.tsx",
+    "frontend/src/components/landing",
+    "docs/UX_UI_BACKLOG.md",
+    "docs/design/mockups/root-portal.html",
+    "docs/UX_UI_STYLE_GUIDE.md",
+    "docs/design/design-dna.json",
+    "docs/design/mockups",
+    "docs/design",
+    "backend/venv/Lib/site-packages/anyio/abc/__pycache__/_resources.cpython-312-pytest-8.3.4.pyc",
+    "backend/venv/Lib/site-packages/anyio/_core/__pycache__/_typedattr.cpython-312-pytest-8.3.4.pyc",
+    "backend/venv/Lib/site-packages/anyio/abc/__pycache__/_streams.cpython-312-pytest-8.3.4.pyc",
+    "backend/venv/Lib/site-packages/anyio/__pycache__/to_thread.cpython-312-pytest-8.3.4.pyc",
+    "docs/AUTOMATION_SETUP.md",
+    "docs/superpowers/plans/2026-09-10-telegram-github-copilot-automation.md",
     "docs/superpowers/specs/2026-09-10-telegram-github-copilot-automation-design.md",
     "architecture/frontend_architecture.canvas",
     "architecture/data_models_architecture.canvas",
     "architecture/care_algorithm.canvas",
-    "architecture/backend_api_architecture.canvas",
     "architecture/ARCHITECTURE_GRAPH.md",
     "architecture/services_architecture.canvas",
-    "backend/src/api/geojson_cache.json.tmp",
-    "frontend/src/utils/radius.ts",
-    "backend/src/services/__pycache__/username_service.cpython-312.pyc",
     "architecture/redthread_architecture.canvas",
-    "architecture/infra_architecture.canvas",
     "VERSIONING_GUIDE.md",
     "docs/superpowers/specs/2026-09-09-profile-help-tips-design.md",
-    "docs/superpowers/specs",
-    "docs/superpowers",
     "backend/static/uploads/3f3c554f-eedd-4c32-aa46-1c6e6ec61c23.jpg",
     "backend/static/uploads/ca903f57-e3d1-4046-9152-b7888081942f.jpg",
     "backend/static/uploads/92fb6b35-792c-41eb-9201-fcabdc8c3e44.jpg",
@@ -218,11 +227,6 @@
     "backend/static/uploads/f1b324a1-3d6b-459b-b71f-187c3d5c03c6.jpg",
     "backend/static/uploads/b3d8afc8-0067-49c5-8e7d-8506e2d0dd51.jpg",
     "backend/static/uploads/be32a878-7f3a-451b-84e6-7904abb9feec.jpg",
-    "backend/venv/Lib/site-packages/anyio/_core/__pycache__/_fileio.cpython-312.pyc",
-    "backend/seed/tmp_inspect_dbs.py",
-    "backend/seed/tmp_populate_options.py",
-    "backend/seed/__pycache__/seed_data.cpython-312.pyc",
-    "backend/seed/__pycache__",
     "TEST_CREDENTIALS.md",
     "TESSERACT_INSTALLATION.md",
     "SUBSCRIPTION_TIERS_TEST.md",
@@ -242,11 +246,6 @@
     "OBSERVABILITY_SETUP.md",
     "OCR_IMPLEMENTATION_GUIDE.md",
     "OCR_SYSTEM_COMPLETE.md",
-    "README.md",
-    "RESUMEN_USUARIOS_PRUEBA.md",
-    "TEST_USERS.md",
-    "ARCHITECTURE_GRAPH.md",
-    "frontend/node_modules/@gsap/react/README.md",
-    "knowledge/adrs/ADR-006-kafka-event-bus.md"
+    "README.md"
   ]
 }

@@ -146,7 +146,6 @@ from src.api import (
 )
 from src.api.admin import auth as admin_auth, care_analytics  # CARE Analytics
 from src.routers import boost  # Boost System
-from src.automation import routes as automation_routes  # Automation pipeline
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(spotify_auth.router, prefix="/api/auth/spotify", tags=["Spotify Auth"]) # New
@@ -179,7 +178,7 @@ app.include_router(media.router, prefix="/media", tags=["Media"])  # New
 app.include_router(icebreaker.router, prefix="/api/icebreaker", tags=["Icebreaker"])
 app.include_router(games.router, prefix="/api/games", tags=["Games"])
 app.include_router(boost.router, prefix="/boost", tags=["Boost"])  # Boost System
-app.include_router(automation_routes.router, prefix="/automation", tags=["Automation"])
+
 
 
 # Admin Portal Routers

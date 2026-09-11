@@ -9,7 +9,6 @@ import {
     Tab,
     Card,
     CardContent,
-    CardMedia,
     IconButton,
     CircularProgress,
     Dialog,
@@ -24,6 +23,7 @@ import AdminLayout from '../../../components/layout/AdminLayout';
 import appearanceService from '../../../services/appearanceService';
 import { AppearanceResource, AppearanceType, Platform } from '../../../types/appearance';
 import { getMediaUrl } from '../../../utils/media';
+import { BRAND_LOGO_KIT, DEFAULT_LOGO_BY_VARIANT, BrandLogoVariant } from '../../../config/brandAssets';
 
 export default function LogosPage() {
     const [tabIndex, setTabIndex] = useState(0); // 0: Principal, 1: Dark Mode, 2: Mobile
@@ -49,8 +49,7 @@ export default function LogosPage() {
         }
     };
 
-    const getVariantFromTab = (tab: number) => {
-        if (tab === 0) return 'main';
+    const getVariantFromTab = (tab: number): BrandLogoVariant => {
         if (tab === 1) return 'dark';
         if (tab === 2) return 'mobile';
         return 'main';
@@ -99,6 +98,33 @@ export default function LogosPage() {
                         </Button>
                     </Box>
 
+                    <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                        Kit de marca
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        Archivos del kit en img/assets, listos para Principal, Dark Mode y Mobile.
+                    </Typography>
+                    <Grid container spacing={3} sx={{ mb: 4 }}>
+                        {BRAND_LOGO_KIT.map((asset) => (
+                            <Grid item xs={12} sm={6} md={4} key={asset.id}>
+                                <Card sx={{ bgcolor: asset.variant === 'dark' ? '#1A1B1E' : '#fff' }}>
+                                    <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', height: 200, alignItems: 'center' }}>
+                                        <img src={asset.src} alt={asset.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                                    </Box>
+                                    <CardContent>
+                                        <Typography variant="subtitle2">{asset.title}</Typography>
+                                        <Typography variant="caption" color={asset.variant === 'dark' ? 'grey.400' : 'text.secondary'} display="block">
+                                            {asset.description}
+                                        </Typography>
+                                        <Typography variant="caption" color="primary.main">
+                                            {asset.variant === 'main' ? 'Principal' : asset.variant === 'dark' ? 'Dark Mode' : 'Mobile'}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+
                     <Paper sx={{ width: '100%', mb: 2 }}>
                         <Tabs value={tabIndex} onChange={(e, v) => setTabIndex(v)} centered>
                             <Tab label="Principal (Light)" />
@@ -109,6 +135,24 @@ export default function LogosPage() {
 
                     {loading ? <CircularProgress /> : (
                         <Grid container spacing={3}>
+                            {filteredResources.length === 0 && (
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <Card sx={{ bgcolor: tabIndex === 1 ? '#1A1B1E' : '#fff' }}>
+                                        <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', height: 200, alignItems: 'center' }}>
+                                            <img
+                                                src={DEFAULT_LOGO_BY_VARIANT[getVariantFromTab(tabIndex)]}
+                                                alt="Logo por defecto"
+                                                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                            />
+                                        </Box>
+                                        <CardContent>
+                                            <Typography variant="caption" color={tabIndex === 1 ? 'grey.400' : 'text.secondary'}>
+                                                Por defecto (kit de marca)
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            )}
                             {filteredResources.map((r) => (
                                 <Grid item xs={12} sm={6} md={4} key={r._id}>
                                     <Card sx={{ bgcolor: tabIndex === 1 ? '#333' : '#fff' }}>
@@ -126,7 +170,6 @@ export default function LogosPage() {
                                     </Card>
                                 </Grid>
                             ))}
-                            {filteredResources.length === 0 && <Typography sx={{ p: 4, width: '100%', textAlign: 'center' }}>No hay logos.</Typography>}
                         </Grid>
                     )}
 

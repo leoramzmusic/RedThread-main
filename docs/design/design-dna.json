@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "name": "RedThread Liquid Glass",
+    "description": "Design DNA de la nueva era de RedThread: interfaz raiz como portal de vidrio liquido. Fusion controlada de iOS 26 (Liquid Glass) y One UI 9 (superficies translucidas con luz ambiental). Minimalista, elegante, futurista-humana. Paleta blanco puro -> grafito, acento azul electrico para accion/tecnologia y rojo destino #E63946 como acento emocional de marca (hilo con la identidad rosa previa).",
+    "source_references": [
+      "User brief 2026-09-10: Liquid Glass + Realismo Digital, minimalista, fusion iOS 26 + One UI 9, blancos/grafito, azul electrico, rojo destino #E63946, movimiento organico tipo vidrio liquido",
+      "ui-ux-pro-max design-system (RedThread): confirma cascada rosa->azul (primario rosa #E11D48 -> azul #2563EB) y Poppins display; se descarta el tono 'vibrant/playful' por la direccion minimalista del usuario"
+    ],
+    "created_at": "2026-09-10"
+  },
+  "design_system": {
+    "color": {
+      "palette_type": "complementary",
+      "primary": { "hex": "#3B82F6", "role": "accion primaria / tecnologia (CTA principal, enlaces, focus, informacion)" },
+      "secondary": { "hex": "#2B2F36", "role": "grafito profundo: texto principal, superficies oscuras, modo oscuro" },
+      "accent": { "hex": "#E63946", "role": "rojo destino: acento emocional de marca (momentos clave, alertas romanticas, enumfasis con significado)" },
+      "neutral": {
+        "scale": ["#FFFFFF", "#F6F7F9", "#ECEEF2", "#D7DBE1", "#9AA1AB", "#6B7280", "#4B5563", "#2B2F36", "#1A1B1E"],
+        "usage": "texto principal #1A1B1E sobre superficies claras; texto secundario #6B7280; texto sobre meta-vidrio nunca por debajo de 4.5:1 (usar #2B2F36 si hace falta); en modo oscuro invertir: fondo #1A1B1E, texto #F6F7F9"
+      },
+      "semantic": {
+        "success": "#16A34A",
+        "warning": "#D97706",
+        "error": "#E63946",
+        "info": "#3B82F6"
+      },
+      "surface": {
+        "background": "#F5F6F8",
+        "card": "rgba(255,255,255,0.62)",
+        "elevated": "rgba(255,255,255,0.82)"
+      },
+      "contrast_strategy": "texto AA sobre vidrio (4.5:1), texto AA en superficies opacas, 3:1 para elementos graficos no textuales y texto grande; vidrio se evalua SOLO con el fondo real; rojo destino #E63946 (4.05:1 sobre blanco) se reserva para relleno/ui grande, texto pequeno usa #B4232C (~6:1)"
+    },
+    "typography": {
+      "type_scale": {
+        "display": { "size": "4.5rem/72px", "weight": 600, "line_height": 1.05, "tracking": "-0.03em" },
+        "heading_1": { "size": "3.25rem/52px", "weight": 600, "line_height": 1.12, "tracking": "-0.025em" },
+        "heading_2": { "size": "2.25rem/36px", "weight": 600, "line_height": 1.2, "tracking": "-0.02em" },
+        "heading_3": { "size": "1.5rem/24px", "weight": 600, "line_height": 1.3, "tracking": "-0.01em" },
+        "body": { "size": "1.0625rem/17px", "weight": 400, "line_height": 1.6, "tracking": "0em" },
+        "body_small": { "size": "0.9375rem/15px", "weight": 400, "line_height": 1.55, "tracking": "0em" },
+        "caption": { "size": "0.8125rem/13px", "weight": 500, "line_height": 1.4, "tracking": "0.01em" },
+        "overline": { "size": "0.75rem/12px", "weight": 600, "line_height": 1.3, "tracking": "0.08em" }
+      },
+      "font_families": {
+        "heading": "Poppins, Inter, system-ui, sans-serif",
+        "body": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+        "mono": "'SF Mono', ui-monospace, Menlo, Consolas, monospace"
+      },
+      "font_style_notes": "humanista moderna con toques geometricos; display con tracking negativo para transmitir precision calida; la cursiva Dancing Script de la marca anterior queda RETIRADA del sistema UI (solo micro-momentos emocionales opcionales y explicitamente aprobados)"
+    },
+    "spacing": {
+      "base_unit": 8,
+      "scale": [4, 8, 12, 16, 24, 32, 40, 48, 64, 96],
+      "content_density": "comfortable",
+      "section_rhythm": "hero 128->96->72px segun profundidad; contraste de ritmo via espaciado amplio, nunca via densidad"
+    },
+    "layout": {
+      "grid_system": "12 columnas fluidas con gutters adaptativos",
+      "max_content_width": 1200,
+      "columns": 12,
+      "gutter": 24,
+      "breakpoints": [375, 768, 1024, 1440],
+      "alignment_tendency": "hero centrado simetrico + tarjetas con ligero offset asimetrico (ufos de vidrio)"
+    },
+    "shape": {
+      "border_radius": { "small": 12, "medium": 20, "large": 28, "pill": 999 },
+      "border_usage": "borde sutil de 1px como filo de vidrio rgba(255,255,255,0.55) + highlight interior superior; solo en inputs el borde es mas definido",
+      "divider_style": "hairline rgba(26,27,30,0.08); en modo oscuro rgba(255,255,255,0.1)"
+    },
+    "elevation": {
+      "shadow_style": "difusa ambiental + filo de luz interior (crisp glass highlight)",
+      "levels": {
+        "low": "0 2px 8px rgba(26,27,30,0.06), inset 0 1px 0 rgba(255,255,255,0.55)",
+        "medium": "0 12px 32px rgba(26,27,30,0.10), inset 0 1px 0 rgba(255,255,255,0.60)",
+        "high": "0 24px 64px rgba(26,27,30,0.16), inset 0 1px 0 rgba(255,255,255,0.65)"
+      },
+      "depth_cues": "sombras difusas + blur/glass + superposicion de capas"
+    },
+    "iconography": {
+      "style": "outline redondeado",
+      "stroke_weight": 1.8,
+      "size_scale": [16, 20, 24, 32, 48],
+      "preferred_set": "Phosphor icons (fallback Heroicons); sin emojis como iconos estructurales; imagenes vectoriales siempre"
+    },
+    "motion": {
+      "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+      "duration_scale": { "micro": 140, "normal": 280, "macro": 640 },
+      "entrance_pattern": "ascenso liquido escalonado: translateY(24px) + scale(0.98) + blur(6px)->sharp; hero palabra a palabra; cards con ligero overshoot (1.02) que vuelve a 1",
+      "exit_pattern": "salida rapida y corta: fade + scale(0.98), 160ms",
+      "philosophy": "el movimiento imita vidrio/viscosidad: glides largos, eases generosos, sin fisica de juguete; micro-interacciones solo donde aportan significado; respeto estricto a prefers-reduced-motion"
+    },
+    "components": {
+      "button_style": "pildora (radius pill). Variantes: primaria (gradiente azul 135deg #3B82F6->#2563EB, texto blanco, shadow azul ambiental), destino (rojo #E63946, uso limitado/con significado), vidrio (rgba(255,255,255,0.65)+blur+borde filo), outline (1.5px borde grafito suave, relleno transparente). Hover: translateY(-2px)+glow; active: scale(0.98); focus: ring azul 2px offset 3px",
+      "input_style": "vidrio esmerilado rgba(255,255,255,0.5)+blur(20px), radius 16, borde superior interior blanco, focus ring azul + superficie elevada, label flotante",
+      "card_style": "vidrio radius 28, padding 28, hover: radius morph 28->24, blur 20->18, translateY(-6px), sheen diagonal que recorre la superficie (efecto presion liquida)",
+      "navigation_pattern": "barra superior flotante estilo pildora (backdrop blur), con selector segmentado de idioma en vidrio",
+      "modal_style": "vidrio apilado sobre scrim blur; movil: hoja inferior que emerge",
+      "list_style": "filas de vidrio con hairline divider",
+      "component_notes": "todo componente lee luz ambiental de fondo (los orbis atraviesan el vidrio); el vidrio NO es un color fijo, es una receta composicion transparente + blur + filo"
+    }
+  },
+  "design_style": {
+    "aesthetic": {
+      "mood": ["calm", "precise", "elegant", "warm-futuristic", "human"],
+      "visual_metaphor": "pelicula de vidrio liquido a traves de la cual viaja luz ambiental; superficies que se hunden y reflejan al tocar, como el Control Center de iOS iluminado por detras",
+      "era_influence": "iOS 26 Liquid Glass + One UI 9",
+      "genre": "portal tecnosocial premium-minimal",
+      "personality_traits": ["confident", "approachable", "meticulous", "warm"],
+      "adjectives": ["translucent", "fluid", "serene", "sharp", "human"]
+    },
+    "visual_language": {
+      "complexity": "minimal",
+      "ornamentation": "subtle accents",
+      "whitespace_usage": "generous, airy",
+      "visual_weight_distribution": "centro ligero, base anclada",
+      "focal_strategy": "single hero element",
+      "contrast_level": "medium-high (texto alto, decoracion baja)",
+      "texture_usage": "sheen de vidrio + luz caustica suave, sin ruido ni grano"
+    },
+    "composition": {
+      "hierarchy_method": "tipografia + aislamiento espacial + peso del color",
+      "balance_type": "hero simetrico, tarjetas balanceadas con leve asimetria",
+      "flow_direction": "vertical top-down con quiebres horizontales en hero",
+      "grouping_strategy": "clusters por proximidad dentro de contenedores de vidrio",
+      "negative_space_role": "primaria: el espacio vacio es el lienzo por el que el vidrio lee la luz"
+    },
+    "imagery": {
+      "photo_treatment": "profundidad suave, ligero parallax, calidez desaturada cuando esta detras del vidrio",
+      "illustration_style": "lineal fina, duotono azul/rojo, sin rellenos pesados",
+      "graphic_elements": "fuentes de luz redeadas (orbis), marcos hairline, motivo del hilo (nodulos SVG) como firma de marca",
+      "pattern_usage": "ninguno o highlights radiales susurrados",
+      "image_shape": "recortes rounded 24 dentro de marcos de vidrio"
+    },
+    "interaction_feel": {
+      "feedback_style": "highlight translucido instantaneo + elevacion suave",
+      "hover_behavior": "liquido: el blur se profundiza, un sheen recorre la superficie, el radius morfea, translateY(-6px)",
+      "transition_personality": "smooth glide con overshoot calmado",
+      "loading_style": "spinner de vidrio con vela radial + skeleton shimmer en glass",
+      "microinteraction_density": "moderate: micro-interacciones solo donde aportan significado"
+    },
+    "brand_voice_in_ui": {
+      "tone": "calida, humana, concisa, optimista-tecnologica",
+      "formality": "casual-profesional",
+      "cta_style": "imperativo directo y amable (Comenzar, Unete, Entrar)",
+      "empty_state_approach": "escena de vidrio invitante con una sola accion clara",
+      "error_tone": "calma, constructiva, humana; el rojo destino nunca grita"
+    }
+  },
+  "visual_effects": {
+    "overview": {
+      "effect_intensity": "subtle-accent (moderate en hero)",
+      "performance_tier": "lightweight (CSS + vanilla JS); Canvas 2D opcional para orbis si se desea mas riqueza",
+      "fallback_strategy": "dispositivos de baja gama o prefers-reduced-motion: vidrio se degrada a rgba opaco (+blur reducido), orbis se congelan en una posicion estetica, secuencias JS desactivadas",
+      "primary_technology": "CSS + vanilla JS"
+    },
+    "background_effects": {
+      "type": "mesh-gradient (orbis de luz ambiental)",
+      "description": "3-4 orbis radiales difuminados (azul hielo, azul electrico, rosa polvo heredado suavizado, blanco) que viajan lentamente detras del contenido; el vidrio los refracta",
+      "technology": "CSS gradient + @keyframes (opcional Canvas 2D)",
+      "params": {
+        "color_palette": ["#BFDBFE", "#E0E7FF", "#FFE4E6", "#FFFFFF", "#A5C8FF"],
+        "speed": "30s loop",
+        "density": 4,
+        "opacity": 0.55,
+        "blend_mode": "screen (light) / soft-light (dark)"
+      }
+    },
+    "particle_systems": { "enabled": false },
+    "3d_elements": { "enabled": false },
+    "shader_effects": { "enabled": false },
+    "scroll_effects": {
+      "parallax": {
+        "enabled": true,
+        "layers": 2,
+        "depth_range": "[-20px, 20px]",
+        "speed_curve": "linear scrub"
+      },
+      "scroll_triggered_animations": {
+        "enabled": true,
+        "trigger_points": ["hero 0%", "features 24%", "cta 70%"],
+        "animation_type": "fade-up + blur-in escalonado",
+        "scrub_behavior": "triggered"
+      },
+      "scroll_morphing": { "enabled": false }
+    },
+    "text_effects": {
+      "type": "split-word-animate",
+      "description": "subtitulo del hero sube palabra a palabra con blur(6px)->sharp y translateY(24px)->0; sensacion de vidrio emergiendo de la luz",
+      "technology": "vanilla JS span por palabra + CSS transition/keyframes",
+      "params": {
+        "split_strategy": "by-word",
+        "animation_per_unit": "560ms",
+        "stagger": 60,
+        "effect_style": "translateY + blur-in"
+      }
+    },
+    "cursor_effects": { "enabled": false },
+    "image_effects": { "enabled": false },
+    "glassmorphism_neumorphism": {
+      "enabled": true,
+      "style": "glass + frosted-layers",
+      "params": {
+        "blur_radius": "20px ui / 32px panel hero",
+        "transparency": "0.55-0.72",
+        "border_treatment": "1px rgba(255,255,255,0.55) + highlight superior interior",
+        "shadow_type": "ambient difusa",
+        "light_source_angle": "45º (superior izquierda)"
+      }
+    },
+    "canvas_drawings": { "enabled": false },
+    "svg_animations": {
+      "enabled": true,
+      "type": "logo-reveal + decorative-loop",
+      "description": "motivo del hilo (nodulos) se dibuja en la entrada del hero y pulsa sutilmente como firma",
+      "params": {
+        "animation_method": "stroke-dashoffset",
+        "path_morphing": false,
+        "stroke_animation": true,
+        "filter_effects": false
+      }
+    },
+    "composite_notes": "los orbis viven detras de todo y se refractan a traves del panel principal de vidrio; el sheen de hover recorre la tarjeta como presion liquida; el blur se degrada a rgba opaco en baja gama; reduced-motion limita todo a fades simples sin blur animado"
+  }
+}

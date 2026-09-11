@@ -14,6 +14,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import appearanceService from '../services/appearanceService';
 import { AppearanceType } from '../types/appearance';
 import { getMediaUrl } from '../utils/media';
+import RedThreadLogo from '../components/landing/RedThreadLogo';
 
 
 // Translation content for all languages (fallback)
@@ -172,8 +173,8 @@ export default function Home() {
   const [cmsConfig, setCmsConfig] = useState<any>(null);
   const [heroImages, setHeroImages] = useState<string[]>([]);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
-  const [isLoadingCms, setIsLoadingCms] = useState(true);
   const [heroIcon, setHeroIcon] = useState<string | null>(null);
+  const [isLoadingCms, setIsLoadingCms] = useState(true);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -535,23 +536,30 @@ export default function Home() {
             }}
           >
             <Box
+              className="rt-hero-logo"
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 mb: 2,
+                minHeight: 130,
               }}
             >
-              <img
-                className="rt-hero-logo"
-                src={heroIcon || "/imagotipo.png"}
-                alt="Red Thread"
-                style={{
-                  height: '120px',
-                  width: 'auto',
-                  maxWidth: '100%',
-                }}
-              />
+              {heroIcon && heroIcon !== '/imagotipo.png' ? (
+                <img
+                  className="rt-hero-logo"
+                  src={heroIcon}
+                  alt="Red Thread"
+                  style={{ height: '120px', width: 'auto', maxWidth: '100%' }}
+                />
+              ) : (
+                <RedThreadLogo
+                  className="rt-hero-logo"
+                  variant="mark"
+                  aria-label="Red Thread (RETH)"
+                  style={{ height: 120, width: 'auto', maxWidth: '100%' }}
+                />
+              )}
             </Box>
             <Typography
               component="h1"
@@ -595,17 +603,24 @@ export default function Home() {
                 size="large"
                 onClick={() => router.push('/auth/register')}
                 sx={{
-                  bgcolor: 'white',
-                  color: cmsConfig?.gradientStart || '#9F1239',
+                  position: 'relative',
+                  bgcolor: 'rgba(255,255,255,0.16)',
+                  backdropFilter: 'blur(18px)',
+                  WebkitBackdropFilter: 'blur(18px)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.55)',
+                  boxShadow:
+                    'inset 0 1px 0 rgba(255,255,255,0.7), 0 14px 34px rgba(88, 8, 34, 0.38), 0 4px 10px rgba(0,0,0,0.22)',
+                  overflow: 'hidden',
                   '&:hover': {
-                    bgcolor: '#FFF1F2',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 14px 32px rgba(136, 19, 55, 0.3)',
+                    bgcolor: 'rgba(255,255,255,0.26)',
+                    transform: 'translateY(-3px)',
+                    boxShadow:
+                      'inset 0 1px 0 rgba(255,255,255,0.85), 0 22px 46px rgba(224, 72, 82, 0.5), 0 6px 14px rgba(0,0,0,0.24)',
                   },
                   px: 4,
                   py: 1.5,
-                  boxShadow: '0 8px 22px rgba(88, 8, 34, 0.25)',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.25s ease',
                 }}
               >
                 {displayText.ctaPrimary}
@@ -615,17 +630,22 @@ export default function Home() {
                 size="large"
                 onClick={() => router.push('/auth/login')}
                 sx={{
-                  borderColor: 'rgba(255,255,255,0.9)',
+                  position: 'relative',
+                  borderColor: 'rgba(255,255,255,0.6)',
                   color: 'white',
+                  bgcolor: 'rgba(255,255,255,0.10)',
+                  backdropFilter: 'blur(18px)',
+                  WebkitBackdropFilter: 'blur(18px)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 26px rgba(0,0,0,0.16)',
+                  transition: 'all 0.25s ease',
                   '&:hover': {
-                    borderColor: 'white',
-                    bgcolor: 'rgba(255,255,255,0.14)',
+                    bgcolor: 'rgba(255,255,255,0.22)',
+                    borderColor: 'rgba(255,255,255,0.95)',
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 10px 26px rgba(0,0,0,0.18)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 16px 34px rgba(0,0,0,0.22)',
                   },
                   px: 4,
                   py: 1.5,
-                  transition: 'all 0.2s ease',
                 }}
               >
                 {displayText.ctaSecondary}
@@ -672,8 +692,7 @@ export default function Home() {
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <FavoriteIcon sx={{ fontSize: 60, color: '#E11D48', mb: 2 }} />
-                    <Typography
+                    <FavoriteIcon sx={{ fontSize: 60, color: '#3B82F6', mb: 2 }} />                    <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
@@ -722,7 +741,7 @@ export default function Home() {
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <ChatIcon sx={{ fontSize: 60, color: '#EA580C', mb: 2 }} />
+                    <ChatIcon sx={{ fontSize: 60, color: '#8B5CF6', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
@@ -772,7 +791,7 @@ export default function Home() {
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <RadarIcon sx={{ fontSize: 60, color: '#E11D48', mb: 2 }} />
+                    <RadarIcon sx={{ fontSize: 60, color: '#F59E0B', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
@@ -822,7 +841,7 @@ export default function Home() {
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <GroupsIcon sx={{ fontSize: 60, color: '#EA580C', mb: 2 }} />
+                    <GroupsIcon sx={{ fontSize: 60, color: '#E63946', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
@@ -867,7 +886,28 @@ export default function Home() {
           }}
         >
           <Typography variant="body2" sx={{ fontFamily: 'Open Sans, Inter, sans-serif', letterSpacing: '0.04em' }}>
-            {displayText.footer}
+            {displayText.footer.split(/([❤♥])/).map((chunk: string, idx: number) =>
+              /[❤♥]/.test(chunk) ? (
+                <Box
+                  key={idx}
+                  component="span"
+                  aria-hidden="true"
+                  sx={{
+                    display: 'inline-block',
+                    color: '#E63946',
+                    fontSize: '1.15em',
+                    lineHeight: 1,
+                    verticalAlign: '-0.08em',
+                    mx: 0.15,
+                    filter: 'drop-shadow(0 1px 2px rgba(230, 57, 70, 0.4))',
+                  }}
+                >
+                  ♥
+                </Box>
+              ) : (
+                chunk
+              )
+            )}
           </Typography>
         </Box>
       </Box>

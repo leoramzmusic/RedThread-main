@@ -14,6 +14,12 @@ import { AppearanceType, Platform, AppearanceResource } from '../../../types/app
 import Image from 'next/image';
 import { getMediaUrl } from '../../../utils/media';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RedThreadLogo from '../../../components/landing/RedThreadLogo';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ChatIcon from '@mui/icons-material/Chat';
+import RadarIcon from '@mui/icons-material/Radar';
+import GroupsIcon from '@mui/icons-material/Groups';
+import Head from 'next/head';
 
 // --- Configuration Types ---
 
@@ -82,9 +88,9 @@ const DEFAULT_CONTENT: TranslatedContent = {
 };
 
 const DEFAULT_THEME: LandingThemeConfig = {
-    gradientStart: '#FF6B6B',
-    gradientEnd: '#4ECDC4',
-    subtitleFontSize: 1.5,
+    gradientStart: '#881337',
+    gradientEnd: '#FB7185',
+    subtitleFontSize: 5,
     subtitleColor: '#FFFFFF',
     savedGradients: [],
     translations: {
@@ -130,6 +136,19 @@ const DEFAULT_THEME: LandingThemeConfig = {
         }
     }
 };
+
+const PRESET_GRADIENTS: Array<{ id: string; name: string; start: string; end: string; subtitleColor: string }> = [
+    { id: 'preset-cold', name: 'Frío (Azul/Violeta)', start: '#1A237E', end: '#7B1FA2', subtitleColor: '#FFFFFF' },
+    { id: 'preset-graphite', name: 'Neutro (Grafito/Negro)', start: '#212121', end: '#000000', subtitleColor: '#FFFFFF' },
+    { id: 'preset-warm', name: 'Cálido (Naranja/Dorado)', start: '#FF8E53', end: '#FFD54F', subtitleColor: '#3E2723' },
+    { id: 'preset-light', name: 'Claro (Blanco/Gris)', start: '#FFFFFF', end: '#F5F5F5', subtitleColor: '#212121' },
+    { id: 'preset-love-romantic', name: 'Amor romántico', start: '#FF6B8B', end: '#FFB7C5', subtitleColor: '#212121' },
+    { id: 'preset-love-passion', name: 'Pasión y deseo', start: '#D32F2F', end: '#880E4F', subtitleColor: '#FFFFFF' },
+    { id: 'preset-love-tenderness', name: 'Ternura y pureza', start: '#FFE0E0', end: '#FFFFFF', subtitleColor: '#212121' },
+    { id: 'preset-love-spiritual', name: 'Conexión espiritual', start: '#7B1FA2', end: '#D32F2F', subtitleColor: '#FFFFFF' },
+    { id: 'preset-love-eternal', name: 'Amor eterno', start: '#FF8E53', end: '#FFD54F', subtitleColor: '#3E2723' },
+    { id: 'preset-love-juvenile', name: 'Amor juvenil', start: '#FF4081', end: '#F50057', subtitleColor: '#FFFFFF' },
+];
 
 type Language = 'es' | 'en' | 'pt' | 'fr';
 
@@ -204,7 +223,7 @@ export default function BannersPage() {
                         ...DEFAULT_THEME,
                         gradientStart: fetchedData.gradientStart || DEFAULT_THEME.gradientStart,
                         gradientEnd: fetchedData.gradientEnd || DEFAULT_THEME.gradientEnd,
-                        subtitleFontSize: fetchedData.subtitleFontSize || DEFAULT_THEME.subtitleFontSize,
+                        subtitleFontSize: Math.max(fetchedData.subtitleFontSize || DEFAULT_THEME.subtitleFontSize, 4.6),
                         subtitleColor: fetchedData.subtitleColor || DEFAULT_THEME.subtitleColor,
                         translations: {
                             ...DEFAULT_THEME.translations,
@@ -224,6 +243,7 @@ export default function BannersPage() {
                     setConfig(prev => ({
                         ...prev,
                         ...fetchedData,
+                        subtitleFontSize: Math.max(fetchedData.subtitleFontSize || prev.subtitleFontSize || DEFAULT_THEME.subtitleFontSize, 4.6),
                         savedGradients: fetchedData.savedGradients || [],
                         translations: {
                             ...prev.translations,
@@ -313,8 +333,55 @@ export default function BannersPage() {
         }
     };
 
-    const handleApplyGradient = (gradient: { start: string, end: string }) => {
-        setConfig({ ...config, gradientStart: gradient.start, gradientEnd: gradient.end });
+    const handleApplyGradient = async (gradient: { start: string, end: string }) => {
+        const newConfig = { ...config, gradientStart: gradient.start, gradientEnd: gradient.end };
+        setConfig(newConfig);
+
+        // Persist immediately so the user portal reflects the change
+        if (themeResource) {
+            try {
+                await appearanceService.updateResource(themeResource._id!, {
+                    metadata: newConfig,
+                    is_active: true
+                });
+            } catch (error) {
+                console.error("Error applying gradient:", error);
+                setSnackbar({ open: true, message: 'Error al aplicar el gradiente', severity: 'error' });
+            }
+        }
+    };
+
+    const handleApplyPreset = async (preset: { id: string; name: string; start: string; end: string; subtitleColor: string }) => {
+        const alreadySaved = config.savedGradients?.some(g => g.start === preset.start && g.end === preset.end);
+        const updatedGradients = alreadySaved
+            ? (config.savedGradients || [])
+            : [...(config.savedGradients || []), {
+                id: preset.id,
+                name: preset.name,
+                start: preset.start,
+                end: preset.end
+            }];
+        const newConfig: LandingThemeConfig = {
+            ...config,
+            gradientStart: preset.start,
+            gradientEnd: preset.end,
+            subtitleColor: preset.subtitleColor,
+            savedGradients: updatedGradients
+        };
+
+        setConfig(newConfig);
+
+        if (themeResource) {
+            try {
+                await appearanceService.updateResource(themeResource._id!, {
+                    metadata: newConfig,
+                    is_active: true
+                });
+            } catch (error) {
+                console.error("Error applying preset:", error);
+                setSnackbar({ open: true, message: 'Error al aplicar el fondo predefinido', severity: 'error' });
+            }
+        }
     };
 
     const handleDeleteGradient = async (id: string, e: React.MouseEvent) => {
@@ -459,6 +526,14 @@ export default function BannersPage() {
 
     return (
         <AdminLayout>
+            <Head>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap"
+                    rel="stylesheet"
+                />
+            </Head>
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={6000}
@@ -493,7 +568,7 @@ export default function BannersPage() {
                                     <Typography variant="caption" fontWeight="bold">Tamaño Título (rem)</Typography>
                                     <Slider
                                         value={config.subtitleFontSize}
-                                        min={0.8} max={4} step={0.1}
+                                        min={4.6} max={8} step={0.1}
                                         onChange={(e, v) => setConfig({ ...config, subtitleFontSize: v as number })}
                                         valueLabelDisplay="auto"
                                         sx={{ color: '#FF6B6B' }}
@@ -554,6 +629,52 @@ export default function BannersPage() {
                                     </Box>
                                 </Grid>
                             </Grid>
+
+                            {/* Preset Backgrounds */}
+                            <Box mt={3}>
+                                <Typography variant="caption" color="text.secondary" mb={1} display="block">Fondos predefinidos:</Typography>
+                                <Grid container spacing={1}>
+                                    {PRESET_GRADIENTS.map((preset) => {
+                                        const isActive = config.gradientStart === preset.start && config.gradientEnd === preset.end;
+                                        return (
+                                            <Grid item xs={6} key={preset.id}>
+                                                <Paper
+                                                    onClick={() => handleApplyPreset(preset)}
+                                                    variant="outlined"
+                                                    sx={{
+                                                        p: 1,
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 1,
+                                                        border: isActive ? '2px solid #881337' : '1px solid #ddd',
+                                                        '&:hover': { bgcolor: 'action.hover' }
+                                                    }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            width: 40,
+                                                            height: 40,
+                                                            borderRadius: 1,
+                                                            flexShrink: 0,
+                                                            background: `linear-gradient(135deg, ${preset.start} 0%, ${preset.end} 100%)`,
+                                                            border: '1px solid #ddd'
+                                                        }}
+                                                    />
+                                                    <Box sx={{ minWidth: 0 }}>
+                                                        <Typography variant="caption" fontWeight="bold" display="block" noWrap>
+                                                            {preset.name}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontFamily: 'monospace', fontSize: '0.65rem' }} noWrap>
+                                                            {preset.start} → {preset.end}
+                                                        </Typography>
+                                                    </Box>
+                                                </Paper>
+                                            </Grid>
+                                        );
+                                    })}
+                                </Grid>
+                            </Box>
 
                             {/* Saved Gradients List */}
                             {config.savedGradients && config.savedGradients.length > 0 && (
@@ -722,7 +843,7 @@ export default function BannersPage() {
                                 disabled={saving}
                                 fullWidth
                             >
-                                {saving ? "Guardando..." : "Guardar Todos los Idiomas"}
+                                {saving ? "Guardando..." : "Guardar Cambios"}
                             </Button>
                         </Box>
                     </Grid>
@@ -747,11 +868,20 @@ export default function BannersPage() {
                                     justifyContent: 'center'
                                 }}
                             >
-                                <img
-                                    src={previewIcon || '/imagotipo.png'}
-                                    alt="Hero Icon"
-                                    style={{ height: '80px', objectFit: 'contain' }}
-                                />
+                                {previewIcon && previewIcon !== '/imagotipo.png' ? (
+                                    <img
+                                        src={previewIcon}
+                                        alt="Hero Icon"
+                                        style={{ height: '80px', objectFit: 'contain' }}
+                                    />
+                                ) : (
+                                    <RedThreadLogo
+                                        className="rt-hero-logo"
+                                        variant="mark"
+                                        aria-label="Red Thread (RETH)"
+                                        style={{ height: 80, width: 'auto', maxWidth: '100%' }}
+                                    />
+                                )}
                             </Box>
                         </Paper>
 
@@ -833,79 +963,199 @@ export default function BannersPage() {
                                 </Typography>
                             </Box>
 
-                            {/* Mockup Container */}
+                            {/* Mockup Container — replica fiel del landing real (index.tsx) */}
                             <Box
                                 sx={{
-                                    height: '400px',
+                                    height: '480px',
                                     overflowY: 'auto',
                                     position: 'relative',
+                                    textAlign: 'center',
                                     color: 'white',
                                     background: previewBanner
-                                        ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${previewBanner})`
+                                        ? `linear-gradient(rgba(35, 8, 20, 0.55), rgba(35, 8, 20, 0.68)), url(${previewBanner})`
                                         : `linear-gradient(135deg, ${config.gradientStart} 0%, ${config.gradientEnd} 100%)`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    transition: 'background-image 0.5s ease',
-                                    textAlign: 'center',
-                                    p: 2
+                                    backgroundAttachment: 'fixed',
+                                    transition: 'background 0.5s ease'
                                 }}
                             >
+                                {/* Glow blobs decorativos */}
+                                <Box
+                                    aria-hidden
+                                    sx={{
+                                        position: 'absolute',
+                                        top: -120,
+                                        right: -80,
+                                        width: { xs: 220, md: 340 },
+                                        height: { xs: 220, md: 340 },
+                                        borderRadius: '50%',
+                                        background: 'radial-gradient(circle, rgba(251,113,133,0.5) 0%, rgba(213,63,140,0) 70%)',
+                                        filter: 'blur(70px)',
+                                        pointerEvents: 'none',
+                                        zIndex: 0
+                                    }}
+                                />
+                                <Box
+                                    aria-hidden
+                                    sx={{
+                                        position: 'absolute',
+                                        bottom: -100,
+                                        left: -90,
+                                        width: { xs: 200, md: 300 },
+                                        height: { xs: 200, md: 300 },
+                                        borderRadius: '50%',
+                                        background: 'radial-gradient(circle, rgba(255,177,153,0.4) 0%, rgba(255,177,153,0) 70%)',
+                                        filter: 'blur(80px)',
+                                        pointerEvents: 'none',
+                                        zIndex: 0
+                                    }}
+                                />
+
                                 {/* Mockup Hero */}
-                                <Box mb={4} mt={2}>
-                                    <img
-                                        src={previewIcon || '/imagotipo.png'}
-                                        alt="Icon"
-                                        style={{ height: '60px', marginBottom: '16px' }}
-                                    />
-                                    <Typography
+                                <Box sx={{ position: 'relative', zIndex: 1, pt: { xs: 5, md: 7 }, pb: { xs: 4, md: 5 }, px: 2 }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2, minHeight: 100 }}>
+                                        {previewIcon && previewIcon !== '/imagotipo.png' ? (
+                                            <img
+                                                alt="Hero Icon"
+                                                src={previewIcon}
+                                                style={{ height: '90px', width: 'auto', objectFit: 'contain', maxWidth: '100%' }}
+                                            />
+                                        ) : (
+                                            <RedThreadLogo
+                                                className="rt-hero-logo"
+                                                variant="mark"
+                                                aria-label="Red Thread (RETH)"
+                                                style={{ height: 90, width: 'auto', maxWidth: '100%' }}
+                                            />
+                                        )}
+                                    </Box>
+                                    <Box
                                         sx={{
-                                            fontWeight: 'bold',
-                                            mb: 1,
-                                            fontSize: `${config.subtitleFontSize * 0.8}rem`, // Scale down for preview
+                                            fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                                            fontWeight: 600,
+                                            letterSpacing: '0.02em',
+                                            lineHeight: 1.35,
+                                            mb: 2,
+                                            fontSize: `${(Math.max(config.subtitleFontSize || 5, 4.6) * 0.8).toFixed(2)}rem`,
                                             color: config.subtitleColor,
-                                            textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                                            opacity: 0.98,
+                                            textShadow: '0 2px 6px rgba(0,0,0,0.35)'
                                         }}
                                     >
                                         {t.subtitle}
-                                    </Typography>
-                                    <Typography variant="caption" display="block" sx={{ mb: 2, opacity: 0.9 }}>
-                                        {t.description.substring(0, 80)}...
-                                    </Typography>
-                                    <Box display="flex" gap={1} justifyContent="center">
-                                        <Button size="small" variant="contained" sx={{ bgcolor: 'white', color: config.gradientStart, fontSize: '0.6rem' }}>
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            fontFamily: 'Open Sans, Inter, sans-serif',
+                                            fontSize: '0.8rem',
+                                            lineHeight: 1.7,
+                                            mb: 3,
+                                            maxWidth: '360px',
+                                            mx: 'auto',
+                                            opacity: 0.95,
+                                            textShadow: '0 1px 3px rgba(0,0,0,0.35)'
+                                        }}
+                                    >
+                                        {t.description.substring(0, 90)}{t.description.length > 90 ? '...' : ''}
+                                    </Box>
+                                    <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center', flexWrap: 'wrap' }}>
+                                        <Button
+                                            size="small"
+                                            variant="contained"
+                                            sx={{
+                                                bgcolor: 'rgba(255,255,255,0.16)',
+                                                backdropFilter: 'blur(18px)',
+                                                WebkitBackdropFilter: 'blur(18px)',
+                                                color: 'white',
+                                                border: '1px solid rgba(255,255,255,0.55)',
+                                                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 14px 34px rgba(88, 8, 34, 0.38), 0 4px 10px rgba(0,0,0,0.22)',
+                                                '&:hover': { bgcolor: 'rgba(255,255,255,0.26)' },
+                                                px: 3,
+                                                py: 1,
+                                                fontSize: '0.7rem'
+                                            }}
+                                        >
                                             {t.ctaPrimary}
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            sx={{
+                                                borderColor: 'rgba(255,255,255,0.6)',
+                                                color: 'white',
+                                                bgcolor: 'rgba(255,255,255,0.10)',
+                                                backdropFilter: 'blur(18px)',
+                                                WebkitBackdropFilter: 'blur(18px)',
+                                                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 26px rgba(0,0,0,0.16)',
+                                                '&:hover': { bgcolor: 'rgba(255,255,255,0.22)', borderColor: 'rgba(255,255,255,0.95)' },
+                                                px: 3,
+                                                py: 1,
+                                                fontSize: '0.7rem'
+                                            }}
+                                        >
+                                            {t.ctaSecondary}
                                         </Button>
                                     </Box>
                                 </Box>
 
-                                {/* Mockup Features (Mini) */}
-                                <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', p: 1, borderRadius: 1 }}>
-                                    <Typography variant="caption" fontWeight="bold" display="block" mb={1}>
+                                {/* Mockup Features */}
+                                <Box sx={{ position: 'relative', zIndex: 1, pb: { xs: 4, md: 5 }, px: 3 }}>
+                                    <Box
+                                        sx={{
+                                            fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                                            fontSize: '1.4rem',
+                                            textAlign: 'center',
+                                            color: 'white',
+                                            letterSpacing: '0.01em',
+                                            mb: 2.5,
+                                            fontWeight: 700,
+                                            textShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                                        }}
+                                    >
                                         {t.howItWorksTitle}
-                                    </Typography>
-                                    <Grid container spacing={1}>
+                                    </Box>
+                                    <Grid container spacing={2}>
                                         <Grid item xs={6}>
-                                            <Paper sx={{ p: 0.5, height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="caption" sx={{ fontSize: '0.5rem', color: 'black' }}>
+                                            <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+                                                <FavoriteIcon sx={{ fontSize: 32, color: '#3B82F6', mb: 0.5 }} />
+                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
                                                     {t.features.smartMatching.title}
-                                                </Typography>
+                                                </Box>
                                             </Paper>
                                         </Grid>
                                         <Grid item xs={6}>
-                                            <Paper sx={{ p: 0.5, height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="caption" sx={{ fontSize: '0.5rem', color: 'black' }}>
+                                            <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+                                                <ChatIcon sx={{ fontSize: 32, color: '#8B5CF6', mb: 0.5 }} />
+                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
                                                     {t.features.realTimeChat.title}
-                                                </Typography>
+                                                </Box>
+                                            </Paper>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+                                                <RadarIcon sx={{ fontSize: 32, color: '#F59E0B', mb: 0.5 }} />
+                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
+                                                    {t.features.proximityRadar.title}
+                                                </Box>
+                                            </Paper>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+                                                <GroupsIcon sx={{ fontSize: 32, color: '#E63946', mb: 0.5 }} />
+                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
+                                                    {t.features.multipleIntentions.title}
+                                                </Box>
                                             </Paper>
                                         </Grid>
                                     </Grid>
                                 </Box>
 
                                 {/* Mockup Footer */}
-                                <Box mt={4}>
-                                    <Typography variant="caption" sx={{ fontSize: '0.5rem', opacity: 0.7 }}>
+                                <Box sx={{ position: 'relative', zIndex: 1, py: 3, textAlign: 'center', color: 'white', opacity: 0.85 }}>
+                                    <Box sx={{ fontFamily: 'Open Sans, Inter, sans-serif', fontSize: '0.75rem', letterSpacing: '0.04em' }}>
                                         {t.footerText}
-                                    </Typography>
+                                    </Box>
                                 </Box>
                             </Box>
                         </Paper>
