@@ -77,5 +77,23 @@
     "modalClosing": "इस दृष्टिकोण से, सिफारिशें साधारण संयोग नहीं, बल्कि सार्थक जुड़ाव होती हैं।",
     "close": "बंद करें",
     "statVisits": "विज़िट्स"
-  }
+  },
+  "menu_settings": "सेटिंग्स",
+  "menu_appearance": "दिखावट",
+  "menu_navbar": "नेवबार अनुकूलित करें",
+  "menu_security": "सुरक्षा",
+  "menu_notifications": "सूचनाएँ",
+  "menu_privacy": "गोपनीयता",
+  "menu_logout": "लॉग आउट",
+  "menu_toggleSidebar": "प्रोफ़ाइल साइडबार टॉगल करें",
+  "settings_title": "सेटिंग्स",
+  "settings_appearance_title": "दिखावट",
+  "settings_notifications": "सूचनाएँ",
+  "settings_accessibility": "सुलभता",
+  "settings_language": "भाषा",
+  "settings_advanced": "उन्नत सेटिंग्स",
+  "settings_wip_title": "विकासाधीन अनुभाग",
+  "settings_wip_desc": "यह सुविधा जल्द ही उपलब्ध होगी",
+  "settings_welcome_title": "सेटिंग्स में आपका स्वागत है",
+  "settings_welcome_desc": "शुरू करने के लिए साइड मेनू से एक विकल्प चुनें"
 }

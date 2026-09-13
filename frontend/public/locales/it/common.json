@@ -78,5 +78,23 @@
     "modalClosing": "Grazie a questo approccio, le raccomandazioni non sono semplici coincidenze, ma connessioni significative.",
     "close": "Chiudi",
     "statVisits": "Visite"
-  }
+  },
+  "menu_settings": "Impostazioni",
+  "menu_appearance": "Aspetto",
+  "menu_navbar": "Personalizza Navbar",
+  "menu_security": "Sicurezza",
+  "menu_notifications": "Notifiche",
+  "menu_privacy": "Privacy",
+  "menu_logout": "Esci",
+  "menu_toggleSidebar": "Attiva/disattiva barra laterale del profilo",
+  "settings_title": "Impostazioni",
+  "settings_appearance_title": "Aspetto",
+  "settings_notifications": "Notifiche",
+  "settings_accessibility": "Accessibilità",
+  "settings_language": "Lingua",
+  "settings_advanced": "Impostazioni avanzate",
+  "settings_wip_title": "Sezione in sviluppo",
+  "settings_wip_desc": "Questa funzionalità sarà disponibile a breve",
+  "settings_welcome_title": "Benvenuto nelle Impostazioni",
+  "settings_welcome_desc": "Seleziona un'opzione dal menu laterale per iniziare"
 }

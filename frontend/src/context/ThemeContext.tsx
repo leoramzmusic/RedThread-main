@@ -223,7 +223,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     palette: {
       mode: mode,
       primary: {
-        main: theme === 'redThread' ? '#FD297B' :
+        main: theme === 'redThread' ? '#E63946' :
           theme === 'sakura' ? '#EEAAC0' :
             theme === 'premium' ? '#797979' :
               theme === 'blue' ? '#0CB7F2' :

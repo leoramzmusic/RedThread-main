@@ -78,5 +78,23 @@
     "modalClosing": "Tack vare detta synsätt är rekommendationer inte enkla sammanträffanden, utan meningsfulla kopplingar.",
     "close": "Stäng",
     "statVisits": "Besök"
-  }
+  },
+  "menu_settings": "Inställningar",
+  "menu_appearance": "Utseende",
+  "menu_navbar": "Anpassa navigeringsfältet",
+  "menu_security": "Säkerhet",
+  "menu_notifications": "Aviseringar",
+  "menu_privacy": "Integritet",
+  "menu_logout": "Logga ut",
+  "menu_toggleSidebar": "Växla profilens sidofält",
+  "settings_title": "Inställningar",
+  "settings_appearance_title": "Utseende",
+  "settings_notifications": "Aviseringar",
+  "settings_accessibility": "Tillgänglighet",
+  "settings_language": "Språk",
+  "settings_advanced": "Avancerade inställningar",
+  "settings_wip_title": "Avsnitt under utveckling",
+  "settings_wip_desc": "Den här funktionen kommer snart",
+  "settings_welcome_title": "Välkommen till inställningarna",
+  "settings_welcome_desc": "Välj ett alternativ från sidomenyn för att börja"
 }

@@ -77,5 +77,23 @@
     "modalClosing": "Salamat sa pamamaraang ito, ang mga rekomendasyon ay hindi simpleng pagkakataon, kundi makabuluhang koneksyon.",
     "close": "Isara",
     "statVisits": "Mga Pagbisita"
-  }
+  },
+  "menu_settings": "Mga Setting",
+  "menu_appearance": "Hitsura",
+  "menu_navbar": "I-customize ang Navbar",
+  "menu_security": "Seguridad",
+  "menu_notifications": "Mga Abiso",
+  "menu_privacy": "Privacy",
+  "menu_logout": "Mag-logout",
+  "menu_toggleSidebar": "I-toggle ang sidebar ng profile",
+  "settings_title": "Mga Setting",
+  "settings_appearance_title": "Hitsura",
+  "settings_notifications": "Mga Abiso",
+  "settings_accessibility": "Pagiging naa-access",
+  "settings_language": "Wika",
+  "settings_advanced": "Mga Advanced na Setting",
+  "settings_wip_title": "Seksyon na ginagawa",
+  "settings_wip_desc": "Malapit nang magagamit ang feature na ito",
+  "settings_welcome_title": "Maligayang pagdating sa Settings",
+  "settings_welcome_desc": "Pumili ng opsyon mula sa side menu para magsimula"
 }

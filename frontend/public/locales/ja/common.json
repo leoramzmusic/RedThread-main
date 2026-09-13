@@ -77,5 +77,23 @@
     "modalClosing": "このアプローチにより、おすすめは単なる偶然ではなく、意味のあるつながりになります。",
     "close": "閉じる",
     "statVisits": "訪問"
-  }
+  },
+  "menu_settings": "設定",
+  "menu_appearance": "外観",
+  "menu_navbar": "ナビバーをカスタマイズ",
+  "menu_security": "セキュリティ",
+  "menu_notifications": "通知",
+  "menu_privacy": "プライバシー",
+  "menu_logout": "ログアウト",
+  "menu_toggleSidebar": "プロフィールサイドバーを切り替え",
+  "settings_title": "設定",
+  "settings_appearance_title": "外観",
+  "settings_notifications": "通知",
+  "settings_accessibility": "アクセシビリティ",
+  "settings_language": "言語",
+  "settings_advanced": "詳細設定",
+  "settings_wip_title": "開発中のセクション",
+  "settings_wip_desc": "この機能は近日公開予定です",
+  "settings_welcome_title": "設定へようこそ",
+  "settings_welcome_desc": "開始するにはサイドメニューからオプションを選択してください"
 }

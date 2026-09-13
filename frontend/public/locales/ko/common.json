@@ -77,5 +77,23 @@
     "modalClosing": "이 접근 방식 덕분에 추천은 단순한 우연이 아니라 의미 있는 연결이 됩니다.",
     "close": "닫기",
     "statVisits": "방문"
-  }
+  },
+  "menu_settings": "설정",
+  "menu_appearance": "모양",
+  "menu_navbar": "내비바 맞춤설정",
+  "menu_security": "보안",
+  "menu_notifications": "알림",
+  "menu_privacy": "개인정보",
+  "menu_logout": "로그아웃",
+  "menu_toggleSidebar": "프로필 사이드바 토글",
+  "settings_title": "설정",
+  "settings_appearance_title": "모양",
+  "settings_notifications": "알림",
+  "settings_accessibility": "접근성",
+  "settings_language": "언어",
+  "settings_advanced": "고급 설정",
+  "settings_wip_title": "개발 중인 섹션",
+  "settings_wip_desc": "이 기능은 곧 제공될 예정입니다",
+  "settings_welcome_title": "설정에 오신 것을 환영합니다",
+  "settings_welcome_desc": "시작하려면 측면 메뉴에서 옵션을 선택하세요"
 }

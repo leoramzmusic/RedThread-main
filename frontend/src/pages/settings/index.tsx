@@ -144,10 +144,10 @@ export default function SettingsPage() {
         return (
           <Box textAlign="center" py={8}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              Sección en desarrollo
+              {t('settings_wip_title')}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Esta funcionalidad estará disponible próximamente
+              {t('settings_wip_desc')}
             </Typography>
           </Box>
         );
@@ -155,10 +155,10 @@ export default function SettingsPage() {
         return (
           <Box textAlign="center" py={8}>
             <Typography variant="h5" color="text.primary" gutterBottom>
-              Bienvenido a Configuración
+              {t('settings_welcome_title')}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Selecciona una opción del menú lateral para comenzar
+              {t('settings_welcome_desc')}
             </Typography>
           </Box>
         );
@@ -186,7 +186,7 @@ export default function SettingsPage() {
           }}
         >
           {/* Section Title */}
-          <Typography variant="h4" fontWeight={700} gutterBottom mb={3}>
+          <Typography variant="h3" fontWeight={800} gutterBottom mb={3}>
             {getSectionTitle()}
           </Typography>
 

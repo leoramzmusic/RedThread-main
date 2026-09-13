@@ -77,5 +77,23 @@
     "modalClosing": "এই পদ্ধতির জন্য, সুপারিশগুলো কেবল কাকতালীয় নয়, বরং অর্থপূর্ণ সংযোগ।",
     "close": "বন্ধ করুন",
     "statVisits": "ভিজিট"
-  }
+  },
+  "menu_settings": "সেটিংস",
+  "menu_appearance": "চেহারা",
+  "menu_navbar": "নেভবার কাস্টমাইজ করুন",
+  "menu_security": "নিরাপত্তা",
+  "menu_notifications": "বিজ্ঞপ্তি",
+  "menu_privacy": "গোপনীয়তা",
+  "menu_logout": "লগ আউট",
+  "menu_toggleSidebar": "প্রোফাইল সাইডবার টগল করুন",
+  "settings_title": "সেটিংস",
+  "settings_appearance_title": "চেহারা",
+  "settings_notifications": "বিজ্ঞপ্তি",
+  "settings_accessibility": "অ্যাক্সেসযোগ্যতা",
+  "settings_language": "ভাষা",
+  "settings_advanced": "উন্নত সেটিংস",
+  "settings_wip_title": "বিকাশাধীন বিভাগ",
+  "settings_wip_desc": "এই বৈশিষ্ট্যটি শীঘ্রই উপলব্ধ হবে",
+  "settings_welcome_title": "সেটিংসে স্বাগতম",
+  "settings_welcome_desc": "শুরু করতে সাইড মেনু থেকে একটি বিকল্প বেছে নিন"
 }

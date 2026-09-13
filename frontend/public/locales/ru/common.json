@@ -78,5 +78,23 @@
     "modalClosing": "Благодаря этому подходу рекомендации — не простые совпадения, а значимые связи.",
     "close": "Закрыть",
     "statVisits": "Посещения"
-  }
+  },
+  "menu_settings": "Настройки",
+  "menu_appearance": "Внешний вид",
+  "menu_navbar": "Настроить панель навигации",
+  "menu_security": "Безопасность",
+  "menu_notifications": "Уведомления",
+  "menu_privacy": "Конфиденциальность",
+  "menu_logout": "Выйти",
+  "menu_toggleSidebar": "Переключить боковую панель профиля",
+  "settings_title": "Настройки",
+  "settings_appearance_title": "Внешний вид",
+  "settings_notifications": "Уведомления",
+  "settings_accessibility": "Доступность",
+  "settings_language": "Язык",
+  "settings_advanced": "Расширенные настройки",
+  "settings_wip_title": "Раздел в разработке",
+  "settings_wip_desc": "Эта функция скоро будет доступна",
+  "settings_welcome_title": "Добро пожаловать в настройки",
+  "settings_welcome_desc": "Выберите пункт в боковом меню, чтобы начать"
 }

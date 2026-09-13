@@ -1,5 +1,6 @@
 import { useState, ReactNode } from 'react';
 import {
+  Avatar,
   Box,
   Typography,
   Stack,
@@ -13,6 +14,8 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 import {
   Home as HomeIcon,
   Explore as ExploreIcon,
@@ -317,6 +320,14 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
   const isDark = theme.palette.mode === 'dark';
   const glassBg = isDark ? 'rgba(16,18,32,0.55)' : 'rgba(255,255,255,0.72)';
 
+  const { user } = useSelector((state: RootState) => state.auth);
+  const getImageUrl = (url?: string) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${url}`;
+  };
+  const displayAvatar = getImageUrl(user?.avatar);
+
   const current = settings?.navbar_config ?? {};
   const shortcuts: Record<string, boolean> = {
     ...SHORTCUT_DEFAULTS,
@@ -586,7 +597,22 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
               {q.icon}
             </QuickActionIcon>
           ))}
-          <Box sx={{ width: 30, height: 30, borderRadius: '50%', bgcolor: 'primary.main', opacity: 0.9 }} />
+          <Avatar
+            src={displayAvatar || undefined}
+            alt={user?.email || 'Perfil'}
+            sx={{
+              width: 30,
+              height: 30,
+              bgcolor: 'primary.main',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '0.7rem',
+              border: '1.5px solid',
+              borderColor: alpha(theme.palette.primary.main, 0.45),
+            }}
+          >
+            {!displayAvatar && user?.email?.charAt(0).toUpperCase()}
+          </Avatar>
         </Box>
 
         <Stack spacing={1.5}>

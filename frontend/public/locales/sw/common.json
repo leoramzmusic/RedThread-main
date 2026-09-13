@@ -77,5 +77,23 @@
     "modalClosing": "Kwa njia hii, mapendekezo si bahati tu, bali ni miungano yenye maana.",
     "close": "Funga",
     "statVisits": "Ziara"
-  }
+  },
+  "menu_settings": "Mipangilio",
+  "menu_appearance": "Mwonekano",
+  "menu_navbar": "Badilisha Navbar",
+  "menu_security": "Usalama",
+  "menu_notifications": "Arifa",
+  "menu_privacy": "Faragha",
+  "menu_logout": "Toka",
+  "menu_toggleSidebar": "Geuza upau wa kando wa wasifu",
+  "settings_title": "Mipangilio",
+  "settings_appearance_title": "Mwonekano",
+  "settings_notifications": "Arifa",
+  "settings_accessibility": "Ufikivu",
+  "settings_language": "Lugha",
+  "settings_advanced": "Mipangilio ya Juu",
+  "settings_wip_title": "Sehemu inatengenezwa",
+  "settings_wip_desc": "Kipengele hiki kitapatikana hivi karibuni",
+  "settings_welcome_title": "Karibu kwenye Mipangilio",
+  "settings_welcome_desc": "Chagua chaguo kutoka kwenye menyu ya kando ili kuanza"
 }

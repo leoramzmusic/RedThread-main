@@ -78,5 +78,23 @@
     "modalClosing": "Dankzij deze aanpak zijn aanbevelingen geen simpele toevalligheden, maar betekenisvolle verbindingen.",
     "close": "Sluiten",
     "statVisits": "Bezoeken"
-  }
+  },
+  "menu_settings": "Instellingen",
+  "menu_appearance": "Weergave",
+  "menu_navbar": "Navbar aanpassen",
+  "menu_security": "Beveiliging",
+  "menu_notifications": "Meldingen",
+  "menu_privacy": "Privacy",
+  "menu_logout": "Uitloggen",
+  "menu_toggleSidebar": "Profielzijbalk wisselen",
+  "settings_title": "Instellingen",
+  "settings_appearance_title": "Weergave",
+  "settings_notifications": "Meldingen",
+  "settings_accessibility": "Toegankelijkheid",
+  "settings_language": "Taal",
+  "settings_advanced": "Geavanceerde instellingen",
+  "settings_wip_title": "Sectie in ontwikkeling",
+  "settings_wip_desc": "Deze functie is binnenkort beschikbaar",
+  "settings_welcome_title": "Welkom bij Instellingen",
+  "settings_welcome_desc": "Kies een optie uit het zijmenu om te beginnen"
 }

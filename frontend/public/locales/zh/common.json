@@ -78,5 +78,23 @@
     "modalClosing": "借助这种方法，推荐不再是简单的巧合，而是有意义的连接。",
     "close": "关闭",
     "statVisits": "访问"
-  }
+  },
+  "menu_settings": "设置",
+  "menu_appearance": "外观",
+  "menu_navbar": "自定义导航栏",
+  "menu_security": "安全",
+  "menu_notifications": "通知",
+  "menu_privacy": "隐私",
+  "menu_logout": "退出登录",
+  "menu_toggleSidebar": "切换个人资料侧边栏",
+  "settings_title": "设置",
+  "settings_appearance_title": "外观",
+  "settings_notifications": "通知",
+  "settings_accessibility": "无障碍",
+  "settings_language": "语言",
+  "settings_advanced": "高级设置",
+  "settings_wip_title": "开发中的版块",
+  "settings_wip_desc": "此功能即将推出",
+  "settings_welcome_title": "欢迎使用设置",
+  "settings_welcome_desc": "从侧边菜单选择一个选项以开始"
 }

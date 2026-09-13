@@ -78,5 +78,23 @@
     "modalClosing": "Dank dieses Ansatzes sind Empfehlungen keine einfachen Zufälle, sondern bedeutungsvolle Verbindungen.",
     "close": "Schließen",
     "statVisits": "Besuche"
-  }
+  },
+  "menu_settings": "Einstellungen",
+  "menu_appearance": "Darstellung",
+  "menu_navbar": "Navbar anpassen",
+  "menu_security": "Sicherheit",
+  "menu_notifications": "Benachrichtigungen",
+  "menu_privacy": "Datenschutz",
+  "menu_logout": "Abmelden",
+  "menu_toggleSidebar": "Profil-Sidebar umschalten",
+  "settings_title": "Einstellungen",
+  "settings_appearance_title": "Darstellung",
+  "settings_notifications": "Benachrichtigungen",
+  "settings_accessibility": "Barrierefreiheit",
+  "settings_language": "Sprache",
+  "settings_advanced": "Erweiterte Einstellungen",
+  "settings_wip_title": "Abschnitt in Entwicklung",
+  "settings_wip_desc": "Diese Funktion wird bald verfügbar sein",
+  "settings_welcome_title": "Willkommen in den Einstellungen",
+  "settings_welcome_desc": "Wähle eine Option aus dem Seitenmenü, um zu beginnen"
 }

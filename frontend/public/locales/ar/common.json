@@ -77,5 +77,23 @@
     "modalClosing": "بفضل هذا النهج، التوصيات ليست مجرد صدف، بل روابط ذات معنى.",
     "close": "إغلاق",
     "statVisits": "زوار"
-  }
+  },
+  "menu_settings": "الإعدادات",
+  "menu_appearance": "المظهر",
+  "menu_navbar": "تخصيص شريط التنقل",
+  "menu_security": "الأمان",
+  "menu_notifications": "الإشعارات",
+  "menu_privacy": "الخصوصية",
+  "menu_logout": "تسجيل الخروج",
+  "menu_toggleSidebar": "تبديل الشريط الجانبي للملف الشخصي",
+  "settings_title": "الإعدادات",
+  "settings_appearance_title": "المظهر",
+  "settings_notifications": "الإشعارات",
+  "settings_accessibility": "إمكانية الوصول",
+  "settings_language": "اللغة",
+  "settings_advanced": "الإعدادات المتقدمة",
+  "settings_wip_title": "قسم قيد التطوير",
+  "settings_wip_desc": "هذه الميزة ستتوفر قريبًا",
+  "settings_welcome_title": "مرحبًا بك في الإعدادات",
+  "settings_welcome_desc": "اختر خيارًا من القائمة الجانبية للبدء"
 }

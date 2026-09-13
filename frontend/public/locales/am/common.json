@@ -77,5 +77,23 @@
     "modalClosing": "በዚህ አካሄድ ምክንያት፣ ምክሮች ቀላል የአጋጣሚ ነገር ሳይሆኑ፣ ትርጉም ያላቸው ግንኙነቶች ናቸው።",
     "close": "ዝጋ",
     "statVisits": "ጕበንቺት"
-  }
+  },
+  "menu_settings": "ቅንብሮች",
+  "menu_appearance": "ገጽታ",
+  "menu_navbar": "ናቭባር አብጅ",
+  "menu_security": "ደህንነት",
+  "menu_notifications": "ማሳወቂያዎች",
+  "menu_privacy": "ግላዊነት",
+  "menu_logout": "ውጣ",
+  "menu_toggleSidebar": "የፕሮፋይል ጎን አሞሌ ቀይር",
+  "settings_title": "ቅንብሮች",
+  "settings_appearance_title": "ገጽታ",
+  "settings_notifications": "ማሳወቂያዎች",
+  "settings_accessibility": "ተደራሽነት",
+  "settings_language": "ቋንቋ",
+  "settings_advanced": "የላቁ ቅንብሮች",
+  "settings_wip_title": "ክፍል በልማት ላይ",
+  "settings_wip_desc": "ይህ ባህሪ በቅርቡ ይገኛል",
+  "settings_welcome_title": "እንኳን ወደ ቅንብሮች በደህና መጡ",
+  "settings_welcome_desc": "መጀመር ለማድረግ ከጎን ምናሌ አማራጭ ይምረጡ"
 }

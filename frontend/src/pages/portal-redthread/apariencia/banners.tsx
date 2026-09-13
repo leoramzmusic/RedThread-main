@@ -19,7 +19,6 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatIcon from '@mui/icons-material/Chat';
 import RadarIcon from '@mui/icons-material/Radar';
 import GroupsIcon from '@mui/icons-material/Groups';
-import Head from 'next/head';
 
 // --- Configuration Types ---
 
@@ -173,9 +172,6 @@ const BODY_FONT_OPTIONS: Array<{ value: string; label: string }> = [
     { value: 'Nunito Sans', label: 'Nunito Sans' },
     { value: 'Lato', label: 'Lato' },
 ];
-
-// Google Fonts URL used by both the admin preview and the portal (must include every option above)
-const FONTS_STYLESHEET = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Lobster&family=Pacifico&family=Caveat:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=Lato:wght@400;600;700&display=swap';
 
 const getTitleFontFamily = (font: string) => `${font}, Poppins, Inter, cursive`;
 const getBodyFontFamily = (font: string) => `${font}, Inter, sans-serif`;
@@ -584,11 +580,6 @@ export default function BannersPage() {
 
     return (
         <AdminLayout>
-            <Head>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link href={FONTS_STYLESHEET} rel="stylesheet" />
-            </Head>
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={6000}

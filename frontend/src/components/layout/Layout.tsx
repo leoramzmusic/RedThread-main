@@ -202,16 +202,27 @@ export default function Layout({ children }: LayoutProps) {
     setLangAnchorEl(null);
   };
 
-  const handleLanguageSelect = (newLang: string) => {
+  const handleLanguageSelect = async (newLang: string) => {
     handleCloseLangMenu();
+    // Persist so AuthInitializer doesn't force the previously saved language on reload
+    try {
+      await apiClient.put('/settings/me', { preferred_language: newLang });
+    } catch (error) {
+      console.warn('Could not save preferred language:', error);
+    }
     document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`;
     const currentPath = router.asPath;
     const currentLocale = router.locale || 'es';
-    const supportedLocales = ['en', 'pt', 'fr'];
-    const cleanedPath = supportedLocales.includes(currentLocale)
-      ? currentPath.replace(`/${currentLocale}`, '')
-      : currentPath;
-    const target = newLang !== 'es' ? `/${newLang}${cleanedPath === '/' ? '' : cleanedPath}` : cleanedPath;
+    const defaultLocale = router.defaultLocale || 'es';
+    const configuredLocales = (router.locales as string[] | undefined) ?? [];
+
+    const prefixRe = configuredLocales.length
+      ? new RegExp(`^/(?:${configuredLocales.map((l) => l.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})+(?=/|$)`)
+      : new RegExp(`^/${currentLocale}(?=/|$)`);
+    const cleanedPath = currentPath.replace(prefixRe, '') || '/';
+    const target = newLang !== defaultLocale
+      ? `/${newLang}${cleanedPath === '/' ? '' : cleanedPath}`
+      : cleanedPath;
     window.location.href = target || '/';
   };
 

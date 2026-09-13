@@ -77,5 +77,23 @@
     "modalClosing": "Da wannan tsarin, shawarwari ba waɗansu daidaituwa ba ne, amma haɗe-haɗe masu ma'ana.",
     "close": "Rufe",
     "statVisits": "Ziyara"
-  }
+  },
+  "menu_settings": "Saiti",
+  "menu_appearance": "Kamanni",
+  "menu_navbar": "Daidaita Navbar",
+  "menu_security": "Tsaro",
+  "menu_notifications": "Sanarwa",
+  "menu_privacy": "Sirri",
+  "menu_logout": "Fita",
+  "menu_toggleSidebar": "Juya mashigin bayanan martaba",
+  "settings_title": "Saiti",
+  "settings_appearance_title": "Kamanni",
+  "settings_notifications": "Sanarwa",
+  "settings_accessibility": "Samun dama",
+  "settings_language": "Harshe",
+  "settings_advanced": "Saitin ci-gaba",
+  "settings_wip_title": "Sashe mai ci gaba",
+  "settings_wip_desc": "Wannan fasalin zai samu nan ba da jimawa ba",
+  "settings_welcome_title": "Barka da zuwa Saiti",
+  "settings_welcome_desc": "Zaɓi zaɓi daga menu na gefe don farawa"
 }

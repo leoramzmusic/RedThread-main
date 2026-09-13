@@ -62,18 +62,24 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
               });
 
               if (settingsResponse.data.preferred_language) {
-                const currentLocale = window.location.pathname.split('/')[1];
-                const supportedLocales = ['en', 'pt', 'fr'];
-                const effectiveLocale = supportedLocales.includes(currentLocale) ? currentLocale : 'es';
+                const currentLocale = router.locale || router.defaultLocale || 'es';
+                const defaultLocale = router.defaultLocale || 'es';
+                const configuredLocales = (router.locales as string[] | undefined) ?? [];
 
-                if (settingsResponse.data.preferred_language !== effectiveLocale) {
+                const prefixRe = configuredLocales.length
+                  ? new RegExp(`^/(?:${configuredLocales.map((l) => l.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})+(?=/|$)`)
+                  : new RegExp(`^/${currentLocale}(?=/|$)`);
+                const pathWithoutLocale = window.location.pathname.replace(prefixRe, '') || '/';
+
+                const targetPrefix = settingsResponse.data.preferred_language === defaultLocale
+                  ? ''
+                  : `/${settingsResponse.data.preferred_language}`;
+                const targetPath = `${targetPrefix}${pathWithoutLocale}${window.location.search}${window.location.hash}`;
+
+                if (settingsResponse.data.preferred_language !== currentLocale
+                    || targetPath !== window.location.pathname + window.location.search + window.location.hash) {
                   document.cookie = `NEXT_LOCALE=${settingsResponse.data.preferred_language}; path=/; max-age=31536000`;
-                  const pathWithoutLocale = supportedLocales.includes(currentLocale)
-                    ? window.location.pathname.replace(`/${currentLocale}`, '')
-                    : window.location.pathname;
-
-                  const targetPrefix = settingsResponse.data.preferred_language === 'es' ? '' : `/${settingsResponse.data.preferred_language}`;
-                  window.location.href = `${targetPrefix}${pathWithoutLocale || '/'}${window.location.search}${window.location.hash}`;
+                  window.location.href = targetPath;
                 }
               }
             }

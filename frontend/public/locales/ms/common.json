@@ -77,5 +77,23 @@
     "modalClosing": "Dengan pendekatan ini, cadangan bukanlah kebetulan semata-mata, tetapi kaitan yang bermakna.",
     "close": "Tutup",
     "statVisits": "Lawatan"
-  }
+  },
+  "menu_settings": "Tetapan",
+  "menu_appearance": "Penampilan",
+  "menu_navbar": "Sesuaikan Navbar",
+  "menu_security": "Keselamatan",
+  "menu_notifications": "Pemberitahuan",
+  "menu_privacy": "Privasi",
+  "menu_logout": "Log Keluar",
+  "menu_toggleSidebar": "Togol bar sisi profil",
+  "settings_title": "Tetapan",
+  "settings_appearance_title": "Penampilan",
+  "settings_notifications": "Pemberitahuan",
+  "settings_accessibility": "Kebolehaksesan",
+  "settings_language": "Bahasa",
+  "settings_advanced": "Tetapan Lanjutan",
+  "settings_wip_title": "Bahagian dalam pembangunan",
+  "settings_wip_desc": "Ciri ini akan tersedia tidak lama lagi",
+  "settings_welcome_title": "Selamat datang ke Tetapan",
+  "settings_welcome_desc": "Pilih pilihan daripada menu sisi untuk bermula"
 }

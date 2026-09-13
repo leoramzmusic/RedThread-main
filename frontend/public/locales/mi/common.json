@@ -77,5 +77,23 @@
     "modalClosing": "Nā tēnei huarahi, ehara ngā tūtohu i te tūponotanga noa, engari he hononga whai tikanga.",
     "close": "Katia",
     "statVisits": "Toronga"
-  }
+  },
+  "menu_settings": "Ngā Tautuhinga",
+  "menu_appearance": "Āhua",
+  "menu_navbar": "Whakaritea te Navbar",
+  "menu_security": "Haumarutanga",
+  "menu_notifications": "Ngā Whakamōhiotanga",
+  "menu_privacy": "Matatapu",
+  "menu_logout": "Putanga",
+  "menu_toggleSidebar": "Takahuri te pae taha o te kōtaha",
+  "settings_title": "Ngā Tautuhinga",
+  "settings_appearance_title": "Āhua",
+  "settings_notifications": "Ngā Whakamōhiotanga",
+  "settings_accessibility": "Te Āhei",
+  "settings_language": "Reo",
+  "settings_advanced": "Ngā Tautuhinga Matatau",
+  "settings_wip_title": "Te Wāhanga e Whanakehia ana",
+  "settings_wip_desc": "Ka wawe tonu tēnei āhuatanga",
+  "settings_welcome_title": "Nau mai ki ngā Tautuhinga",
+  "settings_welcome_desc": "Kōwhiria tētahi kōwhiringa mai i te rārangi taha hei tīmata"
 }

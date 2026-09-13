@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, forwardRef, useState } from 'react';
 import { IconButton, Box, useTheme } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
@@ -639,16 +639,19 @@ function premiumBellSx(active: boolean, isDark: boolean) {
   } as const;
 }
 
-export default function QuickActionIcon({
-  styleId,
-  onClick,
-  motion,
-  basicHover,
-  asBox,
-  active = false,
-  badgeContent,
-  children,
-}: QuickActionIconProps) {
+const QuickActionIcon = forwardRef<HTMLDivElement | HTMLButtonElement, QuickActionIconProps>(function QuickActionIcon(
+  {
+    styleId,
+    onClick,
+    motion,
+    basicHover,
+    asBox,
+    active = false,
+    badgeContent,
+    children,
+  },
+  ref,
+) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const iconColor =
@@ -902,6 +905,7 @@ const hoverSx =
   if (asBox) {
     return (
       <Box
+        ref={ref as React.Ref<HTMLDivElement>}
         sx={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -925,6 +929,7 @@ const hoverSx =
       size="small"
       onClick={handleClick}
       color="inherit"
+      ref={ref as React.Ref<HTMLButtonElement>}
       sx={[
         {
           color: iconColor,
@@ -941,4 +946,6 @@ const hoverSx =
       {burstOverlay}
     </IconButton>
   );
-}
+})
+
+export default QuickActionIcon;
