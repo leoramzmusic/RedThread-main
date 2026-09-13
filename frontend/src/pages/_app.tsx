@@ -9,6 +9,7 @@ import '../styles/globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AppThemeProvider } from '../context/ThemeContext';
 import { UIProvider } from '../context/UIContext';
+import { NavbarProvider } from '../context/NavbarContext';
 import { SnackbarProvider } from 'notistack';
 import DynamicFavicon from '../components/layout/DynamicFavicon';
 
@@ -17,15 +18,17 @@ function App({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <AppThemeProvider>
         <UIProvider>
-          <AuthInitializer>
-            <AdminRouteGuard>
-              <DynamicFavicon />
-              <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-                <CssBaseline />
-                <Component {...pageProps} />
-              </SnackbarProvider>
-            </AdminRouteGuard>
-          </AuthInitializer>
+          <NavbarProvider>
+            <AuthInitializer>
+              <AdminRouteGuard>
+                <DynamicFavicon />
+                <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+                  <CssBaseline />
+                  <Component {...pageProps} />
+                </SnackbarProvider>
+              </AdminRouteGuard>
+            </AuthInitializer>
+          </NavbarProvider>
         </UIProvider>
       </AppThemeProvider>
     </Provider>

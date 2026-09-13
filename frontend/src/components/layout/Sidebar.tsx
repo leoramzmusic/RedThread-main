@@ -10,7 +10,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  IconButton,
   Typography,
   Collapse,
   Divider,
@@ -19,7 +18,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Explore as ExploreIcon,
   Chat as ChatIcon,
@@ -50,8 +48,10 @@ import { useUI } from '../../context/UIContext';
 import { RootState } from '../../store/store';
 import PlanAvatar from '../subscription/PlanAvatar';
 import PlanBadge from '../subscription/PlanBadge';
+import MorphToggleIcon from '../motion/MorphToggleIcon';
 import { isPremiumOrHigher, getPlanConfig } from '../../config/planConfig';
-import { getThreadConfig, ThreadId } from '../../config/threadConfig';
+import { ThreadId } from '../../config/threadConfig';
+import { alpha } from '@mui/material/styles';
 
 const DRAWER_WIDTH = 260;
 const DRAWER_WIDTH_COLLAPSED = 72;
@@ -86,7 +86,6 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
 
   const { sidebarCollapsed: collapsed, setSidebarCollapsed } = useUI();
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
-  const [hoveredThread, setHoveredThread] = useState<ThreadId | null>(null);
 
   // Remove local persistence effect as it's now in UIProvider
 
@@ -95,30 +94,30 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
       id: 'social',
       label: 'SOCIAL',
       items: [
-        { id: 'home', label: t('nav.home', 'Inicio'), icon: <DashboardIcon />, path: '/home' },
+        { id: 'home', label: t('nav.home', 'Inicio'), icon: <DashboardIcon className="rt-dash" />, path: '/home' },
         {
           id: 'discover',
           label: t('nav.discover', 'Descubrir'),
-          icon: <ExploreIcon />,
+          icon: <ExploreIcon className="rt-compass" />,
           path: '/discover',
           threadId: 'redthread'
         },
         {
           id: 'blueth',
           label: t('nav.blueth', 'Amigos'),
-          icon: <GroupIcon />,
+          icon: <GroupIcon className="rt-pulse" />,
           path: '/friends',
           threadId: 'blueth'
         },
         {
           id: 'goldth',
           label: 'Golth',
-          icon: <HubIcon />,
+          icon: <HubIcon className="rt-orbit" />,
           path: '/golth',
           threadId: 'goldth'
         },
-        { id: 'chat', label: 'Chat', icon: <ChatIcon />, path: '/chat' },
-        { id: 'visits', label: 'Visitas', icon: <VisibilityIcon />, path: '/visits' },
+        { id: 'chat', label: 'Chat', icon: <ChatIcon className="rt-bubble" />, path: '/chat' },
+        { id: 'visits', label: 'Visitas', icon: <VisibilityIcon className="rt-blink" />, path: '/visits' },
       ]
     },
     {
@@ -128,21 +127,21 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
         {
           id: 'purpleth',
           label: t('nav.purpleth', 'Gaming Zone'),
-          icon: <GamingIcon />,
+          icon: <GamingIcon className="rt-joystick" />,
           path: '/purpleth',
           threadId: 'purpleth'
         },
-        { id: 'likes', label: t('nav.likes', 'Likes'), icon: <HeartIcon />, path: '/likes' },
-        { id: 'roulette', label: 'Ruleta', icon: <CasinoIcon />, path: '/roulette' },
-        { id: 'radar', label: 'Radar', icon: <RadarIcon />, path: '/radar' },
+        { id: 'likes', label: t('nav.likes', 'Likes'), icon: <HeartIcon className="rt-heart" />, path: '/likes' },
+        { id: 'roulette', label: 'Ruleta', icon: <CasinoIcon className="rt-wheel" />, path: '/roulette' },
+        { id: 'radar', label: 'Radar', icon: <RadarIcon className="rt-ping" />, path: '/radar' },
       ]
     },
     {
       id: 'organization',
       label: 'ORGANIZACIÓN',
       items: [
-        { id: 'events', label: t('nav.events', 'Eventos'), icon: <EventIcon />, path: '/events' },
-        { id: 'premium', label: 'Suscripción', icon: <DiamondIcon />, path: '/suscripcion' },
+        { id: 'events', label: t('nav.events', 'Eventos'), icon: <EventIcon className="rt-flip" />, path: '/events' },
+        { id: 'premium', label: 'Suscripción', icon: <DiamondIcon className="rt-gem" />, path: '/suscripcion' },
       ]
     },
     {
@@ -152,14 +151,14 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
         {
           id: 'settings',
           label: 'Configuración',
-          icon: <SettingsIcon />,
+          icon: <SettingsIcon className="rt-settings-icon" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />,
           children: [
-            { id: 'appearance', label: 'Apariencia', icon: <PaletteIcon />, path: '/settings?section=appearance' },
-            { id: 'notifications-settings', label: 'Notificaciones', icon: <NotificationsIcon />, path: '/settings?section=notifications' },
-            { id: 'security-settings', label: 'Seguridad', icon: <SecurityIcon />, path: '/settings?section=security' },
-            { id: 'accessibility', label: 'Accesibilidad', icon: <AccessibilityIcon />, path: '/settings?section=accessibility' },
-            { id: 'privacy', label: 'Privacidad', icon: <LockIcon />, path: '/settings?section=privacy' },
-            { id: 'advanced', label: 'Avanzado', icon: <TuneIcon />, path: '/settings?section=advanced' },
+            { id: 'appearance', label: 'Apariencia', icon: <PaletteIcon className="rt-palette" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />, path: '/settings?section=appearance' },
+            { id: 'notifications-settings', label: 'Notificaciones', icon: <NotificationsIcon className="rt-bell" />, path: '/settings?section=notifications' },
+            { id: 'security-settings', label: 'Seguridad', icon: <SecurityIcon className="rt-shield" />, path: '/settings?section=security' },
+            { id: 'accessibility', label: 'Accesibilidad', icon: <AccessibilityIcon className="rt-wave" />, path: '/settings?section=accessibility' },
+            { id: 'privacy', label: 'Privacidad', icon: <LockIcon className="rt-unlock" />, path: '/settings?section=privacy' },
+            { id: 'advanced', label: 'Avanzado', icon: <TuneIcon className="rt-sliders" />, path: '/settings?section=advanced' },
           ],
         },
 
@@ -204,6 +203,19 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
   // On mobile, always render as expanded (show text labels)
   const isCollapsed = isMobile ? false : collapsed;
 
+  // Theme-aware tokens: react to mode (light/dark) + active visual theme from settings
+  const isDark = theme.palette.mode === 'dark';
+  const primary = theme.palette.primary.main;
+  const textActive = isDark ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.87)';
+  const textInactive = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.6)';
+  const textSection = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
+  const iconInactive = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)';
+  const dividerColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)';
+  const glassBg = isDark ? 'rgba(16,18,32,0.55)' : 'rgba(255,255,255,0.72)';
+
+  // Stagger counter for item entrance animation (across sections)
+  let navIndex = 0;
+
   const drawerContent = (
     <>
       {/* Header Section */}
@@ -219,21 +231,16 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
         }}
       >
         {/* Collapse Button - Hidden on Mobile */}
-        <IconButton
+        <MorphToggleIcon
+          open={collapsed}
+          label="toggle sidebar"
           onClick={handleToggleCollapse}
           sx={{
             display: { xs: 'none', md: 'flex' },
             p: 1,
             color: 'primary.main',
-            transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
-            '&:hover': {
-              bgcolor: 'action.hover',
-              transform: 'rotate(180deg)'
-            }
           }}
-        >
-          <MenuIcon />
-        </IconButton>
+        />
 
         {/* Animated Brand Text */}
         <Box
@@ -264,7 +271,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
               transition: 'all 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)',
               '&:hover': {
                 transform: isCollapsed ? 'translateX(-20px)' : 'translateX(0) scale(1.05)',
-                filter: 'drop-shadow(0 0 12px rgba(255,77,79,0.5))',
+                filter: `drop-shadow(0 0 12px ${alpha(primary, 0.5)})`,
               }
             }}
           >
@@ -296,7 +303,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                   transform: isCollapsed
                     ? 'translate(-50%, -50%) scale(1.15)'
                     : 'translate(-50%, -50%) scale(0.5)',
-                  filter: 'drop-shadow(0 0 15px rgba(255,77,79,0.8))',
+                  filter: `drop-shadow(0 0 15px ${alpha(primary, 0.8)})`,
                 }
               }}
             >
@@ -307,9 +314,126 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
       </Box>
 
       {/* Main Navigation */}
-      <Box sx={{ overflowY: 'auto', overflowX: 'hidden', px: 1.5, flexGrow: 1 }}>
-        {menuSections.map((section) => (
+      <Box
+        key={isMobile ? (mobileOpen ? 'nav-open' : 'nav-closed') : 'nav-desktop'}
+        sx={{
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          px: 1.5,
+          flexGrow: 1,
+          '@media (prefers-reduced-motion: no-preference)': {
+            '@keyframes rtItemIn': {
+              from: { opacity: 0, transform: 'translateY(8px)' },
+              to: { opacity: 1, transform: 'translateY(0)' },
+            },
+            '@keyframes rtDrawerIn': {
+              from: { opacity: 0, transform: 'translateX(-14px)' },
+              to: { opacity: 1, transform: 'translateX(0)' },
+            },
+            '@keyframes rtThreadDraw': {
+              from: { transform: 'scaleY(0)' },
+              to: { transform: 'scaleY(1)' },
+            },
+            '@keyframes rtChatBubble': {
+              '0%, 82%, 100%': { transform: 'translateY(0) scale(1)' },
+              '86%': { transform: 'translateY(-2px) scale(1.06)' },
+              '90%': { transform: 'translateY(0) scale(1)' },
+              '94%': { transform: 'translateY(-1px) scale(1.03)' },
+              '98%': { transform: 'translateY(0) scale(1)' },
+            },
+            '@keyframes rtFriendsPulse': {
+              '0%, 72%, 100%': { transform: 'scale(1)', opacity: 1 },
+              '78%': { transform: 'scale(1.06)', opacity: 0.9 },
+              '84%': { transform: 'scale(1)', opacity: 1 },
+              '90%': { transform: 'scale(1.03)', opacity: 0.95 },
+              '96%': { transform: 'scale(1)', opacity: 1 },
+            },
+            '@keyframes rtCompassSway': {
+              '0%': { transform: 'rotate(-10deg)' },
+              '100%': { transform: 'rotate(10deg)' },
+            },
+            '@keyframes rtHeartbeat': {
+              '0%, 8%, 100%': { transform: 'scale(1)' },
+              '2%': { transform: 'scale(1.18)' },
+              '5%': { transform: 'scale(1)' },
+              '6.5%': { transform: 'scale(1.12)' },
+            },
+            '@keyframes rtPing': {
+              '0%, 78%, 100%': { transform: 'scale(1)', opacity: 1 },
+              '84%': { transform: 'scale(1.14)', opacity: 0.75 },
+              '90%': { transform: 'scale(1)', opacity: 1 },
+            },
+            '@keyframes rtBlink': {
+              '0%, 90%, 100%': { transform: 'scaleY(1)' },
+              '93%': { transform: 'scaleY(0.15)' },
+              '96%': { transform: 'scaleY(1)' },
+            },
+            '@keyframes rtDing': {
+              '0%, 92%, 100%': { transform: 'rotate(0)' },
+              '94%': { transform: 'rotate(-14deg)' },
+              '96%': { transform: 'rotate(12deg)' },
+              '98%': { transform: 'rotate(-6deg)' },
+            },
+            '@keyframes rtShake': {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '25%': { transform: 'translateX(-2px)' },
+              '75%': { transform: 'translateX(2px)' },
+            },
+            '@keyframes rtOrbit': {
+              to: { transform: 'rotate(180deg)' },
+            },
+            '@keyframes rtJoystick': {
+              '0%, 60%, 100%': { transform: 'rotate(0)' },
+              '20%': { transform: 'rotate(-14deg)' },
+              '40%': { transform: 'rotate(10deg)' },
+            },
+            '@keyframes rtSpin': {
+              to: { transform: 'rotate(360deg)' },
+            },
+            '@keyframes rtFlip': {
+              to: { transform: 'rotateY(180deg)' },
+            },
+            '@keyframes rtGemGlint': {
+              '0%, 100%': { transform: 'scale(1)', filter: 'none' },
+              '50%': {
+                transform: 'scale(1.12)',
+                filter: `drop-shadow(0 0 6px ${alpha(primary, 0.8)}) brightness(1.35)`,
+              },
+            },
+            '@keyframes rtShieldPulse': {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.15)' },
+            },
+            '@keyframes rtWave': {
+              '0%, 100%': { transform: 'rotate(-8deg)' },
+              '50%': { transform: 'rotate(8deg)' },
+            },
+            '@keyframes rtWiggleLock': {
+              '0%, 100%': { transform: 'rotate(0)' },
+              '25%': { transform: 'rotate(-12deg)' },
+              '50%': { transform: 'rotate(10deg)' },
+              '75%': { transform: 'rotate(-6deg)' },
+            },
+            '@keyframes rtSliders': {
+              '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
+              '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
+              '75%': { transform: 'translateY(1px) scaleY(1.2)' },
+            },
+            '& .rt-bubble': { animation: 'rtChatBubble 9s ease-in-out infinite' },
+            '& .rt-pulse': { animation: 'rtFriendsPulse 5.5s ease-in-out infinite' },
+            '& .rt-compass': { animation: 'rtCompassSway 5s ease-in-out infinite alternate' },
+            '& .rt-heart': { animation: 'rtHeartbeat 6s cubic-bezier(0.28, 0.84, 0.42, 1) infinite' },
+            '& .rt-ping': { animation: 'rtPing 4s ease-in-out infinite' },
+            '& .rt-blink': { animation: 'rtBlink 5s ease-in-out infinite' },
+            '& .rt-bell': { animation: 'rtDing 14s ease-in-out infinite' },
+          },
+        }}
+      >
+        {menuSections.map((section, sectionIndex) => (
           <Box key={section.id} sx={{ mb: 2 }}>
+            {sectionIndex > 0 && (
+              <Divider sx={{ borderColor: dividerColor, mx: 1, mb: 2, opacity: 0.6 }} />
+            )}
             {!isCollapsed && (
               <Typography
                 variant="caption"
@@ -317,8 +441,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                   px: 2,
                   py: 1,
                   display: 'block',
-                  color: 'text.disabled',
-                  opacity: 0.6,
+                  color: textSection,
                   fontWeight: 700,
                   letterSpacing: '1px',
                   fontSize: '0.7rem'
@@ -332,8 +455,9 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                 if (item.id === 'goldth' && !isPremiumOrVip) return false;
                 return true;
               }).map((item) => {
-                const thread = item.threadId ? getThreadConfig(item.threadId) : null;
                 const active = isActive(item.path);
+                const delay = `${Math.min(navIndex * 45, 540)}ms`;
+                navIndex += 1;
 
                 return (
                   <Box key={item.id}>
@@ -342,28 +466,30 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                         <ListItemButton
                           selected={active}
                           onClick={() => handleMenuClick(item)}
-                          onMouseEnter={() => item.threadId && setHoveredThread(item.threadId)}
-                          onMouseLeave={() => setHoveredThread(null)}
                           sx={{
                             borderRadius: '10px',
                             justifyContent: isCollapsed ? 'center' : 'flex-start',
                             px: isCollapsed ? 0 : 2,
                             minHeight: 44,
                             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                            animation: `rtItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both ${delay}`,
                             '&:hover': {
-                              bgcolor: thread ? thread.activeBg : 'rgba(255,255,255,0.06)',
+                              bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
                               '& .MuiListItemIcon-root': {
-                                color: thread ? thread.color : 'white',
+                                color: primary,
                                 transform: 'scale(1.1)',
                               },
                               '& .MuiListItemText-primary': {
-                                color: 'white',
-                              }
+                                color: isDark ? textActive : primary,
+                                textShadow: isDark ? `0 0 10px ${alpha(primary, 0.65)}` : 'none',
+                              },
                             },
                             '&.Mui-selected': {
-                              bgcolor: thread ? thread.activeBg : 'rgba(255,255,255,0.08)',
+                              bgcolor: alpha(primary, isDark ? 0.14 : 0.08),
+                              backgroundImage: `linear-gradient(90deg, ${alpha(primary, isDark ? 0.22 : 0.12)}, ${alpha(primary, 0.02)})`,
                               '&:hover': {
-                                bgcolor: thread ? thread.activeBg : 'rgba(255,255,255,0.1)',
+                                bgcolor: alpha(primary, isDark ? 0.18 : 0.1),
+                                backgroundImage: `linear-gradient(90deg, ${alpha(primary, isDark ? 0.26 : 0.16)}, ${alpha(primary, 0.03)})`,
                               },
                               '&::before': {
                                 content: '""',
@@ -373,18 +499,35 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                                 height: '70%',
                                 width: '4px',
                                 borderRadius: '0 4px 4px 0',
-                                bgcolor: thread ? thread.color : 'primary.main',
-                                boxShadow: `0 0 10px ${thread ? thread.color : theme.palette.primary.main}`,
-                              }
+                                transformOrigin: 'top',
+                                bgcolor: primary,
+                                boxShadow: `0 0 10px ${alpha(primary, 0.8)}`,
+                                animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
+                              },
                             },
+                            '&:hover .rt-settings-icon': {
+                              transform: 'rotate(90deg)',
+                            },
+                            '&:hover .rt-dash': { animation: 'rtShake 0.4s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                            '&:hover .rt-orbit': { animation: 'rtOrbit 0.6s cubic-bezier(0.22, 1, 0.36, 1)' },
+                            '&:hover .rt-joystick': { animation: 'rtJoystick 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                            '&:hover .rt-wheel': { animation: 'rtSpin 0.7s cubic-bezier(0.22, 1, 0.36, 1)' },
+                            '&:hover .rt-flip': { animation: 'rtFlip 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                            '&:hover .rt-gem': { animation: 'rtGemGlint 0.8s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                            '&:hover .rt-compass': { animationPlayState: 'paused' },
+                            '&:hover .rt-heart': { animationPlayState: 'paused' },
+                            '&:hover .rt-ping': { animationPlayState: 'paused' },
+                            '&:hover .rt-blink': { animationPlayState: 'paused' },
+                            '&:hover .rt-bubble': { animationPlayState: 'paused' },
+                            '&:hover .rt-pulse': { animationPlayState: 'paused' },
                           }}
                         >
                           <ListItemIcon
                             sx={{
                               minWidth: isCollapsed ? 'auto' : 36,
                               color: active
-                                ? (thread ? thread.color : (isPremiumOrVip ? planConfig.color.primary : 'primary.main'))
-                                : 'text.secondary',
+                                ? (isPremiumOrVip ? planConfig.color.primary : primary)
+                                : iconInactive,
                               justifyContent: 'center',
                               transition: 'all 0.2s ease',
                             }}
@@ -398,7 +541,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                                 primaryTypographyProps={{
                                   fontSize: '0.88rem',
                                   fontWeight: active ? 600 : 500,
-                                  color: active ? 'text.primary' : 'text.secondary',
+                                  color: active ? textActive : textInactive,
                                   sx: { transition: 'color 0.2s ease' }
                                 }}
                               />
@@ -416,7 +559,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                     {/* Submenu */}
                     {item.children && !isCollapsed && (
                       <Collapse in={expandedMenus.includes(item.id)} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding sx={{ ml: 1, borderLeft: '1px solid', borderColor: 'divider', my: 0.5 }}>
+                        <List component="div" disablePadding sx={{ ml: 1, borderLeft: '1px solid', borderColor: dividerColor, my: 0.5 }}>
                           {item.children.map((child) => (
                             <ListItem key={child.id} disablePadding sx={{ mb: 0.2 }}>
                               <ListItemButton
@@ -436,19 +579,25 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                                   '&.Mui-selected': {
                                     bgcolor: 'transparent',
                                     '& .MuiListItemText-primary': {
-                                      color: 'primary.main',
+                                      color: primary,
                                       fontWeight: 600,
                                     },
                                     '& .MuiListItemIcon-root': {
-                                      color: 'primary.main',
+                                      color: primary,
                                     }
                                   },
+                                  '&:hover .rt-palette': { transform: 'rotate(45deg)' },
+                                  '&:hover .rt-bell': { animationPlayState: 'paused' },
+                                  '&:hover .rt-shield': { animation: 'rtShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                                  '&:hover .rt-wave': { animation: 'rtWave 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                                  '&:hover .rt-unlock': { animation: 'rtWiggleLock 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+                                  '&:hover .rt-sliders': { animation: 'rtSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
                                 }}
                               >
                                 <ListItemIcon
                                   sx={{
                                     minWidth: 32,
-                                    color: isActive(child.path) ? 'primary.main' : 'rgba(255,255,255,0.35)',
+                                    color: isActive(child.path) ? primary : iconInactive,
                                     transform: 'scale(0.75)',
                                   }}
                                 >
@@ -459,7 +608,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                                   primaryTypographyProps={{
                                     fontSize: '0.82rem',
                                     fontWeight: 400,
-                                    color: isActive(child.path) ? 'text.primary' : 'text.secondary',
+                                    color: isActive(child.path) ? textActive : textInactive,
                                   }}
                                 />
                               </ListItemButton>
@@ -478,7 +627,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
 
       {/* Footer Info */}
       <Box sx={{ p: '16px 28px', textAlign: 'left', mt: 'auto' }}>
-        <Divider sx={{ mb: 2, ml: -3.5, mr: -3.5 }} />
+        <Divider sx={{ mb: 2, ml: -3.5, mr: -3.5, borderColor: dividerColor, opacity: 0.6 }} />
         {!isCollapsed ? (
           <Box>
             <Typography
@@ -532,10 +681,12 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           width: DRAWER_WIDTH,
           boxSizing: 'border-box',
           borderRight: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-          backgroundImage: hoveredThread ? `linear-gradient(to bottom, transparent, ${getThreadConfig(hoveredThread).color}08)` : 'none',
-          color: 'text.primary'
+          borderColor: dividerColor,
+          bgcolor: glassBg,
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          color: textActive,
+          animation: 'rtDrawerIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
         },
       }}
     >
@@ -552,12 +703,14 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           width: drawerWidth,
           boxSizing: 'border-box',
           borderRight: '1px solid',
-          borderColor: 'divider',
-          transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          borderColor: dividerColor,
+          transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
           overflowX: 'hidden',
-          bgcolor: 'background.paper',
-          backgroundImage: hoveredThread ? `linear-gradient(to bottom, transparent, ${getThreadConfig(hoveredThread).color}08)` : 'none',
-          color: 'text.primary'
+          bgcolor: glassBg,
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          color: textActive,
+          animation: 'rtDrawerIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
         },
       }}
     >

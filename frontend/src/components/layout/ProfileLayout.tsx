@@ -11,7 +11,6 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
-  IconButton,
   Divider,
 } from '@mui/material';
 import {
@@ -19,12 +18,13 @@ import {
   Security as SecurityIcon,
   Notifications as NotificationsIcon,
   Lock as LockIcon,
-  Menu as MenuIcon,
   ArrowBack as ArrowBackIcon,
   Logout as LogoutIcon,
+  Tune as TuneIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 import { useAppTheme } from '../../context/ThemeContext';
+import MorphToggleIcon from '../motion/MorphToggleIcon';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_WIDTH_COLLAPSED = 70;
@@ -46,6 +46,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
 
   const menuItems = [
     { id: 'settings', label: t('menu_settings', 'Configuración'), icon: <SettingsIcon />, path: '/settings' },
+    { id: 'navbar', label: t('menu_navbar', 'Personalizar Navbar'), icon: <TuneIcon />, path: '/settings?section=navbar' },
     { id: 'security', label: t('menu_security', 'Seguridad'), icon: <SecurityIcon />, path: '/settings?section=security' },
     { id: 'notifications', label: t('menu_notifications', 'Notificaciones'), icon: <NotificationsIcon />, path: '/settings?section=notifications' },
     { id: 'privacy', label: t('menu_privacy', 'Privacidad'), icon: <LockIcon />, path: '/settings?section=privacy' },
@@ -74,15 +75,15 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
           minHeight: 64,
         }}
       >
-        <IconButton
+        <MorphToggleIcon
+          open={collapsed}
+          label="toggle profile sidebar"
           onClick={handleToggleCollapse}
           sx={{
             p: 1,
             color: 'primary.main',
           }}
-        >
-          <MenuIcon />
-        </IconButton>
+        />
 
         {!collapsed && (
           <Typography
@@ -103,7 +104,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
         {menuItems.map((item) => (
           <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
-              selected={router.pathname === item.path}
+              selected={router.asPath === item.path || router.pathname === item.path}
               onClick={() => handleNavigation(item.path)}
               sx={{
                 borderRadius: 1,

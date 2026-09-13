@@ -7,7 +7,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Button,
   Chip,
   Avatar,
@@ -31,6 +30,7 @@ import {
   VideoCameraFront as VideoIcon,
 } from '@mui/icons-material';
 import Layout from '../../components/layout/Layout';
+import ParallaxImage from '../../components/motion/ParallaxImage';
 import apiClient from '../../services/api';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
@@ -170,11 +170,12 @@ export default function Events() {
           {filteredEvents.map((event) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={event.id}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={event.image_url || `https://source.unsplash.com/random/800x600/?${event.theme.toLowerCase()}`}
+                <ParallaxImage
+                  src={event.image_url || `https://source.unsplash.com/random/800x600/?${event.theme.toLowerCase()}`}
                   alt={event.title}
+                  intensity={0.1}
+                  drift={4}
+                  frameSx={{ height: 140 }}
                 />
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>

@@ -24,6 +24,8 @@ import NotificationsSection from '../../components/settings/NotificationsSection
 import SecuritySection from '../../components/settings/SecuritySection';
 import AccessibilitySection from '../../components/settings/AccessibilitySection';
 import PrivacySection from '../../components/settings/PrivacySection';
+import NavbarSection from '../../components/settings/NavbarSection';
+import { useNavbarContext } from '../../context/NavbarContext';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -33,6 +35,7 @@ export default function SettingsPage() {
 
   const { settings, loading, saving, updateSettings, saveSettings, suspendAccount, deleteAccount } = useSettings();
   const { mode, setMode, setTheme } = useAppTheme();
+  const { refresh: refreshNavConfig } = useNavbarContext();
   const [localSettings, setLocalSettings] = useState(settings);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
@@ -55,6 +58,7 @@ export default function SettingsPage() {
 
     if (data) {
       await saveSettings(data);
+      refreshNavConfig();
       setShowSuccessAlert(true);
       setTimeout(() => setShowSuccessAlert(false), 3000);
     }
@@ -69,6 +73,7 @@ export default function SettingsPage() {
       'privacy': t('menu_privacy'),
       'localization': t('settings_language'),
       'advanced': t('settings_advanced'),
+      'navbar': t('menu_navbar', 'Personalizar Navbar'),
     };
     return titles[activeSection] || t('settings_title');
   };
@@ -123,6 +128,13 @@ export default function SettingsPage() {
       case 'privacy':
         return (
           <PrivacySection
+            settings={localSettings}
+            onSettingsChange={handleSettingsChange}
+          />
+        );
+      case 'navbar':
+        return (
+          <NavbarSection
             settings={localSettings}
             onSettingsChange={handleSettingsChange}
           />
@@ -182,7 +194,7 @@ export default function SettingsPage() {
           {renderSection()}
 
           {/* Save Button */}
-          {!loading && ['appearance', 'notifications', 'security', 'accessibility', 'privacy'].includes(activeSection) && (
+          {!loading && ['appearance', 'notifications', 'security', 'accessibility', 'privacy', 'navbar'].includes(activeSection) && (
             <Box display="flex" justifyContent="flex-end" pt={4} mt={4} borderTop="1px solid" borderColor="divider">
               <Button
                 variant="contained"

@@ -52,8 +52,31 @@ class UserSettings(Document):
     keyboard_navigation: bool = False
     reduced_motion: bool = False
     
-    # 🧰 Avanzado
-    auto_save: bool = True
+    # 🧭 Personalización del Navbar
+    navbar_config: Dict[str, Any] = Field(default_factory=lambda: {
+        "shortcuts": {
+            "home": True,
+            "discover": True,
+            "events": True,
+            "plans": True,
+            "favorites": False,
+            "recent": False,
+            "help": False,
+            "notifications": True,
+            "settings": True,
+        },
+        "icon_styles": {
+            "theme": "basic",           # basic, glow, subtle, liquid, premium
+            "notifications": "basic",
+            "settings": "basic",
+            "language": "basic",
+        },
+        "profile": {
+            "shape": "circle",      # circle, square, diamond
+            "border": "accent",     # none, thin, accent
+            "glow": "accent",       # none, accent, passion
+        },
+    })
     
     # Metadata
     created_at: datetime = Field(default_factory=datetime.utcnow)

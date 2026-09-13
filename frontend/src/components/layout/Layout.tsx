@@ -14,22 +14,19 @@ import {
   Divider,
   ListItemIcon,
   Drawer,
-  Badge,
   GlobalStyles
 } from '@mui/material';
 import {
-  Brightness4,
-  Brightness7,
   Settings as SettingsIcon,
   Security as SecurityIcon,
   Notifications as NotificationsIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
-  Menu as MenuIcon,
   Home as HomeIcon,
   Search as SearchIcon,
   Favorite as FavoriteBorderIcon,
-  ChatBubble as ChatBubbleIcon
+  ChatBubble as ChatBubbleIcon,
+  Language as TranslateIcon
 } from '@mui/icons-material';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 
@@ -45,12 +42,24 @@ import apiClient from '../../services/api';
 import NotificationPanel from '../notifications/NotificationPanel';
 import Footer from './Footer';
 import { useUI } from '../../context/UIContext';
+import { alpha, useTheme } from '@mui/material/styles';
+import NavLink from './NavLink';
+import MorphToggleIcon from '../motion/MorphToggleIcon';
+import ThemeSwitch from '../motion/ThemeSwitch';
+import BasicThemeSwitch from '../motion/BasicThemeSwitch';
+import GlowThemeSwitch from '../motion/GlowThemeSwitch';
+import SubtleThemeSwitch from '../motion/SubtleThemeSwitch';
+import LiquidThemeSwitch from '../motion/LiquidThemeSwitch';
+import QuickActionIcon from '../motion/QuickActionIcon';
+import { isIconStyleId, IconStyleId } from '../motion/iconStyles';
+import { supportedLanguages } from '../settings/AppearanceSection';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 import { useAppTheme } from '../../context/ThemeContext';
+import { useNavbarContext } from '../../context/NavbarContext';
 
 // ... (existing imports)
 
@@ -61,6 +70,39 @@ export default function Layout({ children }: LayoutProps) {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { mode, toggleMode } = useAppTheme();
   const { drawerWidth } = useUI();
+  const { navConfig, refresh: refreshNavConfig } = useNavbarContext();
+
+  const muiTheme = useTheme();
+  const isDark = muiTheme.palette.mode === 'dark';
+  const primary = muiTheme.palette.primary.main;
+  const dividerColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)';
+  const glassBg = isDark ? 'rgba(16,18,32,0.55)' : 'rgba(255,255,255,0.72)';
+
+  const shortcuts = navConfig?.shortcuts ?? {};
+  const profileStyle = navConfig?.profile ?? {};
+  const avatarShape = profileStyle.shape ?? 'circle';
+  const avatarBorder = profileStyle.border ?? 'accent';
+  const avatarGlow = profileStyle.glow ?? 'accent';
+  const avatarRadius = avatarShape === 'circle' ? '50%' : avatarShape === 'square' ? '12px' : '6px';
+  const isDiamondAvatar = avatarShape === 'diamond';
+  const avatarBorderWidth = avatarBorder === 'none' ? 0 : avatarBorder === 'thin' ? 1.5 : 2;
+  const avatarBorderColor =
+    avatarBorder === 'none'
+      ? 'transparent'
+      : avatarBorder === 'thin'
+        ? isDark
+          ? 'rgba(255,255,255,0.4)'
+          : 'rgba(0,0,0,0.22)'
+        : alpha(primary, 0.6);
+  const avatarGlowColor = (o: number) =>
+    avatarGlow === 'passion' ? `rgba(211,47,47,${o})` : alpha(primary, o);
+  const iconStyleIds = navConfig?.icon_styles ?? {};
+  const styleOf = (id: string): IconStyleId => {
+    const value = iconStyleIds[id];
+    return isIconStyleId(value) ? value : 'basic';
+  };
+  const quickActions = navConfig?.quick_actions ?? {};
+  const showIcon = (id: string): boolean => (navConfig ? quickActions[id] !== false : true);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -69,6 +111,9 @@ export default function Layout({ children }: LayoutProps) {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const ws = useRef<WebSocket | null>(null);
+
+  // Language menu state
+  const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
 
   // Helper to get full image URL
   const getImageUrl = (url?: string) => {
@@ -94,6 +139,13 @@ export default function Layout({ children }: LayoutProps) {
 
     fetchNotifications();
   }, [isAuthenticated]);
+
+  // Refetch navbar config when auth state changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshNavConfig();
+    }
+  }, [isAuthenticated, refreshNavConfig]);
 
   // Use avatar from Redux and process URL
   const displayAvatar = getImageUrl(user?.avatar);
@@ -140,6 +192,27 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleOpenLangMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setLangAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseLangMenu = () => {
+    setLangAnchorEl(null);
+  };
+
+  const handleLanguageSelect = (newLang: string) => {
+    handleCloseLangMenu();
+    document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`;
+    const currentPath = router.asPath;
+    const currentLocale = router.locale || 'es';
+    const supportedLocales = ['en', 'pt', 'fr'];
+    const cleanedPath = supportedLocales.includes(currentLocale)
+      ? currentPath.replace(`/${currentLocale}`, '')
+      : currentPath;
+    const target = newLang !== 'es' ? `/${newLang}${cleanedPath === '/' ? '' : cleanedPath}` : cleanedPath;
+    window.location.href = target || '/';
   };
 
   const handleLogout = async () => {
@@ -190,18 +263,27 @@ export default function Layout({ children }: LayoutProps) {
             position="fixed"
             elevation={0}
             sx={{
-              bgcolor: 'background.paper',
-              color: 'text.primary',
+              bgcolor: glassBg,
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
+              color: isDark ? 'rgba(255,255,255,0.92)' : 'rgba(33,33,33,0.87)',
               borderBottom: '1px solid',
-              borderColor: 'divider',
+              borderColor: dividerColor,
+              boxShadow: `0 1px 24px ${isDark ? 'rgba(0,0,0,0.35)' : alpha(primary, 0.06)}`,
               minHeight: { xs: 60, sm: 72 },
               width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
               ml: { xs: 0, md: `${drawerWidth}px` },
-              transition: theme => theme.transitions.create(['width', 'margin'], {
+              transition: theme => theme.transitions.create(['width', 'margin', 'background-color', 'border-color'], {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
               }),
-              zIndex: 1500 // Stay above everything including drawers
+              zIndex: 1500, // Stay above everything including drawers
+              '@media (prefers-reduced-motion: no-preference)': {
+                '@keyframes rtAvatarRing': {
+                  '0%, 100%': { boxShadow: `0 0 0 2px ${avatarGlowColor(0.35)}` },
+                  '50%': { boxShadow: `0 0 0 5px ${avatarGlowColor(0.12)}` },
+                },
+              },
             }}
           >
             <Toolbar sx={{ position: 'relative', justifyContent: 'space-between', gap: 1, minHeight: { xs: '60px !important', sm: '72px !important' }, px: { xs: 1, sm: 3 } }}>
@@ -209,15 +291,14 @@ export default function Layout({ children }: LayoutProps) {
               <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '40px', flexShrink: 0 }}>
                 {/* Hamburger Menu (Mobile Only) */}
                 <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center' }}>
-                  <IconButton
+                  <MorphToggleIcon
+                    open={mobileDrawerOpen}
+                    label="toggle drawer"
                     color="inherit"
-                    aria-label="toggle drawer"
                     edge="start"
                     onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
                     sx={{ mr: 1 }}
-                  >
-                    <MenuIcon />
-                  </IconButton>
+                  />
                 </Box>
 
                 {/* Logo Area (Left - Desktop) */}
@@ -241,31 +322,28 @@ export default function Layout({ children }: LayoutProps) {
                 maxWidth: '100%'
               }}>
                 {[
-                  { label: t('nav.home', 'Inicio'), path: '/home' },
-                  { label: t('nav.discover', 'Descubrir'), path: '/discover' },
-                  { label: t('nav.events', 'Eventos'), path: '/events' },
-                  { label: t('nav.plans', 'Planes'), path: '/plans' },
-                ].map((link) => (
-                  <Typography
-                    key={link.path}
-                    variant="body2"
-                    sx={{
-                      cursor: 'pointer',
-                      color: router.pathname === link.path ? 'primary.main' : 'text.secondary',
-                      fontWeight: router.pathname === link.path ? 700 : 500,
-                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        color: 'primary.main',
-                      }
-                    }}
-                    onClick={() => router.push(link.path)}
-                  >
-                    {link.label}
-                  </Typography>
-                ))}
+                  { id: 'home', label: t('nav.home', 'Inicio'), path: '/home', optional: false },
+                  { id: 'discover', label: t('nav.discover', 'Descubrir'), path: '/discover', optional: false },
+                  { id: 'events', label: t('nav.events', 'Eventos'), path: '/events', optional: false },
+                  { id: 'plans', label: t('nav.plans', 'Planes'), path: '/plans', optional: false },
+                  { id: 'favorites', label: t('nav.favorites', 'Favoritos'), path: '/likes', optional: true },
+                  { id: 'recent', label: t('nav.recent', 'Recientes'), path: '/visits', optional: true },
+                  { id: 'help', label: t('nav.help', 'Ayuda'), path: '/help', optional: true },
+                ]
+                  .filter((link) => {
+                    if (link.optional) {
+                      return navConfig !== null && shortcuts[link.id] === true;
+                    }
+                    return navConfig ? shortcuts[link.id] !== false : true;
+                  })
+                  .map((link) => (
+                    <NavLink
+                      key={link.path}
+                      label={link.label}
+                      active={router.pathname === link.path}
+                      onClick={() => router.push(link.path)}
+                    />
+                  ))}
               </Box>
 
               {/* RIGHT: User Actions - Positoned Absolutely on Mobile for stability */}
@@ -280,52 +358,133 @@ export default function Layout({ children }: LayoutProps) {
                 flexShrink: 0,
               }}>
                 {/* Theme Toggle - Desktop Only */}
-                <Tooltip title={mode === 'dark' ? t('theme.light', 'Modo Claro') : t('theme.dark', 'Modo Oscuro')}>
-                  <IconButton
-                    onClick={toggleMode}
-                    color="inherit"
-                    size="small"
-                    sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
-                  >
-                    {mode === 'dark' ? <Brightness7 sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} /> : <Brightness4 sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />}
-                  </IconButton>
-                </Tooltip>
+                {showIcon('theme') && (
+                  <Tooltip title={mode === 'dark' ? t('theme.light', 'Modo Claro') : t('theme.dark', 'Modo Oscuro')}>
+                    <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                      <QuickActionIcon styleId={styleOf('theme')} motion="switch" asBox>
+                        {styleOf('theme') === 'basic' ? (
+                          <BasicThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                        ) : styleOf('theme') === 'glow' ? (
+                          <GlowThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                        ) : styleOf('theme') === 'subtle' ? (
+                          <SubtleThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                        ) : styleOf('theme') === 'liquid' ? (
+                          <LiquidThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                        ) : (
+                          <ThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                        )}
+                      </QuickActionIcon>
+                    </Box>
+                  </Tooltip>
+                )}
 
                 {/* Notifications Button */}
-                <Tooltip title={t('nav.notifications', 'Notificaciones')}>
-                  <IconButton onClick={() => setNotificationOpen(true)} color="inherit" size="small">
-                    <Badge badgeContent={unreadCount} color="error">
-                      <NotificationsIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                    </Badge>
-                  </IconButton>
-                </Tooltip>
+                {showIcon('notifications') && (
+                  <Tooltip title={t('nav.notifications', 'Notificaciones')}>
+                    <QuickActionIcon
+                      styleId={styleOf('notifications')}
+                      motion="bell"
+                      basicHover="bell"
+                      active={unreadCount > 0}
+                      badgeContent={unreadCount}
+                      onClick={() => setNotificationOpen(true)}
+                    >
+                      <NotificationsIcon className="rt-bell-icon" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                    </QuickActionIcon>
+                  </Tooltip>
+                )}
 
                 {/* Settings Button */}
-                <Tooltip title={t('nav.settings', 'Configuración')}>
-                  <IconButton
-                    onClick={() => router.push('/settings')}
-                    color="inherit"
-                    size="small"
-                  >
-                    <SettingsIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                  </IconButton>
-                </Tooltip>
+                {showIcon('settings') && (
+                  <Tooltip title={t('nav.settings', 'Configuración')}>
+                    <QuickActionIcon
+                      styleId={styleOf('settings')}
+                      motion="gear"
+                      basicHover="gear"
+                      onClick={() => router.push('/settings')}
+                    >
+                      <SettingsIcon className="rt-settings-spin" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                    </QuickActionIcon>
+                  </Tooltip>
+                )}
+
+                {/* Language Button */}
+                {showIcon('language') && (
+                  <Tooltip title={t('nav.language', 'Idioma')}>
+                    <QuickActionIcon styleId={styleOf('language')} motion="globe" onClick={handleOpenLangMenu}>
+                      <TranslateIcon className="rt-globe" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                    </QuickActionIcon>
+                  </Tooltip>
+                )}
+
+                {/* Language Menu */}
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-language"
+                  anchorEl={langAnchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(langAnchorEl)}
+                  onClose={handleCloseLangMenu}
+                >
+                  {supportedLanguages.map((lang) => (
+                    <MenuItem
+                      key={lang.code}
+                      selected={(router.locale || 'es') === lang.code}
+                      onClick={() => handleLanguageSelect(lang.code)}
+                    >
+                      {lang.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
 
                 {/* User Avatar */}
                 <Tooltip title={t('nav.profile', 'Perfil')}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0.5 }}>
-                    <Avatar
-                      alt={user?.email}
-                      src={displayAvatar || undefined}
+                    <Box
+                      className="rt-avatar"
                       sx={{
                         width: { xs: 28, sm: 32 },
                         height: { xs: 28, sm: 32 },
-                        bgcolor: 'primary.main',
-                        fontSize: '0.9rem'
+                        borderRadius: avatarRadius,
+                        border: `${avatarBorderWidth}px solid ${avatarBorderColor}`,
+                        overflow: 'hidden',
+                        transform: isDiamondAvatar ? 'rotate(45deg)' : 'none',
+                        transition: 'border-radius 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease',
+                        ...(avatarGlow !== 'none'
+                          ? {
+                              '@media (prefers-reduced-motion: no-preference)': {
+                                animation: 'rtAvatarRing 3s ease-in-out infinite',
+                              },
+                            }
+                          : {}),
                       }}
                     >
-                      {!displayAvatar && user?.email?.charAt(0).toUpperCase()}
-                    </Avatar>
+                      <Avatar
+                        alt={user?.email}
+                        src={displayAvatar || undefined}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          bgcolor: 'primary.main',
+                          fontSize: '0.9rem',
+                          transform: isDiamondAvatar ? 'rotate(-45deg)' : 'none',
+                          transition: 'transform 0.3s ease',
+                          '&:hover': {
+                            transform: isDiamondAvatar ? 'rotate(-45deg) scale(1.06)' : 'scale(1.06)',
+                          },
+                        }}
+                      >
+                        {!displayAvatar && user?.email?.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </Box>
                   </IconButton>
                 </Tooltip>
               </Box>

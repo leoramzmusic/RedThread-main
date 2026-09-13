@@ -27,10 +27,20 @@ import {
     Email,
     CheckCircle,
     Cancel,
+    Lock,
 } from '@mui/icons-material';
 import apiClient from '../../services/api';
-import { useAppTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'next-i18next';
+import { AUTH_INPUT_SX, SOCIAL_BTN_SX, SUBMIT_BTN_SX } from './authInputStyles';
+import { keyframes } from '@mui/material';
+
+const lockShake = keyframes`
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-1.5px); }
+  40% { transform: translateX(1.5px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+`;
 
 
 // Debounce hook
@@ -50,9 +60,8 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
-export default function RegisterForm() {
+export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } = {}) {
     const router = useRouter();
-    const { mode } = useAppTheme();
     const { t } = useTranslation('common');
 
     // Password validation rules with translations
@@ -252,6 +261,7 @@ export default function RegisterForm() {
                 otp: otp
             });
             setSuccess(true);
+            onSuccess?.();
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Código inválido o expirado.');
         } finally {
@@ -269,18 +279,19 @@ export default function RegisterForm() {
 
     if (step === 2) {
         return (
-            <form onSubmit={handleVerifyOtp} style={{ width: '100%' }}>
-                <Typography variant="h6" align="center" gutterBottom sx={{ fontWeight: 600 }}>
+            <form onSubmit={handleVerifyOtp} style={{ width: '100%', fontFamily: "'Inter', 'Poppins', sans-serif" }}>
+                <Typography variant="h6" align="center" gutterBottom sx={{ fontWeight: 600, color: '#FFFFFF' }}>
                     {t('auth.verifyTitle')}
                 </Typography>
-                <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
+                <Typography variant="body2" align="center" sx={{ color: 'rgba(255,255,255,0.85)', mb: 3 }}>
                     {t('auth.verifySubtitle', { phone: formData.identifier })}
                 </Typography>
 
-                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
 
                 <TextField
                     fullWidth
+                    variant="standard"
                     label={t('auth.verificationCode')}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').substring(0, 6))}
@@ -288,9 +299,11 @@ export default function RegisterForm() {
                     required
                     autoFocus
                     placeholder="000000"
+                    sx={AUTH_INPUT_SX}
                     InputProps={{
-                        sx: { borderRadius: 2, textAlign: 'center', fontSize: '1.5rem', letterSpacing: '8px' }
+                        sx: { fontSize: '1.5rem', letterSpacing: '8px', textAlign: 'center' }
                     }}
+                    inputProps={{ style: { textAlign: 'center' } }}
                 />
 
                 <Button
@@ -299,15 +312,7 @@ export default function RegisterForm() {
                     variant="contained"
                     size="large"
                     disabled={loading || otp.length < 6}
-                    sx={{
-                        mt: 3,
-                        mb: 2,
-                        height: 48,
-                        borderRadius: 2,
-                        bgcolor: '#e91e63',
-                        '&:hover': { bgcolor: '#d81b60' },
-                        fontWeight: 700
-                    }}
+                    sx={SUBMIT_BTN_SX}
                 >
                     {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.verifyAction')}
                 </Button>
@@ -316,7 +321,7 @@ export default function RegisterForm() {
                     fullWidth
                     variant="text"
                     onClick={() => setStep(1)}
-                    sx={{ color: 'text.secondary', textTransform: 'none' }}
+                    sx={{ color: 'rgba(255,255,255,0.85)', textTransform: 'none', '&:hover': { color: '#FFFFFF', bgcolor: 'rgba(255,255,255,0.1)' } }}
                 >
                     {t('auth.backToEdit')}
                 </Button>
@@ -325,13 +330,14 @@ export default function RegisterForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+        <form onSubmit={handleSubmit} style={{ width: '100%', fontFamily: "'Inter', 'Poppins', sans-serif" }}>
+            {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
 
             {/* Unified Identifier Field */}
             <TextField
                 fullWidth
-                label={t('auth.identifierLabel')}
+                variant="standard"
+                label={t('auth.registerIdentifierLabel', { defaultValue: 'Tu correo electrónico o número móvil' })}
                 name="identifier"
                 type="text"
                 placeholder={t('auth.identifierPlaceholder')}
@@ -340,11 +346,11 @@ export default function RegisterForm() {
                 margin="normal"
                 required
                 autoFocus
+                sx={AUTH_INPUT_SX}
                 InputProps={{
-                    sx: { borderRadius: 2 },
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Email sx={{ fontSize: 20, color: 'text.secondary' }} />
+                            <Email sx={{ fontSize: 20, color: 'rgba(255,255,255,0.55)' }} />
                         </InputAdornment>
                     )
                 }}
@@ -354,7 +360,8 @@ export default function RegisterForm() {
             {/* Username Field with Uniqueness Check */}
             <TextField
                 fullWidth
-                label={t('auth.username')}
+                variant="standard"
+                label={t('auth.registerUsername', { defaultValue: 'Elige tu nombre único' })}
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
@@ -363,23 +370,30 @@ export default function RegisterForm() {
                 error={usernameAvailable === false}
                 helperText={
                     formData.username.length < 3
-                        ? t('auth.errors.usernameMin')
+                        ? t('auth.registerUsernameNote', { defaultValue: 'Debe tener al menos 3 caracteres' })
                         : usernameAvailable === false
                             ? t('auth.usernameTaken')
                             : usernameAvailable === true
                                 ? t('auth.usernameAvailable')
                                 : ''
                 }
+                sx={AUTH_INPUT_SX}
                 InputProps={{
-                    sx: { borderRadius: 2 },
                     endAdornment: (
                         <InputAdornment position="end">
                             {checkingUsername ? (
-                                <CircularProgress size={20} />
+                                <CircularProgress size={20} sx={{ color: 'rgba(255,255,255,0.7)' }} />
                             ) : usernameAvailable === true ? (
-                                <CheckCircle color="success" />
+                                <CheckCircle
+                                    color="success"
+                                    sx={{
+                                        fontSize: 20,
+                                        transition: 'filter 0.3s ease',
+                                        filter: 'drop-shadow(0 0 6px rgba(76, 175, 80, 0.85))',
+                                    }}
+                                />
                             ) : usernameAvailable === false ? (
-                                <Cancel color="error" />
+                                <Cancel color="error" sx={{ fontSize: 20 }} />
                             ) : null}
                         </InputAdornment>
                     ),
@@ -389,7 +403,7 @@ export default function RegisterForm() {
             {/* Username Suggestions */}
             {usernameAvailable === false && usernameSuggestions.length > 0 && (
                 <Box sx={{ mt: 1, mb: 1 }}>
-                    <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', mb: 0.5, display: 'block' }}>
                         {t('auth.usernameSuggestions')}:
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -420,7 +434,8 @@ export default function RegisterForm() {
             {/* Password Field */}
             <TextField
                 fullWidth
-                label={t('auth.password')}
+                variant="standard"
+                label={t('auth.registerPassword', { defaultValue: 'Crea una contraseña segura' })}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 value={formData.password}
@@ -429,15 +444,15 @@ export default function RegisterForm() {
                 required
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
+                sx={AUTH_INPUT_SX}
                 InputProps={{
-                    sx: { borderRadius: 2 },
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton
-                                onClick={() => setShowPassword(!showPassword)}
-                                edge="end"
-                            >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                                <Box sx={{ position: 'relative', width: 24, height: 24 }}>
+                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
+                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
+                                </Box>
                             </IconButton>
                         </InputAdornment>
                     ),
@@ -446,8 +461,8 @@ export default function RegisterForm() {
 
             {/* Dynamic Password Validation Hints */}
             <Collapse in={passwordFocused} timeout={300}>
-                <Box sx={{ mt: 1, mb: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
-                    <Typography variant="caption" color="text.secondary" gutterBottom>
+                <Box sx={{ mt: 1, mb: 2, p: 2, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: 2, border: '1px solid rgba(255,255,255,0.2)' }}>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }} gutterBottom>
                         {t('auth.passwordRequirements.title')}
                     </Typography>
                     <List dense disablePadding>
@@ -466,7 +481,7 @@ export default function RegisterForm() {
                                         primary={rule.label}
                                         primaryTypographyProps={{
                                             variant: 'caption',
-                                            color: isMet ? 'text.primary' : 'text.disabled'
+                                            color: isMet ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)'
                                         }}
                                     />
                                 </ListItem>
@@ -479,7 +494,8 @@ export default function RegisterForm() {
             {/* Confirm Password Field */}
             <TextField
                 fullWidth
-                label={t('auth.confirmPassword')}
+                variant="standard"
+                label={t('auth.registerConfirmPassword', { defaultValue: 'Repite tu contraseña' })}
                 name="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={formData.confirmPassword}
@@ -488,15 +504,38 @@ export default function RegisterForm() {
                 required
                 onFocus={() => setConfirmPasswordFocused(true)}
                 onBlur={() => setConfirmPasswordFocused(false)}
+                sx={AUTH_INPUT_SX}
                 InputProps={{
-                    sx: { borderRadius: 2 },
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <Lock
+                                sx={{
+                                    fontSize: 20,
+                                    transition: 'color 0.3s ease, filter 0.3s ease',
+                                    color: passwordsMatch
+                                        ? '#FB7185'
+                                        : 'rgba(255,255,255,0.45)',
+                                    filter: passwordsMatch
+                                        ? 'drop-shadow(0 0 6px rgba(251, 113, 133, 0.9))'
+                                        : 'none',
+                                    ...(formData.confirmPassword.length > 0 && !passwordsMatch
+                                        ? {
+                                              '@media (prefers-reduced-motion: no-preference)': {
+                                                  animation: `${lockShake} 1.1s ease-in-out infinite`,
+                                              },
+                                          }
+                                        : {}),
+                                }}
+                            />
+                        </InputAdornment>
+                    ),
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                edge="end"
-                            >
-                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                                <Box sx={{ position: 'relative', width: 24, height: 24 }}>
+                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showConfirmPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
+                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showConfirmPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
+                                </Box>
                             </IconButton>
                         </InputAdornment>
                     ),
@@ -537,31 +576,20 @@ export default function RegisterForm() {
                     usernameAvailable !== true ||
                     !identifierType
                 }
-                sx={{
-                    mt: 3,
-                    mb: 2,
-                    height: 48,
-                    borderRadius: 2,
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    boxShadow: '0 4px 14px 0 rgba(253, 41, 123, 0.39)',
-                    bgcolor: '#e91e63',
-                    '&:hover': { bgcolor: '#d81b60' }
-                }}
+                sx={SUBMIT_BTN_SX}
             >
-                {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.signUp')}
+                {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.registerSubmit', { defaultValue: 'Comenzar mi historia' })}
             </Button>
 
             <Box sx={{ position: 'relative', my: 3 }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'absolute', width: '100%', top: '50%' }} />
+                <Box sx={{ borderBottom: 1, borderColor: 'rgba(255,255,255,0.25)', position: 'absolute', width: '100%', top: '50%' }} />
                 <Typography
                     variant="caption"
                     sx={{
-                        bgcolor: 'background.paper',
+                        bgcolor: 'transparent',
                         px: 2,
                         position: 'relative',
-                        color: 'text.secondary',
+                        color: 'rgba(255,255,255,0.7)',
                         display: 'inline-block'
                     }}
                 >
@@ -573,64 +601,25 @@ export default function RegisterForm() {
                 {/* Google */}
                 <IconButton
                     aria-label={t('auth.social.registerWith', { provider: 'Google' })}
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <Google sx={{ fontSize: 20, color: '#4285F4' }} />
+                    <Google sx={{ fontSize: 20, color: '#FFFFFF' }} />
                 </IconButton>
 
                 {/* Facebook */}
                 <IconButton
                     aria-label="Registrarse con Facebook"
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
+                    <Facebook sx={{ fontSize: 20, color: '#FFFFFF' }} />
                 </IconButton>
 
                 {/* Instagram */}
                 <IconButton
                     aria-label="Registrarse con Instagram"
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: mode === 'dark' ? '#fff' : '#E4405F' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -640,22 +629,9 @@ export default function RegisterForm() {
                 {/* TikTok */}
                 <IconButton
                     aria-label="Registrarse con TikTok"
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: mode === 'dark' ? '#fff' : '#000' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF">
                         <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.76-.55-1.38-1.28-1.83-2.12v8.59c.02 1.17-.18 2.37-.62 3.44-1.12 2.75-4.14 4.54-7.06 4.01-1.21-.21-2.39-.81-3.23-1.72-1.36-1.44-1.92-3.56-1.45-5.5.42-1.74 1.7-3.29 3.4-3.9 1.04-.37 2.14-.5 3.24-.37.38.04.75.12 1.12.23.01-1.31.01-2.61.02-3.91-.56-.16-1.14-.23-1.72-.25-2.08-.07-4.22.75-5.61 2.3-1.8 2.01-2.18 5.23-1.15 7.82.72 1.83 2.34 3.33 4.26 3.86 1.84.52 4.02.13 5.48-1.12 1.39-1.2 2.04-3.09 1.95-4.94L12.525.02z" />
                     </svg>
                 </IconButton>

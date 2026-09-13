@@ -7,7 +7,6 @@ import {
   Tab,
   Grid,
   Card,
-  CardMedia,
   CardContent,
   Chip,
   CircularProgress,
@@ -26,6 +25,7 @@ import {
   Chat as ChatIcon
 } from '@mui/icons-material';
 import Layout from '../../components/layout/Layout';
+import ParallaxImage from '../../components/motion/ParallaxImage';
 import apiClient from '../../services/api';
 import ProfileCard, { Profile } from '../../components/profile/ProfileCard';
 import { useTranslation } from 'next-i18next';
@@ -229,18 +229,12 @@ export default function LikesPage() {
               }}
             >
               <Box sx={{ position: 'relative', pt: '125%' }}>
-                <CardMedia
-                  component="img"
-                  image={profile.photos[0] || 'https://via.placeholder.com/400'}
+                <ParallaxImage
+                  src={profile.photos[0] || 'https://via.placeholder.com/400'}
                   alt={profile.display_name}
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
+                  intensity={0.08}
+                  drift={4}
+                  frameSx={{ position: 'absolute', inset: 0 }}
                 />
                 <Box sx={{
                   position: 'absolute',

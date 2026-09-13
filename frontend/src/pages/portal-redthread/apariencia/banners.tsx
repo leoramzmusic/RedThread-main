@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Container, Box, Typography, Paper, Button, TextField, Grid,
     Card, CardContent, Divider, Switch, FormControlLabel,
-    InputAdornment, Alert, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Slider, Tabs, Tab, Snackbar
+    InputAdornment, Alert, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Slider, Tabs, Tab, Snackbar, MenuItem
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -49,6 +49,8 @@ interface LandingThemeConfig {
     gradientEnd: string;
     subtitleFontSize: number; // rem
     subtitleColor: string;
+    titleFont: string;
+    bodyFont: string;
     savedGradients?: Array<{ id: string; name: string; start: string; end: string }>;
 
     // Content by Language
@@ -92,6 +94,8 @@ const DEFAULT_THEME: LandingThemeConfig = {
     gradientEnd: '#FB7185',
     subtitleFontSize: 5,
     subtitleColor: '#FFFFFF',
+    titleFont: 'Dancing Script',
+    bodyFont: 'Open Sans',
     savedGradients: [],
     translations: {
         es: DEFAULT_CONTENT,
@@ -152,6 +156,30 @@ const PRESET_GRADIENTS: Array<{ id: string; name: string; start: string; end: st
 
 type Language = 'es' | 'en' | 'pt' | 'fr';
 
+const TITLE_FONT_OPTIONS: Array<{ value: string; label: string }> = [
+    { value: 'Dancing Script', label: 'Dancing Script' },
+    { value: 'Playfair Display', label: 'Playfair Display' },
+    { value: 'Lobster', label: 'Lobster' },
+    { value: 'Pacifico', label: 'Pacifico' },
+    { value: 'Caveat', label: 'Caveat' },
+    { value: 'Great Vibes', label: 'Great Vibes' },
+];
+
+const BODY_FONT_OPTIONS: Array<{ value: string; label: string }> = [
+    { value: 'Open Sans', label: 'Open Sans' },
+    { value: 'Inter', label: 'Inter' },
+    { value: 'Poppins', label: 'Poppins' },
+    { value: 'Montserrat', label: 'Montserrat' },
+    { value: 'Nunito Sans', label: 'Nunito Sans' },
+    { value: 'Lato', label: 'Lato' },
+];
+
+// Google Fonts URL used by both the admin preview and the portal (must include every option above)
+const FONTS_STYLESHEET = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Lobster&family=Pacifico&family=Caveat:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=Lato:wght@400;600;700&display=swap';
+
+const getTitleFontFamily = (font: string) => `${font}, Poppins, Inter, cursive`;
+const getBodyFontFamily = (font: string) => `${font}, Inter, sans-serif`;
+
 // Helper: Convert HEX to RGB for display
 const hexToRgb = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -181,6 +209,32 @@ export default function BannersPage() {
     // Preview URLs
     const [previewBanner, setPreviewBanner] = useState<string | null>(null);
     const [previewIcon, setPreviewIcon] = useState<string | null>(null);
+
+    // Live preview auto-fit (mini-pantalla: escala el mockup para que entre sin scroll)
+    const previewBoxRef = useRef<HTMLDivElement | null>(null);
+    const previewContentRef = useRef<HTMLDivElement | null>(null);
+    const [previewScale, setPreviewScale] = useState(1);
+    const [scaledPreviewHeight, setScaledPreviewHeight] = useState(480);
+
+    useEffect(() => {
+        const measure = () => {
+            const content = previewContentRef.current;
+            const box = previewBoxRef.current;
+            if (!content || !box) return;
+            const contentHeight = content.scrollHeight;
+            const containerHeight = box.clientHeight;
+            const scale = contentHeight > containerHeight && containerHeight > 0
+                ? containerHeight / contentHeight
+                : 1;
+            setPreviewScale(scale);
+            setScaledPreviewHeight(Math.round(contentHeight * scale));
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        if (previewBoxRef.current) ro.observe(previewBoxRef.current);
+        if (previewContentRef.current) ro.observe(previewContentRef.current);
+        return () => ro.disconnect();
+    }, [currentTab, config.subtitleFontSize, config.subtitleColor, previewBanner, previewIcon]);
 
     useEffect(() => {
         fetchSettings();
@@ -225,6 +279,8 @@ export default function BannersPage() {
                         gradientEnd: fetchedData.gradientEnd || DEFAULT_THEME.gradientEnd,
                         subtitleFontSize: Math.max(fetchedData.subtitleFontSize || DEFAULT_THEME.subtitleFontSize, 4.6),
                         subtitleColor: fetchedData.subtitleColor || DEFAULT_THEME.subtitleColor,
+                        titleFont: fetchedData.titleFont || DEFAULT_THEME.titleFont,
+                        bodyFont: fetchedData.bodyFont || DEFAULT_THEME.bodyFont,
                         translations: {
                             ...DEFAULT_THEME.translations,
                             es: {
@@ -244,6 +300,8 @@ export default function BannersPage() {
                         ...prev,
                         ...fetchedData,
                         subtitleFontSize: Math.max(fetchedData.subtitleFontSize || prev.subtitleFontSize || DEFAULT_THEME.subtitleFontSize, 4.6),
+                        titleFont: fetchedData.titleFont || prev.titleFont || DEFAULT_THEME.titleFont,
+                        bodyFont: fetchedData.bodyFont || prev.bodyFont || DEFAULT_THEME.bodyFont,
                         savedGradients: fetchedData.savedGradients || [],
                         translations: {
                             ...prev.translations,
@@ -529,10 +587,7 @@ export default function BannersPage() {
             <Head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap"
-                    rel="stylesheet"
-                />
+                <link href={FONTS_STYLESHEET} rel="stylesheet" />
             </Head>
             <Snackbar
                 open={snackbar.open}
@@ -588,6 +643,44 @@ export default function BannersPage() {
                                             <Typography variant="caption" color="text.secondary">{hexToRgb(config.subtitleColor)}</Typography>
                                         </Box>
                                     </Box>
+                                </Grid>
+                            </Grid>
+
+                            {/* Typography Fonts */}
+                            <Grid container spacing={2} sx={{ mb: 3 }}>
+                                <Grid item xs={6}>
+                                    <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Tipografía Título</Typography>
+                                    <TextField
+                                        select
+                                        fullWidth
+                                        size="small"
+                                        value={config.titleFont || DEFAULT_THEME.titleFont}
+                                        onChange={(e) => setConfig({ ...config, titleFont: e.target.value })}
+                                        sx={{ '& .MuiSelect-select': { fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont) } }}
+                                    >
+                                        {TITLE_FONT_OPTIONS.map((opt) => (
+                                            <MenuItem key={opt.value} value={opt.value} sx={{ fontFamily: getTitleFontFamily(opt.value) }}>
+                                                {opt.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Tipografía de Texto</Typography>
+                                    <TextField
+                                        select
+                                        fullWidth
+                                        size="small"
+                                        value={config.bodyFont || DEFAULT_THEME.bodyFont}
+                                        onChange={(e) => setConfig({ ...config, bodyFont: e.target.value })}
+                                        sx={{ '& .MuiSelect-select': { fontFamily: getBodyFontFamily(config.bodyFont || DEFAULT_THEME.bodyFont) } }}
+                                    >
+                                        {BODY_FONT_OPTIONS.map((opt) => (
+                                            <MenuItem key={opt.value} value={opt.value} sx={{ fontFamily: getBodyFontFamily(opt.value) }}>
+                                                {opt.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
                                 </Grid>
                             </Grid>
 
@@ -965,9 +1058,10 @@ export default function BannersPage() {
 
                             {/* Mockup Container — replica fiel del landing real (index.tsx) */}
                             <Box
+                                ref={previewBoxRef}
                                 sx={{
                                     height: '480px',
-                                    overflowY: 'auto',
+                                    overflow: 'hidden',
                                     position: 'relative',
                                     textAlign: 'center',
                                     color: 'white',
@@ -980,6 +1074,18 @@ export default function BannersPage() {
                                     transition: 'background 0.5s ease'
                                 }}
                             >
+                                {/* Scalable wrapper: mide el alto natural y lo reduce para que entre sin scroll */}
+                                <Box
+                                    sx={{
+                                        height: `${scaledPreviewHeight}px`,
+                                        transform: `scale(${previewScale})`,
+                                        transformOrigin: 'top center',
+                                        position: 'relative',
+                                        zIndex: 1,
+                                        willChange: 'transform'
+                                    }}
+                                >
+                                    <Box ref={previewContentRef}>
                                 {/* Glow blobs decorativos */}
                                 <Box
                                     aria-hidden
@@ -1032,7 +1138,7 @@ export default function BannersPage() {
                                     </Box>
                                     <Box
                                         sx={{
-                                            fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                                            fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont),
                                             fontWeight: 600,
                                             letterSpacing: '0.02em',
                                             lineHeight: 1.35,
@@ -1047,7 +1153,7 @@ export default function BannersPage() {
                                     </Box>
                                     <Box
                                         sx={{
-                                            fontFamily: 'Open Sans, Inter, sans-serif',
+                                            fontFamily: getBodyFontFamily(config.bodyFont || DEFAULT_THEME.bodyFont),
                                             fontSize: '0.8rem',
                                             lineHeight: 1.7,
                                             mb: 3,
@@ -1103,7 +1209,7 @@ export default function BannersPage() {
                                 <Box sx={{ position: 'relative', zIndex: 1, pb: { xs: 4, md: 5 }, px: 3 }}>
                                     <Box
                                         sx={{
-                                            fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                                            fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont),
                                             fontSize: '1.4rem',
                                             textAlign: 'center',
                                             color: 'white',
@@ -1119,7 +1225,7 @@ export default function BannersPage() {
                                         <Grid item xs={6}>
                                             <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                 <FavoriteIcon sx={{ fontSize: 32, color: '#3B82F6', mb: 0.5 }} />
-                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
+                                                <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
                                                     {t.features.smartMatching.title}
                                                 </Box>
                                             </Paper>
@@ -1127,7 +1233,7 @@ export default function BannersPage() {
                                         <Grid item xs={6}>
                                             <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                 <ChatIcon sx={{ fontSize: 32, color: '#8B5CF6', mb: 0.5 }} />
-                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
+                                                <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
                                                     {t.features.realTimeChat.title}
                                                 </Box>
                                             </Paper>
@@ -1135,7 +1241,7 @@ export default function BannersPage() {
                                         <Grid item xs={6}>
                                             <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                 <RadarIcon sx={{ fontSize: 32, color: '#F59E0B', mb: 0.5 }} />
-                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
+                                                <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
                                                     {t.features.proximityRadar.title}
                                                 </Box>
                                             </Paper>
@@ -1143,7 +1249,7 @@ export default function BannersPage() {
                                         <Grid item xs={6}>
                                             <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                 <GroupsIcon sx={{ fontSize: 32, color: '#E63946', mb: 0.5 }} />
-                                                <Box sx={{ fontFamily: 'Dancing Script, Poppins, Inter, cursive', fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
+                                                <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
                                                     {t.features.multipleIntentions.title}
                                                 </Box>
                                             </Paper>
@@ -1153,8 +1259,10 @@ export default function BannersPage() {
 
                                 {/* Mockup Footer */}
                                 <Box sx={{ position: 'relative', zIndex: 1, py: 3, textAlign: 'center', color: 'white', opacity: 0.85 }}>
-                                    <Box sx={{ fontFamily: 'Open Sans, Inter, sans-serif', fontSize: '0.75rem', letterSpacing: '0.04em' }}>
+                                    <Box sx={{ fontFamily: getBodyFontFamily(config.bodyFont || DEFAULT_THEME.bodyFont), fontSize: '0.75rem', letterSpacing: '0.04em' }}>
                                         {t.footerText}
+                                    </Box>
+                                </Box>
                                     </Box>
                                 </Box>
                             </Box>

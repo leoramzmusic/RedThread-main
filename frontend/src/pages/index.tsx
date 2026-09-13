@@ -17,6 +17,13 @@ import { getMediaUrl } from '../utils/media';
 import RedThreadLogo from '../components/landing/RedThreadLogo';
 
 
+// Google Fonts URL — must include every font selectable in the admin (Apariencia > Banners)
+const FONTS_STYLESHEET = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Lobster&family=Pacifico&family=Caveat:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=Lato:wght@400;600;700&display=swap';
+
+const getTitleFontFamily = (font?: string) => `${font || 'Dancing Script'}, Poppins, Inter, cursive`;
+const getBodyFontFamily = (font?: string) => `${font || 'Open Sans'}, Inter, sans-serif`;
+
+
 // Translation content for all languages (fallback)
 const translations = {
   es: {
@@ -452,7 +459,7 @@ export default function Home() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap"
+          href={FONTS_STYLESHEET}
           rel="stylesheet"
         />
         <style
@@ -477,6 +484,45 @@ export default function Home() {
             body[data-font-size] .rt-landing .rt-section-title { font-size: 4rem !important; }
             body[data-font-size] .rt-landing .rt-card-title { font-size: 1.8rem !important; }
           }
+        `}</style>
+        <style>{`
+          @media (prefers-reduced-motion: no-preference) {
+            .rt-landing .rt-icon-heart { display: inline-block; animation: rt-rt-heartbeat 1.2s ease-in-out infinite; }
+            .rt-landing .rt-icon-chat { display: inline-block; animation: rt-rt-bubble 2.4s ease-in-out infinite; }
+            .rt-landing .rt-icon-radar { display: inline-block; animation: rt-rt-radar-pulse 2s ease-in-out infinite; }
+            .rt-landing .rt-icon-groups { display: inline-block; animation: rt-rt-sway 3.2s ease-in-out infinite; }
+            .rt-landing .rt-icon-heart:hover,
+            .rt-landing .rt-icon-chat:hover,
+            .rt-landing .rt-icon-radar:hover,
+            .rt-landing .rt-icon-groups:hover { animation-play-state: paused; }
+          }
+          @keyframes rt-rt-heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.18); }
+            30% { transform: scale(0.96); }
+            45% { transform: scale(1.12); }
+            60% { transform: scale(1); }
+          }
+          @keyframes rt-rt-bubble {
+            0%, 100% { transform: scale(1); }
+            30% { transform: scale(1.1); }
+            50% { transform: scale(0.96); }
+            70% { transform: scale(1.06); }
+          }
+          @keyframes rt-rt-radar-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+          }
+          @keyframes rt-rt-sway {
+            0%, 100% { transform: rotate(-4deg) translateY(0); }
+            50% { transform: rotate(4deg) translateY(-3px); }
+          }
+          .rt-landing .rt-thread-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 0 6px rgba(211,47,47,0.5)); }
+          .rt-landing .rt-thread-base { stroke: #D32F2F; stroke-width: 2.5; fill: none; opacity: 0.4; }
+          @media (prefers-reduced-motion: no-preference) {
+            .rt-landing .rt-thread-flow { stroke: #E53935; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-dasharray: 10 22; opacity: 0.85; animation: rt-rt-thread-flow 7s linear infinite; }
+          }
+          @keyframes rt-rt-thread-flow { to { stroke-dashoffset: -640; } }
         `}</style>
       </Head>
 
@@ -567,7 +613,7 @@ export default function Home() {
               className="rt-subtitle"
               aria-label={displayText.subtitle}
               sx={{
-                fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                 fontWeight: 600,
                 letterSpacing: '0.02em',
                 lineHeight: 1.35,
@@ -584,7 +630,7 @@ export default function Home() {
               variant="body1"
               className="rt-description"
               sx={{
-                fontFamily: 'Open Sans, Inter, sans-serif',
+                fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
                 fontWeight: 400,
                 fontSize: { xs: '1.05rem', md: '1.15rem' },
                 lineHeight: 1.7,
@@ -654,12 +700,30 @@ export default function Home() {
           </Box>
 
           {/* Features Section */}
-          <Box className="rt-features" sx={{ py: { xs: 7, md: 10 } }}>
+          <Box className="rt-features" sx={{ py: { xs: 7, md: 10 }, position: 'relative' }}>
+            <svg
+              className="rt-thread-svg"
+              viewBox="0 0 1440 320"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                className="rt-thread-base"
+                d="M-40,250 C240,90 420,280 720,170 C1020,60 1230,240 1480,120"
+              />
+              <path
+                className="rt-thread-flow"
+                d="M-40,250 C240,90 420,280 720,170 C1020,60 1230,240 1480,120"
+              />
+            </svg>
             <Typography
               variant="h3"
               className="rt-section-title"
               sx={{
-                fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                position: 'relative',
+                zIndex: 1,
+                fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                 textAlign: 'center',
                 color: 'white',
                 fontSize: { xs: '2.9rem', md: '4rem' },
@@ -671,7 +735,7 @@ export default function Home() {
             >
               {displayText.howItWorks}
             </Typography>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} sx={{ position: 'relative', zIndex: 1 }}>
               <Grid item xs={12} md={6} lg={3}>
                 <Card
                   className="rt-feature-card"
@@ -684,20 +748,20 @@ export default function Home() {
                     WebkitBackdropFilter: 'blur(14px)',
                     border: '1px solid rgba(255,255,255,0.7)',
                     boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                     '&:hover': {
-                      transform: 'translateY(-10px)',
-                      boxShadow: '0 26px 55px rgba(136, 19, 55, 0.24), 0 8px 20px rgba(0, 0, 0, 0.12)',
+                      transform: 'translateY(-8px) scale(1.03)',
+                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
                     },
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <FavoriteIcon sx={{ fontSize: 60, color: '#3B82F6', mb: 2 }} />                    <Typography
+                    <FavoriteIcon className="rt-icon-heart" sx={{ fontSize: 60, color: '#3B82F6', mb: 2 }} />                    <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
-                        fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                        fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                         fontWeight: 600,
                         letterSpacing: '0.01em',
                         lineHeight: 1.3,
@@ -710,7 +774,7 @@ export default function Home() {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontFamily: 'Open Sans, Inter, sans-serif',
+                        fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
                         lineHeight: 1.7,
                         color: '#6E5560',
                       }}
@@ -733,21 +797,21 @@ export default function Home() {
                     WebkitBackdropFilter: 'blur(14px)',
                     border: '1px solid rgba(255,255,255,0.7)',
                     boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                     '&:hover': {
-                      transform: 'translateY(-10px)',
-                      boxShadow: '0 26px 55px rgba(136, 19, 55, 0.24), 0 8px 20px rgba(0, 0, 0, 0.12)',
+                      transform: 'translateY(-8px) scale(1.03)',
+                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
                     },
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <ChatIcon sx={{ fontSize: 60, color: '#8B5CF6', mb: 2 }} />
+                    <ChatIcon className="rt-icon-chat" sx={{ fontSize: 60, color: '#8B5CF6', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
-                        fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                        fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                         fontWeight: 600,
                         letterSpacing: '0.01em',
                         lineHeight: 1.3,
@@ -760,7 +824,7 @@ export default function Home() {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontFamily: 'Open Sans, Inter, sans-serif',
+                        fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
                         lineHeight: 1.7,
                         color: '#6E5560',
                       }}
@@ -783,21 +847,21 @@ export default function Home() {
                     WebkitBackdropFilter: 'blur(14px)',
                     border: '1px solid rgba(255,255,255,0.7)',
                     boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                     '&:hover': {
-                      transform: 'translateY(-10px)',
-                      boxShadow: '0 26px 55px rgba(136, 19, 55, 0.24), 0 8px 20px rgba(0, 0, 0, 0.12)',
+                      transform: 'translateY(-8px) scale(1.03)',
+                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
                     },
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <RadarIcon sx={{ fontSize: 60, color: '#F59E0B', mb: 2 }} />
+                    <RadarIcon className="rt-icon-radar" sx={{ fontSize: 60, color: '#F59E0B', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
-                        fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                        fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                         fontWeight: 600,
                         letterSpacing: '0.01em',
                         lineHeight: 1.3,
@@ -810,7 +874,7 @@ export default function Home() {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontFamily: 'Open Sans, Inter, sans-serif',
+                        fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
                         lineHeight: 1.7,
                         color: '#6E5560',
                       }}
@@ -833,21 +897,21 @@ export default function Home() {
                     WebkitBackdropFilter: 'blur(14px)',
                     border: '1px solid rgba(255,255,255,0.7)',
                     boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                     '&:hover': {
-                      transform: 'translateY(-10px)',
-                      boxShadow: '0 26px 55px rgba(136, 19, 55, 0.24), 0 8px 20px rgba(0, 0, 0, 0.12)',
+                      transform: 'translateY(-8px) scale(1.03)',
+                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
                     },
                   }}
                 >
                   <CardContent sx={{ p: 4 }}>
-                    <GroupsIcon sx={{ fontSize: 60, color: '#E63946', mb: 2 }} />
+                    <GroupsIcon className="rt-icon-groups" sx={{ fontSize: 60, color: '#E63946', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
-                        fontFamily: 'Dancing Script, Poppins, Inter, cursive',
+                        fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                         fontWeight: 600,
                         letterSpacing: '0.01em',
                         lineHeight: 1.3,
@@ -860,7 +924,7 @@ export default function Home() {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontFamily: 'Open Sans, Inter, sans-serif',
+                        fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
                         lineHeight: 1.7,
                         color: '#6E5560',
                       }}
@@ -885,7 +949,7 @@ export default function Home() {
             zIndex: 1,
           }}
         >
-          <Typography variant="body2" sx={{ fontFamily: 'Open Sans, Inter, sans-serif', letterSpacing: '0.04em' }}>
+          <Typography variant="body2" sx={{ fontFamily: getBodyFontFamily(cmsConfig?.bodyFont), letterSpacing: '0.04em' }}>
             {displayText.footer.split(/([❤♥])/).map((chunk: string, idx: number) =>
               /[❤♥]/.test(chunk) ? (
                 <Box

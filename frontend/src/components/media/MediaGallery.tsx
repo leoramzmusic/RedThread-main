@@ -6,6 +6,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import MusicNoteIcon from '@mui/icons-material/MusicNote'; // For TikTok
+import ParallaxImage from '../motion/ParallaxImage';
 
 interface MediaGalleryProps {
   items: MediaItem[];
@@ -51,10 +52,12 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({ items, height = 400 }) => {
     switch (item.type) {
       case MediaType.PHOTO:
         return (
-          <img
+          <ParallaxImage
             src={item.url}
             alt="Profile"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            intensity={0.05}
+            drift={2}
+            frameSx={{ width: '100%', height: '100%' }}
           />
         );
       case MediaType.VIDEO:

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { IconButton, Menu, MenuItem, Typography, Box } from '@mui/material';
-import { Translate } from '@mui/icons-material';
+import { IconButton, Menu, MenuItem, Typography, Box, Slide, keyframes } from '@mui/material';
+import type { TransitionProps } from '@mui/material/transitions';
+import { Public } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
+import { GLASS_ICON_BTN_SX } from './glassIconStyles';
 
 const LANGUAGES = [
     { code: 'en', label: 'English', flag: 'EN' },
@@ -28,10 +30,20 @@ const LANGUAGES = [
     { code: 'mi', label: 'Māori', flag: 'MI' },
 ];
 
+const globeSpin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+function MenuTransition(props: TransitionProps) {
+    return <Slide direction="down" {...(props as React.ComponentProps<typeof Slide>)} />;
+}
+
 export default function LanguageSelector() {
     const { i18n } = useTranslation();
     const router = useRouter();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -56,30 +68,51 @@ export default function LanguageSelector() {
         <Box>
             <IconButton
                 onClick={handleClick}
-                color="primary"
+                className={open ? 'rt-open' : undefined}
+                aria-label="Seleccionar idioma"
+                aria-haspopup="menu"
+                aria-expanded={open}
                 sx={{
-                    borderRadius: 2,
+                    ...GLASS_ICON_BTN_SX,
                     fontSize: '0.9rem',
                     fontWeight: 600,
-                    gap: 1
+                    gap: 1,
                 }}
             >
-                <Translate sx={{ fontSize: 20 }} />
-                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase' }}>
+                <Public
+                    sx={{
+                        fontSize: 18,
+                        color: 'rgba(255,255,255,0.9)',
+                        ...(open
+                            ? {
+                                  '@media (prefers-reduced-motion: no-preference)': {
+                                      animation: `${globeSpin} 0.9s ease-in-out`,
+                                  },
+                              }
+                            : {}),
+                    }}
+                />
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', fontFamily: "'Inter', 'Poppins', sans-serif" }}>
                     {currentLang.code}
                 </Typography>
             </IconButton>
             <Menu
                 anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
+                open={open}
                 onClose={handleClose}
-                TransitionProps={{ timeout: 300 }}
+                TransitionComponent={MenuTransition}
+                transitionDuration={{ enter: 300, exit: 200 }}
                 PaperProps={{
                     sx: {
                         borderRadius: 2,
                         mt: 1,
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                        minWidth: 150
+                        minWidth: 180,
+                        maxHeight: 360,
+                        bgcolor: 'rgba(255,255,255,0.12)',
+                        backdropFilter: 'blur(18px)',
+                        WebkitBackdropFilter: 'blur(18px)',
+                        border: '1px solid rgba(255,255,255,0.25)',
+                        boxShadow: '0 18px 50px rgba(20, 30, 90, 0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
                     }
                 }}
             >
@@ -89,12 +122,19 @@ export default function LanguageSelector() {
                         onClick={() => handleLanguageChange(lang.code)}
                         selected={router.locale === lang.code}
                         sx={{
+                            fontFamily: "'Inter', 'Poppins', sans-serif",
                             fontSize: '0.9rem',
-                            fontWeight: router.locale === lang.code ? 700 : 400,
+                            color: 'rgba(255,255,255,0.85)',
                             display: 'flex',
                             justifyContent: 'space-between',
                             px: 2,
-                            py: 1
+                            py: 1,
+                            '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+                            '&.Mui-selected': {
+                                color: '#FFFFFF',
+                                fontWeight: 700,
+                                boxShadow: 'inset 2px 0 0 #FB7185',
+                            },
                         }}
                     >
                         {lang.label}

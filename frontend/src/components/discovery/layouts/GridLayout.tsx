@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Card, CardMedia, Typography, Fade } from '@mui/material';
+import { Box, Card, Typography, Fade } from '@mui/material';
 import { Profile } from '../../profile/ProfileCard';
 import { InteractionMode } from '../InteractionSettingsDialog';
 import ProfileDetailModal from '../ProfileDetailModal';
+import ParallaxImage from '../../motion/ParallaxImage';
 
 interface GridLayoutProps {
     profiles: Profile[];
@@ -105,14 +106,12 @@ export default function GridLayout({
                                 }}
                             >
                                 {/* Photo */}
-                                <CardMedia
-                                    component="img"
-                                    image={profile.photos?.[0] || 'https://via.placeholder.com/300x400?text=No+Photo'}
-                                    sx={{
-                                        height: '100%',
-                                        width: '100%',
-                                        objectFit: 'cover'
-                                    }}
+                                <ParallaxImage
+                                    src={profile.photos?.[0] || 'https://via.placeholder.com/300x400?text=No+Photo'}
+                                    alt={profile.display_name || 'Profile'}
+                                    intensity={0.08}
+                                    drift={4}
+                                    frameSx={{ height: '100%', width: '100%' }}
                                 />
 
                                 {/* Hover Overlay */}

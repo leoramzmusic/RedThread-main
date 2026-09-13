@@ -42,6 +42,9 @@ class UpdateSettingsRequest(BaseModel):
     
     # Avanzado
     auto_save: Optional[bool] = None
+    
+    # Personalización del Navbar
+    navbar_config: Optional[Dict[str, Any]] = None
 
 
 @router.get("/me")

@@ -15,6 +15,7 @@ import {
     Link as MuiLink,
     Tabs,
     Tab,
+    Fade,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Google, Facebook, Email, Phone } from '@mui/icons-material';
 import Link from 'next/link';
@@ -22,11 +23,12 @@ import apiClient from '../../services/api';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'next-i18next';
+import { AUTH_INPUT_SX, SOCIAL_BTN_SX, SUBMIT_BTN_SX } from './authInputStyles';
 
-export default function LoginForm() {
+export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}) {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { loadPreferences, mode } = useAppTheme();
+    const { loadPreferences } = useAppTheme();
     const { t } = useTranslation('common');
 
     const [formData, setFormData] = useState({ identifier: '', password: '' });
@@ -103,7 +105,8 @@ export default function LoginForm() {
                 }
             }));
 
-            router.push('/discover');
+            onSuccess?.();
+            setTimeout(() => router.push('/discover'), 800);
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Error al iniciar sesión. Verifica tus credenciales.');
         } finally {
@@ -112,11 +115,12 @@ export default function LoginForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+        <form onSubmit={handleSubmit} style={{ width: '100%', fontFamily: "'Inter', 'Poppins', sans-serif" }}>
+            {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
 
             <TextField
                 fullWidth
+                variant="standard"
                 label={t('auth.identifierLabel') || "Correo, usuario o celular"}
                 name="identifier"
                 type="text"
@@ -126,17 +130,18 @@ export default function LoginForm() {
                 margin="normal"
                 required
                 autoFocus
+                sx={AUTH_INPUT_SX}
                 InputProps={{
-                    sx: { borderRadius: 2 },
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Email sx={{ fontSize: 20, color: 'text.secondary' }} />
+                            <Email sx={{ fontSize: 20, color: 'rgba(255,255,255,0.55)' }} />
                         </InputAdornment>
                     )
                 }}
             />
             <TextField
                 fullWidth
+                variant="standard"
                 label={t('auth.password')}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
@@ -144,33 +149,36 @@ export default function LoginForm() {
                 onChange={handleChange}
                 margin="normal"
                 required
+                sx={AUTH_INPUT_SX}
                 InputProps={{
-                    sx: { borderRadius: 2 },
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                                <Box sx={{ position: 'relative', width: 24, height: 24 }}>
+                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
+                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
+                                </Box>
                             </IconButton>
                         </InputAdornment>
                     ),
                 }}
             />
 
-            <Box display="flex" justifyContent="space-between" alignItems="center" mt={1} mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={1} mb={2} sx={{ color: 'white' }}>
                 <FormControlLabel
                     control={
                         <Checkbox
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            color="primary"
+                            sx={{ color: 'rgba(255,255,255,0.7)', '&.Mui-checked': { color: '#FB7185' } }}
                         />
                     }
-                    label={<Typography variant="body2">{t('auth.rememberMe')}</Typography>}
+                    label={<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)' }}>{t('auth.rememberMe')}</Typography>}
                 />
                 <Link href="/auth/forgot-password" passHref>
                     <Button
                         size="small"
-                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                        sx={{ textTransform: 'none', fontWeight: 600, color: 'rgba(255,255,255,0.85)', '&:hover': { color: '#FFFFFF', bgcolor: 'rgba(255,255,255,0.1)' } }}
                     >
                         {t('auth.forgotPassword')}
                     </Button>
@@ -183,31 +191,20 @@ export default function LoginForm() {
                 variant="contained"
                 size="large"
                 disabled={loading}
-                sx={{
-                    mt: 2,
-                    mb: 3,
-                    height: 48,
-                    borderRadius: 2,
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    boxShadow: '0 4px 14px 0 rgba(253, 41, 123, 0.39)',
-                    bgcolor: '#e91e63',
-                    '&:hover': { bgcolor: '#d81b60' }
-                }}
+                sx={{ ...SUBMIT_BTN_SX, mt: 2, mb: 3 }}
             >
                 {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.signIn')}
             </Button>
 
             <Box sx={{ position: 'relative', my: 3 }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'absolute', width: '100%', top: '50%' }} />
+                <Box sx={{ borderBottom: 1, borderColor: 'rgba(255,255,255,0.25)', position: 'absolute', width: '100%', top: '50%' }} />
                 <Typography
                     variant="caption"
                     sx={{
-                        bgcolor: 'background.paper',
+                        bgcolor: 'transparent',
                         px: 2,
                         position: 'relative',
-                        color: 'text.secondary',
+                        color: 'rgba(255,255,255,0.7)',
                         display: 'inline-block'
                     }}
                 >
@@ -221,23 +218,9 @@ export default function LoginForm() {
                     aria-label={t('auth.social.loginWith', { provider: 'Google' })}
                     role="button"
                     tabIndex={0}
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        // Ensure background stays light-ish if possible or themed
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <Google sx={{ fontSize: 20, color: '#4285F4' }} />
+                    <Google sx={{ fontSize: 20, color: '#FFFFFF' }} />
                 </IconButton>
 
                 {/* Facebook */}
@@ -245,22 +228,9 @@ export default function LoginForm() {
                     aria-label="Iniciar sesión con Facebook"
                     role="button"
                     tabIndex={0}
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
+                    <Facebook sx={{ fontSize: 20, color: '#FFFFFF' }} />
                 </IconButton>
 
                 {/* Instagram */}
@@ -268,22 +238,9 @@ export default function LoginForm() {
                     aria-label="Iniciar sesión con Instagram"
                     role="button"
                     tabIndex={0}
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: mode === 'dark' ? '#fff' : '#E4405F' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -295,22 +252,9 @@ export default function LoginForm() {
                     aria-label="Iniciar sesión con TikTok"
                     role="button"
                     tabIndex={0}
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: '#fff',
-                        m: '0 8px',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        },
-                        ...(mode === 'dark' && { bgcolor: 'rgba(255,255,255,0.05)' })
-                    }}
+                    sx={SOCIAL_BTN_SX}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: mode === 'dark' ? '#fff' : '#000' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF">
                         <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.76-.55-1.38-1.28-1.83-2.12v8.59c.02 1.17-.18 2.37-.62 3.44-1.12 2.75-4.14 4.54-7.06 4.01-1.21-.21-2.39-.81-3.23-1.72-1.36-1.44-1.92-3.56-1.45-5.5.42-1.74 1.7-3.29 3.4-3.9 1.04-.37 2.14-.5 3.24-.37.38.04.75.12 1.12.23.01-1.31.01-2.61.02-3.91-.56-.16-1.14-.23-1.72-.25-2.08-.07-4.22.75-5.61 2.3-1.8 2.01-2.18 5.23-1.15 7.82.72 1.83 2.34 3.33 4.26 3.86 1.84.52 4.02.13 5.48-1.12 1.39-1.2 2.04-3.09 1.95-4.94L12.525.02z" />
                     </svg>
                 </IconButton>

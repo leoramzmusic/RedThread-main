@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { Box, IconButton, Card, CardMedia, Typography, Tooltip } from '@mui/material';
+import { Box, IconButton, Card, Typography, Tooltip } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Profile } from '../../profile/ProfileCard';
 import { InteractionMode } from '../InteractionSettingsDialog';
 import ProfileDetailModal from '../ProfileDetailModal';
+import ParallaxImage from '../../motion/ParallaxImage';
 
 interface CarouselLayoutProps {
     profiles: Profile[];
@@ -181,14 +182,12 @@ export default function CarouselLayout({
                         }}
                     >
                         {/* Photo */}
-                        <CardMedia
-                            component="img"
-                            image={profile.photos?.[0] || 'https://via.placeholder.com/300x450?text=No+Photo'}
-                            sx={{
-                                height: '100%',
-                                width: '100%',
-                                objectFit: 'cover'
-                            }}
+                        <ParallaxImage
+                            src={profile.photos?.[0] || 'https://via.placeholder.com/300x450?text=No+Photo'}
+                            alt={profile.display_name || 'Profile'}
+                            intensity={0.1}
+                            drift={4}
+                            frameSx={{ height: '100%', width: '100%' }}
                         />
 
                         {/* Gradient Overlay */}

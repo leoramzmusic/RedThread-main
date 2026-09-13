@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { APP_VERSION } from '../../config/version';
+import MorphToggleIcon from '../motion/MorphToggleIcon';
 import {
   Box,
   Drawer,
@@ -14,7 +15,9 @@ import {
   Divider,
   Collapse,
   Tooltip,
+  useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
@@ -70,11 +73,11 @@ export default function AdminSidebar({
   const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
 
   const menuItems: MenuItem[] = [
-    { id: 'home', label: 'Portal Home', icon: <DashboardIcon />, path: '/portal-redthread' },
+    { id: 'home', label: 'Portal Home', icon: <DashboardIcon className="rt-dash" />, path: '/portal-redthread' },
     {
       id: 'eventos',
       label: 'Eventos',
-      icon: <EventIcon />,
+      icon: <EventIcon className="rt-flip" />,
       children: [
         { id: 'eventos-crear', label: 'Crear evento', icon: <EventIcon />, path: '/portal-redthread/eventos/crear' },
         { id: 'eventos-listar', label: 'Editar evento', icon: <EventIcon />, path: '/portal-redthread/eventos' },
@@ -85,7 +88,7 @@ export default function AdminSidebar({
     {
       id: 'experiencia',
       label: 'Experiencia del Usuario',
-      icon: <VerifiedUserIcon />, // Or Psychology if available
+      icon: <VerifiedUserIcon className="rt-shield" />, // Or Psychology if available
       children: [
         { id: 'experiencia-menus', label: 'Menús del Portal', icon: <MenuIcon />, path: '/portal-redthread/experiencia/menus' },
         { id: 'experiencia-motor', label: 'Motor CARE', icon: <BarChartIcon />, path: '/portal-redthread/experiencia/motor' },
@@ -95,7 +98,7 @@ export default function AdminSidebar({
     {
       id: 'metricas',
       label: 'Métricas',
-      icon: <BarChartIcon />,
+      icon: <BarChartIcon className="rt-sliders" />,
       children: [
         { id: 'metricas-usuarios', label: 'Usuarios registrados', icon: <UserIcon />, path: '/portal-redthread/metricas/usuarios' },
         { id: 'metricas-pais', label: 'Por país', icon: <BarChartIcon />, path: '/portal-redthread/metricas/pais' },
@@ -108,7 +111,7 @@ export default function AdminSidebar({
     {
       id: 'denuncias',
       label: 'Denuncias',
-      icon: <FlagIcon />,
+      icon: <FlagIcon className="rt-wave" />,
       children: [
         { id: 'denuncias-listado', label: 'Listado', icon: <FlagIcon />, path: '/portal-redthread/denuncias' },
         { id: 'denuncias-pendientes', label: 'Pendientes', icon: <FlagIcon />, path: '/portal-redthread/denuncias/pendientes' },
@@ -121,7 +124,7 @@ export default function AdminSidebar({
     {
       id: 'empleados',
       label: 'Empleados',
-      icon: <PeopleIcon />,
+      icon: <PeopleIcon className="rt-pulse" />,
       children: [
         { id: 'empleados-listado', label: 'Listado', icon: <PeopleIcon />, path: '/portal-redthread/empleados/listado' },
         { id: 'empleados-registrar', label: 'Registrar empleado', icon: <PeopleIcon />, path: '/portal-redthread/empleados/registrar' },
@@ -132,7 +135,7 @@ export default function AdminSidebar({
     {
       id: 'usuarios',
       label: 'Usuarios',
-      icon: <UserIcon />,
+      icon: <UserIcon className="rt-pulse" />,
       children: [
         { id: 'usuarios-listado', label: 'Listado', icon: <PeopleIcon />, path: '/portal-redthread/usuarios/listado' },
         { id: 'usuarios-verificaciones', label: 'Solicitudes de verificación', icon: <VerifiedUserIcon />, path: '/portal-redthread/usuarios/verificaciones' },
@@ -144,7 +147,7 @@ export default function AdminSidebar({
     {
       id: 'finanzas',
       label: 'Finanzas',
-      icon: <MoneyIcon />,
+      icon: <MoneyIcon className="rt-gem" />,
       children: [
         { id: 'finanzas-suscripciones', label: 'Suscripciones', icon: <MoneyIcon />, path: '/portal-redthread/finanzas/suscripciones' },
         { id: 'finanzas-ingresos', label: 'Ingresos', icon: <MoneyIcon />, path: '/portal-redthread/finanzas/ingresos' },
@@ -155,7 +158,7 @@ export default function AdminSidebar({
     {
       id: 'campanas',
       label: 'Campañas',
-      icon: <CampaignIcon />,
+      icon: <CampaignIcon className="rt-ping" />,
       children: [
         { id: 'campanas-crear', label: 'Crear campaña', icon: <CampaignIcon />, path: '/portal-redthread/campanas/crear' },
         { id: 'campanas-anunciantes', label: 'Anunciantes', icon: <PeopleIcon />, path: '/portal-redthread/campanas/anunciantes' },
@@ -166,7 +169,7 @@ export default function AdminSidebar({
     {
       id: 'apariencia',
       label: 'Apariencia',
-      icon: <PaletteIcon />,
+      icon: <PaletteIcon className="rt-palette" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />,
       children: [
         { id: 'apariencia-iconos', label: 'Favicon & Iconos', icon: <ImageIcon />, path: '/portal-redthread/apariencia/iconos' },
         { id: 'apariencia-logos', label: 'Logos', icon: <ImageIcon />, path: '/portal-redthread/apariencia/logos' },
@@ -178,7 +181,7 @@ export default function AdminSidebar({
     {
       id: 'soporte',
       label: 'Soporte Técnico',
-      icon: <SupportIcon />,
+      icon: <SupportIcon className="rt-pulse" />,
       children: [
         { id: 'soporte-tickets', label: 'Tickets', icon: <SupportIcon />, path: '/portal-redthread/soporte/tickets' },
         { id: 'soporte-fallos', label: 'Fallos reportados', icon: <ReportIcon />, path: '/portal-redthread/soporte/fallos' },
@@ -188,7 +191,7 @@ export default function AdminSidebar({
     {
       id: 'configuracion',
       label: 'Configuración',
-      icon: <SettingsIcon />,
+      icon: <SettingsIcon className="rt-settings-icon" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />,
       children: [
         { id: 'config-general', label: 'General', icon: <SettingsIcon />, path: '/portal-redthread/configuracion/general' },
         { id: 'config-seguridad', label: 'Seguridad', icon: <SecurityIcon />, path: '/portal-redthread/configuracion/seguridad' },
@@ -233,6 +236,17 @@ export default function AdminSidebar({
 
   const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
 
+  // Theme-aware tokens: react to mode (light/dark) + active visual theme from settings
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const primary = theme.palette.primary.main;
+  const textActive = isDark ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.87)';
+  const textInactive = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.6)';
+  const iconInactive = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)';
+  const dividerColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)';
+  const glassBg = isDark ? 'rgba(16,18,32,0.55)' : 'rgba(255,255,255,0.72)';
+  const collapseIconColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
+
   return (
     <Drawer
       variant="permanent"
@@ -242,11 +256,15 @@ export default function AdminSidebar({
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          bgcolor: 'background.paper',
+          bgcolor: glassBg,
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
           borderRight: '1px solid',
-          borderColor: 'divider',
+          borderColor: dividerColor,
           transition: 'width 0.3s ease',
           overflowX: 'hidden',
+          color: textActive,
+          animation: 'rtDrawerIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
         },
       }}
     >
@@ -262,20 +280,15 @@ export default function AdminSidebar({
           minHeight: collapsed ? 90 : 72,
         }}
       >
-        <IconButton
+        <MorphToggleIcon
+          open={collapsed}
+          label="toggle sidebar"
           onClick={handleToggleCollapse}
           sx={{
             p: 1,
             color: 'primary.main',
-            transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
-            '&:hover': {
-              bgcolor: 'action.hover',
-              transform: 'rotate(180deg)'
-            }
           }}
-        >
-          <MenuIcon />
-        </IconButton>
+        />
 
         {/* Animated Brand Text */}
         <Box
@@ -314,7 +327,7 @@ export default function AdminSidebar({
                 lineHeight: 1.2,
                 '&:hover': {
                   transform: 'scale(1.05)',
-                  filter: 'drop-shadow(0 0 12px rgba(255,77,79,0.5))',
+                  filter: `drop-shadow(0 0 12px ${alpha(primary, 0.5)})`,
                 }
               }}
             >
@@ -364,7 +377,7 @@ export default function AdminSidebar({
                   transform: collapsed
                     ? 'translate(-50%, -50%) scale(1.15)'
                     : 'translate(-50%, -50%) scale(0.5)',
-                  filter: 'drop-shadow(0 0 15px rgba(255,77,79,0.8))',
+                  filter: `drop-shadow(0 0 15px ${alpha(primary, 0.8)})`,
                 }
               }}
             >
@@ -374,42 +387,172 @@ export default function AdminSidebar({
         </Box>
       </Box>
 
-      <Divider />
+      <Divider sx={{ borderColor: dividerColor }} />
 
       {/* Menu Items */}
-      <List sx={{ px: 1, py: 1 }}>
-        {menuItems.map((item) => (
+      <List
+        sx={{
+          px: 1,
+          py: 1,
+          flexGrow: 1,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          '@media (prefers-reduced-motion: no-preference)': {
+            '@keyframes rtItemIn': {
+              from: { opacity: 0, transform: 'translateY(8px)' },
+              to: { opacity: 1, transform: 'translateY(0)' },
+            },
+            '@keyframes rtDrawerIn': {
+              from: { opacity: 0, transform: 'translateX(-14px)' },
+              to: { opacity: 1, transform: 'translateX(0)' },
+            },
+            '@keyframes rtThreadDraw': {
+              from: { transform: 'scaleY(0)' },
+              to: { transform: 'scaleY(1)' },
+            },
+            '@keyframes rtChatBubble': {
+              '0%, 82%, 100%': { transform: 'translateY(0) scale(1)' },
+              '86%': { transform: 'translateY(-2px) scale(1.06)' },
+              '90%': { transform: 'translateY(0) scale(1)' },
+              '94%': { transform: 'translateY(-1px) scale(1.03)' },
+              '98%': { transform: 'translateY(0) scale(1)' },
+            },
+            '@keyframes rtFriendsPulse': {
+              '0%, 72%, 100%': { transform: 'scale(1)', opacity: 1 },
+              '78%': { transform: 'scale(1.06)', opacity: 0.9 },
+              '84%': { transform: 'scale(1)', opacity: 1 },
+              '90%': { transform: 'scale(1.03)', opacity: 0.95 },
+              '96%': { transform: 'scale(1)', opacity: 1 },
+            },
+            '@keyframes rtPing': {
+              '0%, 78%, 100%': { transform: 'scale(1)', opacity: 1 },
+              '84%': { transform: 'scale(1.14)', opacity: 0.75 },
+              '90%': { transform: 'scale(1)', opacity: 1 },
+            },
+            '@keyframes rtDing': {
+              '0%, 92%, 100%': { transform: 'rotate(0)' },
+              '94%': { transform: 'rotate(-14deg)' },
+              '96%': { transform: 'rotate(12deg)' },
+              '98%': { transform: 'rotate(-6deg)' },
+            },
+            '@keyframes rtShake': {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '25%': { transform: 'translateX(-2px)' },
+              '75%': { transform: 'translateX(2px)' },
+            },
+            '@keyframes rtFlip': {
+              to: { transform: 'rotateY(180deg)' },
+            },
+            '@keyframes rtGemGlint': {
+              '0%, 100%': { transform: 'scale(1)', filter: 'none' },
+              '50%': {
+                transform: 'scale(1.12)',
+                filter: `drop-shadow(0 0 6px ${alpha(primary, 0.8)}) brightness(1.35)`,
+              },
+            },
+            '@keyframes rtShieldPulse': {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.15)' },
+            },
+            '@keyframes rtWave': {
+              '0%, 100%': { transform: 'rotate(-8deg)' },
+              '50%': { transform: 'rotate(8deg)' },
+            },
+            '@keyframes rtSliders': {
+              '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
+              '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
+              '75%': { transform: 'translateY(1px) scaleY(1.2)' },
+            },
+            '& .rt-pulse': { animation: 'rtFriendsPulse 5.5s ease-in-out infinite' },
+            '& .rt-ping': { animation: 'rtPing 4s ease-in-out infinite' },
+            '& .rt-bell': { animation: 'rtDing 14s ease-in-out infinite' },
+            '& .MuiListItemButton-root:hover .rt-dash': { animation: 'rtShake 0.4s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+            '& .MuiListItemButton-root:hover .rt-flip': { animation: 'rtFlip 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+            '& .MuiListItemButton-root:hover .rt-gem': { animation: 'rtGemGlint 0.8s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+            '& .MuiListItemButton-root:hover .rt-sliders': { animation: 'rtSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+            '& .MuiListItemButton-root:hover .rt-shield': { animation: 'rtShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+            '& .MuiListItemButton-root:hover .rt-wave': { animation: 'rtWave 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+            '& .MuiListItemButton-root:hover .rt-pulse': { animationPlayState: 'paused' },
+            '& .MuiListItemButton-root:hover .rt-ping': { animationPlayState: 'paused' },
+            '& .MuiListItemButton-root:hover .rt-bell': { animationPlayState: 'paused' },
+            '& .MuiListItemButton-root:hover .rt-palette': { transform: 'rotate(45deg)' },
+            '& .MuiListItemButton-root:hover .rt-settings-icon': { transform: 'rotate(90deg)' },
+          },
+        }}
+      >
+        {menuItems.map((item, itemIndex) => {
+          const parentDelay = `${Math.min(itemIndex * 45, 540)}ms`;
+          return (
           <Box key={item.id}>
             <ListItem disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton
                 selected={isActive(item.path)}
                 onClick={() => handleMenuClick(item)}
                 sx={{
-                  borderRadius: 1,
+                  borderRadius: '10px',
+                  position: 'relative',
                   justifyContent: collapsed ? 'center' : 'flex-start',
                   px: collapsed ? 0 : 2,
+                  minHeight: 44,
+                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  animation: `rtItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both ${parentDelay}`,
+                  '&:hover': {
+                    bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
+                    '& .MuiListItemIcon-root': {
+                      color: primary,
+                      transform: 'scale(1.1)',
+                    },
+                    '& .MuiListItemText-primary': {
+                      color: isDark ? textActive : primary,
+                      textShadow: isDark ? `0 0 10px ${alpha(primary, 0.65)}` : 'none',
+                    },
+                  },
                   '&.Mui-selected': {
-                    bgcolor: 'primary.light',
+                    bgcolor: alpha(primary, isDark ? 0.14 : 0.08),
+                    backgroundImage: `linear-gradient(90deg, ${alpha(primary, isDark ? 0.22 : 0.12)}, ${alpha(primary, 0.02)})`,
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: alpha(primary, isDark ? 0.18 : 0.1),
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      left: 0,
+                      top: '15%',
+                      height: '70%',
+                      width: '4px',
+                      borderRadius: '0 4px 4px 0',
+                      transformOrigin: 'top',
+                      bgcolor: primary,
+                      boxShadow: `0 0 10px ${alpha(primary, 0.8)}`,
+                      animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
                     },
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    minWidth: collapsed ? 'auto' : 40,
-                    color: isActive(item.path) ? 'primary.main' : 'inherit',
+                    minWidth: collapsed ? 'auto' : 36,
+                    color: isActive(item.path) ? primary : iconInactive,
                     justifyContent: 'center',
+                    transition: 'all 0.2s ease',
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
                 {!collapsed && (
                   <>
-                    <ListItemText primary={item.label} />
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontSize: '0.88rem',
+                        fontWeight: isActive(item.path) ? 600 : 500,
+                        sx: { color: isActive(item.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
+                      }}
+                    />
                     {item.children && (
-                      expandedMenus.includes(item.id) ? <ExpandLess /> : <ExpandMore />
+                      expandedMenus.includes(item.id)
+                        ? <ExpandLess sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
+                        : <ExpandMore sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
                     )}
                   </>
                 )}
@@ -420,26 +563,45 @@ export default function AdminSidebar({
             {item.children && !collapsed && (
               <Collapse in={expandedMenus.includes(item.id)} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  {item.children.map((child) => (
+                  {item.children.map((child, childIndex) => (
                     <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
                       <ListItemButton
                         selected={isActive(child.path)}
                         onClick={() => child.path && router.push(child.path)}
                         sx={{
                           pl: 4,
-                          borderRadius: 1,
+                          borderRadius: '8px',
+                          position: 'relative',
+                          transition: 'all 0.2s ease',
+                          animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
+                          '&:hover': {
+                            bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
+                            '& .MuiListItemText-primary': { color: isDark ? textActive : primary },
+                            '& .MuiListItemIcon-root': { color: primary },
+                          },
                           '&.Mui-selected': {
-                            bgcolor: 'primary.light',
-                            '&:hover': {
-                              bgcolor: 'primary.light',
+                            bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
+                            '&::before': {
+                              content: '""',
+                              position: 'absolute',
+                              left: 0,
+                              top: '15%',
+                              height: '70%',
+                              width: 3,
+                              borderRadius: '0 3px 3px 0',
+                              transformOrigin: 'top',
+                              bgcolor: primary,
+                              boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
+                              animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
                             },
                           },
                         }}
                       >
                         <ListItemIcon
                           sx={{
-                            minWidth: 40,
-                            color: isActive(child.path) ? 'primary.main' : 'inherit',
+                            minWidth: 34,
+                            color: isActive(child.path) ? primary : iconInactive,
+                            transition: 'all 0.2s ease',
                           }}
                         >
                           {child.icon}
@@ -448,6 +610,8 @@ export default function AdminSidebar({
                           primary={child.label}
                           primaryTypographyProps={{
                             fontSize: '0.875rem',
+                            fontWeight: isActive(child.path) ? 600 : 400,
+                            sx: { color: isActive(child.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
                           }}
                         />
                       </ListItemButton>
@@ -457,15 +621,16 @@ export default function AdminSidebar({
               </Collapse>
             )}
           </Box>
-        ))}
+        );
+        })}
       </List>
 
-      <Divider sx={{ mt: 'auto' }} />
+      <Divider sx={{ mt: 'auto', borderColor: dividerColor }} />
 
       {/* Footer Info */}
       {!collapsed && (
         <Box sx={{ p: '16px 28px', textAlign: 'left', mt: 'auto' }}>
-          <Divider sx={{ mb: 2, ml: -3.5, mr: -3.5 }} />
+          <Divider sx={{ mb: 2, ml: -3.5, mr: -3.5, borderColor: dividerColor, opacity: 0.6 }} />
           <Typography
             variant="caption"
             sx={{

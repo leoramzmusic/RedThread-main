@@ -42,6 +42,17 @@ interface UserSettings {
   
   // Avanzado
   auto_save?: boolean;
+
+  // Personalización del Navbar
+  navbar_config?: {
+    shortcuts?: Record<string, boolean>;
+    icon_styles?: Record<string, string>;
+    profile?: {
+      shape?: 'circle' | 'square' | 'diamond';
+      border?: 'none' | 'thin' | 'accent';
+      glow?: 'none' | 'accent' | 'passion';
+    };
+  };
 }
 
 interface UseSettingsReturn {

@@ -7,7 +7,6 @@ import {
     Button,
     Card,
     CardContent,
-    CardMedia,
     IconButton,
     CircularProgress,
     Dialog,
@@ -21,6 +20,7 @@ import AdminLayout from '../../../components/layout/AdminLayout';
 import appearanceService from '../../../services/appearanceService';
 import { AppearanceResource, AppearanceType, Platform } from '../../../types/appearance';
 import { getMediaUrl } from '../../../utils/media';
+import ParallaxImage from '../../../components/motion/ParallaxImage';
 
 export default function MultimediaPage() {
     const [resources, setResources] = useState<AppearanceResource[]>([]);
@@ -94,7 +94,7 @@ export default function MultimediaPage() {
                                         {r.url.endsWith('.mp4') ? (
                                             <video src={getMediaUrl(r.url)} style={{ width: '100%', height: 150, objectFit: 'cover' }} controls />
                                         ) : (
-                                            <CardMedia component="img" height="150" image={getMediaUrl(r.url)} alt="media" />
+                                            <ParallaxImage src={getMediaUrl(r.url)} alt="media" intensity={0.08} drift={3} frameSx={{ height: 150 }} />
                                         )}
                                         <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
                                             <IconButton size="small" color="error" onClick={() => r._id && handleDelete(r._id)}>

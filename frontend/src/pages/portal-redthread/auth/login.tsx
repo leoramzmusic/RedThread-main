@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,27 +6,37 @@ import {
   Button,
   TextField,
   Typography,
-  Paper,
   Alert,
   CircularProgress,
   InputAdornment,
   IconButton,
 } from '@mui/material';
-import { Visibility, VisibilityOff, AdminPanelSettings } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import adminApiClient from '../../../services/adminApi';
 import { setAdminCredentials } from '../../../store/slices/adminAuthSlice';
 import { RootState } from '../../../store/store';
+import AuthLayout from '../../../components/auth/AuthLayout';
+import { AUTH_INPUT_SX, SUBMIT_BTN_SX } from '../../../components/auth/authInputStyles';
 
 export default function AdminLogin() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state: RootState) => state.adminAuth);
 
+  const [authSuccess, setAuthSuccess] = useState(false);
+  const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    if (isAuthenticated) {
+    return () => {
+      if (successTimer.current) clearTimeout(successTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && !authSuccess) {
       router.replace('/portal-redthread');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, authSuccess]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -71,61 +81,51 @@ export default function AdminLogin() {
         refresh_token,
       }));
 
-      // Redirect to Admin Portal
-      router.push('/portal-redthread');
+      // Brief success glow, then redirect to Admin Portal
+      setAuthSuccess(true);
+      successTimer.current = setTimeout(() => {
+        router.push('/portal-redthread');
+      }, 800);
     } catch (err: any) {
       console.error('Admin login error:', err);
 
       // Provide specific error messages
       if (err.response?.status === 401) {
-        setError('❌ Credenciales incorrectas. Verifica tu email y contraseña.');
+        setError('Credenciales incorrectas. Verifica tu email y contraseña.');
       } else if (err.response?.status === 500) {
-        setError('⚠️ Error del servidor. Por favor, contacta al administrador del sistema.');
+        setError('Error del servidor. Por favor, contacta al administrador del sistema.');
       } else {
-        setError(err.response?.data?.detail || '⚠️ Error de conexión. Verifica tu red e intenta nuevamente.');
+        setError(err.response?.data?.detail || 'Error de conexión. Verifica tu red e intenta nuevamente.');
       }
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        bgcolor: '#1a1a1a', // Dark background for admin feel
-      }}
+    <AuthLayout
+      title="Red Thread Admin"
+      subtitle="Portal de Administración"
+      authSuccess={authSuccess}
     >
-      <Paper
-        elevation={6}
-        sx={{
-          p: 5,
-          width: '100%',
-          maxWidth: 400,
-          borderRadius: 3,
-          bgcolor: 'background.paper',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-          <AdminPanelSettings sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
-          <Typography variant="h5" align="center" fontWeight={700} color="text.primary">
-            Red Thread Admin
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Portal de Administración
-          </Typography>
-        </Box>
-
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
+          <Alert
+            severity="error"
+            sx={{
+              mb: 3,
+              width: '100%',
+              color: '#FFFFFF',
+              bgcolor: 'rgba(229, 57, 53, 0.22)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 138, 128, 0.45)',
+              '& .MuiAlert-icon': { color: '#FF8A80' },
+            }}
+          >
             {error}
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <TextField
             fullWidth
             label="Email Administrativo"
@@ -136,7 +136,8 @@ export default function AdminLogin() {
             margin="normal"
             required
             autoFocus
-            variant="outlined"
+            variant="standard"
+            sx={AUTH_INPUT_SX}
           />
           <TextField
             fullWidth
@@ -147,13 +148,16 @@ export default function AdminLogin() {
             onChange={handleChange}
             margin="normal"
             required
-            variant="outlined"
+            variant="standard"
+            sx={AUTH_INPUT_SX}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    sx={{ color: 'rgba(255,255,255,0.7)' }}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
@@ -167,13 +171,20 @@ export default function AdminLogin() {
             type="submit"
             variant="contained"
             size="large"
-            disabled={loading}
-            sx={{ mt: 4, mb: 2, height: 48, fontWeight: 'bold' }}
+            disabled={loading || authSuccess}
+            sx={SUBMIT_BTN_SX}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Acceder al Portal'}
+            {loading || authSuccess ? <CircularProgress size={24} color="inherit" /> : 'Acceder al Portal'}
           </Button>
         </form>
-      </Paper>
-    </Box>
+
+        <Typography
+          variant="caption"
+          sx={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.5px', mt: 1 }}
+        >
+          Acceso exclusivo para administradores de RedThread
+        </Typography>
+      </Box>
+    </AuthLayout>
   );
 }
