@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel
+import re
 from src.models.employee import Employee, EmployeeStatus
 from src.models.admin_rbac import AdminRole, Permission, AdminUser
 from src.core.middleware.rbac import require_permission, require_all_permissions, log_admin_action, get_admin_user
@@ -73,7 +74,7 @@ async def listar_empleados(
     query = {}
     
     if search:
-        search_regex = {"$regex": search, "$options": "i"}
+        search_regex = {"$regex": re.escape(search), "$options": "i"}
         query["$or"] = [
             {"first_name": search_regex},
             {"last_name": search_regex},
@@ -180,10 +181,10 @@ async def employee_actions(
     """
     # 1. Permission checks
     if request.action == "update_role":
-        if not admin_user.has_permission(Permission.ASSIGN_ROLES):
+        if not await admin_user.has_permission(Permission.ASSIGN_ROLES):
             raise HTTPException(status_code=403, detail="Not enough permissions to assign roles")
     else:
-        if not admin_user.has_permission(Permission.MANAGE_EMPLOYEES):
+        if not await admin_user.has_permission(Permission.MANAGE_EMPLOYEES):
             raise HTTPException(status_code=403, detail="Not enough permissions to manage employees")
 
     # 2. Find employee

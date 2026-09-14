@@ -3,6 +3,9 @@ from typing import List, Optional
 from src.models.appearance import AppearanceResource, AppearanceType, Platform
 from src.models.appearance_history import AppearanceHistory, HistoryAction
 from src.core.config import settings
+from src.models.employee import Employee
+from src.models.admin_rbac import Permission
+from src.core.middleware.employee_rbac import require_employee_permission, require_any_employee_permission
 import os
 import shutil
 from datetime import datetime, timezone
@@ -37,33 +40,54 @@ async def check_scheduled_activations(type: Optional[AppearanceType] = None, pla
 UPLOAD_DIR = "static/uploads/appearance"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".ico"}
+
 @router.post("/upload")
 async def upload_file(
     file: UploadFile = File(...),
     type: AppearanceType = Form(...),
+    employee: Employee = Depends(require_employee_permission(Permission.MANAGE_BRANDING)),
 ):
     """
     Upload a file for an appearance resource.
     Returns the URL of the uploaded file.
     """
     try:
+        file_ext = os.path.splitext(file.filename or "")[1].lower()
+        if file_ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(status_code=400, detail="File extension not allowed")
+
+        if file_ext != ".ico" and file.content_type not in settings.ALLOWED_IMAGE_TYPES:
+            raise HTTPException(status_code=400, detail="File type not allowed")
+
         # Generate unique filename
-        file_ext = os.path.splitext(file.filename)[1]
         filename = f"{type.value}_{uuid.uuid4()}{file_ext}"
         file_path = os.path.join(UPLOAD_DIR, filename)
-        
-        # Save file
+
+        # Save file with size limit
+        size = 0
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-            
+            while chunk := await file.read(1024 * 1024):
+                size += len(chunk)
+                if size > settings.MAX_UPLOAD_SIZE:
+                    buffer.close()
+                    os.remove(file_path)
+                    raise HTTPException(status_code=413, detail="File too large")
+                buffer.write(chunk)
+
         # Return URL
         url = f"/static/uploads/appearance/{filename}"
         return {"url": url}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/resources", response_model=AppearanceResource)
-async def create_resource(resource: AppearanceResource):
+async def create_resource(
+    resource: AppearanceResource,
+    employee: Employee = Depends(require_employee_permission(Permission.MANAGE_BRANDING)),
+):
     """
     Create a new appearance resource entry.
     If is_active is True, other resources of same type/platform might need to be deactivated (logic dependent on exact requirement, currently allowing multiple).
@@ -85,7 +109,7 @@ async def create_resource(resource: AppearanceResource):
     await AppearanceHistory(
         resource_id=str(resource.id),
         action=HistoryAction.UPLOADED,
-        user_id="admin", # Todo: get from auth context
+        user_id=str(employee.id),
         context=context
     ).insert()
 
@@ -148,7 +172,8 @@ async def check_scheduled_activations(type: Optional[AppearanceType] = None, pla
 async def list_resources(
     type: Optional[AppearanceType] = None,
     platform: Optional[Platform] = None,
-    active_only: bool = False
+    active_only: bool = False,
+    employee: Employee = Depends(require_any_employee_permission([Permission.MANAGE_BRANDING, Permission.EDIT_CONFIG])),
 ):
     # Run lazy check
     await check_scheduled_activations(type, platform)
@@ -164,7 +189,11 @@ async def list_resources(
     return await AppearanceResource.find(query).sort("-created_at").to_list()
 
 @router.put("/resources/{resource_id}", response_model=AppearanceResource)
-async def update_resource(resource_id: str, update_data: dict):
+async def update_resource(
+    resource_id: str,
+    update_data: dict,
+    employee: Employee = Depends(require_employee_permission(Permission.MANAGE_BRANDING)),
+):
     resource = await AppearanceResource.get(resource_id)
     if not resource:
         raise HTTPException(status_code=404, detail="Resource not found")
@@ -184,7 +213,7 @@ async def update_resource(resource_id: str, update_data: dict):
         await AppearanceHistory(
             resource_id=str(resource.id),
             action=action,
-            user_id="admin", 
+            user_id=str(employee.id),
             context="Manual update"
         ).insert()
 
@@ -192,7 +221,10 @@ async def update_resource(resource_id: str, update_data: dict):
     return resource
 
 @router.delete("/resources/{resource_id}")
-async def delete_resource(resource_id: str):
+async def delete_resource(
+    resource_id: str,
+    employee: Employee = Depends(require_employee_permission(Permission.MANAGE_BRANDING)),
+):
     resource = await AppearanceResource.get(resource_id)
     if not resource:
         raise HTTPException(status_code=404, detail="Resource not found")
@@ -201,7 +233,7 @@ async def delete_resource(resource_id: str):
     await AppearanceHistory(
         resource_id=str(resource.id),
         action=HistoryAction.DELETED,
-        user_id="admin", 
+        user_id=str(employee.id),
         context="Resource deleted"
     ).insert()
 
@@ -213,7 +245,8 @@ async def delete_resource(resource_id: str):
 @router.get("/history", response_model=List[AppearanceHistory])
 async def get_history(
     resource_id: Optional[str] = None,
-    limit: int = 50
+    limit: int = 50,
+    employee: Employee = Depends(require_any_employee_permission([Permission.MANAGE_BRANDING, Permission.EDIT_CONFIG])),
 ):
     query = {}
     if resource_id:
@@ -222,7 +255,9 @@ async def get_history(
     return await AppearanceHistory.find(query).sort("-timestamp").limit(limit).to_list()
 
 @router.delete("/history")
-async def clear_history():
+async def clear_history(
+    employee: Employee = Depends(require_employee_permission(Permission.MANAGE_BRANDING)),
+):
     """
     Clear all appearance history logs.
     """

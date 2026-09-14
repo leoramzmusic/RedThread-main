@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'js-cookie';
+import adminApiClient from '../services/adminApi';
 import { setAdminCredentials, setAdminInitialized } from '../store/slices/adminAuthSlice';
 
 export const useAdminSessionHydration = () => {
@@ -11,34 +11,24 @@ export const useAdminSessionHydration = () => {
   useEffect(() => {
     if (isInitialized) return;
 
-    const hydrateAdminSession = () => {
+    const hydrateAdminSession = async () => {
       try {
-        console.log('[DEBUG] useAdminSessionHydration running...');
-        const adminAccessToken = Cookies.get('admin_access_token');
-        const adminRefreshToken = Cookies.get('admin_refresh_token');
-        const adminUserStr = Cookies.get('admin_user');
-        console.log('[DEBUG] Cookies found:', { 
-          access: !!adminAccessToken, 
-          refresh: !!adminRefreshToken, 
-          user: !!adminUserStr 
-        });
+        const response = await adminApiClient.get('/portal-redthread/auth/me');
+        const employee = response.data;
 
-        if (adminAccessToken && adminRefreshToken && adminUserStr) {
-          const adminUser = JSON.parse(adminUserStr);
-          
-          dispatch(setAdminCredentials({
-            user: adminUser,
-            access_token: adminAccessToken,
-            refresh_token: adminRefreshToken,
-            skipCookies: true, // Don't re-save cookies during hydration
-          }));
-        }
+        dispatch(setAdminCredentials({
+          user: {
+            id: employee.id,
+            email: employee.email,
+            first_name: employee.first_name,
+            last_name: employee.last_name,
+            role: employee.roles?.[0] ?? '',
+            area: employee.department_id,
+            avatar: employee.avatar,
+          },
+        }));
       } catch (error) {
-        console.error('Failed to hydrate admin session:', error);
-        // Clear corrupted data
-        Cookies.remove('admin_access_token');
-        Cookies.remove('admin_refresh_token');
-        Cookies.remove('admin_user');
+        // No valid session (401) - stays unauthenticated
       } finally {
         dispatch(setAdminInitialized(true));
       }

@@ -62,6 +62,9 @@ class Permission(str, Enum):
     MANAGE_CAMPAIGNS = "manage_campaigns"
     MANAGE_SOCIAL_ACCOUNTS = "manage_social_accounts" # New
     SCHEDULE_POSTS = "schedule_posts" # New
+
+    # Branding & Appearance
+    MANAGE_BRANDING = "manage_branding"  # New
     
     # Support
     VIEW_TICKETS = "view_tickets"

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import { useRouter } from 'next/router';
-import Cookies from 'js-cookie';
 import apiClient from '../services/api';
 import adminApiClient from '../services/adminApi';
 
@@ -98,8 +97,6 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   // Load admin preferences on admin portal route (only when an admin session exists)
   useEffect(() => {
     if (!mounted || !isAdminPortal) return;
-    // Skip when there's no session (e.g. login page) to avoid a doomed /me call + refresh noise
-    if (!Cookies.get('admin_access_token')) return;
 
     const loadAdminPrefs = async () => {
       try {
@@ -115,8 +112,10 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
             localStorage.setItem(ADMIN_VISUAL_KEY, data.admin_visual_theme);
           }
         }
-      } catch (error) {
-        console.error('Failed to load admin theme preferences:', error);
+      } catch (error: any) {
+        if (error?.response?.status !== 401 && error?.response?.status !== 403) {
+          console.error('Failed to load admin theme preferences:', error);
+        }
       }
     };
 

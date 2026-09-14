@@ -186,7 +186,9 @@ app.include_router(boost.router, prefix="/boost", tags=["Boost"])  # Boost Syste
 # No need for router-level dependencies since Employee tokens are used
 
 app.include_router(admin_portal.router, prefix="/portal-redthread", tags=["Admin Portal"])
-app.include_router(admin_bootstrap.router, prefix="/portal-redthread/bootstrap", tags=["Admin - Bootstrap"])  # ⚠️ Remove in production
+# ⚠️ Bootstrap solo para entornos de desarrollo/inicialización (nunca en producción)
+if settings.ENVIRONMENT in ("local", "dev", "qa"):
+    app.include_router(admin_bootstrap.router, prefix="/portal-redthread/bootstrap", tags=["Admin - Bootstrap"])
 app.include_router(admin_eventos.router, prefix="/portal-redthread/eventos", tags=["Admin - Eventos"])
 app.include_router(admin_empleados.router, prefix="/portal-redthread/empleados", tags=["Admin - Empleados"])
 app.include_router(admin_metricas.router, prefix="/portal-redthread/metricas", tags=["Admin - Métricas"])

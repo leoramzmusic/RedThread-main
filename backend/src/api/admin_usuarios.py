@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel
+import re
 from src.models.user import User
 from src.models.profile import Profile
 from src.models.relationship import Relationship
@@ -95,7 +96,7 @@ async def list_users(
 
     # 3. Smart Search
     if search:
-        search_regex = {"$regex": search, "$options": "i"}
+        search_regex = {"$regex": re.escape(search), "$options": "i"}
         search_query = {
             "$or": [
                 {"email": search_regex},

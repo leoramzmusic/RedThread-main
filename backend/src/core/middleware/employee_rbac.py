@@ -5,7 +5,7 @@ Provides role-based access control for admin endpoints using the Employee model.
 This replaces the old AdminUser-based RBAC for the new Employee authentication system.
 """
 
-from fastapi import Depends, HTTPException, status, Header
+from fastapi import Depends, HTTPException, status, Header, Request
 from typing import List, Callable, Optional
 from src.models.employee import Employee
 from src.models.admin_rbac import Permission, AdminAction, ROLE_PERMISSIONS
@@ -13,31 +13,33 @@ from src.core.utils.security import decode_token
 from datetime import datetime
 
 
-async def get_current_employee(authorization: Optional[str] = Header(None)) -> Employee:
+async def get_current_employee(
+    request: Request,
+    authorization: Optional[str] = Header(None)
+) -> Employee:
     """
-    Get current authenticated employee from Authorization header.
+    Get current authenticated employee from Authorization header or HttpOnly cookie.
     Raises 401 if token is invalid or employee not found.
     """
-    if not authorization:
+    token = None
+
+    if authorization:
+        try:
+            scheme, token = authorization.split()
+            if scheme.lower() != "bearer":
+                token = None
+        except ValueError:
+            token = None
+
+    if not token:
+        token = request.cookies.get("admin_access_token")
+
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authorization header missing"
+            detail="Authorization header or session cookie missing"
         )
-    
-    # Extract token from "Bearer <token>"
-    try:
-        scheme, token = authorization.split()
-        if scheme.lower() != "bearer":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication scheme"
-            )
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header format"
-        )
-    
+
     # Decode token
     payload = decode_token(token)
     if not payload or payload.get("type") != "access":
@@ -92,7 +94,7 @@ def require_employee_permission(permission: Permission):
             ...
     """
     async def permission_checker(employee: Employee = Depends(get_current_employee)) -> Employee:
-        if not employee.has_permission(permission):
+        if not await employee.has_permission(permission):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Permission required: {permission.value}"
@@ -120,7 +122,7 @@ def require_any_employee_permission(permissions: List[Permission]):
         # Check if employee has any of the required permissions
         has_permission = False
         for perm in permissions:
-            if employee.has_permission(perm):
+            if await employee.has_permission(perm):
                 has_permission = True
                 break
         
@@ -151,7 +153,7 @@ def require_all_employee_permissions(permissions: List[Permission]):
     """
     async def permission_checker(employee: Employee = Depends(get_current_employee)) -> Employee:
         for perm in permissions:
-            if not employee.has_permission(perm):
+            if not await employee.has_permission(perm):
                 perm_names = ", ".join([p.value for p in permissions])
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -205,7 +207,7 @@ async def employee_has_permission(employee_id: str, permission: Permission) -> b
     employee = await Employee.get(employee_id)
     if not employee:
         return False
-    return employee.has_permission(permission)
+    return await employee.has_permission(permission)
 
 
 # Helper function to get employee's permissions

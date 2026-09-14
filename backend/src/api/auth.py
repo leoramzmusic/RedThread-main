@@ -239,13 +239,15 @@ async def register(request: RegisterRequest, response: Response):
     # Handle Phone Registration Verification
     requires_verification = False
     if request.phone:
-        import random
-        otp = "".join([str(random.randint(0, 9)) for _ in range(6)])
+        import secrets
+        otp = f"{secrets.randbelow(1_000_000):06d}"
         user.phone_otp = otp
         user.phone_otp_expires_at = datetime.utcnow() + timedelta(minutes=10)
+        user.phone_otp_attempts = 0
         requires_verification = True
-        # Mock SMS sending
-        print(f"--- [MOCK SMS] --- To: {request.phone} Code: {otp} ---")
+        # Mock SMS sending (solo visible en debug/local)
+        if settings.DEBUG:
+            print(f"--- [MOCK SMS] --- To: {request.phone} Code: {otp} ---")
     else:
         user.is_verified = True # Email verified immediately or later? For now immediate to match UI flow
 
@@ -335,7 +337,13 @@ async def verify_phone(request: VerifyPhoneRequest, response: Response):
     if user.is_verified:
         raise HTTPException(status_code=400, detail="User already verified")
     
+    # Anti brute-force
+    if user.phone_otp_attempts >= 5:
+        raise HTTPException(status_code=429, detail="Too many attempts. Request a new code.")
+    
     if not user.phone_otp or user.phone_otp != request.otp:
+        user.phone_otp_attempts += 1
+        await user.save()
         raise HTTPException(status_code=400, detail="Invalid verification code")
     
     if user.phone_otp_expires_at < datetime.utcnow():
@@ -345,6 +353,7 @@ async def verify_phone(request: VerifyPhoneRequest, response: Response):
     user.is_verified = True
     user.phone_otp = None
     user.phone_otp_expires_at = None
+    user.phone_otp_attempts = 0
     await user.save()
     
     # Generate tokens

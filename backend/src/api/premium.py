@@ -3,8 +3,11 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timedelta
 from src.models.user import User, SubscriptionTier
+from src.models.employee import Employee
+from src.models.admin_rbac import Permission
 from src.api.auth import get_current_user
 from src.core.config import settings
+from src.core.middleware.employee_rbac import require_employee_permission
 
 
 router = APIRouter()
@@ -68,19 +71,17 @@ async def subscribe_premium(
         raise HTTPException(status_code=400, detail="Invalid tier")
 
     
-    # Calculate expiration
-    expires_at = datetime.utcnow() + timedelta(days=request.duration_months * 30) # Approximate
-    
-    # Update user subscription
-    current_user.subscription_tier = target_tier
-    current_user.subscription_expires_at = expires_at
-    # current_user.stripe_customer_id = "cus_..." # Set after Stripe processing
-    await current_user.save()
-    
-    return SubscriptionResponse(
-        subscription_tier=target_tier,
-        expires_at=expires_at,
-        message=f"Successfully subscribed to {request.tier} plan for {request.duration_months} months"
+    # No se otorga la suscripción hasta que el pago sea verificado vía webhook de Stripe.
+    if not settings.STRIPE_SECRET_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Payments not configured. Subscription not activated."
+        )
+    # TODO: Crear PaymentIntent por `amount` y activar la suscripción solo cuando
+    # el webhook de Stripe confirme checkout.session.completed. Nunca conceder aquí.
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Stripe integration pending. Subscription not activated."
     )
 
 
@@ -182,16 +183,17 @@ async def get_subscription_status(current_user: User = Depends(get_current_user)
 class UpdateTierRequest(BaseModel):
     tier: str  # "free", "premium", or "vip"
     days: int = 30  # Number of days for premium/vip
+    user_id: Optional[str] = None  # Target user (now required; admin/testing only)
 
 
 @router.post("/update-tier")
 async def update_subscription_tier(
     request: UpdateTierRequest,
-    current_user: User = Depends(get_current_user)
+    employee: Employee = Depends(require_employee_permission(Permission.MANAGE_SUBSCRIPTIONS)),
 ):
     """
-    Update subscription tier (for testing/admin purposes)
-    In production, this should be restricted to admin users only
+    Update subscription tier for a target user.
+    Restricted to employees with MANAGE_SUBSCRIPTIONS permission.
     """
     
     # Validate tier
@@ -206,23 +208,31 @@ async def update_subscription_tier(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid tier. Must be 'free', 'premium', or 'vip'"
         )
+
+    if not request.user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="user_id is required")
+
+    target = await User.get(request.user_id)
+    if not target:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     new_tier = tier_map[request.tier.lower()]
     
     # Update user
-    current_user.subscription_tier = new_tier
+    target.subscription_tier = new_tier
     
     if new_tier == SubscriptionTier.FREE:
-        current_user.subscription_expires_at = None
+        target.subscription_expires_at = None
     else:
-        current_user.subscription_expires_at = datetime.utcnow() + timedelta(days=request.days)
+        target.subscription_expires_at = datetime.utcnow() + timedelta(days=request.days)
     
-    await current_user.save()
+    await target.save()
     
     return {
         "message": f"Subscription tier updated to {request.tier}",
-        "subscription_tier": current_user.subscription_tier,
-        "expires_at": current_user.subscription_expires_at,
+        "user_id": request.user_id,
+        "subscription_tier": target.subscription_tier,
+        "expires_at": target.subscription_expires_at,
     }
 
 
@@ -273,20 +283,15 @@ async def purchase_boosts(
         raise HTTPException(status_code=400, detail="Invalid package ID")
         
     boost_count = package_map[request.package_id]
-    
-    # TODO: Implement actual Stripe payment processing
-    
-    # Update user available boosts
-    # Note: purchased boosts are added to available_boosts. 
-    # The renewal logic normally resets to the tier maximum.
-    # We should probably have a separate field or handle this in renewal.
-    # For now, we'll just add them.
-    current_user.available_boosts += boost_count
-    await current_user.save()
-    
-    return {
-        "success": True,
-        "message": f"Successfully purchased {boost_count} boosts!",
-        "new_total": current_user.available_boosts
-    }
+
+    # No se otorgan boosts hasta que el pago sea verificado vía webhook de Stripe.
+    if not settings.STRIPE_SECRET_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Payments not configured. Boosts not granted."
+        )
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Stripe integration pending. Boosts not granted."
+    )
 

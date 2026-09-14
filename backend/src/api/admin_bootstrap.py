@@ -32,11 +32,14 @@ async def create_super_admin_bootstrap(
         HTTPException: If super admin already exists
     """
     
-    # Check if any super admin exists
-    existing_super_admin = await AdminUser.find_one(
-        AdminUser.role == AdminRole.SUPER_ADMIN,
-        AdminUser.is_active == True
-    )
+    # Check if any super admin exists (legacy role or dynamic roles system)
+    existing_super_admin = await AdminUser.find_one({
+        "is_active": True,
+        "$or": [
+            {"role": AdminRole.SUPER_ADMIN.value},
+            {"roles": {"$in": ["superadmin"]}},
+        ],
+    })
     
     if existing_super_admin:
         raise HTTPException(
@@ -346,10 +349,13 @@ async def check_super_admin_exists():
     Returns:
         dict: Whether super admin exists
     """
-    existing_super_admin = await AdminUser.find_one(
-        AdminUser.role == AdminRole.SUPER_ADMIN,
-        AdminUser.is_active == True
-    )
+    existing_super_admin = await AdminUser.find_one({
+        "is_active": True,
+        "$or": [
+            {"role": AdminRole.SUPER_ADMIN.value},
+            {"roles": {"$in": ["superadmin"]}},
+        ],
+    })
     
     return {
         "super_admin_exists": existing_super_admin is not None,

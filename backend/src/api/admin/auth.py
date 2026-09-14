@@ -1,27 +1,24 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, HTTPException, status, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, HTTPException, status, Depends, Response, Request, Header
 from pydantic import BaseModel, EmailStr
 from src.models.employee import Employee
 from src.services.employee_service import employee_service
 from src.core.utils.security import create_access_token, create_refresh_token, decode_token
+from src.core.config import settings
 
 router = APIRouter(prefix="/portal-redthread/auth", tags=["Admin Auth"])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="portal-redthread/auth/login")
 
 class AdminLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
 class RefreshTokenRequest(BaseModel):
-    refresh_token: str
+    refresh_token: Optional[str] = None
 
-class AdminTokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
+class AdminAuthResponse(BaseModel):
     employee: dict
+    message: str = "ok"
 
 class EmployeeRegisterRequest(BaseModel):
     first_name: str
@@ -37,10 +34,70 @@ class EmployeeRegisterRequest(BaseModel):
     city: Optional[str] = None
     is_2fa_enabled: bool = False
 
-async def get_current_employee(token: str = Depends(oauth2_scheme)) -> Employee:
-    """Get current authenticated employee from token"""
+def _set_admin_cookies(response: Response, access_token: str, refresh_token: str):
+    secure = settings.ENVIRONMENT != "local"
+    response.set_cookie(
+        key="admin_access_token",
+        value=access_token,
+        httponly=True,
+        secure=secure,
+        samesite="strict",
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/"
+    )
+    response.set_cookie(
+        key="admin_refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=secure,
+        samesite="strict",
+        max_age=7 * 24 * 60 * 60,
+        path="/"
+    )
+
+
+def _clear_admin_cookies(response: Response):
+    response.delete_cookie(key="admin_access_token", path="/")
+    response.delete_cookie(key="admin_refresh_token", path="/")
+
+
+def _employee_summary(employee: Employee) -> dict:
+    return {
+        "id": str(employee.id),
+        "email": employee.email,
+        "first_name": employee.first_name,
+        "last_name": employee.last_name,
+        "roles": employee.roles,
+        "avatar": employee.avatar
+    }
+
+
+async def get_current_employee(
+    request: Request,
+    authorization: Optional[str] = Header(None)
+) -> Employee:
+    """Get current authenticated employee from Authorization header or HttpOnly cookie"""
+    token = None
+
+    if authorization:
+        try:
+            scheme, token = authorization.split()
+            if scheme.lower() != "bearer":
+                token = None
+        except ValueError:
+            token = None
+
+    if not token:
+        token = request.cookies.get("admin_access_token")
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials"
+        )
+
     payload = decode_token(token)
-    
+
     if not payload or payload.get("type") != "access":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -70,8 +127,8 @@ async def get_current_employee(token: str = Depends(oauth2_scheme)) -> Employee:
         
     return employee
 
-@router.post("/login", response_model=AdminTokenResponse)
-async def login(request: AdminLoginRequest):
+@router.post("/login", response_model=AdminAuthResponse)
+async def login(request: AdminLoginRequest, response: Response):
     print(f"[AUTH DEBUG] Login request received for email: {request.email}")
     employee = await employee_service.authenticate_employee(request.email, request.password)
     
@@ -94,24 +151,29 @@ async def login(request: AdminLoginRequest):
     )
     
     await employee_service.update_last_login(str(employee.id))
-    
-    return AdminTokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        employee={
-            "id": str(employee.id),
-            "email": employee.email,
-            "first_name": employee.first_name,
-            "last_name": employee.last_name,
-            "roles": employee.roles,
-            "avatar": employee.avatar
-        }
-    )
 
-@router.post("/refresh", response_model=AdminTokenResponse)
-async def refresh_token(request: RefreshTokenRequest):
-    """Refresh admin access token"""
-    payload = decode_token(request.refresh_token)
+    _set_admin_cookies(response, access_token, refresh_token)
+
+    return AdminAuthResponse(employee=_employee_summary(employee))
+
+@router.post("/refresh", response_model=AdminAuthResponse)
+async def refresh_token(
+    request: Request,
+    response: Response,
+    body: Optional[RefreshTokenRequest] = None
+):
+    """Refresh admin access token from HttpOnly cookie or request body"""
+    refresh_token_val = request.cookies.get("admin_refresh_token")
+    if not refresh_token_val and body and body.refresh_token:
+        refresh_token_val = body.refresh_token
+
+    if not refresh_token_val:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token"
+        )
+
+    payload = decode_token(refresh_token_val)
     
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(
@@ -143,19 +205,16 @@ async def refresh_token(request: RefreshTokenRequest):
         {"sub": str(employee.id), "scope": "employee"},
         device_type="web"
     )
-    
-    return AdminTokenResponse(
-        access_token=access_token,
-        refresh_token=new_refresh_token,
-        employee={
-            "id": str(employee.id),
-            "email": employee.email,
-            "first_name": employee.first_name,
-            "last_name": employee.last_name,
-            "roles": employee.roles,
-            "avatar": employee.avatar
-        }
-    )
+
+    _set_admin_cookies(response, access_token, new_refresh_token)
+
+    return AdminAuthResponse(employee=_employee_summary(employee))
+
+@router.post("/logout")
+async def logout(response: Response):
+    """Logout admin - clears HttpOnly cookies"""
+    _clear_admin_cookies(response)
+    return {"message": "Logged out successfully"}
 
 @router.get("/me")
 async def get_current_employee_info(current_employee: Employee = Depends(get_current_employee)):

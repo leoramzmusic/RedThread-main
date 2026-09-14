@@ -39,6 +39,7 @@ class User(Document):
     # Phone Verification
     phone_otp: Optional[str] = None
     phone_otp_expires_at: Optional[datetime] = None
+    phone_otp_attempts: int = 0
     
     # Account Status
     is_active: bool = True

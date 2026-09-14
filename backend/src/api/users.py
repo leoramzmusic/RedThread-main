@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timedelta
+import re
 from src.models.user import User
 from src.models.profile import Profile
 from src.api.auth import get_current_user, get_current_user_optional
@@ -240,7 +241,7 @@ async def get_user_by_nickname(
 ):
     print(f"[DEBUG] Fetching user by nickname: '{nickname}'")
     # Find user by nickname (Case-insensitive)
-    user = await User.find_one({"nickname": {"$regex": f"^{nickname}$", "$options": "i"}})
+    user = await User.find_one({"nickname": {"$regex": f"^{re.escape(nickname)}$", "$options": "i"}})
     
     if not user:
         print(f"[DEBUG] User not found for nickname: '{nickname}'")

@@ -65,20 +65,18 @@ export default function AdminLogin() {
         password: formData.password,
       });
 
-      const { access_token, refresh_token, employee } = response.data;
+      const { employee } = response.data;
 
-      // Dispatch to Admin Redux Slice
+      // Dispatch to Admin Redux Slice (session tokens live in HttpOnly cookies)
       dispatch(setAdminCredentials({
         user: {
           id: employee.id,
           email: employee.email,
           first_name: employee.first_name,
           last_name: employee.last_name,
-          role: employee.role,
+          role: employee.roles?.[0] ?? '',
           avatar: employee.avatar,
         },
-        access_token,
-        refresh_token,
       }));
 
       // Brief success glow, then redirect to Admin Portal

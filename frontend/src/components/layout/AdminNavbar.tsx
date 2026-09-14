@@ -21,6 +21,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store/store';
 import { logoutAdmin } from '../../store/slices/adminAuthSlice';
+import adminApiClient from '../../services/adminApi';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useTheme, alpha } from '@mui/material/styles';
 import NavLink from './NavLink';
@@ -68,10 +69,17 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
     setAnchorElUser(null);
   };
 
-  const handleLogout = () => {
-    dispatch(logoutAdmin());
-    router.push('/portal-redthread/auth/login'); // Redirect to admin login page
-    handleCloseUserMenu();
+  const handleLogout = async () => {
+    try {
+      // Clear HttpOnly session cookies server-side
+      await adminApiClient.post('/portal-redthread/auth/logout');
+    } catch (error) {
+      // Proceed with local logout even if the endpoint fails
+    } finally {
+      dispatch(logoutAdmin());
+      router.push('/portal-redthread/auth/login'); // Redirect to admin login page
+      handleCloseUserMenu();
+    }
   };
 
   // Helper to get full image URL
