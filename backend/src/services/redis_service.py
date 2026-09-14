@@ -184,6 +184,37 @@ class RedisService:
             print(f"⚠️ Redis error (get_discovery_queue): {e}")
             return None
 
+    # Generic JSON Cache (read-through / invalidation)
+    async def get_cached_json(self, key: str) -> Optional[Any]:
+        """Read-through JSON cache get. None si no existe o Redis está caído."""
+        if not self.client: return None
+        try:
+            data = await self.client.get(key)
+            if data is None:
+                return None
+            return json.loads(data)
+        except Exception as e:
+            print(f"⚠️ Redis error (get_cached_json): {e}")
+            return None
+
+    async def set_cached_json(self, key: str, value: Any, ttl: int) -> None:
+        """Escribe JSON en caché con TTL. No-op si Redis está caído."""
+        if not self.client: return
+        try:
+            await self.client.setex(key, ttl, json.dumps(value, default=str))
+        except Exception as e:
+            print(f"⚠️ Redis error (set_cached_json): {e}")
+
+    async def invalidar_usuario(self, namespaces: list, user_id: str) -> None:
+        """Invalida claves exactas cache:{ns}:{user_id}. No-op si Redis está caído."""
+        if not self.client or not namespaces:
+            return
+        try:
+            keys = [f"cache:{ns}:{user_id}" for ns in namespaces]
+            await self.client.delete(*keys)
+        except Exception as e:
+            print(f"⚠️ Redis error (invalidar_usuario): {e}")
+
 
 # Singleton instance
 redis_service = RedisService()

@@ -460,5 +460,45 @@
     "modalClosing": "Thanks to this approach, recommendations aren't simple coincidences, but meaningful connections.",
     "close": "Close",
     "statVisits": "Visits"
+  },
+  "errors": {
+    "goHome": "Back to home",
+    "login": "Log in",
+    "back": "Go back",
+    "retry": "Retry",
+    "redirecting": "Redirecting in {{s}} seconds…",
+    "sessionExpired": "Your session expired — reweaving your thread",
+    "404": {
+      "title": "This thread got lost",
+      "narrative": "The page you're looking for isn't on this loom. It may have moved, snapped, or been woven somewhere else."
+    },
+    "403": {
+      "title": "This thread is sealed",
+      "narrative": "You don't have access to this stretch of the network. If you think this is a mistake, try again or ask for permission."
+    },
+    "401": {
+      "title": "Your thread fell asleep",
+      "narrative": "You need to log in to keep weaving. Your story is still waiting where you left it."
+    },
+    "500": {
+      "title": "The loom got tangled",
+      "narrative": "Something went wrong on our side. We've already spun a notice; try again in a moment."
+    },
+    "502": {
+      "title": "The bridge is under tension",
+      "narrative": "One of our servers didn't pass the thread along properly. Try again in a few seconds."
+    },
+    "503": {
+      "title": "We're tuning the loom",
+      "narrative": "Red Thread is under maintenance for a moment. Your thread is safe; we'll keep weaving soon."
+    },
+    "408": {
+      "title": "The thread is dragging",
+      "narrative": "The connection took too long to respond. Check your network and try again; the strand won't run away."
+    },
+    "422": {
+      "title": "This stitch doesn't fit",
+      "narrative": "Some data you sent isn't valid. Check the flagged fields and try again."
+    }
   }
 }

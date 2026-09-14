@@ -537,5 +537,45 @@
     "modalClosing": "Gracias a este enfoque, las recomendaciones no son simples coincidencias, sino conexiones significativas.",
     "close": "Cerrar",
     "statVisits": "Visitas"
+  },
+  "errors": {
+    "goHome": "Volver al inicio",
+    "login": "Iniciar sesión",
+    "back": "Volver atrás",
+    "retry": "Reintentar",
+    "redirecting": "Redirigiendo en {{s}} segundos…",
+    "sessionExpired": "Tu sesión expiró, tejiendo tu hilo de nuevo",
+    "404": {
+      "title": "Este hilo se perdió",
+      "narrative": "La página que buscas no está en este telar. Quizá se movió, se cortó o se tejió en otro lugar."
+    },
+    "403": {
+      "title": "Este hilo está sellado",
+      "narrative": "No tienes acceso a este tramo de la red. Si crees que es un error, vuelve a intentar o pide permiso."
+    },
+    "401": {
+      "title": "Tu hilo se quedó dormido",
+      "narrative": "Necesitas iniciar sesión para seguir tejiendo. Tu historia aún te espera donde la dejaste."
+    },
+    "500": {
+      "title": "El telar se enredó",
+      "narrative": "Algo no salió bien de nuestro lado. Ya tejimos un aviso; vuelve a intentarlo en unos momentos."
+    },
+    "502": {
+      "title": "El puente está tenso",
+      "narrative": "Uno de nuestros servidores no respondió bien al pasar el hilo. Inténtalo de nuevo en unos segundos."
+    },
+    "503": {
+      "title": "Estamos retocando el telar",
+      "narrative": "Red Thread está en mantenimiento por un momento. Tu hilo queda guardado; pronto seguimos tejiendo."
+    },
+    "408": {
+      "title": "El hilo se está arrastrando",
+      "narrative": "La conexión tardó demasiado en responder. Revisa tu red y vuelve a intentarlo; la hebra no se escapa."
+    },
+    "422": {
+      "title": "Esta puntada no encaja",
+      "narrative": "Algunos datos que enviaste no son válidos. Revisa los campos señalados y vuelve a intentarlo."
+    }
   }
 }

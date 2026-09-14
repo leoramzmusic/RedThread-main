@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { useSnackbar } from 'notistack';
 
 const indicatorDraw = keyframes`
   0% { transform: scaleX(0); opacity: 0.7; }
@@ -23,6 +24,14 @@ export default function AuthPage() {
 
     const [authSuccess, setAuthSuccess] = useState(false);
     const [slideDir, setSlideDir] = useState<'left' | 'right' | 'up' | 'down'>('up');
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        if (router.query.expired === '1') {
+            enqueueSnackbar(t('errors.sessionExpired', 'Tu sesión expiró, tejiendo tu hilo de nuevo'), { variant: 'warning' });
+            router.replace('/auth', undefined, { shallow: true });
+        }
+    }, [router.query.expired, enqueueSnackbar, router, t]);
 
     useEffect(() => {
         if (isAuthenticated && !authSuccess) {

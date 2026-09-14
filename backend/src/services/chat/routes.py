@@ -89,6 +89,10 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 # Cache message
                 await redis_service.cache_message(str(message.id), message.dict())
                 
+                # Invalidate dashboard cache for both users (new unread message)
+                await redis_service.invalidar_usuario(["stats", "recent"], user_id)
+                await redis_service.invalidar_usuario(["stats", "recent"], receiver_id)
+                
                 # Send to receiver if online
                 await manager.send_personal_message(receiver_id, {
                     "action": "new_message",
@@ -137,6 +141,9 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     message.is_read = True
                     message.read_at = datetime.utcnow()
                     await message.save()
+                    
+                    # Invalidate dashboard cache (unread count changed)
+                    await redis_service.invalidar_usuario(["stats", "recent"], user_id)
                     
                     # Notify sender
                     await manager.send_personal_message(message.sender_id, {

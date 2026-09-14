@@ -11,6 +11,7 @@ from src.models.profile import Profile
 from src.api.auth import get_current_user
 from src.services.kafka_service import kafka_service
 from src.services.kafka_topics import KafkaTopic, KafkaEventType
+from src.services.redis_service import redis_service
 import json
 
 
@@ -103,6 +104,10 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 )
                 await message.insert()
                 
+                # Invalidate dashboard cache for both users (new unread message)
+                await redis_service.invalidar_usuario(["stats", "recent"], user_id)
+                await redis_service.invalidar_usuario(["stats", "recent"], receiver_id)
+                
                 # Cache message
                 # await redis_service.cache_message(str(message.id), message.dict())
                 
@@ -174,6 +179,9 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     message.is_read = True
                     message.read_at = datetime.utcnow()
                     await message.save()
+                    
+                    # Invalidate dashboard cache (unread count changed)
+                    await redis_service.invalidar_usuario(["stats", "recent"], user_id)
                     
                     # Notify sender
                     await manager.send_personal_message(message.sender_id, {
@@ -322,6 +330,9 @@ async def get_messages(
         conversation.reset_unread(str(current_user.id))
         await conversation.save()
         
+        # Invalidate dashboard cache (unread count changed to 0)
+        await redis_service.invalidar_usuario(["stats", "recent"], str(current_user.id))
+        
         return messages
     
     # Fallback to legacy match_id system
@@ -410,6 +421,10 @@ async def send_message(
         conversation.increment_unread(receiver_id)
         await conversation.save()
         
+        # Invalidate dashboard cache for both users (new message)
+        await redis_service.invalidar_usuario(["stats", "recent"], str(current_user.id))
+        await redis_service.invalidar_usuario(["stats", "recent"], receiver_id)
+        
         # Try to send via WebSocket if receiver is online
         await manager.send_personal_message(receiver_id, {
             "action": "new_message",
@@ -465,6 +480,10 @@ async def send_message(
             created_at=datetime.utcnow()
         )
         await message.insert()
+        
+        # Invalidate dashboard cache for both users (new message)
+        await redis_service.invalidar_usuario(["stats", "recent"], str(current_user.id))
+        await redis_service.invalidar_usuario(["stats", "recent"], receiver_id)
         
         # Try to send via WebSocket if receiver is online
         await manager.send_personal_message(receiver_id, {

@@ -9,6 +9,7 @@ from src.api.auth import get_current_user
 from src.utils.height_context import classify_height, map_country_to_region
 from src.utils.continents import CONTINENT_COUNTRIES_MAP
 from src.api.dtos.user_dtos import UserProfileResponseDTO
+from src.services.redis_service import redis_service
 
 
 router = APIRouter()
@@ -296,8 +297,6 @@ class UpdateDistanceRequest(BaseModel):
 async def get_my_profile(current_user: User = Depends(get_current_user)):
     """Get current user's profile (privacy-protected)"""
     
-    from src.api.dtos.user_dtos import UserProfileResponseDTO
-    
     profile = await Profile.find_one(Profile.user_id == str(current_user.id))
     
     if not profile:
@@ -514,6 +513,9 @@ async def update_my_profile(
     print(f"[HEIGHT] Re-classified user {current_user.id} as '{profile.height_label}' (Region: {region})")
     
     await profile.save()
+    
+    # Invalidate dashboard cache (stats depend on profile_completion, suggestions on profile fields)
+    await redis_service.invalidar_usuario(["stats", "suggest"], str(current_user.id))
     
     return UserProfileResponseDTO.from_user_and_profile(
         current_user, profile, mask_data=False
@@ -1515,7 +1517,6 @@ def calculate_profile_completion(profile: Profile, user: Optional[User] = None) 
         'bio': 3,
         'relationship_goals': 5,
         'interests': 3,
-        'lifestyle_interests': 3,
         'pronouns': 1,
         'height_cm': 2,
         'zodiac': 2,
@@ -1559,7 +1560,7 @@ def calculate_profile_completion(profile: Profile, user: Optional[User] = None) 
     if has_value(profile.interests) or has_value(profile.lifestyle_interests): score += weights['interests']
     if has_value(profile.pronouns): score += weights['pronouns']
     if has_value(profile.height_cm): score += weights['height_cm']
-    if has_value(profile.zodiac): score += weights['zodiac']
+    if has_value(profile.zodiac) or profile.zodiac_relevant is False: score += weights['zodiac']
     if has_value(profile.relationship_type): score += weights['relationship_type']
     if has_value(profile.education_center): score += weights['education_center']
     if has_value(profile.education_level): score += weights['education_level']

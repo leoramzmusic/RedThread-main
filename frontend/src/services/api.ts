@@ -74,8 +74,9 @@ apiClient.interceptors.response.use(
              const isLandingPage = currentPath === '/';
              
              if (!isAuthPage && !isLandingPage) {
-                 // Explicitly logout in Redux if possible or just redirect
-                 window.location.href = '/auth';
+                 // Explicitly logout in Redux if possible or just redirect.
+                 // `expired=1` permite a /auth mostrar el aviso de sesión expirada.
+                 window.location.href = '/auth?expired=1';
              }
         }
         
