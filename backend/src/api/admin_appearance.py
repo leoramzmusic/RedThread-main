@@ -188,6 +188,30 @@ async def list_resources(
         
     return await AppearanceResource.find(query).sort("-created_at").to_list()
 
+
+def build_public_resources_query(
+    type: Optional[AppearanceType] = None,
+    platform: Optional[Platform] = None,
+) -> dict:
+    query = {"is_active": True}
+    if type:
+        query["type"] = type
+    if platform:
+        query["platform"] = platform
+    return query
+
+
+@router.get("/public", response_model=List[AppearanceResource])
+async def list_public_resources(
+    type: Optional[AppearanceType] = None,
+    platform: Optional[Platform] = None,
+):
+    """Public read of active appearance resources. Used by public pages (landing, favicon)."""
+    await check_scheduled_activations(type, platform)
+    return await AppearanceResource.find(
+        build_public_resources_query(type, platform)
+    ).sort("-created_at").to_list()
+
 @router.put("/resources/{resource_id}", response_model=AppearanceResource)
 async def update_resource(
     resource_id: str,

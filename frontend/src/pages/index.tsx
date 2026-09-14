@@ -191,14 +191,14 @@ export default function Home() {
       try {
         setIsLoadingCms(true);
         // Theme Config
-        const themes = await appearanceService.getResources(AppearanceType.LANDING_THEME);
+        const themes = await appearanceService.getPublicResources(AppearanceType.LANDING_THEME);
         const activeTheme = themes.find(r => r.is_active);
         if (activeTheme && activeTheme.metadata) {
           setCmsConfig(activeTheme.metadata);
         }
 
         // Banners (Hero & Icon)
-        const banners = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+        const banners = await appearanceService.getPublicResources(AppearanceType.LANDING_BANNER);
 
         // Find Backgrounds
         const activeBanners = banners.filter(r => r.is_active && !r.metadata?.isHeroIcon);

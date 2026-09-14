@@ -1,9 +1,19 @@
 import adminApiClient from './adminApi';
+import apiClient from './api';
 import { AppearanceResource, AppearanceType, Platform, AppearanceHistory } from '../types/appearance';
 
 const BASE_PATH = '/portal-redthread/apariencia';
 
 const appearanceService = {
+  getPublicResources: async (type?: AppearanceType, platform?: Platform): Promise<AppearanceResource[]> => {
+    const params: any = {};
+    if (type) params.type = type;
+    if (platform) params.platform = platform;
+
+    // Public endpoint: only active resources, no auth required
+    const response = await apiClient.get(`${BASE_PATH}/public`, { params });
+    return response.data;
+  },
   getHistory: async (resourceId?: string): Promise<AppearanceHistory[]> => {
     const params: any = {};
     if (resourceId) params.resource_id = resourceId;

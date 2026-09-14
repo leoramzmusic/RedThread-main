@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import apiClient from '../services/api';
 
 export interface NavbarProfileStyle {
@@ -26,8 +28,13 @@ const NavbarContext = createContext<NavbarContextValue>({
 
 export function NavbarProvider({ children }: { children: ReactNode }) {
   const [navConfig, setNavConfig] = useState<NavbarConfig | null>(null);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const refresh = useCallback(async () => {
+    if (!isAuthenticated) {
+      setNavConfig(null);
+      return;
+    }
     try {
       const response = await apiClient.get('/settings/me');
       setNavConfig(response.data?.navbar_config ?? null);
@@ -35,7 +42,7 @@ export function NavbarProvider({ children }: { children: ReactNode }) {
       console.error('Error fetching navbar config:', error);
       setNavConfig(null);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     refresh();

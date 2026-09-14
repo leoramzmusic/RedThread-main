@@ -20,7 +20,7 @@ export default function DynamicFavicon() {
                 const targetType = isAdmin ? AppearanceType.FAVICON : AppearanceType.FAVICON_USER;
 
                 // Fetch active favicons for the target type
-                const resources = await appearanceService.getResources(targetType, Platform.WEB);
+                const resources = await appearanceService.getPublicResources(targetType, Platform.WEB);
                 const active = resources.filter((r: AppearanceResource) => r.is_active);
 
                 // If user portal has no specific favicon, we could fallback to generic one?
