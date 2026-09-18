@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { AppThemeProvider } from '../context/ThemeContext';
 import { UIProvider } from '../context/UIContext';
 import { NavbarProvider } from '../context/NavbarContext';
+import { YukiConfigProvider } from '../context/YukiConfigContext';
 import { SnackbarProvider } from 'notistack';
 import DynamicFavicon from '../components/layout/DynamicFavicon';
 
@@ -21,11 +22,13 @@ function App({ Component, pageProps }: AppProps) {
           <NavbarProvider>
             <AuthInitializer>
               <AdminRouteGuard>
-                <DynamicFavicon />
-                <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-                  <CssBaseline />
-                  <Component {...pageProps} />
-                </SnackbarProvider>
+                <YukiConfigProvider>
+                  <DynamicFavicon />
+                  <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+                    <CssBaseline />
+                    <Component {...pageProps} />
+                  </SnackbarProvider>
+                </YukiConfigProvider>
               </AdminRouteGuard>
             </AuthInitializer>
           </NavbarProvider>

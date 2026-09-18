@@ -196,11 +196,10 @@ export default function Discover() {
       return;
     }
     // Only fetch queue automatically if NOT in 'more' mode OR if a category is selected in 'more' mode
-    if (discoveryMode !== 'more' || selectedMoreCategory) {
-      fetchQueue();
-    }
-    fetchMyProfile();
-    fetchBoostStatus();
+    const queuePromise = (discoveryMode !== 'more' || selectedMoreCategory)
+      ? fetchQueue()
+      : Promise.resolve();
+    Promise.all([queuePromise, fetchMyProfile(), fetchBoostStatus()]);
   }, [isAuthenticated, router, discoveryMode, selectedMoreCategory]);
 
 

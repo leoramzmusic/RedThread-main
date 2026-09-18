@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { Box, IconButton, Typography, Paper, Fade, useTheme, alpha } from '@mui/material';
 import { useRouter } from 'next/router';
 import KawaiiCat from '../common/KawaiiCat';
+import { useYukiConfig } from '../../context/YukiConfigContext';
 
 interface Tip {
   text: string;
@@ -58,10 +59,13 @@ const CAT_PAW_SVG = (
 export default memo(function MascotFAB() {
   const theme = useTheme();
   const router = useRouter();
+  const { config } = useYukiConfig();
   const isDark = theme.palette.mode === 'dark';
   const [isOpen, setIsOpen] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
   const [isWiggling, setIsWiggling] = useState(false);
+
+  if (!config?.enabled) return null;
 
   const basePath = router?.pathname
     ? '/' + (router.pathname.split('/')[1] || '')

@@ -138,6 +138,7 @@ from src.api import (
     admin_departments, # New
     admin_algorithms, # New
     admin_appearance, # New: Appearance Module
+    admin_yuki, # New: Yuki Mascot Config
     interests, # New: Interest management
     golth, # New: Premium module
 
@@ -203,6 +204,7 @@ app.include_router(admin_roles.router, prefix="/portal-redthread/roles", tags=["
 app.include_router(admin_departments.router, prefix="/portal-redthread/departments", tags=["Admin - Departamentos"]) # New
 app.include_router(admin_algorithms.router, prefix="/portal-redthread/experiencia/algoritmos", tags=["Admin - Algoritmos"]) # New
 app.include_router(admin_appearance.router, prefix="/portal-redthread/apariencia", tags=["Admin - Apariencia"]) # New
+app.include_router(admin_yuki.router, prefix="/portal-redthread/experiencia/mascota", tags=["Admin - Mascota Yuki"]) # New
 app.include_router(care_analytics.router, prefix="/admin/care-analytics", tags=["Admin - CARE Analytics"])  # CARE Engine
 
 

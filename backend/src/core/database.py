@@ -34,6 +34,7 @@ from src.models.appearance import AppearanceResource
 from src.models.appearance_history import AppearanceHistory
 from src.models.photo_metric import PhotoMetric
 from src.models.profile_visit import ProfileVisit
+from src.models.yuki_config import YukiConfig, YukiSkin, YukiAppearanceRule
 
 
 async def init_db():
@@ -83,6 +84,9 @@ async def init_db():
             AppearanceHistory,
             PhotoMetric,
             ProfileVisit,
+            YukiConfig,
+            YukiSkin,
+            YukiAppearanceRule,
         ]
     )
     

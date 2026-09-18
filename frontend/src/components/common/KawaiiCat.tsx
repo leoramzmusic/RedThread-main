@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { Box, type SxProps, type Theme } from '@mui/material';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { useYukiConfig } from '../../context/YukiConfigContext';
 
 type MascotState = 'idle' | 'loading' | 'success' | 'error' | 'sleeping' | 'curious' | 'waving' | 'playful';
 
@@ -17,7 +18,7 @@ interface KawaiiCatProps {
 const LOADING_Y_OFFSETS = [0, -4, 0, -2, 0] as const;
 
 const KawaiiCat = memo(function KawaiiCat({
-  moduleColor = '#E63946',
+  moduleColor,
   size = 120,
   state = 'idle',
   showYarn = false,
@@ -25,6 +26,8 @@ const KawaiiCat = memo(function KawaiiCat({
   'aria-label': ariaLabel = 'Yuki the cat mascot',
   sx,
 }: KawaiiCatProps) {
+  const { config } = useYukiConfig();
+  const yarnColor = moduleColor || config?.yarn_color || '#E63946';
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 });
@@ -159,14 +162,14 @@ const KawaiiCat = memo(function KawaiiCat({
         {/* Yarn ball - only when showYarn */}
         {showYarn && (
           <g>
-            <circle cx="88" cy="85" r="16" fill={moduleColor} opacity="0.9">
+            <circle cx="88" cy="85" r="16" fill={yarnColor} opacity="0.9">
               {isLoading && !prefersReducedMotion && (
                 <animate attributeName="r" values="16;18;14;16" dur="0.6s" repeatCount="indefinite" />
               )}
             </circle>
             <circle cx="88" cy="85" r="16" fill="none" stroke="white" strokeWidth="1.5" opacity="0.4" />
             <path d="M80 80 Q88 75 96 80 Q100 88 92 92 Q84 96 78 88 Q76 82 80 80Z" fill="none" stroke="white" strokeWidth="1" opacity="0.5" />
-            <path d="M72 85 Q65 90 60 85 Q55 78 50 82" fill="none" stroke={moduleColor} strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+            <path d="M72 85 Q65 90 60 85 Q55 78 50 82" fill="none" stroke={yarnColor} strokeWidth="2" strokeLinecap="round" opacity="0.7" />
           </g>
         )}
 
@@ -252,14 +255,14 @@ const KawaiiCat = memo(function KawaiiCat({
             )}
 
             {isCurious && (
-              <text x="70" y="34" fontSize="14" fill={moduleColor} fontWeight="bold" fontFamily="sans-serif" opacity="0.7">?</text>
+              <text x="70" y="34" fontSize="14" fill={yarnColor} fontWeight="bold" fontFamily="sans-serif" opacity="0.7">?</text>
             )}
 
             {isSuccess && (
               <g opacity="0.75">
-                <text x="18" y="34" fontSize="9" fill={moduleColor}>✦</text>
-                <text x="74" y="28" fontSize="7" fill={moduleColor}>✦</text>
-                <text x="68" y="42" fontSize="5" fill={moduleColor}>✦</text>
+                <text x="18" y="34" fontSize="9" fill={yarnColor}>✦</text>
+                <text x="74" y="28" fontSize="7" fill={yarnColor}>✦</text>
+                <text x="68" y="42" fontSize="5" fill={yarnColor}>✦</text>
               </g>
             )}
 
@@ -335,7 +338,7 @@ const KawaiiCat = memo(function KawaiiCat({
           {/* Boop effect */}
           {isBooped && (
             <g>
-              <circle cx="50" cy="28" r="2" fill={moduleColor} opacity="0.8">
+              <circle cx="50" cy="28" r="2" fill={yarnColor} opacity="0.8">
                 {!prefersReducedMotion && (
                   <>
                     <animate attributeName="r" from="2" to="10" dur="0.5s" fill="freeze" />
@@ -343,7 +346,7 @@ const KawaiiCat = memo(function KawaiiCat({
                   </>
                 )}
               </circle>
-              <text x="50" y="18" textAnchor="middle" fontSize="14" fill={moduleColor}>✨</text>
+              <text x="50" y="18" textAnchor="middle" fontSize="14" fill={yarnColor}>✨</text>
             </g>
           )}
         </g>

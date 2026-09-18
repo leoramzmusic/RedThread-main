@@ -43,6 +43,7 @@ import {
   ViewCarousel as ViewCarouselIcon,
   VideoLibrary as VideoLibraryIcon,
   ColorLens as ColorLensIcon,
+  Pets as PetsIcon,
 } from '@mui/icons-material';
 
 export const DRAWER_WIDTH = 260;
@@ -171,6 +172,7 @@ export default function AdminSidebar({
         { id: 'experiencia-menus', label: 'Menús del Portal', icon: <MenuIcon />, path: '/portal-redthread/experiencia/menus' },
         { id: 'experiencia-motor', label: 'Motor CARE', icon: <BarChartIcon />, path: '/portal-redthread/experiencia/motor' },
         { id: 'experiencia-icebreakers', label: 'Icebreaker Manager', icon: <SupportIcon />, path: '/portal-redthread/experiencia/icebreakers' },
+        { id: 'experiencia-mascota', label: 'Mascota (Yuki)', icon: <PetsIcon />, path: '/portal-redthread/experiencia/mascota' },
       ],
     },
     {

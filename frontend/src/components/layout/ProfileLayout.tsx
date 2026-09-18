@@ -199,36 +199,8 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
           px: 1.5,
           flexGrow: 1,
           '@media (prefers-reduced-motion: no-preference)': {
-            '@keyframes rtPItemIn': {
-              from: { opacity: 0, transform: 'translateY(8px)' },
-              to: { opacity: 1, transform: 'translateY(0)' },
-            },
-            '@keyframes rtPThreadDraw': {
-              from: { transform: 'scaleY(0)' },
-              to: { transform: 'scaleY(1)' },
-            },
-            '@keyframes rtPShieldPulse': {
-              '0%, 100%': { transform: 'scale(1)' },
-              '50%': { transform: 'scale(1.15)' },
-            },
-            '@keyframes rtPDing': {
-              '0%, 92%, 100%': { transform: 'rotate(0)' },
-              '94%': { transform: 'rotate(-14deg)' },
-              '96%': { transform: 'rotate(12deg)' },
-              '98%': { transform: 'rotate(-6deg)' },
-            },
-            '@keyframes rtPLockWiggle': {
-              '0%, 100%': { transform: 'rotate(0)' },
-              '25%': { transform: 'rotate(-12deg)' },
-              '50%': { transform: 'rotate(10deg)' },
-              '75%': { transform: 'rotate(-6deg)' },
-            },
-            '@keyframes rtPSliders': {
-              '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
-              '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
-              '75%': { transform: 'translateY(1px) scaleY(1.2)' },
-            },
-            '& .rt-profile-bell': { animation: 'rtPDing 14s ease-in-out infinite' },
+            ...PROFILE_NAV_KEYFRAMES,
+            ...PROFILE_NAV_CLASSES,
           },
         }}
       >
@@ -422,12 +394,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
               WebkitBackdropFilter: 'blur(14px)',
               color: textActive,
               animation: 'rtPDrawerIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
-              '@media (prefers-reduced-motion: no-preference)': {
-                '@keyframes rtPDrawerIn': {
-                  from: { opacity: 0, transform: 'translateX(-14px)' },
-                  to: { opacity: 1, transform: 'translateX(0)' },
-                },
-              },
               '--app-font-size': `${sidebarFontSize}px`,
             },
           }}
