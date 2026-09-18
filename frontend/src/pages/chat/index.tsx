@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -258,6 +258,9 @@ export default function Chat() {
     }
   };
 
+  const activeMatchIdRef = useRef(activeMatchId);
+  activeMatchIdRef.current = activeMatchId;
+
   useEffect(() => {
     if (!isAuthenticated || !user?.user_id) {
       if (!isAuthenticated) router.push('/auth/login');
@@ -276,7 +279,7 @@ export default function Chat() {
       const data = JSON.parse(event.data);
 
       if (data.action === 'new_message') {
-        if (data.message.match_id === activeMatchId) {
+        if (data.message.match_id === activeMatchIdRef.current) {
           setMessages((prev) => [...prev, data.message]);
           scrollToBottom();
         } else {
@@ -290,9 +293,8 @@ export default function Chat() {
         setMessages(prev => prev.map(m =>
           m.id === data.message_id ? { ...m, is_read: true } : m
         ));
-        // Decrement unread count if applicable
         setConversations(prev => prev.map(c => {
-          if (c.match_id === activeMatchId) {
+          if (c.match_id === activeMatchIdRef.current) {
             return { ...c, unread_count: Math.max(0, c.unread_count - 1) };
           }
           return c;
@@ -305,12 +307,11 @@ export default function Chat() {
     };
 
     setSocket(newSocket);
-    fetchConversations();
 
     return () => {
       newSocket.close();
     };
-  }, [isAuthenticated, user?.user_id, activeMatchId]);
+  }, [isAuthenticated, user?.user_id]);
 
   useEffect(() => {
     if (activeMatchId) {
@@ -398,14 +399,23 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const activeConversation = conversations.find(c => c.match_id === activeMatchId);
+  const activeConversation = useMemo(
+    () => conversations.find(c => c.match_id === activeMatchId),
+    [conversations, activeMatchId]
+  );
 
-  // Filter conversations based on selected sub-tab
-  const filteredConversations = conversations.filter(c => {
-    if (messageFilter === 'match') return c.type === 'match' || !c.type; // Default to match for legacy
-    if (messageFilter === 'friend') return c.type === 'friend' || c.type === 'partner';
-    return true;
-  });
+  const filteredConversations = useMemo(() => {
+    return conversations.filter(c => {
+      if (messageFilter === 'match') return c.type === 'match' || !c.type;
+      if (messageFilter === 'friend') return c.type === 'friend' || c.type === 'partner';
+      return true;
+    });
+  }, [conversations, messageFilter]);
+
+  const totalUnread = useMemo(
+    () => conversations.reduce((sum, c) => sum + c.unread_count, 0),
+    [conversations]
+  );
 
   // Dynamic Theme Color
   const activeThemeColor = activeConversation?.theme_color || theme.palette.primary.main;
@@ -426,7 +436,7 @@ export default function Chat() {
               >
                 <Tab label={
                   <Badge
-                    badgeContent={conversations.reduce((sum, c) => sum + c.unread_count, 0)}
+                    badgeContent={totalUnread}
                     color="error"
                   >
                     {t('chat.messages', 'Mensajes')}

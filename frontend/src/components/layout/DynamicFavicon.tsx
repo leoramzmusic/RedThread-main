@@ -1,34 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
 import appearanceService from '../../services/appearanceService';
 import { AppearanceType, Platform, AppearanceResource } from '../../types/appearance';
 
 import { useRouter } from 'next/router';
 
+const faviconCache = new Map<string, AppearanceResource[]>();
+
 export default function DynamicFavicon() {
     const [favicons, setFavicons] = useState<AppearanceResource[]>([]);
-    const [defaultFavicon, setDefaultFavicon] = useState('/favicon.ico');
+    const [defaultFavicon] = useState('/favicon.ico');
     const router = useRouter();
+    const lastTypeRef = useRef<string>('');
 
     useEffect(() => {
+        const isAdmin = router.pathname.startsWith('/portal-redthread');
+        const targetType = isAdmin ? AppearanceType.FAVICON : AppearanceType.FAVICON_USER;
+        const cacheKey = targetType;
+
+        // Skip if same type and already cached
+        if (lastTypeRef.current === cacheKey && faviconCache.has(cacheKey)) {
+            setFavicons(faviconCache.get(cacheKey)!);
+            return;
+        }
+
+        lastTypeRef.current = cacheKey;
+
+        // Check cache first
+        if (faviconCache.has(cacheKey)) {
+            setFavicons(faviconCache.get(cacheKey)!);
+            return;
+        }
+
+        let cancelled = false;
         const fetchFavicons = async () => {
             try {
-                // Determine context based on route
-                // If route starts with /portal-redthread -> Admin Favicon (FAVICON)
-                // Else -> User Favicon (FAVICON_USER)
-                const isAdmin = router.pathname.startsWith('/portal-redthread');
-                const targetType = isAdmin ? AppearanceType.FAVICON : AppearanceType.FAVICON_USER;
-
-                // Fetch active favicons for the target type
                 const resources = await appearanceService.getPublicResources(targetType, Platform.WEB);
                 const active = resources.filter((r: AppearanceResource) => r.is_active);
-
-                // If user portal has no specific favicon, we could fallback to generic one?
-                // For now, let's strictly respect the type. If empty, falls back to defaultFavicon.
-                if (active.length > 0) {
+                if (!cancelled) {
+                    faviconCache.set(cacheKey, active);
                     setFavicons(active);
-                } else {
-                    setFavicons([]); // Reset to default if no active custom icon found
                 }
             } catch (error) {
                 console.error("Failed to fetch dynamic favicons", error);
@@ -38,18 +49,17 @@ export default function DynamicFavicon() {
         fetchFavicons();
 
         const handleUpdate = () => {
+            faviconCache.delete(cacheKey);
             fetchFavicons();
         };
 
         window.addEventListener('appearance:update', handleUpdate);
-        // Also listen to route changes to switch favicon context
-        router.events.on('routeChangeComplete', fetchFavicons);
 
         return () => {
+            cancelled = true;
             window.removeEventListener('appearance:update', handleUpdate);
-            router.events.off('routeChangeComplete', fetchFavicons);
         };
-    }, [router.pathname]); // Re-run when pathname changes (context switch)
+    }, [router.pathname]);
 
     const getFullUrl = (url: string) => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -64,7 +74,7 @@ export default function DynamicFavicon() {
                 <link
                     key={icon._id}
                     rel={icon.resolution === '180x180' ? 'apple-touch-icon' : 'icon'}
-                    href={`${getFullUrl(icon.url)}?t=${new Date().getTime()}`}
+                    href={getFullUrl(icon.url)}
                     sizes={icon.resolution || 'any'}
                     type="image/png"
                 />

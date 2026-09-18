@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { APP_VERSION } from '../../config/version';
@@ -77,6 +77,109 @@ interface SidebarProps {
   mobileOpen?: boolean;
 }
 
+const NAV_KEYFRAMES = {
+  '@keyframes rtItemIn': {
+    from: { opacity: 0, transform: 'translateY(8px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+  },
+  '@keyframes rtDrawerIn': {
+    from: { opacity: 0, transform: 'translateX(-14px)' },
+    to: { opacity: 1, transform: 'translateX(0)' },
+  },
+  '@keyframes rtThreadDraw': {
+    from: { transform: 'scaleY(0)' },
+    to: { transform: 'scaleY(1)' },
+  },
+  '@keyframes rtChatBubble': {
+    '0%, 82%, 100%': { transform: 'translateY(0) scale(1)' },
+    '86%': { transform: 'translateY(-2px) scale(1.06)' },
+    '90%': { transform: 'translateY(0) scale(1)' },
+    '94%': { transform: 'translateY(-1px) scale(1.03)' },
+    '98%': { transform: 'translateY(0) scale(1)' },
+  },
+  '@keyframes rtFriendsPulse': {
+    '0%, 72%, 100%': { transform: 'scale(1)', opacity: 1 },
+    '78%': { transform: 'scale(1.06)', opacity: 0.9 },
+    '84%': { transform: 'scale(1)', opacity: 1 },
+    '90%': { transform: 'scale(1.03)', opacity: 0.95 },
+    '96%': { transform: 'scale(1)', opacity: 1 },
+  },
+  '@keyframes rtCompassSway': {
+    '0%': { transform: 'rotate(-10deg)' },
+    '100%': { transform: 'rotate(10deg)' },
+  },
+  '@keyframes rtHeartbeat': {
+    '0%, 8%, 100%': { transform: 'scale(1)' },
+    '2%': { transform: 'scale(1.18)' },
+    '5%': { transform: 'scale(1)' },
+    '6.5%': { transform: 'scale(1.12)' },
+  },
+  '@keyframes rtPing': {
+    '0%, 78%, 100%': { transform: 'scale(1)', opacity: 1 },
+    '84%': { transform: 'scale(1.14)', opacity: 0.75 },
+    '90%': { transform: 'scale(1)', opacity: 1 },
+  },
+  '@keyframes rtBlink': {
+    '0%, 90%, 100%': { transform: 'scaleY(1)' },
+    '93%': { transform: 'scaleY(0.15)' },
+    '96%': { transform: 'scaleY(1)' },
+  },
+  '@keyframes rtDing': {
+    '0%, 92%, 100%': { transform: 'rotate(0)' },
+    '94%': { transform: 'rotate(-14deg)' },
+    '96%': { transform: 'rotate(12deg)' },
+    '98%': { transform: 'rotate(-6deg)' },
+  },
+  '@keyframes rtShake': {
+    '0%, 100%': { transform: 'translateX(0)' },
+    '25%': { transform: 'translateX(-2px)' },
+    '75%': { transform: 'translateX(2px)' },
+  },
+  '@keyframes rtOrbit': {
+    to: { transform: 'rotate(180deg)' },
+  },
+  '@keyframes rtJoystick': {
+    '0%, 60%, 100%': { transform: 'rotate(0)' },
+    '20%': { transform: 'rotate(-14deg)' },
+    '40%': { transform: 'rotate(10deg)' },
+  },
+  '@keyframes rtSpin': {
+    to: { transform: 'rotate(360deg)' },
+  },
+  '@keyframes rtFlip': {
+    to: { transform: 'rotateY(180deg)' },
+  },
+  '@keyframes rtShieldPulse': {
+    '0%, 100%': { transform: 'scale(1)' },
+    '50%': { transform: 'scale(1.15)' },
+  },
+  '@keyframes rtWave': {
+    '0%, 100%': { transform: 'rotate(-8deg)' },
+    '50%': { transform: 'rotate(8deg)' },
+  },
+  '@keyframes rtWiggleLock': {
+    '0%, 100%': { transform: 'rotate(0)' },
+    '25%': { transform: 'rotate(-12deg)' },
+    '50%': { transform: 'rotate(10deg)' },
+    '75%': { transform: 'rotate(-6deg)' },
+  },
+  '@keyframes rtSliders': {
+    '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
+    '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
+    '75%': { transform: 'translateY(1px) scaleY(1.2)' },
+  },
+};
+
+const NAV_ANIMATION_CLASSES = {
+  '& .rt-bubble': { animation: 'rtChatBubble 9s ease-in-out infinite' },
+  '& .rt-pulse': { animation: 'rtFriendsPulse 5.5s ease-in-out infinite' },
+  '& .rt-compass': { animation: 'rtCompassSway 5s ease-in-out infinite alternate' },
+  '& .rt-heart': { animation: 'rtHeartbeat 6s cubic-bezier(0.28, 0.84, 0.42, 1) infinite' },
+  '& .rt-ping': { animation: 'rtPing 4s ease-in-out infinite' },
+  '& .rt-blink': { animation: 'rtBlink 5s ease-in-out infinite' },
+  '& .rt-bell': { animation: 'rtDing 14s ease-in-out infinite' },
+};
+
 export default function Sidebar({ open: externalOpen, onClose, mobileOpen = false }: SidebarProps) {
   const router = useRouter();
   const { t } = useTranslation('common');
@@ -85,11 +188,11 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const { sidebarCollapsed: collapsed, setSidebarCollapsed } = useUI();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   // Remove local persistence effect as it's now in UIProvider
 
-  const menuSections: MenuSection[] = [
+  const menuSections: MenuSection[] = useMemo(() => [
     {
       id: 'social',
       label: 'SOCIAL',
@@ -164,30 +267,35 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
 
       ]
     }
-  ];
+  ], [t]);
 
   const handleToggleCollapse = () => {
     setSidebarCollapsed(!collapsed);
     if (!collapsed) {
-      setExpandedMenus([]); // Close all submenus when collapsing
+      setExpandedMenus(new Set()); // Close all submenus when collapsing
     }
   };
 
-  const handleMenuClick = (item: MenuItem) => {
+  const handleMenuClick = useCallback((item: MenuItem) => {
     if (item.children) {
       if (!collapsed) {
-        setExpandedMenus((prev) =>
-          prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id]
-        );
+        setExpandedMenus((prev) => {
+          const next = new Set(prev);
+          if (next.has(item.id)) {
+            next.delete(item.id);
+          } else {
+            next.add(item.id);
+          }
+          return next;
+        });
       }
     } else if (item.path) {
       router.push(item.path);
-      // Close mobile drawer after navigation
       if (isMobile && onClose) {
         onClose();
       }
     }
-  };
+  }, [collapsed, isMobile, onClose, router]);
 
   const isActive = (path?: string) => {
     if (!path) return false;
@@ -322,77 +430,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           px: 1.5,
           flexGrow: 1,
           '@media (prefers-reduced-motion: no-preference)': {
-            '@keyframes rtItemIn': {
-              from: { opacity: 0, transform: 'translateY(8px)' },
-              to: { opacity: 1, transform: 'translateY(0)' },
-            },
-            '@keyframes rtDrawerIn': {
-              from: { opacity: 0, transform: 'translateX(-14px)' },
-              to: { opacity: 1, transform: 'translateX(0)' },
-            },
-            '@keyframes rtThreadDraw': {
-              from: { transform: 'scaleY(0)' },
-              to: { transform: 'scaleY(1)' },
-            },
-            '@keyframes rtChatBubble': {
-              '0%, 82%, 100%': { transform: 'translateY(0) scale(1)' },
-              '86%': { transform: 'translateY(-2px) scale(1.06)' },
-              '90%': { transform: 'translateY(0) scale(1)' },
-              '94%': { transform: 'translateY(-1px) scale(1.03)' },
-              '98%': { transform: 'translateY(0) scale(1)' },
-            },
-            '@keyframes rtFriendsPulse': {
-              '0%, 72%, 100%': { transform: 'scale(1)', opacity: 1 },
-              '78%': { transform: 'scale(1.06)', opacity: 0.9 },
-              '84%': { transform: 'scale(1)', opacity: 1 },
-              '90%': { transform: 'scale(1.03)', opacity: 0.95 },
-              '96%': { transform: 'scale(1)', opacity: 1 },
-            },
-            '@keyframes rtCompassSway': {
-              '0%': { transform: 'rotate(-10deg)' },
-              '100%': { transform: 'rotate(10deg)' },
-            },
-            '@keyframes rtHeartbeat': {
-              '0%, 8%, 100%': { transform: 'scale(1)' },
-              '2%': { transform: 'scale(1.18)' },
-              '5%': { transform: 'scale(1)' },
-              '6.5%': { transform: 'scale(1.12)' },
-            },
-            '@keyframes rtPing': {
-              '0%, 78%, 100%': { transform: 'scale(1)', opacity: 1 },
-              '84%': { transform: 'scale(1.14)', opacity: 0.75 },
-              '90%': { transform: 'scale(1)', opacity: 1 },
-            },
-            '@keyframes rtBlink': {
-              '0%, 90%, 100%': { transform: 'scaleY(1)' },
-              '93%': { transform: 'scaleY(0.15)' },
-              '96%': { transform: 'scaleY(1)' },
-            },
-            '@keyframes rtDing': {
-              '0%, 92%, 100%': { transform: 'rotate(0)' },
-              '94%': { transform: 'rotate(-14deg)' },
-              '96%': { transform: 'rotate(12deg)' },
-              '98%': { transform: 'rotate(-6deg)' },
-            },
-            '@keyframes rtShake': {
-              '0%, 100%': { transform: 'translateX(0)' },
-              '25%': { transform: 'translateX(-2px)' },
-              '75%': { transform: 'translateX(2px)' },
-            },
-            '@keyframes rtOrbit': {
-              to: { transform: 'rotate(180deg)' },
-            },
-            '@keyframes rtJoystick': {
-              '0%, 60%, 100%': { transform: 'rotate(0)' },
-              '20%': { transform: 'rotate(-14deg)' },
-              '40%': { transform: 'rotate(10deg)' },
-            },
-            '@keyframes rtSpin': {
-              to: { transform: 'rotate(360deg)' },
-            },
-            '@keyframes rtFlip': {
-              to: { transform: 'rotateY(180deg)' },
-            },
+            ...NAV_KEYFRAMES,
             '@keyframes rtGemGlint': {
               '0%, 100%': { transform: 'scale(1)', filter: 'none' },
               '50%': {
@@ -400,32 +438,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                 filter: `drop-shadow(0 0 6px ${alpha(primary, 0.8)}) brightness(1.35)`,
               },
             },
-            '@keyframes rtShieldPulse': {
-              '0%, 100%': { transform: 'scale(1)' },
-              '50%': { transform: 'scale(1.15)' },
-            },
-            '@keyframes rtWave': {
-              '0%, 100%': { transform: 'rotate(-8deg)' },
-              '50%': { transform: 'rotate(8deg)' },
-            },
-            '@keyframes rtWiggleLock': {
-              '0%, 100%': { transform: 'rotate(0)' },
-              '25%': { transform: 'rotate(-12deg)' },
-              '50%': { transform: 'rotate(10deg)' },
-              '75%': { transform: 'rotate(-6deg)' },
-            },
-            '@keyframes rtSliders': {
-              '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
-              '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
-              '75%': { transform: 'translateY(1px) scaleY(1.2)' },
-            },
-            '& .rt-bubble': { animation: 'rtChatBubble 9s ease-in-out infinite' },
-            '& .rt-pulse': { animation: 'rtFriendsPulse 5.5s ease-in-out infinite' },
-            '& .rt-compass': { animation: 'rtCompassSway 5s ease-in-out infinite alternate' },
-            '& .rt-heart': { animation: 'rtHeartbeat 6s cubic-bezier(0.28, 0.84, 0.42, 1) infinite' },
-            '& .rt-ping': { animation: 'rtPing 4s ease-in-out infinite' },
-            '& .rt-blink': { animation: 'rtBlink 5s ease-in-out infinite' },
-            '& .rt-bell': { animation: 'rtDing 14s ease-in-out infinite' },
+            ...NAV_ANIMATION_CLASSES,
           },
         }}
       >
@@ -546,7 +559,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                                 }}
                               />
                               {item.children && (
-                                expandedMenus.includes(item.id) ?
+                                expandedMenus.has(item.id) ?
                                   <ExpandLess sx={{ fontSize: '1.2rem', opacity: 0.4 }} /> :
                                   <ExpandMore sx={{ fontSize: '1.2rem', opacity: 0.4 }} />
                               )}
@@ -558,7 +571,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
 
                     {/* Submenu */}
                     {item.children && !isCollapsed && (
-                      <Collapse in={expandedMenus.includes(item.id)} timeout="auto" unmountOnExit>
+                      <Collapse in={expandedMenus.has(item.id)} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding sx={{ ml: 1, borderLeft: '1px solid', borderColor: dividerColor, my: 0.5 }}>
                           {item.children.map((child) => (
                             <ListItem key={child.id} disablePadding sx={{ mb: 0.2 }}>

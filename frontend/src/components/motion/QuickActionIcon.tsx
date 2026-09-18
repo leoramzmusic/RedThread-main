@@ -1,4 +1,4 @@
-﻿import { ReactNode, forwardRef, useState } from 'react';
+import { ReactNode, forwardRef, useState } from 'react';
 import { IconButton, Box, useTheme } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
@@ -13,6 +13,7 @@ interface QuickActionIconProps {
   active?: boolean;
   badgeContent?: ReactNode;
   children: ReactNode;
+  [key: string]: any;
 }
 
 const BELL_HOVER_SX = {
@@ -649,6 +650,7 @@ const QuickActionIcon = forwardRef<HTMLDivElement | HTMLButtonElement, QuickActi
     active = false,
     badgeContent,
     children,
+    ...restProps
   },
   ref,
 ) {
@@ -906,6 +908,7 @@ const hoverSx =
     return (
       <Box
         ref={ref as React.Ref<HTMLDivElement>}
+        {...restProps}
         sx={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -927,9 +930,10 @@ const hoverSx =
   return (
     <IconButton
       size="small"
-      onClick={handleClick}
       color="inherit"
       ref={ref as React.Ref<HTMLButtonElement>}
+      {...restProps}
+      onClick={handleClick}
       sx={[
         {
           color: iconColor,

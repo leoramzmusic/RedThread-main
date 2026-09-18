@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from 'next/document';
 
 export default function Document() {
   return (
-    <Html>
+    <Html data-scroll-behavior="smooth">
       <Head>
         {/* Google Fonts URL — must include every font selectable in the admin (Apariencia > Banners) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

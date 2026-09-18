@@ -81,6 +81,11 @@ const YukiLottie = memo(function YukiLottie({
     setIsPaused(prefersReducedMotion);
   }, [prefersReducedMotion]);
 
+  useEffect(() => {
+    if (!animationData || prefersReducedMotion || isPaused) return;
+    lottieRef.current?.play();
+  }, [animationData, prefersReducedMotion, isPaused]);
+
   if (!animationData) return null;
 
   return (
@@ -99,7 +104,7 @@ const YukiLottie = memo(function YukiLottie({
         lottieRef={lottieRef}
         src={animationData}
         loop={loop && state !== 'success' && !prefersReducedMotion}
-        autoplay={!prefersReducedMotion}
+        autoplay={false}
         style={lottieStyle}
       />
       <Tooltip title={isPaused ? 'Reanudar animación' : 'Pausar animación'}>

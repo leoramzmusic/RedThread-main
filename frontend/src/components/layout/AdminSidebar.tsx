@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { APP_VERSION } from '../../config/version';
 import MorphToggleIcon from '../motion/MorphToggleIcon';
@@ -61,13 +61,91 @@ interface AdminSidebarProps {
   onToggleCollapse?: () => void;
 }
 
+const ADMIN_NAV_KEYFRAMES = {
+  '@keyframes rtItemIn': {
+    from: { opacity: 0, transform: 'translateY(8px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+  },
+  '@keyframes rtDrawerIn': {
+    from: { opacity: 0, transform: 'translateX(-14px)' },
+    to: { opacity: 1, transform: 'translateX(0)' },
+  },
+  '@keyframes rtThreadDraw': {
+    from: { transform: 'scaleY(0)' },
+    to: { transform: 'scaleY(1)' },
+  },
+  '@keyframes rtChatBubble': {
+    '0%, 82%, 100%': { transform: 'translateY(0) scale(1)' },
+    '86%': { transform: 'translateY(-2px) scale(1.06)' },
+    '90%': { transform: 'translateY(0) scale(1)' },
+    '94%': { transform: 'translateY(-1px) scale(1.03)' },
+    '98%': { transform: 'translateY(0) scale(1)' },
+  },
+  '@keyframes rtFriendsPulse': {
+    '0%, 72%, 100%': { transform: 'scale(1)', opacity: 1 },
+    '78%': { transform: 'scale(1.06)', opacity: 0.9 },
+    '84%': { transform: 'scale(1)', opacity: 1 },
+    '90%': { transform: 'scale(1.03)', opacity: 0.95 },
+    '96%': { transform: 'scale(1)', opacity: 1 },
+  },
+  '@keyframes rtPing': {
+    '0%, 78%, 100%': { transform: 'scale(1)', opacity: 1 },
+    '84%': { transform: 'scale(1.14)', opacity: 0.75 },
+    '90%': { transform: 'scale(1)', opacity: 1 },
+  },
+  '@keyframes rtDing': {
+    '0%, 92%, 100%': { transform: 'rotate(0)' },
+    '94%': { transform: 'rotate(-14deg)' },
+    '96%': { transform: 'rotate(12deg)' },
+    '98%': { transform: 'rotate(-6deg)' },
+  },
+  '@keyframes rtShake': {
+    '0%, 100%': { transform: 'translateX(0)' },
+    '25%': { transform: 'translateX(-2px)' },
+    '75%': { transform: 'translateX(2px)' },
+  },
+  '@keyframes rtFlip': {
+    to: { transform: 'rotateY(180deg)' },
+  },
+  '@keyframes rtShieldPulse': {
+    '0%, 100%': { transform: 'scale(1)' },
+    '50%': { transform: 'scale(1.15)' },
+  },
+  '@keyframes rtWave': {
+    '0%, 100%': { transform: 'rotate(-8deg)' },
+    '50%': { transform: 'rotate(8deg)' },
+  },
+  '@keyframes rtSliders': {
+    '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
+    '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
+    '75%': { transform: 'translateY(1px) scaleY(1.2)' },
+  },
+};
+
+const ADMIN_ANIMATION_CLASSES = {
+  '& .rt-pulse': { animation: 'rtFriendsPulse 5.5s ease-in-out infinite' },
+  '& .rt-ping': { animation: 'rtPing 4s ease-in-out infinite' },
+  '& .rt-bell': { animation: 'rtDing 14s ease-in-out infinite' },
+  '& .MuiListItemButton-root:hover .rt-dash': { animation: 'rtShake 0.4s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+  '& .MuiListItemButton-root:hover .rt-flip': { animation: 'rtFlip 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+  '& .MuiListItemButton-root:hover .rt-gem': { animation: 'rtGemGlint 0.8s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+  '& .MuiListItemButton-root:hover .rt-sliders': { animation: 'rtSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+  '& .MuiListItemButton-root:hover .rt-shield': { animation: 'rtShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+  '& .MuiListItemButton-root:hover .rt-wave': { animation: 'rtWave 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)' },
+  '& .MuiListItemButton-root:hover .rt-pulse': { animationPlayState: 'paused' },
+  '& .MuiListItemButton-root:hover .rt-ping': { animationPlayState: 'paused' },
+  '& .MuiListItemButton-root:hover .rt-bell': { animationPlayState: 'paused' },
+  '& .MuiListItemButton-root:hover .rt-palette': { transform: 'rotate(45deg)' },
+  '& .MuiListItemButton-root:hover .rt-settings-icon': { transform: 'rotate(90deg)' },
+};
+
 export default function AdminSidebar({
   collapsed: externalCollapsed,
   onToggleCollapse
 }: AdminSidebarProps) {
   const router = useRouter();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   // Use external collapsed state if provided, otherwise use internal
   const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
@@ -207,21 +285,27 @@ export default function AdminSidebar({
       setInternalCollapsed(!internalCollapsed);
     }
     if (!collapsed) {
-      setExpandedMenus([]); // Close all submenus when collapsing
+      setExpandedMenus(new Set()); // Close all submenus when collapsing
     }
   };
 
-  const handleMenuClick = (item: MenuItem) => {
+  const handleMenuClick = useCallback((item: MenuItem) => {
     if (item.children) {
       if (!collapsed) {
-        setExpandedMenus((prev) =>
-          prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id]
-        );
+        setExpandedMenus((prev) => {
+          const next = new Set(prev);
+          if (next.has(item.id)) {
+            next.delete(item.id);
+          } else {
+            next.add(item.id);
+          }
+          return next;
+        });
       }
     } else if (item.path) {
       router.push(item.path);
     }
-  };
+  }, [collapsed, router]);
 
   const isActive = (path?: string) => {
     if (!path) return false;
@@ -398,51 +482,7 @@ export default function AdminSidebar({
           overflowY: 'auto',
           overflowX: 'hidden',
           '@media (prefers-reduced-motion: no-preference)': {
-            '@keyframes rtItemIn': {
-              from: { opacity: 0, transform: 'translateY(8px)' },
-              to: { opacity: 1, transform: 'translateY(0)' },
-            },
-            '@keyframes rtDrawerIn': {
-              from: { opacity: 0, transform: 'translateX(-14px)' },
-              to: { opacity: 1, transform: 'translateX(0)' },
-            },
-            '@keyframes rtThreadDraw': {
-              from: { transform: 'scaleY(0)' },
-              to: { transform: 'scaleY(1)' },
-            },
-            '@keyframes rtChatBubble': {
-              '0%, 82%, 100%': { transform: 'translateY(0) scale(1)' },
-              '86%': { transform: 'translateY(-2px) scale(1.06)' },
-              '90%': { transform: 'translateY(0) scale(1)' },
-              '94%': { transform: 'translateY(-1px) scale(1.03)' },
-              '98%': { transform: 'translateY(0) scale(1)' },
-            },
-            '@keyframes rtFriendsPulse': {
-              '0%, 72%, 100%': { transform: 'scale(1)', opacity: 1 },
-              '78%': { transform: 'scale(1.06)', opacity: 0.9 },
-              '84%': { transform: 'scale(1)', opacity: 1 },
-              '90%': { transform: 'scale(1.03)', opacity: 0.95 },
-              '96%': { transform: 'scale(1)', opacity: 1 },
-            },
-            '@keyframes rtPing': {
-              '0%, 78%, 100%': { transform: 'scale(1)', opacity: 1 },
-              '84%': { transform: 'scale(1.14)', opacity: 0.75 },
-              '90%': { transform: 'scale(1)', opacity: 1 },
-            },
-            '@keyframes rtDing': {
-              '0%, 92%, 100%': { transform: 'rotate(0)' },
-              '94%': { transform: 'rotate(-14deg)' },
-              '96%': { transform: 'rotate(12deg)' },
-              '98%': { transform: 'rotate(-6deg)' },
-            },
-            '@keyframes rtShake': {
-              '0%, 100%': { transform: 'translateX(0)' },
-              '25%': { transform: 'translateX(-2px)' },
-              '75%': { transform: 'translateX(2px)' },
-            },
-            '@keyframes rtFlip': {
-              to: { transform: 'rotateY(180deg)' },
-            },
+            ...ADMIN_NAV_KEYFRAMES,
             '@keyframes rtGemGlint': {
               '0%, 100%': { transform: 'scale(1)', filter: 'none' },
               '50%': {
@@ -450,33 +490,7 @@ export default function AdminSidebar({
                 filter: `drop-shadow(0 0 6px ${alpha(primary, 0.8)}) brightness(1.35)`,
               },
             },
-            '@keyframes rtShieldPulse': {
-              '0%, 100%': { transform: 'scale(1)' },
-              '50%': { transform: 'scale(1.15)' },
-            },
-            '@keyframes rtWave': {
-              '0%, 100%': { transform: 'rotate(-8deg)' },
-              '50%': { transform: 'rotate(8deg)' },
-            },
-            '@keyframes rtSliders': {
-              '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
-              '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
-              '75%': { transform: 'translateY(1px) scaleY(1.2)' },
-            },
-            '& .rt-pulse': { animation: 'rtFriendsPulse 5.5s ease-in-out infinite' },
-            '& .rt-ping': { animation: 'rtPing 4s ease-in-out infinite' },
-            '& .rt-bell': { animation: 'rtDing 14s ease-in-out infinite' },
-            '& .MuiListItemButton-root:hover .rt-dash': { animation: 'rtShake 0.4s cubic-bezier(0.36, 0, 0.66, 0.56)' },
-            '& .MuiListItemButton-root:hover .rt-flip': { animation: 'rtFlip 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
-            '& .MuiListItemButton-root:hover .rt-gem': { animation: 'rtGemGlint 0.8s cubic-bezier(0.36, 0, 0.66, 0.56)' },
-            '& .MuiListItemButton-root:hover .rt-sliders': { animation: 'rtSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)' },
-            '& .MuiListItemButton-root:hover .rt-shield': { animation: 'rtShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)' },
-            '& .MuiListItemButton-root:hover .rt-wave': { animation: 'rtWave 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)' },
-            '& .MuiListItemButton-root:hover .rt-pulse': { animationPlayState: 'paused' },
-            '& .MuiListItemButton-root:hover .rt-ping': { animationPlayState: 'paused' },
-            '& .MuiListItemButton-root:hover .rt-bell': { animationPlayState: 'paused' },
-            '& .MuiListItemButton-root:hover .rt-palette': { transform: 'rotate(45deg)' },
-            '& .MuiListItemButton-root:hover .rt-settings-icon': { transform: 'rotate(90deg)' },
+            ...ADMIN_ANIMATION_CLASSES,
           },
         }}
       >
@@ -550,7 +564,7 @@ export default function AdminSidebar({
                       }}
                     />
                     {item.children && (
-                      expandedMenus.includes(item.id)
+                      expandedMenus.has(item.id)
                         ? <ExpandLess sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
                         : <ExpandMore sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
                     )}
@@ -561,7 +575,7 @@ export default function AdminSidebar({
 
             {/* Submenu */}
             {item.children && !collapsed && (
-              <Collapse in={expandedMenus.includes(item.id)} timeout="auto" unmountOnExit>
+              <Collapse in={expandedMenus.has(item.id)} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {item.children.map((child, childIndex) => (
                     <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>

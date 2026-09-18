@@ -48,24 +48,26 @@ export default function ProfileActions({
         >
             {/* 1. Rewind Button */}
             <Tooltip title="Retroceder">
-                <IconButton
-                    onClick={(e) => { e.stopPropagation(); onUndo && onUndo(); }}
-                    disabled={!onUndo}
-                    sx={{
-                        bgcolor: 'rgba(20, 20, 20, 0.4)',
-                        backdropFilter: 'blur(20px)',
-                        color: '#B0BEC5',
-                        opacity: onUndo ? 1 : 0.4,
-                        width: 52,
-                        height: 52,
-                        border: '1.5px solid rgba(255,255,255,0.1)',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', color: 'white' },
-                        transition: 'all 0.2s'
-                    }}
-                >
-                    <UndoIcon sx={{ fontSize: '1.6rem' }} />
-                </IconButton>
+                <span>
+                    <IconButton
+                        onClick={(e) => { e.stopPropagation(); onUndo && onUndo(); }}
+                        disabled={!onUndo}
+                        sx={{
+                            bgcolor: 'rgba(20, 20, 20, 0.4)',
+                            backdropFilter: 'blur(20px)',
+                            color: '#B0BEC5',
+                            opacity: onUndo ? 1 : 0.4,
+                            width: 52,
+                            height: 52,
+                            border: '1.5px solid rgba(255,255,255,0.1)',
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', color: 'white' },
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <UndoIcon sx={{ fontSize: '1.6rem' }} />
+                    </IconButton>
+                </span>
             </Tooltip>
 
             {/* 2. Dislike Button */}

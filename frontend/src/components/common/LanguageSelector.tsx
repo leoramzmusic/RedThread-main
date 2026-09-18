@@ -35,9 +35,11 @@ const globeSpin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-function MenuTransition(props: TransitionProps) {
-    return <Slide direction="down" {...(props as React.ComponentProps<typeof Slide>)} />;
-}
+const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: React.ReactElement<any, any> }>(
+    function MenuTransition(props, ref) {
+        return <Slide direction="down" ref={ref} {...(props as React.ComponentProps<typeof Slide>)} />;
+    }
+);
 
 export default function LanguageSelector() {
     const { i18n } = useTranslation();

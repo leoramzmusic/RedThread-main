@@ -119,7 +119,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     };
 
     loadAdminPrefs();
-  }, [mounted, isAdminPortal, router.pathname]);
+}, [mounted, isAdminPortal]);
 
   // Function to load preferences from DB/Object after login
   const loadPreferences = (prefs: { theme_mode?: string, visual_theme?: string, font_size?: string, admin_theme_mode?: string, admin_visual_theme?: string }) => {

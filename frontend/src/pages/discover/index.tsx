@@ -182,6 +182,11 @@ export default function Discover() {
   const isPremium = ['premium', 'vip'].includes(userPlan);
   const isVIP = userPlan === 'vip';
 
+  const profileCompletion = useMemo(
+    () => myProfile ? calculateCompletionPercentage(calculateProfileScore(myProfile)) : 0,
+    [myProfile]
+  );
+
   // More Mode State
   const [selectedMoreCategory, setSelectedMoreCategory] = useState<any>(null); // Store entire category object
 
@@ -958,7 +963,7 @@ export default function Discover() {
 
             {/* Completeness alert moved below for mobile or kept above for desktop if needed, 
                 but here we follow user request to avoid opaquing cards in vertical mode */}
-            {myProfile && calculateCompletionPercentage(calculateProfileScore(myProfile)) < 60 && (
+            {myProfile && profileCompletion < 60 && (
               <Alert
                 severity="warning"
                 sx={{
@@ -1208,7 +1213,7 @@ export default function Discover() {
             )}
 
             {/* Completeness alert for mobile - MOVED BELOW CARDS */}
-            {myProfile && calculateCompletionPercentage(calculateProfileScore(myProfile)) < 60 && (
+            {myProfile && profileCompletion < 60 && (
               <Alert
                 severity="warning"
                 sx={{
@@ -1593,45 +1598,47 @@ export default function Discover() {
                           }
                           arrow
                         >
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                size="small"
-                                checked={useAgeRule}
-                                disabled={!myProfile?.birth_date}
-                                onChange={(e) => {
-                                  setUseAgeRule(e.target.checked);
-                                  if (e.target.checked) {
-                                    let age = myProfile?.age;
+                          <Box component="span" sx={{ display: 'inline-flex' }}>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  size="small"
+                                  checked={useAgeRule}
+                                  disabled={!myProfile?.birth_date}
+                                  onChange={(e) => {
+                                    setUseAgeRule(e.target.checked);
+                                    if (e.target.checked) {
+                                      let age = myProfile?.age;
 
-                                    if (!age && myProfile?.birth_date) {
-                                      // Fallback: Calculate Age from birth_date
-                                      const birthDate = new Date(myProfile.birth_date);
-                                      const ageDifMs = Date.now() - birthDate.getTime();
-                                      const ageDate = new Date(ageDifMs);
-                                      age = Math.abs(ageDate.getUTCFullYear() - 1970);
-                                    }
+                                      if (!age && myProfile?.birth_date) {
+                                        // Fallback: Calculate Age from birth_date
+                                        const birthDate = new Date(myProfile.birth_date);
+                                        const ageDifMs = Date.now() - birthDate.getTime();
+                                        const ageDate = new Date(ageDifMs);
+                                        age = Math.abs(ageDate.getUTCFullYear() - 1970);
+                                      }
 
-                                    if (age) {
-                                      const min = Math.floor(age / 2) + 7;
-                                      const max = (age - 7) * 2;
-                                      setAgeRange([Math.max(18, min), Math.min(99, max)]);
-                                      enqueueSnackbar(`Regla ½+7 aplicada (${age} años): ${Math.max(18, min)} - ${Math.min(99, max)} años`, { variant: 'success', autoHideDuration: 3000 });
+                                      if (age) {
+                                        const min = Math.floor(age / 2) + 7;
+                                        const max = (age - 7) * 2;
+                                        setAgeRange([Math.max(18, min), Math.min(99, max)]);
+                                        enqueueSnackbar(`Regla ½+7 aplicada (${age} años): ${Math.max(18, min)} - ${Math.min(99, max)} años`, { variant: 'success', autoHideDuration: 3000 });
+                                      }
                                     }
-                                  }
-                                }}
-                              />
-                            }
-                            label={
-                              <Box display="flex" alignItems="center" gap={0.5}>
-                                <Typography variant="caption" sx={{ fontWeight: 600, color: useAgeRule ? 'primary.main' : 'text.secondary' }}>
-                                  Regla ½ + 7
-                                </Typography>
-                                <InfoIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
-                              </Box>
-                            }
-                            sx={{ mr: 0 }}
-                          />
+                                  }}
+                                />
+                              }
+                              label={
+                                <Box display="flex" alignItems="center" gap={0.5}>
+                                  <Typography variant="caption" sx={{ fontWeight: 600, color: useAgeRule ? 'primary.main' : 'text.secondary' }}>
+                                    Regla ½ + 7
+                                  </Typography>
+                                  <InfoIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
+                                </Box>
+                              }
+                              sx={{ mr: 0 }}
+                            />
+                          </Box>
                         </Tooltip>
                       </Box>
 

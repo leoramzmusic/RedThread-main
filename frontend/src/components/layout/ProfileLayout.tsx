@@ -41,6 +41,46 @@ interface ProfileMenuItem {
   path: string;
 }
 
+const PROFILE_NAV_KEYFRAMES = {
+  '@keyframes rtPItemIn': {
+    from: { opacity: 0, transform: 'translateY(8px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+  },
+  '@keyframes rtPThreadDraw': {
+    from: { transform: 'scaleY(0)' },
+    to: { transform: 'scaleY(1)' },
+  },
+  '@keyframes rtPShieldPulse': {
+    '0%, 100%': { transform: 'scale(1)' },
+    '50%': { transform: 'scale(1.15)' },
+  },
+  '@keyframes rtPDing': {
+    '0%, 92%, 100%': { transform: 'rotate(0)' },
+    '94%': { transform: 'rotate(-14deg)' },
+    '96%': { transform: 'rotate(12deg)' },
+    '98%': { transform: 'rotate(-6deg)' },
+  },
+  '@keyframes rtPLockWiggle': {
+    '0%, 100%': { transform: 'rotate(0)' },
+    '25%': { transform: 'rotate(-12deg)' },
+    '50%': { transform: 'rotate(10deg)' },
+    '75%': { transform: 'rotate(-6deg)' },
+  },
+  '@keyframes rtPSliders': {
+    '0%, 100%': { transform: 'translateY(0) scaleY(1)' },
+    '25%': { transform: 'translateY(-1px) scaleY(0.8)' },
+    '75%': { transform: 'translateY(1px) scaleY(1.2)' },
+  },
+  '@keyframes rtPDrawerIn': {
+    from: { opacity: 0, transform: 'translateX(-14px)' },
+    to: { opacity: 1, transform: 'translateX(0)' },
+  },
+};
+
+const PROFILE_NAV_CLASSES = {
+  '& .rt-profile-bell': { animation: 'rtPDing 14s ease-in-out infinite' },
+};
+
 export default function ProfileLayout({ children }: ProfileLayoutProps) {
   const router = useRouter();
   const theme = useTheme();
