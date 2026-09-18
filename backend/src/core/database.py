@@ -92,6 +92,10 @@ async def init_db():
     
     print(f"✅ Connected to MongoDB: {settings.MONGODB_DB_NAME}")
 
+    # Seed automático de datos del sistema (idempotente)
+    from src.core.seed import seed_system_data
+    await seed_system_data()
+
 
 async def close_db():
     """Close MongoDB connection"""
