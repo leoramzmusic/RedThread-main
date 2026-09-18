@@ -2,8 +2,10 @@ import type { Theme } from '@mui/material';
 import type { SystemStyleObject } from '@mui/system';
 
 // RedThread Liquid Glass — tokens del DNA (docs/design/design-dna.json)
+// PALETA FIJA: Rojo Destino #E63946 protagonista, azul #3B82F6 acento narrativo
 export const RED = '#E63946';
-export const RED_SMALL = '#B4232C';
+export const RED_LIGHT = '#FF6B6B';
+export const RED_DARK = '#B71C1C';
 export const BLUE = '#3B82F6';
 export const BLUE_GRADIENT = 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)';
 export const GRAPHITE = '#2B2F36';

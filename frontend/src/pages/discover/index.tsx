@@ -63,23 +63,26 @@ const LocationMap = dynamic(() => import('../../components/common/LocationMap'),
   </Box>
 });
 
+const MoreModeSelection = dynamic(() => import('../../components/discovery/MoreModeSelection'));
+const DiscoveryRadarLoader = dynamic(() => import('../../components/discovery/DiscoveryRadarLoader'));
+const StickerBookLayout = dynamic(() => import('../../components/discovery/layouts/StickerBookLayout'));
+const CarouselLayout = dynamic(() => import('../../components/discovery/layouts/CarouselLayout'));
+const GridLayout = dynamic(() => import('../../components/discovery/layouts/GridLayout'));
+const CareNarrativePanel = dynamic(() => import('../../components/discovery/CareNarrativePanel'));
+const CompatibilityTechnicalPanel = dynamic(() => import('../../components/discovery/CompatibilityTechnicalPanel'));
+const ProfileDetailModal = dynamic(() => import('../../components/discovery/ProfileDetailModal'));
+const BoostActivationModal = dynamic(() => import('../../components/discovery/BoostActivationModal'));
+const DiscoveryRefinementCard = dynamic(() => import('../../components/discovery/DiscoveryRefinementCard'));
+const CuriosityGenderSelector = dynamic(() => import('../../components/discovery/CuriosityGenderSelector'));
+
 import SocialBatteryWidget from '../../components/common/SocialBatteryWidget';
 import TimeOutModal from '../../components/common/TimeOutModal';
 import InteractionSettingsDialog, { InteractionMode, LayoutMode } from '../../components/discovery/InteractionSettingsDialog';
 import StackLayout from '../../components/discovery/layouts/StackLayout';
-import StickerBookLayout from '../../components/discovery/layouts/StickerBookLayout';
-import CarouselLayout from '../../components/discovery/layouts/CarouselLayout';
-import GridLayout from '../../components/discovery/layouts/GridLayout';
 import DiscoverToolbar from '../../components/discovery/DiscoverToolbar';
-import CareNarrativePanel from '../../components/discovery/CareNarrativePanel';
-import CompatibilityTechnicalPanel from '../../components/discovery/CompatibilityTechnicalPanel';
-import ProfileDetailModal from '../../components/discovery/ProfileDetailModal';
-import BoostActivationModal from '../../components/discovery/BoostActivationModal';
 import boostService, { BoostStatus } from '../../services/boostService';
 import DiscoveryModeSelector, { DiscoveryMode } from '../../components/discovery/DiscoveryModeSelector';
 import { useAppTheme } from '../../context/ThemeContext';
-import DiscoveryRefinementCard from '../../components/discovery/DiscoveryRefinementCard';
-import CuriosityGenderSelector from '../../components/discovery/CuriosityGenderSelector';
 
 export default function Discover() {
   const { mode } = useAppTheme();
@@ -181,10 +184,6 @@ export default function Discover() {
 
   // More Mode State
   const [selectedMoreCategory, setSelectedMoreCategory] = useState<any>(null); // Store entire category object
-
-  // Dynamic import for code splitting
-  const MoreModeSelection = dynamic(() => import('../../components/discovery/MoreModeSelection'));
-  const DiscoveryRadarLoader = dynamic(() => import('../../components/discovery/DiscoveryRadarLoader'));
 
   useEffect(() => {
     if (!isAuthenticated) {

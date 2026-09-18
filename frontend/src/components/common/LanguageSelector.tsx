@@ -58,11 +58,11 @@ export default function LanguageSelector() {
         localStorage.setItem('preferred_language', code);
 
         // Reload the page with the new locale
-        const currentPath = router.asPath;
+        const currentPath = router?.asPath || '/';
         window.location.href = `/${code}${currentPath}`;
     };
 
-    const currentLang = LANGUAGES.find(l => l.code === (router.locale || 'es')) || LANGUAGES[1];
+    const currentLang = LANGUAGES.find(l => l.code === (router?.locale || 'es')) || LANGUAGES[1];
 
     return (
         <Box>
@@ -120,7 +120,7 @@ export default function LanguageSelector() {
                     <MenuItem
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang.code)}
-                        selected={router.locale === lang.code}
+                        selected={router?.locale === lang.code}
                         sx={{
                             fontFamily: "'Inter', 'Poppins', sans-serif",
                             fontSize: '0.9rem',
@@ -133,7 +133,7 @@ export default function LanguageSelector() {
                             '&.Mui-selected': {
                                 color: '#FFFFFF',
                                 fontWeight: 700,
-                                boxShadow: 'inset 2px 0 0 #FB7185',
+                                boxShadow: 'inset 2px 0 0 #E63946',
                             },
                         }}
                     >

@@ -1,6 +1,6 @@
 import asyncio
-from src.db.utils.connection import init_db
-from src.db.schemas.profile import Profile
+from src.core.database import init_db
+from src.models.profile import Profile
 import pymongo
 
 async def create_indexes():
@@ -11,9 +11,9 @@ async def create_indexes():
     try:
         # Beanie uses the underlying motor collection
         await Profile.get_motor_collection().create_index([("location", pymongo.GEOSPHERE)])
-        print("✅ Index created successfully!")
+        print("Index created successfully!")
     except Exception as e:
-        print(f"❌ Error creating index: {e}")
+        print(f"Error creating index: {e}")
 
 if __name__ == "__main__":
     asyncio.run(create_indexes())

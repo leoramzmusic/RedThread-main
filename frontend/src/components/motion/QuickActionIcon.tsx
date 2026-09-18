@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef, useState } from 'react';
+﻿import { ReactNode, forwardRef, useState } from 'react';
 import { IconButton, Box, useTheme } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
@@ -85,7 +85,7 @@ function glowBellSx(active: boolean, gray: string) {
     position: 'relative',
     '.rt-bell-regular': {
       color: gray,
-      filter: 'drop-shadow(0 0 3px rgba(211,47,47,0.35))',
+      filter: 'drop-shadow(0 0 3px rgba(230,57,70,0.35))',
       transition: 'color 0.3s ease, filter 0.3s ease',
       animation: 'rtGlowFill 0.5s ease-out',
     },
@@ -93,7 +93,7 @@ function glowBellSx(active: boolean, gray: string) {
       display: 'none',
       color: RED_PASSION,
       filter:
-        'drop-shadow(0 0 6px rgba(211,47,47,0.8)) drop-shadow(0 0 13px rgba(211,47,47,0.45))',
+        'drop-shadow(0 0 6px rgba(211,47,47,0.8)) drop-shadow(0 0 13px rgba(230,57,70,0.45))',
       transition: 'filter 0.3s ease',
       animation: 'rtGlowFill 0.5s ease-out',
     },
@@ -112,7 +112,7 @@ function glowBellSx(active: boolean, gray: string) {
           '.rt-bell-icon': {
             color: RED_PASSION,
             filter:
-              'drop-shadow(0 0 6px rgba(211,47,47,0.8)) drop-shadow(0 0 13px rgba(211,47,47,0.45))',
+              'drop-shadow(0 0 6px rgba(211,47,47,0.8)) drop-shadow(0 0 13px rgba(230,57,70,0.45))',
             animation: 'rtGlowBellShake 1.4s ease-in-out infinite',
           },
           '&:hover .rt-bell-regular': { display: 'none' },
@@ -206,7 +206,7 @@ function premiumGearSx(active: boolean, isDark: boolean) {
       justifyContent: 'center',
       borderRadius: '50%',
       padding: '2px',
-      background: 'linear-gradient(135deg, #FD297B, #D32F2F, #FF8A5C)',
+      background: 'linear-gradient(135deg, #E63946, #FF6B6B, #B71C1C)',
       backgroundSize: '200% 200%',
       transition: 'box-shadow 0.6s ease',
       animation: 'rtPremiumShift 4s linear infinite, rtPremiumGearAura 6s ease-in-out infinite',
@@ -255,7 +255,7 @@ function premiumGearSx(active: boolean, isDark: boolean) {
       },
     },
     '@keyframes rtPremiumGearBurst': {
-      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.55), 0 0 18px rgba(211,47,47,0.6)' },
+      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.55), 0 0 18px rgba(230,57,70,0.6)' },
       to: { boxShadow: '0 0 0 12px rgba(211,47,47,0), 0 0 18px rgba(211,47,47,0)' },
     },
     '@media (prefers-reduced-motion: reduce)': {
@@ -286,12 +286,12 @@ function glowGlobeSx(active: boolean) {
       transform: 'scale(0.92)',
     },
     '@keyframes rtGlowGlobeBreathe': {
-      '0%, 100%': { filter: 'drop-shadow(0 0 4px rgba(211,47,47,0.35))' },
+      '0%, 100%': { filter: 'drop-shadow(0 0 4px rgba(230,57,70,0.35))' },
       '50%': { filter: 'drop-shadow(0 0 10px rgba(211,47,47,0.7))' },
     },
     '@keyframes rtGlowGlobeIdle': {
       '0%, 100%': { filter: 'drop-shadow(0 0 2px rgba(211,47,47,0.18))' },
-      '50%': { filter: 'drop-shadow(0 0 7px rgba(211,47,47,0.45))' },
+      '50%': { filter: 'drop-shadow(0 0 7px rgba(230,57,70,0.45))' },
     },
     '@keyframes rtGlowGlobeBurst': {
       from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.5), 0 0 12px rgba(211,47,47,0.55)' },
@@ -359,7 +359,7 @@ function premiumGlobeSx(active: boolean, isDark: boolean) {
       justifyContent: 'center',
       borderRadius: '50%',
       padding: '2px',
-      background: 'linear-gradient(135deg, #FD297B, #D32F2F, #FF8A5C)',
+      background: 'linear-gradient(135deg, #E63946, #FF6B6B, #B71C1C)',
       backgroundSize: '200% 200%',
       transition: 'box-shadow 0.6s ease',
       animation:
@@ -416,7 +416,7 @@ function premiumGlobeSx(active: boolean, isDark: boolean) {
       to: { transform: 'rotate(360deg)' },
     },
     '@keyframes rtPremiumGlobeBurst': {
-      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.55), 0 0 18px rgba(211,47,47,0.6)' },
+      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.55), 0 0 18px rgba(230,57,70,0.6)' },
       to: { boxShadow: '0 0 0 12px rgba(211,47,47,0), 0 0 18px rgba(211,47,47,0)' },
     },
     '@media (prefers-reduced-motion: reduce)': {
@@ -493,7 +493,7 @@ function liquidBellSx(active: boolean, isDark: boolean) {
       ? {
           '.rt-bell-glass': {
             boxShadow: '0 0 14px rgba(211,47,47,0.5)',
-            borderColor: 'rgba(211,47,47,0.35)',
+            borderColor: 'rgba(230,57,70,0.35)',
           },
           '.rt-bell-icon': {
             color: '#D32F2F',
@@ -512,7 +512,7 @@ function liquidBellSx(active: boolean, isDark: boolean) {
       '75%': { transform: 'rotate(-6deg)' },
     },
     '@keyframes rtLiquidBurst': {
-      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.5), 0 0 14px rgba(211,47,47,0.6)' },
+      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.5), 0 0 14px rgba(230,57,70,0.6)' },
       to: { boxShadow: '0 0 0 10px rgba(211,47,47,0), 0 0 14px rgba(211,47,47,0)' },
     },
     '@media (prefers-reduced-motion: reduce)': {
@@ -543,12 +543,12 @@ function glowGearSx(active: boolean) {
       transform: 'scale(0.92)',
     },
     '@keyframes rtGlowGearBreathe': {
-      '0%, 100%': { filter: 'drop-shadow(0 0 4px rgba(211,47,47,0.35))' },
+      '0%, 100%': { filter: 'drop-shadow(0 0 4px rgba(230,57,70,0.35))' },
       '50%': { filter: 'drop-shadow(0 0 10px rgba(211,47,47,0.7))' },
     },
     '@keyframes rtGlowGearIdle': {
       '0%, 100%': { filter: 'drop-shadow(0 0 2px rgba(211,47,47,0.18))' },
-      '50%': { filter: 'drop-shadow(0 0 7px rgba(211,47,47,0.45))' },
+      '50%': { filter: 'drop-shadow(0 0 7px rgba(230,57,70,0.45))' },
     },
     '@keyframes rtGlowGearBurst': {
       from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.5), 0 0 12px rgba(211,47,47,0.55)' },
@@ -576,7 +576,7 @@ function premiumBellSx(active: boolean, isDark: boolean) {
       justifyContent: 'center',
       borderRadius: '50%',
       padding: '2px',
-      background: 'linear-gradient(135deg, #FD297B, #D32F2F, #FF8A5C)',
+      background: 'linear-gradient(135deg, #E63946, #FF6B6B, #B71C1C)',
       backgroundSize: '200% 200%',
       transition: 'box-shadow 0.6s ease',
       animation: 'rtPremiumShift 4s linear infinite, rtPremiumAura 6s ease-in-out infinite',
@@ -630,7 +630,7 @@ function premiumBellSx(active: boolean, isDark: boolean) {
       '75%': { transform: 'rotate(-3deg)' },
     },
     '@keyframes rtPremiumBurst': {
-      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.55), 0 0 18px rgba(211,47,47,0.6)' },
+      from: { boxShadow: '0 0 0 2px rgba(211,47,47,0.55), 0 0 18px rgba(230,57,70,0.6)' },
       to: { boxShadow: '0 0 0 12px rgba(211,47,47,0), 0 0 18px rgba(211,47,47,0)' },
     },
     '@media (prefers-reduced-motion: reduce)': {
@@ -803,7 +803,7 @@ const hoverSx =
             fontSize: 10,
             lineHeight: 1,
             boxShadow: isPremiumBell
-              ? '0 0 8px rgba(211,47,47,0.6)'
+              ? '0 0 8px rgba(230,57,70,0.6)'
               : '0 2px 6px rgba(0,0,0,0.3)',
             animation: isPremiumBell
               ? 'rtBadgeIn 0.45s ease, rtBadgeHalo 1.4s ease-out 0.15s'

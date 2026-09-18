@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect, useRef } from 'react';
+import { ReactNode, useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useRouter } from 'next/router';
 import {
   AppBar,
@@ -39,20 +39,22 @@ import { logout } from '../../store/slices/authSlice';
 import Sidebar from './Sidebar';
 import { useTranslation } from 'next-i18next';
 import apiClient from '../../services/api';
-import NotificationPanel from '../notifications/NotificationPanel';
-import Footer from './Footer';
 import { useUI } from '../../context/UIContext';
 import { alpha, useTheme } from '@mui/material/styles';
 import NavLink from './NavLink';
 import MorphToggleIcon from '../motion/MorphToggleIcon';
-import ThemeSwitch from '../motion/ThemeSwitch';
-import BasicThemeSwitch from '../motion/BasicThemeSwitch';
-import GlowThemeSwitch from '../motion/GlowThemeSwitch';
-import SubtleThemeSwitch from '../motion/SubtleThemeSwitch';
-import LiquidThemeSwitch from '../motion/LiquidThemeSwitch';
-import QuickActionIcon from '../motion/QuickActionIcon';
 import { isIconStyleId, IconStyleId } from '../motion/iconStyles';
-import { supportedLanguages } from '../settings/AppearanceSection';
+import { supportedLanguages } from '../../config/languages';
+
+const NotificationPanel = lazy(() => import('../notifications/NotificationPanel'));
+const Footer = lazy(() => import('./Footer'));
+const MascotFAB = lazy(() => import('../common/MascotFAB'));
+const ThemeSwitch = lazy(() => import('../motion/ThemeSwitch'));
+const BasicThemeSwitch = lazy(() => import('../motion/BasicThemeSwitch'));
+const GlowThemeSwitch = lazy(() => import('../motion/GlowThemeSwitch'));
+const SubtleThemeSwitch = lazy(() => import('../motion/SubtleThemeSwitch'));
+const LiquidThemeSwitch = lazy(() => import('../motion/LiquidThemeSwitch'));
+const QuickActionIcon = lazy(() => import('../motion/QuickActionIcon'));
 
 interface LayoutProps {
   children: ReactNode;
@@ -372,19 +374,21 @@ export default function Layout({ children }: LayoutProps) {
                 {showIcon('theme') && (
                   <Tooltip title={mode === 'dark' ? t('theme.light', 'Modo Claro') : t('theme.dark', 'Modo Oscuro')}>
                     <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
-                      <QuickActionIcon styleId={styleOf('theme')} motion="switch" asBox>
-                        {styleOf('theme') === 'basic' ? (
-                          <BasicThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
-                        ) : styleOf('theme') === 'glow' ? (
-                          <GlowThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
-                        ) : styleOf('theme') === 'subtle' ? (
-                          <SubtleThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
-                        ) : styleOf('theme') === 'liquid' ? (
-                          <LiquidThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
-                        ) : (
-                          <ThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
-                        )}
-                      </QuickActionIcon>
+                      <Suspense fallback={null}>
+                        <QuickActionIcon styleId={styleOf('theme')} motion="switch" asBox>
+                          {styleOf('theme') === 'basic' ? (
+                            <BasicThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                          ) : styleOf('theme') === 'glow' ? (
+                            <GlowThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                          ) : styleOf('theme') === 'subtle' ? (
+                            <SubtleThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                          ) : styleOf('theme') === 'liquid' ? (
+                            <LiquidThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                          ) : (
+                            <ThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
+                          )}
+                        </QuickActionIcon>
+                      </Suspense>
                     </Box>
                   </Tooltip>
                 )}
@@ -582,10 +586,12 @@ export default function Layout({ children }: LayoutProps) {
           }}
           sx={{ zIndex: (theme) => theme.zIndex.drawer }} // Ensure it's below AppBar if needed, or adjust
         >
-          <NotificationPanel
-            onClose={() => setNotificationOpen(false)}
-            onUpdateUnreadCount={setUnreadCount}
-          />
+          <Suspense fallback={null}>
+            <NotificationPanel
+              onClose={() => setNotificationOpen(false)}
+              onUpdateUnreadCount={setUnreadCount}
+            />
+          </Suspense>
         </Drawer>
 
         {/* Page Content */}
@@ -682,8 +688,17 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Footer */}
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-          <Footer />
+          <Suspense fallback={null}>
+            <Footer />
+          </Suspense>
         </Box>
+
+        {/* Mascot FAB */}
+        {isAuthenticated && (
+          <Suspense fallback={null}>
+            <MascotFAB />
+          </Suspense>
+        )}
       </Box>
     </Box>
   );

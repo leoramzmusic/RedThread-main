@@ -32,7 +32,7 @@ interface AppearanceSectionProps {
 }
 
 const THEMES = [
-    { id: 'redThread', label: 'RedThread', color: '#E63946', bg: '#FFF0F0' },
+    { id: 'redThread', label: 'RedThread', color: '#E63946', bg: '#F6F7F9' },
     { id: 'sakura', label: 'Sakura', color: '#EEAAC0', bg: '#EAD1D7' },
     { id: 'premium', label: 'Premium', color: '#797979', bg: '#CECECE' },
     { id: 'vip', label: 'VIP', color: '#efb810', bg: '#ffff75' },

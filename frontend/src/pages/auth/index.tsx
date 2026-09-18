@@ -73,8 +73,8 @@ export default function AuthPage() {
                             height: 3,
                             borderRadius: 3,
                             transformOrigin: 'left center',
-                            background: 'linear-gradient(90deg, #D32F2F 0%, #FB7185 100%)',
-                            boxShadow: '0 0 12px rgba(211, 47, 47, 0.7), 0 2px 4px rgba(211, 47, 47, 0.35)',
+                            background: 'linear-gradient(90deg, #E63946 0%, #3B82F6 100%)',
+                            boxShadow: '0 0 12px rgba(230, 57, 70, 0.7), 0 2px 4px rgba(230, 57, 70, 0.35)',
                             '@media (prefers-reduced-motion: no-preference)': {
                                 animation: `${indicatorDraw} 0.35s ease`,
                             },

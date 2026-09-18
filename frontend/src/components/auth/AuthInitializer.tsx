@@ -6,7 +6,8 @@ import { setAdminCredentials, setAdminInitialized } from '../../store/slices/adm
 import apiClient from '../../services/api';
 import { useAppTheme } from '../../context/ThemeContext';
 import { RootState } from '../../store/store';
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
+import YukiLoader from '../common/YukiLoader';
 
 export default function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
@@ -120,10 +121,10 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          backgroundColor: '#000000', // Matches the app's dark theme if needed, or adjust as per brand
+          backgroundColor: '#000000',
         }}
       >
-        <CircularProgress sx={{ color: '#FF3B30' }} />
+        <YukiLoader message="Preparando tu experiencia..." size={140} />
       </Box>
     );
   }

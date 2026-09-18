@@ -16,6 +16,7 @@ import {
 } from '../../styles/glass';
 import { ErrorCta, getErrorMeta } from './registry';
 import ThreadIllustration from './ThreadIllustration';
+import KawaiiCat from '../common/KawaiiCat';
 
 interface ErrorPageProps {
   code: number;
@@ -141,6 +142,15 @@ export default function ErrorPage({ code, redirectTo, redirectDelayMs = 2500 }: 
             }}
           >
             <ThreadIllustration variant={meta.ornament} accent={meta.accent} isDark={isDark} />
+          </Box>
+
+          <Box sx={{ mb: 1 }}>
+            <KawaiiCat
+              state={code === 404 ? 'curious' : 'error'}
+              moduleColor={meta.accent}
+              size={100}
+              interactive
+            />
           </Box>
 
           <Typography

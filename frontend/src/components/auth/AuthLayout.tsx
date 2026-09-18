@@ -4,6 +4,7 @@ import { LightMode, DarkMode } from '@mui/icons-material';
 import { useAppTheme } from '../../context/ThemeContext';
 import LanguageSelector from '../common/LanguageSelector';
 import RedThreadLogo from '../landing/RedThreadLogo';
+import KawaiiCat from '../common/KawaiiCat';
 import { GLASS_ICON_BTN_SX } from '../common/glassIconStyles';
 
 interface AuthLayoutProps {
@@ -122,7 +123,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
                     height: { xs: 340, md: 560 },
                     borderRadius: '50%',
                     background: mode === 'light'
-                        ? 'radial-gradient(circle, rgba(255,182,193,0.45) 0%, rgba(255,182,193,0) 70%)'
+                        ? 'radial-gradient(circle, rgba(230,57,70,0.35) 0%, rgba(230,57,70,0) 70%)'
                         : 'radial-gradient(circle, rgba(211,47,47,0.35) 0%, rgba(211,47,47,0) 70%)',
                     filter: 'blur(80px)',
                     pointerEvents: 'none',
@@ -144,7 +145,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
                     borderRadius: '50%',
                     background: mode === 'light'
                         ? 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%)'
-                        : 'radial-gradient(circle, rgba(251,113,133,0.22) 0%, rgba(251,113,133,0) 70%)',
+                        : 'radial-gradient(circle, rgba(255,107,107,0.22) 0%, rgba(255,107,107,0) 70%)',
                     filter: 'blur(80px)',
                     pointerEvents: 'none',
                     zIndex: 0,
@@ -178,8 +179,8 @@ export default function AuthLayout(props: AuthLayoutProps) {
                         p: { xs: 4, sm: 5 },
                         borderRadius: 4,
                         bgcolor: mode === 'light' ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.08)',
-                        backdropFilter: 'blur(18px)',
-                        WebkitBackdropFilter: 'blur(18px)',
+                        backdropFilter: 'blur(24px) saturate(1.7)',
+                        WebkitBackdropFilter: 'blur(24px) saturate(1.7)',
                         border: '1px solid rgba(255,255,255,0.25)',
                         boxShadow: mode === 'light'
                             ? '0 24px 60px rgba(20, 30, 90, 0.28), inset 0 1px 0 rgba(255,255,255,0.4)'
@@ -192,8 +193,8 @@ export default function AuthLayout(props: AuthLayoutProps) {
                             stroke: '#E53935',
                         },
                         '&:hover .rt-thread-frame-flow': {
-                            filter: 'drop-shadow(0 0 6px rgba(251, 113, 133, 0.85))',
-                            stroke: '#FB7185',
+                            filter: 'drop-shadow(0 0 6px rgba(230, 57, 70, 0.85))',
+                            stroke: '#E63946',
                             '@media (prefers-reduced-motion: no-preference)': {
                                 animationDuration: '3.5s',
                             },
@@ -244,7 +245,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
                             pathLength={100}
                             fill="none"
                             sx={{
-                                stroke: '#FB7185',
+                                stroke: '#E63946',
                                 strokeWidth: 2.4,
                                 vectorEffect: 'non-scaling-stroke',
                                 strokeDasharray: '4 21 3 72',
@@ -266,8 +267,8 @@ export default function AuthLayout(props: AuthLayoutProps) {
                                 borderRadius: 2,
                                 top: fieldRange.top,
                                 height: Math.max(fieldRange.bottom - fieldRange.top, 24),
-                                background: 'linear-gradient(180deg, #D32F2F, #FB7185)',
-                                boxShadow: '0 0 10px rgba(251, 113, 133, 0.9), 0 0 4px rgba(211, 47, 47, 0.8)',
+                                background: 'linear-gradient(180deg, #E63946, #B4232C)',
+                                boxShadow: '0 0 10px rgba(230, 57, 70, 0.9), 0 0 4px rgba(230, 57, 70, 0.8)',
                                 zIndex: 0,
                                 pointerEvents: 'none',
                                 transition: 'top 0.25s ease, height 0.25s ease',
@@ -277,6 +278,15 @@ export default function AuthLayout(props: AuthLayoutProps) {
 
                     {/* Content */}
                     <Box sx={{ position: 'relative', zIndex: 1 }}>
+                        {/* Yuki mascot */}
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+                            <KawaiiCat
+                                state="waving"
+                                size={80}
+                                interactive
+                            />
+                        </Box>
+
                         {/* Logo / Header */}
                         <Box mb={4}>
                             <RedThreadLogo

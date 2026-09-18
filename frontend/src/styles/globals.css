@@ -5,6 +5,84 @@
   --text-color: #222222;
   --accent-color: #007bff;
 
+  /* RedThread Liquid Glass tokens — docs/design/design-dna.json */
+  /* Color — PALETA FIJA: Rojo Destino #E63946 protagonista */
+  --lg-primary: #E63946;
+  --lg-primary-light: #FF6B6B;
+  --lg-primary-dark: #B71C1C;
+  --lg-secondary: #2B2F36;
+  --lg-accent: #3B82F6;
+  --lg-accent-violet: #7F4CA5;
+  --lg-accent-gold: #efb810;
+  --lg-success: #16A34A;
+  --lg-warning: #D97706;
+  --lg-error: #E63946;
+  --lg-info: #3B82F6;
+
+  /* Neutral scale */
+  --n-0: #FFFFFF;
+  --n-50: #F6F7F9;
+  --n-100: #ECEEF2;
+  --n-200: #D7DBE1;
+  --n-300: #9AA1AB;
+  --n-400: #6B7280;
+  --n-500: #4B5563;
+  --n-600: #2B2F36;
+  --n-700: #1A1B1E;
+
+  /* Surface */
+  --lg-bg: #F5F6F8;
+  --lg-card: rgba(255, 255, 255, 0.62);
+  --lg-elevated: rgba(255, 255, 255, 0.82);
+
+  /* Typography */
+  --font-heading: 'Poppins', Inter, system-ui, sans-serif;
+  --font-body: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  --space-9: 64px;
+  --space-10: 96px;
+
+  /* Layout */
+  --lg-max-width: 1200px;
+  --lg-gutter: 24px;
+  --bp-sm: 375px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1440px;
+
+  /* Shape */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* Elevation (glass shadows + inner shine) */
+  --shadow-low: 0 2px 8px rgba(26, 27, 30, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  --shadow-medium: 0 12px 32px rgba(26, 27, 30, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.60);
+  --shadow-high: 0 24px 64px rgba(26, 27, 30, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+
+  /* Glass recipe */
+  --glass-blur: 20px;
+  --glass-saturate: 150%;
+  --glass-card: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.55);
+
+  /* Motion */
+  --ease-liquid: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-micro: 140ms;
+  --dur-normal: 280ms;
+  --dur-macro: 640ms;
+
   /* Section Variables */
   --section-bg: #ffffff;
   --section-text: #222222;
@@ -22,11 +100,36 @@
 [data-mode="dark"] {
   --bg-color: #121212;
   --text-color: #f5f5f5;
-  --accent-color: #3B82F6;
+  --accent-color: #E63946;
 
+  /* Liquid Glass dark overrides — PALETA FIJA: Rojo Destino #E63946 protagonista */
+  --lg-primary: #E63946;
+  --lg-primary-light: #FF6B6B;
+  --lg-primary-dark: #B71C1C;
+  --lg-secondary: #F6F7F9;
+  --lg-accent: #3B82F6;
+  --lg-accent-violet: #7F4CA5;
+  --lg-accent-gold: #efb810;
+  --n-0: #FFFFFF;
+  --n-50: #F6F7F9;
+  --n-100: #ECEEF2;
+  --n-200: #D7DBE1;
+  --n-300: #9AA1AB;
+  --n-400: #6B7280;
+  --n-500: #4B5563;
+  --n-600: #2B2F36;
+  --n-700: #1A1B1E;
+  --lg-bg: #1A1B1E;
+  --lg-card: rgba(26, 27, 30, 0.55);
+  --lg-elevated: rgba(26, 27, 30, 0.72);
+  --shadow-low: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --shadow-medium: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-high: 0 24px 64px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --glass-card: rgba(26, 27, 30, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.12);
   --section-bg: #1a1a1a;
   --section-text: #eeeeee;
-  --section-accent: #3B82F6;
+  --section-accent: #E63946;
 
   /* Theme Card Variables */
   --theme-card-bg: #1a1a1a;
@@ -35,14 +138,12 @@
 
 /* Theme Data Attributes - Pastel Minimalist Palette */
 [data-theme="redThread"] {
-  --section-accent: #FD297B;
-  /* Vibrante rosa fucsia */
-  --banner-bg: #FF5864;
-  /* Coral intenso */
-  --btn-primary: #FF655B;
-  /* Coral suave para botones */
-  --btn-hover: #FF3E4D;
-  --bg-color-soft: #FFF0F0;
+  --section-accent: #E63946;
+  /* Rojo Destino Liquid Glass */
+  --banner-bg: #B71C1C;
+  --btn-primary: #E63946;
+  --btn-hover: #FF6B6B;
+  --bg-color-soft: #F6F7F9;
 }
 
 [data-theme="sakura"] {

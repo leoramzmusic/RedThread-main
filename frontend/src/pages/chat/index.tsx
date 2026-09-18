@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -46,8 +46,8 @@ import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import MicIcon from '@mui/icons-material/Mic';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PeopleIcon from '@mui/icons-material/People';
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
+const EmojiPicker = lazy(() => import('@emoji-mart/react'));
+const emojiDataPromise = import('@emoji-mart/data').then(m => m.default);
 import Layout from '../../components/layout/Layout';
 import ChatMessage, { Message } from '../../components/chat/ChatMessage';
 import NotificationsList from '../../components/chat/NotificationsList';
@@ -118,6 +118,7 @@ export default function Chat() {
   const [reportDescription, setReportDescription] = useState('');
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [emojiData, setEmojiData] = useState<any>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
@@ -651,14 +652,16 @@ export default function Chat() {
                   </Box>
                 ) : (
                   <Box sx={{ p: 2, borderTop: '1px solid #eee', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, position: 'relative' }}>
-                    {showEmojiPicker && (
+                    {showEmojiPicker && emojiData && (
                       <Box sx={{ position: 'absolute', bottom: '80px', left: '20px', zIndex: 10 }}>
-                        <Picker
-                          data={data}
-                          onEmojiSelect={onEmojiSelect}
-                          theme={theme.palette.mode}
-                          locale="es"
-                        />
+                        <Suspense fallback={null}>
+                          <EmojiPicker
+                            data={emojiData}
+                            onEmojiSelect={onEmojiSelect}
+                            theme={theme.palette.mode}
+                            locale="es"
+                          />
+                        </Suspense>
                       </Box>
                     )}
 
@@ -669,7 +672,12 @@ export default function Chat() {
                         onSend={(text) => handleSendMessage(undefined, text)}
                         color={activeThemeColor}
                       />
-                      <IconButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                      <IconButton onClick={async () => {
+                        if (!emojiData) {
+                          setEmojiData(await emojiDataPromise);
+                        }
+                        setShowEmojiPicker(!showEmojiPicker);
+                      }}>
                         <EmojiEmotionsIcon color="action" />
                       </IconButton>
 

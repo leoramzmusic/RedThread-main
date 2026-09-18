@@ -476,7 +476,8 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
   const enabledQuickIcons = quickIcons.filter((q) => quickActions[q.id] !== false);
 
   const glassCard = {
-    p: 2.5,
+    p: 3,
+    pt: 2.5,
     borderRadius: 3,
     border: '1px solid',
     borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
@@ -519,7 +520,7 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
       {/* Bloque 1: Atajos de navegación */}
       <Box sx={glassCard}>
         <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-          <Typography variant="h6" fontWeight={700}>
+          <Typography variant="h5" fontWeight={700} sx={{ fontSize: '1.4rem', mt: 1 }}>
             {t('navbar_nav_title', 'Atajos de navegación')}
           </Typography>
         </Box>
@@ -564,7 +565,7 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
 
       {/* Bloque 2: Iconos de acción rápida */}
       <Box sx={glassCard}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>
+        <Typography variant="h5" fontWeight={700} gutterBottom sx={{ fontSize: '1.4rem', mt: 1 }}>
           {t('navbar_actions_title', 'Iconos de acción rápida')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
@@ -637,7 +638,7 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
 
       {/* Estilo del perfil */}
       <Box sx={glassCard}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>
+        <Typography variant="h5" fontWeight={700} gutterBottom sx={{ fontSize: '1.4rem', mt: 1 }}>
           {t('navbar_profile_title', 'Estilo de tu perfil')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>

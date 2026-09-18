@@ -89,12 +89,12 @@ const DEFAULT_CONTENT: TranslatedContent = {
 };
 
 const DEFAULT_THEME: LandingThemeConfig = {
-    gradientStart: '#881337',
-    gradientEnd: '#FB7185',
+    gradientStart: '#1A1B1E',
+    gradientEnd: '#2563EB',
     subtitleFontSize: 5,
     subtitleColor: '#FFFFFF',
-    titleFont: 'Dancing Script',
-    bodyFont: 'Open Sans',
+    titleFont: 'Playfair Display',
+    bodyFont: 'Inter',
     savedGradients: [],
     translations: {
         es: DEFAULT_CONTENT,
@@ -156,7 +156,6 @@ const PRESET_GRADIENTS: Array<{ id: string; name: string; start: string; end: st
 type Language = 'es' | 'en' | 'pt' | 'fr';
 
 const TITLE_FONT_OPTIONS: Array<{ value: string; label: string }> = [
-    { value: 'Dancing Script', label: 'Dancing Script' },
     { value: 'Playfair Display', label: 'Playfair Display' },
     { value: 'Lobster', label: 'Lobster' },
     { value: 'Pacifico', label: 'Pacifico' },
@@ -731,7 +730,7 @@ export default function BannersPage() {
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         gap: 1,
-                                                        border: isActive ? '2px solid #881337' : '1px solid #ddd',
+                                                        border: isActive ? '2px solid #2563EB' : '1px solid #ddd',
                                                         '&:hover': { bgcolor: 'action.hover' }
                                                     }}
                                                 >

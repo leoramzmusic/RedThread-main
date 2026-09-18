@@ -92,7 +92,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                     backgroundImage: `url(${bannerUrl})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
                     '&::after': {
                         content: '""',
                         position: 'absolute',
@@ -100,7 +100,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%)'
+                        background: 'linear-gradient(to bottom, rgba(29,29,31,0.1) 0%, rgba(29,29,31,0.5) 100%)'
                     }
                 }}
             >
@@ -127,7 +127,16 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                                 position: 'relative',
                                 borderRadius: '50%',
                                 p: 0.5,
-                                bgcolor: avatarBorderColor === theme.palette.background.paper ? 'transparent' : avatarBorderColor
+                                background: hasNewStory && !storyViewed
+                                    ? 'linear-gradient(135deg, #E63946, #FF6B6B, #E63946)'
+                                    : 'transparent',
+                                animation: hasNewStory && !storyViewed
+                                    ? 'rtAvatarPulse 2s ease-in-out infinite'
+                                    : 'none',
+                                '@keyframes rtAvatarPulse': {
+                                    '0%, 100%': { boxShadow: '0 0 0 2px rgba(230,57,70,0.4)' },
+                                    '50%': { boxShadow: '0 0 0 6px rgba(230,57,70,0.15)' },
+                                },
                             }}
                         >
                             <Avatar
@@ -137,11 +146,12 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                                 sx={{
                                     width: 140,
                                     height: 140,
-                                    border: `4px solid ${theme.palette.background.default}`, // Blend with page bg
+                                    border: `4px solid ${theme.palette.background.default}`,
                                     cursor: 'pointer',
-                                    transition: 'transform 0.2s',
+                                    transition: 'transform 0.2s, box-shadow 0.2s',
                                     '&:hover': {
-                                        transform: 'scale(1.02)'
+                                        transform: 'scale(1.02)',
+                                        boxShadow: '0 0 20px rgba(230,57,70,0.3)',
                                     }
                                 }}
                             />
@@ -155,10 +165,15 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                                     position: 'absolute',
                                     bottom: 10,
                                     right: 10,
-                                    bgcolor: theme.palette.background.paper,
-                                    color: theme.palette.text.primary,
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                                    '&:hover': { bgcolor: theme.palette.action.hover }
+                                    bgcolor: 'rgba(230,57,70,0.85)',
+                                    backdropFilter: 'blur(10px)',
+                                    WebkitBackdropFilter: 'blur(10px)',
+                                    color: 'white',
+                                    boxShadow: '0 2px 12px rgba(230,57,70,0.4)',
+                                    '&:hover': {
+                                        bgcolor: 'rgba(230,57,70,1)',
+                                        transform: 'scale(1.1)',
+                                    }
                                 }}
                                 size="small"
                             >
@@ -190,7 +205,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                             <Typography variant="h5" color="text.secondary" fontWeight={500}>
                                 {profile.age}
                             </Typography>
-                            {profile.verified && <VerifiedIcon sx={{ color: '#1976D2' }} />}
+                            {profile.verified && <VerifiedIcon sx={{ color: '#E63946' }} />}
                         </Box>
 
                         {/* Handle */}
@@ -223,18 +238,19 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                                     py: 0.75,
                                     px: 1.5,
                                     borderRadius: 2,
-                                    boxShadow: 'none',
                                     textTransform: 'none',
                                     fontWeight: 500,
                                     whiteSpace: 'nowrap',
-                                    // Gray theme with light/dark mode adaptation
-                                    bgcolor: theme.palette.mode === 'dark' ? 'grey.800' : 'grey.200',
-                                    color: theme.palette.mode === 'dark' ? 'grey.100' : 'grey.800',
-                                    border: `1px solid ${theme.palette.mode === 'dark' ? theme.palette.grey[700] : theme.palette.grey[300]}`,
+                                    bgcolor: 'rgba(230,57,70,0.9)',
+                                    backdropFilter: 'blur(10px)',
+                                    WebkitBackdropFilter: 'blur(10px)',
+                                    border: '1px solid rgba(255,255,255,0.15)',
+                                    boxShadow: '0 4px 16px rgba(230,57,70,0.3)',
+                                    transition: 'all 0.2s ease',
                                     '&:hover': {
-                                        bgcolor: theme.palette.mode === 'dark' ? 'grey.700' : 'grey.300',
-                                        boxShadow: 'none',
-                                        borderColor: theme.palette.mode === 'dark' ? theme.palette.grey[600] : theme.palette.grey[400]
+                                        bgcolor: 'rgba(230,57,70,1)',
+                                        boxShadow: '0 6px 20px rgba(230,57,70,0.4)',
+                                        transform: 'translateY(-1px)',
                                     }
                                 }}
                             >

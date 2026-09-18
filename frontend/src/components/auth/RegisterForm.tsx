@@ -513,10 +513,10 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                                     fontSize: 20,
                                     transition: 'color 0.3s ease, filter 0.3s ease',
                                     color: passwordsMatch
-                                        ? '#FB7185'
+                                        ? '#E63946'
                                         : 'rgba(255,255,255,0.45)',
                                     filter: passwordsMatch
-                                        ? 'drop-shadow(0 0 6px rgba(251, 113, 133, 0.9))'
+                                        ? 'drop-shadow(0 0 6px rgba(230, 57, 70, 0.9))'
                                         : 'none',
                                     ...(formData.confirmPassword.length > 0 && !passwordsMatch
                                         ? {

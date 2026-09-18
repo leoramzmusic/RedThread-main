@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RedThread — Portal (mockup Liquid Glass)</title>
+<meta name="description" content="Mockup conceptual de la landing / con estilo Liquid Glass + Realismo Digital (iOS 26 x One UI 9). Sin dependencias." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============ DESIGN TOKENS (Design DNA) ============ */
+  :root {
+    --n-0:#FFFFFF; --n-1:#F6F7F9; --n-2:#ECEEF2; --n-3:#D7DBE1; --n-4:#9AA1AB;
+    --n-5:#6B7280; --n-6:#4B5563; --n-7:#2B2F36; --n-8:#1A1B1E;
+    --blue-300:#60A5FA; --blue-500:#3B82F6; --blue-600:#2563EB; --blue-700:#1D4ED8;
+    --red-destino:#E63946; --red-strong:#B4232C;
+    --surface-bg:#F5F6F8;
+    --glass-card:rgba(255,255,255,0.62); --glass-elevated:rgba(255,255,255,0.82); --glass-strong:rgba(255,255,255,0.72);
+    --radius-sm:12px; --radius-md:20px; --radius-lg:28px; --radius-pill:999px;
+    --shadow-low:0 2px 8px rgba(26,27,30,0.06), inset 0 1px 0 rgba(255,255,255,0.55);
+    --shadow-med:0 12px 32px rgba(26,27,30,0.10), inset 0 1px 0 rgba(255,255,255,0.60);
+    --shadow-high:0 24px 64px rgba(26,27,30,0.16), inset 0 1px 0 rgba(255,255,255,0.65);
+    --ease-liquid:cubic-bezier(0.22,1,0.36,1);
+    --ease-enter:cubic-bezier(0.16,1,0.3,1);
+    --dur-micro:140ms; --dur-normal:280ms; --dur-macro:640ms;
+    --sp-4:4px; --sp-8:8px; --sp-12:12px; --sp-16:16px; --sp-24:24px; --sp-32:32px; --sp-40:40px; --sp-48:48px; --sp-64:64px; --sp-96:96px;
+    --font-display:"Poppins","Inter","system-ui",sans-serif;
+    --font-body:"Inter","system-ui",-apple-system,"Segoe UI",Roboto,sans-serif;
+    --content-max:1200px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:var(--font-body); color:var(--n-8); background:var(--surface-bg);
+    line-height:1.6; min-height:100vh; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  /* ============ LUZ AMBIENTAL — orbes detrás de todo ============ */
+  .light-field { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .orb { position:absolute; border-radius:50%; filter:blur(70px); opacity:0.55; will-change:transform; }
+  .orb-1 { width:520px; height:520px; top:-140px; left:-120px; background:radial-gradient(circle,#BFDBFE 0%,rgba(191,219,254,0) 70%); mix-blend-mode:screen; animation:drift1 30s var(--ease-liquid) infinite alternate; }
+  .orb-2 { width:560px; height:560px; top:8%; right:-160px; background:radial-gradient(circle,#E0E7FF 0%,rgba(224,231,255,0) 70%); mix-blend-mode:screen; animation:drift2 36s var(--ease-liquid) infinite alternate; }
+  .orb-3 { width:480px; height:480px; bottom:-120px; left:22%; background:radial-gradient(circle,#FFE4E6 0%,rgba(255,228,230,0) 70%); mix-blend-mode:screen; animation:drift3 34s var(--ease-liquid) infinite alternate; }
+  .orb-4 { width:380px; height:380px; top:46%; left:-140px; background:radial-gradient(circle,#A5C8FF 0%,rgba(165,200,255,0) 70%); mix-blend-mode:screen; opacity:0.4; animation:drift1 42s var(--ease-liquid) infinite alternate-reverse; }
+  @keyframes drift1 { from{transform:translate(0,0) scale(1)} to{transform:translate(90px,60px) scale(1.08)} }
+  @keyframes drift2 { from{transform:translate(0,0) scale(1.05)} to{transform:translate(-80px,90px) scale(0.96)} }
+  @keyframes drift3 { from{transform:translate(0,0) scale(0.98)} to{transform:translate(70px,-70px) scale(1.1)} }
+
+  /* ============ RECETA DE VIDRIO ============ */
+  .glass {
+    background:linear-gradient(135deg,rgba(255,255,255,0.68),rgba(255,255,255,0.52));
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.55);
+    box-shadow:var(--shadow-med);
+    border-radius:var(--radius-lg);
+  }
+  .glass-strong {
+    background:linear-gradient(135deg,rgba(255,255,255,0.8),rgba(255,255,255,0.64));
+    -webkit-backdrop-filter:blur(24px) saturate(170%);
+    backdrop-filter:blur(24px) saturate(170%);
+    border:1px solid rgba(255,255,255,0.6);
+    box-shadow:var(--shadow-med);
+    border-radius:var(--radius-lg);
+  }
+  .sheen { position:relative; overflow:hidden; }
+  .sheen::before {
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.32) 48%,rgba(255,255,255,0.06) 52%,transparent 64%);
+    transform:translateX(-130%); transition:transform 0.7s var(--ease-liquid);
+  }
+  .sheen:hover::before { transform:translateX(130%); }
+
+  /* ============ NAV GLASS ============ */
+  .site-nav {
+    position:sticky; top:var(--sp-16); z-index:30; max-width:var(--content-max);
+    margin:var(--sp-16) auto 0; padding:var(--sp-12) var(--sp-24);
+    display:flex; align-items:center; gap:var(--sp-24);
+    border-radius:var(--radius-pill);
+    background:linear-gradient(135deg,rgba(255,255,255,0.78),rgba(255,255,255,0.6));
+    -webkit-backdrop-filter:blur(24px) saturate(170%);
+    backdrop-filter:blur(24px) saturate(170%);
+    border:1px solid rgba(255,255,255,0.6);
+    box-shadow:var(--shadow-low);
+  }
+  .brand { display:flex; align-items:center; gap:var(--sp-12); font-family:var(--font-display); font-weight:600; font-size:1.05rem; letter-spacing:-0.01em; color:var(--n-8); }
+  .brand .knot { width:32px; height:32px; flex:none; }
+  .nav-links { display:flex; gap:var(--sp-24); margin-left:var(--sp-8); list-style:none; }
+  .nav-links a { color:var(--n-6); text-decoration:none; font-size:0.95rem; font-weight:500; transition:color var(--dur-micro) var(--ease-liquid); }
+  .nav-links a:hover { color:var(--blue-700); }
+  .nav-actions { margin-left:auto; display:flex; align-items:center; gap:var(--sp-16); }
+  .lang-seg {
+    display:flex; padding:4px; border-radius:var(--radius-pill);
+    background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.55);
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  }
+  .lang-seg button {
+    border:0; background:transparent; font:600 0.8rem/1 var(--font-body); color:var(--n-5);
+    padding:var(--sp-8) var(--sp-16); border-radius:var(--radius-pill); cursor:pointer;
+    transition:all var(--dur-normal) var(--ease-liquid); font-family:var(--font-body);
+  }
+  .lang-seg button[aria-pressed="true"] { background:var(--n-0); color:var(--n-8); box-shadow:var(--shadow-low); }
+  .lang-seg button:focus-visible, .btn:focus-visible { outline:2px solid var(--blue-500); outline-offset:3px; }
+
+  /* ============ BOTONES ============ */
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:var(--sp-8);
+    font-family:var(--font-body); font-weight:600; font-size:0.95rem; cursor:pointer; white-space:nowrap;
+    border-radius:var(--radius-pill); padding:var(--sp-12) var(--sp-24); border:0;
+    transition:transform var(--dur-normal) var(--ease-liquid), box-shadow var(--dur-normal) var(--ease-liquid), background var(--dur-normal) var(--ease-liquid);
+  }
+  .btn:active { transform:scale(0.98); }
+  .btn-primary {
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-600)); color:var(--n-0);
+    box-shadow:0 8px 24px rgba(37,99,235,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 14px 32px rgba(37,99,235,0.42), inset 0 1px 0 rgba(255,255,255,0.28); }
+  .btn-destino {
+    background:linear-gradient(135deg,var(--red-destino),var(--red-strong)); color:var(--n-0);
+    box-shadow:0 8px 24px rgba(230,57,70,0.30), inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  .btn-destino:hover { transform:translateY(-2px); box-shadow:0 14px 32px rgba(230,57,70,0.38); }
+  .btn-glass {
+    background:rgba(255,255,255,0.55); color:var(--n-7);
+    border:1.5px solid rgba(26,27,30,0.14);
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  }
+  .btn-glass:hover { transform:translateY(-2px); background:rgba(255,255,255,0.75); box-shadow:var(--shadow-low); }
+
+  /* ============ HERO ============ */
+  .hero { position:relative; z-index:1; max-width:var(--content-max); margin:0 auto; padding:var(--sp-96) var(--sp-24) var(--sp-64); text-align:center; }
+  .overline {
+    display:inline-flex; align-items:center; gap:var(--sp-8); font-size:0.78rem; font-weight:600; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--blue-700); background:rgba(37,99,235,0.08);
+    border:1px solid rgba(37,99,235,0.16); padding:var(--sp-8) var(--sp-16); border-radius:var(--radius-pill);
+  }
+  .overline .dot { width:7px; height:7px; border-radius:50%; background:var(--blue-500); box-shadow:0 0 0 4px rgba(59,130,246,0.18); }
+  .hero h1 {
+    font-family:var(--font-display); font-size:clamp(2.6rem,6vw,4.5rem); font-weight:600;
+    line-height:1.05; letter-spacing:-0.03em; color:var(--n-8); margin:var(--sp-32) auto var(--sp-24);
+    max-width:20ch;
+  }
+  .hero h1 .word { display:inline-block; overflow:hidden; vertical-align:bottom; }
+  .hero h1 .word > span { display:inline-block; will-change:transform,opacity,filter; }
+  .hero h1 .em-blue { color:var(--blue-600); }
+  .hero h1 .em-red { color:var(--red-destino); }
+  .hero h1 .em-blue, .hero h1 .em-red { position:relative; z-index:1; }
+  .hero p.lead { max-width:560px; margin:0 auto; color:var(--n-5); font-size:1.1rem; }
+  .hero .ctas { display:flex; gap:var(--sp-16); justify-content:center; flex-wrap:wrap; margin-top:var(--sp-40); }
+  .hero .ctas .btn { min-height:52px; padding-inline:var(--sp-32); }
+
+  .stats { display:flex; justify-content:center; gap:var(--sp-24); flex-wrap:wrap; margin-top:var(--sp-48); }
+  .chip {
+    display:flex; align-items:center; gap:var(--sp-12);
+    background:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.6);
+    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+    border-radius:var(--radius-pill); padding:var(--sp-12) var(--sp-20); box-shadow:var(--shadow-low);
+  }
+  .chip b { font-family:var(--font-display); font-weight:600; font-size:1.05rem; color:var(--n-8); }
+  .chip span { font-size:0.85rem; color:var(--n-5); }
+
+  /* UFOs de vidrio con parallax */
+  .ufo {
+    position:absolute; z-index:2; padding:var(--sp-16) var(--sp-20); display:flex; align-items:center; gap:var(--sp-12);
+    border-radius:var(--radius-md); pointer-events:none;
+  }
+  .ufo .ufo-ico { width:36px; height:36px; border-radius:var(--radius-sm); display:grid; place-items:center; }
+  .ufo b { font-size:0.92rem; font-weight:600; display:block; }
+  .ufo span { font-size:0.8rem; color:var(--n-5); }
+  .ufo-a { top:34%; left:2%; }
+  .ufo-a .ufo-ico { background:rgba(230,57,70,0.12); color:var(--red-destino); }
+  .ufo-b { top:52%; right:2%; }
+  .ufo-b .ufo-ico { background:rgba(59,130,246,0.12); color:var(--blue-600); }
+
+  /* ============ SECTION COMMONS ============ */
+  section { position:relative; z-index:1; }
+  .wrap { max-width:var(--content-max); margin:0 auto; padding:var(--sp-96) var(--sp-24); }
+  .sec-head { text-align:center; margin-bottom:var(--sp-64); }
+  .sec-head h2 { font-family:var(--font-display); font-size:clamp(2rem,4vw,2.6rem); letter-spacing:-0.02em; color:var(--n-8); }
+  .sec-head p { color:var(--n-5); max-width:520px; margin:var(--sp-16) auto 0; }
+
+  /* ============ FEATURES ============ */
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-24); }
+  .card {
+    padding:var(--sp-32); display:flex; flex-direction:column; gap:var(--sp-16); min-height:280px;
+    border-radius:var(--radius-lg);
+    background:linear-gradient(135deg,rgba(255,255,255,0.68),rgba(255,255,255,0.5));
+    -webkit-backdrop-filter:blur(20px) saturate(160%); backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.55); box-shadow:var(--shadow-med);
+    transition:transform var(--dur-normal) var(--ease-liquid), border-radius var(--dur-normal) var(--ease-liquid),
+               backdrop-filter var(--dur-normal) var(--ease-liquid), box-shadow var(--dur-normal) var(--ease-liquid);
+  }
+  .card:hover {
+    transform:translateY(-6px); border-radius:var(--radius-md);
+    -webkit-backdrop-filter:blur(18px) saturate(170%); backdrop-filter:blur(18px) saturate(170%);
+    box-shadow:var(--shadow-high);
+  }
+  .card .ico { width:48px; height:48px; border-radius:14px; display:grid; place-items:center; color:var(--n-0); }
+  .card .ico.blue { background:linear-gradient(135deg,var(--blue-500),var(--blue-600)); box-shadow:0 8px 20px rgba(37,99,235,0.3); }
+  .card .ico.red { background:linear-gradient(135deg,var(--red-destino),var(--red-strong)); box-shadow:0 8px 20px rgba(230,57,70,0.28); }
+  .card h3 { font-family:var(--font-display); font-weight:600; font-size:1.15rem; letter-spacing:-0.01em; color:var(--n-8); }
+  .card p { font-size:0.92rem; color:var(--n-5); }
+
+  /* ============ CTA BAND ============ */
+  .cta-band {
+    position:relative; border-radius:var(--radius-lg); padding:var(--sp-64); text-align:center; overflow:hidden;
+    background:
+      radial-gradient(600px 300px at 85% -20%,rgba(59,130,246,0.18),transparent 70%),
+      radial-gradient(500px 300px at 10% 120%,rgba(230,57,70,0.12),transparent 70%),
+      linear-gradient(135deg,rgba(255,255,255,0.82),rgba(255,255,255,0.64));
+    -webkit-backdrop-filter:blur(32px) saturate(170%); backdrop-filter:blur(32px) saturate(170%);
+    border:1px solid rgba(255,255,255,0.65); box-shadow:var(--shadow-high);
+  }
+  .cta-band h2 { font-family:var(--font-display); font-size:clamp(1.8rem,3.6vw,2.4rem); letter-spacing:-0.02em; color:var(--n-8); }
+  .cta-band p { color:var(--n-5); max-width:460px; margin:var(--sp-16) auto var(--sp-32); }
+  .cta-actions { display:flex; gap:var(--sp-16); justify-content:center; flex-wrap:wrap; }
+  .thread-svg { position:absolute; inset:auto 0 0 0; height:90px; opacity:0.5; pointer-events:none; }
+  .thread-svg path { stroke-dasharray:4 7; }
+
+  /* ============ FOOTER ============ */
+  footer { position:relative; z-index:1; margin-top:var(--sp-48); }
+  .footer-glass {
+    max-width:var(--content-max); margin:0 auto var(--sp-32); padding:var(--sp-32) var(--sp-40);
+    display:flex; align-items:center; justify-content:space-between; gap:var(--sp-24); flex-wrap:wrap;
+  }
+  .footer-glass a { color:var(--n-5); text-decoration:none; font-size:0.9rem; }
+  .footer-glass a:hover { color:var(--blue-700); }
+  .foot-links { display:flex; gap:var(--sp-24); list-style:none; }
+  .legal { font-size:0.8rem; color:var(--n-4); }
+
+  /* ============ SCROLL REVEAL ============ */
+  .reveal { opacity:0; transform:translateY(24px) scale(0.98); filter:blur(6px);
+    transition:opacity var(--dur-macro) var(--ease-enter), transform var(--dur-macro) var(--ease-enter), filter var(--dur-macro) var(--ease-enter); }
+  .reveal.in { opacity:1; transform:none; filter:none; }
+
+  /* ============ REDUCED MOTION ============ */
+  @media (prefers-reduced-motion: reduce) {
+    *{ transition-duration:0.01ms !important; animation-duration:0.01ms !important; scroll-behavior:auto !important; }
+    .orb{ animation:none !important; }
+    .reveal{ opacity:1; transform:none; filter:none; }
+    .sheen::before{ display:none; }
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:900px){ .cards{ grid-template-columns:repeat(2,1fr); } .nav-links{ display:none; } .ufo{ display:none; } .hero{ padding-top:var(--sp-64); } }
+  @media (max-width:520px){ .cards{ grid-template-columns:1fr; } .wrap{ padding:var(--sp-64) var(--sp-16); } .cta-band{ padding:var(--sp-40) var(--sp-24); } }
+</style>
+</head>
+<body>
+
+  <!-- Luz ambiental -->
+  <div class="light-field" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>
+  </div>
+
+  <!-- Navegación glass -->
+  <nav class="site-nav" aria-label="Principal">
+    <div class="brand">
+      <svg class="knot" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 4c3 5 3 11 0 13-3-2-3-8 0-13Z" fill="#E63946"/>
+        <path d="M16 17c3-2 8-4 12-5-2 4-3 9 0 12-3-1-6-3-8-6-2 3-5 5-8 6 3-3 2-8 0-12 4 1 9 3 12 5Z" fill="#2563EB" fill-opacity=".85"/>
+        <circle cx="16" cy="18" r="2.4" fill="#fff"/>
+      </svg>
+      RedThread
+    </div>
+    <ul class="nav-links">
+      <li><a href="#features" data-i18n="nav-features">Descubrir</a></li>
+      <li><a href="#cta" data-i18n="nav-connect">Conectar</a></li>
+      <li><a href="#footer" data-i18n="nav-story">Historias</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="lang-seg" role="group" aria-label="Idioma">
+        <button type="button" aria-pressed="true" data-lang="es">ES</button>
+        <button type="button" aria-pressed="false" data-lang="en">EN</button>
+      </div>
+      <button class="btn btn-glass" data-i18n="nav-login">Entrar</button>
+      <button class="btn btn-primary" data-i18n="nav-join">Unirme</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="ufo ufo-a glass" data-parallax="-10" aria-hidden="true">
+      <span class="ufo-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+      </span>
+      <div><b data-i18n="ufo-idea-t">Idea nueva</b><span data-i18n="ufo-idea-s">motivo "conexión"</span></div>
+    </div>
+    <div class="ufo ufo-b glass" data-parallax="14" aria-hidden="true">
+      <span class="ufo-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1L3 21l2-5.3a8.5 8.5 0 1 1 16-4.2Z"/></svg>
+      </span>
+      <div><b data-i18n="ufo-chat-t">Charla en vivo</b><span data-i18n="ufo-chat-s">3 de 4 conectados</span></div>
+    </div>
+
+    <p class="overline"><span class="dot" aria-hidden="true"></span><span data-i18n="hero-overline">Conexiones que importan · red social consciente</span></p>
+    <h1 id="heroTitle">
+      <span class="word"><span data-i18n="hero-w1">Personas,</span></span>
+      <span class="word"><span class="em-blue" data-i18n="hero-w2">ideas</span> <span data-i18n="hero-w3">y</span></span>
+      <span class="word"><span class="em-red" data-i18n="hero-w4">destino</span></span>
+      <span class="word"><span data-i18n="hero-w5">se cruzan.</span></span>
+    </h1>
+    <p class="lead" data-i18n="hero-lead">RedThread une amistad, romance, proyectos, gaming y conversación en un solo hilo de vidrio líquido — transparente como la confianza, ágil como la tecnología que elegimos.</p>
+    <div class="ctas">
+      <button class="btn btn-primary" data-i18n="cta-primary">Comenzar gratis</button>
+      <button class="btn btn-glass" data-i18n="cta-secondary">Iniciar sesión</button>
+    </div>
+    <div class="stats">
+      <div class="chip"><b data-i18n="stat-1b">12k+</b><span data-i18n="stat-1s">conexiones reales</span></div>
+      <div class="chip"><b data-i18n="stat-2b">4</b><span data-i18n="stat-2s">intenciones conscientes</span></div>
+      <div class="chip"><b data-i18n="stat-3b">100%</b><span data-i18n="stat-3s">humano, cero ruido</span></div>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2 data-i18n="features-title">Una superficie, cuatro formas de conectar</h2>
+        <p data-i18n="features-sub">El vidrio del héroe te deja ver todo lo que pasa a la vez — sin perder la claridad.</p>
+      </div>
+    <div class="cards">
+      <article class="card sheen reveal">
+        <span class="ico blue" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3M15.4 7.5l-6.8 3"/></svg>
+        </span>
+        <h3 data-i18n="f1-t">Smart Match</h3>
+        <p data-i18n="f1-s">Emparejamos por intención y contexto, no por algoritmo vacío. Tú decides qué tipo de hilo quieres tejer.</p>
+      </article>
+      <article class="card sheen reveal">
+        <span class="ico blue" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1L3 21l2-5.3a8.5 8.5 0 1 1 16-4.2Z"/></svg>
+        </span>
+        <h3 data-i18n="f2-t">Chat en tiempo real</h3>
+        <p data-i18n="f2-s">Mensajes que llegan como vidrio líquido: instantáneos, limpios, con presencia y sin spam.</p>
+      </article>
+      <article class="card sheen reveal">
+        <span class="ico blue" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>
+        </span>
+        <h3 data-i18n="f3-t">Radar de proximidad</h3>
+        <p data-i18n="f3-s">Descubre quién comparte tu espacio y tu intención — de forma opcional, sutil y respetuosa.</p>
+      </article>
+      <article class="card sheen reveal">
+        <span class="ico red" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a4 4 0 0 1 8 0"/><path d="M5 12a7 7 0 0 1 14 0"/><path d="M12 12l3 7-3 2-3-2 3-7Z"/></svg>
+        </span>
+        <h3 data-i18n="f4-t">Múltiples intenciones</h3>
+        <p data-i18n="f4-s">Amistad, romance, proyectos, gaming, conversación. Un solo hilo, tantos colores como tú necesites.</p>
+      </article>
+    </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section id="cta">
+    <div class="wrap" style="padding-top:0">
+      <div class="cta-band sheen reveal">
+        <h2 data-i18n="cta-title">Tu próximo encuentro está a un hilo de distancia.</h2>
+        <p data-i18n="cta-sub">No hace falta romper la barrera de lo desconocido a oscuras: aquí la transparencia es la ventaja.</p>
+        <div class="cta-actions">
+          <button class="btn btn-primary" data-i18n="cta-primary">Comenzar gratis</button>
+          <button class="btn btn-destino" data-i18n="cta-primary-heart">Quiero enamorarme</button>
+        </div>
+        <svg class="thread-svg" viewBox="0 0 1200 90" fill="none" aria-hidden="true">
+          <path d="M0 45 C 200 10, 340 80, 520 40 S 900 15, 1200 50" stroke="#E63946" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M0 55 C 220 85, 420 20, 620 55 S 980 80, 1200 40" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="footer-glass glass-strong">
+      <div class="brand">
+        <svg class="knot" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M16 4c3 5 3 11 0 13-3-2-3-8 0-13Z" fill="#E63946"/>
+          <path d="M16 17c3-2 8-4 12-5-2 4-3 9 0 12-3-1-6-3-8-6-2 3-5 5-8 6 3-3 2-8 0-12 4 1 9 3 12 5Z" fill="#2563EB" fill-opacity=".85"/>
+          <circle cx="16" cy="18" r="2.4" fill="#fff"/>
+        </svg>
+        RedThread
+      </div>
+      <ul class="foot-links">
+        <li><a href="#" data-i18n="f-link-1">Privacidad</a></li>
+        <li><a href="#" data-i18n="f-link-2">Términos</a></li>
+        <li><a href="#" data-i18n="f-link-3">Seguridad</a></li>
+        <li><a href="#" data-i18n="f-link-4">Contacto</a></li>
+      </ul>
+      <span class="legal">© 2026 RedThread · <span data-i18n="legal">tejido con luz</span></span>
+    </div>
+  </footer>
+
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---- Entrada del hero: palabras emergiendo del blur ---- */
+    var title = document.getElementById('heroTitle');
+    if (title) {
+      if (reduceMotion) {
+        Array.prototype.forEach.call(title.querySelectorAll('.word > span'), function (s) {
+          s.style.opacity = 1; s.style.filter = 'none'; s.style.transform = 'none';
+        });
+      } else {
+        Array.prototype.forEach.call(title.querySelectorAll('.word > span'), function (s, i) {
+          s.style.opacity = 0;
+          s.style.transform = 'translateY(24px) scale(0.98)';
+          s.style.filter = 'blur(6px)';
+          setTimeout(function () {
+            s.style.transition = 'opacity 560ms cubic-bezier(.16,1,.3,1), transform 560ms cubic-bezier(.16,1,.3,1), filter 560ms cubic-bezier(.16,1,.3,1)';
+            s.style.opacity = 1;
+            s.style.transform = 'none';
+            s.style.filter = 'none';
+          }, 120 + i * 60);
+        });
+      }
+    }
+
+    /* ---- Parallax suave de los UFOs ---- */
+    var ufos = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
+    if (ufos.length && !reduceMotion) {
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          window.requestAnimationFrame(function () {
+            var y = window.scrollY;
+            ufos.forEach(function (u) {
+              var speed = parseFloat(u.getAttribute('data-parallax'));
+              u.style.transform = 'translateY(' + (y * speed * 0.035) + 'px)';
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+
+    /* ---- Revelado al scroll ---- */
+    var reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.16 });
+      reveals.forEach(function (r) { io.observe(r); });
+    } else {
+      reveals.forEach(function (r) { r.classList.add('in'); });
+    }
+
+    /* ---- Selector de idioma (demostración ES/EN) ---- */
+    var dict = {
+      es: {
+        'nav-features':'Descubrir','nav-connect':'Conectar','nav-story':'Historias','nav-login':'Entrar','nav-join':'Unirme',
+        'hero-overline':'Conexiones que importan · red social consciente',
+        'hero-w1':'Personas,','hero-w2':'ideas','hero-w3':'y','hero-w4':'destino','hero-w5':'se cruzan.',
+        'hero-lead':'RedThread une amistad, romance, proyectos, gaming y conversación en un solo hilo de vidrio líquido — transparente como la confianza, ágil como la tecnología que elegimos.',
+        'cta-primary':'Comenzar gratis','cta-secondary':'Iniciar sesión',
+        'stat-1b':'12k+','stat-1s':'conexiones reales','stat-2b':'4','stat-2s':'intenciones conscientes','stat-3b':'100%','stat-3s':'humano, cero ruido',
+        'features-title':'Una superficie, cuatro formas de conectar','features-sub':'El vidrio del héroe te deja ver todo lo que pasa a la vez — sin perder la claridad.',
+        'f1-t':'Smart Match','f1-s':'Emparejamos por intención y contexto, no por algoritmo vacío. Tú decides qué tipo de hilo quieres tejer.',
+        'f2-t':'Chat en tiempo real','f2-s':'Mensajes que llegan como vidrio líquido: instantáneos, limpios, con presencia y sin spam.',
+        'f3-t':'Radar de proximidad','f3-s':'Descubre quién comparte tu espacio y tu intención — de forma opcional, sutil y respetuosa.',
+        'f4-t':'Múltiples intenciones','f4-s':'Amistad, romance, proyectos, gaming, conversación. Un solo hilo, tantos colores como tú necesites.',
+        'cta-title':'Tu próximo encuentro está a un hilo de distancia.','cta-sub':'No hace falta romper la barrera de lo desconocido a oscuras: aquí la transparencia es la ventaja.',
+        'cta-primary-heart':'Quiero enamorarme',
+        'f-link-1':'Privacidad','f-link-2':'Términos','f-link-3':'Seguridad','f-link-4':'Contacto','legal':'tejido con luz',
+        'ufo-idea-t':'Idea nueva','ufo-idea-s':'motivo "conexión"','ufo-chat-t':'Charla en vivo','ufo-chat-s':'3 de 4 conectados'
+      },
+      en: {
+        'nav-features':'Discover','nav-connect':'Connect','nav-story':'Stories','nav-login':'Sign in','nav-join':'Join',
+        'hero-overline':'Connections that matter · conscious social network',
+        'hero-w1':'People,','hero-w2':'ideas','hero-w3':'and','hero-w4':'destiny','hero-w5':'cross paths.',
+        'hero-lead':'RedThread brings friendship, romance, projects, gaming and conversation together in one liquid-glass thread — transparent like trust, agile like the tech we choose.',
+        'cta-primary':'Start for free','cta-secondary':'Log in',
+        'stat-1b':'12k+','stat-1s':'real connections','stat-2b':'4','stat-2s':'conscious intentions','stat-3b':'100%','stat-3s':'human, zero noise',
+        'features-title':'One surface, four ways to connect','features-sub':'The hero glass lets you see everything at once — without losing clarity.',
+        'f1-t':'Smart Match','f1-s':'We match by intention and context, not empty algorithms. You choose the kind of thread you want to weave.',
+        'f2-t':'Real-time chat','f2-s':'Messages that arrive like liquid glass: instant, clean, present, spam-free.',
+        'f3-t':'Proximity radar','f3-s':'Discover who shares your space and intention — optional, subtle and respectful.',
+        'f4-t':'Multiple intentions','f4-s':'Friendship, romance, projects, gaming, conversation. One thread, as many colors as you need.',
+        'cta-title':'Your next connection is one thread away.','cta-sub':'No need to break the unknown barrier in the dark: here transparency is the advantage.',
+        'cta-primary-heart':'I want love',
+        'f-link-1':'Privacy','f-link-2':'Terms','f-link-3':'Security','f-link-4':'Contact','legal':'woven with light',
+        'ufo-idea-t':'New idea','ufo-idea-s':'intent "connection"','ufo-chat-t':'Live chat','ufo-chat-s':'3 of 4 connected'
+      }
+    };
+
+    var langButtons = document.querySelectorAll('.lang-seg button');
+    var applyLang = function (lang) {
+      var d = dict[lang];
+      Object.keys(d).forEach(function (key) {
+        var el = document.querySelector('[data-i18n="' + key + '"]');
+        if (el) el.textContent = d[key];
+      });
+      langButtons.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
+      });
+    };
+    langButtons.forEach(function (b) {
+      b.addEventListener('click', function () { applyLang(b.getAttribute('data-lang')); });
+    });
+    applyLang('es');
+  })();
+</script>
+</body>
+</html>

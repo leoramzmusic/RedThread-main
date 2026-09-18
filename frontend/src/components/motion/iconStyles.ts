@@ -8,7 +8,7 @@ export interface IconStyleVariant {
   description: string;
 }
 
-export const RED_PASSION = '#D32F2F';
+export const RED_PASSION = '#E63946';
 
 export const ICON_STYLE_VARIANTS: IconStyleVariant[] = [
   { value: 'basic', label: 'Básico', description: 'Toggle clásico con brillo rojo pasión' },
@@ -68,7 +68,7 @@ export function getIconStyleSx(styleId: IconStyleId): SxProps<Theme> {
         '&:hover': {
           color: RED_PASSION,
           bgcolor: 'rgba(211,47,47,0.08)',
-          boxShadow: `0 0 14px rgba(211,47,47,0.45)`,
+          boxShadow: `0 0 14px rgba(230,57,70,0.45)`,
         },
       } as SxProps<Theme>;
     case 'subtle':
@@ -92,7 +92,7 @@ export function getIconStyleSx(styleId: IconStyleId): SxProps<Theme> {
           color: 'primary.main',
           bgcolor:
             theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.11)',
-          boxShadow: '0 0 14px rgba(211,47,47,0.35)',
+          boxShadow: '0 0 14px rgba(230,57,70,0.35)',
         },
       });
       return liquidSx;
@@ -100,14 +100,14 @@ export function getIconStyleSx(styleId: IconStyleId): SxProps<Theme> {
     case 'premium':
       return {
         color: '#fff',
-        background: 'linear-gradient(135deg, #FD297B, #D32F2F, #FF8A5C)',
+        background: 'linear-gradient(135deg, #E63946, #FF6B6B, #B71C1C)',
         backgroundSize: '200% 200%',
         animation: 'rtPremiumShift 4s linear infinite',
-        boxShadow: '0 0 12px rgba(211,47,47,0.45)',
+        boxShadow: '0 0 12px rgba(230,57,70,0.45)',
         transition: 'transform 0.15s ease, box-shadow 0.3s ease',
         '&:hover': {
           transform: 'scale(1.06)',
-          boxShadow: '0 0 18px rgba(211,47,47,0.6)',
+          boxShadow: '0 0 18px rgba(230,57,70,0.6)',
         },
         ...PREMIUM_KEYFRAMES,
       } as SxProps<Theme>;

@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import model_validator
 from typing import Optional
 
 
@@ -8,7 +9,7 @@ class Settings(BaseSettings):
     # Application
     APP_NAME: str = "Red Thread"
     APP_VERSION: str = "1.1.0"
-    DEBUG: bool = True
+    DEBUG: bool = False  # SEC-011: Safe default — False unless explicitly enabled
     ENVIRONMENT: str = "local"  # local, dev, qa, prod
     
     # Server
@@ -124,6 +125,17 @@ class Settings(BaseSettings):
     KAFKA_AUTO_OFFSET_RESET: str = "earliest"
     KAFKA_MAX_BATCH_SIZE: int = 16384
     KAFKA_LINGER_MS: int = 5
+
+    @model_validator(mode='after')
+    def validate_secret_key(self) -> 'Settings':
+        """SEC-001: Fail fast if SECRET_KEY is the insecure default."""
+        if self.SECRET_KEY == "your-secret-key-change-in-production":
+            if self.ENVIRONMENT not in ("local", "dev"):
+                raise ValueError(
+                    "SEC-001 VIOLATION: SECRET_KEY must be set to a secure value in "
+                    f"environment '{self.ENVIRONMENT}'. Set SECRET_KEY env var."
+                )
+        return self
 
     class Config:
         env_file = "config/local.env"

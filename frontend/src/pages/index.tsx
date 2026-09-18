@@ -6,7 +6,8 @@ import Head from 'next/head';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { Container, Box, Typography, Button, Grid, Card, CardContent, CircularProgress } from '@mui/material';
+import { Container, Box, Typography, Button, Grid, Card, CardContent } from '@mui/material';
+import YukiLoader from '../components/common/YukiLoader';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatIcon from '@mui/icons-material/Chat';
 import RadarIcon from '@mui/icons-material/Radar';
@@ -15,9 +16,10 @@ import appearanceService from '../services/appearanceService';
 import { AppearanceType } from '../types/appearance';
 import { getMediaUrl } from '../utils/media';
 import RedThreadLogo from '../components/landing/RedThreadLogo';
+import LandingNavbar from '../components/landing/LandingNavbar';
 
-const getTitleFontFamily = (font?: string) => `${font || 'Dancing Script'}, Poppins, Inter, cursive`;
-const getBodyFontFamily = (font?: string) => `${font || 'Open Sans'}, Inter, sans-serif`;
+const getTitleFontFamily = (font?: string) => `${font || 'Poppins'}, Poppins, Inter, sans-serif`;
+const getBodyFontFamily = (font?: string) => `${font || 'Inter'}, Inter, sans-serif`;
 
 
 // Translation content for all languages (fallback)
@@ -168,7 +170,15 @@ function renderChars(text: string): ReactNode {
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const [currentLangIndex, setCurrentLangIndex] = useState(0);
+  const [currentLangIndex, setCurrentLangIndex] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('reth-lang');
+      if (saved && languages.includes(saved as Language)) {
+        return languages.indexOf(saved as Language);
+      }
+    }
+    return 0;
+  });
   const currentLang: Language = languages[currentLangIndex];
   const t = translations[currentLang];
 
@@ -178,6 +188,13 @@ export default function Home() {
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [heroIcon, setHeroIcon] = useState<string | null>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(true);
+
+  // Persist language preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('reth-lang', currentLang);
+    }
+  }, [currentLang]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -190,28 +207,26 @@ export default function Home() {
     const fetchCmsData = async () => {
       try {
         setIsLoadingCms(true);
-        // Theme Config
-        const themes = await appearanceService.getPublicResources(AppearanceType.LANDING_THEME);
+        const [themes, banners] = await Promise.all([
+          appearanceService.getPublicResources(AppearanceType.LANDING_THEME),
+          appearanceService.getPublicResources(AppearanceType.LANDING_BANNER),
+        ]);
+
         const activeTheme = themes.find(r => r.is_active);
         if (activeTheme && activeTheme.metadata) {
           setCmsConfig(activeTheme.metadata);
         }
 
-        // Banners (Hero & Icon)
-        const banners = await appearanceService.getPublicResources(AppearanceType.LANDING_BANNER);
-
-        // Find Backgrounds
         const activeBanners = banners.filter(r => r.is_active && !r.metadata?.isHeroIcon);
         if (activeBanners.length > 0) {
           setHeroImages(activeBanners.map(b => getMediaUrl(b.url)));
         }
 
-        // Find Icon
         const activeIcon = banners.find(r => r.is_active && r.metadata?.isHeroIcon);
         if (activeIcon) {
           setHeroIcon(getMediaUrl(activeIcon.url));
         } else {
-          setHeroIcon('/imagotipo.png'); // Default fallback
+          setHeroIcon('/imagotipo.png');
         }
 
       } catch (error) {
@@ -283,10 +298,11 @@ export default function Home() {
         master.addLabel('hero', 0);
         master.fromTo(
           chars,
-          { yPercent: 120, autoAlpha: 0 },
+          { yPercent: 120, autoAlpha: 0, filter: 'blur(8px)' },
           {
             yPercent: 0,
             autoAlpha: 1,
+            filter: 'blur(0px)',
             duration: LANDING_TIMING.hero.charDuration,
             stagger: LANDING_TIMING.hero.charStagger,
           },
@@ -366,13 +382,13 @@ export default function Home() {
 
   const backgroundStyle = currentHeroImage
     ? {
-      backgroundImage: `linear-gradient(rgba(35, 8, 20, 0.55), rgba(35, 8, 20, 0.68)), url(${currentHeroImage})`,
+      backgroundImage: `linear-gradient(rgba(29, 29, 31, 0.55), rgba(29, 29, 31, 0.68)), url(${currentHeroImage})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed'
     }
     : {
-      background: `linear-gradient(135deg, ${cmsConfig?.gradientStart || '#881337'} 0%, ${cmsConfig?.gradientEnd || '#FB7185'} 100%)`
+      background: `linear-gradient(135deg, ${cmsConfig?.gradientStart || '#1A1B1E'} 0%, ${cmsConfig?.gradientEnd || '#B71C1C'} 100%)`
     };
 
   // Helper to safely get CMS content with fallbacks
@@ -437,10 +453,10 @@ export default function Home() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #881337 0%, #FB7185 100%)'
+            background: 'linear-gradient(135deg, #1A1B1E 0%, #B71C1C 100%)'
           }}
         >
-          <CircularProgress size={60} sx={{ color: 'white' }} />
+          <YukiLoader message="" size={80} />
         </Box>
       </>
     );
@@ -527,6 +543,10 @@ export default function Home() {
           transition: 'background 0.5s ease',
         }}
       >
+        <LandingNavbar currentLang={currentLang} onLangChange={(lang) => {
+          const idx = languages.indexOf(lang);
+          if (idx >= 0) setCurrentLangIndex(idx);
+        }} />
         {/* Decorative glow blobs */}
         <Box
           aria-hidden="true"
@@ -537,7 +557,7 @@ export default function Home() {
             width: { xs: 320, md: 520 },
             height: { xs: 320, md: 520 },
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(251,113,133,0.5) 0%, rgba(213,63,140,0) 70%)',
+            background: 'radial-gradient(circle, rgba(230,57,70,0.5) 0%, rgba(183,28,28,0) 70%)',
             filter: 'blur(70px)',
             pointerEvents: 'none',
             zIndex: 0,
@@ -552,7 +572,7 @@ export default function Home() {
             width: { xs: 300, md: 480 },
             height: { xs: 300, md: 480 },
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,177,153,0.4) 0%, rgba(255,177,153,0) 70%)',
+            background: 'radial-gradient(circle, rgba(255,107,107,0.4) 0%, rgba(255,107,107,0) 70%)',
             filter: 'blur(80px)',
             pointerEvents: 'none',
             zIndex: 0,
@@ -640,19 +660,19 @@ export default function Home() {
                 onClick={() => router.push('/auth/register')}
                 sx={{
                   position: 'relative',
-                  bgcolor: 'rgba(255,255,255,0.16)',
+                  bgcolor: '#E63946',
                   backdropFilter: 'blur(18px)',
                   WebkitBackdropFilter: 'blur(18px)',
                   color: 'white',
-                  border: '1px solid rgba(255,255,255,0.55)',
+                  border: '1px solid rgba(255,255,255,0.2)',
                   boxShadow:
-                    'inset 0 1px 0 rgba(255,255,255,0.7), 0 14px 34px rgba(88, 8, 34, 0.38), 0 4px 10px rgba(0,0,0,0.22)',
+                    'inset 0 1px 0 rgba(255,255,255,0.3), 0 14px 34px rgba(230,57,70,0.4), 0 4px 10px rgba(0,0,0,0.22)',
                   overflow: 'hidden',
                   '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.26)',
+                    bgcolor: '#FF6B6B',
                     transform: 'translateY(-3px)',
                     boxShadow:
-                      'inset 0 1px 0 rgba(255,255,255,0.85), 0 22px 46px rgba(224, 72, 82, 0.5), 0 6px 14px rgba(0,0,0,0.24)',
+                      'inset 0 1px 0 rgba(255,255,255,0.5), 0 22px 46px rgba(230,57,70,0.55), 0 6px 14px rgba(0,0,0,0.24)',
                   },
                   px: 4,
                   py: 1.5,

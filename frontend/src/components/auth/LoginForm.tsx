@@ -170,7 +170,7 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}
                         <Checkbox
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            sx={{ color: 'rgba(255,255,255,0.7)', '&.Mui-checked': { color: '#FB7185' } }}
+                            sx={{ color: 'rgba(255,255,255,0.7)', '&.Mui-checked': { color: '#E63946' } }}
                         />
                     }
                     label={<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)' }}>{t('auth.rememberMe')}</Typography>}

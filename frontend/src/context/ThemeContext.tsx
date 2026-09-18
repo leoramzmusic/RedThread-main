@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import apiClient from '../services/api';
 import adminApiClient from '../services/adminApi';
+import { createLiquidGlassTheme, type ThemeMode, type VisualTheme } from '../theme/liquidGlass';
 
-type ThemeMode = 'light' | 'dark';
-type VisualTheme = 'redThread' | 'premium' | 'vip' | 'blue' | 'purple' | 'pink' | 'green' | 'sakura' | 'halloween' | 'christmas';
 type PortalType = 'user' | 'admin';
 
 interface ThemeContextType {
@@ -218,28 +217,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   };
 
   // Create MUI theme
-  const muiTheme = createTheme({
-    palette: {
-      mode: mode,
-      primary: {
-        main: theme === 'redThread' ? '#E63946' :
-          theme === 'sakura' ? '#EEAAC0' :
-            theme === 'premium' ? '#797979' :
-              theme === 'blue' ? '#0CB7F2' :
-                theme === 'green' ? '#5CCB5F' :
-                  theme === 'vip' ? '#efb810' :
-                    theme === 'purple' ? '#7F4CA5' :
-                      theme === 'halloween' ? '#CC750D' :
-                        theme === 'christmas' ? '#CC750D' :
-                          theme === 'pink' ? '#ff69b4' :
-                            '#3B82F6',
-      },
-      background: {
-        default: mode === 'dark' ? '#121212' : '#ffffff',
-        paper: mode === 'dark' ? '#1e1e1e' : '#ffffff',
-      }
-    },
-  });
+  const muiTheme = createLiquidGlassTheme(mode, theme);
 
   if (!mounted) {
     return null;

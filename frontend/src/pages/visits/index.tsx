@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Box,
   Container,
@@ -23,7 +23,7 @@ import {
   Chat as ChatIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+const VisitsChart = lazy(() => import('../../components/visits/VisitsChart'));
 import { formatDistanceToNow, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Layout from '../../components/layout/Layout';
@@ -145,22 +145,9 @@ export default function VisitsPage() {
             Visitas por día (últimos 14 días)
           </Typography>
           <Box sx={{ width: '100%', height: 240 }}>
-            <ResponsiveContainer>
-              <BarChart data={stats?.daily ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(v: string) => format(new Date(v), 'd/M')}
-                  tick={{ fontSize: 11 }}
-                  interval={1}
-                />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                <Tooltip
-                  labelFormatter={(label: any) => format(new Date(String(label)), 'dd/MM/yyyy')}
-                  formatter={(value) => [`${value} visitas`, 'Visitas']}
-                />
-                <Bar dataKey="count" fill="#3498DB" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress size={24} /></Box>}>
+              <VisitsChart data={stats?.daily ?? []} />
+            </Suspense>
           </Box>
         </Paper>
 

@@ -40,7 +40,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation, Trans } from 'next-i18next';
 import {
   RED,
-  RED_SMALL,
+  RED_DARK,
   BLUE,
   GRAPHITE,
   ICE_BLUE,
@@ -459,8 +459,8 @@ export default function Dashboard() {
               height: 260,
               borderRadius: '50%',
               background: isDark
-                ? 'radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%)'
-                : 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)',
+                ? 'radial-gradient(circle, rgba(255,107,107,0.22) 0%, transparent 70%)'
+                : 'radial-gradient(circle, rgba(230,57,70,0.15) 0%, transparent 70%)',
               zIndex: 0,
             }} />
 
@@ -484,7 +484,7 @@ export default function Dashboard() {
                     fontSize: 32,
                     color: RED,
                     transition: 'transform 0.3s ease, color 0.3s ease',
-                    '&:hover': { transform: 'scale(1.25) rotate(8deg)', color: isDark ? '#ff6b76' : RED_SMALL },
+                    '&:hover': { transform: 'scale(1.25) rotate(8deg)', color: isDark ? '#ff6b76' : RED_DARK },
                   }}
                 />
               </Box>
