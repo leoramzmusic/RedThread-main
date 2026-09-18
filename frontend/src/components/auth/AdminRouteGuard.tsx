@@ -48,5 +48,16 @@ export default function AdminRouteGuard({ children }: AdminRouteGuardProps) {
     );
   }
 
+  // Block admin pages until authenticated
+  const isAdminRoute = router.pathname.startsWith('/portal-redthread');
+  const isAdminAuthRoute = router.pathname.startsWith('/portal-redthread/auth');
+  if (isAdminRoute && !isAdminAuthRoute && !isAuthenticated) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return <>{children}</>;
 }
