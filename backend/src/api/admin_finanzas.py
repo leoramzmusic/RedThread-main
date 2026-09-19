@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel
 from src.models.subscription import Subscription, SubscriptionPlan, PaymentStatus
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.api.auth import get_current_user
 
 
@@ -17,7 +17,7 @@ async def listar_suscripciones(
     active_only: bool = True,
     limit: int = Query(50, le=100),
     offset: int = 0,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_FINANCES))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_FINANCES))
 ) -> List[Dict[str, Any]]:
     """List all subscriptions with filters - Admin only"""
     
@@ -49,7 +49,7 @@ async def listar_suscripciones(
 @router.get("/ingresos")
 async def get_revenue_stats(
     period: str = Query("month", regex="^(day|week|month|year)$"),
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_FINANCES))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_FINANCES))
 ) -> Dict[str, Any]:
     """Get revenue statistics - Admin only"""
     
@@ -82,7 +82,7 @@ async def get_revenue_stats(
 
 @router.get("/estadisticas")
 async def get_financial_stats(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_METRICS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_METRICS))
 ) -> Dict[str, Any]:
     """Get overall financial statistics - Admin only"""
     
@@ -107,7 +107,7 @@ async def get_financial_stats(
 async def cancel_subscription(
     subscription_id: str,
     reason: str = Body(..., embed=True),
-    admin_user: AdminUser = Depends(require_permission(Permission.MANAGE_SUBSCRIPTIONS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.MANAGE_SUBSCRIPTIONS))
 ) -> Dict[str, Any]:
     """Cancel a subscription - Admin only"""
     
@@ -125,8 +125,8 @@ async def cancel_subscription(
     await sub.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="cancel_subscription",
         description=f"Cancelled subscription for user {sub.user_id}",
         target_type="subscription",

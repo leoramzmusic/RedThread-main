@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import re
 from src.models.employee import Employee, EmployeeStatus
 from src.models.admin_rbac import AdminRole, Permission, AdminUser
-from src.core.middleware.rbac import require_permission, require_all_permissions, log_admin_action, get_admin_user
+from src.core.middleware.employee_rbac import require_employee_permission, require_all_employee_permissions, log_employee_action, get_current_employee
 from src.services.employee_service import employee_service
 
 
@@ -37,7 +37,7 @@ class EmployeeUpdateRequest(BaseModel):
 
 @router.get("/roles")
 async def listar_roles(
-    admin_user: Any = Depends(require_permission(Permission.VIEW_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))
 ) -> List[Dict[str, Any]]:
     """List all available admin roles"""
     return [
@@ -48,7 +48,7 @@ async def listar_roles(
 
 @router.get("/permisos")
 async def listar_permisos(
-    admin_user: Any = Depends(require_permission(Permission.VIEW_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))
 ) -> List[Dict[str, Any]]:
     """List all available permissions"""
     return [
@@ -66,7 +66,7 @@ async def listar_empleados(
     country: Optional[str] = Query(None),
     limit: int = Query(50, le=200),
     offset: int = 0,
-    admin_user: Any = Depends(require_permission(Permission.VIEW_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))
 ) -> Dict[str, Any]:
     """
     List all employees with advanced pagination and filters.
@@ -128,7 +128,7 @@ async def listar_empleados(
 
 @router.get("/dashboard-stats")
 async def get_employee_stats(
-    admin_user: Any = Depends(require_permission(Permission.VIEW_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))
 ) -> Dict[str, Any]:
     """
     Get aggregate metrics for the employee management dashboard.
@@ -173,7 +173,7 @@ async def get_employee_stats(
 async def employee_actions(
     employee_id: str,
     request: EmployeeActionRequest,
-    admin_user: Any = Depends(get_admin_user)
+    admin_user: Any = Depends(get_current_employee)
 ) -> Dict[str, Any]:
     """
     Perform administrative actions on an employee.
@@ -212,8 +212,8 @@ async def employee_actions(
     await employee.save()
 
     # 4. Audit log
-    await log_admin_action(
-        admin_user_id=str(admin_user.id) if hasattr(admin_user, 'id') else str(admin_user.user_id),
+    await log_employee_action(
+        employee_id=str(admin_user.id) if hasattr(admin_user, 'id') else str(admin_user.user_id),
         action_type=request.action,
         description=f"{description}. Reason: {request.reason or 'No reason provided'}",
         target_type="employee",
@@ -230,7 +230,7 @@ async def employee_actions(
 @router.get("/{employee_id}")
 async def obtener_empleado(
     employee_id: str,
-    admin_user: Any = Depends(require_permission(Permission.VIEW_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))
 ) -> Dict[str, Any]:
     """Get full employee details for editing"""
     employee = await Employee.get(employee_id)
@@ -261,7 +261,7 @@ async def obtener_empleado(
 async def actualizar_empleado(
     employee_id: str,
     request: EmployeeUpdateRequest,
-    admin_user: Any = Depends(require_permission(Permission.MANAGE_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.MANAGE_EMPLOYEES))
 ):
     """Full update of employee data with audit logging"""
     # Convert string dates to datetime if present
@@ -287,7 +287,7 @@ async def actualizar_empleado(
 @router.get("/{employee_id}/audit")
 async def listar_auditoria(
     employee_id: str,
-    admin_user: Any = Depends(require_permission(Permission.VIEW_EMPLOYEES))
+    admin_user: Any = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))
 ):
     """Get change history for an employee"""
     logs = await employee_service.get_audit_logs(employee_id)

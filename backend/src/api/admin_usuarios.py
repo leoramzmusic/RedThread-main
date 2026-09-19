@@ -8,7 +8,7 @@ from src.models.profile import Profile
 from src.models.relationship import Relationship
 from src.models.report import Report
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, require_all_permissions, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, require_all_employee_permissions, log_employee_action
 from src.api.auth import get_current_user
 
 
@@ -40,7 +40,7 @@ async def list_users(
     sort_order: int = Query(-1, ge=-1, le=1),
     limit: int = Query(50, le=500),
     offset: int = 0,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_USERS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_USERS))
 ) -> Dict[str, Any]:
     """
     List all users with advanced pagination and filters.
@@ -177,7 +177,7 @@ async def list_users(
 
 @router.get("/dashboard-stats")
 async def get_admin_dashboard_stats(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_METRICS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_METRICS))
 ) -> Dict[str, Any]:
     """
     Get detailed user statistics for the admin dashboard.
@@ -240,7 +240,7 @@ async def get_admin_dashboard_stats(
 @router.get("/exportar")
 async def export_users(
     format: str = Query("json", regex="^(json|csv)$"),
-    admin_user: AdminUser = Depends(require_permission(Permission.EXPORT_METRICS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.EXPORT_METRICS))
 ):
     """
     Export all users in JSON or CSV format.
@@ -282,7 +282,7 @@ async def export_users(
 @router.get("/{user_id}")
 async def get_user_details(
     user_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_USERS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_USERS))
 ) -> Dict[str, Any]:
     """
     Get detailed information about a specific user.
@@ -350,7 +350,7 @@ async def get_user_details(
 async def update_account_status(
     user_id: str,
     request_data: UpdateAccountStatusRequest,
-    admin_user: AdminUser = Depends(require_all_permissions([
+    admin_user: AdminUser = Depends(require_all_employee_permissions([
         Permission.VIEW_USERS,
         Permission.SUSPEND_USERS
     ]))
@@ -396,8 +396,8 @@ async def update_account_status(
     await user.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="update_account_status",
         description=f"Updated user {user_id} status to {request_data.status}",
         target_type="user",
@@ -419,7 +419,7 @@ async def update_account_status(
 async def get_user_activity_history(
     user_id: str,
     limit: int = Query(50, le=200),
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_USERS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_USERS))
 ) -> Dict[str, Any]:
     """
     Get user activity history.
@@ -495,7 +495,7 @@ async def get_user_activity_history(
 
 @router.get("/perfiles-reportados")
 async def get_flagged_profiles(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_USERS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_USERS))
 ) -> List[Dict[str, Any]]:
     """
     Get profiles with multiple reports (3+).

@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from src.models.system_options import SystemOption
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.api.auth import get_current_user
 from src.core.config import settings
 
@@ -21,7 +21,7 @@ class SystemSettingUpdate(BaseModel):
 
 @router.get("/ajustes")
 async def get_system_settings(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_CONFIG))
 ) -> Dict[str, Any]:
     """Get system configuration - Admin only"""
     
@@ -59,7 +59,7 @@ async def get_system_settings(
 @router.post("/ajustes/opcion")
 async def create_system_option(
     option_data: Dict[str, Any],
-    admin_user: AdminUser = Depends(require_permission(Permission.EDIT_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.EDIT_CONFIG))
 ) -> Dict[str, Any]:
     """Create new system option - Admin only"""
     
@@ -84,8 +84,8 @@ async def create_system_option(
     await option.insert()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="create_system_option",
         description=f"Created system option: {option.category}/{option.value}",
         target_type="system_option",
@@ -99,7 +99,7 @@ async def create_system_option(
 async def update_system_option(
     option_id: str,
     update_data: Dict[str, Any],
-    admin_user: AdminUser = Depends(require_permission(Permission.EDIT_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.EDIT_CONFIG))
 ) -> Dict[str, Any]:
     """Update system option - Admin only"""
     
@@ -118,8 +118,8 @@ async def update_system_option(
     await option.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="update_system_option",
         description=f"Updated system option: {option.category}/{option.value}",
         target_type="system_option",
@@ -131,7 +131,7 @@ async def update_system_option(
 
 @router.get("/feature-flags")
 async def get_feature_flags(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_CONFIG))
 ) -> List[Dict[str, Any]]:
     """Get feature flags - Admin only"""
     
@@ -154,7 +154,7 @@ async def get_feature_flags(
 async def toggle_feature_flag(
     flag_key: str,
     enabled: bool = Body(..., embed=True),
-    admin_user: AdminUser = Depends(require_permission(Permission.MANAGE_INTEGRATIONS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.MANAGE_INTEGRATIONS))
 ) -> Dict[str, Any]:
     """Toggle feature flag - Admin only"""
     
@@ -177,8 +177,8 @@ async def toggle_feature_flag(
         await flag.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="toggle_feature_flag",
         description=f"Toggled feature flag {flag_key} to {enabled}",
         target_type="feature_flag",

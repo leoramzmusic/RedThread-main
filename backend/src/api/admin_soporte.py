@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from src.models.support_ticket import SupportTicket, TicketStatus, TicketPriority, TicketCategory
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.api.auth import get_current_user
 
 
@@ -23,7 +23,7 @@ async def listar_tickets(
     assigned_to_me: bool = False,
     limit: int = Query(50, le=100),
     offset: int = 0,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_TICKETS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_TICKETS))
 ) -> List[Dict[str, Any]]:
     """List all tickets with filters - Admin only"""
     
@@ -58,7 +58,7 @@ async def listar_tickets(
 @router.get("/tickets/{ticket_id}")
 async def get_ticket_details(
     ticket_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_TICKETS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_TICKETS))
 ) -> Dict[str, Any]:
     """Get ticket details - Admin only"""
     
@@ -96,7 +96,7 @@ async def get_ticket_details(
 async def assign_ticket(
     ticket_id: str,
     admin_id: str = Body(..., embed=True),
-    admin_user: AdminUser = Depends(require_permission(Permission.HANDLE_TICKETS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.HANDLE_TICKETS))
 ) -> Dict[str, Any]:
     """Assign ticket to admin - Admin only"""
     
@@ -114,8 +114,8 @@ async def assign_ticket(
     await ticket.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="assign_ticket",
         description=f"Assigned ticket {ticket_id} to {admin_id}",
         target_type="ticket",
@@ -130,7 +130,7 @@ async def assign_ticket(
 async def respond_ticket(
     ticket_id: str,
     response: TicketResponse,
-    admin_user: AdminUser = Depends(require_permission(Permission.HANDLE_TICKETS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.HANDLE_TICKETS))
 ) -> Dict[str, Any]:
     """Add response to ticket - Admin only"""
     
@@ -153,8 +153,8 @@ async def respond_ticket(
     await ticket.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="respond_ticket",
         description=f"Responded to ticket {ticket_id}",
         target_type="ticket",
@@ -168,7 +168,7 @@ async def respond_ticket(
 @router.put("/tickets/{ticket_id}/cerrar")
 async def close_ticket(
     ticket_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.CLOSE_TICKETS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.CLOSE_TICKETS))
 ) -> Dict[str, Any]:
     """Close ticket - Admin only"""
     
@@ -186,8 +186,8 @@ async def close_ticket(
     await ticket.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="close_ticket",
         description=f"Closed ticket {ticket_id}",
         target_type="ticket",

@@ -1,0 +1,98 @@
+name: Deployment Pipeline & Environment Seed
+
+on:
+  push:
+    branches:
+      - develop  # Despliegue automático a DEV
+      - main     # Despliegue a PROD
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: 'Ambiente objetivo de despliegue'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # DEV / QA Deployment Job
+  # Regla: Se corre el seed en cada despliegue para asegurar consistencia
+  # ────────────────────────────────────────────────────────────────────────────
+  deploy-dev-qa:
+    name: Deploy to DEV/QA
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && (inputs.target_env == 'dev' || inputs.target_env == 'qa'))
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Execute Seed for DEV/QA (Ensure consistency on every deploy)
+        env:
+          ENVIRONMENT: ${{ inputs.target_env || 'dev' }}
+          MONGODB_URL: ${{ secrets.DEV_MONGODB_URL || 'mongodb://localhost:27017' }}
+          MONGODB_DB_NAME: ${{ secrets.DEV_MONGODB_DB_NAME || 'redthread_dev' }}
+          SECRET_KEY: ${{ secrets.DEV_SECRET_KEY || 'temp-secret-key-dev-environment-only' }}
+        run: |
+          echo "=========================================================="
+          echo "🚀 Ejecutando seed en ambiente $ENVIRONMENT..."
+          echo "Regla DEV/QA: Sincronización forzada para consistencia"
+          echo "=========================================================="
+          cd backend
+          python -m src.core.seed --env="$ENVIRONMENT"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # PROD Deployment Job
+  # Regla: Se ejecuta solo si no existen registros, para evitar sobrescribir datos reales
+  # ────────────────────────────────────────────────────────────────────────────
+  deploy-prod:
+    name: Deploy to Production
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.target_env == 'prod')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Execute Seed for PROD (Safeguard: only if tables are empty)
+        env:
+          ENVIRONMENT: prod
+          MONGODB_URL: ${{ secrets.PROD_MONGODB_URL }}
+          MONGODB_DB_NAME: ${{ secrets.PROD_MONGODB_DB_NAME || 'redthread_prod' }}
+          SECRET_KEY: ${{ secrets.PROD_SECRET_KEY }}
+        run: |
+          echo "=========================================================="
+          echo "🔒 Ejecutando seed en ambiente PROD..."
+          echo "Regla PROD: Solo si no existen registros (protección de datos reales)"
+          echo "=========================================================="
+          cd backend
+          # Si existen datos, el script emite un aviso seguro y sale sin modificar nada
+          python -m src.core.seed --env=prod

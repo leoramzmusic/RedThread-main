@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 from src.models.department import Department, DepartmentStatus
 from src.models.admin_rbac import Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.models.employee import Employee
 from pydantic import BaseModel
 from datetime import datetime
@@ -31,12 +31,12 @@ class DepartmentUpdate(BaseModel):
     max_employees: int = None
 
 @router.get("/", response_model=List[Department])
-async def list_departments(admin: Employee = Depends(require_permission(Permission.VIEW_EMPLOYEES))):
+async def list_departments(admin: Employee = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))):
     """List all organizational departments"""
     return await Department.find_all().to_list()
 
 @router.get("/{dept_id}", response_model=Department)
-async def get_department(dept_id: str, admin: Employee = Depends(require_permission(Permission.VIEW_EMPLOYEES))):
+async def get_department(dept_id: str, admin: Employee = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))):
     """Get department details"""
     dept = await Department.get(dept_id)
     if not dept:
@@ -46,7 +46,7 @@ async def get_department(dept_id: str, admin: Employee = Depends(require_permiss
 @router.post("/", response_model=Department)
 async def create_department(
     dept_in: DepartmentCreate,
-    admin: Employee = Depends(require_permission(Permission.MANAGE_EMPLOYEES))
+    admin: Employee = Depends(require_employee_permission(Permission.MANAGE_EMPLOYEES))
 ):
     """Create a new department"""
     existing = await Department.find_one(Department.code == dept_in.code)
@@ -56,8 +56,8 @@ async def create_department(
     new_dept = Department(**dept_in.dict())
     await new_dept.insert()
     
-    await log_admin_action(
-        admin_user_id=str(admin.id),
+    await log_employee_action(
+        employee_id=str(admin.id),
         action_type="create_department",
         description=f"Created department {new_dept.name}",
         target_type="department",
@@ -70,7 +70,7 @@ async def create_department(
 async def update_department(
     dept_id: str,
     dept_in: DepartmentUpdate,
-    admin: Employee = Depends(require_permission(Permission.MANAGE_EMPLOYEES))
+    admin: Employee = Depends(require_employee_permission(Permission.MANAGE_EMPLOYEES))
 ):
     """Update department details"""
     dept = await Department.get(dept_id)
@@ -85,8 +85,8 @@ async def update_department(
     
     await dept.save()
     
-    await log_admin_action(
-        admin_user_id=str(admin.id),
+    await log_employee_action(
+        employee_id=str(admin.id),
         action_type="update_department",
         description=f"Updated department {dept.name}",
         target_type="department",
@@ -98,7 +98,7 @@ async def update_department(
 @router.delete("/{dept_id}")
 async def delete_department(
     dept_id: str,
-    admin: Employee = Depends(require_permission(Permission.MANAGE_EMPLOYEES))
+    admin: Employee = Depends(require_employee_permission(Permission.MANAGE_EMPLOYEES))
 ):
     """Delete a department"""
     dept = await Department.get(dept_id)
@@ -112,8 +112,8 @@ async def delete_department(
         
     await dept.delete()
     
-    await log_admin_action(
-        admin_user_id=str(admin.id),
+    await log_employee_action(
+        employee_id=str(admin.id),
         action_type="delete_department",
         description=f"Deleted department {dept.name}",
         target_type="department",

@@ -1,0 +1,10 @@
+version: '3.8'
+
+# Override para ambiente DEV / QA
+# Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+services:
+  backend:
+    environment:
+      - ENVIRONMENT=dev
+      - DEBUG=true
+    # En DEV/QA el seed se ejecuta en cada inicio/despliegue para garantizar consistencia

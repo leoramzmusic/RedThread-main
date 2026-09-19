@@ -9,6 +9,8 @@ manual `src/seed_employees.py` que solo debe correr una vez por entorno.
 """
 
 from datetime import datetime
+from typing import Optional
+from src.core.config import settings
 from src.models.admin_rbac import Permission
 from src.models.role import Role
 from src.models.department import Department
@@ -17,15 +19,15 @@ from src.models.department import Department
 # ─── Catálogo de Departamentos ────────────────────────────────────────────────
 
 DEPARTMENTS: list[dict] = [
-    {"name": "Gerencia",           "code": "ADM",  "description": "Alta dirección y administración general"},
-    {"name": "Recursos Humanos",   "code": "HR",   "description": "Gestión de talento y personal"},
-    {"name": "Finanzas",           "code": "FIN",  "description": "Contabilidad, pagos y análisis financiero"},
-    {"name": "Tecnología",         "code": "TECH", "description": "Desarrollo de software y sistemas"},
-    {"name": "Marketing",          "code": "MKT",  "description": "Publicidad, campañas y diseño"},
-    {"name": "Ventas",             "code": "SALE", "description": "Ventas y gestión de cuentas"},
-    {"name": "Operaciones",        "code": "OPS",  "description": "Logística y almacén"},
-    {"name": "Soporte",            "code": "SUPP", "description": "Atención al cliente y tickets"},
-    {"name": "Legal",              "code": "LEG",  "description": "Cumplimiento y asuntos legales"},
+    {"name": "Gerencia", "code": "ADM", "description": "Alta dirección y administración general"},
+    {"name": "Recursos Humanos", "code": "HR", "description": "Gestión de talento y personal"},
+    {"name": "Finanzas", "code": "FIN", "description": "Contabilidad, pagos y análisis financiero"},
+    {"name": "Tecnología", "code": "TECH", "description": "Desarrollo de software y sistemas"},
+    {"name": "Marketing", "code": "MKT", "description": "Publicidad, campañas y diseño"},
+    {"name": "Ventas", "code": "SALE", "description": "Ventas y gestión de cuentas"},
+    {"name": "Operaciones", "code": "OPS", "description": "Logística y almacén"},
+    {"name": "Soporte", "code": "SUPP", "description": "Atención al cliente y tickets"},
+    {"name": "Legal", "code": "LEG", "description": "Cumplimiento y asuntos legales"},
 ]
 
 
@@ -337,25 +339,65 @@ ROLES: list[dict] = [
 
 # ─── Función principal de seed ────────────────────────────────────────────────
 
-async def seed_system_data() -> None:
+
+def evaluate_seed_condition(
+    target_env: str,
+    role_count: int,
+    dept_count: int,
+    force: bool = False,
+) -> tuple[bool, str]:
     """
-    Inserta o actualiza los departamentos y roles del sistema.
-    Idempotente: se puede llamar en cada arranque sin efectos secundarios.
-    Solo actualiza permisos/descripción — nunca elimina datos existentes.
+    Evalúa si se debe ejecutar el seed según el ambiente y registros existentes.
+
+    Reglas:
+    - Local: se ejecuta si la tabla está vacía (count == 0).
+    - DEV/QA: se corre en cada despliegue para asegurar consistencia.
+    - PROD: se ejecuta solo si no existen registros (count == 0), evitando sobrescribir datos reales.
+    - force=True: salta validaciones y fuerza la ejecución.
+
+    Retorna: (should_run: bool, reason: str)
     """
+    is_empty = (role_count == 0 and dept_count == 0)
+
+    if force:
+        return True, "forced"
+
+    if target_env in ["prod", "production"]:
+        if not is_empty:
+            return False, "prod_has_data"
+        return True, "prod_empty"
+
+    if target_env == "local":
+        if not is_empty:
+            return False, "local_has_data"
+        return True, "local_empty"
+
+    if target_env in ["dev", "qa", "development", "staging"]:
+        return True, f"{target_env}_deploy_consistency"
+
+    if not is_empty:
+        return False, "unknown_env_has_data"
+    return True, "unknown_env_empty"
+
+
+async def _perform_seed(target_env: str) -> dict:
+    """Ejecuta la sincronización e inserción de departamentos y roles."""
     now = datetime.utcnow()
 
     # 1. Departamentos ─────────────────────────────────────────────────────────
     dept_id_by_code: dict[str, str] = {}
+    created_depts = 0
+    updated_depts = 0
 
     for d in DEPARTMENTS:
         existing = await Department.find_one(Department.code == d["code"])
         if existing:
-            # Actualiza descripción si cambió
-            if existing.description != d["description"]:
+            if existing.description != d["description"] or existing.name != d["name"]:
+                existing.name = d["name"]
                 existing.description = d["description"]
                 existing.updated_at = now
                 await existing.save()
+                updated_depts += 1
             dept_id_by_code[d["code"]] = str(existing.id)
         else:
             dept = Department(
@@ -364,15 +406,18 @@ async def seed_system_data() -> None:
                 description=d["description"],
             )
             await dept.insert()
+            created_depts += 1
             dept_id_by_code[d["code"]] = str(dept.id)
 
     # 2. Roles ─────────────────────────────────────────────────────────────────
+    created_roles = 0
+    updated_roles = 0
+
     for r in ROLES:
         dept_id = dept_id_by_code.get(r["dept"])
         existing = await Role.find_one(Role.slug == r["slug"])
 
         if existing:
-            # Siempre sincroniza permisos, nivel y descripción
             changed = False
             if existing.permissions != r["perms"]:
                 existing.permissions = r["perms"]
@@ -386,9 +431,13 @@ async def seed_system_data() -> None:
             if existing.description != r.get("description"):
                 existing.description = r.get("description")
                 changed = True
+            if existing.name != r["name"]:
+                existing.name = r["name"]
+                changed = True
             if changed:
                 existing.updated_at = now
                 await existing.save()
+                updated_roles += 1
         else:
             role = Role(
                 slug=r["slug"],
@@ -400,8 +449,109 @@ async def seed_system_data() -> None:
                 is_system_role=r.get("system", False),
             )
             await role.insert()
+            created_roles += 1
 
     print(
-        f"[seed] Sistema listo: {len(DEPARTMENTS)} departamentos, "
-        f"{len(ROLES)} roles, {len(_ALL)} permisos."
+        f"[seed] ✅ Seed completado ({target_env}): "
+        f"Deptos (creados={created_depts}, actualizados={updated_depts}), "
+        f"Roles (creados={created_roles}, actualizados={updated_roles})."
     )
+
+    return {
+        "status": "executed",
+        "env": target_env,
+        "created_departments": created_depts,
+        "updated_departments": updated_depts,
+        "created_roles": created_roles,
+        "updated_roles": updated_roles,
+    }
+
+
+async def seed_system_data(env: Optional[str] = None, force: bool = False) -> dict:
+    """
+    Carga o sincroniza departamentos y roles del sistema según el ambiente:
+
+    - Local: al levantar la app, se ejecuta si la tabla está vacía.
+    - DEV/QA: se corre el seed en cada despliegue para asegurar consistencia.
+    - PROD: se ejecuta solo si no existen registros, para evitar sobrescribir datos reales.
+    - force=True: omite las verificaciones y fuerza la sincronización.
+    """
+    target_env = (env or settings.ENVIRONMENT or "local").lower().strip()
+
+    role_count = await Role.find_all().count()
+    dept_count = await Department.find_all().count()
+
+    should_run, reason = evaluate_seed_condition(
+        target_env=target_env,
+        role_count=role_count,
+        dept_count=dept_count,
+        force=force,
+    )
+
+    if not should_run:
+        if reason == "prod_has_data":
+            print(
+                f"[seed] 🔒 Ambiente PROD: Existen {role_count} roles y {dept_count} departamentos. "
+                "Seed omitido para evitar sobrescribir datos reales."
+            )
+        elif reason == "local_has_data":
+            print(
+                f"[seed] ℹ️ Ambiente LOCAL: Existen {role_count} roles y {dept_count} departamentos. "
+                "Seed omitido porque la tabla no está vacía."
+            )
+        else:
+            print(f"[seed] ℹ️ Ambiente '{target_env}': Existen registros. Omitiendo seed por precaución.")
+
+        return {
+            "status": "skipped",
+            "reason": reason,
+            "env": target_env,
+            "roles": role_count,
+            "departments": dept_count,
+        }
+
+    if reason == "prod_empty":
+        print("[seed] 🚀 Ambiente PROD: Base de datos vacía. Ejecutando seed inicial del sistema...")
+    elif reason == "local_empty":
+        print("[seed] 🚀 Ambiente LOCAL: Base de datos vacía. Ejecutando seed inicial del sistema...")
+    elif "_deploy_consistency" in reason:
+        print(f"[seed] 🔄 Ambiente {target_env.upper()}: Ejecutando seed para asegurar consistencia tras despliegue...")
+
+    return await _perform_seed(target_env)
+
+
+if __name__ == "__main__":
+    import argparse
+    import asyncio
+    import os
+    import sys
+
+    # Asegura que backend esté en sys.path
+    backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    if backend_dir not in sys.path:
+        sys.path.insert(0, backend_dir)
+
+    from src.core.database import init_db, close_db
+
+    parser = argparse.ArgumentParser(description="Seed system departments, roles and permissions by environment")
+    parser.add_argument("--env", type=str, default=None, help="Environment: local, dev, qa, prod")
+    parser.add_argument("--force", action="store_true", help="Force execution even if data exists")
+    cli_args = parser.parse_args()
+
+    async def main():
+        if cli_args.env:
+            os.environ["ENVIRONMENT"] = cli_args.env
+            settings.ENVIRONMENT = cli_args.env
+
+        # init_db() llama a seed_system_data() automáticamente con el entorno configurado.
+        # Si se especificó --force, ejecutamos explícitamente con force=True.
+        if cli_args.force:
+            await init_db()
+            result = await seed_system_data(env=cli_args.env, force=True)
+            print(f"[seed-cli] Resultado forzado: {result}")
+        else:
+            await init_db()
+            print("[seed-cli] Proceso finalizado exitosamente.")
+        await close_db()
+
+    asyncio.run(main())

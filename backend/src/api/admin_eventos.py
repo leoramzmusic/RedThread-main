@@ -5,7 +5,7 @@ from calendar import monthrange
 from pydantic import BaseModel
 from src.models.event import Event, EventCategory, EventStatus
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.api.auth import get_current_user
 
 
@@ -36,7 +36,7 @@ async def listar_eventos(
     status_filter: Optional[EventStatus] = None,
     limit: int = Query(50, le=100),
     offset: int = 0,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_EVENTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_EVENTS))
 ) -> List[Dict[str, Any]]:
     """List all events with filters - Admin only"""
     
@@ -73,7 +73,7 @@ async def listar_eventos(
 async def get_calendar_view(
     month: int = Query(..., ge=1, le=12),
     year: int = Query(..., ge=2020, le=2100),
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_EVENTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_EVENTS))
 ) -> Dict[str, Any]:
     """Get calendar view of events for a specific month - Admin only"""
     
@@ -115,7 +115,7 @@ async def get_calendar_view(
 
 @router.get("/estadisticas")
 async def get_event_statistics(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_METRICS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_METRICS))
 ) -> Dict[str, Any]:
     """Get event statistics - Admin only"""
     
@@ -172,7 +172,7 @@ async def get_event_statistics(
 @router.post("/crear")
 async def crear_evento(
     evento_data: CreateEventRequest,
-    admin_user: AdminUser = Depends(require_permission(Permission.CREATE_EVENTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.CREATE_EVENTS))
 ) -> Dict[str, Any]:
     """Create new event - Admin only"""
     
@@ -198,8 +198,8 @@ async def crear_evento(
     await event.insert()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="create_event",
         description=f"Created event: {evento_data.title}",
         target_type="event",
@@ -216,7 +216,7 @@ async def crear_evento(
 async def actualizar_evento(
     evento_id: str,
     evento_data: CreateEventRequest,
-    admin_user: AdminUser = Depends(require_permission(Permission.EDIT_EVENTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.EDIT_EVENTS))
 ) -> Dict[str, Any]:
     """Update event - Admin only"""
     
@@ -247,8 +247,8 @@ async def actualizar_evento(
     await event.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="update_event",
         description=f"Updated event: {event.title}",
         target_type="event",
@@ -264,7 +264,7 @@ async def actualizar_evento(
 @router.delete("/{evento_id}")
 async def eliminar_evento(
     evento_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.DELETE_EVENTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.DELETE_EVENTS))
 ) -> Dict[str, Any]:
     """Delete event - Admin only"""
     
@@ -278,8 +278,8 @@ async def eliminar_evento(
     await event.delete()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="delete_event",
         description=f"Deleted event: {event.title}",
         target_type="event",

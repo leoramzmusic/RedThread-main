@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from src.models.campaign import Campaign, CampaignStatus, CampaignType
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.api.auth import get_current_user
 
 
@@ -30,7 +30,7 @@ async def listar_campanas(
     type_filter: Optional[CampaignType] = None,
     limit: int = Query(50, le=100),
     offset: int = 0,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_CAMPAIGNS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_CAMPAIGNS))
 ) -> List[Dict[str, Any]]:
     """List all campaigns with filters - Admin only"""
     
@@ -62,7 +62,7 @@ async def listar_campanas(
 @router.post("/crear")
 async def crear_campana(
     campaign_data: CreateCampaignRequest,
-    admin_user: AdminUser = Depends(require_permission(Permission.CREATE_CAMPAIGNS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.CREATE_CAMPAIGNS))
 ) -> Dict[str, Any]:
     """Create new campaign - Admin only"""
     
@@ -84,8 +84,8 @@ async def crear_campana(
     await campaign.insert()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="create_campaign",
         description=f"Created campaign: {campaign.name}",
         target_type="campaign",
@@ -101,7 +101,7 @@ async def crear_campana(
 @router.get("/{campaign_id}/estadisticas")
 async def get_campaign_stats(
     campaign_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_METRICS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_METRICS))
 ) -> Dict[str, Any]:
     """Get detailed campaign statistics - Admin only"""
     
@@ -138,7 +138,7 @@ async def get_campaign_stats(
 async def update_campaign_status(
     campaign_id: str,
     status_update: str = Body(..., embed=True),  # active, paused, cancelled
-    admin_user: AdminUser = Depends(require_permission(Permission.MANAGE_CAMPAIGNS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.MANAGE_CAMPAIGNS))
 ) -> Dict[str, Any]:
     """Update campaign status - Admin only"""
     
@@ -170,8 +170,8 @@ async def update_campaign_status(
     await campaign.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="update_campaign_status",
         description=f"Updated campaign {campaign.name} status to {new_status}",
         target_type="campaign",

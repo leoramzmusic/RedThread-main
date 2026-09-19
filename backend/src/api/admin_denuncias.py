@@ -7,7 +7,7 @@ from src.models.profile import Profile
 from src.models.report import Report, ReportStatus, ReportPriority, ReportCategory
 from src.models.report_rule import ReportRule, RuleAction, RuleTrigger
 from src.models.admin_rbac import AdminUser, Permission
-from src.core.middleware.rbac import require_permission, log_admin_action
+from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 
 
 router = APIRouter()
@@ -50,7 +50,7 @@ async def list_reports(
     reason_filter: Optional[str] = Query(None, description="Filter by reason"),
     limit: int = Query(50, le=100),
     offset: int = 0,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_REPORTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_REPORTS))
 ) -> Dict[str, Any]:
     """
     List all reports with pagination and filters.
@@ -116,7 +116,7 @@ async def list_reports(
 
 @router.get("/estadisticas")
 async def get_report_statistics(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_METRICS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_METRICS))
 ) -> Dict[str, Any]:
     """
     Get overall report statistics using aggregation for efficiency.
@@ -167,7 +167,7 @@ async def get_report_statistics(
 @router.post("/lotes/procesar")
 async def bulk_process_reports(
     request_data: BulkProcessRequest,
-    admin_user: AdminUser = Depends(require_permission(Permission.HANDLE_REPORTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.HANDLE_REPORTS))
 ) -> Dict[str, Any]:
     """
     Process multiple reports at once.
@@ -201,8 +201,8 @@ async def bulk_process_reports(
         await report.save()
         processed_count += 1
         
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="bulk_process_reports",
         description=f"Processed {processed_count} reports with action {request_data.action}",
         target_type="report_batch",
@@ -217,7 +217,7 @@ async def bulk_process_reports(
 
 @router.get("/configuracion/reglas")
 async def list_moderation_rules(
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_CONFIG))
 ) -> List[Dict[str, Any]]:
     """List all automated moderation rules."""
     rules = await ReportRule.find_all().to_list()
@@ -227,14 +227,14 @@ async def list_moderation_rules(
 @router.post("/configuracion/reglas")
 async def create_moderation_rule(
     rule_data: ReportRuleCreate,
-    admin_user: AdminUser = Depends(require_permission(Permission.EDIT_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.EDIT_CONFIG))
 ) -> Dict[str, Any]:
     """Create a new automated moderation rule."""
     rule = ReportRule(**rule_data.dict())
     await rule.insert()
     
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="create_moderation_rule",
         description=f"Created moderation rule: {rule_data.name}",
         target_type="moderation_rule",
@@ -247,7 +247,7 @@ async def create_moderation_rule(
 @router.delete("/configuracion/reglas/{rule_id}")
 async def delete_moderation_rule(
     rule_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.EDIT_CONFIG))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.EDIT_CONFIG))
 ) -> Dict[str, Any]:
     """Delete a moderation rule."""
     rule = await ReportRule.get(rule_id)
@@ -256,8 +256,8 @@ async def delete_moderation_rule(
         
     await rule.delete()
     
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="delete_moderation_rule",
         description=f"Deleted moderation rule: {rule_id}",
         target_type="moderation_rule",
@@ -272,7 +272,7 @@ async def delete_moderation_rule(
 @router.get("/{report_id}")
 async def get_report_details(
     report_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_REPORTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_REPORTS))
 ) -> Dict[str, Any]:
     """
     Get detailed information about a specific report.
@@ -336,7 +336,7 @@ async def get_report_details(
 async def update_report_status(
     report_id: str,
     request_data: UpdateReportStatusRequest,
-    admin_user: AdminUser = Depends(require_permission(Permission.HANDLE_REPORTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.HANDLE_REPORTS))
 ) -> Dict[str, Any]:
     """
     Update the status of a report.
@@ -374,8 +374,8 @@ async def update_report_status(
     await report.save()
     
     # Log admin action
-    await log_admin_action(
-        admin_user_id=admin_user.user_id,
+    await log_employee_action(
+        employee_id=admin_user.user_id,
         action_type="update_report_status",
         description=f"Updated report {report_id} status to {request_data.status}",
         target_type="report",
@@ -393,7 +393,7 @@ async def update_report_status(
 async def assign_moderator(
     report_id: str,
     request_data: AssignModeratorRequest,
-    admin_user: AdminUser = Depends(require_permission(Permission.ASSIGN_REPORTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.ASSIGN_REPORTS))
 ) -> Dict[str, Any]:
     """
     Assign a report to a specific moderator.
@@ -446,7 +446,7 @@ async def assign_moderator(
 @router.get("/usuario/{user_id}/historial")
 async def get_user_report_history(
     user_id: str,
-    admin_user: AdminUser = Depends(require_permission(Permission.VIEW_REPORTS))
+    admin_user: AdminUser = Depends(require_employee_permission(Permission.VIEW_REPORTS))
 ) -> Dict[str, Any]:
     """
     Get all reports involving a specific user (as reporter or reported).

@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redthread-seed-job
+  labels:
+    app: redthread-backend
+    tier: seed
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: redthread-backend
+        tier: seed
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: seed
+        image: your-registry.azurecr.io/redthread-backend:latest
+        command: ["python", "-m", "src.core.seed"]
+        env:
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: redthread-config
+              key: environment
+        - name: MONGODB_URL
+          valueFrom:
+            secretKeyRef:
+              name: redthread-secrets
+              key: mongodb-url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: redthread-secrets
+              key: secret-key
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"

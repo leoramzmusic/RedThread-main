@@ -24,7 +24,14 @@ async def lifespan(app: FastAPI):
     
     # Initialize database
     await init_db()
-    
+
+    # Auto-seed default roles/departments in ALL environments (idempotent)
+    try:
+        from src.core.seed_defaults import seed_default_roles_and_departments
+        await seed_default_roles_and_departments()
+    except Exception as e:
+        print(f"⚠️ Seed defaults failed: {e}")
+
     # Initialize Redis
     await redis_service.connect()
     
