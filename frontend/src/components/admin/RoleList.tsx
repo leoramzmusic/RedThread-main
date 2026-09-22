@@ -35,6 +35,7 @@ import {
     Shield as ShieldIcon,
     Search as SearchIcon,
     Info as InfoIcon,
+    VisibilityOff as HideIcon,
 } from '@mui/icons-material';
 import adminApiClient from '../../services/adminApi';
 
@@ -60,6 +61,16 @@ const RoleList: React.FC = () => {
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentEmployee, setCurrentEmployee] = useState<any>(null);
+    const [canAddMore, setCanAddMore] = useState(false);
+    const [showValidationModal, setShowValidationModal] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+    const [validationUser, setValidationUser] = useState('');
+    const [validationPass, setValidationPass] = useState('');
+    const [validationError, setValidationError] = useState<string | null>(null);
+    const [validating, setValidating] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
+    const [hideTarget, setHideTarget] = useState<Role | null>(null);
 
     // Form State
     const [openForm, setOpenForm] = useState(false);
@@ -76,7 +87,15 @@ const RoleList: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+        fetchCurrentEmployee();
     }, []);
+
+    const fetchCurrentEmployee = async () => {
+        try {
+            const res = await adminApiClient.get('/portal-redthread/auth/me');
+            setCurrentEmployee(res.data);
+        } catch {}
+    };
 
     const fetchData = async () => {
         setLoading(true);
@@ -118,46 +137,135 @@ const RoleList: React.FC = () => {
                 is_active: true,
             });
         }
+        setCanAddMore(false);
+        setValidationError(null);
         setOpenForm(true);
     };
 
     const handleCloseForm = () => {
         setOpenForm(false);
         setEditingRole(null);
+        setCanAddMore(false);
+        setShowValidationModal(false);
+        setShowPasswordConfirm(false);
+        setValidationPass('');
+        setValidationUser('');
     };
 
     const handleSubmit = async () => {
         setSubmitting(true);
+        const beforePerms = new Set(editingRole?.permissions || []);
+        const afterPerms = new Set(formData.permissions || []);
+        const added = [...afterPerms].filter((p) => !beforePerms.has(p));
+        // Normaliza permisos a valor del enum (lowercase) y evita enviar slug en update (RoleUpdate no lo tiene)
+        const payload: any = {
+            ...formData,
+            permissions: (formData.permissions || []).map((p: string) => p.toLowerCase()),
+        };
+        if (editingRole) delete payload.slug;
         try {
             if (editingRole) {
                 const id = editingRole.id || editingRole._id;
-                await adminApiClient.put(`/portal-redthread/roles/${id}`, formData);
+                await adminApiClient.put(`/portal-redthread/roles/${id}`, payload);
             } else {
-                await adminApiClient.post('/portal-redthread/roles/', formData);
+                await adminApiClient.post('/portal-redthread/roles/', payload);
+            }
+            if (added.length) {
+                const who = currentEmployee?.email || 'unknown';
+                console.log(`[audit] ${who} añadió permisos ${added.join(',')} a rol ${formData.slug || editingRole?.slug} el ${new Date().toISOString()}`);
             }
             fetchData();
             handleCloseForm();
         } catch (err: any) {
             console.error('Error saving role:', err);
-            const detail = err.response?.data?.detail || 'Error al guardar el rol. El slug y el nombre deben ser únicos.';
+            const raw = err.response?.data?.detail;
+            let detail: string;
+            if (Array.isArray(raw)) detail = raw.map((d: any) => d?.msg || d?.message || JSON.stringify(d)).join(' | ');
+            else if (raw && typeof raw === 'object') detail = (raw as any).msg || (raw as any).message || JSON.stringify(raw);
+            else detail = (typeof raw === 'string' ? raw : null) || 'Error al guardar el rol. El slug y el nombre deben ser únicos.';
             setError(detail);
         } finally {
             setSubmitting(false);
         }
     };
 
-    const handleDelete = async (role: Role) => {
+    const handleDelete = (role: Role) => {
         if (role.is_system_role) return;
-        if (!window.confirm(`¿Está seguro de eliminar el rol "${role.name}"?`)) return;
-
+        setDeleteTarget(role);
+    };
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
         try {
-            const id = role.id || role._id;
+            const id = deleteTarget.id || deleteTarget._id;
             await adminApiClient.delete(`/portal-redthread/roles/${id}`);
             fetchData();
         } catch (err: any) {
             console.error('Error deleting role:', err);
-            alert(err.response?.data?.detail || 'No se pudo eliminar el rol.');
+            const raw = err.response?.data?.detail;
+            const msg = Array.isArray(raw) ? raw.map((d: any) => d?.msg || JSON.stringify(d)).join(' | ') : (raw && typeof raw === 'object' ? (raw.msg || JSON.stringify(raw)) : raw) || 'No se pudo eliminar el rol.';
+            setError(String(msg));
+        } finally { setDeleteTarget(null); }
+    };
+    const handleHide = (role: Role) => setHideTarget(role);
+    const confirmHide = async () => {
+        if (!hideTarget) return;
+        try {
+            const id = hideTarget.id || hideTarget._id;
+            await adminApiClient.put(`/portal-redthread/roles/${id}`, { is_active: false });
+            fetchData();
+        } catch (err: any) {
+            console.error('Error hiding role:', err);
+            const raw = err.response?.data?.detail;
+            const msg = Array.isArray(raw) ? raw.map((d: any) => d?.msg || JSON.stringify(d)).join(' | ') : (raw && typeof raw === 'object' ? (raw.msg || JSON.stringify(raw)) : raw) || 'No se pudo ocultar el rol.';
+            setError(String(msg));
+        } finally { setHideTarget(null); }
+    };
+
+    const isPrivileged = (() => {
+        const roles: string[] = currentEmployee?.roles || [];
+        if (roles.includes('superadmin') || roles.includes('admin')) return true;
+        // Gerente del departamento: tiene manage_employees y mismo dept que el rol en edición
+        if (editingRole && currentEmployee?.department_id && editingRole.slug) {
+            const isManager = roles.some((r) => r.includes('gerente') || r.includes('gestor') || r === 'hr');
+            return isManager;
         }
+        return false;
+    })();
+
+    const handleAddMoreClick = () => {
+        if (isPrivileged) setShowPasswordConfirm(true);
+        else setShowValidationModal(true);
+    };
+
+    const handleValidateUserPass = async () => {
+        setValidating(true);
+        setValidationError(null);
+        try {
+            await adminApiClient.post('/portal-redthread/auth/login', { email: validationUser, password: validationPass });
+            setCanAddMore(true);
+            setShowValidationModal(false);
+            setValidationUser('');
+            setValidationPass('');
+            // auditoría: se reautenticó para ver permisos extra
+            console.log('[audit] validación user+pass OK por', validationUser);
+        } catch (e: any) {
+            setValidationError(e.response?.data?.detail || 'Credenciales inválidas');
+        } finally { setValidating(false); }
+    };
+
+    const handleConfirmPassword = async () => {
+        setValidating(true);
+        setValidationError(null);
+        try {
+            const email = currentEmployee?.email;
+            await adminApiClient.post('/portal-redthread/auth/login', { email, password: validationPass });
+            setCanAddMore(true);
+            setShowPasswordConfirm(false);
+            setValidationPass('');
+            console.log('[audit] confirmación password OK por', email);
+        } catch (e: any) {
+            setValidationError(e.response?.data?.detail || 'Contraseña incorrecta');
+        } finally { setValidating(false); }
     };
 
     if (loading && roles.length === 0) {
@@ -227,17 +335,14 @@ const RoleList: React.FC = () => {
                                             <EditIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
-                                    <Tooltip title={role.is_system_role ? "Rol del sistema (Protegido)" : "Eliminar"}>
-                                        <span>
-                                            <IconButton
-                                                size="small"
-                                                color="error"
-                                                disabled={role.is_system_role}
-                                                onClick={() => handleDelete(role)}
-                                            >
-                                                <DeleteIcon fontSize="small" />
-                                            </IconButton>
-                                        </span>
+                                    <Tooltip title={role.is_system_role ? 'Ocultar (rol del sistema no se borra)' : 'Eliminar'}>
+                                        <IconButton
+                                            size="small"
+                                            color={role.is_system_role ? 'default' : 'error'}
+                                            onClick={() => (role.is_system_role ? handleHide(role) : handleDelete(role))}
+                                        >
+                                            {role.is_system_role ? <HideIcon fontSize="small" /> : <DeleteIcon fontSize="small" />}
+                                        </IconButton>
                                     </Tooltip>
                                 </TableCell>
                             </TableRow>
@@ -332,7 +437,18 @@ const RoleList: React.FC = () => {
                         </Box>
 
                         <Box gridColumn="span 2">
-                            <FormControl fullWidth sx={{ mt: 1 }}>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                <Typography variant="subtitle2" fontWeight="bold">Permisos del departamento</Typography>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <Checkbox
+                                        checked={formData.permissions?.length === permissions.length && permissions.length > 0}
+                                        indeterminate={!!formData.permissions?.length && formData.permissions.length < permissions.length}
+                                        onChange={(e) => setFormData({ ...formData, permissions: e.target.checked ? permissions.map((p) => p.id) : [] })}
+                                    />
+                                    <Typography variant="caption">Seleccionar todos</Typography>
+                                </Box>
+                            </Box>
+                            <FormControl fullWidth sx={{ mt: 0 }}>
                                 <InputLabel id="permissions-label">Permisos Asociados</InputLabel>
                                 <Select
                                     labelId="permissions-label"
@@ -351,12 +467,35 @@ const RoleList: React.FC = () => {
                                 >
                                     {permissions.map((perm) => (
                                         <MenuItem key={perm.id} value={perm.id}>
-                                            <Checkbox checked={(formData.permissions || []).indexOf(perm.id) > -1} />
+                                            <Checkbox checked={(formData.permissions || []).some((p: string) => p.toLowerCase() === perm.id.toLowerCase())} />
                                             <ListItemText primary={perm.name} secondary={perm.id} />
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
+                            <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="caption" color="text.secondary">¿Necesitas permisos de otros módulos?</Typography>
+                                <Button size="small" variant="outlined" onClick={handleAddMoreClick} disabled={canAddMore}>
+                                    {canAddMore ? '✓ Acceso ampliado' : 'Agregar más permisos'}
+                                </Button>
+                            </Box>
+                            {canAddMore && (
+                                <Box mt={2} p={1.5} border="1px solid rgba(0,0,0,0.08)" borderRadius={2} bgcolor="rgba(0,0,0,0.02)">
+                                    <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Permisos adicionales por módulo (desbloqueados)</Typography>
+                                    <Box display="flex" flexWrap="wrap" gap={1}>
+                                        {permissions.map((perm) => {
+                                            const active = (formData.permissions || []).some((p: string) => p.toLowerCase() === perm.id.toLowerCase());
+                                            return (
+                                            <Chip key={`extra-${perm.id}`} label={perm.id} size="small" variant={active ? 'filled' : 'outlined'} onClick={() => {
+                                                const cur = formData.permissions || [];
+                                                const isActive = cur.some((x: string) => x.toLowerCase() === perm.id.toLowerCase());
+                                                setFormData({ ...formData, permissions: isActive ? cur.filter((x: string) => x.toLowerCase() !== perm.id.toLowerCase()) : [...cur, perm.id] });
+                                            }} color={active ? 'primary' : 'default'} />
+                                        )})}
+                                    </Box>
+                                    <Typography variant="caption" color="text.secondary" display="block" mt={1}>Auditoría: se registrarán usuario, fecha/hora y permisos añadidos al guardar.</Typography>
+                                </Box>
+                            )}
                         </Box>
                     </Box>
                 </DialogContent>
@@ -371,6 +510,64 @@ const RoleList: React.FC = () => {
                     >
                         {submitting ? <CircularProgress size={24} color="inherit" /> : 'Guardar Cambios'}
                     </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Modal validación extra: usuario + contraseña (no privilegiado) */}
+            <Dialog open={showValidationModal} onClose={() => setShowValidationModal(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>Validación requerida para permisos extra</DialogTitle>
+                <DialogContent dividers>
+                    <Typography variant="body2" color="text.secondary" mb={2}>Ingresa usuario y contraseña de un supervisor para desbloquear permisos de otros módulos.</Typography>
+                    {validationError && <Alert severity="error" sx={{ mb: 2 }}>{validationError}</Alert>}
+                    <TextField fullWidth label="Usuario (email)" value={validationUser} onChange={(e) => setValidationUser(e.target.value)} margin="dense" />
+                    <TextField fullWidth label="Contraseña" type="password" value={validationPass} onChange={(e) => setValidationPass(e.target.value)} margin="dense" />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowValidationModal(false)}>Cancelar</Button>
+                    <Button onClick={handleValidateUserPass} variant="contained" disabled={validating || !validationUser || !validationPass}>
+                        {validating ? <CircularProgress size={20} /> : 'Validar y mostrar permisos adicionales'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Modal confirmación por contraseña (privilegiado) */}
+            <Dialog open={showPasswordConfirm} onClose={() => setShowPasswordConfirm(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>Confirmar con contraseña</DialogTitle>
+                <DialogContent dividers>
+                    <Typography variant="body2" color="text.secondary" mb={2}>Por auditoría, confirma tu contraseña para asignar permisos adicionales.</Typography>
+                    {validationError && <Alert severity="error" sx={{ mb: 2 }}>{validationError}</Alert>}
+                    <TextField fullWidth label="Contraseña" type="password" value={validationPass} onChange={(e) => setValidationPass(e.target.value)} margin="dense" autoFocus />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowPasswordConfirm(false)}>Cancelar</Button>
+                    <Button onClick={handleConfirmPassword} variant="contained" disabled={validating || !validationPass}>
+                        {validating ? <CircularProgress size={20} /> : 'Confirmar'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Confirmar borrar rol (solo custom) */}
+            <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
+                <DialogTitle>¿Eliminar rol?</DialogTitle>
+                <DialogContent dividers>
+                    <Typography variant="body2">¿Está seguro de eliminar el rol <strong>{deleteTarget?.name}</strong> ({deleteTarget?.slug})? Solo roles creados después pueden borrarse.</Typography>
+                    <Alert severity="warning" sx={{ mt: 2 }}>Se verificará que ningún empleado lo esté usando.</Alert>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteTarget(null)}>Cancelar</Button>
+                    <Button onClick={confirmDelete} color="error" variant="contained">Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Ocultar rol del sistema */}
+            <Dialog open={!!hideTarget} onClose={() => setHideTarget(null)} maxWidth="xs" fullWidth>
+                <DialogTitle>¿Ocultar rol?</DialogTitle>
+                <DialogContent dividers>
+                    <Typography variant="body2"><strong>{hideTarget?.name}</strong> es un rol del sistema y no se puede borrar, pero sí ocultar (pasará a <em>Inactivo</em>).</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setHideTarget(null)}>Cancelar</Button>
+                    <Button onClick={confirmHide} color="warning" variant="contained">Ocultar</Button>
                 </DialogActions>
             </Dialog>
         </Box>

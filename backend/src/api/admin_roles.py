@@ -31,7 +31,7 @@ async def list_roles(admin: Employee = Depends(require_employee_permission(Permi
 @router.get("/permissions")
 async def list_available_permissions(admin: Employee = Depends(require_employee_permission(Permission.ASSIGN_ROLES))):
     """List all available granular permissions in the system"""
-    return [{"id": p.name, "name": p.value} for p in Permission]
+    return [{"id": p.value, "name": p.value} for p in Permission]
 
 @router.post("/", response_model=Role)
 async def create_role(

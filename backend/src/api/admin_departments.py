@@ -5,6 +5,7 @@ from src.models.admin_rbac import Permission
 from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.models.employee import Employee
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 router = APIRouter(tags=["Admin Departments"])
@@ -14,21 +15,21 @@ class DepartmentCreate(BaseModel):
     code: str
     description: str = ""
     status: DepartmentStatus = DepartmentStatus.ACTIVE
-    head_id: str = None
-    location: str = None
-    contact_email: str = None
-    contact_phone: str = None
-    max_employees: int = None
+    head_id: Optional[str] = None
+    location: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    max_employees: Optional[int] = None
 
 class DepartmentUpdate(BaseModel):
-    name: str = None
-    description: str = None
-    status: DepartmentStatus = None
-    head_id: str = None
-    location: str = None
-    contact_email: str = None
-    contact_phone: str = None
-    max_employees: int = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[DepartmentStatus] = None
+    head_id: Optional[str] = None
+    location: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    max_employees: Optional[int] = None
 
 @router.get("/", response_model=List[Department])
 async def list_departments(admin: Employee = Depends(require_employee_permission(Permission.VIEW_EMPLOYEES))):

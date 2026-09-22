@@ -172,6 +172,15 @@ const BODY_FONT_OPTIONS: Array<{ value: string; label: string }> = [
     { value: 'Lato', label: 'Lato' },
 ];
 
+const BANNER_RESOLUTIONS: Array<{ value: string; label: string; hint: string }> = [
+    { value: 'all', label: 'Todas (fallback)', hint: '1920×1080, se recorta con cover' },
+    { value: 'mobile', label: 'Móvil (≤767px)', hint: '750×1334 vertical, ≤300KB' },
+    { value: 'tablet', label: 'Tablet (768-1023)', hint: '1536×2048' },
+    { value: 'desktop', label: 'Desktop (1024-1439)', hint: '1920×1080' },
+    { value: 'xl', label: 'Large (1440-1919)', hint: '2560×1440' },
+    { value: 'smart', label: 'Smart Display (≥1920)', hint: '3840×2160 4K' },
+];
+
 const getTitleFontFamily = (font: string) => `${font}, Poppins, Inter, cursive`;
 const getBodyFontFamily = (font: string) => `${font}, Inter, sans-serif`;
 
@@ -194,6 +203,7 @@ export default function BannersPage() {
     const [themeResource, setThemeResource] = useState<AppearanceResource | null>(null);
     const [bannerResources, setBannerResources] = useState<AppearanceResource[]>([]);
     const [previewIndex, setPreviewIndex] = useState(0);
+    const [pendingResolution, setPendingResolution] = useState<string>('all');
 
     // Form State
     const [config, setConfig] = useState<LandingThemeConfig>(DEFAULT_THEME);
@@ -204,6 +214,7 @@ export default function BannersPage() {
     // Preview URLs
     const [previewBanner, setPreviewBanner] = useState<string | null>(null);
     const [previewIcon, setPreviewIcon] = useState<string | null>(null);
+    const [previewNavLogo, setPreviewNavLogo] = useState<string | null>(null);
 
     // Live preview auto-fit (mini-pantalla: escala el mockup para que entre sin scroll)
     const previewBoxRef = useRef<HTMLDivElement | null>(null);
@@ -229,7 +240,7 @@ export default function BannersPage() {
         if (previewBoxRef.current) ro.observe(previewBoxRef.current);
         if (previewContentRef.current) ro.observe(previewContentRef.current);
         return () => ro.disconnect();
-    }, [currentTab, config.subtitleFontSize, config.subtitleColor, previewBanner, previewIcon]);
+    }, [currentTab, config.subtitleFontSize, config.subtitleColor, previewBanner, previewIcon, previewNavLogo]);
 
     useEffect(() => {
         fetchSettings();
@@ -256,8 +267,17 @@ export default function BannersPage() {
     const fetchSettings = async () => {
         setLoading(true);
         try {
-            // 1. Fetch Theme Config
-            const themes = await appearanceService.getResources(AppearanceType.LANDING_THEME);
+            // 1. Fetch Theme Config — manejo 403 sin romper el portal
+            let themes: AppearanceResource[] = [];
+            try {
+                themes = await appearanceService.getResources(AppearanceType.LANDING_THEME);
+            } catch (e: any) {
+                if (e?.response?.status === 403) {
+                    setSnackbar({ open: true, message: 'Acceso denegado (403): tu rol no tiene permiso MANAGE_BRANDING / EDIT_CONFIG para Apariencia', severity: 'error' });
+                    console.warn('Apariencia: permisos insuficientes para LANDING_THEME', e);
+                    themes = [];
+                } else throw e;
+            }
             const activeTheme = themes.find(r => r.is_active);
             if (activeTheme && activeTheme.metadata) {
                 setThemeResource(activeTheme);
@@ -306,8 +326,16 @@ export default function BannersPage() {
                 }
             }
 
-            // 2. Fetch Hero Banner Backgrounds (All active)
-            const banners = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+            // 2. Fetch Hero Banner Backgrounds (All active) — con manejo 403
+            let banners: AppearanceResource[] = [];
+            try {
+                banners = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+            } catch (e: any) {
+                if (e?.response?.status === 403) {
+                    setSnackbar({ open: true, message: 'Acceso denegado (403) para fondos de portada: falta permiso MANAGE_BRANDING', severity: 'error' });
+                    banners = [];
+                } else throw e;
+            }
             const activeBanners = banners.filter(r => r.is_active && !r.metadata?.isHeroIcon);
             setBannerResources(activeBanners);
 
@@ -323,6 +351,14 @@ export default function BannersPage() {
                 setPreviewIcon(getMediaUrl(activeIcon.url));
             } else {
                 setPreviewIcon('/imagotipo.png');
+            }
+
+            // 4. Fetch Navbar Imagotipo (horizontal)
+            const activeNavLogo = banners.find(r => r.is_active && r.metadata?.isNavLogo);
+            if (activeNavLogo) {
+                setPreviewNavLogo(getMediaUrl(activeNavLogo.url));
+            } else {
+                setPreviewNavLogo('/imagotipo.png');
             }
 
         } catch (error) {
@@ -457,13 +493,24 @@ export default function BannersPage() {
         }
     };
 
-    const uploadImage = async (file: File, isIcon: boolean) => {
+    const isForbidden = (e: any) => e?.response?.status === 403;
+
+    const uploadImage = async (file: File, isIcon: boolean, resolution: string = 'all') => {
         try {
             setLoading(true);
 
             // 1. Fetch current active banners to check limits if needed
             // For icons, we still only want ONE active. For banners, we allow multiple.
-            const existingBanners = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+            let existingBanners: AppearanceResource[] = [];
+            try {
+                existingBanners = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+            } catch (e: any) {
+                if (isForbidden(e)) {
+                    // No bloqueamos la subida por 403 en la lectura; seguimos y dejamos que upload/create informe el 403 real
+                    console.warn('getResources 403 — se omite verificación de límite', e);
+                    existingBanners = [];
+                } else throw e;
+            }
 
             if (isIcon) {
                 const activeToDeactivate = existingBanners.filter(r =>
@@ -485,23 +532,33 @@ export default function BannersPage() {
 
             // 3. Upload and Create New
             const url = await appearanceService.uploadFile(file, AppearanceType.LANDING_BANNER);
+            const resMeta: Record<string, any> = {
+                originalName: file.name,
+                isHeroIcon: isIcon,
+            };
+            if (!isIcon) {
+                resMeta.resolution = resolution;
+                // legado para compatibilidad
+                if (resolution === 'mobile') resMeta.isMobile = true;
+            }
             await appearanceService.createResource({
                 type: AppearanceType.LANDING_BANNER,
                 platform: Platform.WEB,
                 url: url,
-                is_active: true, // This will be the ONLY active one of its type
-                description: isIcon ? 'Hero Icon' : 'Hero Banner Background',
-                metadata: {
-                    originalName: file.name,
-                    isHeroIcon: isIcon
-                }
+                is_active: true,
+                description: isIcon ? 'Hero Icon' : `Hero Banner [${resolution}]`,
+                metadata: resMeta
             });
 
             fetchSettings();
             setSnackbar({ open: true, message: 'Imagen subida correctamente', severity: 'success' });
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error uploading image:", error);
-            setSnackbar({ open: true, message: 'Error al subir la imagen', severity: 'error' });
+            if (isForbidden(error)) {
+                setSnackbar({ open: true, message: 'Acceso denegado (403): tu rol no tiene permiso MANAGE_BRANDING. Ve a /portal-redthread/empleados/roles o pide a un Super Admin que te asigne el permiso.', severity: 'error' });
+            } else {
+                setSnackbar({ open: true, message: `Error al subir la imagen: ${error?.response?.data?.detail || error.message}`, severity: 'error' });
+            }
         } finally {
             setLoading(false);
         }
@@ -524,12 +581,74 @@ export default function BannersPage() {
 
     const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) uploadImage(file, false);
+        if (file) uploadImage(file, false, pendingResolution);
+        // reset input to allow re-upload del mismo archivo
+        e.target.value = '';
     };
 
     const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) uploadImage(file, true);
+    };
+
+    const uploadNavLogo = async (file: File) => {
+        try {
+            setLoading(true);
+            let existing: AppearanceResource[] = [];
+            try {
+                existing = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+            } catch (e: any) {
+                if (isForbidden(e)) console.warn('getResources 403 en navLogo — se omite desactivación previa', e);
+                else throw e;
+            }
+            const toDeactivate = existing.filter(r => r.is_active && r.metadata?.isNavLogo === true);
+            if (toDeactivate.length) {
+                try {
+                    await Promise.all(toDeactivate.map(r => appearanceService.updateResource(r._id!, { is_active: false })));
+                } catch (e: any) { if (!isForbidden(e)) throw e; }
+            }
+            const url = await appearanceService.uploadFile(file, AppearanceType.LANDING_BANNER);
+            await appearanceService.createResource({
+                type: AppearanceType.LANDING_BANNER,
+                platform: Platform.WEB,
+                url,
+                is_active: true,
+                description: 'Navbar Imagotipo Horizontal',
+                metadata: { originalName: file.name, isNavLogo: true }
+            });
+            fetchSettings();
+            setSnackbar({ open: true, message: 'Imagotipo del navbar actualizado', severity: 'success' });
+        } catch (e: any) {
+            console.error('Error uploading nav logo', e);
+            if (isForbidden(e)) {
+                setSnackbar({ open: true, message: 'Acceso denegado (403): tu rol no tiene permiso MANAGE_BRANDING para cambiar el imagotipo. Asigna el permiso en /portal-redthread/empleados/roles.', severity: 'error' });
+            } else {
+                setSnackbar({ open: true, message: `Error al subir imagotipo: ${e?.response?.data?.detail || e.message}`, severity: 'error' });
+            }
+        } finally { setLoading(false); }
+    };
+
+    const handleNavLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) uploadNavLogo(file);
+        e.target.value = '';
+    };
+
+    const handleDeleteNavLogo = async () => {
+        try {
+            setLoading(true);
+            const existing = await appearanceService.getResources(AppearanceType.LANDING_BANNER);
+            const active = existing.find(r => r.is_active && r.metadata?.isNavLogo);
+            if (active?._id) {
+                await appearanceService.updateResource(active._id, { is_active: false });
+                fetchSettings();
+                setSnackbar({ open: true, message: 'Imagotipo restablecido al por defecto', severity: 'success' });
+            }
+        } catch (e: any) {
+            console.error(e);
+            if (isForbidden(e)) setSnackbar({ open: true, message: 'Acceso denegado (403): falta permiso MANAGE_BRANDING', severity: 'error' });
+        }
+        finally { setLoading(false); }
     };
 
     // Helper to update translations for current language
@@ -968,36 +1087,102 @@ export default function BannersPage() {
                             </Box>
                         </Paper>
 
-                        {/* Hero Banner Upload */}
+                        {/* Imagotipo Navbar (Horizontal) — similar a Icono Principal pero debajo */}
                         <Paper sx={{ p: 3, mb: 3 }}>
                             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                <Typography variant="h6">Imagotipo Navbar (Horizontal)</Typography>
+                                <Box display="flex" gap={1}>
+                                    {previewNavLogo && previewNavLogo !== '/imagotipo.png' && (
+                                        <Button size="small" color="inherit" onClick={handleDeleteNavLogo} disabled={loading}>
+                                            Restablecer
+                                        </Button>
+                                    )}
+                                    <Button component="label" size="small" startIcon={<CloudUploadIcon />}>
+                                        Cambiar
+                                        <input type="file" hidden accept="image/*" onChange={handleNavLogoUpload} />
+                                    </Button>
+                                </Box>
+                            </Box>
+                            <Alert severity="info" sx={{ mb: 2, fontSize: '0.8rem' }}>
+                                Horizontal recomendado: <strong>~600×160px, PNG/WebP transparente</strong>. Se muestra a <strong>28px de alto</strong> en el navbar para no alterar su altura.
+                            </Alert>
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    bgcolor: '#f5f5f5',
+                                    borderRadius: 1,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    border: '1px solid #e0e0e0',
+                                    minHeight: 72,
+                                }}
+                            >
+                                <img
+                                    src={previewNavLogo || '/imagotipo.png'}
+                                    alt="Navbar imagotipo"
+                                    style={{ height: '28px', width: 'auto', maxWidth: '100%', objectFit: 'contain' }}
+                                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/imagotipo.png'; }}
+                                />
+                            </Box>
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                URL actual: <Box component="span" sx={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{previewNavLogo || '/imagotipo.png'}</Box>
+                            </Typography>
+                        </Paper>
+
+                        {/* Hero Banner Upload — con resolución por pantalla */}
+                        <Paper sx={{ p: 3, mb: 3 }}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} flexWrap="wrap" gap={1}>
                                 <Typography variant="h6">Fondo de Portada ({bannerResources.length}/10)</Typography>
                                 <Button component="label" size="small" startIcon={<CloudUploadIcon />} disabled={bannerResources.length >= 10}>
                                     Agregar
                                     <input type="file" hidden accept="image/*" onChange={handleBannerUpload} />
                                 </Button>
                             </Box>
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Resolución destino para la próxima subida"
+                                value={pendingResolution}
+                                onChange={(e) => setPendingResolution(e.target.value)}
+                                helperText={BANNER_RESOLUTIONS.find(r => r.value === pendingResolution)?.hint}
+                                sx={{ mb: 2 }}
+                            >
+                                {BANNER_RESOLUTIONS.map(r => (
+                                    <MenuItem key={r.value} value={r.value}>{r.label} — {r.hint}</MenuItem>
+                                ))}
+                            </TextField>
+                            <Alert severity="info" sx={{ mb: 2, fontSize: '0.8rem' }}>
+                                Sube una imagen por resolución: el landing elegirá automáticamente la más adecuada según el ancho del dispositivo (mobile/tablet/desktop/xl/smart). Usa <strong>Todas</strong> como fallback único si solo quieres una imagen.
+                            </Alert>
 
-                            {/* Gallery of Active Banners */}
+                            {/* Gallery of Active Banners — con badge resolución */}
                             <Box display="flex" gap={1} flexWrap="wrap" mb={2}>
-                                {bannerResources.map((banner, index) => (
+                                {bannerResources.map((banner, index) => {
+                                    const res = (banner.metadata?.resolution || (banner.metadata?.isMobile ? 'mobile' : 'all')) as string;
+                                    const label = BANNER_RESOLUTIONS.find(r => r.value === res)?.label || res;
+                                    return (
                                     <Box
                                         key={banner._id}
                                         sx={{
                                             position: 'relative',
-                                            width: 80,
-                                            height: 60,
+                                            width: 92,
+                                            height: 64,
                                             borderRadius: 1,
                                             overflow: 'hidden',
-                                            border: index === previewIndex ? '2px solid #FF6B6B' : '1px solid #ddd'
+                                            border: index === previewIndex ? '2px solid #FF6B6B' : '1px solid #ddd',
+                                            cursor: 'pointer'
                                         }}
                                         onClick={() => setPreviewIndex(index)}
+                                        title={`${label} — ${banner.metadata?.originalName || banner.url}`}
                                     >
                                         <img
                                             src={getMediaUrl(banner.url)}
-                                            alt="banner thumbnail"
+                                            alt={`banner ${label}`}
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
+                                        <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, bgcolor: 'rgba(0,0,0,0.65)', color: 'white', fontSize: '0.6rem', textAlign: 'center', py: 0.2, lineHeight: 1 }}>{label}</Box>
                                         <Box
                                             sx={{
                                                 position: 'absolute',
@@ -1017,7 +1202,8 @@ export default function BannersPage() {
                                             <DeleteIcon sx={{ fontSize: 14, color: 'white' }} />
                                         </Box>
                                     </Box>
-                                ))}
+                                    );
+                                })}
                             </Box>
 
                             <Box
@@ -1043,10 +1229,16 @@ export default function BannersPage() {
                             <Box sx={{ p: 1.5, bgcolor: '#222', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <PreviewIcon fontSize="small" /> Vista Previa: {currentLang.toUpperCase()}
+                                    {bannerResources[previewIndex]?.metadata?.resolution && (
+                                      <Box component="span" sx={{ ml: 1, fontSize: '0.65rem', fontWeight: 700, px: 0.8, py: 0.2, borderRadius: 999, bgcolor: 'rgba(230,57,70,0.22)', border: '1px solid rgba(230,57,70,0.4)', color: '#FF6B6B' }}>
+                                        {bannerResources[previewIndex].metadata.resolution.toUpperCase()}
+                                      </Box>
+                                    )}
                                 </Typography>
+                                <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.65rem' }}>{bannerResources.length} fondos · por resolución</Typography>
                             </Box>
 
-                            {/* Mockup Container — replica fiel del landing real (index.tsx) */}
+                            {/* Mockup Container — replica fiel del landing real (index.tsx) con fondos por resolución */}
                             <Box
                                 ref={previewBoxRef}
                                 sx={{
@@ -1060,7 +1252,7 @@ export default function BannersPage() {
                                         : `linear-gradient(135deg, ${config.gradientStart} 0%, ${config.gradientEnd} 100%)`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    backgroundAttachment: 'fixed',
+                                    backgroundAttachment: 'scroll',
                                     transition: 'background 0.5s ease'
                                 }}
                             >
@@ -1076,6 +1268,19 @@ export default function BannersPage() {
                                     }}
                                 >
                                     <Box ref={previewContentRef}>
+                                {/* Mock Navbar — replica LandingNavbar actual con imagotipo horizontal */}
+                                <Box sx={{ position: 'relative', zIndex: 3, mx: 1.2, mt: 1, display: 'flex', alignItems: 'center', gap: 0.75, p: 0.6, px: 1, borderRadius: '999px', bgcolor: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.18)', boxShadow: '0 4px 16px rgba(0,0,0,0.18)' }}>
+                                    <Box component="img" src={previewNavLogo || '/imagotipo.png'} alt="RETH" sx={{ height: 14, width: 'auto', maxWidth: 72, objectFit: 'contain', display: 'block' }} />
+                                    <Box sx={{ display: 'flex', gap: 0.4, flex: 1, justifyContent: 'center', opacity: 0.85 }}>
+                                        <Box sx={{ width: 18, height: 6, borderRadius: 999, bgcolor: 'rgba(255,255,255,0.75)' }} />
+                                        <Box sx={{ width: 18, height: 6, borderRadius: 999, bgcolor: 'rgba(255,255,255,0.45)' }} />
+                                        <Box sx={{ width: 18, height: 6, borderRadius: 999, bgcolor: 'rgba(255,255,255,0.45)', display: { xs: 'none', sm: 'block' } }} />
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        <Box sx={{ fontSize: '0.55rem', fontWeight: 700, color: 'white', bgcolor: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 999, px: 0.7, py: 0.3 }}>{currentLang.toUpperCase()}</Box>
+                                        <Box sx={{ fontSize: '0.55rem', fontWeight: 700, color: 'white', bgcolor: '#E63946', borderRadius: 999, px: 0.8, py: 0.3, display: { xs: 'none', sm: 'block' } }}>Crear</Box>
+                                    </Box>
+                                </Box>
                                 {/* Glow blobs decorativos */}
                                 <Box
                                     aria-hidden

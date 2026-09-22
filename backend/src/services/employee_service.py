@@ -1,11 +1,68 @@
 from typing import Optional, List
 from datetime import datetime
+import os
+import uuid
+from fastapi import HTTPException, UploadFile
 from src.models.employee import Employee, EmployeeStatus
 from src.models.admin_rbac import AdminRole
 from src.models.employee_audit import EmployeeAudit
 from src.core.utils.security import get_password_hash, verify_password
 
+AVATAR_DIR = "static/uploads/avatars"
+ALLOWED_AVATAR_EXT = {".jpg", ".jpeg", ".png", ".webp"}
+MAX_AVATAR_SIZE = 3 * 1024 * 1024
+ALLOWED_AVATAR_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp", "image/jpg"}
+
+
 class EmployeeService:
+    async def save_avatar(
+        self,
+        employee: Employee,
+        file: UploadFile,
+        admin_id: str,
+        admin_name: str,
+    ) -> str:
+        """Validate, store and audit a 1:1 avatar upload. Returns the public URL."""
+        os.makedirs(AVATAR_DIR, exist_ok=True)
+        ext = os.path.splitext(file.filename or "")[1].lower()
+        if ext not in ALLOWED_AVATAR_EXT:
+            raise HTTPException(status_code=400, detail="Formato no permitido. Usa JPG o PNG")
+        if file.content_type not in ALLOWED_AVATAR_CONTENT_TYPES:
+            raise HTTPException(status_code=400, detail="Tipo de archivo no permitido")
+        filename = f"avatar_{employee.id}_{uuid.uuid4().hex}{ext}"
+        path = os.path.join(AVATAR_DIR, filename)
+        size = 0
+        try:
+            with open(path, "wb") as out:
+                while chunk := await file.read(1024 * 1024):
+                    size += len(chunk)
+                    if size > MAX_AVATAR_SIZE:
+                        out.close()
+                        if os.path.exists(path):
+                            os.remove(path)
+                        raise HTTPException(status_code=413, detail="Imagen supera 3MB")
+                    out.write(chunk)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        url = f"/static/uploads/avatars/{filename}"
+        old = employee.avatar
+        employee.avatar = url
+        employee.updated_at = datetime.utcnow()
+        await employee.save()
+        await EmployeeAudit(
+            employee_id=str(employee.id),
+            admin_id=admin_id,
+            admin_name=admin_name,
+            action="update",
+            field_name="avatar",
+            old_value=old or "",
+            new_value=url,
+            change_summary="Foto de perfil actualizada (para credencial/documentos)",
+        ).insert()
+        return url
+
     async def create_employee(
         self,
         email: str,

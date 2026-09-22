@@ -17,6 +17,8 @@ import {
   Logout as LogoutIcon,
   Person as PersonIcon,
   Settings as SettingsIcon,
+  Tune as TuneIcon,
+  Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store/store';
@@ -217,14 +219,28 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
           </Box>
           <Divider />
 
-          <MenuItem onClick={() => { router.push('/profile'); handleCloseUserMenu(); }}>
+          <MenuItem onClick={() => { router.push('/portal-redthread/mi-perfil?tab=perfil'); handleCloseUserMenu(); }}>
             <ListItemIcon>
               <PersonIcon fontSize="small" />
             </ListItemIcon>
             <Typography textAlign="center">Mi Perfil</Typography>
           </MenuItem>
 
-          <MenuItem onClick={() => { router.push('/portal-redthread/me/settings'); handleCloseUserMenu(); }}>
+          <MenuItem onClick={() => { router.push('/portal-redthread/mi-perfil?tab=preferencias'); handleCloseUserMenu(); }}>
+            <ListItemIcon>
+              <TuneIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography textAlign="center">Preferencias</Typography>
+          </MenuItem>
+
+          <MenuItem onClick={() => { router.push('/portal-redthread/mi-perfil?tab=notificaciones'); handleCloseUserMenu(); }}>
+            <ListItemIcon>
+              <NotificationsIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography textAlign="center">Notificaciones</Typography>
+          </MenuItem>
+
+          <MenuItem onClick={() => { router.push('/portal-redthread/configuracion'); handleCloseUserMenu(); }}>
             <ListItemIcon>
               <SettingsIcon fontSize="small" />
             </ListItemIcon>

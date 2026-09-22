@@ -28,6 +28,11 @@ import {
     TableRow,
     Tab,
     Tabs,
+    Slider,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -50,11 +55,43 @@ import {
     AddCircle as AddIcon,
     Delete as DeleteIcon,
     ArrowForward as ArrowRightIcon,
+    PhotoCamera as PhotoCameraIcon,
+    Videocam as VideocamIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import adminApiClient from '../../services/adminApi';
-import { Stack, InputAdornment } from '@mui/material';
+import { Stack, InputAdornment, useTheme, Autocomplete } from '@mui/material';
 import PasswordResetModal from './PasswordResetModal';
+import CredentialCard from './CredentialCard';
+import CredentialBack from './CredentialBack';
+import { getMediaUrl } from '../../utils/media';
+import { loadCredentialDesign, cardPropsFromDesign, backPropsFromDesign, type CredentialDesignConfig } from '../../utils/credentialDesign';
+import {
+    mapApiToProfile,
+    profileToUpdatePayload,
+    validateProfile,
+    EMPTY_PROFILE,
+    type EmployeeProfile,
+} from '../../utils/employeeProfile';
+
+const COUNTRIES: Array<{ code: string; name: string; states: string[] }> = [
+    { code: 'MX', name: 'México', states: ['Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua', 'Ciudad de México', 'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'Estado de México', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'] },
+    { code: 'ES', name: 'España', states: ['Andalucía', 'Aragón', 'Asturias', 'Baleares', 'Canarias', 'Cantabria', 'Castilla-La Mancha', 'Castilla y León', 'Cataluña', 'Extremadura', 'Galicia', 'Madrid', 'Murcia', 'Navarra', 'País Vasco', 'La Rioja', 'Valencia', 'Ceuta', 'Melilla'] },
+    { code: 'AR', name: 'Argentina', states: ['Buenos Aires', 'Catamarca', 'Chaco', 'Chubut', 'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'] },
+    { code: 'CO', name: 'Colombia', states: ['Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá', 'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba', 'Cundinamarca', 'Guainía', 'Guaviare', 'Huila', 'La Guajira', 'Magdalena', 'Meta', 'Nariño', 'Norte de Santander', 'Putumayo', 'Quindío', 'Risaralda', 'San Andrés', 'Santander', 'Sucre', 'Tolima', 'Valle del Cauca', 'Vaupés', 'Vichada'] },
+    { code: 'CL', name: 'Chile', states: ['Arica y Parinacota', 'Tarapacá', 'Antofagasta', 'Atacama', 'Coquimbo', 'Valparaíso', 'Metropolitana', 'O’Higgins', 'Maule', 'Ñuble', 'Biobío', 'Araucanía', 'Los Ríos', 'Los Lagos', 'Aysén', 'Magallanes'] },
+    { code: 'PE', name: 'Perú', states: ['Amazonas', 'Áncash', 'Apurímac', 'Arequipa', 'Ayacucho', 'Cajamarca', 'Callao', 'Cusco', 'Huancavelica', 'Huánuco', 'Ica', 'Junín', 'La Libertad', 'Lambayeque', 'Lima', 'Loreto', 'Madre de Dios', 'Moquegua', 'Pasco', 'Piura', 'Puno', 'San Martín', 'Tacna', 'Tumbes', 'Ucayali'] },
+    { code: 'BR', name: 'Brasil', states: ['Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal', 'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul', 'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí', 'Río de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia', 'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'] },
+    { code: 'US', name: 'Estados Unidos', states: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'] },
+    { code: 'CA', name: 'Canadá', states: ['Alberta', 'Columbia Británica', 'Manitoba', 'Nuevo Brunswick', 'Terranova y Labrador', 'Nueva Escocia', 'Ontario', 'Isla del Príncipe Eduardo', 'Quebec', 'Saskatchewan', 'Territorios del Noroeste', 'Nunavut', 'Yukón'] },
+    { code: 'FR', name: 'Francia', states: ['Auvergne-Rhône-Alpes', 'Bourgogne-Franche-Comté', 'Bretagne', 'Centre-Val de Loire', 'Corse', 'Grand Est', 'Hauts-de-France', 'Île-de-France', 'Normandie', 'Nouvelle-Aquitaine', 'Occitanie', 'Pays de la Loire', 'Provence-Alpes-Côte d’Azur'] },
+    { code: 'DE', name: 'Alemania', states: ['Baden-Württemberg', 'Baviera', 'Berlín', 'Brandeburgo', 'Bremen', 'Hamburgo', 'Hesse', 'Mecklemburgo-Pomerania', 'Baja Sajonia', 'Renania del Norte-Westfalia', 'Renania-Palatinado', 'Sarre', 'Sajonia', 'Sajonia-Anhalt', 'Schleswig-Holstein', 'Turingia'] },
+    { code: 'IT', name: 'Italia', states: ['Abruzzo', 'Basilicata', 'Calabria', 'Campania', 'Emilia-Romaña', 'Friuli-Venecia Julia', 'Lazio', 'Liguria', 'Lombardía', 'Marche', 'Molise', 'Piamonte', 'Apulia', 'Cerdeña', 'Sicilia', 'Toscana', 'Trentino-Alto Adigio', 'Umbría', 'Valle de Aosta', 'Véneto'] },
+    { code: 'GB', name: 'Reino Unido', states: ['Inglaterra', 'Escocia', 'Gales', 'Irlanda del Norte'] },
+    { code: 'PT', name: 'Portugal', states: ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro', 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo', 'Vila Real', 'Viseu', 'Azores', 'Madeira'] },
+    { code: 'IN', name: 'India', states: ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'] },
+    { code: 'JP', name: 'Japón', states: ['Hokkaido', 'Aomori', 'Iwate', 'Miyagi', 'Akita', 'Yamagata', 'Fukushima', 'Ibaraki', 'Tochigi', 'Gunma', 'Saitama', 'Chiba', 'Tokyo', 'Kanagawa', 'Niigata', 'Toyama', 'Ishikawa', 'Fukui', 'Yamanashi', 'Nagano', 'Gifu', 'Shizuoka', 'Aichi', 'Mie', 'Shiga', 'Kyoto', 'Osaka', 'Hyogo', 'Nara', 'Wakayama', 'Tottori', 'Shimane', 'Okayama', 'Hiroshima', 'Yamaguchi', 'Tokushima', 'Kagawa', 'Ehime', 'Kochi', 'Fukuoka', 'Saga', 'Nagasaki', 'Kumamoto', 'Oita', 'Miyazaki', 'Kagoshima', 'Okinawa'] },
+];
 
 interface Role {
     name: string;
@@ -83,6 +120,8 @@ interface EmployeeEditFormProps {
 
 const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
     const router = useRouter();
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [roles, setRoles] = useState<Role[]>([]);
@@ -93,20 +132,28 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
     const [activeTab, setActiveTab] = useState(0);
     const [resetModalOpen, setResetModalOpen] = useState(false);
     const [showAllLogs, setShowAllLogs] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarZoom, setAvatarZoom] = useState(1);
+    const [isDragging, setIsDragging] = useState(false);
+    const [avatarUploading, setAvatarUploading] = useState(false);
+    const [credentialOpen, setCredentialOpen] = useState(false);
+    const [credDesign, setCredDesign] = useState<CredentialDesignConfig>({});
+    const credDesignCard = React.useMemo(() => cardPropsFromDesign(credDesign), [credDesign]);
+    const credDesignBack = React.useMemo(() => backPropsFromDesign(credDesign), [credDesign]);
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const [cameraError, setCameraError] = useState<string | null>(null);
+    const videoRef = React.useRef<HTMLVideoElement>(null);
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const streamRef = React.useRef<MediaStream | null>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    // Form State
+    // Form State — campos personales normalizados con mapApiToProfile (mismo shape que Mi perfil)
     const [formData, setFormData] = useState<any>({
-        first_name: '',
-        last_name: '',
-        email: '',
-        phone: '',
-        employee_id: '',
+        ...EMPTY_PROFILE,
         department_id: '',
         roles: [],
         status: '',
-        country: '',
-        city: '',
-        birth_date: '',
         hire_date: '',
         is_2fa_enabled: false,
         last_login_at: '',
@@ -125,7 +172,12 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                 ]);
                 setRoles(rolesRes.data);
                 setDepartments(deptsRes.data);
-                setFormData(empRes.data);
+                // Normaliza campos personales con el mismo mapper que Mi perfil
+                setFormData((prev: any) => ({
+                    ...prev,
+                    ...empRes.data,
+                    ...mapApiToProfile(empRes.data),
+                }));
                 setAuditLogs(auditRes.data);
             } catch (err: any) {
                 console.error('Error fetching data:', err);
@@ -137,9 +189,120 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
         if (employeeId) fetchData();
     }, [employeeId]);
 
+    useEffect(() => {
+        let alive = true;
+        loadCredentialDesign().then((cfg) => {
+            if (alive) setCredDesign(cfg);
+        }).catch(() => {});
+        const onStorage = (e: StorageEvent) => {
+            if (e.key === 'reth-credential-config' && e.newValue) {
+                try { setCredDesign(JSON.parse(e.newValue)); } catch {}
+            }
+        };
+        window.addEventListener('storage', onStorage);
+        return () => { alive = false; window.removeEventListener('storage', onStorage); };
+    }, []);
+
     const handleChange = (field: string, value: any) => {
         setFormData((prev: any) => ({ ...prev, [field]: value }));
     };
+
+    const handleAvatarFile = (file: File) => {
+        if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type)) {
+            setError('Formato no permitido. Usa JPG o PNG');
+            return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+            setError('Imagen supera 3MB (máx. 3MB)');
+            return;
+        }
+        setAvatarFile(file);
+        const url = URL.createObjectURL(file);
+        setAvatarPreview(url);
+        setAvatarZoom(1);
+        setError(null);
+    };
+
+    const handleAvatarUpload = async () => {
+        if (!avatarFile) return;
+        setAvatarUploading(true);
+        setError(null);
+        try {
+            const fd = new FormData();
+            fd.append('file', avatarFile);
+            const res = await adminApiClient.post(`/portal-redthread/empleados/${employeeId}/avatar`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+            const url = res.data.url as string;
+            setFormData((prev: any) => ({ ...prev, avatar: url }));
+            setSuccess('Foto actualizada. Se usará en credencial y documentos oficiales (bucket seguro).');
+            setAvatarFile(null);
+            setAvatarPreview(null);
+            setAvatarZoom(1);
+            // refresca auditoría
+            const auditRes = await adminApiClient.get(`/portal-redthread/empleados/${employeeId}/audit`);
+            setAuditLogs(auditRes.data);
+            window.scrollTo(0, 0);
+        } catch (err: any) {
+            console.error('Error uploading avatar:', err);
+            const raw = err.response?.data?.detail;
+            const msg = Array.isArray(raw) ? raw.map((d: any) => d?.msg || JSON.stringify(d)).join(' | ') : (raw && typeof raw === 'object' ? (raw.msg || JSON.stringify(raw)) : raw) || 'Error al subir la foto';
+            setError(String(msg));
+        } finally { setAvatarUploading(false); }
+    };
+
+    const handleOpenCamera = async () => {
+        setCameraError(null);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }, audio: false });
+            streamRef.current = stream;
+            setIsCameraOpen(true);
+            setTimeout(() => {
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                    videoRef.current.play().catch(() => {});
+                }
+            }, 50);
+        } catch (e: any) {
+            const msg = e?.name === 'NotAllowedError' ? 'Permiso de cámara denegado. Actívalo en el navegador.' : e?.name === 'NotFoundError' ? 'No se encontró cámara.' : 'No se pudo acceder a la cámara.';
+            setCameraError(msg);
+        }
+    };
+    const handleCloseCamera = () => {
+        streamRef.current?.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+        setIsCameraOpen(false);
+        setCameraError(null);
+        if (videoRef.current) videoRef.current.srcObject = null;
+    };
+    const handleCapture = () => {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        if (!video || !canvas) return;
+        const size = 512;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        const min = Math.min(vw, vh);
+        const sx = (vw - min) / 2;
+        const sy = (vh - min) / 2;
+        ctx.drawImage(video, sx, sy, min, min, 0, 0, size, size);
+        // mejora brillo/contraste suave
+        ctx.filter = 'contrast(1.05) brightness(1.03)';
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            const file = new File([blob], `camera_${Date.now()}.jpg`, { type: 'image/jpeg' });
+            handleAvatarFile(file);
+            handleCloseCamera();
+        }, 'image/jpeg', 0.92);
+    };
+    useEffect(() => {
+        return () => {
+            streamRef.current?.getTracks().forEach((t) => t.stop());
+            if (avatarPreview && avatarPreview.startsWith('blob:')) URL.revokeObjectURL(avatarPreview);
+        };
+    }, [avatarPreview]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -147,8 +310,30 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
         setError(null);
         setSuccess(null);
         try {
-            // Clean data for internal fields
-            const { id, employee_id, hire_date, last_login_at, created_at, updated_at, ...updateData } = formData;
+            const profile = mapApiToProfile(formData);
+            const validationError = validateProfile(profile, {
+              hasAvatar: !!formData.avatar || !!avatarPreview,
+            });
+            if (validationError) {
+                setError(validationError);
+                setSubmitting(false);
+                return;
+            }
+            // Si hay foto pendiente sin subir, súbela primero
+            if (avatarFile) {
+                const fd = new FormData();
+                fd.append('file', avatarFile);
+                const r = await adminApiClient.post(`/portal-redthread/empleados/${employeeId}/avatar`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+                formData.avatar = r.data.url;
+                setAvatarFile(null);
+                setAvatarPreview(null);
+            }
+            // Payload personal unificado + campos admin; excluye internals e _countryId
+            const { id, employee_id, hire_date, last_login_at, created_at, updated_at, _countryId, ...rest } = formData as any;
+            const updateData = {
+                ...rest,
+                ...profileToUpdatePayload(mapApiToProfile({ ...rest, avatar: formData.avatar, id, employee_id })),
+            };
             await adminApiClient.put(`/portal-redthread/empleados/${employeeId}`, updateData);
             setSuccess('Empleado actualizado correctamente.');
 
@@ -224,6 +409,88 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                         {/* LEFT COLUMN: Personal & Location */}
                         <Grid item xs={12} md={7}>
                             <Stack spacing={3}>
+                                {/* Foto de Perfil — 1:1 crop, preview, bucket seguro y trazabilidad */}
+                                <Paper sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+                                    <Box display="flex" alignItems="center" gap={1.5} mb={1}>
+                                        <Box sx={{ p: 1, bgcolor: 'success.light', borderRadius: 2, display: 'flex', color: 'success.main' }}>
+                                            <PersonIcon />
+                                        </Box>
+                                        <Typography variant="h6" fontWeight="bold">Foto de Perfil</Typography>
+                                        <Chip label="1:1" size="small" sx={{ ml: 1 }} />
+                                    </Box>
+                                    <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                                        Para credencial digital y documentos oficiales. Se guarda en bucket seguro (S3/Azure) y queda auditado quién la cambió. Solo RRHH/Admin pueden reemplazarla.
+                                    </Typography>
+                                    <Grid container spacing={2} alignItems="center">
+                                        <Grid item xs={12} sm={4} display="flex" justifyContent="center">
+                                            <Box sx={{ width: 140, height: 140, borderRadius: 2, overflow: 'hidden', border: '1px solid', borderColor: 'divider', bgcolor: isDark ? '#232428' : '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                                                <Box
+                                                    key={formData.avatar || 'no-avatar'}
+                                                    component="img"
+                                                    src={avatarPreview || (formData.avatar ? `${getMediaUrl(formData.avatar)}?t=${formData.updated_at ? new Date(formData.updated_at).getTime() : Date.now()}` : `https://ui-avatars.com/api/?name=${encodeURIComponent((formData.first_name || 'E') + ' ' + (formData.last_name || ''))}&background=E63946&color=fff&size=256`)}
+                                                    alt="preview"
+                                                    sx={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover',
+                                                        transform: `scale(${avatarZoom})`,
+                                                        filter: avatarPreview ? 'contrast(1.05) brightness(1.03)' : 'none',
+                                                        transition: 'transform 0.2s ease, filter 0.2s ease',
+                                                    }}
+                                                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.first_name || 'E')}&background=ddd&color=555&size=256`; }}
+                                                />
+                                                <Box sx={{ position: 'absolute', inset: 0, border: '2px dashed', borderColor: 'rgba(0,0,0,0.12)', borderRadius: 2, pointerEvents: 'none' }} />
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} sm={8}>
+                                            <Box
+                                                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                                                onDragLeave={() => setIsDragging(false)}
+                                                onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleAvatarFile(f); }}
+                                                onClick={() => fileInputRef.current?.click()}
+                                                sx={{ p: 2, borderRadius: 2, border: '1px dashed', borderColor: isDragging ? 'primary.main' : 'divider', bgcolor: isDragging ? 'action.hover' : 'rgba(0,0,0,0.02)', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease' }}
+                                            >
+                                                <input ref={fileInputRef} type="file" hidden accept="image/jpeg,image/png,image/webp" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarFile(f); e.currentTarget.value = ''; }} />
+                                                <Typography variant="body2" fontWeight={600}>Arrastrar y soltar o <Box component="span" sx={{ color: 'primary.main' }}>Subir foto</Box></Typography>
+                                                <Typography variant="caption" color="text.secondary">JPG, PNG — máx. 3MB — recorte 1:1 cuadrado</Typography>
+                                            </Box>
+                                            <Box display="flex" gap={1} mt={1.5} flexWrap="wrap" alignItems="center">
+                                                <Button size="small" variant="outlined" startIcon={<PhotoCameraIcon />} onClick={handleOpenCamera}>Tomar foto</Button>
+                                                <Typography variant="caption" color="text.secondary">o usa tu cámara integrada</Typography>
+                                            </Box>
+                                            {cameraError && <Alert severity="error" sx={{ mt: 1 }}>{cameraError}</Alert>}
+                                            {isCameraOpen && (
+                                                <Box sx={{ mt: 1.5, p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' }}>
+                                                    <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1', overflow: 'hidden', borderRadius: 2, bgcolor: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <canvas ref={canvasRef} style={{ display: 'none' }} />
+                                                    </Box>
+                                                    <Box display="flex" gap={1} mt={1}>
+                                                        <Button size="small" variant="contained" startIcon={<PhotoCameraIcon />} onClick={handleCapture}>Capturar</Button>
+                                                        <Button size="small" onClick={handleCloseCamera}>Cancelar</Button>
+                                                    </Box>
+                                                    <Typography variant="caption" color="text.secondary">Se recortará 1:1 y se aplicará mejora de brillo/contraste. Pedirá permisos si es necesario.</Typography>
+                                                </Box>
+                                            )}
+                                            {avatarPreview && (
+                                                <Box mt={1.5}>
+                                                    <Typography variant="caption" fontWeight="bold">Zoom y posición</Typography>
+                                                    <Slider value={avatarZoom} min={1} max={2.2} step={0.05} onChange={(_, v) => setAvatarZoom(v as number)} size="small" />
+                                                    <Box display="flex" gap={1} mt={1}>
+                                                        <Button size="small" variant="contained" onClick={handleAvatarUpload} disabled={avatarUploading} sx={{ borderRadius: 2 }}>
+                                                            {avatarUploading ? <CircularProgress size={18} color="inherit" /> : 'Guardar foto'}
+                                                        </Button>
+                                                        <Button size="small" onClick={() => { setAvatarFile(null); setAvatarPreview(null); setAvatarZoom(1); }}>Cancelar</Button>
+                                                    </Box>
+                                                </Box>
+                                            )}
+                                            {!avatarPreview && formData.avatar && (
+                                                <Typography variant="caption" color="text.secondary" display="block" mt={1}>Foto actual guardada en bucket seguro. Cada cambio queda en auditoría.</Typography>
+                                            )}
+                                            <Typography variant="caption" color="text.secondary" display="block" mt={1}>Extras: credencial digital con QR y foto en listados/dashboard se generan automáticamente.</Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Paper>
                                 {/* Personal Data Card */}
                                 <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
                                     <Box display="flex" alignItems="center" gap={1.5} mb={3}>
@@ -326,26 +593,79 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                     </Box>
                                     <Grid container spacing={2.5}>
                                         <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="País"
-                                                value={formData.country || ''}
-                                                onChange={(e) => handleChange('country', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <PlaceIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
+                                            <Autocomplete
+                                                freeSolo
+                                                options={COUNTRIES}
+                                                getOptionLabel={(option) => typeof option === 'string' ? option : option.name}
+                                                value={COUNTRIES.find((c) => c.name === formData.country || c.code === formData.country) || (formData.country || null)}
+                                                onChange={(_, newValue) => {
+                                                    const val = typeof newValue === 'string' ? newValue : newValue ? (newValue as typeof COUNTRIES[number]).name : '';
+                                                    handleChange('country', val);
+                                                    handleChange('city', '');
                                                 }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="País"
+                                                        placeholder="Selecciona país"
+                                                        InputProps={{
+                                                            ...params.InputProps,
+                                                            startAdornment: (
+                                                                <>
+                                                                    <InputAdornment position="start">
+                                                                        <PlaceIcon fontSize="small" color="action" />
+                                                                    </InputAdornment>
+                                                                    {params.InputProps.startAdornment}
+                                                                </>
+                                                            ),
+                                                        }}
+                                                    />
+                                                )}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
+                                            {(() => {
+                                                const selected = COUNTRIES.find((c) => c.name === formData.country || c.code === formData.country);
+                                                const states = selected ? selected.states : [];
+                                                return (
+                                                    <Autocomplete
+                                                        freeSolo
+                                                        options={states}
+                                                        value={formData.city || null}
+                                                        onChange={(_, newValue) => handleChange('city', typeof newValue === 'string' ? newValue : (newValue as string) || '')}
+                                                        onInputChange={(_, newInputValue) => {
+                                                            if (newInputValue && !states.includes(newInputValue)) handleChange('city', newInputValue);
+                                                        }}
+                                                        disabled={!formData.country}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                label="Estado / Ciudad"
+                                                                placeholder={formData.country ? 'Selecciona estado' : 'Selecciona un país primero'}
+                                                                InputProps={{
+                                                                    ...params.InputProps,
+                                                                    startAdornment: (
+                                                                        <>
+                                                                            <InputAdornment position="start">
+                                                                                <PlaceIcon fontSize="small" color="action" />
+                                                                            </InputAdornment>
+                                                                            {params.InputProps.startAdornment}
+                                                                        </>
+                                                                    ),
+                                                                }}
+                                                            />
+                                                        )}
+                                                        noOptionsText={formData.country ? 'No hay estados' : 'Selecciona un país primero'}
+                                                    />
+                                                );
+                                            })()}
+                                        </Grid>
+                                        <Grid item xs={12}>
                                             <TextField
                                                 fullWidth
-                                                label="Ciudad"
-                                                value={formData.city || ''}
-                                                onChange={(e) => handleChange('city', e.target.value)}
+                                                label="Dirección"
+                                                value={formData.address || ''}
+                                                onChange={(e) => handleChange('address', e.target.value)}
                                                 InputProps={{
                                                     startAdornment: (
                                                         <InputAdornment position="start">
@@ -357,6 +677,81 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                         </Grid>
                                     </Grid>
                                 </Paper>
+
+                                {/* Credencial Vertical CR80 */}
+                                {(() => {
+                                    const deptName = departments.find((d) => d._id === formData.department_id)?.name;
+                                    const ready = !!formData.avatar && !!formData.first_name && !!formData.last_name && !!formData.department_id && !!formData.employee_id;
+                                    // CR80 ≈ 204×323px; con recorte de clip+padding del componente
+                                    const credScale = 0.72;
+                                    const credVisualW = 230 * credScale;
+                                    const credVisualH = 390 * credScale;
+                                    return (
+                                        <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflow: 'hidden', width: '100%' }}>
+                                            <Box display="flex" alignItems="center" gap={1.5} mb={1} flexWrap="wrap">
+                                                <Box sx={{ p: 1, bgcolor: 'error.light', borderRadius: 2, display: 'flex', color: 'error.main' }}>
+                                                    <BadgeIcon />
+                                                </Box>
+                                                <Typography variant="h6" fontWeight="bold">Credencial de empleado</Typography>
+                                                <Chip label="CR80 85.6×53.98mm" size="small" sx={{ ml: 1 }} />
+                                            </Box>
+                                            <Typography variant="caption" color="text.secondary" display="block" mb={2}>Vista previa con el diseño de EmployeeIdDesign aplicado a foto, nombre, departamento, código y QR. Se genera en vertical para impresión.</Typography>
+                                            {credDesign.designName ? (
+                                                <Chip label={`Diseño: ${String(credDesign.designName)}`} size="small" color="primary" variant="outlined" sx={{ mb: 1.5 }} />
+                                            ) : null}
+                                            <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start', flexWrap: 'wrap', width: '100%', minHeight: credVisualH + 16 }}>
+                                                <Box
+                                                    sx={{
+                                                        width: credVisualW,
+                                                        height: credVisualH,
+                                                        flexShrink: 0,
+                                                        position: 'relative',
+                                                        overflow: 'visible',
+                                                        p: 1.5,
+                                                        bgcolor: 'rgba(0,0,0,0.03)',
+                                                        borderRadius: 2,
+                                                        border: '1px dashed',
+                                                        borderColor: 'divider',
+                                                    }}
+                                                >
+                                                    <Box sx={{ pointerEvents: 'none', position: 'absolute', top: 6, left: 6, transform: `scale(${credScale})`, transformOrigin: 'top left' }}>
+                                                        <CredentialCard
+                                                            photoUrl={formData.avatar || avatarPreview}
+                                                            firstName={formData.first_name || 'Nombre'}
+                                                            lastName={formData.last_name || 'Apellido'}
+                                                            departmentName={deptName}
+                                                            roleName={roles.find((r) => r.slug === formData.roles?.[0])?.name || formData.roles?.[0]}
+                                                            employeeCode={formData.employee_id || 'EMP-0000'}
+                                                            email={formData.email}
+                                                            phone={formData.phone}
+                                                            birthDate={formData.birth_date}
+                                                            {...credDesignCard}
+                                                        />
+                                                    </Box>
+                                                </Box>
+                                                <Box sx={{ flex: 1, minWidth: 200 }}>
+                                                    <Typography variant="body2" fontWeight={600}>{formData.first_name || '-'} {formData.last_name || ''}</Typography>
+                                                    <Typography variant="caption" color="text.secondary">{deptName || 'Sin departamento'} · {formData.employee_id || 'Sin código'}</Typography>
+                                                    <Typography variant="caption" color="text.secondary" display="block">
+                                                        Plantilla: {String(credDesign.template || 'geométrico')} · {String(credDesign.font || 'Inter')} · {String(credDesign.nameCase || 'UPPERCASE')}
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', gap: 1, mt: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+                                                        <Button size="small" variant="contained" onClick={() => setCredentialOpen(true)} disabled={!ready} sx={{ borderRadius: 2 }}>
+                                                            Ver credencial
+                                                        </Button>
+                                                        {!ready && (
+                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'warning.main' }}>
+                                                                <InfoIcon sx={{ fontSize: 16 }} />
+                                                                <Typography variant="caption">Faltan datos para generar credencial</Typography>
+                                                            </Box>
+                                                        )}
+                                                    </Box>
+                                                    <Typography variant="caption" color="text.secondary" display="block" mt={1}>Requiere: foto, nombre, departamento y código. Usa la foto 1:1 de arriba.</Typography>
+                                                </Box>
+                                            </Box>
+                                        </Paper>
+                                    );
+                                })()}
                             </Stack>
                         </Grid>
 
@@ -394,20 +789,35 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 label="Estado de Cuenta"
                                                 onChange={(e) => handleChange('status', e.target.value)}
                                                 renderValue={(selected) => (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
                                                         <Box sx={{
                                                             width: 10,
                                                             height: 10,
                                                             borderRadius: '50%',
-                                                            bgcolor: selected === 'active' ? '#4caf50' : selected === 'suspended' ? '#ff9800' : '#f44336'
+                                                            bgcolor: selected === 'active' ? '#4caf50' : selected === 'suspended' ? '#ff9800' : '#f44336',
+                                                            flexShrink: 0,
                                                         }} />
-                                                        {selected === 'active' ? '🟢 Activo' : selected === 'suspended' ? '🟡 Suspendido' : '🔴 Inactivo'}
+                                                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                            {selected === 'active' ? 'Activo' : selected === 'suspended' ? 'Suspendido' : 'Inactivo'}
+                                                        </Typography>
                                                     </Box>
                                                 )}
                                             >
-                                                <MenuItem value="active">🟢 Activo</MenuItem>
-                                                <MenuItem value="suspended">🟡 Suspendido</MenuItem>
-                                                <MenuItem value="inactive">🔴 Inactivo</MenuItem>
+                                                <MenuItem value="active">
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+                                                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#4caf50' }} /> Activo
+                                                    </Box>
+                                                </MenuItem>
+                                                <MenuItem value="suspended">
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+                                                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#ff9800' }} /> Suspendido
+                                                    </Box>
+                                                </MenuItem>
+                                                <MenuItem value="inactive">
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+                                                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#f44336' }} /> Inactivo
+                                                    </Box>
+                                                </MenuItem>
                                             </Select>
                                         </FormControl>
 
@@ -417,8 +827,9 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 value={formData.department_id || ''}
                                                 label="Departamento"
                                                 onChange={(e) => handleChange('department_id', e.target.value)}
+                                                sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center', pl: 0 } }}
                                                 startAdornment={
-                                                    <InputAdornment position="start" sx={{ ml: 1, mr: -0.5 }}>
+                                                    <InputAdornment position="start" sx={{ ml: 1, mr: 1.5, display: 'flex', alignItems: 'center' }}>
                                                         <BusinessIcon fontSize="small" color="action" />
                                                     </InputAdornment>
                                                 }
@@ -438,8 +849,9 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 value={formData.roles || []}
                                                 onChange={(e) => handleChange('roles', typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
                                                 input={<OutlinedInput label="Roles Asignados" />}
+                                                sx={{ '& .MuiSelect-select': { display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.5 } }}
                                                 startAdornment={
-                                                    <InputAdornment position="start" sx={{ ml: 1, mr: -0.5 }}>
+                                                    <InputAdornment position="start" sx={{ ml: 1, mr: 1.5, display: 'flex', alignItems: 'center' }}>
                                                         <SecurityIcon fontSize="small" color="action" />
                                                     </InputAdornment>
                                                 }
@@ -716,6 +1128,60 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                 onConfirm={handleConfirmPasswordReset}
                 submitting={submitting}
             />
+
+            {/* Modal Credencial Vertical — bordes 8px, header fijo, backdrop blur 12px */}
+            <Dialog
+                open={credentialOpen}
+                onClose={() => setCredentialOpen(false)}
+                maxWidth="md"
+                fullWidth
+                slotProps={{
+                    backdrop: { sx: { bgcolor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' } },
+                    paper: { sx: { borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' } },
+                }}
+            >
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
+                    <BadgeIcon color="primary" />
+                    <Typography variant="subtitle1" fontWeight={800}>Vista previa de credencial</Typography>
+                    <Box sx={{ ml: 'auto', fontSize: '0.7rem', color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 1, px: 1, py: 0.3 }}>85.6×53.98mm</Box>
+                </DialogTitle>
+                <DialogContent dividers sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', bgcolor: isDark ? '#121212' : '#f5f5f5', py: 3 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="caption" fontWeight={700} color="text.secondary">FRENTE</Typography>
+                    <CredentialCard
+                        photoUrl={formData.avatar || avatarPreview}
+                        firstName={formData.first_name}
+                        lastName={formData.last_name}
+                        departmentName={departments.find((d) => d._id === formData.department_id)?.name}
+                        roleName={roles.find((r) => r.slug === formData.roles?.[0])?.name || formData.roles?.[0]}
+                        employeeCode={formData.employee_id}
+                        email={formData.email}
+                        phone={formData.phone}
+                        birthDate={formData.birth_date}
+                        {...credDesignCard}
+                    />
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="caption" fontWeight={700} color="text.secondary">REVERSO</Typography>
+                        <CredentialBack
+                            employeeCode={formData.employee_id}
+                            email={formData.email}
+                            issueDate={new Date().toLocaleDateString('en-GB')}
+                            expiryDate={new Date(new Date().setFullYear(new Date().getFullYear() + 5)).toLocaleDateString('en-GB')}
+                            serial={`SN-${formData.employee_id}-${String(formData.first_name).slice(0, 2).toUpperCase()}${String(formData.last_name).slice(0, 2).toUpperCase()}`}
+                            {...credDesignBack}
+                        />
+                    </Box>
+                </DialogContent>
+                <Box sx={{ p: 2, display: 'flex', gap: 1, justifyContent: 'flex-end', bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Button variant="outlined" onClick={() => setCredentialOpen(false)} sx={{ borderRadius: '8px' }}>
+                        Cerrar
+                    </Button>
+                    <Button variant="contained" onClick={() => window.print()} sx={{ borderRadius: '8px', bgcolor: '#E63946', '&:hover': { bgcolor: '#B71C1C' } }}>
+                        Imprimir / Descargar PDF
+                    </Button>
+                </Box>
+            </Dialog>
         </Box>
     );
 };

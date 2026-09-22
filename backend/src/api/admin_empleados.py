@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 import re
+import os
 from src.models.employee import Employee, EmployeeStatus
 from src.models.admin_rbac import AdminRole, Permission, AdminUser
 from src.core.middleware.employee_rbac import require_employee_permission, require_all_employee_permissions, log_employee_action, get_current_employee
@@ -30,6 +31,7 @@ class EmployeeUpdateRequest(BaseModel):
     status: Optional[str] = None
     country: Optional[str] = None
     city: Optional[str] = None
+    address: Optional[str] = None
     birth_date: Optional[str] = None
     is_2fa_enabled: Optional[bool] = None
     password: Optional[str] = None  # For password resets
@@ -249,9 +251,11 @@ async def obtener_empleado(
         "status": employee.status,
         "country": employee.country,
         "city": employee.city,
+        "address": employee.address,
         "birth_date": employee.birth_date.isoformat() if employee.birth_date else None,
         "hire_date": employee.hire_date.isoformat() if employee.hire_date else None,
         "is_2fa_enabled": employee.is_2fa_enabled,
+        "avatar": employee.avatar,
         "last_login_at": employee.last_login_at.isoformat() if employee.last_login_at else None,
         "created_at": employee.created_at.isoformat(),
         "updated_at": employee.updated_at.isoformat()
@@ -303,3 +307,24 @@ async def listar_auditoria(
             "date": log.created_at.isoformat()
         } for log in logs
     ]
+
+
+AVATAR_DIR = "static/uploads/avatars"
+os.makedirs(AVATAR_DIR, exist_ok=True)
+ALLOWED_AVATAR_EXT = {".jpg", ".jpeg", ".png", ".webp"}
+MAX_AVATAR_SIZE = 3 * 1024 * 1024
+
+@router.post("/{employee_id}/avatar")
+async def upload_avatar(
+    employee_id: str,
+    file: UploadFile = File(...),
+    admin_user: Any = Depends(require_employee_permission(Permission.MANAGE_EMPLOYEES)),
+):
+    """Subir foto de perfil 1:1 para credencial y documentos oficiales. Valida JPG/PNG/WebP ≤3MB."""
+    employee = await Employee.get(employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    admin_id = str(admin_user.id) if hasattr(admin_user, 'id') else str(admin_user.user_id)
+    admin_name = f"{admin_user.first_name} {admin_user.last_name}" if hasattr(admin_user, 'first_name') else "Admin"
+    url = await employee_service.save_avatar(employee, file, admin_id, admin_name)
+    return {"url": url, "message": "Avatar actualizado"}

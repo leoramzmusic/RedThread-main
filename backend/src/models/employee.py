@@ -31,6 +31,7 @@ class Employee(Document):
     # Location
     country: Optional[str] = None
     city: Optional[str] = None
+    address: Optional[str] = None
     
     # Role & Organizational Access
     # Now supports multiple roles (slugs) and a specific department

@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { Container, Box, Typography, Button, Grid, Card, CardContent } from '@mui/material';
 import YukiLoader from '../components/common/YukiLoader';
+import LandingFooter from '../components/landing/LandingFooter';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatIcon from '@mui/icons-material/Chat';
 import RadarIcon from '@mui/icons-material/Radar';
@@ -17,9 +18,10 @@ import { AppearanceType } from '../types/appearance';
 import { getMediaUrl } from '../utils/media';
 import RedThreadLogo from '../components/landing/RedThreadLogo';
 import LandingNavbar from '../components/landing/LandingNavbar';
+import { landingShadows, landingTypography, getLandingHeroFontSize } from '../theme/liquidGlass';
 
-const getTitleFontFamily = (font?: string) => `${font || 'Poppins'}, Poppins, Inter, sans-serif`;
-const getBodyFontFamily = (font?: string) => `${font || 'Inter'}, Inter, sans-serif`;
+const getTitleFontFamily = (font?: string) => `${font || landingTypography.heroTitle.family}, Poppins, Inter, sans-serif`;
+const getBodyFontFamily = (font?: string) => `${font || landingTypography.heroBody.family}, Inter, sans-serif`;
 
 
 // Translation content for all languages (fallback)
@@ -130,8 +132,10 @@ const translations = {
   }
 };
 
-const languages = ['es', 'en', 'pt', 'fr'] as const;
-type Language = typeof languages[number];
+import { supportedLanguages } from '../config/languages';
+
+const languages = supportedLanguages.map((l) => l.code) as unknown as readonly string[];
+type Language = (typeof supportedLanguages)[number]['code'];
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -176,16 +180,36 @@ export default function Home() {
       if (saved && languages.includes(saved as Language)) {
         return languages.indexOf(saved as Language);
       }
+      // Detección automática de región — híbrida: propone idioma del navegador si está soportado, si no mantiene 'en'
+      try {
+        const raw = navigator.language || (Intl.DateTimeFormat().resolvedOptions().locale as string) || 'en';
+        const browserLang = raw.split('-')[0].toLowerCase();
+        if (languages.includes(browserLang as Language)) {
+          return languages.indexOf(browserLang as Language);
+        }
+      } catch {}
     }
-    return 0;
+    // Fallback seguro: inglés (índice 0 = 'en')
+    return languages.indexOf('en' as Language) >= 0 ? languages.indexOf('en' as Language) : 0;
   });
-  const currentLang: Language = languages[currentLangIndex];
-  const t = translations[currentLang];
+  const currentLang: Language = languages[currentLangIndex] as Language;
+  const t = (translations as Record<string, typeof translations.es>)[currentLang] ?? translations.en;
+
+  // Transición controlada: inicia en 'en' (supportedLanguages[0]) y se pausa tras la primera selección manual
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
+
+  const handleLangChange = (lang: Language) => {
+    const idx = languages.indexOf(lang as string);
+    if (idx >= 0) setCurrentLangIndex(idx);
+    setTransitionEnabled(false);
+  };
 
   // CMS State
   const [cmsConfig, setCmsConfig] = useState<any>(null);
   const [heroImages, setHeroImages] = useState<string[]>([]);
+  const [heroBanners, setHeroBanners] = useState<Array<{ url: string; resolution: string }>>([]);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  const [viewportW, setViewportW] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const [heroIcon, setHeroIcon] = useState<string | null>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(true);
 
@@ -220,6 +244,12 @@ export default function Home() {
         const activeBanners = banners.filter(r => r.is_active && !r.metadata?.isHeroIcon);
         if (activeBanners.length > 0) {
           setHeroImages(activeBanners.map(b => getMediaUrl(b.url)));
+          setHeroBanners(activeBanners.map(b => ({
+            url: getMediaUrl(b.url),
+            resolution: (b.metadata?.resolution as string) || (b.metadata?.isMobile ? 'mobile' : 'all'),
+          })));
+        } else {
+          setHeroBanners([]);
         }
 
         const activeIcon = banners.find(r => r.is_active && r.metadata?.isHeroIcon);
@@ -239,8 +269,16 @@ export default function Home() {
     fetchCmsData();
   }, []);
 
-  // Auto-rotate language (Only if No CMS override for text)
+  // Viewport listener para fondos por resolución
   useEffect(() => {
+    const onResize = () => setViewportW(window.innerWidth);
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Auto-rotate language — se pausa tras la primera selección manual (transitionEnabled)
+  useEffect(() => {
+    if (!transitionEnabled) return;
     if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
@@ -249,20 +287,21 @@ export default function Home() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [transitionEnabled]);
 
-  // Auto-rotate hero images
+  // Auto-rotate hero images (respeta resolución)
   useEffect(() => {
-    if (heroImages.length > 1) {
+    const len = Math.max(heroImages.length, heroBanners.length, 1);
+    if (len > 1) {
       if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
         return;
       }
       const interval = setInterval(() => {
-        setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
+        setCurrentHeroIndex((prev) => (prev + 1) % len);
       }, 300000); // 5 minutes
       return () => clearInterval(interval);
     }
-  }, [heroImages]);
+  }, [heroImages, heroBanners]);
 
   const landingRef = useRef<HTMLDivElement | null>(null);
 
@@ -288,13 +327,10 @@ export default function Home() {
         });
       });
 
+      // Hero intro — shared across all (no pin)
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        const chars = subtitle
-          ? gsap.utils.toArray<HTMLElement>('.rt-landing-char', subtitle)
-          : [];
-
+        const chars = subtitle ? gsap.utils.toArray<HTMLElement>('.rt-landing-char', subtitle) : [];
         const master = gsap.timeline({ defaults: { ease: LANDING_TIMING.hero.ease } });
-
         master.addLabel('hero', 0);
         master.fromTo(
           chars,
@@ -314,8 +350,8 @@ export default function Home() {
           { y: 0, autoAlpha: 1, duration: LANDING_TIMING.heroText.duration, stagger: 0.12 },
           'hero+=0.3'
         );
-
-        if (heroLogo && hero) {
+        // Parallax solo desktop (evita jank táctil + foldable corto)
+        if (heroLogo && hero && window.matchMedia('(min-width: 1024px)').matches) {
           master.fromTo(
             heroLogo,
             { yPercent: LANDING_TIMING.parallax.yStart },
@@ -332,31 +368,51 @@ export default function Home() {
             'hero'
           );
         }
+        ScrollTrigger.refresh();
+      });
 
-        if (features && cards.length > 0) {
-          const pinTargets = [featuresTitle, ...cards].filter(Boolean) as HTMLElement[];
-          gsap.set(pinTargets, { autoAlpha: 0, y: 70 });
-          master.to(
-            pinTargets,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: LANDING_TIMING.features.cardDuration,
-              stagger: (i: number) => (i === 0 ? 0.1 : LANDING_TIMING.features.cardStagger),
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: features,
-                start: LANDING_TIMING.features.triggerStart,
-                end: LANDING_TIMING.features.pin,
-                pin: true,
-                pinSpacing: true,
-                scrub: LANDING_TIMING.features.scrub,
-              },
-            },
-            '<'
-          );
-        }
+      // Features — móvil/tablet/foldable (<1024): fade-up sin pin
+      mm.add('(prefers-reduced-motion: no-preference) and (max-width: 1023px)', () => {
+        if (!features || cards.length === 0) return;
+        const pinTargets = [featuresTitle, ...cards].filter(Boolean) as HTMLElement[];
+        gsap.set(pinTargets, { autoAlpha: 0, y: 28 });
+        gsap.to(pinTargets, {
+          autoAlpha: 1,
+          y: 0,
+          duration: LANDING_TIMING.features.cardDuration,
+          stagger: (i: number) => (i === 0 ? 0.08 : LANDING_TIMING.features.cardStagger),
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: features,
+            start: 'top 88%',
+            end: 'bottom 40%',
+            scrub: false,
+            once: false,
+          },
+        });
+        ScrollTrigger.refresh();
+      });
 
+      // Features — desktop/smart display (≥1024): pin + scrub (P0 desktop, no táctil)
+      mm.add('(prefers-reduced-motion: no-preference) and (min-width: 1024px)', () => {
+        if (!features || cards.length === 0) return;
+        const pinTargets = [featuresTitle, ...cards].filter(Boolean) as HTMLElement[];
+        gsap.set(pinTargets, { autoAlpha: 0, y: 70 });
+        gsap.to(pinTargets, {
+          autoAlpha: 1,
+          y: 0,
+          duration: LANDING_TIMING.features.cardDuration,
+          stagger: (i: number) => (i === 0 ? 0.1 : LANDING_TIMING.features.cardStagger),
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: features,
+            start: LANDING_TIMING.features.triggerStart,
+            end: LANDING_TIMING.features.pin,
+            pin: true,
+            pinSpacing: true,
+            scrub: LANDING_TIMING.features.scrub,
+          },
+        });
         ScrollTrigger.refresh();
       });
 
@@ -375,20 +431,44 @@ export default function Home() {
     if (typeof window === 'undefined') return;
     const id = window.requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => window.cancelAnimationFrame(id);
-  }, [heroImages, currentHeroIndex]);
+  }, [heroImages, heroBanners, currentHeroIndex, viewportW]);
 
-  // Dynamic Styles
-  const currentHeroImage = heroImages.length > 0 ? heroImages[currentHeroIndex] : null;
+  // Dynamic Styles — fondo por resolución (mobile/tablet/desktop/xl/smart) + gradiente fallback
+  const getResolutionKey = (w: number): string => {
+    if (w <= 767) return 'mobile';
+    if (w <= 1023) return 'tablet';
+    if (w <= 1439) return 'desktop';
+    if (w <= 1919) return 'xl';
+    return 'smart';
+  };
+  const currentHeroImage = (() => {
+    if (heroBanners.length > 0) {
+      const key = getResolutionKey(viewportW);
+      // 1) exact match para la resolución actual
+      let pool = heroBanners.filter(b => b.resolution === key);
+      // 2) fallback a 'all' (único) o desktop si es smart/xl sin imagen específica
+      if (pool.length === 0) pool = heroBanners.filter(b => b.resolution === 'all');
+      if (pool.length === 0) pool = heroBanners;
+      return pool[currentHeroIndex % pool.length]?.url || null;
+    }
+    return heroImages.length > 0 ? heroImages[currentHeroIndex % heroImages.length] : null;
+  })();
 
   const backgroundStyle = currentHeroImage
     ? {
       backgroundImage: `linear-gradient(rgba(29, 29, 31, 0.55), rgba(29, 29, 31, 0.68)), url(${currentHeroImage})`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundPosition: 'center center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'scroll',
+      transform: 'translateZ(0)',
     }
     : {
-      background: `linear-gradient(135deg, ${cmsConfig?.gradientStart || '#1A1B1E'} 0%, ${cmsConfig?.gradientEnd || '#B71C1C'} 100%)`
+      backgroundImage: `linear-gradient(135deg, ${cmsConfig?.gradientStart || '#1A1B1E'} 0%, ${cmsConfig?.gradientEnd || '#B71C1C'} 100%)`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'scroll',
     };
 
   // Helper to safely get CMS content with fallbacks
@@ -470,7 +550,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
         <style
           dangerouslySetInnerHTML={{
-            __html: `@media (prefers-reduced-motion: reduce){.rt-landing,.rt-landing *{transition:none !important;animation:none !important;scroll-behavior:auto !important}}`,
+            __html: `@media (prefers-reduced-motion: reduce){.rt-landing,.rt-landing *{transition:none !important;animation:none !important;scroll-behavior:auto !important} .rt-landing .rt-ctas *{transform:none !important}} @media (prefers-reduced-transparency: reduce){.rt-landing .rt-feature-card{backdrop-filter:none !important;-webkit-backdrop-filter:none !important;background:rgba(255,255,255,0.98) !important}} @media (prefers-contrast: more){.rt-landing .rt-feature-card{background:rgba(255,255,255,0.98) !important;border:1.5px solid #1D1D1F !important}}`,
           }}
         />
         <style>{`
@@ -538,27 +618,28 @@ export default function Home() {
         sx={{
           position: 'relative',
           overflow: 'hidden',
-          minHeight: '100vh',
+          minHeight: '100dvh',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
           ...backgroundStyle,
           transition: 'background 0.5s ease',
         }}
       >
-        <LandingNavbar currentLang={currentLang} onLangChange={(lang) => {
-          const idx = languages.indexOf(lang);
-          if (idx >= 0) setCurrentLangIndex(idx);
-        }} />
-        {/* Decorative glow blobs */}
+        <LandingNavbar currentLang={currentLang} onLangChange={handleLangChange} />
+        {/* Decorative glow blobs — fluid across 280→2560, muted on foldable cover to avoid overflow */}
         <Box
           aria-hidden="true"
           sx={{
             position: 'absolute',
-            top: -180,
-            right: -120,
-            width: { xs: 320, md: 520 },
-            height: { xs: 320, md: 520 },
+            top: { xs: -120, sm: -180 },
+            right: { xs: -80, sm: -120 },
+            width: { xs: 220, sm: 320, md: 520, xl: 640 },
+            height: { xs: 220, sm: 320, md: 520, xl: 640 },
             borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(230,57,70,0.5) 0%, rgba(183,28,28,0) 70%)',
-            filter: 'blur(70px)',
+            filter: { xs: 'blur(50px)', md: 'blur(70px)' },
+            opacity: { xs: 0.6, md: 1 },
             pointerEvents: 'none',
             zIndex: 0,
           }}
@@ -567,28 +648,45 @@ export default function Home() {
           aria-hidden="true"
           sx={{
             position: 'absolute',
-            bottom: -160,
-            left: -140,
-            width: { xs: 300, md: 480 },
-            height: { xs: 300, md: 480 },
+            bottom: { xs: -100, sm: -160 },
+            left: { xs: -80, sm: -140 },
+            width: { xs: 220, sm: 300, md: 480, xl: 620 },
+            height: { xs: 220, sm: 300, md: 480, xl: 620 },
             borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(255,107,107,0.4) 0%, rgba(255,107,107,0) 70%)',
-            filter: 'blur(80px)',
+            filter: { xs: 'blur(60px)', md: 'blur(80px)' },
+            opacity: { xs: 0.6, md: 1 },
             pointerEvents: 'none',
             zIndex: 0,
           }}
         />
-        {/* Hero Section */}
-        <Container maxWidth="lg">
+        {/* Hero Section — Producto */}
+        <Container
+          id="producto"
+          maxWidth={false}
+          sx={{
+            maxWidth: { xs: '100%', sm: '540px', md: '768px', lg: '1024px', xl: '1280px' },
+            '@media (min-width:1920px)': { maxWidth: '1600px' },
+            mx: 'auto',
+            px: { xs: 2, sm: 3, lg: 4 },
+          }}
+        >
           <Box
             className="rt-hero"
             sx={{
-              pt: { xs: 10, md: 14 },
-              pb: { xs: 6, md: 9 },
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              pt: { xs: 10, sm: 11, md: 14, lg: 16, xl: 18 },
+              pb: { xs: 6, md: 9, lg: 10 },
               textAlign: 'center',
               color: 'white',
               position: 'relative',
               zIndex: 1,
+              width: '100%',
+              maxWidth: { xs: '100%', sm: '640px', md: '720px', lg: '820px' },
+              mx: 'auto',
+              transition: transitionEnabled ? 'all 0.3s ease' : 'none',
             }}
           >
             <Box
@@ -598,7 +696,7 @@ export default function Home() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 mb: 2,
-                minHeight: 130,
+                minHeight: { xs: 100, sm: 130, lg: 140 },
               }}
             >
               {heroIcon && heroIcon !== '/imagotipo.png' ? (
@@ -606,34 +704,41 @@ export default function Home() {
                   className="rt-hero-logo"
                   src={heroIcon}
                   alt="Red Thread"
-                  style={{ height: '120px', width: 'auto', maxWidth: '100%' }}
+                  style={{ height: 'clamp(88px, 12vw, 160px)', width: 'auto', maxWidth: '100%' }}
                 />
               ) : (
                 <RedThreadLogo
                   className="rt-hero-logo"
                   variant="mark"
                   aria-label="Red Thread (RETH)"
-                  style={{ height: 120, width: 'auto', maxWidth: '100%' }}
+                  style={{ height: 'clamp(88px, 12vw, 160px)', width: 'auto', maxWidth: '100%' }}
                 />
               )}
             </Box>
-            <Typography
-              component="h1"
-              variant="h5"
-              className="rt-subtitle"
-              aria-label={displayText.subtitle}
-              sx={{
-                fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
-                fontWeight: 600,
-                letterSpacing: '0.02em',
-                lineHeight: 1.35,
-                fontSize: { xs: 'max(3.4rem, 3.1rem)', md: `max(${cmsConfig?.subtitleFontSize || 5}rem, 4.6rem)` },
-                color: cmsConfig?.subtitleColor || 'white',
-                mb: 3,
-                opacity: 0.98,
-                textShadow: '0 2px 6px rgba(0,0,0,0.35)'
-              }}
-            >
+              <Typography
+                component="h1"
+                variant="h5"
+                className="rt-subtitle"
+                aria-label={displayText.subtitle}
+                sx={{
+                  fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
+                  fontWeight: landingTypography.heroTitle.weight,
+                  letterSpacing: landingTypography.heroTitle.tracking,
+                  lineHeight: landingTypography.heroTitle.lineHeight,
+                  fontOpticalSizing: 'auto',
+                  fontSize: { xs: landingTypography.heroTitle.size.xs, md: `clamp(4.2rem, 5vw, ${cmsConfig?.subtitleFontSize || 5}rem)` },
+                  color: cmsConfig?.subtitleColor || 'white',
+                  mb: 3,
+                  opacity: 0.98,
+                  textShadow: landingShadows.text.heroTitle,
+                  willChange: 'transform',
+                  overflowWrap: 'anywhere',
+                  textAlign: 'center',
+                  mx: 'auto',
+                  maxWidth: '100%',
+                  textWrap: 'balance',
+                }}
+              >
               {renderChars(displayText.subtitle)}
             </Typography>
             <Typography
@@ -641,19 +746,23 @@ export default function Home() {
               className="rt-description"
               sx={{
                 fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
-                fontWeight: 400,
-                fontSize: { xs: '1.05rem', md: '1.15rem' },
-                lineHeight: 1.7,
-                mb: 5,
-                maxWidth: '620px',
+                fontWeight: landingTypography.heroBody.weight,
+                fontSize: landingTypography.heroBody.size,
+                lineHeight: landingTypography.heroBody.lineHeight,
+                letterSpacing: landingTypography.heroBody.tracking,
+                mb: { xs: 4, md: 5 },
+                maxWidth: '720px',
                 mx: 'auto',
+                textAlign: 'center',
                 opacity: 0.95,
-                textShadow: '0 1px 3px rgba(0,0,0,0.35)'
+                textShadow: landingShadows.text.heroBody,
+                overflowWrap: 'anywhere',
+                textWrap: 'balance',
               }}
             >
               {displayText.description}
             </Typography>
-            <Box className="rt-ctas" sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Box className="rt-ctas" sx={{ display: 'flex', gap: { xs: 1.5, sm: 2 }, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', width: '100%', mx: 'auto' }}>
               <Button
                 variant="contained"
                 size="large"
@@ -665,18 +774,24 @@ export default function Home() {
                   WebkitBackdropFilter: 'blur(18px)',
                   color: 'white',
                   border: '1px solid rgba(255,255,255,0.2)',
-                  boxShadow:
-                    'inset 0 1px 0 rgba(255,255,255,0.3), 0 14px 34px rgba(230,57,70,0.4), 0 4px 10px rgba(0,0,0,0.22)',
+                  boxShadow: landingShadows.ctaPrimary.rest,
                   overflow: 'hidden',
+                  touchAction: 'manipulation', // Apple 10: hit padding + hysteresis
+                  transition: 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease',
                   '&:hover': {
                     bgcolor: '#FF6B6B',
                     transform: 'translateY(-3px)',
-                    boxShadow:
-                      'inset 0 1px 0 rgba(255,255,255,0.5), 0 22px 46px rgba(230,57,70,0.55), 0 6px 14px rgba(0,0,0,0.24)',
+                    boxShadow: landingShadows.ctaPrimary.hover,
                   },
-                  px: 4,
-                  py: 1.5,
-                  transition: 'all 0.25s ease',
+                  '&:active': {
+                    transform: 'scale(0.97)', // Apple 1: response on pointer-down, 100ms
+                    transition: 'transform 100ms ease-out',
+                  },
+                  flex: { xs: '1 1 140px', sm: '0 0 auto' },
+                  minWidth: { xs: 0, sm: 148 },
+                  px: { xs: 2.5, sm: 4 },
+                  py: { xs: 1.25, sm: 1.5 },
+                  fontSize: { xs: '0.95rem', sm: '1rem' },
                 }}
               >
                 {displayText.ctaPrimary}
@@ -692,16 +807,24 @@ export default function Home() {
                   bgcolor: 'rgba(255,255,255,0.10)',
                   backdropFilter: 'blur(18px)',
                   WebkitBackdropFilter: 'blur(18px)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 26px rgba(0,0,0,0.16)',
-                  transition: 'all 0.25s ease',
+                  boxShadow: landingShadows.ctaSecondary.rest,
+                  touchAction: 'manipulation',
+                  transition: 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, border-color 0.2s ease',
                   '&:hover': {
                     bgcolor: 'rgba(255,255,255,0.22)',
                     borderColor: 'rgba(255,255,255,0.95)',
                     transform: 'translateY(-2px)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 16px 34px rgba(0,0,0,0.22)',
+                    boxShadow: landingShadows.ctaSecondary.hover,
                   },
-                  px: 4,
-                  py: 1.5,
+                  '&:active': {
+                    transform: 'scale(0.97)',
+                    transition: 'transform 100ms ease-out',
+                  },
+                  flex: { xs: '1 1 140px', sm: '0 0 auto' },
+                  minWidth: { xs: 0, sm: 148 },
+                  px: { xs: 2.5, sm: 4 },
+                  py: { xs: 1.25, sm: 1.5 },
+                  fontSize: { xs: '0.95rem', sm: '1rem' },
                 }}
               >
                 {displayText.ctaSecondary}
@@ -709,8 +832,8 @@ export default function Home() {
             </Box>
           </Box>
 
-          {/* Features Section */}
-          <Box className="rt-features" sx={{ py: { xs: 7, md: 10 }, position: 'relative' }}>
+          {/* Features Section — Planes / también para anclas */}
+          <Box id="planes" className="rt-features" sx={{ py: { xs: 5, sm: 7, md: 10, xl: 12 }, position: 'relative', scrollMarginTop: '88px' }}>
             <svg
               className="rt-thread-svg"
               viewBox="0 0 1440 320"
@@ -736,47 +859,50 @@ export default function Home() {
                 fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
                 textAlign: 'center',
                 color: 'white',
-                fontSize: { xs: '2.9rem', md: '4rem' },
-                letterSpacing: '0.01em',
+                fontSize: landingTypography.sectionTitle.size,
+                letterSpacing: landingTypography.sectionTitle.tracking,
                 mb: { xs: 5, md: 7 },
-                fontWeight: 700,
-                textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                fontWeight: landingTypography.sectionTitle.weight,
+                lineHeight: landingTypography.sectionTitle.lineHeight,
+                textShadow: landingShadows.text.sectionTitle,
               }}
             >
               {displayText.howItWorks}
             </Typography>
-            <Grid container spacing={4} sx={{ position: 'relative', zIndex: 1 }}>
-              <Grid item xs={12} md={6} lg={3}>
+            <Grid container spacing={{ xs: 2, sm: 3, md: 3, xl: 4 }} sx={{ position: 'relative', zIndex: 1 }}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
                 <Card
                   className="rt-feature-card"
                   sx={{
                     height: '100%',
                     textAlign: 'center',
-                    borderRadius: 4,
-                    bgcolor: 'rgba(255,255,255,0.86)',
-                    backdropFilter: 'blur(14px)',
-                    WebkitBackdropFilter: 'blur(14px)',
+                    borderRadius: { xs: 3, sm: 4 },
+                    bgcolor: 'rgba(255,255,255,0.92)',
+                    backdropFilter: 'blur(14px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(14px) saturate(180%)',
                     border: '1px solid rgba(255,255,255,0.7)',
-                    boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    borderTop: '1px solid rgba(255,255,255,0.4)',
+                    boxShadow: landingShadows.card.rest,
+                    willChange: 'transform',
+                    transition: 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
                       transform: 'translateY(-8px) scale(1.03)',
-                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
+                      boxShadow: landingShadows.card.hover,
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 4 }}>
-                    <FavoriteIcon className="rt-icon-heart" sx={{ fontSize: 60, color: '#3B82F6', mb: 2 }} />                    <Typography
+                  <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
+                    <FavoriteIcon className="rt-icon-heart" sx={{ fontSize: { xs: 48, sm: 60 }, color: '#3B82F6', mb: 2 }} />                    <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
                         fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
-                        fontWeight: 600,
-                        letterSpacing: '0.01em',
-                        lineHeight: 1.3,
-                        fontSize: { xs: '1.6rem', md: '1.8rem' },
-                        color: '#3B1C2A',
+                        fontWeight: landingTypography.cardTitle.weight,
+                        letterSpacing: landingTypography.cardTitle.tracking,
+                        lineHeight: landingTypography.cardTitle.lineHeight,
+                        fontSize: landingTypography.cardTitle.size,
+                        color: landingTypography.cardTitle.color,
                       }}
                     >
                       {displayText.features.smartMatching.title}
@@ -785,8 +911,10 @@ export default function Home() {
                       variant="body2"
                       sx={{
                         fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
-                        lineHeight: 1.7,
-                        color: '#6E5560',
+                        lineHeight: landingTypography.cardBody.lineHeight,
+                        letterSpacing: landingTypography.cardBody.tracking,
+                        fontWeight: landingTypography.cardBody.weight,
+                        color: landingTypography.cardBody.color,
                       }}
                     >
                       {displayText.features.smartMatching.description}
@@ -795,38 +923,40 @@ export default function Home() {
                 </Card>
               </Grid>
 
-              <Grid item xs={12} md={6} lg={3}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
                 <Card
                   className="rt-feature-card"
                   sx={{
                     height: '100%',
                     textAlign: 'center',
-                    borderRadius: 4,
-                    bgcolor: 'rgba(255,255,255,0.86)',
-                    backdropFilter: 'blur(14px)',
-                    WebkitBackdropFilter: 'blur(14px)',
+                    borderRadius: { xs: 3, sm: 4 },
+                    bgcolor: 'rgba(255,255,255,0.92)',
+                    backdropFilter: 'blur(14px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(14px) saturate(180%)',
                     border: '1px solid rgba(255,255,255,0.7)',
-                    boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    borderTop: '1px solid rgba(255,255,255,0.4)',
+                    boxShadow: landingShadows.card.rest,
+                    willChange: 'transform',
+                    transition: 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
                       transform: 'translateY(-8px) scale(1.03)',
-                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
+                      boxShadow: landingShadows.card.hover,
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 4 }}>
-                    <ChatIcon className="rt-icon-chat" sx={{ fontSize: 60, color: '#8B5CF6', mb: 2 }} />
+                  <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
+                    <ChatIcon className="rt-icon-chat" sx={{ fontSize: { xs: 48, sm: 60 }, color: '#8B5CF6', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
                         fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
-                        fontWeight: 600,
-                        letterSpacing: '0.01em',
-                        lineHeight: 1.3,
-                        fontSize: { xs: '1.6rem', md: '1.8rem' },
-                        color: '#3B1C2A',
+                        fontWeight: landingTypography.cardTitle.weight,
+                        letterSpacing: landingTypography.cardTitle.tracking,
+                        lineHeight: landingTypography.cardTitle.lineHeight,
+                        fontSize: landingTypography.cardTitle.size,
+                        color: landingTypography.cardTitle.color,
                       }}
                     >
                       {displayText.features.realTimeChat.title}
@@ -835,8 +965,10 @@ export default function Home() {
                       variant="body2"
                       sx={{
                         fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
-                        lineHeight: 1.7,
-                        color: '#6E5560',
+                        lineHeight: landingTypography.cardBody.lineHeight,
+                        letterSpacing: landingTypography.cardBody.tracking,
+                        fontWeight: landingTypography.cardBody.weight,
+                        color: landingTypography.cardBody.color,
                       }}
                     >
                       {displayText.features.realTimeChat.description}
@@ -845,38 +977,40 @@ export default function Home() {
                 </Card>
               </Grid>
 
-              <Grid item xs={12} md={6} lg={3}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
                 <Card
                   className="rt-feature-card"
                   sx={{
                     height: '100%',
                     textAlign: 'center',
-                    borderRadius: 4,
-                    bgcolor: 'rgba(255,255,255,0.86)',
-                    backdropFilter: 'blur(14px)',
-                    WebkitBackdropFilter: 'blur(14px)',
+                    borderRadius: { xs: 3, sm: 4 },
+                    bgcolor: 'rgba(255,255,255,0.92)',
+                    backdropFilter: 'blur(14px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(14px) saturate(180%)',
                     border: '1px solid rgba(255,255,255,0.7)',
-                    boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    borderTop: '1px solid rgba(255,255,255,0.4)',
+                    boxShadow: landingShadows.card.rest,
+                    willChange: 'transform',
+                    transition: 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
                       transform: 'translateY(-8px) scale(1.03)',
-                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
+                      boxShadow: landingShadows.card.hover,
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 4 }}>
-                    <RadarIcon className="rt-icon-radar" sx={{ fontSize: 60, color: '#F59E0B', mb: 2 }} />
+                  <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
+                    <RadarIcon className="rt-icon-radar" sx={{ fontSize: { xs: 48, sm: 60 }, color: '#F59E0B', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
                         fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
-                        fontWeight: 600,
-                        letterSpacing: '0.01em',
-                        lineHeight: 1.3,
-                        fontSize: { xs: '1.6rem', md: '1.8rem' },
-                        color: '#3B1C2A',
+                        fontWeight: landingTypography.cardTitle.weight,
+                        letterSpacing: landingTypography.cardTitle.tracking,
+                        lineHeight: landingTypography.cardTitle.lineHeight,
+                        fontSize: landingTypography.cardTitle.size,
+                        color: landingTypography.cardTitle.color,
                       }}
                     >
                       {displayText.features.proximityRadar.title}
@@ -885,8 +1019,10 @@ export default function Home() {
                       variant="body2"
                       sx={{
                         fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
-                        lineHeight: 1.7,
-                        color: '#6E5560',
+                        lineHeight: landingTypography.cardBody.lineHeight,
+                        letterSpacing: landingTypography.cardBody.tracking,
+                        fontWeight: landingTypography.cardBody.weight,
+                        color: landingTypography.cardBody.color,
                       }}
                     >
                       {displayText.features.proximityRadar.description}
@@ -895,38 +1031,40 @@ export default function Home() {
                 </Card>
               </Grid>
 
-              <Grid item xs={12} md={6} lg={3}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
                 <Card
                   className="rt-feature-card"
                   sx={{
                     height: '100%',
                     textAlign: 'center',
-                    borderRadius: 4,
-                    bgcolor: 'rgba(255,255,255,0.86)',
-                    backdropFilter: 'blur(14px)',
-                    WebkitBackdropFilter: 'blur(14px)',
+                    borderRadius: { xs: 3, sm: 4 },
+                    bgcolor: 'rgba(255,255,255,0.92)',
+                    backdropFilter: 'blur(14px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(14px) saturate(180%)',
                     border: '1px solid rgba(255,255,255,0.7)',
-                    boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    borderTop: '1px solid rgba(255,255,255,0.4)',
+                    boxShadow: landingShadows.card.rest,
+                    willChange: 'transform',
+                    transition: 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
                       transform: 'translateY(-8px) scale(1.03)',
-                      boxShadow: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
+                      boxShadow: landingShadows.card.hover,
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 4 }}>
-                    <GroupsIcon className="rt-icon-groups" sx={{ fontSize: 60, color: '#E63946', mb: 2 }} />
+                  <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
+                    <GroupsIcon className="rt-icon-groups" sx={{ fontSize: { xs: 48, sm: 60 }, color: '#E63946', mb: 2 }} />
                     <Typography
                       variant="h5"
                       className="rt-card-title"
                       gutterBottom
                       sx={{
                         fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
-                        fontWeight: 600,
-                        letterSpacing: '0.01em',
-                        lineHeight: 1.3,
-                        fontSize: { xs: '1.6rem', md: '1.8rem' },
-                        color: '#3B1C2A',
+                        fontWeight: landingTypography.cardTitle.weight,
+                        letterSpacing: landingTypography.cardTitle.tracking,
+                        lineHeight: landingTypography.cardTitle.lineHeight,
+                        fontSize: landingTypography.cardTitle.size,
+                        color: landingTypography.cardTitle.color,
                       }}
                     >
                       {displayText.features.multipleIntentions.title}
@@ -935,8 +1073,10 @@ export default function Home() {
                       variant="body2"
                       sx={{
                         fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
-                        lineHeight: 1.7,
-                        color: '#6E5560',
+                        lineHeight: landingTypography.cardBody.lineHeight,
+                        letterSpacing: landingTypography.cardBody.tracking,
+                        fontWeight: landingTypography.cardBody.weight,
+                        color: landingTypography.cardBody.color,
                       }}
                     >
                       {displayText.features.multipleIntentions.description}
@@ -946,44 +1086,13 @@ export default function Home() {
               </Grid>
             </Grid>
           </Box>
+          {/* Anclajes adicionales para navbar */}
+          <Box id="seguridad" sx={{ scrollMarginTop: '88px', py: 1 }} />
+          <Box id="soporte" sx={{ scrollMarginTop: '88px', py: 1 }} />
+          <Box id="descarga" sx={{ scrollMarginTop: '88px', py: 1 }} />
         </Container>
 
-        {/* Footer */}
-        <Box
-          sx={{
-            py: 5,
-            textAlign: 'center',
-            color: 'white',
-            opacity: 0.85,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <Typography variant="body2" sx={{ fontFamily: getBodyFontFamily(cmsConfig?.bodyFont), letterSpacing: '0.04em' }}>
-            {displayText.footer.split(/([❤♥])/).map((chunk: string, idx: number) =>
-              /[❤♥]/.test(chunk) ? (
-                <Box
-                  key={idx}
-                  component="span"
-                  aria-hidden="true"
-                  sx={{
-                    display: 'inline-block',
-                    color: '#E63946',
-                    fontSize: '1.15em',
-                    lineHeight: 1,
-                    verticalAlign: '-0.08em',
-                    mx: 0.15,
-                    filter: 'drop-shadow(0 1px 2px rgba(230, 57, 70, 0.4))',
-                  }}
-                >
-                  ♥
-                </Box>
-              ) : (
-                chunk
-              )
-            )}
-          </Typography>
-        </Box>
+        <LandingFooter currentLang={currentLang} footerText={displayText.footer} bodyFont={cmsConfig?.bodyFont} />
       </Box>
     </>
   );

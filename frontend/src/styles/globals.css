@@ -500,12 +500,13 @@ body {
 }
 
 /* Force scaling on MUI Typography and other core text elements, excluding those with .no-scale */
-body[data-font-size] .MuiTypography-root:not(.no-scale),
-body[data-font-size] p:not(.no-scale),
-body[data-font-size] span:not(.no-scale),
-body[data-font-size] label:not(.no-scale),
-body[data-font-size] input:not(.no-scale),
-body[data-font-size] textarea:not(.no-scale) {
+/* .reth-cred: vista previa de credenciales controla su fontSize en vivo (sliders) */
+body[data-font-size] .MuiTypography-root:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+body[data-font-size] p:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+body[data-font-size] span:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+body[data-font-size] label:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+body[data-font-size] input:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+body[data-font-size] textarea:not(.no-scale):not(.reth-cred):not(.reth-cred *) {
   font-size: var(--app-font-size) !important;
 }
 
@@ -1039,6 +1040,22 @@ a:hover {
 
 .rt-fade-in {
   animation: rtSlideUpFade 0.55s ease 0.35s both;
+}
+
+/* Landing responsive — 280 cover, foldable hinge, smart display */
+@media (max-width: 320px) {
+  .rt-landing .rt-hero { padding-top: 88px !important; }
+  .rt-landing .rt-ctas { gap: 10px !important; }
+}
+@media (spanning: single-fold-vertical) {
+  .rt-landing { padding-left: env(fold-left, 0); padding-right: env(fold-right, 0); }
+  .rt-landing .rt-hero { gap: max(24px, env(fold-width, 24px)) !important; }
+}
+@media (min-width: 1920px) {
+  .rt-landing .rt-hero-logo img, .rt-landing .rt-hero-logo svg { height: 180px !important; }
+}
+@media (min-width: 2560px) {
+  .rt-landing { --lg-max-width: 1600px; }
 }
 
 /* Accessibility: reduce every animation/transition when requested */

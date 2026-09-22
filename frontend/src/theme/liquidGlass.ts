@@ -64,10 +64,12 @@ export const typeScale = {
 // ---- Spacing / Layout ----
 export const spacingUnit = 8;
 export const layoutTokens = {
-  maxContentWidth: 1200,
+  maxContentWidth: 1600,
+  contentWidth: { lg: 1200, xl: 1280, xxl: 1600 } as const,
   columns: 12,
-  gutter: 24,
-  breakpoints: [375, 768, 1024, 1440] as const,
+  gutter: { xs: 16, sm: 24, xl: 32 } as const,
+  // 280 cover foldable, 360 mobile, 540 unfolded foldable, 768 tablet, 1024 tablet-L/desktop-S, 1280 desktop, 1440 wide, 1920 smart display
+  breakpoints: [280, 360, 540, 768, 1024, 1280, 1440, 1920] as const,
 };
 
 // ---- Shape ----
@@ -91,6 +93,95 @@ export const elevationTokens = {
     high: '0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.14)',
   },
 };
+
+// ---- Landing Fase A — solo tipografía + sombra (additive, 0 breaking) ----
+// Base para Fase B (project(v)=v/1000*0.998/0.002 springs) sin tocar motion ahora.
+export const landingTypography = {
+  heroTitle: {
+    family: fontFamilies.heading,
+    weight: 600,
+    tracking: '-0.03em',
+    lineHeight: 1.05,
+    // 280 cover → 3.6rem max móvil, 5rem max desktop; floor AA evita <3.1/4.6
+    size: { xs: 'clamp(1.95rem, 7.2vw, 3.6rem)', md: 'clamp(4.2rem, 5vw, 5rem)' } as const,
+    sizeFloor: { xs: '3.1rem', md: '4.6rem' } as const,
+  },
+  heroBody: {
+    family: fontFamilies.body,
+    weight: 400,
+    tracking: '0em',
+    lineHeight: 1.7,
+    size: { xs: '1rem', sm: '1.05rem', md: '1.15rem' } as const,
+  },
+  sectionTitle: {
+    family: fontFamilies.heading,
+    weight: 700,
+    tracking: '0.01em',
+    lineHeight: 1.15,
+    size: { xs: 'clamp(1.9rem, 6vw, 2.9rem)', md: 'clamp(2.6rem, 3.5vw, 4rem)' } as const,
+  },
+  cardTitle: {
+    family: fontFamilies.heading,
+    weight: 600,
+    tracking: '0.01em',
+    lineHeight: 1.3,
+    size: { xs: '1.4rem', sm: '1.6rem', md: '1.8rem' } as const,
+    color: '#3B1C2A',
+  },
+  cardBody: {
+    family: fontFamilies.body,
+    weight: 400,
+    tracking: '0em',
+    lineHeight: 1.7,
+    color: '#6E5560',
+  },
+  footer: {
+    family: fontFamilies.body,
+    tracking: '0.04em',
+    lineHeight: 1.5,
+  },
+  langPill: {
+    size: '0.75rem',
+    weight: 600,
+    tracking: '0em',
+  },
+} as const;
+
+export const landingShadows = {
+  // Apple §12: bigger surfaces = heavier blur+shadow; pill nav es superficie flotante
+  nav: {
+    rest: '0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15)',
+    scrolled: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
+  },
+  card: {
+    rest: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)',
+    hover: '0 26px 55px rgba(255, 0, 80, 0.25), 0 12px 28px rgba(255, 0, 80, 0.12)',
+  },
+  ctaPrimary: {
+    rest: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 14px 34px rgba(230,57,70,0.4), 0 4px 10px rgba(0,0,0,0.22)',
+    hover: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 22px 46px rgba(230,57,70,0.55), 0 6px 14px rgba(0,0,0,0.24)',
+  },
+  ctaSecondary: {
+    rest: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 26px rgba(0,0,0,0.16)',
+    hover: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 16px 34px rgba(0,0,0,0.22)',
+  },
+  text: {
+    heroTitle: '0 2px 6px rgba(0,0,0,0.35)',
+    heroBody: '0 1px 3px rgba(0,0,0,0.35)',
+    sectionTitle: '0 2px 8px rgba(0,0,0,0.3)',
+  },
+} as const;
+
+/** Helper Fase A: resuelve fontSize hero respetando CMS override en md, con floor AA. */
+export function getLandingHeroFontSize(cmsMdSize?: number): { xs: string; md: string } {
+  const md = cmsMdSize ?? Number.parseFloat(landingTypography.heroTitle.size.md);
+  const floorMd = landingTypography.heroTitle.sizeFloor.md;
+  const floorXs = landingTypography.heroTitle.sizeFloor.xs;
+  return {
+    xs: `max(${landingTypography.heroTitle.size.xs}, ${floorXs})`,
+    md: `max(${md}rem, ${floorMd})`,
+  };
+}
 
 // ---- Motion ----
 export const motionTokens = {

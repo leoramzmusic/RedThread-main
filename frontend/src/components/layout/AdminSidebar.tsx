@@ -44,6 +44,13 @@ import {
   VideoLibrary as VideoLibraryIcon,
   ColorLens as ColorLensIcon,
   Pets as PetsIcon,
+  Badge as BadgeIcon,
+  AccountBox as AccountBoxIcon,
+  Tune as PreferencesIcon,
+  Notifications as NotificationsIcon,
+  Description as DescriptionIcon,
+  Gavel as GavelIcon,
+  ContactSupport as ContactSupportIcon,
 } from '@mui/icons-material';
 
 export const DRAWER_WIDTH = 260;
@@ -154,6 +161,25 @@ export default function AdminSidebar({
   const menuItems: MenuItem[] = [
     { id: 'home', label: 'Portal Home', icon: <DashboardIcon className="rt-dash" />, path: '/portal-redthread' },
     {
+      id: 'mi-perfil',
+      label: 'Mi perfil',
+      icon: <AccountBoxIcon />,
+      children: [
+        { id: 'mi-perfil-personal', label: 'Perfil personal', icon: <UserIcon />, path: '/portal-redthread/mi-perfil?tab=perfil' },
+        { id: 'mi-perfil-preferencias', label: 'Preferencias', icon: <PreferencesIcon />, path: '/portal-redthread/mi-perfil?tab=preferencias' },
+        { id: 'mi-perfil-credenciales', label: 'Historial de credenciales', icon: <BadgeIcon />, path: '/portal-redthread/mi-perfil?tab=credenciales' },
+        { id: 'mi-perfil-rep-incidente', label: 'Reportar incidente', icon: <ReportIcon />, path: '/portal-redthread/mi-perfil?tab=reportar-incidente' },
+        { id: 'mi-perfil-rep-seguridad', label: 'Reportar seguridad', icon: <SecurityIcon />, path: '/portal-redthread/mi-perfil?tab=reportar-seguridad' },
+        { id: 'mi-perfil-seguimiento', label: 'Seguimiento de reportes', icon: <HistoryIcon />, path: '/portal-redthread/mi-perfil?tab=seguimiento' },
+        { id: 'mi-perfil-historial-rep', label: 'Historial de reportes', icon: <GavelIcon />, path: '/portal-redthread/mi-perfil?tab=historial' },
+        { id: 'mi-perfil-notificaciones', label: 'Notificaciones', icon: <NotificationsIcon />, path: '/portal-redthread/mi-perfil?tab=notificaciones' },
+        { id: 'mi-perfil-documentos', label: 'Documentos', icon: <DescriptionIcon />, path: '/portal-redthread/mi-perfil?tab=documentos' },
+        { id: 'mi-perfil-seguridad-2fa', label: 'Seguridad (2FA)', icon: <SecurityIcon />, path: '/portal-redthread/mi-perfil?tab=seguridad' },
+        { id: 'mi-perfil-auditoria', label: 'Auditoría personal', icon: <HistoryIcon />, path: '/portal-redthread/mi-perfil?tab=auditoria' },
+        { id: 'mi-perfil-soporte', label: 'Soporte / RRHH', icon: <ContactSupportIcon />, path: '/portal-redthread/mi-perfil?tab=soporte' },
+      ],
+    },
+    {
       id: 'eventos',
       label: 'Eventos',
       icon: <EventIcon className="rt-flip" />,
@@ -210,6 +236,7 @@ export default function AdminSidebar({
         { id: 'empleados-registrar', label: 'Registrar empleado', icon: <PeopleIcon />, path: '/portal-redthread/empleados/registrar' },
         { id: 'empleados-roles', label: 'Roles y permisos', icon: <SecurityIcon />, path: '/portal-redthread/empleados/roles' },
         { id: 'empleados-departamentos', label: 'Departamentos', icon: <PeopleIcon />, path: '/portal-redthread/empleados/departamentos' },
+        { id: 'empleados-design', label: 'Credenciales', icon: <BadgeIcon />, path: '/portal-redthread/empleados/EmployeeIdDesign' },
       ],
     },
     {
@@ -499,145 +526,145 @@ export default function AdminSidebar({
         {menuItems.map((item, itemIndex) => {
           const parentDelay = `${Math.min(itemIndex * 45, 540)}ms`;
           return (
-          <Box key={item.id}>
-            <ListItem disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                selected={isActive(item.path)}
-                onClick={() => handleMenuClick(item)}
-                sx={{
-                  borderRadius: '10px',
-                  position: 'relative',
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  px: collapsed ? 0 : 2,
-                  minHeight: 44,
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  animation: `rtItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both ${parentDelay}`,
-                  '&:hover': {
-                    bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
-                    '& .MuiListItemIcon-root': {
-                      color: primary,
-                      transform: 'scale(1.1)',
-                    },
-                    '& .MuiListItemText-primary': {
-                      color: isDark ? textActive : primary,
-                      textShadow: isDark ? `0 0 10px ${alpha(primary, 0.65)}` : 'none',
-                    },
-                  },
-                  '&.Mui-selected': {
-                    bgcolor: alpha(primary, isDark ? 0.14 : 0.08),
-                    backgroundImage: `linear-gradient(90deg, ${alpha(primary, isDark ? 0.22 : 0.12)}, ${alpha(primary, 0.02)})`,
-                    '&:hover': {
-                      bgcolor: alpha(primary, isDark ? 0.18 : 0.1),
-                    },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      left: 0,
-                      top: '15%',
-                      height: '70%',
-                      width: '4px',
-                      borderRadius: '0 4px 4px 0',
-                      transformOrigin: 'top',
-                      bgcolor: primary,
-                      boxShadow: `0 0 10px ${alpha(primary, 0.8)}`,
-                      animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
-                    },
-                  },
-                }}
-              >
-                <ListItemIcon
+            <Box key={item.id}>
+              <ListItem disablePadding sx={{ mb: 0.5 }}>
+                <ListItemButton
+                  selected={isActive(item.path)}
+                  onClick={() => handleMenuClick(item)}
                   sx={{
-                    minWidth: collapsed ? 'auto' : 36,
-                    color: isActive(item.path) ? primary : iconInactive,
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
+                    borderRadius: '10px',
+                    position: 'relative',
+                    justifyContent: collapsed ? 'center' : 'flex-start',
+                    px: collapsed ? 0 : 2,
+                    minHeight: 44,
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    animation: `rtItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both ${parentDelay}`,
+                    '&:hover': {
+                      bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
+                      '& .MuiListItemIcon-root': {
+                        color: primary,
+                        transform: 'scale(1.1)',
+                      },
+                      '& .MuiListItemText-primary': {
+                        color: isDark ? textActive : primary,
+                        textShadow: isDark ? `0 0 10px ${alpha(primary, 0.65)}` : 'none',
+                      },
+                    },
+                    '&.Mui-selected': {
+                      bgcolor: alpha(primary, isDark ? 0.14 : 0.08),
+                      backgroundImage: `linear-gradient(90deg, ${alpha(primary, isDark ? 0.22 : 0.12)}, ${alpha(primary, 0.02)})`,
+                      '&:hover': {
+                        bgcolor: alpha(primary, isDark ? 0.18 : 0.1),
+                      },
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: '15%',
+                        height: '70%',
+                        width: '4px',
+                        borderRadius: '0 4px 4px 0',
+                        transformOrigin: 'top',
+                        bgcolor: primary,
+                        boxShadow: `0 0 10px ${alpha(primary, 0.8)}`,
+                        animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
+                      },
+                    },
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                {!collapsed && (
-                  <>
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        fontSize: '0.88rem',
-                        fontWeight: isActive(item.path) ? 600 : 500,
-                        sx: { color: isActive(item.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
-                      }}
-                    />
-                    {item.children && (
-                      expandedMenus.has(item.id)
-                        ? <ExpandLess sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
-                        : <ExpandMore sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
-                    )}
-                  </>
-                )}
-              </ListItemButton>
-            </ListItem>
-
-            {/* Submenu */}
-            {item.children && !collapsed && (
-              <Collapse in={expandedMenus.has(item.id)} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  {item.children.map((child, childIndex) => (
-                    <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
-                      <ListItemButton
-                        selected={isActive(child.path)}
-                        onClick={() => child.path && router.push(child.path)}
-                        sx={{
-                          pl: 4,
-                          borderRadius: '8px',
-                          position: 'relative',
-                          transition: 'all 0.2s ease',
-                          animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
-                          '&:hover': {
-                            bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
-                            '& .MuiListItemText-primary': { color: isDark ? textActive : primary },
-                            '& .MuiListItemIcon-root': { color: primary },
-                          },
-                          '&.Mui-selected': {
-                            bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
-                            '&::before': {
-                              content: '""',
-                              position: 'absolute',
-                              left: 0,
-                              top: '15%',
-                              height: '70%',
-                              width: 3,
-                              borderRadius: '0 3px 3px 0',
-                              transformOrigin: 'top',
-                              bgcolor: primary,
-                              boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
-                              animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
-                            },
-                          },
+                  <ListItemIcon
+                    sx={{
+                      minWidth: collapsed ? 'auto' : 36,
+                      color: isActive(item.path) ? primary : iconInactive,
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  {!collapsed && (
+                    <>
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontSize: '0.88rem',
+                          fontWeight: isActive(item.path) ? 600 : 500,
+                          sx: { color: isActive(item.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
                         }}
-                      >
-                        <ListItemIcon
+                      />
+                      {item.children && (
+                        expandedMenus.has(item.id)
+                          ? <ExpandLess sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
+                          : <ExpandMore sx={{ fontSize: '1.2rem', color: collapseIconColor }} />
+                      )}
+                    </>
+                  )}
+                </ListItemButton>
+              </ListItem>
+
+              {/* Submenu */}
+              {item.children && !collapsed && (
+                <Collapse in={expandedMenus.has(item.id)} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {item.children.map((child, childIndex) => (
+                      <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
+                        <ListItemButton
+                          selected={isActive(child.path)}
+                          onClick={() => child.path && router.push(child.path)}
                           sx={{
-                            minWidth: 34,
-                            color: isActive(child.path) ? primary : iconInactive,
+                            pl: 4,
+                            borderRadius: '8px',
+                            position: 'relative',
                             transition: 'all 0.2s ease',
+                            animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
+                            '&:hover': {
+                              bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
+                              '& .MuiListItemText-primary': { color: isDark ? textActive : primary },
+                              '& .MuiListItemIcon-root': { color: primary },
+                            },
+                            '&.Mui-selected': {
+                              bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
+                              '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                left: 0,
+                                top: '15%',
+                                height: '70%',
+                                width: 3,
+                                borderRadius: '0 3px 3px 0',
+                                transformOrigin: 'top',
+                                bgcolor: primary,
+                                boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
+                                animation: 'rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
+                              },
+                            },
                           }}
                         >
-                          {child.icon}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={child.label}
-                          primaryTypographyProps={{
-                            fontSize: '0.875rem',
-                            fontWeight: isActive(child.path) ? 600 : 400,
-                            sx: { color: isActive(child.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-              </Collapse>
-            )}
-          </Box>
-        );
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 34,
+                              color: isActive(child.path) ? primary : iconInactive,
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            {child.icon}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={child.label}
+                            primaryTypographyProps={{
+                              fontSize: '0.875rem',
+                              fontWeight: isActive(child.path) ? 600 : 400,
+                              sx: { color: isActive(child.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Collapse>
+              )}
+            </Box>
+          );
         })}
       </List>
 
