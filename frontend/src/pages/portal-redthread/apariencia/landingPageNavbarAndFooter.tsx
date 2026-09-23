@@ -233,6 +233,7 @@ export default function LandingPageNavbarAndFooterAdminPage() {
 
   const toggleLock = (section: NavSection) => {
     setSections((prev) => prev.map((s) => (s.id === section.id ? { ...s, locked: !s.locked } : s)));
+    markDirty();
   };
 
   const saveNavSection = async (formData: NavSectionFormData) => {
@@ -305,7 +306,7 @@ export default function LandingPageNavbarAndFooterAdminPage() {
         ops.push(appearanceService.createResource(mapSectionToResource({ ...rest, id: '' })).then(() => undefined));
       }
       for (const s of changes.toUpdate) {
-        ops.push(appearanceService.updateResource(s.id, mapSectionToResource(s)).then(() => undefined));
+        ops.push(appearanceService.updateResource(s.id, { metadata: { key: s.key, route: s.route, icon: s.icon, visible: s.visible, locked: s.locked, order: s.order, translations: s.translations } }).then(() => undefined));
       }
       for (const id of changes.toDelete) {
         ops.push(appearanceService.deleteResource(id));
