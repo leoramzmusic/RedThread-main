@@ -90,7 +90,7 @@ export default function NavbarRenderer({
         role="menubar"
       >
         {visibleNavItems.map((item) => (
-          <Box key={`${item.label}-${item.href}`} sx={{ position: 'relative', display: 'flex' }}>
+          <Box key={`${item.label}-${item.href}`} sx={{ position: 'relative', display: 'flex', '&:hover .rt-nav-underline': { transform: 'scaleX(1)' }, '&:focus-within .rt-nav-underline': { transform: 'scaleX(1)' } }}>
             <Button
               role="menuitem"
               startIcon={styleSpec.showIcons ? <NavbarIcon name={item.icon} /> : undefined}
@@ -114,6 +114,7 @@ export default function NavbarRenderer({
             </Button>
             {styleSpec.underlineOnHover && (
               <Box
+                className="rt-nav-underline"
                 sx={{
                   position: 'absolute',
                   bottom: 2,
