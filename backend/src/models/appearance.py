@@ -13,6 +13,8 @@ class AppearanceType(str, Enum):
     # CMS Types
     LANDING_BANNER = "landing_banner"
     LANDING_THEME = "landing_theme"
+    LANDING_NAVBAR = "landing_navbar"
+    LANDING_NAVBAR_STYLE = "landing_navbar_style"
     FAVICON_USER = "favicon_user"
 
 class Platform(str, Enum):

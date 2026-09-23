@@ -6,7 +6,9 @@ export enum AppearanceType {
   THEME = "theme",
   LANDING_BANNER = "landing_banner",
   LANDING_THEME = "landing_theme",
-  FAVICON_USER = "favicon_user"
+  LANDING_NAVBAR = "landing_navbar",
+  LANDING_NAVBAR_STYLE = "landing_navbar_style",
+  FAVICON_USER = "favicon_user",
 }
 
 export enum Platform {
