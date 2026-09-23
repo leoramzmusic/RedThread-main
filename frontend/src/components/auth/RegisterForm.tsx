@@ -214,6 +214,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
         setLoading(true);
 
         try {
+            const preferred = (typeof window !== 'undefined' ? localStorage.getItem('preferred_language') : null) || router.locale || 'en';
             const response = await apiClient.post('/auth/register', {
                 email: identifierType === 'email' ? formData.identifier : null,
                 phone: identifierType === 'phone' ? formData.identifier : null,
@@ -221,6 +222,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                 display_name: formData.username,
                 age: 18,
                 gender: 'other',
+                preferred_language: preferred,
             });
 
             if (response.data.requires_verification) {

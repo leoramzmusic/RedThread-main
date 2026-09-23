@@ -73,6 +73,27 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}
             // Fetch user details & prefs - cookies are sent automatically
             const userResponse = await apiClient.get('/auth/me');
 
+            // Language sync: DB vs local (continuity)
+            try {
+              const dbLang = (userResponse.data.preferred_language || 'en').toLowerCase();
+              const localLang = typeof window !== 'undefined' ? localStorage.getItem('preferred_language') : null;
+              if (dbLang !== router.locale) {
+                localStorage.setItem('preferred_language', dbLang);
+                document.cookie = `NEXT_LOCALE=${dbLang}; path=/; max-age=31536000; SameSite=Lax`;
+                const pathWithoutLocale = (router.asPath || '/').replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+                if (localLang && localLang !== dbLang && localLang !== 'en') {
+                  await apiClient.patch('/auth/me', {preferred_language: localLang});
+                  localStorage.setItem('preferred_language', localLang);
+                  document.cookie = `NEXT_LOCALE=${localLang}; path=/; max-age=31536000; SameSite=Lax`;
+                  window.location.href = `/${localLang}${pathWithoutLocale}`;
+                  return;
+                } else {
+                  window.location.href = `/${dbLang}${pathWithoutLocale}`;
+                  return;
+                }
+              }
+            } catch {}
+
             // Load preferences from DB (this will now also save to localStorage)
             try {
                 const settingsResponse = await apiClient.get('/settings/me');

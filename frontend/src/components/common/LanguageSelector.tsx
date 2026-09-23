@@ -4,6 +4,7 @@ import type { TransitionProps } from '@mui/material/transitions';
 import { Public } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { GLASS_ICON_BTN_SX } from './glassIconStyles';
+import { getEnabledLanguages } from '../../services/languageService';
 
 const LANGUAGES = [
     { code: 'en', label: 'English', flag: 'EN' },
@@ -40,7 +41,7 @@ const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: R
     }
 );
 
-export default function LanguageSelector() {
+export default function LanguageSelector({ showContinuityHint }: { showContinuityHint?: boolean } = {}) {
     const router = useRouter();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -53,13 +54,18 @@ export default function LanguageSelector() {
         setAnchorEl(null);
     };
 
-    const handleLanguageChange = (code: string) => {
-        // Save to localStorage for persistence
+    const handleLanguageChange = async (code: string) => {
+        const enabled = await getEnabledLanguages();
+        if (!enabled.includes(code)) return;
         localStorage.setItem('preferred_language', code);
-
-        // Reload the page with the new locale
+        document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; SameSite=Lax`;
+        try {
+            const token = localStorage.getItem('access_token');
+            if (token) await fetch('/api/auth/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({preferred_language: code}) });
+        } catch {}
         const currentPath = router?.asPath || '/';
-        window.location.href = `/${code}${currentPath}`;
+        const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+        window.location.href = `/${code}${pathWithoutLocale}`;
     };
 
     const currentLang = LANGUAGES.find(l => l.code === (router?.locale || 'es')) || LANGUAGES[1];
@@ -142,6 +148,7 @@ export default function LanguageSelector() {
                     </MenuItem>
                 ))}
             </Menu>
+            {showContinuityHint && <Typography variant="caption" sx={{display:'block', mt:1, color:'rgba(255,255,255,0.6)'}}>Este idioma se aplicará también dentro de la aplicación</Typography>}
         </Box>
     );
 }

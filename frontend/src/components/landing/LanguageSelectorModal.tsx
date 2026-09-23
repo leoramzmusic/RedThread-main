@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Box, Grid, Typography, Dialog, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { supportedLanguages } from '../../config/languages';
+import { getEnabledLanguages } from '../../services/languageService';
 
 type Language = (typeof supportedLanguages)[number]['code'];
 
@@ -58,6 +59,9 @@ function nearestTile(tiles: HTMLElement[], from: HTMLElement, dir: 'left' | 'rig
 
 export default function LanguageSelectorModal({ open, onClose, currentLang, onLangChange }: Props) {
   const gridRef = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState<string[] | null>(null);
+  useEffect(() => { getEnabledLanguages().then(setEnabled); }, []);
+  const visible = enabled ? supportedLanguages.filter(l => enabled.includes(l.code)) : supportedLanguages;
 
   const handleChange = (code: string) => {
     onLangChange(code as Language);
@@ -167,7 +171,7 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
         }}
       >
         <Grid ref={gridRef} container spacing={1} onKeyDown={handleGridKeyDown}>
-          {supportedLanguages.map((lang) => {
+          {visible.map((lang) => {
             const isActive = lang.code === currentLang;
             return (
               <Grid item xs={6} sm={4} md={3} key={lang.code}>
@@ -218,8 +222,9 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600, letterSpacing: '0.02em', display: 'block' }}>
             {MORE_LANGS[currentLang] ?? MORE_LANGS.en}
           </Typography>
+          <Typography variant="caption" sx={{display:'block', mt:1, color:'rgba(255,255,255,0.6)'}}>Este idioma se aplicará también dentro de la aplicación</Typography>
           <Typography variant="caption" sx={{ display: 'block', color: 'rgba(255,255,255,0.4)', mt: 0.5, fontSize: '0.65rem' }}>
-            {supportedLanguages.length} idiomas disponibles · RETH Liquid Glass
+            {visible.length} idiomas disponibles · RETH Liquid Glass
           </Typography>
         </Box>
       </Box>
