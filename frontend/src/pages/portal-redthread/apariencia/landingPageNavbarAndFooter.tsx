@@ -40,7 +40,13 @@ import appearanceService from '../../../services/appearanceService';
 import { AppearanceType, AppearanceResource, Platform } from '../../../types/appearance';
 import NavbarSectionList from '../../../components/appearance/navbar-editor/NavbarSectionList';
 import NavbarSectionDialog from '../../../components/appearance/navbar-editor/NavbarSectionDialog';
-import NavbarMiniPreview from '../../../components/appearance/navbar-editor/NavbarMiniPreview';
+import NavbarResponsivePreview from '../../../components/appearance/navbar-editor/NavbarResponsivePreview';
+import NavbarStyleSelector from '../../../components/appearance/navbar-editor/NavbarStyleSelector';
+import NavbarHistory from '../../../components/appearance/navbar-editor/NavbarHistory';
+import { computeSectionChanges } from '../../../components/appearance/navbar-editor/changeSet';
+import { getDefaultStyleSpec, mergeStyleSpec, NAVBAR_STYLE_ID_DEFAULT } from '../../../components/appearance/navbar-editor/styles';
+import type { NavbarStyleSpec, NavbarStyleId } from '../../../components/appearance/navbar-editor/styles';
+import type { AppearanceHistory } from '../../../types/appearance';
 import {
   NavSection,
   NavSectionFormData,
@@ -113,6 +119,13 @@ export default function LandingPageNavbarAndFooterAdminPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [currentLang, setCurrentLang] = useState<Language>('es');
   const [footerFormData, setFooterFormData] = useState<FooterFormData>({ ...DEFAULT_FOOTER });
+  const [styleDraft, setStyleDraft] = useState<NavbarStyleSpec>(() => getDefaultStyleSpec(NAVBAR_STYLE_ID_DEFAULT));
+  const [styleSaved, setStyleSaved] = useState<NavbarStyleSpec>(() => getDefaultStyleSpec(NAVBAR_STYLE_ID_DEFAULT));
+  const [sectionsSnapshot, setSectionsSnapshot] = useState<NavSection[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+  const [history, setHistory] = useState<AppearanceHistory[]>([]);
+  const [activeSubTab, setActiveSubTab] = useState(0);
+  const [dirtyCount, setDirtyCount] = useState(0);
 
   const fetchSections = useCallback(async () => {
     setLoading(true);
@@ -121,19 +134,41 @@ export default function LandingPageNavbarAndFooterAdminPage() {
       const mapped = resources.map(mapResourceToSection).sort(sortByOrder);
       if (mapped.length === 0) {
         const defaults = DEFAULT_SECTIONS.map((s, i) => ({ ...s, id: `default-${i}`, order: i }));
+        setSectionsSnapshot(defaults);
         setSections(defaults);
       } else {
+        setSectionsSnapshot(mapped);
         setSections(mapped);
       }
     } catch (e: any) {
       console.error('Error fetching navbar sections:', e);
       const defaults = DEFAULT_SECTIONS.map((s, i) => ({ ...s, id: `default-${i}`, order: i }));
+      setSectionsSnapshot(defaults);
       setSections(defaults);
       if (e?.response?.status !== 422) {
         setSnackbar({ open: true, message: 'Error al cargar secciones del navbar', severity: 'error' });
       }
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const fetchStyle = useCallback(async () => {
+    try {
+      const resources = await appearanceService.getResources(AppearanceType.LANDING_NAVBAR_STYLE);
+      const active = resources.find((r) => r.is_active);
+      if (active?.metadata?.id) {
+        const base = getDefaultStyleSpec(active.metadata.id);
+        const spec = mergeStyleSpec(base, {
+          accent: active.metadata.accent,
+          fontWeight: active.metadata.fontWeight,
+          hoverAnimation: active.metadata.hoverAnimation,
+        });
+        setStyleDraft(spec);
+        setStyleSaved(spec);
+      }
+    } catch (e: any) {
+      console.error('Error fetching navbar style:', e);
     }
   }, []);
 
@@ -164,6 +199,13 @@ export default function LandingPageNavbarAndFooterAdminPage() {
 
   useEffect(() => { fetchSections(); }, [fetchSections]);
   useEffect(() => { fetchFooter(); }, [fetchFooter, currentLang]);
+  useEffect(() => { fetchStyle(); }, [fetchStyle]);
+
+  useEffect(() => {
+    if (activeTab === 0 && activeSubTab === 2) {
+      appearanceService.getHistory().then((h) => setHistory(h)).catch(() => {});
+    }
+  }, [activeTab, activeSubTab]);
 
   const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
 
@@ -187,25 +229,21 @@ export default function LandingPageNavbarAndFooterAdminPage() {
     setFooterFormData(footerData[lang] || DEFAULT_FOOTER);
   };
 
+  const markDirty = () => setDirtyCount((n) => n + 1);
+
+  const toggleLock = (section: NavSection) => {
+    setSections((prev) => prev.map((s) => (s.id === section.id ? { ...s, locked: !s.locked } : s)));
+  };
+
   const saveNavSection = async (formData: NavSectionFormData) => {
-    setSaving(true);
-    try {
-      const resource = mapSectionToResource({ ...formData, id: editingSection?.id || '', order: editingSection?.order ?? sections.length });
-      if (editingSection?.id) {
-        await appearanceService.updateResource(editingSection.id, resource);
-        setSnackbar({ open: true, message: 'Sección actualizada', severity: 'success' });
-      } else {
-        await appearanceService.createResource(resource);
-        setSnackbar({ open: true, message: 'Sección creada', severity: 'success' });
-      }
-      closeNavDialog();
-      fetchSections();
-    } catch (e: any) {
-      console.error('Error saving section:', e);
-      setSnackbar({ open: true, message: `Error al guardar: ${e?.response?.data?.detail || e.message}`, severity: 'error' });
-    } finally {
-      setSaving(false);
+    if (editingSection) {
+      setSections((prev) => prev.map((s) => (s.id === editingSection.id ? { ...s, ...formData } : s)));
+    } else {
+      setSections((prev) => [...prev, { id: '', ...formData, order: prev.length }]);
     }
+    markDirty();
+    setNavDialogOpen(false);
+    setEditingSection(null);
   };
 
   const saveFooter = async () => {
@@ -238,33 +276,73 @@ export default function LandingPageNavbarAndFooterAdminPage() {
     if (lang === currentLang) setFooterFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const deleteSection = async (id: string) => {
-    if (!window.confirm('¿Eliminar esta sección del navbar?')) return;
-    try {
-      await appearanceService.deleteResource(id);
-      setSnackbar({ open: true, message: 'Sección eliminada', severity: 'success' });
-      fetchSections();
-    } catch (e: any) {
-      console.error('Error deleting section:', e);
-      setSnackbar({ open: true, message: 'Error al eliminar', severity: 'error' });
+  const deleteSection = (id: string) => {
+    if (window.confirm('¿Eliminar esta sección del navbar?')) {
+      setSections((prev) => prev.filter((s) => s.id !== id));
+      markDirty();
     }
   };
 
-  const toggleVisibility = async (section: NavSection) => {
-    try {
-      await appearanceService.updateResource(section.id, { metadata: { ...section, visible: !section.visible } });
-      setSections(prev => prev.map(s => s.id === section.id ? { ...s, visible: !s.visible } : s));
-    } catch (e: any) {
-      console.error('Error toggling visibility:', e);
-      setSnackbar({ open: true, message: 'Error al cambiar visibilidad', severity: 'error' });
-    }
+  const toggleVisibility = (section: NavSection) => {
+    if (section.locked) return;
+    setSections((prev) => prev.map((s) => (s.id === section.id ? { ...s, visible: !s.visible } : s)));
+    markDirty();
   };
 
   const handleReorder = (newSections: NavSection[]) => {
     setSections(newSections);
-    Promise.all(newSections.map(s =>
-      appearanceService.updateResource(s.id, { metadata: { ...s, order: s.order } })
-    )).catch(() => setSnackbar({ open: true, message: 'Error al reordenar', severity: 'error' }));
+    markDirty();
+  };
+
+  const saveAll = async () => {
+    setSaving(true);
+    try {
+      const changes = computeSectionChanges(sections, sectionsSnapshot);
+      const ops: Promise<void>[] = [];
+
+      for (const s of changes.toCreate) {
+        const { id, ...rest } = s;
+        ops.push(appearanceService.createResource(mapSectionToResource({ ...rest, id: '' })).then(() => undefined));
+      }
+      for (const s of changes.toUpdate) {
+        ops.push(appearanceService.updateResource(s.id, mapSectionToResource(s)).then(() => undefined));
+      }
+      for (const id of changes.toDelete) {
+        ops.push(appearanceService.deleteResource(id));
+      }
+
+      const styleChanged = JSON.stringify(styleDraft) !== JSON.stringify(styleSaved);
+      if (styleChanged) {
+        const existing = await appearanceService.getResources(AppearanceType.LANDING_NAVBAR_STYLE);
+        const active = existing.find((r) => r.is_active);
+        const styleMetadata = { id: styleDraft.id, accent: styleDraft.accent, fontWeight: styleDraft.fontWeight, hoverAnimation: styleDraft.hoverAnimation };
+        if (active?._id) {
+          ops.push(appearanceService.updateResource(active._id, { metadata: { ...styleMetadata } }).then(() => undefined));
+        } else {
+          ops.push(
+            appearanceService.createResource({
+              type: AppearanceType.LANDING_NAVBAR_STYLE,
+              platform: Platform.WEB,
+              url: '',
+              metadata: styleMetadata,
+              is_active: true,
+            }).then(() => undefined)
+          );
+        }
+      }
+
+      await Promise.all(ops);
+      setStyleSaved(styleDraft);
+      setDirtyCount(0);
+      setSectionsSnapshot(sections);
+      setSnackbar({ open: true, message: 'Cambios guardados', severity: 'success' });
+      if (styleChanged) fetchStyle();
+    } catch (e: any) {
+      console.error('Error saving all:', e);
+      setSnackbar({ open: true, message: `Error al guardar: ${e?.response?.data?.detail || e.message}`, severity: 'error' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -312,7 +390,7 @@ export default function LandingPageNavbarAndFooterAdminPage() {
           {activeTab === 0 && (
             <>
               <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Idioma de edición (Navbar)</Typography>
+                <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Idioma de edición</Typography>
                 <TextField
                   select
                   fullWidth
@@ -322,109 +400,155 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                   label="Seleccionar idioma"
                   sx={{ minWidth: 220, maxWidth: 300 }}
                 >
-                  {LANGUAGES.map(l => <MenuItem key={l} value={l}>{l.toUpperCase()}</MenuItem>)}
+                  {LANGUAGES.map((l) => <MenuItem key={l} value={l}>{l.toUpperCase()}</MenuItem>)}
                 </TextField>
               </Box>
 
-              <Grid container spacing={3}>
-                <Grid item xs={12} lg={7}>
-                  <Paper sx={{ p: 2 }}>
-                    <NavbarSectionList
-                      sections={sections}
-                      currentLang={currentLang}
-                      onEdit={openNavDialog}
-                      onDelete={deleteSection}
-                      onToggle={toggleVisibility}
-                      onReorder={handleReorder}
-                    />
-                  </Paper>
+              <NavbarResponsivePreview
+                sections={sections}
+                currentLang={currentLang}
+                draft={styleDraft}
+                saved={styleSaved}
+                showCompare={showCompare}
+              />
 
-                  <Box sx={{ mt: 2 }}>
-                    <Button
-                      size="small"
-                      startIcon={<TableView />}
-                      endIcon={<ExpandMore sx={{ transform: showDebugTable ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />}
-                      onClick={() => setShowDebugTable(prev => !prev)}
-                    >
-                      Modo depuración
-                    </Button>
-                    <Collapse in={showDebugTable}>
-                      <Paper sx={{ p: 2, mt: 1 }}>
-                        <Typography variant="h6" gutterBottom mb={2}>Editor de Traducciones Navbar (depuración)</Typography>
-                        <Typography variant="body2" color="text.secondary" paragraph>
-                          Cada fila es una sección; cada columna un idioma. Si falta traducción, se usa fallback (ES → EN → primera disponible).
-                        </Typography>
-                        <TableContainer sx={{ maxHeight: 500, overflow: 'auto' }}>
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell sx={{ width: 60 }}>Icono</TableCell>
-                                <TableCell sx={{ width: 140 }}>Clave / Ruta</TableCell>
-                                {LANGUAGES.map(lang => (
-                                  <TableCell key={lang} align="center" sx={{ minWidth: 140 }}>
-                                    <Chip label={lang.toUpperCase()} size="small" variant="outlined" />
-                                  </TableCell>
-                                ))}
-                                <TableCell align="center" sx={{ width: 80 }}>Visibilidad</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {sections.map((section, rowIndex) => (
-                                <TableRow key={section.id} hover>
-                                  <TableCell>
-                                    <Chip label={section.icon} size="small" variant="outlined" />
-                                  </TableCell>
-                                  <TableCell>
-                                    <Typography variant="caption" display="block" color="text.secondary">{section.key}</Typography>
-                                    <Typography variant="caption" fontFamily="monospace">{section.route}</Typography>
-                                  </TableCell>
+              <Tabs value={activeSubTab} onChange={(_, v) => setActiveSubTab(v)} sx={{ my: 2 }} variant="scrollable" scrollButtons="auto">
+                <Tab label="Menús" />
+                <Tab label="Estilo" />
+                <Tab label="Historial" />
+              </Tabs>
+
+              {activeSubTab === 0 && (
+                <Grid container spacing={3}>
+                  <Grid item xs={12} lg={7}>
+                    <Paper sx={{ p: 2 }}>
+                      <NavbarSectionList
+                        sections={sections}
+                        currentLang={currentLang}
+                        onEdit={openNavDialog}
+                        onDelete={deleteSection}
+                        onToggle={toggleVisibility}
+                        onToggleLock={toggleLock}
+                        onReorder={handleReorder}
+                      />
+                    </Paper>
+
+                    <Box sx={{ mt: 2 }}>
+                      <Button
+                        size="small"
+                        startIcon={<TableView />}
+                        endIcon={<ExpandMore sx={{ transform: showDebugTable ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />}
+                        onClick={() => setShowDebugTable(prev => !prev)}
+                      >
+                        Modo depuración
+                      </Button>
+                      <Collapse in={showDebugTable}>
+                        <Paper sx={{ p: 2, mt: 1 }}>
+                          <Typography variant="h6" gutterBottom mb={2}>Editor de Traducciones Navbar (depuración)</Typography>
+                          <Typography variant="body2" color="text.secondary" paragraph>
+                            Cada fila es una sección; cada columna un idioma. Si falta traducción, se usa fallback (ES → EN → primera disponible).
+                          </Typography>
+                          <TableContainer sx={{ maxHeight: 500, overflow: 'auto' }}>
+                            <Table size="small">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell sx={{ width: 60 }}>Icono</TableCell>
+                                  <TableCell sx={{ width: 140 }}>Clave / Ruta</TableCell>
                                   {LANGUAGES.map(lang => (
-                                    <TableCell key={lang} align="center">
-                                      <TextField
-                                        size="small"
-                                        value={getTranslationFallback(section.translations, lang)}
-                                        onChange={e => {
-                                          const newSections = [...sections];
-                                          newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: e.target.value } };
-                                          setSections(newSections);
-                                        }}
-                                        inputProps={{ style: { textAlign: 'center' } }}
-                                        sx={{ width: '100%' }}
-                                        placeholder={section.translations[lang] ? '' : `(${getTranslationFallback(section.translations, lang) || 'vacío'})`}
-                                        InputProps={{
-                                          endAdornment: section.translations[lang] ? (
-                                            <IconButton size="small" onClick={() => {
-                                              const newSections = [...sections];
-                                              newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: '' } };
-                                              setSections(newSections);
-                                            }}><Cancel fontSize="small" /></IconButton>
-                                          ) : null
-                                        }}
-                                      />
+                                    <TableCell key={lang} align="center" sx={{ minWidth: 140 }}>
+                                      <Chip label={lang.toUpperCase()} size="small" variant="outlined" />
                                     </TableCell>
                                   ))}
-                                  <TableCell align="center">
-                                    <Switch
-                                      checked={section.visible}
-                                      onChange={() => toggleVisibility(section)}
-                                      size="small"
-                                      color="primary"
-                                    />
-                                  </TableCell>
+                                  <TableCell align="center" sx={{ width: 80 }}>Visibilidad</TableCell>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                      </Paper>
-                    </Collapse>
-                  </Box>
+                              </TableHead>
+                              <TableBody>
+                                {sections.map((section, rowIndex) => (
+                                  <TableRow key={section.id} hover>
+                                    <TableCell>
+                                      <Chip label={section.icon} size="small" variant="outlined" />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Typography variant="caption" display="block" color="text.secondary">{section.key}</Typography>
+                                      <Typography variant="caption" fontFamily="monospace">{section.route}</Typography>
+                                    </TableCell>
+                                    {LANGUAGES.map(lang => (
+                                      <TableCell key={lang} align="center">
+                                        <TextField
+                                          size="small"
+                                          value={getTranslationFallback(section.translations, lang)}
+                                          onChange={e => {
+                                            const newSections = [...sections];
+                                            newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: e.target.value } };
+                                            setSections(newSections);
+                                          }}
+                                          inputProps={{ style: { textAlign: 'center' } }}
+                                          sx={{ width: '100%' }}
+                                          placeholder={section.translations[lang] ? '' : `(${getTranslationFallback(section.translations, lang) || 'vacío'})`}
+                                          InputProps={{
+                                            endAdornment: section.translations[lang] ? (
+                                              <IconButton size="small" onClick={() => {
+                                                const newSections = [...sections];
+                                                newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: '' } };
+                                                setSections(newSections);
+                                              }}><Cancel fontSize="small" /></IconButton>
+                                            ) : null
+                                          }}
+                                        />
+                                      </TableCell>
+                                    ))}
+                                    <TableCell align="center">
+                                      <Switch
+                                        checked={section.visible}
+                                        onChange={() => toggleVisibility(section)}
+                                        disabled={section.locked}
+                                        size="small"
+                                        color="primary"
+                                      />
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </Paper>
+                      </Collapse>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} lg={5}>
+                    <Paper sx={{ p: 2 }}>
+                      <Button variant="contained" startIcon={<Add />} onClick={() => openNavDialog()} size="medium" fullWidth sx={{ mb: 1 }}>
+                        Agregar Sección Navbar
+                      </Button>
+                      {dirtyCount > 0 && (
+                        <Button variant="contained" color="success" fullWidth onClick={saveAll} disabled={saving}>
+                          {saving ? 'Guardando…' : `Guardar (${dirtyCount})`}
+                        </Button>
+                      )}
+                    </Paper>
+                  </Grid>
                 </Grid>
+              )}
 
-                <Grid item xs={12} lg={5}>
-                  <NavbarMiniPreview sections={sections} currentLang={currentLang} />
-                </Grid>
-              </Grid>
+              {activeSubTab === 1 && (
+                <Paper sx={{ p: 2 }}>
+                  <NavbarStyleSelector
+                    draft={styleDraft}
+                    saved={styleSaved}
+                    onSelectStyle={(id) => { setStyleDraft(getDefaultStyleSpec(id)); setShowCompare(true); markDirty(); }}
+                    onChangeAdvanced={(patch) => { setStyleDraft((prev) => mergeStyleSpec(prev, patch)); markDirty(); }}
+                    onApply={() => { setStyleSaved(styleDraft); setShowCompare(false); }}
+                    onToggleCompare={() => setShowCompare((v) => !v)}
+                    showCompare={showCompare}
+                  />
+                </Paper>
+              )}
+
+              {activeSubTab === 2 && (
+                <Paper sx={{ p: 2 }}>
+                  <NavbarHistory history={history} onClear={async () => { await appearanceService.clearHistory(); setHistory([]); }} />
+                </Paper>
+              )}
             </>
           )}
 

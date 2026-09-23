@@ -150,6 +150,10 @@ function NavbarSectionForm({
               <Switch checked={formData.visible} onChange={(e) => setField('visible', e.target.checked)} color="primary" />
               <Typography>Visible en navbar</Typography>
             </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, height: '100%' }}>
+              <Switch checked={formData.locked} onChange={(e) => setField('locked', e.target.checked)} color="warning" />
+              <Typography>Sección fija (no se puede eliminar ni ocultar)</Typography>
+            </Box>
           </Grid>
         </Grid>
 
