@@ -78,6 +78,8 @@ class PrivateUserDTO(BaseModel):
     identity_document_type: Optional[str] = None
     identity_rejection_reason: Optional[str] = None
     identity_submitted_at: Optional[datetime] = None
+
+    preferred_language: str = "en"
     
     # Profile data
     profile: Optional[dict] = None
@@ -108,6 +110,7 @@ class PrivateUserDTO(BaseModel):
             identity_document_type=user.identity_document_type,
             identity_rejection_reason=user.identity_rejection_reason,
             identity_submitted_at=user.identity_submitted_at,
+            preferred_language=getattr(user, 'preferred_language', 'en') or "en",
             profile=profile.model_dump(mode='json') if profile else None
         )
 

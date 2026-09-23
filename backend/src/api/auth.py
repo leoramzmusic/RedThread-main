@@ -44,6 +44,7 @@ class RegisterRequest(BaseModel):
     display_name: str  # Public display name
     age: int
     gender: str
+    preferred_language: Optional[str] = None
 
 class RegisterResponse(BaseModel):
     message: str
@@ -222,6 +223,15 @@ async def register(request: RegisterRequest, response: Response):
             detail="Username already taken"
         )
 
+    # Preferred language handling
+    preferred = (request.preferred_language or "en").lower()
+    try:
+        enabled = await get_enabled_languages()
+        if preferred not in enabled:
+            preferred = "en"
+    except Exception:
+        preferred = (request.preferred_language or "en").lower() if (request.preferred_language or "en").lower() in ["en","es","pt","fr","de","it","ru","sv","nl","zh","hi","bn","ja","ko","ar","sw","ha","am","tl","ms","mi"] else "en"
+
     # Create user
     user = User(
         real_name=request.real_name,
@@ -232,6 +242,7 @@ async def register(request: RegisterRequest, response: Response):
         hashed_password=get_password_hash(request.password),
         auth_provider=AuthProvider.EMAIL,
         subscription_tier=SubscriptionTier.FREE,
+        preferred_language=preferred,
         created_at=datetime.utcnow(),
         last_login_at=datetime.utcnow()
     )
@@ -729,6 +740,32 @@ async def get_current_user_info(request: Request, current_user: User = Depends(g
     
     return response_dto
 
+
+class UpdatePreferencesRequest(BaseModel):
+    preferred_language: str
+
+
+async def get_enabled_languages() -> list[str]:
+    from src.models.appearance import AppearanceResource, AppearanceType
+    res = await AppearanceResource.find_one(AppearanceResource.type == AppearanceType.LANDING_LANGUAGES)
+    if res and res.metadata and res.metadata.get("enabled"):
+        return res.metadata["enabled"]
+    return ["en","es","pt","fr","de","it","ru","sv","nl","zh","hi","bn","ja","ko","ar","sw","ha","am","tl","ms","mi"]
+
+
+@router.patch("/me", response_model=dict)
+async def update_me_preferences(
+    body: UpdatePreferencesRequest,
+    user: User = Depends(get_current_user),
+):
+    code = body.preferred_language.lower()
+    enabled = await get_enabled_languages()
+    if code not in enabled:
+        raise HTTPException(status_code=400, detail="Language not available")
+    user.preferred_language = code
+    user.updated_at = datetime.utcnow()
+    await user.save()
+    return {"preferred_language": user.preferred_language}
 
 
 # Session Management Endpoints
