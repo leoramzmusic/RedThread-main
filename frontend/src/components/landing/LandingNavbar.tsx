@@ -1,55 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import type React from 'react';
 import { Box, Button, IconButton, Drawer, List, ListItemButton, ListItemText, Divider } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useRouter } from 'next/router';
 import RedThreadLogo from './RedThreadLogo';
-import { landingShadows, shapeTokens } from '../../theme/liquidGlass';
-import { supportedLanguages } from '../../config/languages';
+import { shapeTokens } from '../../theme/liquidGlass';
 import LanguageSelectorModal from './LanguageSelectorModal';
 import appearanceService from '../../services/appearanceService';
 import { AppearanceType } from '../../types/appearance';
 import { getMediaUrl } from '../../utils/media';
-
-const languages = supportedLanguages.map((l) => l.code) as unknown as readonly string[];
-type Language = (typeof supportedLanguages)[number]['code'];
+import NavbarRenderer from '../../components/appearance/navbar-editor/NavbarRenderer';
+import { getDefaultStyleSpec, mergeStyleSpec, NavbarStyleSpec, NAVBAR_STYLE_ID_DEFAULT } from '../../components/appearance/navbar-editor/styles';
+import { NavSection, Language, getTranslationFallback } from '../../components/appearance/navbar-editor/types';
 
 interface LandingNavbarProps {
   currentLang: Language;
   onLangChange: (lang: Language) => void;
 }
 
-const NAV_ITEMS: Record<string, Array<{ label: string; href: string }>> = {
-  es: [
-    { label: 'Producto', href: '#producto' },
-    { label: 'Planes', href: '#planes' },
-    { label: 'Seguridad', href: '#seguridad' },
-    { label: 'Soporte', href: '#soporte' },
-    { label: 'Descarga', href: '#descarga' },
-  ],
-  en: [
-    { label: 'Product', href: '#producto' },
-    { label: 'Plans', href: '#planes' },
-    { label: 'Safety', href: '#seguridad' },
-    { label: 'Support', href: '#soporte' },
-    { label: 'Download', href: '#descarga' },
-  ],
-  pt: [
-    { label: 'Produto', href: '#producto' },
-    { label: 'Planos', href: '#planes' },
-    { label: 'Segurança', href: '#seguridad' },
-    { label: 'Suporte', href: '#soporte' },
-    { label: 'Download', href: '#descarga' },
-  ],
-  fr: [
-    { label: 'Produit', href: '#producto' },
-    { label: 'Forfaits', href: '#planes' },
-    { label: 'Sécurité', href: '#seguridad' },
-    { label: 'Support', href: '#soporte' },
-    { label: 'Télécharger', href: '#descarga' },
-  ],
-};
+const DEFAULT_NAV_SECTIONS: NavSection[] = [
+  { id: 'home', key: 'home', route: '/', icon: 'Home', visible: true, order: 0, locked: true, translations: { es: 'Inicio', en: 'Home', pt: 'Início', fr: 'Accueil' } },
+  { id: 'product', key: 'product', route: '#producto', icon: 'Explore', visible: true, order: 1, locked: false, translations: { es: 'Producto', en: 'Product', pt: 'Produto', fr: 'Produit' } },
+  { id: 'plans', key: 'plans', route: '#planes', icon: 'Settings', visible: true, order: 2, locked: false, translations: { es: 'Planes', en: 'Plans', pt: 'Planos', fr: 'Forfaits' } },
+  { id: 'security', key: 'security', route: '#seguridad', icon: 'Security', visible: true, order: 3, locked: false, translations: { es: 'Seguridad', en: 'Safety', pt: 'Segurança', fr: 'Sécurité' } },
+  { id: 'support', key: 'support', route: '#soporte', icon: 'SupportAgent', visible: true, order: 3, locked: false, translations: { es: 'Soporte', en: 'Support', pt: 'Suporte', fr: 'Support' } },
+  { id: 'download', key: 'download', route: '#descarga', icon: 'Download', visible: true, order: 4, locked: false, translations: { es: 'Descarga', en: 'Download', pt: 'Download', fr: 'Télécharger' } },
+];
 
 const CTA_LABEL: Record<string, string> = {
   es: 'Crear cuenta',
@@ -62,9 +39,10 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [langModalOpen, setLangModalOpen] = useState(false);
-  const [navLogoUrl, setNavLogoUrl] = useState<string>('/imagotipo.png');
+  const [navLogoUrl, setNavLogoUrl] = useState<string>('/img/assets/isotipo.png');
+  const [navSections, setNavSections] = useState<NavSection[]>(DEFAULT_NAV_SECTIONS);
+  const [styleSpec, setStyleSpec] = useState<NavbarStyleSpec>(() => getDefaultStyleSpec(NAVBAR_STYLE_ID_DEFAULT));
   const router = useRouter();
-  const navItems = NAV_ITEMS[currentLang] ?? NAV_ITEMS.en;
   const ctaLabel = CTA_LABEL[currentLang] ?? CTA_LABEL.en;
 
   const handleLangChange = (code: string) => {
@@ -72,13 +50,54 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
     setLangModalOpen(false);
   };
 
+  // Carga secciones del navbar dinámicas (público, sin auth)
+  const fetchNavSections = useCallback(() => {
+    appearanceService
+      .getPublicResources(AppearanceType.LANDING_NAVBAR)
+      .then((resources) => {
+        const mapped = resources
+          .filter(r => r.is_active && (r.metadata as any)?.visible)
+          .map(r => ({
+            id: (r as any)?.id ?? r._id ?? '',
+            key: (r.metadata as any)?.key || '',
+            route: (r.metadata as any)?.route || '',
+            icon: (r.metadata as any)?.icon || 'Menu',
+            visible: (r.metadata as any)?.visible ?? true,
+            locked: (r.metadata as any)?.locked ?? false,
+            order: (r.metadata as any)?.order ?? 0,
+            translations: ((r.metadata as any)?.translations || {}) as Record<Language, string>,
+          }))
+          .sort((a, b) => a.order - b.order);
+        if (mapped.length > 0) setNavSections(mapped);
+      })
+      .catch(() => {});
+  }, []);
+
+  const fetchStyleSpec = useCallback(() => {
+    appearanceService
+      .getPublicResources(AppearanceType.LANDING_NAVBAR_STYLE)
+      .then((resources) => {
+        const active = resources.find((r) => r.is_active && (r.metadata as any)?.id);
+        if (active?.metadata?.id) {
+          const base = getDefaultStyleSpec((active.metadata as any).id);
+          setStyleSpec(mergeStyleSpec(base, { accent: active.metadata.accent, fontWeight: active.metadata.fontWeight, hoverAnimation: active.metadata.hoverAnimation }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetchNavSections();
+    fetchStyleSpec();
+  }, [fetchNavSections, fetchStyleSpec]);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Carga imagotipo navbar dinámico (portal → isNavLogo) con fallback a /imagotipo.png
+  // Carga imagotipo navbar dinámico (portal → isNavLogo) con fallback a /img/assets/isotipo.png
   useEffect(() => {
     let cancelled = false;
     appearanceService
@@ -102,11 +121,29 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
     }
   };
 
+  const handlePillClick = (e: React.MouseEvent) => {
+    const el = (e.target as Element).closest(
+      '[data-nav-logo],[data-nav-href],[data-nav-lang],[data-nav-cta],[data-nav-menu]'
+    );
+    if (!el) return;
+    if (el.hasAttribute('data-nav-logo')) window.scrollTo({ top: 0, behavior: 'smooth' });
+    else if (el.hasAttribute('data-nav-href')) handleNavClick(el.getAttribute('data-nav-href') || '');
+    else if (el.hasAttribute('data-nav-lang')) setLangModalOpen(true);
+    else if (el.hasAttribute('data-nav-cta')) router.push('/auth/register');
+    else if (el.hasAttribute('data-nav-menu')) setDrawerOpen(true);
+  };
+
+  // Obtiene items visibles para el idioma actual
+  const visibleNavItems = navSections
+    .filter(s => s.visible)
+    .map(s => ({ label: getTranslationFallback(s.translations, currentLang), href: s.route }));
+
   return (
     <>
       <Box
         component="nav"
         aria-label="Main navigation"
+        onClick={handlePillClick}
         sx={{
           position: 'fixed',
           top: 'max(12px, env(safe-area-inset-top, 16px))',
@@ -120,158 +157,16 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
           px: { xs: 0, lg: 0 },
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: { xs: 1, md: 2, lg: 3 },
-            width: '100%',
-            px: { xs: 1.25, sm: 2, md: 2.5 },
-            py: 1,
-            borderRadius: shapeTokens.pill,
-            bgcolor: scrolled ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(24px) saturate(1.7)',
-            WebkitBackdropFilter: 'blur(24px) saturate(1.7)',
-            border: '1px solid rgba(255,255,255,0.18)',
-            boxShadow: scrolled ? landingShadows.nav.scrolled : landingShadows.nav.rest,
-            transition: 'all 0.3s cubic-bezier(0.22,1,0.36,1)',
-            minWidth: 0,
-          }}
-        >
-          {/* Izq: Imagotipo horizontal — altura fija para no alterar alto del navbar */}
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', flexShrink: 0, cursor: 'pointer', height: 28 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            aria-label="RETH inicio"
-          >
-            <Box
-              component="img"
-              src={navLogoUrl}
-              alt="RETH"
-              onError={() => setNavLogoUrl('/imagotipo.png')}
-              sx={{
-                height: 28,
-                width: 'auto',
-                maxWidth: { xs: 110, sm: 140 },
-                objectFit: 'contain',
-                display: 'block',
-              }}
-            />
-          </Box>
-
-          {/* Centro: menús principales - hidden en <lg */}
-          <Box
-            sx={{
-              display: { xs: 'none', lg: 'flex' },
-              alignItems: 'center',
-              gap: 0.5,
-              flex: 1,
-              justifyContent: 'center',
-              minWidth: 0,
-            }}
-            role="menubar"
-          >
-            {navItems.map((item) => (
-              <Button
-                key={item.label}
-                role="menuitem"
-                onClick={() => handleNavClick(item.href)}
-                sx={{
-                  color: 'rgba(255,255,255,0.88)',
-                  fontFamily: 'Inter, system-ui, sans-serif',
-                  fontWeight: 500,
-                  fontSize: '0.875rem',
-                  letterSpacing: '0.01em',
-                  textTransform: 'none',
-                  px: 1.5,
-                  py: 0.75,
-                  borderRadius: shapeTokens.pill,
-                  transition: 'all 0.2s cubic-bezier(0.22,1,0.36,1)',
-                  '&:hover': {
-                    color: 'white',
-                    bgcolor: 'rgba(255,255,255,0.12)',
-                    transform: 'translateY(-1px)',
-                  },
-                  '&:active': { transform: 'scale(0.97)', transition: 'transform 100ms ease-out' },
-                  '&:focus-visible': { outline: '2px solid #E63946', outlineOffset: 2 },
-                }}
-              >
-                {item.label}
-              </Button>
-            ))}
-          </Box>
-
-          {/* Der: selector idioma (Tinder modal) + CTA + hamburger */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1 }, flexShrink: 0, ml: 'auto' }}>
-            <Button
-              onClick={() => setLangModalOpen(true)}
-              aria-label="Seleccionar idioma"
-              startIcon={<LanguageIcon sx={{ fontSize: 16 }} />}
-              sx={{
-                height: 34,
-                borderRadius: shapeTokens.pill,
-                bgcolor: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.18)',
-                color: 'white',
-                fontFamily: 'Inter, system-ui, sans-serif',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                letterSpacing: '0.04em',
-                px: 1.5,
-                textTransform: 'none',
-                backdropFilter: 'blur(12px) saturate(1.5)',
-                WebkitBackdropFilter: 'blur(12px) saturate(1.5)',
-                transition: 'all 0.2s ease',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.14)', borderColor: 'rgba(255,255,255,0.28)' },
-              }}
-            >
-              {currentLang.toUpperCase()}
-            </Button>
-
-            <Button
-              variant="contained"
-              onClick={() => router.push('/auth/register')}
-              sx={{
-                display: { xs: 'none', sm: 'inline-flex' },
-                bgcolor: '#E63946',
-                color: 'white',
-                fontFamily: 'Inter, system-ui, sans-serif',
-                fontWeight: 600,
-                fontSize: '0.875rem',
-                letterSpacing: '0.01em',
-                textTransform: 'none',
-                borderRadius: shapeTokens.pill,
-                px: 2.5,
-                py: 0.9,
-                boxShadow: landingShadows.ctaPrimary.rest,
-                border: '1px solid rgba(255,255,255,0.18)',
-                transition: 'all 0.25s cubic-bezier(0.22,1,0.36,1)',
-                '&:hover': { bgcolor: '#FF6B6B', transform: 'translateY(-2px)', boxShadow: landingShadows.ctaPrimary.hover },
-                '&:active': { transform: 'scale(0.97)', transition: 'transform 100ms ease-out' },
-                '&:focus-visible': { outline: '2px solid white', outlineOffset: 2 },
-              }}
-            >
-              {ctaLabel}
-            </Button>
-
-            <IconButton
-              aria-label="Abrir menú"
-              onClick={() => setDrawerOpen(true)}
-              sx={{
-                display: { xs: 'inline-flex', lg: 'none' },
-                color: 'white',
-                bgcolor: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.18)',
-                width: 36,
-                height: 36,
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.18)' },
-                '&:focus-visible': { outline: '2px solid #E63946', outlineOffset: 2 },
-              }}
-            >
-              <MenuIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        </Box>
+        <NavbarRenderer
+          sections={navSections}
+          currentLang={currentLang}
+          styleSpec={styleSpec}
+          scrolled={scrolled}
+          interactive
+          ctaLabel={ctaLabel}
+          logoUrl={navLogoUrl}
+          onLogoError={() => setNavLogoUrl('/img/assets/isotipo.png')}
+        />
       </Box>
 
       <Drawer
@@ -301,7 +196,7 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
         </Box>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
         <List sx={{ p: 1.5 }}>
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <ListItemButton key={item.label} onClick={() => handleNavClick(item.href)} sx={{ borderRadius: 2, mb: 0.5 }}>
               <ListItemText primary={item.label} primaryTypographyProps={{ fontWeight: 500, fontFamily: 'Inter, system-ui, sans-serif' }} />
             </ListItemButton>

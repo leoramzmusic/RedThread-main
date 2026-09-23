@@ -12,6 +12,8 @@ export interface NavbarRendererProps {
   scrolled?: boolean;
   interactive?: boolean;
   ctaLabel?: string;
+  logoUrl?: string;
+  onLogoError?: () => void;
 }
 
 const DEFAULT_CTA_LABEL: Record<string, string> = {
@@ -40,7 +42,7 @@ const getHoverSx = (animation: NavbarStyleSpec['hoverAnimation'], accent: string
 };
 
 export default function NavbarRenderer({
-  sections, currentLang, styleSpec, scrolled = false, interactive = true, ctaLabel,
+  sections, currentLang, styleSpec, scrolled = false, interactive = true, ctaLabel, logoUrl, onLogoError,
 }: NavbarRendererProps) {
   const visibleNavItems = sections
     .filter((s) => s.visible)
@@ -71,11 +73,27 @@ export default function NavbarRenderer({
         minWidth: 0,
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0, cursor: 'pointer', height: compact ? 24 : 28, gap: 0.5, mr: 1 }}>
-        <NavbarIcon name="Home" sx={{ color: 'rgba(255,255,255,0.9)', fontSize: compact ? 22 : 24 }} />
-        <Box component="span" sx={{ color: 'white', fontWeight: 800, letterSpacing: '-0.02em', fontSize: compact ? '0.85rem' : '0.95rem' }}>
-          RETH
-        </Box>
+      <Box
+        aria-label="RETH inicio"
+        {...(interactive ? { 'data-nav-logo': '' } : {})}
+        sx={{ display: 'flex', alignItems: 'center', flexShrink: 0, cursor: 'pointer', height: compact ? 24 : 28, gap: 0.5, mr: 1 }}
+      >
+        {logoUrl ? (
+          <Box
+            component="img"
+            src={logoUrl}
+            alt="RETH"
+            onError={onLogoError}
+            sx={{ height: compact ? 24 : 28, width: 'auto', maxWidth: { xs: 110, sm: 140 }, objectFit: 'contain', display: 'block' }}
+          />
+        ) : (
+          <>
+            <NavbarIcon name="Home" sx={{ color: 'rgba(255,255,255,0.9)', fontSize: compact ? 22 : 24 }} />
+            <Box component="span" sx={{ color: 'white', fontWeight: 800, letterSpacing: '-0.02em', fontSize: compact ? '0.85rem' : '0.95rem' }}>
+              RETH
+            </Box>
+          </>
+        )}
       </Box>
 
       <Box
@@ -93,6 +111,7 @@ export default function NavbarRenderer({
           <Box key={`${item.label}-${item.href}`} sx={{ position: 'relative', display: 'flex', '&:hover .rt-nav-underline': { transform: 'scaleX(1)' }, '&:focus-within .rt-nav-underline': { transform: 'scaleX(1)' } }}>
             <Button
               role="menuitem"
+              {...(interactive ? { 'data-nav-href': item.href } : {})}
               startIcon={styleSpec.showIcons ? <NavbarIcon name={item.icon} /> : undefined}
               sx={{
                 color: 'rgba(255,255,255,0.88)',
@@ -138,6 +157,7 @@ export default function NavbarRenderer({
       <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1 }, flexShrink: 0, ml: 'auto' }}>
         <Button
           aria-label="Seleccionar idioma"
+          {...(interactive ? { 'data-nav-lang': '' } : {})}
           startIcon={<LanguageIcon sx={{ fontSize: 16 }} />}
           sx={{
             height: compact ? 30 : 34,
@@ -161,6 +181,7 @@ export default function NavbarRenderer({
 
         <Button
           variant="contained"
+          {...(interactive ? { 'data-nav-cta': '' } : {})}
           sx={{
             display: { xs: 'none', sm: 'inline-flex' },
             bgcolor: '#E63946',
@@ -184,6 +205,7 @@ export default function NavbarRenderer({
 
         <IconButton
           aria-label="Abrir menú"
+          {...(interactive ? { 'data-nav-menu': '' } : {})}
           sx={{
             display: { xs: 'inline-flex', lg: 'none' },
             color: 'white',
