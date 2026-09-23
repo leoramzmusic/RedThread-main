@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { IconButton, Menu, MenuItem, Typography, Box, Slide, keyframes } from '@mui/material';
 import type { TransitionProps } from '@mui/material/transitions';
 import { Public } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { GLASS_ICON_BTN_SX } from './glassIconStyles';
 
@@ -42,7 +41,6 @@ const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: R
 );
 
 export default function LanguageSelector() {
-    const { i18n } = useTranslation();
     const router = useRouter();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);

@@ -501,9 +501,11 @@ body {
 
 /* Force scaling on MUI Typography and other core text elements, excluding those with .no-scale */
 /* .reth-cred: vista previa de credenciales controla su fontSize en vivo (sliders) */
-body[data-font-size] .MuiTypography-root:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+/* .rt-subtitle / .rt-landing-*: el H1 del landing lo gobierna el CMS (subtitleFontSize); no escalarlo aquí */
+/* .rt-description: la descripción del héroe la gobierna el CMS (descriptionFontSize); no escalarla aquí */
+body[data-font-size] .MuiTypography-root:not(.no-scale):not(.reth-cred):not(.reth-cred *):not(.rt-subtitle):not(.rt-subtitle *):not(.rt-description):not(.rt-description *),
 body[data-font-size] p:not(.no-scale):not(.reth-cred):not(.reth-cred *),
-body[data-font-size] span:not(.no-scale):not(.reth-cred):not(.reth-cred *),
+body[data-font-size] span:not(.no-scale):not(.reth-cred):not(.reth-cred *):not(.rt-landing-word):not(.rt-landing-word *):not(.rt-landing-char):not(.rt-landing-char *),
 body[data-font-size] label:not(.no-scale):not(.reth-cred):not(.reth-cred *),
 body[data-font-size] input:not(.no-scale):not(.reth-cred):not(.reth-cred *),
 body[data-font-size] textarea:not(.no-scale):not(.reth-cred):not(.reth-cred *) {

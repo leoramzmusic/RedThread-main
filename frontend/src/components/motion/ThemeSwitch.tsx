@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
+import React, { forwardRef } from 'react';
 
 interface ThemeSwitchProps {
   checked: boolean;
@@ -18,14 +19,17 @@ const STARS = [
   { left: 28.5, top: 8.55 },
 ];
 
-const ThemeSwitch = ({ checked, onChange }: ThemeSwitchProps) => {
+const ThemeSwitch = forwardRef<HTMLButtonElement, ThemeSwitchProps & React.ButtonHTMLAttributes<HTMLButtonElement>>(
+  ({ checked, onChange, ...rest }, ref) => {
   const theme = useTheme();
   const primary = theme.palette.primary.main;
   const isNight = checked;
 
   return (
     <Box
+      ref={ref}
       component="button"
+      {...rest}
       type="button"
       role="switch"
       aria-checked={checked}
@@ -129,7 +133,8 @@ const ThemeSwitch = ({ checked, onChange }: ThemeSwitchProps) => {
         }}
       />
     </Box>
-  );
-};
+);
+	});
 
-export default ThemeSwitch;
+	ThemeSwitch.displayName = 'ThemeSwitch';
+	export default ThemeSwitch;

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Box, Grid, Typography, Dialog, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { supportedLanguages } from '../../config/languages';
@@ -33,10 +34,50 @@ const MORE_LANGS: Record<string, string> = {
   fil: 'Parami pang mga wika...',
 };
 
+function nearestTile(tiles: HTMLElement[], from: HTMLElement, dir: 'left' | 'right' | 'up' | 'down'): HTMLElement | null {
+  const r = from.getBoundingClientRect();
+  let best: HTMLElement | null = null;
+  let bestDist = Infinity;
+  for (const t of tiles) {
+    if (t === from) continue;
+    const tr = t.getBoundingClientRect();
+    const overlapY = tr.top < r.bottom && tr.bottom > r.top;
+    const overlapX = tr.left < r.right && tr.right > r.left;
+    let dist = Infinity;
+    if (dir === 'right' && tr.left >= r.right - 4 && overlapY) dist = tr.left - r.right;
+    if (dir === 'left' && tr.right <= r.left + 4 && overlapY) dist = r.left - tr.right;
+    if (dir === 'down' && tr.top >= r.bottom - 4 && overlapX) dist = tr.top - r.bottom;
+    if (dir === 'up' && tr.bottom <= r.top + 4 && overlapX) dist = r.top - tr.bottom;
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = t;
+    }
+  }
+  return best;
+}
+
 export default function LanguageSelectorModal({ open, onClose, currentLang, onLangChange }: Props) {
+  const gridRef = useRef<HTMLDivElement>(null);
+
   const handleChange = (code: string) => {
     onLangChange(code as Language);
     onClose();
+  };
+
+  const handleGridKeyDown = (e: React.KeyboardEvent) => {
+    const dirs: Record<string, 'left' | 'right' | 'up' | 'down'> = {
+      ArrowLeft: 'left',
+      ArrowRight: 'right',
+      ArrowUp: 'up',
+      ArrowDown: 'down',
+    };
+    const dir = dirs[e.key];
+    if (!dir) return;
+    const tiles = Array.from(gridRef.current?.querySelectorAll<HTMLElement>('[data-lang-tile]') ?? []);
+    const focused = document.activeElement as HTMLElement | null;
+    if (!focused || !tiles.includes(focused)) return;
+    e.preventDefault();
+    nearestTile(tiles, focused, dir)?.focus();
   };
 
   return (
@@ -60,13 +101,37 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
         },
       }}
     >
-      <Box sx={{ position: 'relative', p: { xs: 2.5, md: 3 }, pb: 1, textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <Box
+        sx={{
+          position: 'relative',
+          p: { xs: 3, md: 4 },
+          pr: { xs: 6, md: 7 },
+          pb: 2,
+          textAlign: 'center',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
-          <Box sx={{ width: 36, height: 36, borderRadius: '50%', bgcolor: 'rgba(230,57,70,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(230,57,70,0.25)' }}>
-            <Box component="span" sx={{ width: 14, height: 18, borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%', background: 'linear-gradient(180deg, #FF6B6B 0%, #E63946 65%, #B71C1C 100%)', display: 'block', transform: 'rotate(-12deg)' }} />
+          <Box
+            sx={{
+              width: 44, height: 44, borderRadius: '50%',
+              bgcolor: 'rgba(230,57,70,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '1px solid rgba(230,57,70,0.25)',
+            }}
+          >
+            <Box
+              component="img"
+              src="/img/assets/isotipo.png"
+              alt="RETH"
+              sx={{ width: 26, height: 26, objectFit: 'contain', display: 'block' }}
+            />
           </Box>
         </Box>
-        <Typography variant="h6" sx={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 800, color: 'white', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+        <Typography
+          variant="h6"
+          sx={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 800, color: 'white', letterSpacing: '-0.02em', lineHeight: 1.2 }}
+        >
           {currentLang === 'es' ? 'Elige un idioma' : currentLang === 'pt' ? 'Escolha um idioma' : currentLang === 'fr' ? 'Choisir une langue' : 'Choose a language'}
         </Typography>
         <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.02em', mt: 0.5, display: 'block' }}>
@@ -75,23 +140,49 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
         <IconButton
           onClick={onClose}
           aria-label="Cerrar"
-          sx={{ position: 'absolute', top: 12, right: 12, color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.18)', width: 32, height: 32, bgcolor: 'rgba(255,255,255,0.06)', '&:hover': { bgcolor: 'rgba(255,255,255,0.12)', color: 'white' } }}
+          sx={{
+            position: 'absolute', top: 14, right: 14,
+            width: 30, height: 30,
+            color: 'rgba(255,255,255,0.7)',
+            border: '1px solid rgba(255,255,255,0.18)',
+            bgcolor: 'rgba(255,255,255,0.06)',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: 'rgba(230,57,70,0.18)',
+              borderColor: 'rgba(230,57,70,0.55)',
+              color: '#E63946',
+            },
+          }}
         >
-          <CloseIcon sx={{ fontSize: 16 }} />
+          <CloseIcon sx={{ fontSize: 14 }} />
         </IconButton>
       </Box>
 
-      <Box sx={{ p: { xs: 2, md: 3 }, overflowY: 'auto' }}>
-        <Grid container spacing={1}>
+      <Box
+        sx={{
+          p: { xs: 2, md: 3 },
+          overflowY: 'auto',
+          scrollBehavior: 'smooth',
+          overscrollBehavior: 'contain',
+        }}
+      >
+        <Grid ref={gridRef} container spacing={1} onKeyDown={handleGridKeyDown}>
           {supportedLanguages.map((lang) => {
             const isActive = lang.code === currentLang;
             return (
-              <Grid item xs={6} sm={3} key={lang.code}>
+              <Grid item xs={6} sm={4} md={3} key={lang.code}>
                 <Box
+                  data-lang-tile
                   onClick={() => handleChange(lang.code)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleChange(lang.code)}
+                  aria-pressed={isActive}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleChange(lang.code);
+                    }
+                  }}
                   sx={{
                     p: 1.5,
                     borderRadius: 2,
@@ -99,8 +190,17 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
                     border: isActive ? '1.5px solid #E63946' : '1px solid rgba(255,255,255,0.08)',
                     bgcolor: isActive ? 'rgba(230,57,70,0.14)' : 'transparent',
                     transition: 'all 0.2s ease',
-                    '&:hover': { bgcolor: 'rgba(230,57,70,0.12)', borderColor: 'rgba(230,57,70,0.35)', transform: 'translateY(-1px)' },
+                    '&:hover': {
+                      bgcolor: 'rgba(230,57,70,0.12)',
+                      borderColor: 'rgba(230,57,70,0.35)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 16px rgba(0,0,0,0.35)',
+                    },
                     '&:active': { transform: 'scale(0.98)' },
+                    '&:focus-visible': {
+                      outline: '2px solid #E63946',
+                      outlineOffset: 2,
+                    },
                   }}
                 >
                   <Typography sx={{ color: isActive ? '#FF6B6B' : 'white', fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.2, fontFamily: 'Inter, system-ui, sans-serif', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -114,7 +214,7 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
             );
           })}
         </Grid>
-        <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+        <Box sx={{ mt: 3.5, p: 2.5, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600, letterSpacing: '0.02em', display: 'block' }}>
             {MORE_LANGS[currentLang] ?? MORE_LANGS.en}
           </Typography>

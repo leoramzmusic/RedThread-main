@@ -280,7 +280,8 @@ export default function AdminSidebar({
       children: [
         { id: 'apariencia-iconos', label: 'Favicon & Iconos', icon: <ImageIcon />, path: '/portal-redthread/apariencia/iconos' },
         { id: 'apariencia-logos', label: 'Logos', icon: <ImageIcon />, path: '/portal-redthread/apariencia/logos' },
-        { id: 'apariencia-banners', label: 'Portada y Banners', icon: <ViewCarouselIcon />, path: '/portal-redthread/apariencia/banners' },
+        { id: 'apariencia-landingpage', label: 'Landing Page', icon: <ViewCarouselIcon />, path: '/portal-redthread/apariencia/landingpage' },
+        { id: 'apariencia-navbar-footer', label: 'Navbar y Footer', icon: <MenuIcon />, path: '/portal-redthread/apariencia/landingPageNavbarAndFooter' },
         { id: 'apariencia-multimedia', label: 'Multimedia', icon: <VideoLibraryIcon />, path: '/portal-redthread/apariencia/multimedia' },
         { id: 'apariencia-temas', label: 'Temas', icon: <ColorLensIcon />, path: '/portal-redthread/apariencia/temas' },
       ],

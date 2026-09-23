@@ -14,6 +14,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export default function AppearanceDashboard() {
     const router = useRouter();
@@ -37,7 +38,7 @@ export default function AppearanceDashboard() {
             title: 'Banners',
             description: 'Portada del portal y banners de campaña',
             icon: <ViewCarouselIcon sx={{ fontSize: 60, color: '#34495E' }} />,
-            path: '/portal-redthread/apariencia/banners',
+            path: '/portal-redthread/apariencia/landingpage',
             color: '#34495E'
         },
         {
@@ -46,6 +47,13 @@ export default function AppearanceDashboard() {
             icon: <VideoLibraryIcon sx={{ fontSize: 60, color: '#9B59B6' }} />,
             path: '/portal-redthread/apariencia/multimedia',
             color: '#9B59B6'
+        },
+        {
+            title: 'Navbar y Footer',
+            description: 'Secciones del navbar, orden, visibilidad, traducciones y contenido del footer',
+            icon: <MenuIcon sx={{ fontSize: 60, color: '#E63946' }} />,
+            path: '/portal-redthread/apariencia/landingPageNavbarAndFooter',
+            color: '#E63946'
         },
         {
             title: 'Temas',

@@ -212,6 +212,7 @@ export default function Home() {
   const [viewportW, setViewportW] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const [heroIcon, setHeroIcon] = useState<string | null>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(true);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   // Persist language preference
   useEffect(() => {
@@ -498,6 +499,7 @@ export default function Home() {
     ctaSecondary: getCmsText('ctaSecondary') || t.ctaSecondary || 'Sign In',
     howItWorks: getCmsText('howItWorksTitle') || t.howItWorks,
     footer: getCmsText('footerText') || t.footer,
+    footerTagline: getCmsText('footerTagline') as string | null | undefined ?? null,
     features: {
       smartMatching: {
         title: getCmsText('features', 'title', 'smartMatching') || t.features.smartMatching.title,
@@ -556,17 +558,34 @@ export default function Home() {
         <style>{`
           .rt-landing .rt-landing-word { display: inline-block; white-space: nowrap; }
           .rt-landing .rt-landing-char { display: inline-block; will-change: transform; }
+          /* Beat globals.css body[data-font-size] span/Typography !important (specificity 0,5,1)
+             so CMS subtitleFontSize actually drives the hero title. */
           body[data-font-size] .rt-landing .rt-landing-word.rt-landing-word,
           body[data-font-size] .rt-landing .rt-landing-char.rt-landing-char {
             font-size: inherit !important;
           }
+          body[data-font-size] .rt-landing.rt-landing .rt-subtitle.rt-subtitle,
+          body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle {
+            font-size: clamp(var(--rt-title-clamp-min, 1.5rem), var(--rt-title-clamp-vw, 2.5vw), var(--rt-title-clamp-max, 3rem)) !important;
+            overflow-wrap: break-word !important;
+          }
+          body[data-font-size] .rt-landing .rt-subtitle .rt-landing-word.rt-landing-word,
+          body[data-font-size] .rt-landing .rt-subtitle .rt-landing-char.rt-landing-char {
+            font-size: inherit !important;
+          }
+          body[data-font-size] .rt-landing.rt-landing .rt-description.rt-description,
+          body[data-font-size] .rt-landing .MuiTypography-root.rt-description.rt-description {
+            font-size: ${cmsConfig?.descriptionFontSize || 1.15}rem !important;
+          }
           @media (max-width: 899.98px) {
-            body[data-font-size] .rt-landing.rt-landing .rt-subtitle { font-size: max(${cmsConfig?.subtitleFontSize || 3.4}rem, 3.1rem) !important; }
+            body[data-font-size] .rt-landing.rt-landing .rt-subtitle.rt-subtitle,
+            body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle { font-size: var(--rt-title-size, max(${cmsConfig?.subtitleFontSize || 3.4}rem, 3.1rem)) !important; }
             body[data-font-size] .rt-landing .rt-section-title { font-size: 2.9rem !important; }
             body[data-font-size] .rt-landing .rt-card-title { font-size: 1.6rem !important; }
           }
           @media (min-width: 900px) {
-            body[data-font-size] .rt-landing.rt-landing .rt-subtitle { font-size: max(${cmsConfig?.subtitleFontSize || 5}rem, 4.6rem) !important; }
+            body[data-font-size] .rt-landing.rt-landing .rt-subtitle.rt-subtitle,
+            body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle { font-size: var(--rt-title-size, max(${cmsConfig?.subtitleFontSize || 5}rem, 4.6rem)) !important; }
             body[data-font-size] .rt-landing .rt-section-title { font-size: 4rem !important; }
             body[data-font-size] .rt-landing .rt-card-title { font-size: 1.8rem !important; }
           }
@@ -719,6 +738,7 @@ export default function Home() {
                 component="h1"
                 variant="h5"
                 className="rt-subtitle"
+                ref={titleRef}
                 aria-label={displayText.subtitle}
                 sx={{
                   fontFamily: getTitleFontFamily(cmsConfig?.titleFont),
@@ -726,17 +746,21 @@ export default function Home() {
                   letterSpacing: landingTypography.heroTitle.tracking,
                   lineHeight: landingTypography.heroTitle.lineHeight,
                   fontOpticalSizing: 'auto',
-                  fontSize: { xs: landingTypography.heroTitle.size.xs, md: `clamp(4.2rem, 5vw, ${cmsConfig?.subtitleFontSize || 5}rem)` },
+                  // El texto nunca se corta: ocupa las líneas que necesite; palabras largas sí envuelven
+                  fontSize: {
+                    xs: landingTypography.heroTitle.size.xs,
+                    md: `max(${cmsConfig?.subtitleFontSize || 5}rem, 4.6rem)`,
+                  },
+                  overflowWrap: 'break-word',
+                  textAlign: 'center',
+                  mx: 'auto',
+                  maxWidth: '100%',
+                  textWrap: 'balance',
                   color: cmsConfig?.subtitleColor || 'white',
                   mb: 3,
                   opacity: 0.98,
                   textShadow: landingShadows.text.heroTitle,
                   willChange: 'transform',
-                  overflowWrap: 'anywhere',
-                  textAlign: 'center',
-                  mx: 'auto',
-                  maxWidth: '100%',
-                  textWrap: 'balance',
                 }}
               >
               {renderChars(displayText.subtitle)}
@@ -745,9 +769,9 @@ export default function Home() {
               variant="body1"
               className="rt-description"
               sx={{
-                fontFamily: getBodyFontFamily(cmsConfig?.bodyFont),
+                fontFamily: getBodyFontFamily(cmsConfig?.descriptionFont || cmsConfig?.bodyFont),
                 fontWeight: landingTypography.heroBody.weight,
-                fontSize: landingTypography.heroBody.size,
+                fontSize: `${cmsConfig?.descriptionFontSize || 1.15}rem`,
                 lineHeight: landingTypography.heroBody.lineHeight,
                 letterSpacing: landingTypography.heroBody.tracking,
                 mb: { xs: 4, md: 5 },
@@ -1092,7 +1116,7 @@ export default function Home() {
           <Box id="descarga" sx={{ scrollMarginTop: '88px', py: 1 }} />
         </Container>
 
-        <LandingFooter currentLang={currentLang} footerText={displayText.footer} bodyFont={cmsConfig?.bodyFont} />
+        <LandingFooter currentLang={currentLang} footerText={displayText.footer} bodyFont={cmsConfig?.bodyFont} footerTagline={displayText.footerTagline} />
       </Box>
     </>
   );
