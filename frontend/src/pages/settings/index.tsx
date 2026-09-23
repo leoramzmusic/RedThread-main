@@ -26,10 +26,16 @@ import AccessibilitySection from '../../components/settings/AccessibilitySection
 import PrivacySection from '../../components/settings/PrivacySection';
 import NavbarSection from '../../components/settings/NavbarSection';
 import { useNavbarContext } from '../../context/NavbarContext';
+import LanguageSelector from '../../components/common/LanguageSelector';
+import apiClient from '../../services/api';
+import { useLanguageFallback } from '../../hooks/useLanguageFallback';
+import { useSnackbar } from 'notistack';
 
 export default function SettingsPage() {
   const router = useRouter();
   const { t } = useTranslation('common');
+  const { enqueueSnackbar } = useSnackbar();
+  useLanguageFallback(false);
   const { section } = router.query;
   const activeSection = (section as string) || 'appearance';
 
@@ -140,6 +146,23 @@ export default function SettingsPage() {
           />
         );
       case 'localization':
+        return (
+          <Box sx={{ py: 2 }}>
+            <Typography variant="h6" fontWeight={700} gutterBottom>{t('settings_language', 'Idioma')}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t('settings_language_hint', 'Cambia el idioma de la interfaz. Se guardará en tu cuenta y se sincronizará en todos tus dispositivos.')}</Typography>
+            <LanguageSelector
+              showContinuityHint={false}
+              onLanguageChange={async (code) => {
+                try {
+                  await apiClient.patch('/auth/me', { preferred_language: code });
+                } catch (e: any) {
+                  if (e?.response?.status === 400) enqueueSnackbar('Idioma no disponible', { variant: 'error' });
+                  throw e;
+                }
+              }}
+            />
+          </Box>
+        );
       case 'advanced':
         return (
           <Box textAlign="center" py={8}>

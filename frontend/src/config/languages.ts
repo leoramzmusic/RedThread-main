@@ -17,5 +17,7 @@ export const supportedLanguages = [
     { code: 'sw', label: 'Kiswahili (Swahili)', sample: 'A E I O U' },
     { code: 'ha', label: 'Hausa', sample: 'Á À É È Í Ì Ó Ò Ú' },
     { code: 'am', label: 'አማርኛ (Amharic)', sample: 'ሀ ሁ ሂ ሃ ሄ ህ ሆ' },
-    { code: 'fil', label: 'Filipino/Tagalog', sample: 'A E I O U' },
+    { code: 'tl', label: 'Filipino/Tagalog', sample: 'A E I O U' },
+    { code: 'ms', label: 'Bahasa Melayu (Malay)', sample: 'A E I O U ə' },
+    { code: 'mi', label: 'Māori', sample: 'A E I O U Ā Ē Ī Ō Ū' },
 ];

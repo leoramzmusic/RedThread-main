@@ -28,6 +28,9 @@ import { useAppTheme } from '../../context/ThemeContext';
 import { useTheme, alpha } from '@mui/material/styles';
 import NavLink from './NavLink';
 import ThemeSwitch from '../motion/ThemeSwitch';
+import LanguageSelector from '../common/LanguageSelector';
+import { useLanguageFallback } from '../../hooks/useLanguageFallback';
+import { useSnackbar } from 'notistack';
 
 interface AdminNavbarProps {
   sidebarCollapsed?: boolean;
@@ -38,6 +41,8 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.adminAuth);
   const { mode, toggleMode } = useAppTheme();
+  const { enqueueSnackbar } = useSnackbar();
+  useLanguageFallback(true);
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -146,6 +151,21 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
 
         {/* RIGHT: Theme Toggle & User */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+          <LanguageSelector
+            showContinuityHint={false}
+            onLanguageChange={async (code) => {
+              try {
+                await adminApiClient.patch('/auth/me', { preferred_language: code });
+              } catch (e: any) {
+                // fallback to user client if admin endpoint not separate
+                if (e?.response?.status === 404) {
+                  try { await adminApiClient.patch('/portal-redthread/auth/me', { preferred_language: code }); return; } catch {}
+                }
+                if (e?.response?.status === 400) enqueueSnackbar('Idioma no disponible', { variant: 'error' });
+                throw e;
+              }
+            }}
+          />
           <Tooltip title={mode === 'light' ? 'Modo Oscuro' : 'Modo Claro'}>
             <ThemeSwitch checked={mode === 'dark'} onChange={toggleMode} />
           </Tooltip>

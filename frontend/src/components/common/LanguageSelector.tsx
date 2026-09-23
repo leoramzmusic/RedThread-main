@@ -5,6 +5,7 @@ import { Public } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { GLASS_ICON_BTN_SX } from './glassIconStyles';
 import { getEnabledLanguages } from '../../services/languageService';
+import apiClient from '../../services/api';
 
 const LANGUAGES = [
     { code: 'en', label: 'English', flag: 'EN' },
@@ -41,7 +42,7 @@ const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: R
     }
 );
 
-export default function LanguageSelector({ showContinuityHint }: { showContinuityHint?: boolean } = {}) {
+export default function LanguageSelector({ showContinuityHint, onLanguageChange }: { showContinuityHint?: boolean; onLanguageChange?: (code: string) => Promise<void> } = {}) {
     const router = useRouter();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -60,9 +61,30 @@ export default function LanguageSelector({ showContinuityHint }: { showContinuit
         localStorage.setItem('preferred_language', code);
         document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; SameSite=Lax`;
         try {
-            const token = localStorage.getItem('access_token');
-            if (token) await fetch('/api/auth/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({preferred_language: code}) });
-        } catch {}
+            if (onLanguageChange) {
+                await onLanguageChange(code);
+            } else {
+                // default authenticated sync via apiClient with credentials
+                try {
+                    await apiClient.patch('/auth/me', { preferred_language: code });
+                } catch (e: any) {
+                    if (e?.response?.status === 401) {
+                        // anonymous — ignore
+                    } else if (e?.response?.status === 400) {
+                        // idioma no disponible — let caller handle or just warn
+                        throw e;
+                    } else if (e?.response) {
+                        throw e;
+                    }
+                }
+            }
+        } catch (err: any) {
+            if (err?.response?.status === 400) {
+                // keep error visible for test; UI may toast externally
+            }
+            // re-throw only if onLanguageChange wanted it; otherwise swallow for anonymous
+            if (onLanguageChange) throw err;
+        }
         const currentPath = router?.asPath || '/';
         const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
         window.location.href = `/${code}${pathWithoutLocale}`;
