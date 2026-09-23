@@ -15,6 +15,7 @@ class AppearanceType(str, Enum):
     LANDING_THEME = "landing_theme"
     LANDING_NAVBAR = "landing_navbar"
     LANDING_NAVBAR_STYLE = "landing_navbar_style"
+    LANDING_LANGUAGES = "landing_languages"
     FAVICON_USER = "favicon_user"
 
 class Platform(str, Enum):

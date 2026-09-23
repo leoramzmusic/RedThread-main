@@ -77,7 +77,7 @@ class User(Document):
     last_login_at: Optional[datetime] = None
     
     # User Preferences
-    preferred_language: str = "es"  # es, en, pt, fr
+    preferred_language: str = "en"  # es, en, pt, fr
     theme_mode: str = "light"  # light, dark
     visual_theme: str = "redThread"  # redThread, premium, vip, blue, purple, pink, green, sakura, halloween, christmas
     theme_color: str = "#FF6B6B"  # Primary color
