@@ -155,12 +155,8 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
             showContinuityHint={false}
             onLanguageChange={async (code) => {
               try {
-                await adminApiClient.patch('/auth/me', { preferred_language: code });
+                await adminApiClient.patch('/portal-redthread/auth/me', { preferred_language: code });
               } catch (e: any) {
-                // fallback to user client if admin endpoint not separate
-                if (e?.response?.status === 404) {
-                  try { await adminApiClient.patch('/portal-redthread/auth/me', { preferred_language: code }); return; } catch {}
-                }
                 if (e?.response?.status === 400) enqueueSnackbar('Idioma no disponible', { variant: 'error' });
                 throw e;
               }

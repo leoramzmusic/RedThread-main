@@ -1,6 +1,7 @@
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import LanguageSelector from './LanguageSelector';
 
+jest.mock('notistack', () => ({ useSnackbar: () => ({ enqueueSnackbar: jest.fn() }) }));
 jest.mock('next/router', () => ({ useRouter: () => ({ locale: 'en', asPath: '/en/discover', push: jest.fn() }) }));
 jest.mock('../../services/languageService', () => ({
   getEnabledLanguages: jest.fn().mockResolvedValue(['en','es','pt','fr','de','it','ru','sv','nl','zh','hi','bn','ja','ko','ar','sw','ha','am','tl','ms','mi']),

@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { GLASS_ICON_BTN_SX } from './glassIconStyles';
 import { getEnabledLanguages } from '../../services/languageService';
 import apiClient from '../../services/api';
+import { useSnackbar } from 'notistack';
 
 const LANGUAGES = [
     { code: 'en', label: 'English', flag: 'EN' },
@@ -44,6 +45,7 @@ const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: R
 
 export default function LanguageSelector({ showContinuityHint, onLanguageChange }: { showContinuityHint?: boolean; onLanguageChange?: (code: string) => Promise<void> } = {}) {
     const router = useRouter();
+    const { enqueueSnackbar } = useSnackbar();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -65,25 +67,19 @@ export default function LanguageSelector({ showContinuityHint, onLanguageChange 
                 await onLanguageChange(code);
             } else {
                 // default authenticated sync via apiClient with credentials
-                try {
-                    await apiClient.patch('/auth/me', { preferred_language: code });
-                } catch (e: any) {
-                    if (e?.response?.status === 401) {
-                        // anonymous — ignore
-                    } else if (e?.response?.status === 400) {
-                        // idioma no disponible — let caller handle or just warn
-                        throw e;
-                    } else if (e?.response) {
-                        throw e;
-                    }
-                }
+                await apiClient.patch('/auth/me', { preferred_language: code });
             }
-        } catch (err: any) {
-            if (err?.response?.status === 400) {
-                // keep error visible for test; UI may toast externally
+        } catch (e: any) {
+            if (e?.response?.status === 401) {
+                // anonymous — ignore, proceed to redirect
+            } else if (e?.response?.status === 400) {
+                enqueueSnackbar('Idioma no disponible', { variant: 'error' });
+                throw e;
+            } else if (e?.response) {
+                throw e;
+            } else {
+                throw e;
             }
-            // re-throw only if onLanguageChange wanted it; otherwise swallow for anonymous
-            if (onLanguageChange) throw err;
         }
         const currentPath = router?.asPath || '/';
         const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';

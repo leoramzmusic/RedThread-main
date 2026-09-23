@@ -62,6 +62,8 @@ interface LayoutProps {
 
 import { useAppTheme } from '../../context/ThemeContext';
 import { useNavbarContext } from '../../context/NavbarContext';
+import { useSnackbar } from 'notistack';
+import { useLanguageFallback } from '../../hooks/useLanguageFallback';
 
 // ... (existing imports)
 
@@ -69,6 +71,8 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const dispatch = useDispatch();
   const { t } = useTranslation('common');
+  const { enqueueSnackbar } = useSnackbar();
+  useLanguageFallback(false);
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { mode, toggleMode } = useAppTheme();
   const { drawerWidth } = useUI();
@@ -206,13 +210,17 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleLanguageSelect = async (newLang: string) => {
     handleCloseLangMenu();
-    // Persist so AuthInitializer doesn't force the previously saved language on reload
+    localStorage.setItem('preferred_language', newLang);
     try {
-      await apiClient.put('/settings/me', { preferred_language: newLang });
-    } catch (error) {
-      console.warn('Could not save preferred language:', error);
+      await apiClient.patch('/auth/me', { preferred_language: newLang });
+    } catch (e: any) {
+      if (e?.response?.status === 400) {
+        enqueueSnackbar('Idioma no disponible', { variant: 'error' });
+        return;
+      }
+      if (e?.response?.status !== 401) console.warn('Could not save preferred language:', e);
     }
-    document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`;
+    document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000; SameSite=Lax`;
     const currentPath = router.asPath;
     const currentLocale = router.locale || 'es';
     const defaultLocale = router.defaultLocale || 'es';
