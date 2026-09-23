@@ -284,6 +284,7 @@ export default function AdminSidebar({
         { id: 'apariencia-navbar-footer', label: 'Navbar y Footer', icon: <MenuIcon />, path: '/portal-redthread/apariencia/landingPageNavbarAndFooter' },
         { id: 'apariencia-multimedia', label: 'Multimedia', icon: <VideoLibraryIcon />, path: '/portal-redthread/apariencia/multimedia' },
         { id: 'apariencia-temas', label: 'Temas', icon: <ColorLensIcon />, path: '/portal-redthread/apariencia/temas' },
+        { id: 'apariencia-idiomas', label: 'Idiomas', icon: <PaletteIcon />, path: '/portal-redthread/apariencia/idiomas' },
       ],
     },
     {
