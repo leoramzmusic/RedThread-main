@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -70,24 +70,26 @@ function NavbarSectionForm({
     else if (formData.key.length > MAX_INPUT_LENGTH) e.key = `Máximo ${MAX_INPUT_LENGTH} caracteres`;
     if (!formData.route.trim()) e.route = 'La ruta es obligatoria';
     else if (formData.route.length > MAX_INPUT_LENGTH) e.route = `Máximo ${MAX_INPUT_LENGTH} caracteres`;
+    const hasAnyTranslation = LANGUAGES.some((lang) => (formData.translations[lang] || '').trim());
+    if (!hasAnyTranslation) {
+      e.translations = 'Agrega al menos una traducción (los idiomas vacíos usan fallback en inglés)';
+    }
     LANGUAGES.forEach((lang) => {
       const value = formData.translations[lang] || '';
-      if (!value.trim()) e[`lang_${lang}`] = 'Traducción obligatoria';
-      else if (value.length > MAX_TRANSLATION_LENGTH) e[`lang_${lang}`] = `Máximo ${MAX_TRANSLATION_LENGTH} caracteres`;
+      if (value.length > MAX_TRANSLATION_LENGTH) e[`lang_${lang}`] = `Máximo ${MAX_TRANSLATION_LENGTH} caracteres`;
     });
     return e;
   };
-
-  const firstMissingLang = useMemo(() => {
-    return LANGUAGES.findIndex((lang) => !(formData.translations[lang] || '').trim());
-  }, [formData.translations]);
 
   const handleSave = async () => {
     const e = validate();
     setErrors(e);
     const hasLangError = LANGUAGES.some((lang) => e[`lang_${lang}`]);
-    if (e.key || e.route || hasLangError) {
-      if (hasLangError && firstMissingLang >= 0) setLangTab(firstMissingLang);
+    if (e.key || e.route || e.translations || hasLangError) {
+      if (hasLangError) {
+        const firstLongLang = LANGUAGES.findIndex((lang) => e[`lang_${lang}`]);
+        if (firstLongLang >= 0) setLangTab(firstLongLang);
+      }
       return;
     }
     await onSave(formData);
@@ -159,8 +161,13 @@ function NavbarSectionForm({
 
         <Typography variant="subtitle2" gutterBottom>Traducciones por idioma</Typography>
         <Typography variant="caption" color="text.secondary" display="block" mb={1}>
-          Cada pestaña es un idioma. Traducción obligatoria en los {LANGUAGES.length} idiomas (máx. {MAX_TRANSLATION_LENGTH} caracteres).
+          Cada pestaña es un idioma. Puedes guardar con traducciones parciales: los idiomas vacíos usan fallback en inglés. Máx. {MAX_TRANSLATION_LENGTH} caracteres.
         </Typography>
+        {errors.translations && (
+          <Typography variant="caption" color="error" display="block" mb={1}>
+            {errors.translations}
+          </Typography>
+        )}
         <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
           <Tabs
             value={langTab}

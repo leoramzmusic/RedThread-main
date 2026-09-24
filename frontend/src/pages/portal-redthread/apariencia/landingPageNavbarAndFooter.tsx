@@ -32,6 +32,7 @@ import {
   Description,
   ExpandMore,
   TableView,
+  History,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../../components/layout/AdminLayout';
@@ -124,7 +125,7 @@ export default function LandingPageNavbarAndFooterAdminPage() {
   const [sectionsSnapshot, setSectionsSnapshot] = useState<NavSection[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   const [history, setHistory] = useState<AppearanceHistory[]>([]);
-  const [activeSubTab, setActiveSubTab] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
   const [dirtyCount, setDirtyCount] = useState(0);
 
   const fetchSections = useCallback(async () => {
@@ -202,10 +203,10 @@ export default function LandingPageNavbarAndFooterAdminPage() {
   useEffect(() => { fetchStyle(); }, [fetchStyle]);
 
   useEffect(() => {
-    if (activeTab === 0 && activeSubTab === 2) {
-      appearanceService.getHistory().then((h) => setHistory(h)).catch(() => {});
+    if (activeTab === 0 && showHistory) {
+      appearanceService.getHistory().then((h) => setHistory(h)).catch(() => { });
     }
-  }, [activeTab, activeSubTab]);
+  }, [activeTab, showHistory]);
 
   const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
 
@@ -372,11 +373,8 @@ export default function LandingPageNavbarAndFooterAdminPage() {
               <Typography variant="body1" color="text.secondary">Administra las secciones del navbar y el contenido del footer del landing.</Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button variant="contained" startIcon={<Add />} onClick={() => openNavDialog()} size="large">
-                Agregar Sección Navbar
-              </Button>
               <Button variant="contained" startIcon={<Save />} onClick={saveFooter} disabled={saving} size="large">
-                {saving ? 'Guardando…' : 'Guardar Footer'}
+                {saving ? 'Guardando…' : 'Guardar cambios'}
               </Button>
             </Box>
           </Box>
@@ -413,143 +411,146 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                 showCompare={showCompare}
               />
 
-              <Tabs value={activeSubTab} onChange={(_, v) => setActiveSubTab(v)} sx={{ my: 2 }} variant="scrollable" scrollButtons="auto">
-                <Tab label="Menús" />
-                <Tab label="Estilo" />
-                <Tab label="Historial" />
-              </Tabs>
+              <Grid container spacing={3}>
+                <Grid item xs={12} lg={7}>
+                  <Paper sx={{ p: 2 }}>
+                    <NavbarSectionList
+                      sections={sections}
+                      currentLang={currentLang}
+                      onEdit={openNavDialog}
+                      onDelete={deleteSection}
+                      onToggle={toggleVisibility}
+                      onToggleLock={toggleLock}
+                      onReorder={handleReorder}
+                    />
+                  </Paper>
 
-              {activeSubTab === 0 && (
-                <Grid container spacing={3}>
-                  <Grid item xs={12} lg={7}>
-                    <Paper sx={{ p: 2 }}>
-                      <NavbarSectionList
-                        sections={sections}
-                        currentLang={currentLang}
-                        onEdit={openNavDialog}
-                        onDelete={deleteSection}
-                        onToggle={toggleVisibility}
-                        onToggleLock={toggleLock}
-                        onReorder={handleReorder}
-                      />
-                    </Paper>
-
-                    <Box sx={{ mt: 2 }}>
-                      <Button
-                        size="small"
-                        startIcon={<TableView />}
-                        endIcon={<ExpandMore sx={{ transform: showDebugTable ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />}
-                        onClick={() => setShowDebugTable(prev => !prev)}
-                      >
-                        Modo depuración
-                      </Button>
-                      <Collapse in={showDebugTable}>
-                        <Paper sx={{ p: 2, mt: 1 }}>
-                          <Typography variant="h6" gutterBottom mb={2}>Editor de Traducciones Navbar (depuración)</Typography>
-                          <Typography variant="body2" color="text.secondary" paragraph>
-                            Cada fila es una sección; cada columna un idioma. Si falta traducción, se usa fallback (ES → EN → primera disponible).
-                          </Typography>
-                          <TableContainer sx={{ maxHeight: 500, overflow: 'auto' }}>
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={{ width: 60 }}>Icono</TableCell>
-                                  <TableCell sx={{ width: 140 }}>Clave / Ruta</TableCell>
+                  <Box sx={{ mt: 2 }}>
+                    <Button
+                      size="small"
+                      startIcon={<TableView />}
+                      endIcon={<ExpandMore sx={{ transform: showDebugTable ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />}
+                      onClick={() => setShowDebugTable(prev => !prev)}
+                    >
+                      Modo depuración
+                    </Button>
+                    <Collapse in={showDebugTable}>
+                      <Paper sx={{ p: 2, mt: 1 }}>
+                        <Typography variant="h6" gutterBottom mb={2}>Editor de Traducciones Navbar (depuración)</Typography>
+                        <Typography variant="body2" color="text.secondary" paragraph>
+                          Cada fila es una sección; cada columna un idioma. Si falta traducción, se usa fallback (idioma → EN → ES → primera disponible).
+                        </Typography>
+                        <TableContainer sx={{ maxHeight: 500, overflow: 'auto' }}>
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell sx={{ width: 60 }}>Icono</TableCell>
+                                <TableCell sx={{ width: 140 }}>Clave / Ruta</TableCell>
+                                {LANGUAGES.map(lang => (
+                                  <TableCell key={lang} align="center" sx={{ minWidth: 140 }}>
+                                    <Chip label={lang.toUpperCase()} size="small" variant="outlined" />
+                                  </TableCell>
+                                ))}
+                                <TableCell align="center" sx={{ width: 80 }}>Visibilidad</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {sections.map((section, rowIndex) => (
+                                <TableRow key={section.id} hover>
+                                  <TableCell>
+                                    <Chip label={section.icon} size="small" variant="outlined" />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Typography variant="caption" display="block" color="text.secondary">{section.key}</Typography>
+                                    <Typography variant="caption" fontFamily="monospace">{section.route}</Typography>
+                                  </TableCell>
                                   {LANGUAGES.map(lang => (
-                                    <TableCell key={lang} align="center" sx={{ minWidth: 140 }}>
-                                      <Chip label={lang.toUpperCase()} size="small" variant="outlined" />
-                                    </TableCell>
-                                  ))}
-                                  <TableCell align="center" sx={{ width: 80 }}>Visibilidad</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {sections.map((section, rowIndex) => (
-                                  <TableRow key={section.id} hover>
-                                    <TableCell>
-                                      <Chip label={section.icon} size="small" variant="outlined" />
-                                    </TableCell>
-                                    <TableCell>
-                                      <Typography variant="caption" display="block" color="text.secondary">{section.key}</Typography>
-                                      <Typography variant="caption" fontFamily="monospace">{section.route}</Typography>
-                                    </TableCell>
-                                    {LANGUAGES.map(lang => (
-                                      <TableCell key={lang} align="center">
-                                        <TextField
-                                          size="small"
-                                          value={getTranslationFallback(section.translations, lang)}
-                                          onChange={e => {
-                                            const newSections = [...sections];
-                                            newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: e.target.value } };
-                                            setSections(newSections);
-                                          }}
-                                          inputProps={{ style: { textAlign: 'center' } }}
-                                          sx={{ width: '100%' }}
-                                          placeholder={section.translations[lang] ? '' : `(${getTranslationFallback(section.translations, lang) || 'vacío'})`}
-                                          InputProps={{
-                                            endAdornment: section.translations[lang] ? (
-                                              <IconButton size="small" onClick={() => {
-                                                const newSections = [...sections];
-                                                newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: '' } };
-                                                setSections(newSections);
-                                              }}><Cancel fontSize="small" /></IconButton>
-                                            ) : null
-                                          }}
-                                        />
-                                      </TableCell>
-                                    ))}
-                                    <TableCell align="center">
-                                      <Switch
-                                        checked={section.visible}
-                                        onChange={() => toggleVisibility(section)}
-                                        disabled={section.locked}
+                                    <TableCell key={lang} align="center">
+                                      <TextField
                                         size="small"
-                                        color="primary"
+                                        value={getTranslationFallback(section.translations, lang)}
+                                        onChange={e => {
+                                          const newSections = [...sections];
+                                          newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: e.target.value } };
+                                          setSections(newSections);
+                                          markDirty();
+                                        }}
+                                        inputProps={{ style: { textAlign: 'center' } }}
+                                        sx={{ width: '100%' }}
+                                        placeholder={section.translations[lang] ? '' : `(${getTranslationFallback(section.translations, lang) || 'vacío'})`}
+                                        InputProps={{
+                                          endAdornment: section.translations[lang] ? (
+                                            <IconButton size="small" onClick={() => {
+                                              const newSections = [...sections];
+                                              newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: '' } };
+                                              setSections(newSections);
+                                              markDirty();
+                                            }}><Cancel fontSize="small" /></IconButton>
+                                          ) : null
+                                        }}
                                       />
                                     </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-                        </Paper>
-                      </Collapse>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} lg={5}>
-                    <Paper sx={{ p: 2 }}>
-                      <Button variant="contained" startIcon={<Add />} onClick={() => openNavDialog()} size="medium" fullWidth sx={{ mb: 1 }}>
-                        Agregar Sección Navbar
-                      </Button>
-                      {dirtyCount > 0 && (
-                        <Button variant="contained" color="success" fullWidth onClick={saveAll} disabled={saving}>
-                          {saving ? 'Guardando…' : `Guardar (${dirtyCount})`}
-                        </Button>
-                      )}
-                    </Paper>
-                  </Grid>
+                                  ))}
+                                  <TableCell align="center">
+                                    <Switch
+                                      checked={section.visible}
+                                      onChange={() => toggleVisibility(section)}
+                                      disabled={section.locked}
+                                      size="small"
+                                      color="primary"
+                                    />
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Paper>
+                    </Collapse>
+                  </Box>
                 </Grid>
-              )}
+                <Grid item xs={12} lg={5}>
+                  <Paper sx={{ p: 2, mb: 2 }}>
+                    <NavbarStyleSelector
+                      draft={styleDraft}
+                      saved={styleSaved}
+                      onSelectStyle={(id) => { setStyleDraft(getDefaultStyleSpec(id)); setShowCompare(true); markDirty(); }}
+                      onChangeAdvanced={(patch) => { setStyleDraft((prev) => mergeStyleSpec(prev, patch)); markDirty(); }}
+                      onApply={() => { setStyleSaved(styleDraft); setShowCompare(false); }}
+                      onToggleCompare={() => setShowCompare((v) => !v)}
+                      showCompare={showCompare}
+                    />
+                  </Paper>
 
-              {activeSubTab === 1 && (
-                <Paper sx={{ p: 2 }}>
-                  <NavbarStyleSelector
-                    draft={styleDraft}
-                    saved={styleSaved}
-                    onSelectStyle={(id) => { setStyleDraft(getDefaultStyleSpec(id)); setShowCompare(true); markDirty(); }}
-                    onChangeAdvanced={(patch) => { setStyleDraft((prev) => mergeStyleSpec(prev, patch)); markDirty(); }}
-                    onApply={() => { setStyleSaved(styleDraft); setShowCompare(false); }}
-                    onToggleCompare={() => setShowCompare((v) => !v)}
-                    showCompare={showCompare}
-                  />
-                </Paper>
-              )}
+                  <Paper sx={{ p: 2, mb: 2 }}>
+                    <Button variant="contained" startIcon={<Add />} onClick={() => openNavDialog()} size="medium" fullWidth sx={{ mb: 1 }}>
+                      Agregar Sección Navbar
+                    </Button>
+                    {dirtyCount > 0 && (
+                      <Button variant="contained" color="success" fullWidth onClick={saveAll} disabled={saving}>
+                        {saving ? 'Guardando…' : `Guardar (${dirtyCount})`}
+                      </Button>
+                    )}
+                  </Paper>
 
-              {activeSubTab === 2 && (
-                <Paper sx={{ p: 2 }}>
-                  <NavbarHistory history={history} onClear={async () => { await appearanceService.clearHistory(); setHistory([]); }} />
-                </Paper>
-              )}
+                  <Paper sx={{ p: 2 }}>
+                    <Button
+                      size="small"
+                      startIcon={<History />}
+                      endIcon={<ExpandMore sx={{ transform: showHistory ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />}
+                      onClick={() => setShowHistory((prev) => !prev)}
+                      fullWidth
+                    >
+                      Historial de cambios
+                    </Button>
+                    <Collapse in={showHistory}>
+                      <Box sx={{ mt: 1 }}>
+                        <NavbarHistory history={history} onClear={async () => { await appearanceService.clearHistory(); setHistory([]); }} />
+                      </Box>
+                    </Collapse>
+                  </Paper>
+                </Grid>
+              </Grid>
             </>
           )}
 

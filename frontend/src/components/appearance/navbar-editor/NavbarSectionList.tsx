@@ -4,7 +4,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useSortable } from '@dnd-kit/sortable';
-import { NavSection, Language, getPrimaryLabel, completionStatus, filledTranslations } from './types';
+import { NavSection, Language, getPrimaryLabel, completionStatus, filledTranslations, LANGUAGES } from './types';
 import { NavbarIcon } from './NavbarIcon';
 
 interface NavbarSectionListProps {
@@ -69,6 +69,10 @@ function SortableNavItem({ section, currentLang, onEdit, onDelete, onToggle, onT
   const primary = getPrimaryLabel(section.translations, currentLang);
   const status = completionStatus(section.translations);
   const filled = filledTranslations(section.translations);
+  const missingCurrentLang = !(section.translations[currentLang] || '').trim();
+  const completionLabel = status.complete
+    ? `Traducciones completas (${LANGUAGES.length} idiomas)`
+    : `Faltan ${status.missing.length} de ${LANGUAGES.length} idiomas`;
 
   return (
     <Box ref={setNodeRef} style={style} {...attributes} {...listeners}>
@@ -110,15 +114,28 @@ function SortableNavItem({ section, currentLang, onEdit, onDelete, onToggle, onT
           </Typography>
         </Box>
 
-        <Tooltip title={status.complete ? 'Traducciones completas (20 idiomas)' : `Faltan ${status.missing.length} idiomas`}>
+        <Tooltip title={completionLabel}>
           <Chip
-            aria-label={status.complete ? 'Traducciones completas' : `Faltan ${status.missing.length} idiomas`}
+            aria-label={completionLabel}
             icon={status.complete ? <CheckCircle sx={{ fontSize: '1rem !important' }} /> : <WarningAmber sx={{ fontSize: '1rem !important' }} />}
             size="small"
             color={status.complete ? 'success' : 'error'}
             sx={{ fontSize: '0.7rem', height: 24 }}
           />
         </Tooltip>
+
+        {missingCurrentLang && (
+          <Tooltip title="Sin traducción en este idioma — se usará fallback en inglés">
+            <Chip
+              aria-label={`Sin traducción en ${currentLang.toUpperCase()}`}
+              icon={<WarningAmber sx={{ fontSize: '1rem !important' }} />}
+              size="small"
+              color="warning"
+              label={`${currentLang.toUpperCase()} ⚠️`}
+              sx={{ fontSize: '0.7rem', height: 24 }}
+            />
+          </Tooltip>
+        )}
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
           <Tooltip title={section.locked ? 'Sección fija — no se puede eliminar ni ocultar' : 'Fijar sección'}>
