@@ -30,8 +30,17 @@ describe('NavbarRenderer', () => {
     expect(screen.getByText('Sign up')).toBeInTheDocument();
   });
 
-  it('falls back to es label when current lang missing', () => {
+  it('falls back to es label when current lang missing and en is empty', () => {
     render(<NavbarRenderer sections={sections} currentLang="de" styleSpec={getDefaultStyleSpec('minimal')} />);
     expect(screen.getByText('Inicio')).toBeInTheDocument();
+  });
+
+  it('falls back to English before es when both are present', () => {
+    const withEn: NavSection[] = [
+      { id: 'a', key: 'home', route: '/', icon: 'Home', visible: true, locked: true, order: 0, translations: { ...emptyT(), es: 'Inicio', en: 'Home' } },
+    ];
+    render(<NavbarRenderer sections={withEn} currentLang="ja" styleSpec={getDefaultStyleSpec('minimal')} />);
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.queryByText('Inicio')).not.toBeInTheDocument();
   });
 });

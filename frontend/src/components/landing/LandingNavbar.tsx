@@ -12,21 +12,14 @@ import { AppearanceType } from '../../types/appearance';
 import { getMediaUrl } from '../../utils/media';
 import NavbarRenderer from '../../components/appearance/navbar-editor/NavbarRenderer';
 import { getDefaultStyleSpec, mergeStyleSpec, NavbarStyleSpec, NAVBAR_STYLE_ID_DEFAULT } from '../../components/appearance/navbar-editor/styles';
-import { NavSection, Language, getTranslationFallback } from '../../components/appearance/navbar-editor/types';
+import { NavSection, Language, getTranslationFallback, DEFAULT_SECTIONS } from '../../components/appearance/navbar-editor/types';
 
 interface LandingNavbarProps {
   currentLang: Language;
   onLangChange: (lang: Language) => void;
 }
 
-const DEFAULT_NAV_SECTIONS: NavSection[] = [
-  { id: 'home', key: 'home', route: '/', icon: 'Home', visible: true, order: 0, locked: true, translations: { es: 'Inicio', en: 'Home', pt: 'Início', fr: 'Accueil' } },
-  { id: 'product', key: 'product', route: '#producto', icon: 'Explore', visible: true, order: 1, locked: false, translations: { es: 'Producto', en: 'Product', pt: 'Produto', fr: 'Produit' } },
-  { id: 'plans', key: 'plans', route: '#planes', icon: 'Settings', visible: true, order: 2, locked: false, translations: { es: 'Planes', en: 'Plans', pt: 'Planos', fr: 'Forfaits' } },
-  { id: 'security', key: 'security', route: '#seguridad', icon: 'Security', visible: true, order: 3, locked: false, translations: { es: 'Seguridad', en: 'Safety', pt: 'Segurança', fr: 'Sécurité' } },
-  { id: 'support', key: 'support', route: '#soporte', icon: 'SupportAgent', visible: true, order: 3, locked: false, translations: { es: 'Soporte', en: 'Support', pt: 'Suporte', fr: 'Support' } },
-  { id: 'download', key: 'download', route: '#descarga', icon: 'Download', visible: true, order: 4, locked: false, translations: { es: 'Descarga', en: 'Download', pt: 'Download', fr: 'Télécharger' } },
-];
+const INITIAL_NAV_SECTIONS: NavSection[] = DEFAULT_SECTIONS.map((s) => ({ ...s, id: s.key }));
 
 const CTA_LABEL: Record<string, string> = {
   es: 'Crear cuenta',
@@ -40,7 +33,7 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [navLogoUrl, setNavLogoUrl] = useState<string>('/img/assets/isotipo.png');
-  const [navSections, setNavSections] = useState<NavSection[]>(DEFAULT_NAV_SECTIONS);
+  const [navSections, setNavSections] = useState<NavSection[]>(INITIAL_NAV_SECTIONS);
   const [styleSpec, setStyleSpec] = useState<NavbarStyleSpec>(() => getDefaultStyleSpec(NAVBAR_STYLE_ID_DEFAULT));
   const router = useRouter();
   const ctaLabel = CTA_LABEL[currentLang] ?? CTA_LABEL.en;
