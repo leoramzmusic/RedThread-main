@@ -231,19 +231,62 @@ export default function LandingFooter({ currentLang, footerText, bodyFont, foote
         color: 'rgba(255,255,255,0.85)',
         overflow: 'hidden',
         zIndex: 1,
-        // Hilo rojo sutil en el borde superior
-        '&::before': {
-          content: '""',
+      }}
+    >
+      {/* Hilo rojo animado en el borde superior: se dibuja L→R, hace fade y espera (la "vuelta") */}
+      <Box
+        aria-hidden
+        data-testid="footer-thread"
+        sx={{
           position: 'absolute',
           top: 0,
           left: 0,
-          width: '38%',
-          height: 2,
-          background: 'linear-gradient(90deg, transparent, #E63946, transparent)',
-          boxShadow: '0 0 12px rgba(230,57,70,0.8)',
-        },
-      }}
-    >
+          width: '100%',
+          height: 3,
+          zIndex: 2,
+          pointerEvents: 'none',
+          '@media (prefers-reduced-motion: no-preference)': {
+            '@keyframes rtFooterThreadDraw': {
+              '0%': { strokeDashoffset: 1000, opacity: 0 },
+              '8%': { opacity: 1 },
+              '70%': { strokeDashoffset: 0, opacity: 1 },
+              '85%': { strokeDashoffset: 0, opacity: 0 },
+              '100%': { strokeDashoffset: 0, opacity: 0 },
+            },
+            '& line': {
+              strokeDashoffset: 1000,
+              animation: 'rtFooterThreadDraw 7s linear infinite',
+              filter: 'drop-shadow(0 0 6px rgba(230, 57, 70, 0.85))',
+            },
+          },
+          '@media (prefers-reduced-motion: reduce)': {
+            display: 'none',
+          },
+        }}
+      >
+        <svg width="100%" height="3" viewBox="0 0 1000 3" preserveAspectRatio="none" focusable="false">
+          <defs>
+            <linearGradient id="rt-footer-thread-grad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#E63946" stopOpacity="0" />
+              <stop offset="18%" stopColor="#E63946" stopOpacity="1" />
+              <stop offset="82%" stopColor="#E63946" stopOpacity="1" />
+              <stop offset="100%" stopColor="#E63946" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <line
+            x1="0"
+            y1="1.5"
+            x2="1000"
+            y2="1.5"
+            pathLength={1000}
+            strokeDasharray={1000}
+            strokeDashoffset={1000}
+            stroke="url(#rt-footer-thread-grad)"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+          />
+        </svg>
+      </Box>
       {/* 1) Barra minimalista */}
       <Box sx={{ width: '100%', py: { xs: 3, md: 4 }, borderBottom: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box' }}>
         <Container disableGutters maxWidth={false} sx={CONTAINER_SX}>

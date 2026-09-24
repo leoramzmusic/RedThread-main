@@ -105,3 +105,50 @@ describe('LandingFooter i18n', () => {
     expect(screen.getByText('Privacy Policy')).toBeInTheDocument();
   });
 });
+
+describe('LandingFooter red thread animation', () => {
+  const getCssText = () => {
+    let text = '';
+    document.querySelectorAll('style').forEach((s) => {
+      text += s.textContent ?? '';
+      const sheet = s.sheet as CSSStyleSheet | null;
+      if (sheet) {
+        try {
+          Array.from(sheet.cssRules).forEach((r) => {
+            text += `${r.cssText}\n`;
+          });
+        } catch {
+          /* cross-origin or unsupported rule */
+        }
+      }
+    });
+    return text;
+  };
+
+  it('renders an aria-hidden SVG thread with a full-length dashed stroke', () => {
+    renderFooter();
+    const thread = screen.getByTestId('footer-thread');
+    expect(thread).toHaveAttribute('aria-hidden', 'true');
+    const line = thread.querySelector('line');
+    expect(line).toBeInTheDocument();
+    expect(line?.getAttribute('stroke-dasharray')).toBe('1000');
+    expect(line?.getAttribute('pathLength')).toBe('1000');
+    expect(line?.getAttribute('stroke')).toBe('url(#rt-footer-thread-grad)');
+  });
+
+  it('animates the stroke with draw-and-pause keyframes', () => {
+    renderFooter();
+    const css = getCssText();
+    expect(css).toContain('rtFooterThreadDraw');
+    expect(css).toContain('stroke-dashoffset');
+    expect(css).toContain('rtFooterThreadDraw 7s linear infinite');
+  });
+
+  it('gates the animation behind prefers-reduced-motion and hides the thread under reduce', () => {
+    renderFooter();
+    const css = getCssText();
+    expect(css).toContain('prefers-reduced-motion: no-preference');
+    expect(css).toContain('prefers-reduced-motion: reduce');
+    expect(css).toContain('display: none');
+  });
+});
