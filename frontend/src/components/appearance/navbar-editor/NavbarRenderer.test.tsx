@@ -79,9 +79,9 @@ describe('NavbarRenderer layout modes', () => {
     expect(menuButton().style.display).not.toBe('none');
   });
 
-  it('stacks the navbar vertically on mobile', () => {
+  it('keeps a single horizontal row on mobile so the fixed bar never covers the hero logo', () => {
     renderMode('mobile');
-    expect(root().style.flexDirection).toBe('column');
+    expect(root().style.flexDirection).not.toBe('column');
   });
 
   it('keeps a horizontal bar on tablet', () => {

@@ -732,7 +732,7 @@ export default function Home() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                mb: 2,
+                mb: { xs: 3, md: 2 },
                 minHeight: { xs: 100, sm: 130, lg: 140 },
               }}
             >

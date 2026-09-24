@@ -62,7 +62,6 @@ export default function NavbarRenderer({
   return (
     <Box
       data-navbar-mode={mode}
-      style={{ flexDirection: mode === 'mobile' ? 'column' : undefined }}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -163,7 +162,7 @@ export default function NavbarRenderer({
         ))}
       </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1 }, flexShrink: 0, ml: mode === 'mobile' ? 0 : 'auto' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1 }, flexShrink: 0, ml: 'auto' }}>
         <Button
           aria-label="Seleccionar idioma"
           {...(interactive ? { 'data-nav-lang': '' } : {})}
