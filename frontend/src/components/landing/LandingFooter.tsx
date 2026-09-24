@@ -1,10 +1,12 @@
-import { Box, Container, Typography, IconButton, Stack } from '@mui/material';
+import { Box, Container, Typography, IconButton, Stack, useMediaQuery, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import {
   Twitter as TwitterIcon,
   Instagram as InstagramIcon,
   Facebook as FacebookIcon,
   Email as EmailIcon,
+  ExpandMore,
 } from '@mui/icons-material';
+import { type ReactNode } from 'react';
 import { landingTypography as lgTypography } from '../../theme/liquidGlass';
 import { FooterCopyrightText } from './LoveTicker';
 
@@ -79,6 +81,56 @@ const RED_UNDERLINE = {
   mb: 2,
 } as const;
 
+const FOOTER_LAYOUT_QUERY = '(min-width: 1025px)';
+
+const linkSx = {
+  color: 'rgba(255,255,255,0.72) !important',
+  WebkitTextFillColor: 'currentColor',
+  fontSize: 'clamp(0.875rem, 1.2vw, 1rem)',
+  lineHeight: 1.5,
+  textDecoration: 'none',
+  transition: 'color 0.2s ease, text-shadow 0.2s ease',
+  '&:hover': {
+    color: '#fff !important',
+    WebkitTextFillColor: 'currentColor',
+    textDecoration: 'underline',
+    textShadow: '0 0 12px rgba(230,57,70,0.85)',
+  },
+} as const;
+
+const headerSx = {
+  color: 'rgba(255,255,255,0.92)',
+  fontWeight: 700,
+  fontSize: 'clamp(0.8rem, 1vw, 0.9rem)',
+  letterSpacing: '0.12rem',
+  textTransform: 'uppercase' as const,
+  mb: 1.5,
+} as const;
+
+function FooterAccordion({ header, children }: { header: string; children: ReactNode }) {
+  return (
+    <Accordion
+      disableGutters
+      sx={{
+        bgcolor: 'transparent',
+        boxShadow: 'none',
+        '&:before': { display: 'none' },
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '12px !important',
+        '&:not(:last-child)': { mb: 1.5 },
+      }}
+    >
+      <AccordionSummary
+        expandIcon={<ExpandMore sx={{ color: 'rgba(255,255,255,0.7)' }} />}
+        sx={{ px: 2, minHeight: 52, '& .MuiAccordionSummary-content': { my: 1.2 } }}
+      >
+        <Typography variant="subtitle2" sx={{ ...headerSx, mb: 0 }}>{header}</Typography>
+      </AccordionSummary>
+      <AccordionDetails sx={{ px: 2, pt: 0, pb: 2.5 }}>{children}</AccordionDetails>
+    </Accordion>
+  );
+}
+
 export default function LandingFooter({ currentLang, footerText, bodyFont, footerTagline }: Props) {
   const headers = pick(COL_HEADERS, currentLang);
   const labels = { ...LINK_LABELS.en, ...(LINK_LABELS[currentLang] ?? {}) };
@@ -91,28 +143,71 @@ export default function LandingFooter({ currentLang, footerText, bodyFont, foote
     { icon: <EmailIcon />, url: 'mailto:support@redthread.app', label: 'Email' },
   ];
 
-  const linkSx = {
-    color: 'rgba(255,255,255,0.72) !important',
-    WebkitTextFillColor: 'currentColor',
-    fontSize: '0.85rem',
-    textDecoration: 'none',
-    transition: 'color 0.2s ease, text-shadow 0.2s ease',
-    '&:hover': {
-      color: '#fff !important',
-      WebkitTextFillColor: 'currentColor',
-      textDecoration: 'underline',
-      textShadow: '0 0 12px rgba(230,57,70,0.85)',
-    },
-  } as const;
+  const isDesktop = useMediaQuery(FOOTER_LAYOUT_QUERY, { defaultMatches: true });
 
-  const headerSx = {
-    color: 'rgba(255,255,255,0.92)',
-    fontWeight: 700,
-    fontSize: '0.82rem',
-    letterSpacing: '0.12rem',
-    textTransform: 'uppercase' as const,
-    mb: 1.5,
-  } as const;
+  const linkGroups = {
+    legal: [
+      { label: labels.privacy, href: '/legal/privacy' },
+      { label: labels.terms, href: '/legal/terms' },
+      { label: labels.security, href: '/legal/security' },
+      { label: labels.community, href: '/legal/community-guidelines' },
+    ],
+    help: [
+      { label: labels.faq, href: '/help' },
+      { label: labels.contact, href: '/help/contact' },
+      { label: labels.support, href: 'mailto:support@redthread.app' },
+    ],
+    company: [
+      { label: labels.about, href: '#' },
+      { label: labels.careers, href: '#' },
+      { label: labels.press, href: '#' },
+    ],
+  };
+
+  const renderLinks = (links: { label: string; href: string }[], gap: number) => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap }}>
+      {links.map((l) => (
+        <Box key={`${l.href}-${l.label}`} component="a" href={l.href} sx={linkSx}>
+          {l.label}
+        </Box>
+      ))}
+    </Box>
+  );
+
+  const rethContent = (
+    <>
+      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, mb: 2, fontStyle: 'italic' }}>
+        {tagline}
+      </Typography>
+      <Stack direction="row" spacing={1}>
+        {socials.map((s) => (
+          <IconButton
+            key={s.label}
+            size="small"
+            href={s.url}
+            target="_blank"
+            rel="noopener"
+            aria-label={s.label}
+            sx={{
+              color: 'rgba(255,255,255,0.7)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              bgcolor: 'rgba(255,255,255,0.06)',
+              transition: 'all 0.25s ease',
+              '&:hover': {
+                color: '#fff',
+                bgcolor: 'rgba(230,57,70,0.18)',
+                borderColor: 'rgba(230,57,70,0.55)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 0 14px rgba(230,57,70,0.45)',
+              },
+            }}
+          >
+            {s.icon}
+          </IconButton>
+        ))}
+      </Stack>
+    </>
+  );
 
   const colDivider = {
     borderLeft: { xs: 'none', md: '1px solid' },
@@ -173,35 +268,6 @@ export default function LandingFooter({ currentLang, footerText, bodyFont, foote
                 </Box>
               ))}
             </Box>
-            <Box sx={{ display: 'flex', gap: 1.2, alignItems: 'center' }}>
-              {[
-                { label: 'X', href: 'https://x.com' },
-                { label: 'IG', href: 'https://instagram.com' },
-                { label: 'TT', href: 'https://tiktok.com' },
-              ].map((s) => (
-                <Box
-                  key={s.label}
-                  component="a"
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label={s.label}
-                  sx={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    border: '1px solid rgba(255,255,255,0.18)',
-                    color: 'rgba(255,255,255,0.7)',
-                    fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.04em',
-                    bgcolor: 'rgba(255,255,255,0.06)',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.2s ease',
-                    '&:hover': { color: '#fff', bgcolor: 'rgba(230,57,70,0.22)', borderColor: 'rgba(230,57,70,0.55)', transform: 'translateY(-2px)', boxShadow: '0 0 14px rgba(230,57,70,0.45)' },
-                  }}
-                >
-                  {s.label}
-                </Box>
-              ))}
-            </Box>
           </Box>
         </Container>
       </Box>
@@ -209,76 +275,52 @@ export default function LandingFooter({ currentLang, footerText, bodyFont, foote
       {/* 2) Cuatro columnas (un solo contenedor) */}
       <Box sx={{ width: '100%', py: { xs: 4, md: 5 }, borderBottom: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box' }}>
         <Container disableGutters maxWidth={false} sx={CONTAINER_SX}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: { xs: 0, sm: 3, md: 4 }, alignItems: 'start' }}>
-            {/* RETH */}
-            <Box sx={{ minWidth: 0 }}>
-              <Typography variant="subtitle2" sx={headerSx}>RETH</Typography>
-              <Box sx={RED_UNDERLINE} />
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, mb: 2, fontStyle: 'italic' }}>
-                {tagline}
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                {socials.map((s) => (
-                  <IconButton
-                    key={s.label}
-                    size="small"
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener"
-                    aria-label={s.label}
-                    sx={{
-                      color: 'rgba(255,255,255,0.7)',
-                      border: '1px solid rgba(255,255,255,0.18)',
-                      bgcolor: 'rgba(255,255,255,0.06)',
-                      transition: 'all 0.25s ease',
-                      '&:hover': {
-                        color: '#fff',
-                        bgcolor: 'rgba(230,57,70,0.18)',
-                        borderColor: 'rgba(230,57,70,0.55)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 0 14px rgba(230,57,70,0.45)',
-                      },
-                    }}
-                  >
-                    {s.icon}
-                  </IconButton>
-                ))}
-              </Stack>
-            </Box>
+          <Box
+            data-footer-layout={isDesktop ? 'grid' : 'accordion'}
+            sx={
+              isDesktop
+                ? { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, alignItems: 'start' }
+                : { display: 'flex', flexDirection: 'column', gap: 1.5 }
+            }
+          >
+            {isDesktop ? (
+              <>
+                {/* RETH */}
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography variant="subtitle2" sx={headerSx}>RETH</Typography>
+                  <Box sx={RED_UNDERLINE} />
+                  {rethContent}
+                </Box>
 
-            {/* LEGAL */}
-            <Box sx={{ ...colDivider, minWidth: 0 }}>
-              <Typography variant="subtitle2" sx={headerSx}>{headers.legal}</Typography>
-              <Box sx={RED_UNDERLINE} />
-              <Stack spacing={1.5}>
-                <Box component="a" href="/legal/privacy" sx={linkSx}>{labels.privacy}</Box>
-                <Box component="a" href="/legal/terms" sx={linkSx}>{labels.terms}</Box>
-                <Box component="a" href="/legal/security" sx={linkSx}>{labels.security}</Box>
-                <Box component="a" href="/legal/community-guidelines" sx={linkSx}>{labels.community}</Box>
-              </Stack>
-            </Box>
+                {/* LEGAL */}
+                <Box sx={{ ...colDivider, minWidth: 0 }}>
+                  <Typography variant="subtitle2" sx={headerSx}>{headers.legal}</Typography>
+                  <Box sx={RED_UNDERLINE} />
+                  {renderLinks(linkGroups.legal, 1.5)}
+                </Box>
 
-            {/* AYUDA */}
-            <Box sx={{ ...colDivider, minWidth: 0 }}>
-              <Typography variant="subtitle2" sx={headerSx}>{headers.help}</Typography>
-              <Box sx={RED_UNDERLINE} />
-              <Stack spacing={1.5}>
-                <Box component="a" href="/help" sx={linkSx}>{labels.faq}</Box>
-                <Box component="a" href="/help/contact" sx={linkSx}>{labels.contact}</Box>
-                <Box component="a" href="mailto:support@redthread.app" sx={linkSx}>{labels.support}</Box>
-              </Stack>
-            </Box>
+                {/* AYUDA */}
+                <Box sx={{ ...colDivider, minWidth: 0 }}>
+                  <Typography variant="subtitle2" sx={headerSx}>{headers.help}</Typography>
+                  <Box sx={RED_UNDERLINE} />
+                  {renderLinks(linkGroups.help, 1.5)}
+                </Box>
 
-            {/* EMPRESA */}
-            <Box sx={{ ...colDivider, minWidth: 0 }}>
-              <Typography variant="subtitle2" sx={headerSx}>{headers.company}</Typography>
-              <Box sx={RED_UNDERLINE} />
-              <Stack spacing={1.5}>
-                <Box component="a" href="#" sx={linkSx}>{labels.about}</Box>
-                <Box component="a" href="#" sx={linkSx}>{labels.careers}</Box>
-                <Box component="a" href="#" sx={linkSx}>{labels.press}</Box>
-              </Stack>
-            </Box>
+                {/* EMPRESA */}
+                <Box sx={{ ...colDivider, minWidth: 0 }}>
+                  <Typography variant="subtitle2" sx={headerSx}>{headers.company}</Typography>
+                  <Box sx={RED_UNDERLINE} />
+                  {renderLinks(linkGroups.company, 1.5)}
+                </Box>
+              </>
+            ) : (
+              <>
+                <FooterAccordion header="RETH">{rethContent}</FooterAccordion>
+                <FooterAccordion header={headers.legal}>{renderLinks(linkGroups.legal, 2)}</FooterAccordion>
+                <FooterAccordion header={headers.help}>{renderLinks(linkGroups.help, 2)}</FooterAccordion>
+                <FooterAccordion header={headers.company}>{renderLinks(linkGroups.company, 2)}</FooterAccordion>
+              </>
+            )}
           </Box>
         </Container>
       </Box>
