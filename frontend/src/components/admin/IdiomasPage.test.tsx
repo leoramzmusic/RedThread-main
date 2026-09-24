@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import IdiomasPage from './idiomas';
-import { supportedLanguages } from '../../../config/languages';
+import IdiomasPage from '../../pages/portal-redthread/apariencia/idiomas';
+import { supportedLanguages } from '../../config/languages';
 
-jest.mock('../../../services/appearanceService', () => ({
+jest.mock('../../services/appearanceService', () => ({
   __esModule: true,
   default: {
     getResources: jest.fn().mockResolvedValue([]),

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Switch, Typography, Button, Paper, Stack } from '@mui/material';
 import { supportedLanguages } from '../../../config/languages';
 import appearanceService from '../../../services/appearanceService';
-import { AppearanceType } from '../../../types/appearance';
+import { AppearanceType, Platform } from '../../../types/appearance';
 
 export default function IdiomasAdminPage() {
   const [enabled, setEnabled] = useState<string[]>(supportedLanguages.map(l=>l.code));
@@ -10,8 +10,8 @@ export default function IdiomasAdminPage() {
   const [resourceId, setResourceId] = useState<string | null>(null);
 
   useEffect(() => {
-    appearanceService.getResources(AppearanceType.LANDING_LANGUAGES as any).then(res => {
-      const e = (res?.[0] as any)?.metadata?.enabled;
+    appearanceService.getResources(AppearanceType.LANDING_LANGUAGES).then(res => {
+      const e = res?.[0]?.metadata?.enabled;
       if (Array.isArray(e)) setEnabled(e);
       if (res?.[0]?._id) setResourceId(res[0]._id);
     }).catch(()=>{});
@@ -21,8 +21,8 @@ export default function IdiomasAdminPage() {
   const save = async () => {
     setSaving(true);
     try {
-      if (resourceId) await appearanceService.updateResource(resourceId, {metadata:{enabled}} as any);
-      else await appearanceService.createResource({type: AppearanceType.LANDING_LANGUAGES as any, platform: 'web' as any, url:'', metadata:{enabled}, is_active:true} as any);
+      if (resourceId) await appearanceService.updateResource(resourceId, {metadata:{enabled}});
+      else await appearanceService.createResource({type: AppearanceType.LANDING_LANGUAGES, platform: Platform.WEB, url:'', metadata:{enabled}, is_active:true});
     } finally { setSaving(false); }
   };
 
@@ -35,7 +35,7 @@ export default function IdiomasAdminPage() {
           {supportedLanguages.map(l => (
             <Box key={l.code} sx={{display:'flex', justifyContent:'space-between', alignItems:'center', py:0.5}}>
               <Typography>{l.label} ({l.code.toUpperCase()})</Typography>
-              <Switch checked={enabled.includes(l.code)} onChange={()=>toggle(l.code)} inputProps={{ role: 'switch' } as any} />
+              <Switch checked={enabled.includes(l.code)} onChange={()=>toggle(l.code)} inputProps={{ role: 'switch' }} />
             </Box>
           ))}
         </Stack>

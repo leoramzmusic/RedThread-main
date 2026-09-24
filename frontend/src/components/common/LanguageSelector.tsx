@@ -37,7 +37,16 @@ const globeSpin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: React.ReactElement<any, any> }>(
+function setLocaleCookie(code: string) {
+    document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; SameSite=Lax`;
+}
+
+function redirectToLocale(code: string, pathWithoutLocale: string) {
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload required so the NEXT_LOCALE cookie and i18n middleware re-resolve the locale
+    window.location.href = `/${code}${pathWithoutLocale}`;
+}
+
+const MenuTransition = React.forwardRef<unknown, TransitionProps & { children: React.ReactElement }>(
     function MenuTransition(props, ref) {
         return <Slide direction="down" ref={ref} {...(props as React.ComponentProps<typeof Slide>)} />;
     }
@@ -61,7 +70,7 @@ export default function LanguageSelector({ showContinuityHint, onLanguageChange 
         const enabled = await getEnabledLanguages();
         if (!enabled.includes(code)) return;
         localStorage.setItem('preferred_language', code);
-        document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; SameSite=Lax`;
+        setLocaleCookie(code);
         try {
             if (onLanguageChange) {
                 await onLanguageChange(code);
@@ -69,13 +78,12 @@ export default function LanguageSelector({ showContinuityHint, onLanguageChange 
                 // default authenticated sync via apiClient with credentials
                 await apiClient.patch('/auth/me', { preferred_language: code });
             }
-        } catch (e: any) {
-            if (e?.response?.status === 401) {
+        } catch (e: unknown) {
+            const status = (e as { response?: { status?: number } })?.response?.status;
+            if (status === 401) {
                 // anonymous — ignore, proceed to redirect
-            } else if (e?.response?.status === 400) {
+            } else if (status === 400) {
                 enqueueSnackbar('Idioma no disponible', { variant: 'error' });
-                throw e;
-            } else if (e?.response) {
                 throw e;
             } else {
                 throw e;
@@ -83,7 +91,7 @@ export default function LanguageSelector({ showContinuityHint, onLanguageChange 
         }
         const currentPath = router?.asPath || '/';
         const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
-        window.location.href = `/${code}${pathWithoutLocale}`;
+        redirectToLocale(code, pathWithoutLocale);
     };
 
     const currentLang = LANGUAGES.find(l => l.code === (router?.locale || 'es')) || LANGUAGES[1];
