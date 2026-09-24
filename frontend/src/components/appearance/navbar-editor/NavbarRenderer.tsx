@@ -1,9 +1,10 @@
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, IconButton, useMediaQuery } from '@mui/material';
 import { Language as LanguageIcon, Menu as MenuIcon } from '@mui/icons-material';
 import { landingShadows, shapeTokens } from '../../../theme/liquidGlass';
 import { NavSection, Language, getTranslationFallback } from './types';
 import { NavbarStyleSpec } from './styles';
 import { NavbarIcon } from './NavbarIcon';
+import { NavbarLayoutMode, NAVBAR_MOBILE_MAX, NAVBAR_TABLET_MAX } from './layoutMode';
 
 export interface NavbarRendererProps {
   sections: NavSection[];
@@ -14,6 +15,7 @@ export interface NavbarRendererProps {
   ctaLabel?: string;
   logoUrl?: string;
   onLogoError?: () => void;
+  layoutMode?: NavbarLayoutMode;
 }
 
 const DEFAULT_CTA_LABEL: Record<string, string> = {
@@ -42,8 +44,11 @@ const getHoverSx = (animation: NavbarStyleSpec['hoverAnimation'], accent: string
 };
 
 export default function NavbarRenderer({
-  sections, currentLang, styleSpec, scrolled = false, interactive = true, ctaLabel, logoUrl, onLogoError,
+  sections, currentLang, styleSpec, scrolled = false, interactive = true, ctaLabel, logoUrl, onLogoError, layoutMode,
 }: NavbarRendererProps) {
+  const matchesMobile = useMediaQuery(`(max-width: ${NAVBAR_MOBILE_MAX}px)`, { defaultMatches: false });
+  const matchesTablet = useMediaQuery(`(max-width: ${NAVBAR_TABLET_MAX}px)`, { defaultMatches: false });
+  const mode: NavbarLayoutMode = layoutMode ?? (matchesMobile ? 'mobile' : matchesTablet ? 'tablet' : 'desktop');
   const visibleNavItems = sections
     .filter((s) => s.visible)
     .map((s) => ({ label: getTranslationFallback(s.translations, currentLang), href: s.route, icon: s.icon }));
@@ -56,6 +61,8 @@ export default function NavbarRenderer({
 
   return (
     <Box
+      data-navbar-mode={mode}
+      style={{ flexDirection: mode === 'mobile' ? 'column' : undefined }}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -97,15 +104,17 @@ export default function NavbarRenderer({
       </Box>
 
       <Box
+        data-nav-menubar=""
+        role="menubar"
+        style={{ display: mode === 'desktop' ? 'flex' : 'none' }}
         sx={{
-          display: { xs: 'none', lg: 'flex' },
           alignItems: 'center',
           gap: 0.5,
           flex: 1,
           justifyContent: 'center',
           minWidth: 0,
+          flexWrap: 'wrap',
         }}
-        role="menubar"
       >
         {visibleNavItems.map((item) => (
           <Box key={`${item.label}-${item.href}`} sx={{ position: 'relative', display: 'flex', '&:hover .rt-nav-underline': { transform: 'scaleX(1)' }, '&:focus-within .rt-nav-underline': { transform: 'scaleX(1)' } }}>
@@ -154,7 +163,7 @@ export default function NavbarRenderer({
         ))}
       </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1 }, flexShrink: 0, ml: 'auto' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, sm: 1 }, flexShrink: 0, ml: mode === 'mobile' ? 0 : 'auto' }}>
         <Button
           aria-label="Seleccionar idioma"
           {...(interactive ? { 'data-nav-lang': '' } : {})}
@@ -206,8 +215,8 @@ export default function NavbarRenderer({
         <IconButton
           aria-label="Abrir menú"
           {...(interactive ? { 'data-nav-menu': '' } : {})}
+          style={{ display: mode === 'desktop' ? 'none' : undefined }}
           sx={{
-            display: { xs: 'inline-flex', lg: 'none' },
             color: 'white',
             bgcolor: 'rgba(255,255,255,0.1)',
             border: '1px solid rgba(255,255,255,0.18)',

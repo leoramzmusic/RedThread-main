@@ -44,3 +44,53 @@ describe('NavbarRenderer', () => {
     expect(screen.queryByText('Inicio')).not.toBeInTheDocument();
   });
 });
+
+describe('NavbarRenderer layout modes', () => {
+  const renderMode = (layoutMode: 'desktop' | 'tablet' | 'mobile') =>
+    render(
+      <NavbarRenderer sections={sections} currentLang="es" styleSpec={getDefaultStyleSpec('glass')} layoutMode={layoutMode} />
+    );
+
+  const root = () => document.querySelector('[data-navbar-mode]') as HTMLElement;
+  const menubar = () => document.querySelector('[data-nav-menubar]') as HTMLElement;
+  const menuButton = () => document.querySelector('[data-nav-menu]') as HTMLElement;
+
+  it('exposes the requested layout mode on the root element', () => {
+    renderMode('tablet');
+    expect(root().getAttribute('data-navbar-mode')).toBe('tablet');
+  });
+
+  it('shows the menubar and hides the hamburger on desktop', () => {
+    renderMode('desktop');
+    expect(root().getAttribute('data-navbar-mode')).toBe('desktop');
+    expect(menubar().style.display).not.toBe('none');
+    expect(menuButton().style.display).toBe('none');
+  });
+
+  it('hides the menubar and shows the hamburger on tablet', () => {
+    renderMode('tablet');
+    expect(menubar().style.display).toBe('none');
+    expect(menuButton().style.display).not.toBe('none');
+  });
+
+  it('hides the menubar and shows the hamburger on mobile', () => {
+    renderMode('mobile');
+    expect(menubar().style.display).toBe('none');
+    expect(menuButton().style.display).not.toBe('none');
+  });
+
+  it('stacks the navbar vertically on mobile', () => {
+    renderMode('mobile');
+    expect(root().style.flexDirection).toBe('column');
+  });
+
+  it('keeps a horizontal bar on tablet', () => {
+    renderMode('tablet');
+    expect(root().style.flexDirection).not.toBe('column');
+  });
+
+  it('derives desktop mode when no layoutMode is provided (jsdom default)', () => {
+    render(<NavbarRenderer sections={sections} currentLang="es" styleSpec={getDefaultStyleSpec('glass')} />);
+    expect(root().getAttribute('data-navbar-mode')).toBe('desktop');
+  });
+});

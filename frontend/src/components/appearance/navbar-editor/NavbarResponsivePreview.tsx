@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import NavbarRenderer from './NavbarRenderer';
 import { NavSection, Language } from './types';
 import { NavbarStyleSpec } from './styles';
+import { NavbarLayoutMode } from './layoutMode';
 
 export interface NavbarResponsivePreviewProps {
   sections: NavSection[];
@@ -21,12 +22,13 @@ export const RESUMEN_RESOLUTIONS = [
 
 type ResolutionId = (typeof RESUMEN_RESOLUTIONS)[number]['id'];
 
-function Mockup({ sections, currentLang, styleSpec, width, label }: {
+function Mockup({ sections, currentLang, styleSpec, width, label, layoutMode }: {
   sections: NavSection[];
   currentLang: Language;
   styleSpec: NavbarStyleSpec;
   width: number;
   label: string;
+  layoutMode: NavbarLayoutMode;
 }) {
   return (
     <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -50,10 +52,12 @@ function Mockup({ sections, currentLang, styleSpec, width, label }: {
           <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#28C840' }} />
           <Box sx={{ flex: 1, mx: 1, height: 16, borderRadius: 1, bgcolor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.06)' }} />
         </Box>
-        <Box sx={{ p: 2, background: 'linear-gradient(135deg, #1c1d20 0%, #232529 55%, #2a1014 100%)' }}>
-          <Box sx={{ position: 'relative', height: 64 }}>
-            <NavbarRenderer sections={sections} currentLang={currentLang} styleSpec={styleSpec} scrolled={false} />
-          </Box>
+        <Box
+          data-mockup-stage=""
+          style={{ height: layoutMode === 'mobile' ? 110 : 64 }}
+          sx={{ position: 'relative', background: 'linear-gradient(135deg, #1c1d20 0%, #232529 55%, #2a1014 100%)' }}
+        >
+          <NavbarRenderer sections={sections} currentLang={currentLang} styleSpec={styleSpec} scrolled={false} layoutMode={layoutMode} />
         </Box>
       </Box>
     </Box>
@@ -110,11 +114,11 @@ export default function NavbarResponsivePreview({ sections, currentLang, draft, 
       <Stack direction={compare ? 'row' : 'row'} spacing={2} sx={{ justifyContent: compare ? 'center' : 'flex-start' }}>
         {compare ? (
           <>
-            <Mockup sections={sections} currentLang={currentLang} styleSpec={saved} width={active!.width} label={`Estilo actual — ${saved.label}`} />
-            <Mockup sections={sections} currentLang={currentLang} styleSpec={draft} width={active!.width} label={`Seleccionado — ${draft.label}`} />
+            <Mockup sections={sections} currentLang={currentLang} styleSpec={saved} width={active!.width} label={`Estilo actual — ${saved.label}`} layoutMode={resolution} />
+            <Mockup sections={sections} currentLang={currentLang} styleSpec={draft} width={active!.width} label={`Seleccionado — ${draft.label}`} layoutMode={resolution} />
           </>
         ) : (
-          <Mockup sections={sections} currentLang={currentLang} styleSpec={draft} width={active!.width} label="" />
+          <Mockup sections={sections} currentLang={currentLang} styleSpec={draft} width={active!.width} label="" layoutMode={resolution} />
         )}
       </Stack>
     </Paper>

@@ -45,4 +45,43 @@ describe('NavbarResponsivePreview', () => {
     expect(RESUMEN_RESOLUTIONS.length).toBe(3);
     jest.useRealTimers();
   });
+
+  it('renders the mockup navbar in desktop mode by default', () => {
+    render(
+      <NavbarResponsivePreview
+        sections={sections} currentLang="es"
+        draft={getDefaultStyleSpec('glass')} saved={getDefaultStyleSpec('glass')} showCompare={false}
+      />
+    );
+    expect(document.querySelector('[data-navbar-mode="desktop"]')).toBeInTheDocument();
+  });
+
+  it('switches the mockup navbar layout mode with the selected resolution', () => {
+    render(
+      <NavbarResponsivePreview
+        sections={sections} currentLang="es"
+        draft={getDefaultStyleSpec('glass')} saved={getDefaultStyleSpec('glass')} showCompare={false}
+      />
+    );
+    fireEvent.click(screen.getByText('Tablet'));
+    expect(document.querySelector('[data-navbar-mode="tablet"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-navbar-mode="desktop"]')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Móvil'));
+    expect(document.querySelector('[data-navbar-mode="mobile"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-navbar-mode="tablet"]')).not.toBeInTheDocument();
+  });
+
+  it('gives the mobile mockup stage extra height for the stacked bar', () => {
+    render(
+      <NavbarResponsivePreview
+        sections={sections} currentLang="es"
+        draft={getDefaultStyleSpec('glass')} saved={getDefaultStyleSpec('glass')} showCompare={false}
+      />
+    );
+    const stage = () => document.querySelector('[data-mockup-stage]') as HTMLElement;
+    expect(stage().style.height).toBe('64px');
+    fireEvent.click(screen.getByText('Móvil'));
+    expect(stage().style.height).toBe('110px');
+  });
 });
