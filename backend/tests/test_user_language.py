@@ -25,3 +25,23 @@ def test_register_request_accepts_preferred_language():
     from src.api.auth import RegisterRequest
     r = RegisterRequest(email="x@x.com", password="12345678", username="xuser", display_name="X", age=22, gender="other", preferred_language="fr")
     assert r.preferred_language == "fr"
+
+def test_employee_default_language_is_en():
+    from src.models.employee import Employee
+    assert Employee.model_fields["preferred_language"].default == "en"
+
+def test_admin_me_payload_includes_language():
+    import inspect
+    from src.api.admin.auth import _me_payload
+    src = inspect.getsource(_me_payload)
+    assert "preferred_language" in src
+
+def test_admin_router_has_patch_me():
+    import inspect
+    from src.api.admin.auth import router
+    from fastapi.routing import APIRoute
+    paths = [
+        r.path for r in router.routes
+        if isinstance(r, APIRoute) and r.path == "/portal-redthread/auth/me" and "PATCH" in r.methods
+    ]
+    assert paths, "PATCH /me missing from admin auth router"

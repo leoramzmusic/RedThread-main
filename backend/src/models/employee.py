@@ -61,6 +61,7 @@ class Employee(Document):
     # Theme Preference (independent from user portal)
     admin_theme_mode: str = "light"  # light, dark
     admin_visual_theme: str = "redThread"  # redThread, premium, vip, blue, purple, pink, green, sakura, halloween, christmas
+    preferred_language: str = "en"  # per-employee language preference
     
     class Settings:
         name = "employees"

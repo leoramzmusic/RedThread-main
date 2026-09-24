@@ -26,6 +26,9 @@ class AdminAuthResponse(BaseModel):
 class Update2FARequest(BaseModel):
     enabled: bool
 
+class UpdateEmployeeLanguageRequest(BaseModel):
+    preferred_language: str
+
 class EmployeeRegisterRequest(BaseModel):
     first_name: str
     last_name: str
@@ -287,6 +290,23 @@ async def get_current_employee_info(current_employee: Employee = Depends(get_cur
     return await _me_payload(current_employee)
 
 
+@router.patch("/me")
+async def update_current_employee_language(
+    request: UpdateEmployeeLanguageRequest,
+    current_employee: Employee = Depends(get_current_employee),
+):
+    """Update the employee's own language preference (per-employee, never global)."""
+    from src.api.auth import get_enabled_languages
+    code = request.preferred_language.lower()
+    enabled = await get_enabled_languages()
+    if code not in enabled:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Language not available")
+    current_employee.preferred_language = code
+    current_employee.updated_at = datetime.utcnow()
+    await current_employee.save()
+    return {"preferred_language": current_employee.preferred_language}
+
+
 @router.get("/sessions")
 async def get_active_sessions(current_employee: Employee = Depends(get_current_employee)):
     """Get all active sessions for the current employee"""
@@ -454,6 +474,7 @@ async def _me_payload(employee: Employee) -> dict:
         "status": employee.status.value if hasattr(employee.status, "value") else employee.status,
         "admin_theme_mode": employee.admin_theme_mode,
         "admin_visual_theme": employee.admin_visual_theme,
+        "preferred_language": employee.preferred_language,
         "permissions": await employee.get_all_permissions(),
     }
 
