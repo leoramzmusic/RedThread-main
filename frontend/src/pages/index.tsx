@@ -133,6 +133,8 @@ const translations = {
 };
 
 import { supportedLanguages } from '../config/languages';
+import apiClient from '../services/api';
+import { resolveInitialLang, readStoredLang, persistLangLocal, normalizeLang } from '../utils/landingLanguage';
 
 const languages = supportedLanguages.map((l) => l.code) as unknown as readonly string[];
 type Language = (typeof supportedLanguages)[number]['code'];
@@ -173,36 +175,56 @@ function renderChars(text: string): ReactNode {
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
   const [currentLangIndex, setCurrentLangIndex] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('reth-lang');
-      if (saved && languages.includes(saved as Language)) {
-        return languages.indexOf(saved as Language);
-      }
-      // Detección automática de región — híbrida: propone idioma del navegador si está soportado, si no mantiene 'en'
-      try {
-        const raw = navigator.language || (Intl.DateTimeFormat().resolvedOptions().locale as string) || 'en';
-        const browserLang = raw.split('-')[0].toLowerCase();
-        if (languages.includes(browserLang as Language)) {
-          return languages.indexOf(browserLang as Language);
-        }
-      } catch {}
+      // Profile is applied after mount (see effect below); local choice wins for anonymous visitors.
+      // No browser auto-detection: the global default is English.
+      const initial = resolveInitialLang({ storedLang: readStoredLang() });
+      return Math.max(0, languages.indexOf(initial));
     }
-    // Fallback seguro: inglés (índice 0 = 'en')
-    return languages.indexOf('en' as Language) >= 0 ? languages.indexOf('en' as Language) : 0;
+    return Math.max(0, languages.indexOf('en'));
   });
   const currentLang: Language = languages[currentLangIndex] as Language;
   const t = (translations as Record<string, typeof translations.es>)[currentLang] ?? translations.en;
 
-  // Transición controlada: inicia en 'en' (supportedLanguages[0]) y se pausa tras la primera selección manual
-  const [transitionEnabled, setTransitionEnabled] = useState(true);
+  // Auto-rotation only makes sense before the user has chosen a language (local or profile)
+  const [transitionEnabled, setTransitionEnabled] = useState(
+    () => typeof window === 'undefined' || !readStoredLang()
+  );
 
   const handleLangChange = (lang: Language) => {
     const idx = languages.indexOf(lang as string);
-    if (idx >= 0) setCurrentLangIndex(idx);
+    if (idx >= 0) {
+      setCurrentLangIndex(idx);
+      const persisted = persistLangLocal(lang);
+      if (persisted && isAuthenticated) {
+        apiClient.patch('/auth/me', { preferred_language: persisted }).catch(() => {});
+      }
+    }
     setTransitionEnabled(false);
   };
+
+  // Cross-device sync: apply the profile language once the auth session is known
+  useEffect(() => {
+    if (!isInitialized || !isAuthenticated) return;
+    let cancelled = false;
+    apiClient
+      .get('/auth/me')
+      .then((res) => {
+        const lang = normalizeLang(res.data?.preferred_language);
+        if (cancelled || !lang) return;
+        const idx = languages.indexOf(lang);
+        if (idx >= 0) {
+          setCurrentLangIndex(idx);
+          setTransitionEnabled(false);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isInitialized, isAuthenticated]);
 
   // CMS State
   const [cmsConfig, setCmsConfig] = useState<any>(null);
@@ -213,13 +235,6 @@ export default function Home() {
   const [heroIcon, setHeroIcon] = useState<string | null>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(true);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
-
-  // Persist language preference
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('reth-lang', currentLang);
-    }
-  }, [currentLang]);
 
   useEffect(() => {
     if (isAuthenticated) {

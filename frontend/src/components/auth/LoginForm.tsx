@@ -23,6 +23,7 @@ import apiClient from '../../services/api';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'next-i18next';
+import { persistLangLocal, normalizeLang, PROFILE_LANG_STORAGE_KEY } from '../../utils/landingLanguage';
 import { AUTH_INPUT_SX, SOCIAL_BTN_SX, SUBMIT_BTN_SX } from './authInputStyles';
 
 export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}) {
@@ -73,24 +74,20 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}
             // Fetch user details & prefs - cookies are sent automatically
             const userResponse = await apiClient.get('/auth/me');
 
-            // Language sync: DB vs local (continuity)
+            // Language sync: DB vs local (continuity) — writes reth-lang + preferred_language + NEXT_LOCALE cookie
             try {
-              const dbLang = (userResponse.data.preferred_language || 'en').toLowerCase();
-              const localLang = typeof window !== 'undefined' ? localStorage.getItem('preferred_language') : null;
+              const dbLang = normalizeLang(userResponse.data.preferred_language) || 'en';
+              const localLang = normalizeLang(typeof window !== 'undefined' ? localStorage.getItem(PROFILE_LANG_STORAGE_KEY) : null);
               if (dbLang !== router.locale) {
-                localStorage.setItem('preferred_language', dbLang);
-                document.cookie = `NEXT_LOCALE=${dbLang}; path=/; max-age=31536000; SameSite=Lax`;
                 const pathWithoutLocale = (router.asPath || '/').replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
-                if (localLang && localLang !== dbLang && localLang !== 'en') {
-                  await apiClient.patch('/auth/me', {preferred_language: localLang});
-                  localStorage.setItem('preferred_language', localLang);
-                  document.cookie = `NEXT_LOCALE=${localLang}; path=/; max-age=31536000; SameSite=Lax`;
-                  window.location.href = `/${localLang}${pathWithoutLocale}`;
-                  return;
-                } else {
-                  window.location.href = `/${dbLang}${pathWithoutLocale}`;
-                  return;
+                const localWins = !!localLang && localLang !== dbLang && localLang !== 'en';
+                const targetLang = localWins ? (localLang as string) : dbLang;
+                persistLangLocal(targetLang);
+                if (localWins) {
+                  await apiClient.patch('/auth/me', { preferred_language: targetLang });
                 }
+                window.location.href = `/${targetLang}${pathWithoutLocale}`;
+                return;
               }
             } catch {}
 
