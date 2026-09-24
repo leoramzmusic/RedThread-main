@@ -1,4 +1,4 @@
-import { createLiquidGlassTheme, liquidColors, typeScale, fontFamilies, shapeTokens, motionTokens } from '../liquidGlass';
+import { createLiquidGlassTheme, liquidColors, typeScale, fontFamilies, shapeTokens, motionTokens, getLandingHeroFontSize } from '../liquidGlass';
 import type { ThemeMode, VisualTheme } from '../liquidGlass';
 
 describe('createLiquidGlassTheme', () => {
@@ -109,6 +109,32 @@ describe('createLiquidGlassTheme', () => {
       const theme = createLiquidGlassTheme('light', visual);
       expect(theme.palette.primary.main).toBe(expected);
     });
+  });
+});
+
+describe('getLandingHeroFontSize', () => {
+  it('mobile xs is viewport-fluid: contains vw and no max() floor that would dominate small screens', () => {
+    const { xs } = getLandingHeroFontSize();
+    expect(xs).toContain('vw');
+    expect(xs).not.toMatch(/^max\(/);
+    expect(xs).not.toContain('3.1rem');
+  });
+
+  it('without CMS: xs is the token clamp, md is 5rem with 4.6rem floor and never NaN', () => {
+    const { xs, md } = getLandingHeroFontSize();
+    expect(xs).toBe('clamp(1.95rem, 7.2vw, 3.6rem)');
+    expect(md).toBe('max(5rem, 4.6rem)');
+    expect(md).not.toContain('NaN');
+  });
+
+  it('with CMS size: mobile keeps the vw ramp with CMS as ceiling only', () => {
+    const { xs, md } = getLandingHeroFontSize(4.6);
+    expect(xs).toBe('clamp(1.95rem, 7.2vw, 4.6rem)');
+    expect(md).toBe('max(4.6rem, 4.6rem)');
+  });
+
+  it('desktop md never drops below the 4.6rem floor', () => {
+    expect(getLandingHeroFontSize(3).md).toBe('max(3rem, 4.6rem)');
   });
 });
 

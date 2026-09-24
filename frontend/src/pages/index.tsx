@@ -514,26 +514,29 @@ export default function Home() {
     ctaSecondary: getCmsText('ctaSecondary') || t.ctaSecondary || 'Sign In',
     howItWorks: getCmsText('howItWorksTitle') || t.howItWorks,
     footer: getCmsText('footerText') || t.footer,
-    footerTagline: getCmsText('footerTagline') as string | null | undefined ?? null,
-    features: {
-      smartMatching: {
-        title: getCmsText('features', 'title', 'smartMatching') || t.features.smartMatching.title,
-        description: getCmsText('features', 'description', 'smartMatching') || t.features.smartMatching.description
-      },
-      realTimeChat: {
-        title: getCmsText('features', 'title', 'realTimeChat') || t.features.realTimeChat.title,
-        description: getCmsText('features', 'description', 'realTimeChat') || t.features.realTimeChat.description
-      },
-      proximityRadar: {
-        title: getCmsText('features', 'title', 'proximityRadar') || t.features.proximityRadar.title,
-        description: getCmsText('features', 'description', 'proximityRadar') || t.features.proximityRadar.description
-      },
-      multipleIntentions: {
-        title: getCmsText('features', 'title', 'multipleIntentions') || t.features.multipleIntentions.title,
-        description: getCmsText('features', 'description', 'multipleIntentions') || t.features.multipleIntentions.description
+      footerTagline: getCmsText('footerTagline') as string | null | undefined ?? null,
+      features: {
+        smartMatching: {
+          title: getCmsText('features', 'title', 'smartMatching') || t.features.smartMatching.title,
+          description: getCmsText('features', 'description', 'smartMatching') || t.features.smartMatching.description
+        },
+        realTimeChat: {
+          title: getCmsText('features', 'title', 'realTimeChat') || t.features.realTimeChat.title,
+          description: getCmsText('features', 'description', 'realTimeChat') || t.features.realTimeChat.description
+        },
+        proximityRadar: {
+          title: getCmsText('features', 'title', 'proximityRadar') || t.features.proximityRadar.title,
+          description: getCmsText('features', 'description', 'proximityRadar') || t.features.proximityRadar.description
+        },
+        multipleIntentions: {
+          title: getCmsText('features', 'title', 'multipleIntentions') || t.features.multipleIntentions.title,
+          description: getCmsText('features', 'description', 'multipleIntentions') || t.features.multipleIntentions.description
+        }
       }
-    }
-  };
+    };
+
+    // Single source for the hero title size (sx + the body[data-font-size] !important block)
+    const heroFontSize = getLandingHeroFontSize(cmsConfig?.subtitleFontSize);
 
   // Show loading screen while fetching CMS data
   if (isLoadingCms) {
@@ -581,7 +584,7 @@ export default function Home() {
           }
           body[data-font-size] .rt-landing.rt-landing .rt-subtitle.rt-subtitle,
           body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle {
-            font-size: clamp(var(--rt-title-clamp-min, 1.5rem), var(--rt-title-clamp-vw, 2.5vw), var(--rt-title-clamp-max, 3rem)) !important;
+            font-size: ${heroFontSize.xs} !important;
             overflow-wrap: break-word !important;
           }
           body[data-font-size] .rt-landing .rt-subtitle .rt-landing-word.rt-landing-word,
@@ -594,13 +597,13 @@ export default function Home() {
           }
           @media (max-width: 899.98px) {
             body[data-font-size] .rt-landing.rt-landing .rt-subtitle.rt-subtitle,
-            body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle { font-size: var(--rt-title-size, max(${cmsConfig?.subtitleFontSize || 3.4}rem, 3.1rem)) !important; }
+            body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle { font-size: ${heroFontSize.xs} !important; }
             body[data-font-size] .rt-landing .rt-section-title { font-size: 2.9rem !important; }
             body[data-font-size] .rt-landing .rt-card-title { font-size: 1.6rem !important; }
           }
           @media (min-width: 900px) {
             body[data-font-size] .rt-landing.rt-landing .rt-subtitle.rt-subtitle,
-            body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle { font-size: var(--rt-title-size, max(${cmsConfig?.subtitleFontSize || 5}rem, 4.6rem)) !important; }
+            body[data-font-size] .rt-landing .MuiTypography-root.rt-subtitle.rt-subtitle { font-size: ${heroFontSize.md} !important; }
             body[data-font-size] .rt-landing .rt-section-title { font-size: 4rem !important; }
             body[data-font-size] .rt-landing .rt-card-title { font-size: 1.8rem !important; }
           }
@@ -762,10 +765,7 @@ export default function Home() {
                   lineHeight: landingTypography.heroTitle.lineHeight,
                   fontOpticalSizing: 'auto',
                   // El texto nunca se corta: ocupa las líneas que necesite; palabras largas sí envuelven
-                  fontSize: {
-                    xs: landingTypography.heroTitle.size.xs,
-                    md: `max(${cmsConfig?.subtitleFontSize || 5}rem, 4.6rem)`,
-                  },
+                  fontSize: { xs: heroFontSize.xs, md: heroFontSize.md },
                   overflowWrap: 'break-word',
                   textAlign: 'center',
                   mx: 'auto',

@@ -102,9 +102,10 @@ export const landingTypography = {
     weight: 600,
     tracking: '-0.03em',
     lineHeight: 1.05,
-    // 280 cover → 3.6rem max móvil, 5rem max desktop; floor AA evita <3.1/4.6
+    // 280 cover → móvil fluido 1.95→3.6rem vía vw (siempre cabe en pantallas angostas;
+    // el CMS solo sube el techo), desktop 5rem con floor 4.6
     size: { xs: 'clamp(1.95rem, 7.2vw, 3.6rem)', md: 'clamp(4.2rem, 5vw, 5rem)' } as const,
-    sizeFloor: { xs: '3.1rem', md: '4.6rem' } as const,
+    sizeFloor: { md: '4.6rem' } as const,
   },
   heroBody: {
     family: fontFamilies.body,
@@ -172,14 +173,15 @@ export const landingShadows = {
   },
 } as const;
 
-/** Helper Fase A: resuelve fontSize hero respetando CMS override en md, con floor AA. */
-export function getLandingHeroFontSize(cmsMdSize?: number): { xs: string; md: string } {
-  const md = cmsMdSize ?? Number.parseFloat(landingTypography.heroTitle.size.md);
-  const floorMd = landingTypography.heroTitle.sizeFloor.md;
-  const floorXs = landingTypography.heroTitle.sizeFloor.xs;
+/** Helper Fase A: resuelve fontSize hero respetando CMS override, con floor desktop 4.6.
+ *  xs es SIEMPRE fluido (clamp con vw) para que el título nunca desborde en móvil —
+ *  un rem fijo aquí vuelve a cortar el título en viewports angostos. */
+export function getLandingHeroFontSize(cmsRem?: number): { xs: string; md: string } {
+  const xs = landingTypography.heroTitle.size.xs;
+  const xsCeiling = cmsRem != null ? `clamp(1.95rem, 7.2vw, ${cmsRem}rem)` : xs;
   return {
-    xs: `max(${landingTypography.heroTitle.size.xs}, ${floorXs})`,
-    md: `max(${md}rem, ${floorMd})`,
+    xs: xsCeiling,
+    md: `max(${cmsRem ?? 5}rem, ${landingTypography.heroTitle.sizeFloor.md})`,
   };
 }
 
