@@ -10,6 +10,7 @@ export enum AppearanceType {
   LANDING_NAVBAR_STYLE = "landing_navbar_style",
   LANDING_SECTIONS = "landing_sections",
   LANDING_LANGUAGES = "landing_languages",
+  USER_MENUS = "user_menus",
   FAVICON_USER = "favicon_user",
 }
 
