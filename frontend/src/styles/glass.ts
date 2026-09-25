@@ -23,7 +23,7 @@ interface GlassOptions {
 }
 
 export function glassSurface(isDark: boolean, opts: GlassOptions = {}): SystemStyleObject<Theme> {
-  const { blur = 20, radius = 28, level = 'medium', elevated = false, sheen = 'hover' } = opts;
+  const { blur = 20, radius = 12, level = 'medium', elevated = false, sheen = 'hover' } = opts;
 
   const shadows: Record<GlassLevel, string> = {
     low: isDark
@@ -91,8 +91,8 @@ export function glassSurface(isDark: boolean, opts: GlassOptions = {}): SystemSt
 export function glassHover(): SystemStyleObject<Theme> {
   return {
     '&:hover': {
-      transform: 'translateY(-6px)',
-      borderRadius: 24,
+      transform: 'translateY(-4px)',
+      borderRadius: 12,
     },
     '&:hover::after': {
       left: '120%',

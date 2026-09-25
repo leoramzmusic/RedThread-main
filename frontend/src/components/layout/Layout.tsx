@@ -403,41 +403,47 @@ export default function Layout({ children }: LayoutProps) {
 
                 {/* Notifications Button */}
                 {showIcon('notifications') && (
-                  <Tooltip title={t('nav.notifications', 'Notificaciones')}>
-                    <QuickActionIcon
-                      styleId={styleOf('notifications')}
-                      motion="bell"
-                      basicHover="bell"
-                      active={unreadCount > 0}
-                      badgeContent={unreadCount}
-                      onClick={() => setNotificationOpen(true)}
-                    >
-                      <NotificationsIcon className="rt-bell-icon" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                    </QuickActionIcon>
-                  </Tooltip>
+                  <Suspense fallback={null}>
+                    <Tooltip title={t('nav.notifications', 'Notificaciones')}>
+                      <QuickActionIcon
+                        styleId={styleOf('notifications')}
+                        motion="bell"
+                        basicHover="bell"
+                        active={unreadCount > 0}
+                        badgeContent={unreadCount}
+                        onClick={() => setNotificationOpen(true)}
+                      >
+                        <NotificationsIcon className="rt-bell-icon" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                      </QuickActionIcon>
+                    </Tooltip>
+                  </Suspense>
                 )}
 
                 {/* Settings Button */}
                 {showIcon('settings') && (
-                  <Tooltip title={t('nav.settings', 'Configuración')}>
-                    <QuickActionIcon
-                      styleId={styleOf('settings')}
-                      motion="gear"
-                      basicHover="gear"
-                      onClick={() => router.push('/settings')}
-                    >
-                      <SettingsIcon className="rt-settings-spin" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                    </QuickActionIcon>
-                  </Tooltip>
+                  <Suspense fallback={null}>
+                    <Tooltip title={t('nav.settings', 'Configuración')}>
+                      <QuickActionIcon
+                        styleId={styleOf('settings')}
+                        motion="gear"
+                        basicHover="gear"
+                        onClick={() => router.push('/settings')}
+                      >
+                        <SettingsIcon className="rt-settings-spin" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                      </QuickActionIcon>
+                    </Tooltip>
+                  </Suspense>
                 )}
 
                 {/* Language Button */}
                 {showIcon('language') && (
-                  <Tooltip title={t('nav.language', 'Idioma')}>
-                    <QuickActionIcon styleId={styleOf('language')} motion="globe" onClick={handleOpenLangMenu}>
-                      <TranslateIcon className="rt-globe" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                    </QuickActionIcon>
-                  </Tooltip>
+                  <Suspense fallback={null}>
+                    <Tooltip title={t('nav.language', 'Idioma')}>
+                      <QuickActionIcon styleId={styleOf('language')} motion="globe" onClick={handleOpenLangMenu}>
+                        <TranslateIcon className="rt-globe" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                      </QuickActionIcon>
+                    </Tooltip>
+                  </Suspense>
                 )}
 
                 {/* Language Menu */}

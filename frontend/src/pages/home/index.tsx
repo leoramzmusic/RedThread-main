@@ -886,7 +886,7 @@ export default function Dashboard() {
                     <Grid item xs={12} sm={6} md={4} lg={2.4} key={suggestion.user_id}>
                       <Card
                         sx={{
-                          ...glassSurface(isDark, { blur: 16, radius: 20, level: 'low' }),
+                          ...glassSurface(isDark, { blur: 16, radius: 12, level: 'low' }),
                           cursor: 'pointer',
                           zIndex: 1,
                         }}
@@ -897,7 +897,7 @@ export default function Dashboard() {
                             height: 200,
                             m: 1.25,
                             mb: 0,
-                            borderRadius: 24,
+                            borderRadius: { xs: '8px', sm: '12px' },
                             overflow: 'hidden',
                             background: suggestion.photo
                               ? `url(${suggestion.photo})`

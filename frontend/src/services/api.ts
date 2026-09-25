@@ -21,6 +21,7 @@ export function createApiClient(options: CreateClientOptions = {}): AxiosInstanc
     baseURL: API_URL,
     withCredentials: true,
     headers: { 'Content-Type': 'application/json' },
+    timeout: 8000,
   });
 
   let isRefreshing = false;

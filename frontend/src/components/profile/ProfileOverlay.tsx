@@ -177,29 +177,46 @@ export default function ProfileOverlay({
     // 0: Identity (Main)
     if (activePhotoIndex === 0) {
         return (
-            <Box sx={{ pointerEvents: 'none' }}>
-                <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <h1 style={{
-                        margin: 0,
-                        fontSize: '30px',
-                        fontWeight: 900,
-                        color: 'white',
-                        lineHeight: 1,
-                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                        display: 'inline-block'
-                    }}>
+            <Box
+                sx={{
+                    pointerEvents: 'none',
+                    '@media (max-width:375px)': {
+                        textAlign: 'center',
+                        '& > div:first-of-type': { justifyContent: 'center' },
+                    },
+                }}
+            >
+                <div
+                    style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                    <h1
+                        className="card-title"
+                        style={{
+                            margin: 0,
+                            fontSize: 'clamp(0.75rem, 3vw, 0.9rem)',
+                            fontWeight: 900,
+                            color: 'white',
+                            lineHeight: 1.1,
+                            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                            display: 'inline-block',
+                            marginBottom: '0.3rem',
+                        }}
+                    >
                         {profile.display_name}
                     </h1>
-                    <h2 style={{
-                        margin: 0,
-                        fontSize: '24px',
-                        fontWeight: 500,
-                        color: 'white',
-                        opacity: 0.95,
-                        lineHeight: 1,
-                        display: 'inline-block',
-                        paddingTop: '6px'
-                    }}>
+                    <h2
+                        className="card-subtitle"
+                        style={{
+                            margin: 0,
+                            fontSize: 'clamp(0.75rem, 3vw, 0.9rem)',
+                            fontWeight: 500,
+                            color: 'white',
+                            opacity: 0.95,
+                            lineHeight: 1.1,
+                            display: 'inline-block',
+                            paddingTop: '6px',
+                        }}
+                    >
                         {profile.show_age !== false ? profile.age : ''}
                     </h2>
                     {profile.verified && (
@@ -256,7 +273,25 @@ export default function ProfileOverlay({
                 )}
 
                 {/* CARE Action/Highlight Badges */}
-                <Box sx={{ display: 'flex', gap: 1, mt: 2, flexWrap: 'wrap' }}>
+                <Box
+                    className="card-tags"
+                    sx={{
+                        display: 'flex',
+                        gap: 1,
+                        mt: 2,
+                        flexWrap: 'wrap',
+                        '@media (max-width:375px)': {
+                            gap: '0.3rem !important',
+                            justifyContent: 'center !important',
+                            '& .MuiChip-root': {
+                                fontSize: '0.65rem !important',
+                                height: '18px !important',
+                                padding: '0.2rem 0.4rem !important',
+                                '& .MuiChip-label': { px: '4px !important', py: '0px !important' },
+                            },
+                        },
+                    }}
+                >
                     {(isDiscovery || profile.is_discovery) && (
                         <Chip
                             icon={<ExploreIcon sx={{ fontSize: '1rem', color: '#E1BEE7' }} />}

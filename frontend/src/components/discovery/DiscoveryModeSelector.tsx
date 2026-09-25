@@ -114,20 +114,29 @@ export default function DiscoveryModeSelector({
     const isLight = mode === 'light';
 
     return (
-        <Box sx={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: { xs: 0.8, sm: 3 }, // More compressed gap for mobile
-            overflowX: { xs: 'hidden', sm: 'auto' },
-            scrollSnapType: 'x mandatory',
-            '&::-webkit-scrollbar': { display: 'none !important' },
-            msOverflowStyle: 'none !important',
-            scrollbarWidth: 'none !important',
-            justifyContent: 'center',
-            px: { xs: 0, sm: 2 }, // Added side padding for better scrolling experience
-            '& > *': { flexShrink: 0 }
-        }}>
+        <Box
+            sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: { xs: 0.8, sm: 2, md: 3 },
+                flexWrap: 'nowrap',
+                overflowX: 'auto',
+                scrollSnapType: 'x mandatory',
+                '&::-webkit-scrollbar': { display: 'none !important' },
+                msOverflowStyle: 'none !important',
+                scrollbarWidth: 'none !important',
+                justifyContent: { xs: 'flex-start', sm: 'center' },
+                px: { xs: 0, sm: 2 },
+                '@media (min-width:768px) and (max-width:1024px)': {
+                    gap: '1rem',
+                    justifyContent: 'center',
+                    overflowX: 'auto',
+                    flexWrap: 'nowrap',
+                },
+                '& > *': { flexShrink: 0 },
+            }}
+        >
             {(Object.keys(MODES) as DiscoveryMode[]).map((modeKey) => {
                 const config = MODES[modeKey];
                 const isActive = currentMode === modeKey;

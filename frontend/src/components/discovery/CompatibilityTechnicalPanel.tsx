@@ -173,13 +173,13 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                 )}
 
                 <Box sx={{
-                    p: 3,
-                    borderRadius: 6,
+                    p: { xs: 2.5, sm: 3 },
+                    borderRadius: { xs: '8px', sm: '12px' },
                     bgcolor: standalone ? '#121214' : (isLight ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.4)'),
                     backdropFilter: 'blur(12px)',
                     border: '1px solid',
                     borderColor: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 255, 0.1)',
-                    boxShadow: isLight ? '0 8px 32px rgba(0,0,0,0.1)' : '0 12px 40px rgba(0,0,0,0.6)',
+                    boxShadow: isLight ? '0 4px 16px rgba(0,0,0,0.06)' : '0 6px 20px rgba(0,0,0,0.3)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 3,
@@ -257,7 +257,24 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                             variant="contained"
                             startIcon={<VisibilityIcon />}
                             onClick={() => onViewProfile(profile)}
-                            sx={{ borderRadius: 3, py: 1.5, textTransform: 'none', fontWeight: 700 }}
+                            className="profile-details-btn"
+                            sx={{
+                                borderRadius: '12px',
+                                py: 1.5,
+                                textTransform: 'none',
+                                fontWeight: 700,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                                '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.16)', transform: 'translateY(-1px)' },
+                                transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                                '@media (max-width:375px)': {
+                                    fontSize: '0.7rem !important',
+                                    py: '0.3rem !important',
+                                    px: '0.6rem !important',
+                                    my: '0.4rem !important',
+                                    display: 'block !important',
+                                    mx: 'auto !important',
+                                },
+                            }}
                         >
                             Ver perfil completo
                         </Button>
@@ -265,7 +282,7 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                             fullWidth
                             variant="outlined"
                             startIcon={<BoltIcon />}
-                            sx={{ borderRadius: 3, py: 1.5, textTransform: 'none', fontWeight: 700, borderColor: 'primary.main', color: 'primary.main' }}
+                            sx={{ borderRadius: '12px', py: 1.5, textTransform: 'none', fontWeight: 700, borderColor: 'primary.main', color: 'primary.main', '&:hover': { bgcolor: 'rgba(230,57,70,0.06)' }, transition: 'background-color 0.2s ease' }}
                         >
                             Enviar Hilo
                         </Button>

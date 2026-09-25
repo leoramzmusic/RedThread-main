@@ -48,14 +48,79 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
             open={open}
             onClose={onClose}
             PaperProps={{
-                sx: { borderRadius: 4, maxWidth: 400, width: '100%', bgcolor: '#1e1e1e' }
+                className: 'modal-container',
+                sx: {
+                    borderRadius: '12px',
+                    maxWidth: 600,
+                    width: { xs: '92%', sm: '600px' },
+                    mx: 'auto',
+                    mt: { xs: 2, md: 4 },
+                    bgcolor: 'rgba(15,15,15,0.92)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 0 16px rgba(255,0,0,0.25)',
+                    overflow: 'hidden',
+                    animation: 'liquidFade 0.4s ease',
+                    '@keyframes liquidFade': {
+                        from: { transform: 'scale(0.95)', opacity: 0 },
+                        to: { transform: 'scale(1)', opacity: 1 },
+                    },
+                    '@media (max-width: 1024px)': {
+                        transform: 'none !important',
+                    },
+                    '@media (min-width:768px) and (max-width:1366px) and (orientation: portrait)': {
+                        width: '70% !important',
+                        maxWidth: '70% !important',
+                        mx: 'auto !important',
+                        marginTop: '10rem !important',
+                        transform: 'none !important',
+                        pt: '0.75rem !important',
+                        pb: '0.75rem !important',
+                        maxHeight: '60vh !important',
+                        height: 'auto !important',
+                    },
+                    '@media (min-width:768px) and (max-width:1366px) and (orientation: landscape)': {
+                        width: '70% !important',
+                        maxWidth: '70% !important',
+                        mx: 'auto !important',
+                        margin: 'auto !important',
+                        transform: 'none !important',
+                        pt: '1rem !important',
+                        pb: '1rem !important',
+                    },
+                    '@media (max-width:767px) and (orientation: portrait)': {
+                        width: '92% !important',
+                        maxWidth: '92% !important',
+                        mx: 'auto !important',
+                        marginTop: '2rem !important',
+                        transform: 'none !important',
+                    },
+                    '@media (max-width:767px) and (orientation: landscape)': {
+                        width: '85% !important',
+                        maxWidth: '85% !important',
+                        mx: 'auto !important',
+                        marginTop: '1rem !important',
+                        transform: 'none !important',
+                    },
+                },
             }}
         >
-            <Box display="flex" justifyContent="space-between" alignItems="center" p={2} pb={0}>
-                <Typography variant="h6" fontWeight={700} sx={{ color: 'white' }}>
-                    {isRecharging ? "⚡ Recargar Batería" : "🔋 Tempotalizador"}
+            <Box display="flex" justifyContent="space-between" alignItems="center" p={2} pb={1}>
+                <Typography
+                    variant="h6"
+                    fontWeight={700}
+                    sx={{
+                        color: 'white',
+                        fontFamily: "'Poppins', sans-serif",
+                        fontSize: 'clamp(1rem, 4vw, 1.2rem)',
+                        textAlign: 'center',
+                        flexGrow: 1,
+                    }}
+                >
+                    {isRecharging ? '⚡ Recargar Batería' : '🔋 Tempotalizador'}
                 </Typography>
-                <IconButton onClick={onClose} sx={{ color: 'text.secondary' }}>
+                <IconButton onClick={onClose} sx={{ color: 'text.secondary', ml: 1 }}>
                     <CloseIcon />
                 </IconButton>
             </Box>
@@ -86,8 +151,17 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
 
                 {isRecharging ? (
                     <Box>
-                        {/* Personality Tuner (Mock for Demo) */}
-                        <Box sx={{ mb: 3, p: 2, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
+                        {/* Personality Tuner */}
+                        <Box
+                            sx={{
+                                mb: 2,
+                                p: 1.5,
+                                bgcolor: 'rgba(255,255,255,0.05)',
+                                borderRadius: '12px',
+                                backdropFilter: 'blur(8px)',
+                                border: '1px solid rgba(255,255,255,0.06)',
+                            }}
+                        >
                             <Typography variant="caption" color="text.secondary" gutterBottom>
                                 Calibrando tu batería social:
                             </Typography>
@@ -112,7 +186,6 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                         <Button
                             fullWidth
                             variant="contained"
-                            color="success"
                             size="large"
                             startIcon={<BatteryChargingFullIcon />}
                             onClick={() => {
@@ -120,11 +193,20 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                                 onClose();
                             }}
                             sx={{
-                                py: 2,
-                                borderRadius: 3,
-                                fontSize: '1.1rem',
+                                py: 1,
+                                px: 2,
+                                borderRadius: '6px',
+                                fontSize: '0.85rem',
                                 fontWeight: 700,
-                                boxShadow: '0 4px 14px rgba(76, 175, 80, 0.4)'
+                                background: 'linear-gradient(90deg, #AB47BC, #D32F2F)',
+                                color: '#fff',
+                                boxShadow: '0 2px 8px rgba(171,71,188,0.3)',
+                                textTransform: 'none',
+                                transition: 'box-shadow 0.3s ease',
+                                '&:hover': {
+                                    background: 'linear-gradient(90deg, #AB47BC, #D32F2F)',
+                                    boxShadow: '0 0 8px rgba(171,71,188,0.6)',
+                                },
                             }}
                         >
                             ¡Ya regresé! (Recargar)
@@ -144,7 +226,17 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                     </Box>
                 ) : (
                     <>
-                        <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'white', mb: 2 }}>
+                        <Typography
+                            variant="subtitle2"
+                            fontWeight={700}
+                            sx={{
+                                color: 'white',
+                                mb: 1.5,
+                                fontFamily: "'Poppins', sans-serif",
+                                fontSize: 'clamp(0.9rem, 3vw, 1rem)',
+                                textAlign: 'center',
+                            }}
+                        >
                             ¿Cuánto tiempo necesitas?
                         </Typography>
 
@@ -161,22 +253,38 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                                         sx={{
                                             height: '100%',
                                             flexDirection: 'column',
-                                            gap: 1,
-                                            py: 2,
-                                            borderRadius: 3,
+                                            gap: 0.8,
+                                            py: 1,
+                                            px: 1,
+                                            borderRadius: '6px',
                                             borderColor: 'rgba(255,255,255,0.1)',
                                             color: 'text.primary',
                                             textTransform: 'none',
+                                            fontSize: '0.85rem',
+                                            transition: 'box-shadow 0.3s ease, border-color 0.2s ease, background-color 0.2s ease',
                                             '&:hover': {
-                                                borderColor: 'primary.main',
-                                                bgcolor: 'rgba(255,255,255,0.05)'
-                                            }
+                                                borderColor: '#AB47BC',
+                                                bgcolor: 'rgba(171,71,188,0.08)',
+                                                boxShadow: '0 0 8px rgba(171,71,188,0.6)',
+                                            },
                                         }}
                                     >
                                         {option.icon}
                                         <Box textAlign="center">
-                                            <Typography variant="body2" fontWeight={700}>{option.label}</Typography>
-                                            <Typography variant="caption" color="text.secondary">{option.phrase}</Typography>
+                                            <Typography
+                                                variant="body2"
+                                                fontWeight={700}
+                                                sx={{
+                                                    fontFamily: "'Poppins', sans-serif",
+                                                    fontSize: 'clamp(0.85rem, 3vw, 0.95rem)',
+                                                    textAlign: 'center',
+                                                }}
+                                            >
+                                                {option.label}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                                                {option.phrase}
+                                            </Typography>
                                         </Box>
                                     </Button>
                                 </Grid>

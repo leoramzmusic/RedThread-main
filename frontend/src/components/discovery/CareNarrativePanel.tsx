@@ -166,13 +166,13 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                 )}
 
                 <Box sx={{
-                    p: 3,
-                    borderRadius: 6,
+                    p: { xs: 2.5, sm: 3 },
+                    borderRadius: { xs: '8px', sm: '12px' },
                     bgcolor: (standalone || !isLight) ? 'rgba(18, 18, 20, 0.8)' : 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(16px)',
                     border: '1px solid',
                     borderColor: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 255, 0.08)',
-                    boxShadow: isLight ? '0 8px 32px rgba(0,0,0,0.08)' : '0 12px 40px rgba(0,0,0,0.4)',
+                    boxShadow: isLight ? '0 4px 16px rgba(0,0,0,0.06)' : '0 6px 20px rgba(0,0,0,0.25)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 3.5,
@@ -254,17 +254,18 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                         <Stack spacing={1.5}>
                             {['Compartir playlist', 'Enviar escena favorita', 'Café simbólico'].map((ritual, i) => (
                                 <Box key={i} sx={{
-                                    p: 1.5, borderRadius: 2.5,
+                                    p: 1.5, borderRadius: '8px',
                                     bgcolor: 'rgba(255,255,255,0.03)',
                                     border: '1px solid rgba(255,255,255,0.05)',
-                                    cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    cursor: 'pointer', transition: 'background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 1.5,
                                     '&:hover': {
                                         bgcolor: 'rgba(255,255,255,0.08)',
-                                        transform: 'translateX(6px)',
-                                        borderColor: 'rgba(255,255,255,0.1)'
+                                        transform: 'translateX(4px)',
+                                        borderColor: 'rgba(255,255,255,0.12)',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
                                     }
                                 }}>
                                     <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#FFD700' }} />

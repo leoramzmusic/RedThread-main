@@ -122,7 +122,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
 }, [mounted, isAdminPortal]);
 
   // Function to load preferences from DB/Object after login
-  const loadPreferences = (prefs: { theme_mode?: string, visual_theme?: string, font_size?: string, admin_theme_mode?: string, admin_visual_theme?: string }) => {
+  const loadPreferences = React.useCallback((prefs: { theme_mode?: string, visual_theme?: string, font_size?: string, admin_theme_mode?: string, admin_visual_theme?: string }) => {
     // Load user theme
     if (prefs.theme_mode) {
       setUserModeState(prefs.theme_mode as ThemeMode);
@@ -148,7 +148,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     if (prefs.font_size) {
       setFontSizeState(prefs.font_size);
     }
-  };
+  }, []);
 
   const setUserMode = (newMode: ThemeMode) => {
     setUserModeState(newMode);

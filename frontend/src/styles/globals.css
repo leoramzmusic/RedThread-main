@@ -913,6 +913,7 @@ a:hover {
 }
 
 @keyframes rtHeartbeat {
+
   0%,
   50%,
   100% {
@@ -940,6 +941,7 @@ a:hover {
 
 /* Pulso breve al alcanzar el 100% en Perfil */
 @keyframes rtPulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -952,6 +954,7 @@ a:hover {
 
 /* Tarjetas con actividad pendiente: halo pulsante del color del ícono */
 @keyframes rtGlowPulse {
+
   0%,
   100% {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.1),
@@ -966,6 +969,7 @@ a:hover {
 
 /* Badge de notificación: pulso sutil */
 @keyframes rtBadgePulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -980,6 +984,7 @@ a:hover {
 
 /* Micro-interacción: el ícono salta al pasar el cursor */
 @keyframes rtIconBounce {
+
   0%,
   100% {
     transform: translateY(0);
@@ -996,6 +1001,7 @@ a:hover {
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes rtGlowPulse {
+
     0%,
     100% {
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1),
@@ -1004,6 +1010,7 @@ a:hover {
   }
 
   @keyframes rtBadgePulse {
+
     0%,
     100% {
       transform: scale(1);
@@ -1013,6 +1020,7 @@ a:hover {
 }
 
 @keyframes rtBreathe {
+
   0%,
   100% {
     transform: scale(1);
@@ -1046,22 +1054,43 @@ a:hover {
 
 /* Landing responsive — 280 cover, foldable hinge, smart display */
 @media (max-width: 320px) {
-  .rt-landing .rt-hero { padding-top: 88px !important; }
-  .rt-landing .rt-ctas { gap: 10px !important; }
+  .rt-landing .rt-hero {
+    padding-top: 88px !important;
+  }
+
+  .rt-landing .rt-ctas {
+    gap: 10px !important;
+  }
 }
+
 @media (spanning: single-fold-vertical) {
-  .rt-landing { padding-left: env(fold-left, 0); padding-right: env(fold-right, 0); }
-  .rt-landing .rt-hero { gap: max(24px, env(fold-width, 24px)) !important; }
+  .rt-landing {
+    padding-left: env(fold-left, 0);
+    padding-right: env(fold-right, 0);
+  }
+
+  .rt-landing .rt-hero {
+    gap: max(24px, env(fold-width, 24px)) !important;
+  }
 }
+
 @media (min-width: 1920px) {
-  .rt-landing .rt-hero-logo img, .rt-landing .rt-hero-logo svg { height: 180px !important; }
+
+  .rt-landing .rt-hero-logo img,
+  .rt-landing .rt-hero-logo svg {
+    height: 180px !important;
+  }
 }
+
 @media (min-width: 2560px) {
-  .rt-landing { --lg-max-width: 1600px; }
+  .rt-landing {
+    --lg-max-width: 1600px;
+  }
 }
 
 /* Accessibility: reduce every animation/transition when requested */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -1069,5 +1098,197 @@ a:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* iPhone SE / 320-375px — ultra-compacto con clamp y !important */
+@media (max-width: 375px) {
+  html body .card-actions {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 0.25rem !important;
+    height: auto !important;
+    padding: 0.2rem !important;
+  }
+
+  html body .card-actions button.MuiIconButton-root,
+  html body .cards-container .card-actions button,
+  html body .cards-container .card-actions button.MuiIconButton-root {
+    width: clamp(28px, 9vw, 34px) !important;
+    height: clamp(28px, 9vw, 34px) !important;
+    font-size: clamp(0.7rem, 2.5vw, 0.8rem) !important;
+    border-width: 1.5px !important;
+    min-width: clamp(28px, 9vw, 34px) !important;
+    min-height: clamp(28px, 9vw, 34px) !important;
+  }
+
+  html body .card-actions .MuiSvgIcon-root,
+  html body .card-actions button.MuiIconButton-root .MuiSvgIcon-root {
+    font-size: clamp(0.7rem, 2.5vw, 0.8rem) !important;
+  }
+
+  .card-title,
+  .card-subtitle {
+    font-size: clamp(0.7rem, 3vw, 0.85rem) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.2rem !important;
+    text-align: center !important;
+  }
+
+  .card-tags {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 0.25rem !important;
+  }
+
+  .card-tags .MuiChip-root {
+    font-size: 0.6rem !important;
+    height: 16px !important;
+    padding: 0.15rem 0.35rem !important;
+  }
+
+  .card-tags .MuiChip-label {
+    padding: 0 3px !important;
+  }
+
+  .extra-options {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    margin-top: 0.3rem !important;
+  }
+
+  .extra-options .MuiButton-root {
+    font-size: 0.65rem !important;
+    padding: 0.2rem 0.4rem !important;
+    margin: 0 !important;
+  }
+
+  .extra-options .MuiSwitch-root {
+    transform: scale(0.8) !important;
+    margin: 0 !important;
+  }
+
+  .profile-details-btn {
+    display: block !important;
+    font-size: 0.65rem !important;
+    padding: 0.25rem 0.5rem !important;
+    margin: 0.3rem auto !important;
+  }
+
+  .cards-container {
+    margin-top: 0 !important;
+    max-height: 480px !important;
+    width: 100% !important;
+    padding-top: 0 !important;
+  }
+
+  .cards-container .MuiCard-root {
+    width: 100% !important;
+    border-radius: 8px !important;
+    min-height: auto !important;
+    padding: 0.8rem !important;
+  }
+
+  .discover-container.discover-tabs.MuiBox-root,
+  .discover-container,
+  .discover-tabs,
+  .discover-container .discover-tabs,
+  .MuiBox-root.discover-tabs,
+  .MuiBox-root.discover-container {
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    min-height: 0 !important;
+    gap: 0 !important;
+  }
+
+  .MuiGrid-root,
+  .MuiStack-root {
+    gap: 0 !important;
+  }
+
+  .card-title,
+  .card-subtitle {
+    line-height: 1.1 !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .cards-container,
+  .discover-tabs {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* Elimina hueco negro entre pestañas y tarjeta en 375 */
+  .discover-container + .cards-container,
+  .discover-tabs + .cards-container,
+  .MuiBox-root.discover-tabs + .MuiBox-root.cards-container,
+  .cards-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    gap: 0 !important;
+    min-height: 0 !important;
+  }
+}
+
+/* Tablet/Mobile — modal alineado con cards según orientación */
+@media (max-width: 1024px) {
+  .MuiPaper-root {
+    transform: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) {
+  .modal-container,
+  .modal-container.MuiPaper-root {
+    margin: 10rem auto 0 auto !important;
+    transform: none !important;
+    max-width: 70% !important;
+    width: 70% !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    max-height: 60vh !important;
+    height: auto !important;
+  }
+  .MuiDialog-container {
+    align-items: flex-start !important;
+    padding-top: 1rem !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+  .modal-container,
+  .modal-container.MuiPaper-root {
+    margin: auto !important;
+    transform: none !important;
+    max-width: 70% !important;
+    width: 70% !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+}
+@media (max-width: 767px) and (orientation: portrait) {
+  .modal-container,
+  .modal-container.MuiPaper-root {
+    margin: 2rem auto 0 auto !important;
+    transform: none !important;
+    width: 92% !important;
+    max-width: 92% !important;
+  }
+  .MuiDialog-container {
+    align-items: flex-start !important;
+  }
+}
+@media (max-width: 767px) and (orientation: landscape) {
+  .modal-container,
+  .modal-container.MuiPaper-root {
+    margin: 1rem auto 0 auto !important;
+    transform: none !important;
+    width: 85% !important;
+    max-width: 85% !important;
+  }
+  .MuiDialog-container {
+    align-items: flex-start !important;
   }
 }

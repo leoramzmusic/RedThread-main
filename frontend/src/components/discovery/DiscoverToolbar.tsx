@@ -93,17 +93,21 @@ export default function DiscoverToolbar({
 
     return (
         <Box
+            className="discover-toolbar discover-tabs"
             sx={{
                 width: '100%',
-                mb: { xs: -3.5, sm: 1.5 },
-                mt: { xs: 0, sm: 1.5 }, // Zero on mobile
+                mb: { xs: 0, sm: 1.5 },
+                mt: { xs: 0, sm: 1.5 },
                 bgcolor: 'transparent',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'hidden',
+                overflow: 'visible',
                 zIndex: 10,
                 colorScheme: 'dark !important',
-                touchAction: 'pan-y',
+                touchAction: 'pan-x pan-y',
+                '@media (max-width:375px)': {
+                    mb: '0.5rem',
+                },
                 '& *': {
                     msOverflowStyle: 'none !important',
                     scrollbarWidth: 'none !important',
@@ -133,6 +137,12 @@ export default function DiscoverToolbar({
                     py: { xs: 0.5, sm: 0 },
                     px: { xs: 0, sm: 2 },
                     boxSizing: 'border-box',
+                    '@media (max-width:375px)': {
+                        px: '0 !important',
+                        py: '0 !important',
+                        minHeight: '0 !important',
+                        gap: '0 !important',
+                    },
                     gap: { xs: 0, sm: 2 },
                     justifyContent: 'flex-start', // Favorecer izquierda
                     alignItems: 'center',
@@ -172,17 +182,22 @@ export default function DiscoverToolbar({
                     </IconButton>
                 </Box>
 
-                {/* CENTER: Modes Segment */}
-                <Box sx={{
-                    flexGrow: 1,
-                    minWidth: 0,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    '& ::-webkit-scrollbar': { display: 'none !important' },
-                    msOverflowStyle: 'none',
-                    scrollbarWidth: 'none'
-                }}>
+                {/* CENTER: Modes Segment — iPhone SE scroll horizontal */}
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        minWidth: 0,
+                        display: 'flex',
+                        justifyContent: { xs: 'flex-start', sm: 'center' },
+                        flexWrap: 'nowrap',
+                        overflowX: 'auto',
+                        WebkitOverflowScrolling: 'touch',
+                        '& ::-webkit-scrollbar': { display: 'none' },
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: 'none',
+                        px: { xs: 0.5, sm: 0 },
+                    }}
+                >
                     <DiscoveryModeSelector
                         currentMode={currentMode}
                         onModeChange={onModeChange}
@@ -218,15 +233,24 @@ export default function DiscoverToolbar({
 
             {/* SECOND ROW (Mobile only when active): Boost Status Overlay */}
             {boostActive && (
-                <Box sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    width: '100%',
-                    justifyContent: 'center',
-                    mt: -0.5,
-                    mb: 0.5,
-                    pointerEvents: 'none',
-                    '& > *': { pointerEvents: 'auto' }
-                }}>
+                <Box
+                    sx={{
+                        display: { xs: 'flex', md: 'none' },
+                        width: '100%',
+                        justifyContent: 'center',
+                        mt: -0.5,
+                        mb: 0.5,
+                        pointerEvents: 'none',
+                        '& > *': { pointerEvents: 'auto' },
+                        '@media (max-width:375px)': {
+                            mt: '0 !important',
+                            mb: '0 !important',
+                            minHeight: '0 !important',
+                            paddingTop: '0 !important',
+                            paddingBottom: '0 !important',
+                        },
+                    }}
+                >
                     <BoostStatusBadge
                         isActive={boostActive}
                         timeLeftSeconds={boostTimeLeft}

@@ -27,6 +27,7 @@ import {
   Divider,
   Paper,
   Collapse,
+  Fade,
   Tooltip
 } from '@mui/material';
 import {
@@ -97,6 +98,13 @@ export default function Discover() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [matchAnimation, setMatchAnimation] = useState(false);
+
+  // Auto-dismiss floating error toast after 6s
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(''), 6000);
+    return () => clearTimeout(timer);
+  }, [error]);
   const [myProfile, setMyProfile] = useState<any>(null);
   const [viewStartTime, setViewStartTime] = useState<number>(Date.now()); // CARE: Track dwell time
   const [history, setHistory] = useState<Profile[]>([]); // New: Track swiped profiles for Undo
@@ -808,8 +816,8 @@ export default function Discover() {
           boxSizing: 'border-box',
           // overflowX: 'hidden' // Removed to avoid clipping floating buttons
         }}>
-        {/* Mobile Toolbar */}
-        <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%' }}>
+        {/* Mobile Toolbar — xs only, tablet/desktop use unified header */}
+        <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%' }}>
           <DiscoverToolbar
             title={t('title', 'Descubrir')}
             isFilterActive={isFilterActive}
@@ -832,29 +840,44 @@ export default function Discover() {
           />
         </Box>
 
-        {/* Desktop Floating Header Island (2-Row Design) */}
-        <Box sx={{
-          display: { xs: 'none', md: 'flex' },
-          width: '100%',
-          justifyContent: 'center',
-          mb: 4,
-          position: 'relative',
-          zIndex: 100
-        }}>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            bgcolor: '#121214', // Deeper matte dark
-            borderRadius: '32px',
-            border: '1px solid rgba(255,255,255,0.05)',
-            pb: 1,
-            pt: 1.5,
-            px: 3,
-            minWidth: '650px',
-            width: 'auto',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
-            gap: 0.5
-          }}>
+        {/* Desktop/Tablet Floating Header Island (2-Row Design) */}
+        <Box
+          className="discover-container discover-tabs"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            width: '100%',
+            maxWidth: 1120,
+            mx: 'auto',
+            mb: 0,
+            position: 'relative',
+            zIndex: 100,
+            bgcolor: '#1a1a1a',
+            borderRadius: '12px 12px 0 0',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: 'none',
+            p: { sm: 2 },
+            pt: { sm: 1.5 },
+            boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+            '@media (min-width:768px) and (max-width:1024px)': {
+              p: '1rem',
+              pt: '0.75rem',
+              pb: '0.75rem',
+              mb: '0.5rem',
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              bgcolor: 'transparent',
+              border: 'none',
+              p: 0,
+              width: '100%',
+              boxShadow: 'none',
+              gap: 0.25,
+            }}
+          >
             {/* TOP ROW: Tools - Title - Status */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
 
@@ -995,9 +1018,46 @@ export default function Discover() {
             )}
 
             {error && (
-              <Alert severity="error" sx={{ mb: 3, width: '100%' }}>
-                {error}
-              </Alert>
+              <Box
+                sx={{
+                  position: 'fixed',
+                  top: { xs: 'auto', sm: 88 },
+                  bottom: { xs: 16, sm: 'auto' },
+                  right: { xs: 'auto', sm: 16 },
+                  left: { xs: '50%', sm: 'auto' },
+                  transform: { xs: 'translateX(-50%)', sm: 'none' },
+                  zIndex: 2000,
+                  width: { xs: 'calc(100% - 32px)', sm: 'auto' },
+                  maxWidth: 360,
+                  pointerEvents: 'none',
+                }}
+              >
+                <Fade in={!!error} timeout={250}>
+                  <Alert
+                    severity="error"
+                    onClose={() => setError('')}
+                    sx={{
+                      pointerEvents: 'auto',
+                      py: 0.6,
+                      px: 1.6,
+                      maxWidth: 360,
+                      borderRadius: { xs: '8px', sm: '12px' },
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      alignItems: 'center',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      bgcolor: 'error.main',
+                      color: 'white',
+                      '& .MuiAlert-icon': { color: 'white', opacity: 0.95, mr: 1 },
+                      '& .MuiAlert-action': { ml: 1, mr: -0.5, pt: 0, alignItems: 'center' },
+                      '& .MuiAlert-message': { py: 0.5, pr: 0.5 },
+                    }}
+                  >
+                    {error}
+                  </Alert>
+                </Fade>
+              </Box>
             )}
 
 
@@ -1028,178 +1088,224 @@ export default function Discover() {
             )}
 
             {queue.length > 0 ? (
-              <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                width: '100%',
-                gap: { md: 2, lg: 3 },
-                position: 'relative',
-                px: { xs: 0, md: 2 }
-              }}>
-                {/* Left Sidebar: CARE Interpretation (Desktop Only) */}
-                <Box sx={{
-                  display: { xs: 'none', md: showCareNarrative ? 'block' : 'none' },
-                  width: '320px',
-                  position: 'sticky',
-                  top: '20px',
-                  zIndex: 5
-                }}>
-                  <CareNarrativePanel
-                    profile={queue[0]}
-                    isVisible={showCareNarrative}
-                    standalone={true}
-                  />
-                </Box>
-
-                <Box sx={{
-                  width: { xs: '100%', md: '430px' }, // Fix width on desktop to mimic mobile card
-                  position: 'relative',
-                  flexShrink: 0
-                }}>
-                  {/* Floating Side Action Buttons (Desktop Only) */}
-                  <Box sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '-60px', // Adjusted since now there's more space
-                    transform: 'translateY(-50%)',
-                    display: { xs: 'none', md: 'flex' },
-                    zIndex: 10
-                  }}>
-                    <IconButton
-                      onClick={() => { setShowCareNarrative(!showCareNarrative); }}
-                      sx={{
-                        bgcolor: 'rgba(18,18,20,0.95)',
-                        color: showCareNarrative ? '#AB47BC' : 'white',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        '&:hover': { bgcolor: 'rgba(30,30,32,1)' },
-                        width: 48,
-                        height: 48
-                      }}
-                    >
-                      <PsychologyIcon />
-                    </IconButton>
+              <Box
+                className="cards-container"
+                sx={{
+                  display: { xs: 'contents', sm: 'block' },
+                  width: '100%',
+                  maxWidth: 1120,
+                  mx: { xs: 0, sm: 'auto' },
+                  bgcolor: { xs: 'transparent', sm: '#1a1a1a' },
+                  border: { xs: 'none', sm: '1px solid rgba(255,255,255,0.06)' },
+                  borderTop: { sm: 'none' },
+                  borderRadius: { xs: 0, sm: '0 0 12px 12px' },
+                  p: { xs: 0, sm: 2 },
+                  pt: { xs: 0, sm: 1.5 },
+                  mt: 0,
+                  boxShadow: { xs: 'none', sm: '0 4px 16px rgba(0,0,0,0.18)' },
+                  backdropFilter: { xs: 'none', sm: 'none' },
+                  '@media (max-width:375px)': { mt: '0.2rem !important', maxHeight: '500px !important' },
+                  '@media (min-width:768px) and (max-width:1024px)': {
+                    p: '1rem',
+                    pt: '0.75rem',
+                    pb: '0.75rem',
+                    mt: 0,
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    width: '100%',
+                    gap: { xs: '0.8rem', md: 2, lg: 3 },
+                    position: 'relative',
+                    px: { xs: 0, md: 0 },
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    '@media (max-width:375px)': {
+                      gap: '0.8rem',
+                      pt: '0.5rem',
+                    },
+                    '@media (min-width:768px) and (max-width:1024px)': {
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '1rem',
+                      alignItems: 'start',
+                    },
+                  }}
+                >
+                  {/* Left Sidebar: CARE Interpretation — tablet 1fr + desktop sticky */}
+                  <Box
+                    sx={{
+                      display: { xs: 'none', sm: showCareNarrative ? 'block' : 'none' },
+                      width: { xs: '320px', sm: '100%', md: '320px' },
+                      position: { sm: 'relative', md: 'sticky' },
+                      top: { md: '20px' },
+                      zIndex: 5,
+                      '@media (min-width:768px) and (max-width:1024px)': {
+                        display: showCareNarrative ? 'block' : 'none',
+                      },
+                    }}
+                  >
+                    <CareNarrativePanel
+                      profile={queue[0]}
+                      isVisible={showCareNarrative}
+                      standalone={true}
+                    />
                   </Box>
 
                   <Box sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    right: '-60px',
-                    transform: 'translateY(-50%)',
-                    display: { xs: 'none', md: 'flex' },
-                    zIndex: 10
+                    width: { xs: '100%', md: '430px' }, // Fix width on desktop to mimic mobile card
+                    position: 'relative',
+                    flexShrink: 0
                   }}>
-                    <IconButton
-                      onClick={() => { setShowCompatibility(!showCompatibility); }}
-                      sx={{
-                        bgcolor: 'rgba(18,18,20,0.95)',
-                        color: showCompatibility ? 'primary.main' : 'white',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        '&:hover': { bgcolor: 'rgba(30,30,32,1)' },
-                        width: 48,
-                        height: 48
-                      }}
-                    >
-                      <BarChartIcon />
-                    </IconButton>
-                  </Box>
+                    {/* Floating Side Action Buttons (Desktop Only) */}
+                    <Box sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '-60px', // Adjusted since now there's more space
+                      transform: 'translateY(-50%)',
+                      display: { xs: 'none', md: 'flex' },
+                      zIndex: 10
+                    }}>
+                      <IconButton
+                        onClick={() => { setShowCareNarrative(!showCareNarrative); }}
+                        sx={{
+                          bgcolor: 'rgba(18,18,20,0.95)',
+                          color: showCareNarrative ? '#AB47BC' : 'white',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          '&:hover': { bgcolor: 'rgba(30,30,32,1)' },
+                          width: 48,
+                          height: 48
+                        }}
+                      >
+                        <PsychologyIcon />
+                      </IconButton>
+                    </Box>
 
-                  {layoutMode === 'stack' && (
-                    (queue[0] as any).isRefinement ? (
-                      <DiscoveryRefinementCard
-                        currentCompletion={(queue[0] as any).currentCompletion}
-                        suggestion={(queue[0] as any).suggestion}
-                        profile={myProfile}
-                        options={options}
-                        onSave={handleRefinementSave}
-                        onSkip={() => setQueue(prev => prev.slice(1))}
-                      />
-                    ) : (
-                      <StackLayout
+                    <Box sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: '-60px',
+                      transform: 'translateY(-50%)',
+                      display: { xs: 'none', md: 'flex' },
+                      zIndex: 10
+                    }}>
+                      <IconButton
+                        onClick={() => { setShowCompatibility(!showCompatibility); }}
+                        sx={{
+                          bgcolor: 'rgba(18,18,20,0.95)',
+                          color: showCompatibility ? 'primary.main' : 'white',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          '&:hover': { bgcolor: 'rgba(30,30,32,1)' },
+                          width: 48,
+                          height: 48
+                        }}
+                      >
+                        <BarChartIcon />
+                      </IconButton>
+                    </Box>
+
+                    {layoutMode === 'stack' && (
+                      (queue[0] as any).isRefinement ? (
+                        <DiscoveryRefinementCard
+                          currentCompletion={(queue[0] as any).currentCompletion}
+                          suggestion={(queue[0] as any).suggestion}
+                          profile={myProfile}
+                          options={options}
+                          onSave={handleRefinementSave}
+                          onSkip={() => setQueue(prev => prev.slice(1))}
+                        />
+                      ) : (
+                        <StackLayout
+                          profiles={queue}
+                          currentIndex={0}
+                          onLike={() => handleSwipe('like')}
+                          onPass={() => handleSwipe('pass')}
+                          onSuperLike={() => handleSwipe('superlike')}
+                          onUndo={history.length > 0 ? handleUndo : undefined}
+                          onVIPMessage={() => handleVIPMessage(queue[0])}
+                          isPremium={isPremium}
+                          isBlind={queue[0]?.is_blind || discoveryMode === 'blind'}
+                          isCurious={isCurious}
+                          interactionMode={interactionMode}
+                        />
+                      )
+                    )}
+
+                    {layoutMode === 'sticker_book' && (
+                      <StickerBookLayout
                         profiles={queue}
-                        currentIndex={0}
-                        onLike={() => handleSwipe('like')}
-                        onPass={() => handleSwipe('pass')}
-                        onSuperLike={() => handleSwipe('superlike')}
-                        onUndo={history.length > 0 ? handleUndo : undefined}
-                        onVIPMessage={() => handleVIPMessage(queue[0])}
+                        onProfileAction={(id, act) => {
+                          const profile = queue.find(p => p.user_id === id);
+                          if ((profile as any)?.isRefinement) {
+                            setQueue(prev => prev.filter(p => p.user_id !== id));
+                            return;
+                          }
+                          handleProfileAction(id, act);
+                        }}
                         isPremium={isPremium}
-                        isBlind={queue[0]?.is_blind || discoveryMode === 'blind'}
+                        isBlind={discoveryMode === 'blind'}
                         isCurious={isCurious}
                         interactionMode={interactionMode}
                       />
-                    )
-                  )}
+                    )}
 
-                  {layoutMode === 'sticker_book' && (
-                    <StickerBookLayout
-                      profiles={queue}
-                      onProfileAction={(id, act) => {
-                        const profile = queue.find(p => p.user_id === id);
-                        if ((profile as any)?.isRefinement) {
-                          setQueue(prev => prev.filter(p => p.user_id !== id));
-                          return;
-                        }
-                        handleProfileAction(id, act);
-                      }}
-                      isPremium={isPremium}
-                      isBlind={discoveryMode === 'blind'}
-                      isCurious={isCurious}
-                      interactionMode={interactionMode}
+                    {layoutMode === 'carousel' && (
+                      <CarouselLayout
+                        profiles={queue}
+                        onProfileAction={(id, act) => {
+                          const profile = queue.find(p => p.user_id === id);
+                          if ((profile as any)?.isRefinement) {
+                            setQueue(prev => prev.filter(p => p.user_id !== id));
+                            return;
+                          }
+                          handleProfileAction(id, act);
+                        }}
+                        isPremium={isPremium}
+                        isBlind={discoveryMode === 'blind'}
+                        isCurious={isCurious}
+                        interactionMode={interactionMode}
+                      />
+                    )}
+
+                    {layoutMode === 'grid' && (
+                      <GridLayout
+                        profiles={queue}
+                        onProfileAction={(id, act) => {
+                          const profile = queue.find(p => p.user_id === id);
+                          if ((profile as any)?.isRefinement) {
+                            setQueue(prev => prev.filter(p => p.user_id !== id));
+                            return;
+                          }
+                          handleProfileAction(id, act);
+                        }}
+                        isPremium={isPremium}
+                        isBlind={discoveryMode === 'blind'}
+                        isCurious={isCurious}
+                        interactionMode={interactionMode}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Right Sidebar: Technical Breakdown (Desktop Only) */}
+                  <Box
+                    sx={{
+                      display: { xs: 'none', md: showCompatibility ? 'block' : 'none' },
+                      width: '320px',
+                      position: 'sticky',
+                      top: '20px',
+                      zIndex: 5,
+                    }}
+                  >
+                    <CompatibilityTechnicalPanel
+                      profile={queue[0]}
+                      isVisible={showCompatibility}
+                      onViewProfile={(p) => setSelectedProfileDetail(p)}
+                      standalone={true}
                     />
-                  )}
-
-                  {layoutMode === 'carousel' && (
-                    <CarouselLayout
-                      profiles={queue}
-                      onProfileAction={(id, act) => {
-                        const profile = queue.find(p => p.user_id === id);
-                        if ((profile as any)?.isRefinement) {
-                          setQueue(prev => prev.filter(p => p.user_id !== id));
-                          return;
-                        }
-                        handleProfileAction(id, act);
-                      }}
-                      isPremium={isPremium}
-                      isBlind={discoveryMode === 'blind'}
-                      isCurious={isCurious}
-                      interactionMode={interactionMode}
-                    />
-                  )}
-
-                  {layoutMode === 'grid' && (
-                    <GridLayout
-                      profiles={queue}
-                      onProfileAction={(id, act) => {
-                        const profile = queue.find(p => p.user_id === id);
-                        if ((profile as any)?.isRefinement) {
-                          setQueue(prev => prev.filter(p => p.user_id !== id));
-                          return;
-                        }
-                        handleProfileAction(id, act);
-                      }}
-                      isPremium={isPremium}
-                      isBlind={discoveryMode === 'blind'}
-                      isCurious={isCurious}
-                      interactionMode={interactionMode}
-                    />
-                  )}
-                </Box>
-
-                {/* Right Sidebar: Technical Breakdown (Desktop Only) */}
-                <Box sx={{
-                  display: { xs: 'none', md: showCompatibility ? 'block' : 'none' },
-                  width: '320px',
-                  position: 'sticky',
-                  top: '20px',
-                  zIndex: 5
-                }}>
-                  <CompatibilityTechnicalPanel
-                    profile={queue[0]}
-                    isVisible={showCompatibility}
-                    onViewProfile={(p) => setSelectedProfileDetail(p)}
-                    standalone={true}
-                  />
+                  </Box>
                 </Box>
               </Box>
             ) : (
@@ -1245,20 +1351,36 @@ export default function Discover() {
               </Alert>
             )}
 
-            {/* Mobile Action Toggles (Below Cards) */}
+            {/* Mobile Action Toggles (Below Cards) — extra-options */}
             {queue.length > 0 && !((queue[0] as any).isRefinement) && (
-              <Box sx={{
-                display: { xs: 'flex', md: 'none' },
-                width: '100%',
-                justifyContent: 'center',
-                gap: 1.5,
-                mt: 2.5,
-                mb: 0.5,
-                px: 2,
-                flexWrap: 'nowrap',
-                overflowX: 'auto',
-                '&::-webkit-scrollbar': { display: 'none' },
-              }}>
+              <Box
+                className="extra-options"
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  width: '100%',
+                  justifyContent: 'center',
+                  gap: 1.5,
+                  mt: 2.5,
+                  mb: 0.5,
+                  px: 2,
+                  flexWrap: 'nowrap',
+                  overflowX: 'auto',
+                  '&::-webkit-scrollbar': { display: 'none' },
+                  '@media (max-width:375px)': {
+                    flexDirection: 'column !important',
+                    alignItems: 'center !important',
+                    gap: '0.4rem !important',
+                    mt: '0.4rem !important',
+                    '& .MuiButton-root': {
+                      fontSize: '0.7rem !important',
+                      py: '0.25rem !important',
+                      px: '0.5rem !important',
+                      margin: '0 !important',
+                    },
+                    '& .MuiSwitch-root': { transform: 'scale(0.85) !important', margin: '0 !important' },
+                  },
+                }}
+              >
                 {/* 1. CARE interpreta (Primary Action) */}
                 <Button
                   variant="outlined"
@@ -1311,14 +1433,26 @@ export default function Discover() {
 
             {/* Mobile-only Curiosity Switch (Immediately Below Layouts) */}
             {queue.length > 0 && (
-              <Box sx={{
-                display: { xs: 'flex', sm: 'none' },
-                justifyContent: 'center',
-                width: '100%',
-                mt: 1.5,
-                mb: 1.5,
-                px: 2
-              }}>
+              <Box
+                className="extra-options"
+                sx={{
+                  display: { xs: 'flex', sm: 'none' },
+                  justifyContent: 'center',
+                  width: '100%',
+                  mt: 1.5,
+                  mb: 1.5,
+                  px: 2,
+                  '@media (max-width:375px)': {
+                    flexDirection: 'column !important',
+                    alignItems: 'center !important',
+                    gap: '0.4rem !important',
+                    mt: '0.4rem !important',
+                    mb: '0.4rem !important',
+                    '& .MuiTypography-root': { fontSize: '0.7rem !important', textAlign: 'center !important' },
+                    '& .MuiSwitch-root': { transform: 'scale(0.85) !important' },
+                  },
+                }}
+              >
                 <Box
                   sx={{
                     display: 'flex',
@@ -1330,11 +1464,17 @@ export default function Discover() {
                     backdropFilter: 'blur(10px)',
                     px: 2.5,
                     py: 0.8,
-                    borderRadius: '24px',
+                    borderRadius: { xs: '8px', sm: '12px' },
                     border: '1.5px solid',
                     borderColor: isCurious ? 'rgba(171, 71, 188, 0.5)' : 'rgba(255, 255, 255, 0.12)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: isCurious ? '0 4px 20px rgba(171, 71, 188, 0.3)' : 'none',
+                    transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
+                    boxShadow: isCurious ? '0 4px 12px rgba(171, 71, 188, 0.2)' : '0 1px 4px rgba(0,0,0,0.08)',
+                    '@media (max-width:375px)': {
+                      px: 1.5,
+                      py: 0.5,
+                      gap: '0.4rem',
+                      '& .MuiTypography-root': { fontSize: '0.75rem' },
+                    },
                   }}
                 >
                   <Switch
@@ -1387,11 +1527,11 @@ export default function Discover() {
                     backdropFilter: 'blur(10px)',
                     px: 3,
                     py: 1,
-                    borderRadius: '24px',
+                    borderRadius: '12px',
                     border: '1.5px solid',
                     borderColor: isCurious ? 'rgba(171, 71, 188, 0.5)' : 'rgba(255, 255, 255, 0.12)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: isCurious ? '0 4px 20px rgba(171, 71, 188, 0.3)' : 'none',
+                    transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
+                    boxShadow: isCurious ? '0 4px 12px rgba(171, 71, 188, 0.2)' : '0 1px 4px rgba(0,0,0,0.08)',
                     cursor: 'pointer'
                   }}
                   onClick={() => handleCuriosityChange(!isCurious)}

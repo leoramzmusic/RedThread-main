@@ -330,8 +330,13 @@ export default function ProfileCard({
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
-        height: { xs: 'calc(100vh - 245px)', sm: '700px' }, // Adjusted to ensure bottom buttons and switch are visible on mobile, larger on desktop
-        maxHeight: { xs: '740px', sm: '700px' }
+        height: { xs: 'calc(100vh - 245px)', sm: '700px' },
+        maxHeight: { xs: '740px', sm: '700px' },
+        '@media (max-width:375px)': {
+          height: 'calc(100vh - 170px) !important',
+          maxHeight: '500px !important',
+          mt: '0.2rem !important',
+        },
       }}
     >
       <Card
@@ -348,18 +353,25 @@ export default function ProfileCard({
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          borderRadius: { xs: 4, sm: 5 },
+          borderRadius: { xs: '8px', sm: '12px' },
           position: 'relative',
-          overflow: 'hidden', // Back to hidden for story style
+          overflow: 'hidden',
           boxShadow: isCurious
-            ? '0 10px 40px -10px rgba(171, 71, 188, 0.4)'
-            : `0 10px 40px -10px ${isPremiumOrVip ? config.color.primary + '66' : 'rgba(0,0,0,0.3)'}`,
+            ? '0 4px 16px rgba(171, 71, 188, 0.22)'
+            : `0 4px 16px ${isPremiumOrVip ? config.color.primary + '22' : 'rgba(0,0,0,0.12)'}`,
           border: isCurious
             ? '3px solid #AB47BC'
             : (isPremiumOrVip ? `2px solid ${config.color.primary}` : 'none'),
           cursor: isDragging ? 'grabbing' : 'pointer',
           transform: `translate(${dragPosition.x}px, ${dragPosition.y}px) rotate(${rotation}deg)`,
-          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease',
+          '&:hover': {
+            boxShadow: isDragging
+              ? undefined
+              : isCurious
+                ? '0 8px 24px rgba(171, 71, 188, 0.26)'
+                : `0 8px 24px ${isPremiumOrVip ? config.color.primary + '28' : 'rgba(0,0,0,0.16)'}`,
+          },
           userSelect: 'none',
           bgcolor: 'black'
         }}
