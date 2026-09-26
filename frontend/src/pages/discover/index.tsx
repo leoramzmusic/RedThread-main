@@ -819,7 +819,7 @@ export default function Discover() {
         {/* Mobile Toolbar — xs only, tablet/desktop use unified header */}
         <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%' }}>
           <DiscoverToolbar
-            title={t('title', 'Descubrir')}
+            title={t('title', 'Discover')}
             isFilterActive={isFilterActive}
             setShowFilters={setShowFilters}
             setShowInteractionSettings={setShowInteractionSettings}
@@ -883,17 +883,21 @@ export default function Discover() {
 
               {/* LEFT: Tools */}
               <Box sx={{ display: 'flex', gap: 1.5, width: '140px' }}>
-                <IconButton onClick={() => setShowInteractionSettings(true)} size="small" sx={{ color: 'rgba(255,255,255,0.8)', p: 0.5 }}>
-                  <SettingsIcon fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => setShowFilters(true)} size="small" sx={{ color: isFilterActive ? '#69F0AE' : 'rgba(255,255,255,0.8)', p: 0.5 }}>
-                  <FilterIcon fontSize="small" />
-                </IconButton>
+                <Tooltip title={t('interaction.title', 'Configuración de interacción')} arrow>
+                  <IconButton onClick={() => setShowInteractionSettings(true)} size="small" sx={{ color: 'rgba(255,255,255,0.8)', p: 0.5 }}>
+                    <SettingsIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t('filters.title', 'Ajustar Búsqueda')} arrow>
+                  <IconButton onClick={() => setShowFilters(true)} size="small" sx={{ color: isFilterActive ? '#69F0AE' : 'rgba(255,255,255,0.8)', p: 0.5 }}>
+                    <FilterIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Box>
 
               {/* CENTER: Title */}
               <Typography variant="overline" sx={{ letterSpacing: 5, fontWeight: 900, color: 'white', fontSize: '14px', textAlign: 'center', opacity: 0.9 }}>
-                DESCUBRIR
+                {t('title', 'Descubrir').toUpperCase()}
               </Typography>
 
               {/* RIGHT: Boost & Battery */}
@@ -918,7 +922,7 @@ export default function Discover() {
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.12)', boxShadow: 'none' }
                   }}
                 >
-                  {boostActive ? `X${boostMultiplier} ${formatTime(boostTimeLeft)}` : 'BOOST'}
+                  {boostActive ? `X${boostMultiplier} ${formatTime(boostTimeLeft)}` : t('boost.label', 'BOOST')}
                 </Button>
                 <SocialBatteryWidget
                   batteryLevel={batteryLevel}

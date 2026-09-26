@@ -9,6 +9,7 @@ import BoostStatusBadge from './BoostStatusBadge';
 import { keyframes } from '@mui/system';
 import DiscoveryModeSelector, { DiscoveryMode } from './DiscoveryModeSelector';
 import { useAppTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'next-i18next';
 
 interface DiscoverToolbarProps {
     title: string;
@@ -60,6 +61,7 @@ export default function DiscoverToolbar({
     isCurious,
     onCuriousChange
 }: DiscoverToolbarProps) {
+    const { t } = useTranslation('discover');
     const { mode } = useAppTheme();
     const isLight = mode === 'light';
 
@@ -150,36 +152,40 @@ export default function DiscoverToolbar({
             >
                 {/* LEFT: Settings & Filter */}
                 <Box sx={{ width: 68, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 0.1 }}>
-                    <IconButton
-                        onClick={() => setShowInteractionSettings(true)}
-                        size="small"
-                        sx={{ color: 'white', p: 0.5 }}
-                    >
-                        <SettingsIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                    </IconButton>
+                    <Tooltip title={t('interaction.title', 'Configuración de Interacción')} arrow>
+                        <IconButton
+                            onClick={() => setShowInteractionSettings(true)}
+                            size="small"
+                            sx={{ color: 'white', p: 0.5 }}
+                        >
+                            <SettingsIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                        </IconButton>
+                    </Tooltip>
 
-                    <IconButton
-                        onClick={() => setShowFilters(true)}
-                        size="small"
-                        sx={{
-                            color: isFilterActive ? '#69F0AE' : 'white',
-                            p: 0.5
-                        }}
-                    >
-                        <TuneIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-                        {isFilterActive && (
-                            <Box sx={{
-                                position: 'absolute',
-                                top: 4,
-                                right: 4,
-                                width: 6,
-                                height: 6,
-                                bgcolor: '#69F0AE',
-                                borderRadius: '50%',
-                                border: '1.5px solid black'
-                            }} />
-                        )}
-                    </IconButton>
+                    <Tooltip title={t('filters.title', 'Ajustar Búsqueda')} arrow>
+                        <IconButton
+                            onClick={() => setShowFilters(true)}
+                            size="small"
+                            sx={{
+                                color: isFilterActive ? '#69F0AE' : 'white',
+                                p: 0.5
+                            }}
+                        >
+                            <TuneIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
+                            {isFilterActive && (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    top: 4,
+                                    right: 4,
+                                    width: 6,
+                                    height: 6,
+                                    bgcolor: '#69F0AE',
+                                    borderRadius: '50%',
+                                    border: '1.5px solid black'
+                                }} />
+                            )}
+                        </IconButton>
+                    </Tooltip>
                 </Box>
 
                 {/* CENTER: Modes Segment — iPhone SE scroll horizontal */}

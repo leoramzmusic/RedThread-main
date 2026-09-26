@@ -1,0 +1,325 @@
+{
+  "title": "Обзор",
+  "subtitle": "Найдите людей, которые разделяют вашу нить",
+  "friendshipMode": {
+    "title": "Режим дружбы активирован",
+    "description": "Поскольку вы в отношениях, вы будете видеть только людей, ищущих дружбу или совместные занятия."
+  },
+  "errors": {
+    "loadFailed": "Не удалось загрузить профили. Попробуйте позже.",
+    "updateFailed": "Не удалось обновить ваш профиль. Попробуйте снова.",
+    "boostFailed": "Ошибка при активации Boost"
+  },
+  "match": {
+    "title": "Это совпадение!",
+    "description": "Вы и {{name}} нравитесь друг другу"
+  },
+  "noProfiles": {
+    "title": "Больше нет профилей поблизости",
+    "description": "Расширьте критерии поиска или вернитесь позже.",
+    "button": "Настроить фильтры"
+  },
+  "filters": {
+    "title": "Настроить поиск",
+    "ageRange": "Диапазон возраста",
+    "ageNoLimit": "Без ограничения возраста",
+    "distance": {
+      "label": "Радиус поиска",
+      "unit": "км",
+      "unlimited": "Без ограничений",
+      "syncMessage": "Эта настройка также будет сохранена в вашем профиле.",
+      "currentLocation": "Поиск рядом с: ",
+      "noLocation": "Укажите место в профиле, чтобы увидеть карту"
+    },
+    "onlineOnly": "Показывать только пользователей в сети",
+    "mode": {
+      "label": "Режим исследования",
+      "suggested": "Рекомендованные совпадения",
+      "suggestedDesc": "На основе вашей нити совместимости",
+      "free": "Свободное исследование",
+      "freeDesc": "Случайные профили рядом с вами"
+    },
+    "premium": {
+      "states": "Искать по штату (Premium)",
+      "countries": "Искать по стране (Premium)",
+      "upsellTitle": "Исследуйте за пределами своего региона",
+      "upsellDesc": "Подключите ReTh Premium или VIP, чтобы искать людей в любом штате или стране.",
+      "upsellAction": "Посмотреть тарифы Premium"
+    },
+    "cancel": "Отмена",
+    "apply": "Применить фильтры",
+    "syncSuccess": "Настройки сохранены в вашем профиле.",
+    "highCompatibility": "Только высокая совместимость (>70%)",
+    "highCompatibilityDesc": "Фильтрует профили с меньшей схожестью.",
+    "online": {
+      "label": "Только пользователи в сети",
+      "desc": "Показывает только активных сейчас людей."
+    }
+  },
+  "emptyState": {
+    "title": "Пока нет совпадений...",
+    "subtitle": "Заполните профиль, чтобы мы нашли людей, разделяющих вашу нить.",
+    "progressLabel": "Ваш профиль заполнен на",
+    "keepGoing": "Почти готово!",
+    "complete": "Отлично!",
+    "buttonEdit": "Заполнить профиль",
+    "buttonExpand": "Исследовать без фильтров",
+    "quickAdds": "БЫСТРО ДОБАВЬТЕ ИНТЕРЕСЫ",
+    "interestAdded": "Интерес добавлен! Ищем новые совпадения..."
+  },
+  "undo": {
+    "message": "Вы вернулись к предыдущему профилю"
+  },
+  "vipMessage": {
+    "comingSoon": "VIP-сообщение: Скоро"
+  },
+  "boost": {
+    "activated": "Boost активирован! Ваш профиль будет сиять 30 минут",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "Профиль обновлён! Вы ближе к своей лучшей версии ✨",
+    "profileProgress": "ПРОГРЕСС ПРОФИЛЯ",
+    "carePhrase": "«То, что вы выбираете, прибавляет; то, что вы не выбираете, никогда не отнимает. Определите свои вкусы, чтобы вибрировать лучше.»",
+    "placeholder": "Напишите здесь..."
+  },
+  "discoverLocked": {
+    "title": "Связь подтверждена",
+    "message": "Ваша связь подтверждена. Discover отключён, чтобы уважать ваши отношения. Golth остаётся доступным для исследования общих склонностей."
+  },
+  "lowCompletenessAlert": "Чем больше деталей вы добавите в профиль, тем лучше будут совпадения",
+  "compatibility": {
+    "whyOpposites": "Почему они дополняют друг друга",
+    "whyCompatible": "Почему они совместимы",
+    "interests": "Общие интересы",
+    "uniqueInterests": "Интересы, которые они вам принесут",
+    "values": "Ценности и образ жизни",
+    "intentions": "Общие намерения",
+    "basicsOnly": "Совместимость на основе возраста, местоположения и базовых предпочтений."
+  },
+  "quickInterests": {
+    "title": "Быстро добавьте интересы",
+    "subtitle": "Помогите нам найти людей, похожих на вас",
+    "search": "Поиск интересов...",
+    "searchResults": "Результаты",
+    "yourInterests": "Ваши интересы",
+    "suggested": "✨ Рекомендовано для вас"
+  },
+  "common": {
+    "skip": "Пропустить",
+    "saving": "Сохранение...",
+    "save": "Сохранить",
+    "done": "Готово"
+  },
+  "modes": {
+    "suggested": {
+      "label": "Для вас",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Противоположности",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "Вслепую",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Свободно",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Ещё",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "НАРРАТИВ СОВПАДЕНИЯ",
+    "syncingNarratives": "Синхронизация сюжетных линий...",
+    "visualHarmony": "ВИЗУАЛЬНАЯ ГАРМОНИЯ",
+    "startWithSong": "Хотите начать с песни, которая вас зацепила?",
+    "suggestedRituals": "ПРЕДЛОЖЕННЫЕ РИТУАЛЫ",
+    "interpretingThread": "Интерпретируем вашу нить...",
+    "narrativeLink": "Связующая нить",
+    "sharedRhythm": "Общий ритм",
+    "purpose": "Цель"
+  },
+  "card": {
+    "potentialConnection": "Возможная связь • Фото скрыты",
+    "firstGlimpse": "Первый нарративный проблеск",
+    "swipeCompatibility": "Смахните для совместимости >",
+    "compatibilityAnalysis": "АНАЛИЗ СОВМЕСТИМОСТИ",
+    "goalAlignment": "Совпадение целей",
+    "musicTaste": "Музыкальные вкусы",
+    "valuesVision": "Ценности и видение",
+    "lifestyle": "Стиль жизни",
+    "scenario": "Сценарий",
+    "personality": "ЛИЧНОСТЬ",
+    "deepTalksQuote": "Я предпочитаю глубокие разговоры поверхностным...",
+    "unlockHint": "Нажмите на замок при взаимном совпадении.",
+    "distance": "В {{count}} км от вас",
+    "nearby": "Рядом с вами",
+    "discovery": "Открытие",
+    "curiositySuggestion": "Любопытное предложение",
+    "veryActive": "Очень активен",
+    "vibesInterests": "МОИ ВАЙБЫ И ИНТЕРЕСЫ",
+    "professionalAcademic": "ПРОФЕССИЯ И ОБРАЗОВАНИЕ",
+    "atCompany": "в {{company}}",
+    "emotionalSide": "МОЯ ЭМОЦИОНАЛЬНАЯ СТОРОНА",
+    "myAnthem": "Мой гимн",
+    "lookingFor": "Ищу:",
+    "uniqueMind": "МОЙ УНИКАЛЬНЫЙ РАЗУМ",
+    "neurodiversity": "Нейроразнообразие",
+    "viewMoreDetails": "Посмотреть подробнее...",
+    "locationNotAvailable": "Местоположение недоступно",
+    "identityTooltipDefault": "Эта идентичность — часть вашего пути. CARE использует её для соединения с уважением и близостью.",
+    "careHarmony": "Гармония CARE",
+    "totalCompatibility": "Общая совместимость",
+    "technicalBreakdown": "Технический разбор",
+    "emotionalBalance": "Эмоциональный баланс",
+    "viewFullProfile": "Смотреть профиль",
+    "firstFlash": "Первый нарративный проблеск",
+    "swipeForCompat": "Смахните для совместимости >",
+    "analysisTitle": "АНАЛИЗ СОВМЕСТИМОСТИ",
+    "breakdownIntent": "Сходство намерений",
+    "breakdownMusic": "Музыкальный вкус",
+    "breakdownValues": "Ценности и взгляды",
+    "breakdownLifestyle": "Стиль жизни",
+    "personalityTitle": "ЛИЧНОСТЬ",
+    "noPrompt": "Я предпочитаю глубокие разговоры пустой болтовне...",
+    "tapLock": "Нажмите на замок, если совпадет пара.",
+    "distanceKm": "в {{count}} км от вас",
+    "nearYou": "Рядом с вами",
+    "discoveryChip": "Открытие",
+    "curiousChip": "Подсказка любопытства",
+    "veryActiveChip": "Очень активен",
+    "vibesTitle": "СОВПАДАЕТ С ВАШИМИ ИНТЕРЕСАМИ",
+    "professionalTitle": "ПРОФЕССИЯ И ОБРАЗОВАНИЕ",
+    "emotionalTitle": "МОЯ ЭМОЦИОНАЛЬНАЯ СТОРОНА",
+    "myHimno": "Мой гимн",
+    "uniqueMindTitle": "МОЙ УНИКАЛЬНЫЙ РАЗУМ",
+    "viewMore": "Смотреть подробнее...",
+    "vibesWithYourInterests": "СОВПАДАЕТ С ВАШИМИ ИНТЕРЕСАМИ"
+  }
+}

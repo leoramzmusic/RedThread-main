@@ -1,5 +1,6 @@
 import { Grid, Paper, Typography, TextField, Box, IconButton, Button, Stack, InputBase, alpha, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'next-i18next';
 import { Info as InfoIcon, Add as AddIcon, Close as CloseIcon, DragIndicator as DragIndicatorIcon, EditNote, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
   DndContext,
@@ -178,6 +179,8 @@ export default function AboutMeSection({
   handleUpdatePrompt,
   handleRemovePrompt
 }: AboutMeSectionProps) {
+  const { t } = useTranslation('common');
+
   return (
     <Grid item xs={12}>
       <Accordion
@@ -198,7 +201,7 @@ export default function AboutMeSection({
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" pr={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <EditNote color="action" />
-              <Typography variant="h6">Sobre mí</Typography>
+              <Typography variant="h6">{t('profile.aboutMe', 'Sobre mí')}</Typography>
             </Box>
             <IconButton
               size="small"
@@ -216,7 +219,7 @@ export default function AboutMeSection({
           <Controller
             name="bio"
             control={control}
-            rules={{ maxLength: { value: 500, message: 'Máximo 500 caracteres' } }}
+            rules={{ maxLength: { value: 500, message: t('profile.max_chars_500', 'Máximo 500 caracteres') } }}
             render={({ field, fieldState: { error } }) => (
               <Box mb={3}>
                 <Box position="relative">
@@ -225,7 +228,7 @@ export default function AboutMeSection({
                     fullWidth
                     multiline
                     rows={4}
-                    placeholder="Esta es tu voz sin imagen. Haz que tu descripción sea tu primer gesto de conexión."
+                    placeholder={t('profile.bio_placeholder', 'Esta es tu voz sin imagen. Haz que tu descripción sea tu primer gesto de conexión.')}
                     error={!!error}
                     helperText={error?.message}
                     sx={{
@@ -254,10 +257,10 @@ export default function AboutMeSection({
           {/* Prompts Section */}
           <Box>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-              Pregúntame sobre...
+              {t('profile.prompts_title', 'Pregúntame sobre...')}
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
-              Escoge hasta 5 de las siguientes frases para que te conozcan un poco mejor
+              {t('profile.prompts_subtitle', 'Escoge hasta 5 de las siguientes frases para que te conozcan un poco mejor')}
             </Typography>
 
             <Stack spacing={2}>
@@ -302,7 +305,7 @@ export default function AboutMeSection({
                   onClick={() => setPromptSelectorOpen(true)}
                 >
                   <Button startIcon={<AddIcon />} sx={{ color: 'text.secondary' }}>
-                    Agregar frase
+                    {t('profile.add_prompt', 'Agregar frase')}
                   </Button>
                 </Box>
               )}

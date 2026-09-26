@@ -105,6 +105,8 @@ export default function DiscoveryModeSelector({
     isCurious,
     onCuriousChange
 }: DiscoveryModeSelectorProps) {
+    const { t } = useTranslation('discover');
+
     const handleModeClick = (mode: DiscoveryMode) => {
         onModeChange(mode);
         localStorage.setItem('favoriteDiscoveryMode', mode);
@@ -142,15 +144,16 @@ export default function DiscoveryModeSelector({
                 const isActive = currentMode === modeKey;
 
                 return (
-                    <ModeButton
-                        key={modeKey}
-                        $isActive={isActive}
-                        $isLight={isLight}
-                        $activeColor={config.color}
-                        onClick={() => handleModeClick(modeKey)}
-                    >
-                        {config.label}
-                    </ModeButton>
+                    <Tooltip key={modeKey} title={t(`modes.${modeKey}.description`, config.description)} arrow>
+                        <ModeButton
+                            $isActive={isActive}
+                            $isLight={isLight}
+                            $activeColor={config.color}
+                            onClick={() => handleModeClick(modeKey)}
+                        >
+                            {t(`modes.${modeKey}.label`, config.label)}
+                        </ModeButton>
+                    </Tooltip>
                 );
             })}
         </Box>

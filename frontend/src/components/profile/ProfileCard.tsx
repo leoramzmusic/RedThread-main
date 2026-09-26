@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'next-i18next';
 import {
   Card,
   CardMedia,
@@ -152,6 +153,7 @@ export default function ProfileCard({
   isCurious = false,
   interactionMode = 'buttons', // Default mode
 }: ProfileCardProps) {
+  const { t } = useTranslation(['discover', 'common']);
   const { mode } = useAppTheme();
   const isLight = mode === 'light';
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -475,8 +477,8 @@ export default function ProfileCard({
 
         {/* Compatibility Indicator - Circular Percentage */}
         <Tooltip title={isOwnProfile
-          ? "Esta vista compara tu perfil contigo mismo. Todas las coincidencias son perfectas."
-          : "Compatibilidad basada en afinidad emocional y coincidencias de perfil"}>
+          ? t('card.ownProfileTooltip', "Esta vista compara tu perfil contigo mismo. Todas las coincidencias son perfectas.")
+          : t('card.compatibilityTooltip', "Compatibilidad basada en afinidad emocional y coincidencias de perfil")}>
           <Box
             onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
             sx={{
@@ -526,7 +528,7 @@ export default function ProfileCard({
 
         {/* Info/Upward Arrow Button - Mobile Story Style */}
         {showActions && (
-          <Tooltip title="Ver detalles del perfil">
+          <Tooltip title={t('card.viewProfileDetails', "Ver detalles del perfil")}>
             <IconButton
               onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
               sx={{

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Box, Typography, IconButton, Tooltip, Zoom, Menu, MenuItem } from '@mui/material';
 import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
 import BatteryFullIcon from '@mui/icons-material/BatteryFull';
@@ -14,6 +15,7 @@ interface SocialBatteryProps {
 }
 
 export default function SocialBatteryWidget({ batteryLevel, onOpenTimeOut, compact }: SocialBatteryProps) {
+    const { t } = useTranslation('common');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     // Emotional Logic for Phrases & Colors
@@ -21,26 +23,26 @@ export default function SocialBatteryWidget({ batteryLevel, onOpenTimeOut, compa
         if (level > 70) return {
             color: '#69F0AE', // Premium Emerald Green
             icon: <BatteryFullIcon sx={{ fontSize: compact ? '1rem' : '1.2rem' }} />,
-            phrase: "Energía vital alta. Tu hilo está listo para conectar ✨",
-            label: "Energía Alta"
+            phrase: t('battery.high.phrase', "Energía vital alta. Tu hilo está listo para conectar ✨"),
+            label: t('battery.high.label', "Energía Alta")
         };
         if (level > 30) return {
             color: '#FFD700', // Gold/Amber
             icon: <BatteryStdIcon sx={{ fontSize: compact ? '1rem' : '1.2rem' }} />,
-            phrase: "Batería media. Un descanso pronto no vendría mal ☕",
-            label: "Energía Media"
+            phrase: t('battery.medium.phrase', "Batería media. Un descanso pronto no vendría mal ☕"),
+            label: t('battery.medium.label', "Energía Media")
         };
         if (level > 0) return {
             color: '#FF5252', // Soft Red
             icon: <BatteryAlertIcon sx={{ fontSize: compact ? '1rem' : '1.2rem' }} />,
-            phrase: "Batería baja. Modo introspección activado 🕯️",
-            label: "Batería Baja"
+            phrase: t('battery.low.phrase', "Batería baja. Modo introspección activado 🕯️"),
+            label: t('battery.low.label', "Batería Baja")
         };
         return {
             color: '#757575', // Muted Grey
             icon: <BedtimeIcon sx={{ fontSize: compact ? '1rem' : '1.2rem' }} />,
-            phrase: "Modo Cueva: Recargando en silencio 🌙",
-            label: "Desconectado"
+            phrase: t('battery.off.phrase', "Modo Cueva: Recargando en silencio 🌙"),
+            label: t('battery.off.label', "Desconectado")
         };
     };
 

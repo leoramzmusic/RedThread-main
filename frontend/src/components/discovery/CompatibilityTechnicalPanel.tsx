@@ -9,6 +9,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { Profile } from '../profile/ProfileCard';
 import { useAppTheme } from '../../context/ThemeContext';
 import { keyframes, styled } from '@mui/system';
+import { useTranslation } from 'next-i18next';
 
 interface CompatibilityTechnicalPanelProps {
     profile: Profile;
@@ -50,6 +51,7 @@ const ToggleContainer = styled(ButtonBase)(({ theme }) => ({
 }));
 
 export default function CompatibilityTechnicalPanel({ profile, isVisible, onViewProfile, mobileOpen = false, standalone = false }: CompatibilityTechnicalPanelProps) {
+    const { t } = useTranslation('discover');
     const { mode } = useAppTheme();
     const isLight = mode === 'light';
     const [isExpanded, setIsExpanded] = useState(false);
@@ -197,21 +199,21 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                             {Math.round(profile.affinity_score || 0)}%
                         </Typography>
                         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 2 }}>
-                            Compatibilidad total
+                            {t('card.totalCompatibility', 'Compatibilidad total')}
                         </Typography>
                     </Box>
 
                     {/* Technical Breakdown */}
                     <Box>
                         <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800, mb: 1.5, display: 'block' }}>
-                            Desglose Técnico
+                            {t('card.technicalBreakdown', 'Desglose Técnico')}
                         </Typography>
                         <Stack spacing={2}>
                             {[
-                                { label: 'Música & Gustos', val: (breakdown as any).interests },
-                                { label: 'Creatividad', val: 80 }, // Mock if not in breakdown
-                                { label: 'Valores & Metas', val: (breakdown as any).intent || (breakdown as any).values || 75 },
-                                { label: 'Estilo de Vida', val: (breakdown as any).lifestyle },
+                                { label: t('card.musicTaste', 'Música & Gustos'), val: (breakdown as any).interests },
+                                { label: t('card.uniqueMind', 'Creatividad'), val: 80 }, // Mock if not in breakdown
+                                { label: t('card.valuesVision', 'Valores & Metas'), val: (breakdown as any).intent || (breakdown as any).values || 75 },
+                                { label: t('card.lifestyle', 'Estilo de Vida'), val: (breakdown as any).lifestyle },
                             ].map((item, i) => (
                                 <Box key={i}>
                                     <Box display="flex" justifyContent="space-between" mb={0.5}>
@@ -235,10 +237,14 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                     {/* Balance Emocional */}
                     <Box>
                         <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800, mb: 1, display: 'block' }}>
-                            Balance Emocional
+                            {t('card.emotionalBalance', 'Balance Emocional')}
                         </Typography>
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap gap={1}>
-                            {['Vínculo narrativo', 'Ritmo compartido', 'Propósito'].map((tag, i) => (
+                            {[
+                                t('careNarrative.narrativeLink', 'Vínculo narrativo'),
+                                t('careNarrative.sharedRhythm', 'Ritmo compartido'),
+                                t('careNarrative.purpose', 'Propósito')
+                            ].map((tag, i) => (
                                 <Box key={i} sx={{
                                     px: 1.5, py: 0.5, borderRadius: 10,
                                     border: '1px solid rgba(255,255,255,0.2)',
@@ -276,7 +282,7 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                                 },
                             }}
                         >
-                            Ver perfil completo
+                            {t('card.viewFullProfile', 'Ver perfil completo')}
                         </Button>
                         <Button
                             fullWidth

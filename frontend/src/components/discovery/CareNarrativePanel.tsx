@@ -8,6 +8,7 @@ import { Profile } from '../profile/ProfileCard';
 import { useUI } from '../../context/UIContext';
 import { useAppTheme } from '../../context/ThemeContext';
 import { keyframes, styled } from '@mui/system';
+import { useTranslation } from 'next-i18next';
 
 interface CareNarrativePanelProps {
     profile: Profile;
@@ -48,6 +49,7 @@ const ToggleContainer = styled(ButtonBase)(({ theme }) => ({
 }));
 
 export default function CareNarrativePanel({ profile, isVisible, mobileOpen = false, standalone = false }: CareNarrativePanelProps) {
+    const { t } = useTranslation('discover');
     const { mode } = useAppTheme();
     const isLight = mode === 'light';
     const { drawerWidth } = useUI();
@@ -115,7 +117,7 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
 
                             {!isExpanded && (
                                 <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '16px' }}>
-                                    CARE Interpreta
+                                    {t('careNarrative.title', 'CARE Interpreta')}
                                 </Typography>
                             )}
 
@@ -158,7 +160,7 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                                         display: 'none'
                                     }}
                                 >
-                                    “Interpretando tu hilo actual...”
+                                    “{t('careNarrative.interpretingThread', 'Interpretando tu hilo actual...')}”
                                 </Typography>
                             )}
                         </ToggleContainer>
@@ -197,14 +199,14 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                             <PsychologyIcon sx={{ fontSize: 24, color: '#AB47BC' }} />
                         </Box>
                         <Typography variant="h6" fontWeight={900} sx={{ letterSpacing: 0.5, fontSize: '1.1rem' }}>
-                            CARE Interpreta
+                            {t('careNarrative.title', 'CARE Interpreta')}
                         </Typography>
                     </Box>
 
                     {/* Narrative Fragments */}
                     <Box>
                         <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800, mb: 1.5, display: 'block' }}>
-                            NARRATIVA DEL MATCH
+                            {t('careNarrative.narrativeOfMatch', 'NARRATIVA DEL MATCH')}
                         </Typography>
                         <Stack spacing={2.5}>
                             {highlights.map((text, i) => (
@@ -220,7 +222,7 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                             ))}
                             {highlights.length === 0 && (
                                 <Typography variant="body2" sx={{ fontStyle: 'italic', opacity: 0.6 }}>
-                                    Sincronizando hilos narrativos...
+                                    {t('careNarrative.syncingNarratives', 'Sincronizando hilos narrativos...')}
                                 </Typography>
                             )}
                         </Stack>
@@ -229,7 +231,7 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                     {/* Microcopy Emocional */}
                     <Box>
                         <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800, mb: 1.5, display: 'block' }}>
-                            SINTONÍA VISUAL
+                            {t('careNarrative.visualHarmony', 'SINTONÍA VISUAL')}
                         </Typography>
                         <Box sx={{
                             p: 2,
@@ -238,7 +240,7 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                             border: '1px solid rgba(144, 202, 249, 0.1)'
                         }}>
                             <Typography variant="body2" sx={{ color: '#90CAF9', fontWeight: 600, lineHeight: 1.5 }}>
-                                {profile.context_advice || "¿Quieres iniciar con una canción que te marcó?"}
+                                {profile.context_advice || t('careNarrative.startWithSong', "¿Quieres iniciar con una canción que te marcó?")}
                             </Typography>
                         </Box>
                     </Box>
@@ -248,7 +250,7 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
                             <AutoAwesomeIcon sx={{ fontSize: 18, color: '#FFD700' }} />
                             <Typography variant="overline" fontWeight={800} sx={{ color: '#FFD700' }}>
-                                RITUALES SUGERIDOS
+                                {t('careNarrative.suggestedRituals', 'RITUALES SUGERIDOS')}
                             </Typography>
                         </Stack>
                         <Stack spacing={1.5}>

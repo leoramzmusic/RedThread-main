@@ -111,7 +111,7 @@ export default function ProfileBio({ profile }: ProfileBioProps) {
                     <Box p={1} bgcolor="primary.50" borderRadius="50%" color="primary.main" display="flex">
                         <PersonIcon />
                     </Box>
-                    <Typography variant="h6" fontWeight={700}>Sobre mí</Typography>
+                    <Typography variant="h6" fontWeight={700}>{t('profile.aboutMe', 'Sobre mí')}</Typography>
                 </Box>
 
                 <Typography
@@ -135,20 +135,21 @@ export default function ProfileBio({ profile }: ProfileBioProps) {
                         sx={{ mt: 1, textTransform: 'none', fontWeight: 600 }}
                         endIcon={bioExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     >
-                        {bioExpanded ? 'Ver menos' : 'Ver más'}
+                        {bioExpanded ? t('profile.showLess', 'Ver menos') : t('profile.showMore', 'Ver más')}
                     </Button>
                 )}
             </Paper>
 
             {/* Intentions / 'Busco' Section */}
-            <InfoSection title="Busco" icon={<HeartIcon />} defaultExpanded={true}>
+            <InfoSection title={t('profile.intentions_title', 'Busco')} icon={<HeartIcon />} defaultExpanded={true}>
                 <Box display="flex" flexWrap="wrap" gap={1}>
                     {profile.intentions?.length > 0 ? profile.intentions.map((intention: string) => {
                         const option = INTENTION_OPTIONS.find(opt => opt.value === intention);
+                        const translatedLabel = t(`profile.intentions_map.${intention}`, option ? option.label : intention);
                         return (
                             <Chip
                                 key={intention}
-                                label={option ? `${option.emoji} ${option.label}` : intention}
+                                label={option ? `${option.emoji} ${translatedLabel}` : translatedLabel}
                                 color="primary"
                                 variant="filled"
                                 sx={{
@@ -161,7 +162,7 @@ export default function ProfileBio({ profile }: ProfileBioProps) {
                             />
                         );
                     }) : (
-                        <Typography variant="body2" color="text.secondary">No especificado</Typography>
+                        <Typography variant="body2" color="text.secondary">{t('profile.notSpecified', 'No especificado')}</Typography>
                     )}
                 </Box>
             </InfoSection>

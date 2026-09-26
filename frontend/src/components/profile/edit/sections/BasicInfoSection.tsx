@@ -1,5 +1,6 @@
 import { Grid, Paper, Typography, TextField, Button, Box, InputAdornment, Autocomplete, CircularProgress, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'next-i18next';
 import { Edit as EditIcon, VerifiedUser as VerifiedUserIcon, Info, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import IdentityVerificationContainer from '../../IdentityVerificationContainer';
 import { COUNTRY_CODES } from '../../../../constants/countryCodes';
@@ -40,6 +41,8 @@ export default function EditBasicInfo({
   handleVerifyPhone,
   handleChangePhoneRequest
 }: EditBasicInfoProps) {
+  const { t } = useTranslation('common');
+
   return (
     <Grid item xs={12}>
       <Accordion
@@ -59,7 +62,7 @@ export default function EditBasicInfo({
         >
           <Box display="flex" alignItems="center" gap={1}>
             <Info color="action" />
-            <Typography variant="h6">Información Básica</Typography>
+            <Typography variant="h6">{t('profile.sections.identity.title', 'Información Básica')}</Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
@@ -82,15 +85,15 @@ export default function EditBasicInfo({
               <Controller
                 name="display_name"
                 control={control}
-                rules={{ required: 'Este campo es requerido', minLength: { value: 2, message: 'Mínimo 2 caracteres' } }}
+                rules={{ required: t('profile.required_field', 'Este campo es requerido'), minLength: { value: 2, message: t('profile.min_length_2', 'Mínimo 2 caracteres') } }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
                     fullWidth
-                    label="Apodo / Nickname"
-                    placeholder="Cómo quieres que te llamen"
+                    label={t('profile.nickname_label', 'Apodo / Nickname')}
+                    placeholder={t('profile.nickname_placeholder', 'Cómo quieres que te llamen')}
                     error={!!error}
-                    helperText={error?.message || "Este es el nombre que verán los demás. Puede contener espacios y acentos."}
+                    helperText={error?.message || t('profile.nickname_helper', 'Este es el nombre que verán los demás. Puede contener espacios y acentos.')}
                   />
                 )}
               />
@@ -111,9 +114,9 @@ export default function EditBasicInfo({
                   <TextField
                     {...field}
                     fullWidth
-                    label="Email"
+                    label={t('profile.email_label', 'Email')}
                     type="email"
-                    helperText="Tu correo electrónico"
+                    helperText={t('profile.email_helper', 'Tu correo electrónico')}
                   />
                 )}
               />
@@ -149,8 +152,8 @@ export default function EditBasicInfo({
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="País"
-                      placeholder="Buscar por país o código..."
+                      label={t('profile.country_label', 'País')}
+                      placeholder={t('profile.country_placeholder', 'Buscar por país o código...')}
                       inputProps={{
                         ...params.inputProps,
                         autoComplete: 'new-password',
@@ -160,11 +163,11 @@ export default function EditBasicInfo({
                 />
                 <TextField
                   fullWidth
-                  label="Teléfono"
+                  label={t('profile.phone_label', 'Teléfono')}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
-                  helperText="Puedes usar este número para iniciar sesión en tu cuenta"
+                  helperText={t('profile.phone_helper', 'Puedes usar este número para iniciar sesión en tu cuenta')}
                 />
               </Box>
             </Grid>

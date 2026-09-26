@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import {
     Box,
     Button,
@@ -33,6 +34,7 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readOnly }: ProfileHeaderProps) {
+    const { t } = useTranslation('common');
     const theme = useTheme();
     const [cameraMenuAnchor, setCameraMenuAnchor] = useState<null | HTMLElement>(null);
     const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
@@ -254,7 +256,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                                     }
                                 }}
                             >
-                                Editar perfil
+                                {t('profile.edit', 'Editar perfil')}
                             </Button>
                         ) : (
                             <Button
@@ -270,7 +272,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                                     boxShadow: 'none'
                                 }}
                             >
-                                Seguir
+                                {t('profile.follow', 'Seguir')}
                             </Button>
                         )}
 
@@ -309,11 +311,11 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
             >
                 <MenuItem onClick={handleUploadStory}>
                     <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
-                    <ListItemText primary="Subir historia" />
+                    <ListItemText primary={t('profile.uploadStory', 'Subir historia')} />
                 </MenuItem>
                 <MenuItem onClick={handleUpdatePhoto}>
                     <ListItemIcon><ImageIcon fontSize="small" /></ListItemIcon>
-                    <ListItemText primary="Ver/Editar foto" />
+                    <ListItemText primary={t('profile.viewEditPhoto', 'Ver/Editar foto')} />
                 </MenuItem>
             </Menu>
 

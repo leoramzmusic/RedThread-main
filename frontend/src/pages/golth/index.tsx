@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { useState } from 'react';
 import { Box, Typography, Button, Container, Grid, Paper, Chip, Tooltip, IconButton, Fade } from '@mui/material';
 import { Hub, Explore, Security, Group, Stars, InfoOutlined, Lock } from '@mui/icons-material';
@@ -244,4 +245,13 @@ export default function GolthPage() {
             </Box>
         </Layout>
     );
+}
+
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 }

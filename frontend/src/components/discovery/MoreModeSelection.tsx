@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Grid, Paper, Card, CardContent, CardActionArea, Chip } from '@mui/material';
 import { Person as PersonIcon, Favorite as FavoriteIcon, EmojiEvents as TrophyIcon } from '@mui/icons-material';
 import { useAppTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'next-i18next';
 
 export interface MoreCategory {
     id: string;
@@ -46,6 +47,7 @@ interface MoreModeSelectionProps {
 }
 
 export default function MoreModeSelection({ onSelectCategory }: MoreModeSelectionProps) {
+    const { t } = useTranslation('discover');
     const { mode } = useAppTheme();
     const isLight = mode === 'light';
 
@@ -135,7 +137,7 @@ export default function MoreModeSelection({ onSelectCategory }: MoreModeSelectio
                             textShadow: '0 2px 4px rgba(0,0,0,0.3)'
                         }}
                     >
-                        {cat.label}
+                        {t(`moreMode.cat.${cat.id}`, cat.label)}
                     </Typography>
                 </CardContent>
             </CardActionArea>
@@ -145,10 +147,10 @@ export default function MoreModeSelection({ onSelectCategory }: MoreModeSelectio
     return (
         <Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto', p: { xs: 1, sm: 2 } }}>
             <Typography variant="h6" sx={{ mb: 1, fontWeight: 700, color: 'text.secondary', fontSize: '1rem' }}>
-                ¿Qué estás buscando?
+                {t('moreMode.title', '¿Qué estás buscando?')}
             </Typography>
             <Typography variant="body2" sx={{ mb: 3, color: 'text.disabled' }}>
-                Encuentra personas que buscan lo mismo que tú.
+                {t('moreMode.subtitle', 'Encuentra personas que buscan lo mismo que tú.')}
             </Typography>
 
             <Grid container spacing={2}>

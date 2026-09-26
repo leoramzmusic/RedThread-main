@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { useTranslation, Trans } from 'next-i18next';
 
 interface BoostActivationModalProps {
     open: boolean;
@@ -29,6 +30,8 @@ export default function BoostActivationModal({
     tier,
     availableBoosts
 }: BoostActivationModalProps) {
+
+    const { t } = useTranslation('discover');
 
     const getTierColor = () => {
         switch (tier) {

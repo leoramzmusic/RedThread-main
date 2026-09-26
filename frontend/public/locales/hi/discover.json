@@ -1,0 +1,325 @@
+{
+  "title": "खोजें",
+  "subtitle": "ऐसे लोग खोजें जो आपका धागा साझा करते हैं",
+  "friendshipMode": {
+    "title": "मित्रता मोड सक्रिय",
+    "description": "चूँकि आप रिश्ते में हैं, आपको केवल दोस्ती या गतिविधियाँ चाहने वाले लोग ही दिखेंगे।"
+  },
+  "errors": {
+    "loadFailed": "प्रोफ़ाइल लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
+    "updateFailed": "हम आपकी प्रोफ़ाइल अपडेट नहीं कर सके। कृपया पुनः प्रयास करें।",
+    "boostFailed": "Boost सक्रिय करने में त्रुटि"
+  },
+  "match": {
+    "title": "यह एक मैच है!",
+    "description": "आप और {{name}} एक-दूसरे को पसंद करते हैं"
+  },
+  "noProfiles": {
+    "title": "आस-पास और कोई प्रोफ़ाइल नहीं",
+    "description": "अपने खोज मानदंड बढ़ाएँ या बाद में वापस आएँ।",
+    "button": "फ़िल्टर समायोजित करें"
+  },
+  "filters": {
+    "title": "खोज समायोजित करें",
+    "ageRange": "आयु सीमा",
+    "ageNoLimit": "कोई आयु सीमा नहीं",
+    "distance": {
+      "label": "खोज दायरा",
+      "unit": "किमी",
+      "unlimited": "असीमित",
+      "syncMessage": "यह सेटिंग भी आपकी प्रोफ़ाइल में सहेजी जाएगी।",
+      "currentLocation": "यहाँ खोज रहे हैं: ",
+      "noLocation": "नक्शा देखने के लिए प्रोफ़ाइल में अपना स्थान सेट करें"
+    },
+    "onlineOnly": "केवल ऑनलाइन उपयोगकर्ता दिखाएँ",
+    "mode": {
+      "label": "खोज मोड",
+      "suggested": "सुझाए गए मैच",
+      "suggestedDesc": "आपके अनुकूलता धागे पर आधारित",
+      "free": "मुक्त खोज",
+      "freeDesc": "आपके आस-पास यादृच्छिक प्रोफ़ाइल"
+    },
+    "premium": {
+      "states": "राज्य के अनुसार खोजें (Premium)",
+      "countries": "देश के अनुसार खोजें (Premium)",
+      "upsellTitle": "अपने क्षेत्र से आगे खोजें",
+      "upsellDesc": "किसी भी राज्य या देश में लोगों को खोजने के लिए ReTh Premium या VIP सदस्यता लें।",
+      "upsellAction": "Premium प्लान देखें"
+    },
+    "cancel": "रद्द करें",
+    "apply": "फ़िल्टर लागू करें",
+    "syncSuccess": "प्राथमिकताएँ आपकी प्रोफ़ाइल में सहेजी गईं।",
+    "highCompatibility": "केवल उच्च अनुकूलता (>70%)",
+    "highCompatibilityDesc": "कम मेल वाली प्रोफ़ाइल फ़िल्टर करता है।",
+    "online": {
+      "label": "केवल ऑनलाइन उपयोगकर्ता",
+      "desc": "केवल अभी सक्रिय लोग दिखाता है।"
+    }
+  },
+  "emptyState": {
+    "title": "अभी तक कोई मैच नहीं...",
+    "subtitle": "ऐसे लोग खोजने के लिए अपनी प्रोफ़ाइल पूरी करें जो आपका धागा साझा करते हैं।",
+    "progressLabel": "आपकी प्रोफ़ाइल है",
+    "keepGoing": "बस थोड़ा सा और!",
+    "complete": "शानदार!",
+    "buttonEdit": "प्रोफ़ाइल पूरी करें",
+    "buttonExpand": "बिना फ़िल्टर खोजें",
+    "quickAdds": "जल्दी से रुचियाँ जोड़ें",
+    "interestAdded": "रुचि जोड़ी गई! नए मैच खोजे जा रहे हैं..."
+  },
+  "undo": {
+    "message": "आप पिछली प्रोफ़ाइल पर वापस गए"
+  },
+  "vipMessage": {
+    "comingSoon": "VIP संदेश: जल्द आ रहा है"
+  },
+  "boost": {
+    "activated": "Boost सक्रिय! आपकी प्रोफ़ाइल 30 मिनट तक चमकेगी",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "प्रोफ़ाइल अपडेट! आप अपने सर्वोत्तम रूप के करीब हैं ✨",
+    "profileProgress": "प्रोफ़ाइल प्रगति",
+    "carePhrase": "\"जो आप चुनते हैं वह जुड़ता है, जो नहीं चुनते वह कभी घटता नहीं। बेहतर तालमेल के लिए अपनी पसंद तय करें।\"",
+    "placeholder": "यहाँ लिखें..."
+  },
+  "discoverLocked": {
+    "title": "संबंध की पुष्टि",
+    "message": "आपके रिश्ते की पुष्टि हो गई है। आपके रिश्ते का सम्मान करने के लिए Discover बंद कर दिया गया है। साझा अनुकूलताएँ खोजने के लिए Golth अभी भी उपलब्ध है।"
+  },
+  "lowCompletenessAlert": "आप जितने अधिक विवरण जोड़ेंगे, उतने बेहतर मैच मिलेंगे",
+  "compatibility": {
+    "whyOpposites": "वे एक-दूसरे की पूरकता क्यों हैं",
+    "whyCompatible": "वे अनुकूल क्यों हैं",
+    "interests": "साझा रुचियाँ",
+    "uniqueInterests": "वे आपके लिए जो रुचियाँ लाएँगे",
+    "values": "मूल्य और जीवन शैली",
+    "intentions": "साझा इरादे",
+    "basicsOnly": "आयु, स्थान और बुनियादी पसंद पर आधारित अनुकूलता।"
+  },
+  "quickInterests": {
+    "title": "जल्दी से रुचियाँ जोड़ें",
+    "subtitle": "हमें आप जैसे लोग खोजने में मदद करें",
+    "search": "रुचियाँ खोजें...",
+    "searchResults": "परिणाम",
+    "yourInterests": "आपकी रुचियाँ",
+    "suggested": "✨ आपके लिए सुझाव"
+  },
+  "common": {
+    "skip": "छोड़ें",
+    "saving": "सहेजा जा रहा है...",
+    "save": "सहेजें",
+    "done": "हो गया"
+  },
+  "modes": {
+    "suggested": {
+      "label": "आपके लिए",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "विपरीत",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "ब्लाइंड",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "मुफ़्त",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "और",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "मैच की कहानी",
+    "syncingNarratives": "कथात्मक धागे सिंक किए जा रहे हैं...",
+    "visualHarmony": "दृश्य तालमेल",
+    "startWithSong": "क्या आप किसी ऐसे गाने से शुरुआत करना चाहते हैं जिसने आपको छू लिया?",
+    "suggestedRituals": "सुझाए गए रीति-रिवाज",
+    "interpretingThread": "आपके वर्तमान धागे की व्याख्या की जा रही है...",
+    "narrativeLink": "कथा बंधन",
+    "sharedRhythm": "साझा लय",
+    "purpose": "उद्देश्य"
+  },
+  "card": {
+    "potentialConnection": "संभावित संबंध • तस्वीरें छिपी हैं",
+    "firstGlimpse": "पहली आख्यानात्मक झलक",
+    "swipeCompatibility": "अनुकूलता देखने के लिए स्वाइप करें >",
+    "compatibilityAnalysis": "अनुकूलता विश्लेषण",
+    "goalAlignment": "लक्ष्य तालमेल",
+    "musicTaste": "संगीत पसंद",
+    "valuesVision": "मूल्य और दृष्टिकोण",
+    "lifestyle": "जीवन शैली",
+    "scenario": "परिदृश्य",
+    "personality": "व्यक्तित्व",
+    "deepTalksQuote": "मुझे छोटी-मोटी बातों की बजाय गहरी बातचीत पसंद है...",
+    "unlockHint": "मैच होने पर ताले पर टैप करें।",
+    "distance": "{{count}} किमी दूर",
+    "nearby": "आपके करीब",
+    "discovery": "खोज",
+    "curiositySuggestion": "जिज्ञासा सुझाव",
+    "veryActive": "बहुत सक्रिय",
+    "vibesInterests": "मेरी वाइब्स और रुचियां",
+    "professionalAcademic": "पेशेवर और शैक्षणिक",
+    "atCompany": "{{company}} में",
+    "emotionalSide": "मेरा भावनात्मक पहलू",
+    "myAnthem": "मेरा गान",
+    "lookingFor": "तलाश है:",
+    "uniqueMind": "मेरा अनूठा मन",
+    "neurodiversity": "तंत्रिका विविधता",
+    "viewMoreDetails": "अधिक विवरण देखें...",
+    "locationNotAvailable": "स्थान उपलब्ध नहीं है",
+    "identityTooltipDefault": "यह पहचान आपकी यात्रा का हिस्सा है। CARE इसका उपयोग सम्मान और आत्मीयता से जोड़ने के लिए करता है।",
+    "careHarmony": "CARE तालमेल",
+    "totalCompatibility": "कुल अनुकूलता",
+    "technicalBreakdown": "तकनीकी विवरण",
+    "emotionalBalance": "भावनात्मक संतुलन",
+    "viewFullProfile": "पूरा प्रोफ़ाइल देखें",
+    "firstFlash": "पहली कथात्मक झलक",
+    "swipeForCompat": "अनुकूलता देखने के लिए स्वाइप करें >",
+    "analysisTitle": "अनुकूलता विश्लेषण",
+    "breakdownIntent": "इरादों का मेल",
+    "breakdownMusic": "संगीत का तालमेल",
+    "breakdownValues": "मूल्य और दृष्टिकोण",
+    "breakdownLifestyle": "जीवन शैली",
+    "personalityTitle": "व्यक्तित्व",
+    "noPrompt": "मुझे सतही बातचीत से ज्यादा गहरी बातें पसंद हैं...",
+    "tapLock": "मैच होने पर ताले पर टैप करें।",
+    "distanceKm": "आपसे {{count}} किमी दूर",
+    "nearYou": "आपके पास",
+    "discoveryChip": "खोज",
+    "curiousChip": "जिज्ञासा सुझाव",
+    "veryActiveChip": "अत्यधिक सक्रिय",
+    "vibesTitle": "आपकी रुचियों से मेल खाता है",
+    "professionalTitle": "व्यावसायिक और शैक्षणिक",
+    "emotionalTitle": "मेरा भावनात्मक पहलू",
+    "myHimno": "मेरा गान",
+    "uniqueMindTitle": "मेरा अनूठा मन",
+    "viewMore": "और विवरण देखें...",
+    "vibesWithYourInterests": "आपकी रुचियों से मेल खाता है"
+  }
+}

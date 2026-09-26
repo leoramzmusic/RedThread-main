@@ -1,0 +1,325 @@
+{
+  "title": "发现",
+  "subtitle": "找到与你志同道合的人",
+  "friendshipMode": {
+    "title": "友谊模式已激活",
+    "description": "由于你处于恋爱关系中，你只会看到寻求友谊或活动的人。"
+  },
+  "errors": {
+    "loadFailed": "加载资料失败。请稍后再试。",
+    "updateFailed": "我们无法更新你的资料。请重试。",
+    "boostFailed": "激活 Boost 时出错"
+  },
+  "match": {
+    "title": "配对成功！",
+    "description": "你和 {{name}} 互相喜欢"
+  },
+  "noProfiles": {
+    "title": "附近没有更多资料了",
+    "description": "扩大搜索范围或稍后再来。",
+    "button": "调整筛选"
+  },
+  "filters": {
+    "title": "调整搜索",
+    "ageRange": "年龄范围",
+    "ageNoLimit": "不限年龄",
+    "distance": {
+      "label": "搜索半径",
+      "unit": "公里",
+      "unlimited": "不限",
+      "syncMessage": "此设置也会保存到你的资料中。",
+      "currentLocation": "搜索附近：",
+      "noLocation": "在资料中设置位置以查看地图"
+    },
+    "onlineOnly": "仅显示在线用户",
+    "mode": {
+      "label": "探索模式",
+      "suggested": "推荐配对",
+      "suggestedDesc": "基于你的契合线索",
+      "free": "自由探索",
+      "freeDesc": "附近的随机资料"
+    },
+    "premium": {
+      "states": "按州探索（Premium）",
+      "countries": "按国家探索（Premium）",
+      "upsellTitle": "探索你的区域之外",
+      "upsellDesc": "订阅 ReTh Premium 或 VIP，即可在任何州或国家搜索他人。",
+      "upsellAction": "查看 Premium 方案"
+    },
+    "cancel": "取消",
+    "apply": "应用筛选",
+    "syncSuccess": "偏好已保存到你的资料。",
+    "highCompatibility": "仅高契合度（>70%）",
+    "highCompatibilityDesc": "过滤契合度较低的资料。",
+    "online": {
+      "label": "仅在线用户",
+      "desc": "仅显示当前活跃的人。"
+    }
+  },
+  "emptyState": {
+    "title": "还没有配对...",
+    "subtitle": "完善你的资料，让我们找到与你志同道合的人。",
+    "progressLabel": "你的资料完成度为",
+    "keepGoing": "快完成了！",
+    "complete": "太棒了！",
+    "buttonEdit": "完善资料",
+    "buttonExpand": "无筛选探索",
+    "quickAdds": "快速添加兴趣",
+    "interestAdded": "已添加兴趣！正在寻找新的配对..."
+  },
+  "undo": {
+    "message": "你已返回上一个资料"
+  },
+  "vipMessage": {
+    "comingSoon": "VIP 消息：即将推出"
+  },
+  "boost": {
+    "activated": "Boost 已激活！你的资料将闪耀 30 分钟",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "资料已更新！你离更好的自己更近了 ✨",
+    "profileProgress": "资料进度",
+    "carePhrase": "\"你选择的会累积，你不选择的从不会减少。定义你的喜好，更好地共鸣。\"",
+    "placeholder": "在此输入..."
+  },
+  "discoverLocked": {
+    "title": "关系已确认",
+    "message": "你的关系已确认。Discover 已停用以尊重你的恋情。Golth 仍可用于探索共同的契合。"
+  },
+  "lowCompletenessAlert": "你添加的资料细节越多，收到的配对就越好",
+  "compatibility": {
+    "whyOpposites": "为何彼此互补",
+    "whyCompatible": "为何彼此契合",
+    "interests": "共同兴趣",
+    "uniqueInterests": "他们带给你的兴趣",
+    "values": "价值观与生活方式",
+    "intentions": "共同的意向",
+    "basicsOnly": "基于年龄、位置和基本偏好的契合度。"
+  },
+  "quickInterests": {
+    "title": "快速添加兴趣",
+    "subtitle": "帮助我们找到与你相似的人",
+    "search": "搜索兴趣...",
+    "searchResults": "结果",
+    "yourInterests": "你的兴趣",
+    "suggested": "✨ 为你推荐"
+  },
+  "common": {
+    "skip": "跳过",
+    "saving": "保存中...",
+    "save": "保存",
+    "done": "完成"
+  },
+  "modes": {
+    "suggested": {
+      "label": "为你推荐",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "互补相反",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "盲选模式",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "自由探索",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "更多",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "匹配叙事",
+    "syncingNarratives": "正在同步叙事红线...",
+    "visualHarmony": "视觉共鸣",
+    "startWithSong": "想从一首打动过你的歌开始吗？",
+    "suggestedRituals": "推荐仪式",
+    "interpretingThread": "正在解读你的当前心弦...",
+    "narrativeLink": "叙事联结",
+    "sharedRhythm": "共同节奏",
+    "purpose": "共同追求"
+  },
+  "card": {
+    "potentialConnection": "潜在缘分 • 照片已隐藏",
+    "firstGlimpse": "第一缕叙事火花",
+    "swipeCompatibility": "滑动查看契合度 >",
+    "compatibilityAnalysis": "契合度分析",
+    "goalAlignment": "目标共鸣",
+    "musicTaste": "音乐品味",
+    "valuesVision": "价值观与远景",
+    "lifestyle": "生活方式",
+    "scenario": "场景",
+    "personality": "性格特征",
+    "deepTalksQuote": "我喜欢深度对话而非闲聊...",
+    "unlockHint": "匹配成功后点击锁扣。",
+    "distance": "相距 {{count}} 公里",
+    "nearby": "在你附近",
+    "discovery": "探索发现",
+    "curiositySuggestion": "好奇心推荐",
+    "veryActive": "非常活跃",
+    "vibesInterests": "我的氛围与兴趣",
+    "professionalAcademic": "职业与学术",
+    "atCompany": "就职于 {{company}}",
+    "emotionalSide": "我的情感一面",
+    "myAnthem": "我的专属曲",
+    "lookingFor": "寻找：",
+    "uniqueMind": "我的独特心智",
+    "neurodiversity": "神经多样性",
+    "viewMoreDetails": "查看更多详情...",
+    "locationNotAvailable": "位置不可用",
+    "identityTooltipDefault": "此身份是你旅程的一部分。CARE 用它来以尊重与共鸣建立连接。",
+    "careHarmony": "CARE 共鸣",
+    "totalCompatibility": "总体契合度",
+    "technicalBreakdown": "技术细分",
+    "emotionalBalance": "情感平衡",
+    "viewFullProfile": "查看完整档案",
+    "firstFlash": "初次叙事印象",
+    "swipeForCompat": "滑动查看契合度 >",
+    "analysisTitle": "默契分析",
+    "breakdownIntent": "意图契合度",
+    "breakdownMusic": "音乐共鸣",
+    "breakdownValues": "价值观与愿景",
+    "breakdownLifestyle": "生活方式",
+    "personalityTitle": "个性特质",
+    "noPrompt": "相比闲聊，我更喜欢有深度的对话...",
+    "tapLock": "若配对成功请轻点锁图标。",
+    "distanceKm": "距你 {{count}} 公里",
+    "nearYou": "在附近",
+    "discoveryChip": "探索推荐",
+    "curiousChip": "好奇心推荐",
+    "veryActiveChip": "非常活跃",
+    "vibesTitle": "与你的兴趣共鸣",
+    "professionalTitle": "职业与学术",
+    "emotionalTitle": "我的情感一面",
+    "myHimno": "我的代表曲",
+    "uniqueMindTitle": "我独特的思维",
+    "viewMore": "查看更多详情...",
+    "vibesWithYourInterests": "与你的兴趣共鸣"
+  }
+}

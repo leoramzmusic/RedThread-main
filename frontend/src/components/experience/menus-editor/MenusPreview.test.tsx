@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material';
 import MenusPreview from './MenusPreview';
+import { createLiquidGlassTheme } from '../../../theme/liquidGlass';
 import { defaultUserMenus } from './userMenuItems';
 import { DEFAULT_MENU_CONFIG, type MenuConfig, type UserMenusMetadata } from './types';
 import type { PreviewContext } from './visibility';
@@ -100,5 +102,15 @@ describe('MenusPreview', () => {
     expect(screen.getByText('SISTEMA')).toBeInTheDocument();
     expect(screen.getByText('Configuración')).toBeInTheDocument();
     expect(screen.getByText('Privacidad')).toBeInTheDocument();
+  });
+
+  it('applies the dark theme surface to the sidebar preview', () => {
+    render(
+      <ThemeProvider theme={createLiquidGlassTheme('dark')}>
+        <MenusPreview metadata={defaults()} ctx={ctx()} device="desktop" onCtxChange={jest.fn()} onDeviceChange={jest.fn()} />
+      </ThemeProvider>
+    );
+    const surface = screen.getByTestId('menus-preview-surface');
+    expect(surface).toHaveStyle({ backgroundColor: '#1A1B1E' });
   });
 });

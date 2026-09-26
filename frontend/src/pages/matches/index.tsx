@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Box, Container, Typography, Button } from '@mui/material';
 import { Favorite as HeartIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import Layout from '../../components/layout/Layout';
@@ -28,4 +29,13 @@ export default function MatchesPage() {
       </Container>
     </Layout>
   );
+}
+
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 }

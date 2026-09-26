@@ -202,6 +202,45 @@
       "superpower": "My Superpower",
       "achillesHeel": "My Achilles Heel",
       "soundtrack": "My Personal Soundtrack"
+    },
+    "intentions_map": {
+      "serious_relationship": "Relationship",
+      "open_relationship": "Relationship, but open",
+      "casual_fun": "Fun, but open",
+      "short_term_fun": "Open relationship",
+      "friendship": "Make friends",
+      "hobbies": "Share hobbies",
+      "travel": "Travel/Events",
+      "undecided": "Still figuring it out"
+    },
+    "essentials": {
+      "title": "Essentials",
+      "occupation": "Occupation",
+      "education": "Education",
+      "location": "Location",
+      "languages": "Languages",
+      "moreAboutMe": "More about me",
+      "zodiac": "Zodiac",
+      "height": "Height",
+      "level": "Level",
+      "heightIrrelevant": "Height does not affect your compatibility.",
+      "heightContextual": "Contextual height activated."
+    },
+    "follow": "Follow",
+    "uploadStory": "Upload story",
+    "viewEditPhoto": "View/Edit photo",
+    "aboutMe": "About me",
+    "intentions_title": "Looking for",
+    "notSpecified": "Not specified",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "anthem_subtitle": "Share your favorite music",
+    "lifestyle_tags": {
+      "pets": "Pets",
+      "drinking": "Drinking",
+      "smoking": "Smoking",
+      "exercise": "Exercise",
+      "interests": "Interests"
     }
   },
   "settings_title": "Settings",
@@ -246,17 +285,17 @@
   "menu_language": "Language",
   "menu_theme": "Theme",
   "menu_notifications": "Notifications",
-"menu_privacy": "Privacy",
-"menu_appearance": "Appearance",
-"menu_navbar": "Customize Navbar",
-"menu_logout": "Log Out",
-"menu_toggleSidebar": "Toggle profile sidebar",
-"settings_accessibility": "Accessibility",
-"settings_advanced": "Advanced Settings",
-"settings_wip_title": "Section under development",
-"settings_wip_desc": "This feature will be available soon",
-"settings_welcome_title": "Welcome to Settings",
-"settings_welcome_desc": "Select an option from the side menu to get started",
+  "menu_privacy": "Privacy",
+  "menu_appearance": "Appearance",
+  "menu_navbar": "Customize Navbar",
+  "menu_logout": "Log Out",
+  "menu_toggleSidebar": "Toggle profile sidebar",
+  "settings_accessibility": "Accessibility",
+  "settings_advanced": "Advanced Settings",
+  "settings_wip_title": "Section under development",
+  "settings_wip_desc": "This feature will be available soon",
+  "settings_welcome_title": "Welcome to Settings",
+  "settings_welcome_desc": "Select an option from the side menu to get started",
   "settings_security_delete_action": "Yes, I am completely sure",
   "settings_security_delete_talkToUs": "Talk to us",
   "settings_security_password_title": "Change Password",
@@ -424,7 +463,8 @@
       "passwordRequirements": "Password does not meet security requirements",
       "usernameMin": "Username must be at least 3 characters",
       "generic": "Error processing request. Please try again."
-    }
+    },
+    "logout": "Log Out"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -462,23 +502,25 @@
     "statVisits": "Visits"
   },
   "errors": {
-    "goHome": "Back to home",
-    "login": "Log in",
-    "back": "Go back",
-    "retry": "Retry",
-    "redirecting": "Redirecting in {{s}} seconds…",
-    "sessionExpired": "Your session expired — reweaving your thread",
-    "404": {
-      "title": "This thread got lost",
-      "narrative": "The page you're looking for isn't on this loom. It may have moved, snapped, or been woven somewhere else."
+    "401": {
+      "title": "Your thread fell asleep",
+      "narrative": "You need to log in to keep weaving. Your story is still waiting where you left it."
     },
     "403": {
       "title": "This thread is sealed",
       "narrative": "You don't have access to this stretch of the network. If you think this is a mistake, try again or ask for permission."
     },
-    "401": {
-      "title": "Your thread fell asleep",
-      "narrative": "You need to log in to keep weaving. Your story is still waiting where you left it."
+    "404": {
+      "title": "This thread got lost",
+      "narrative": "The page you're looking for isn't on this loom. It may have moved, snapped, or been woven somewhere else."
+    },
+    "408": {
+      "title": "The thread is dragging",
+      "narrative": "The connection took too long to respond. Check your network and try again; the strand won't run away."
+    },
+    "422": {
+      "title": "This stitch doesn't fit",
+      "narrative": "Some data you sent isn't valid. Check the flagged fields and try again."
     },
     "500": {
       "title": "The loom got tangled",
@@ -492,13 +534,143 @@
       "title": "We're tuning the loom",
       "narrative": "Red Thread is under maintenance for a moment. Your thread is safe; we'll keep weaving soon."
     },
-    "408": {
-      "title": "The thread is dragging",
-      "narrative": "The connection took too long to respond. Check your network and try again; the strand won't run away."
+    "goHome": "Back to home",
+    "login": "Log in",
+    "back": "Go back",
+    "retry": "Retry",
+    "redirecting": "Redirecting in {{s}} seconds…",
+    "sessionExpired": "Your session expired — reweaving your thread"
+  },
+  "nav": {
+    "home": "Home",
+    "discover": "Discover",
+    "blueth": "Friends",
+    "goldth": "Golth",
+    "chat": "Chat",
+    "visits": "Views",
+    "purpleth": "Gaming Zone",
+    "likes": "Likes",
+    "roulette": "Roulette",
+    "radar": "Radar",
+    "events": "Events",
+    "premium": "Subscription",
+    "settings": "Settings",
+    "appearance": "Appearance",
+    "notifications": "Notifications",
+    "security": "Security",
+    "accessibility": "Accessibility",
+    "privacy": "Privacy",
+    "advanced": "Advanced",
+    "section": {
+      "social": "SOCIAL",
+      "entertainment": "ENTERTAINMENT",
+      "organization": "ORGANIZATION",
+      "system": "SYSTEM"
     },
-    "422": {
-      "title": "This stitch doesn't fit",
-      "narrative": "Some data you sent isn't valid. Check the flagged fields and try again."
+    "chats": "Chats",
+    "favorites": "Favorites",
+    "help": "Help",
+    "language": "Language",
+    "plans": "Plans",
+    "profile": "Profile",
+    "recent": "Recent"
+  },
+  "theme": {
+    "dark": "Dark Mode",
+    "light": "Light Mode"
+  },
+  "footer": {
+    "about": "About",
+    "careers": "Careers",
+    "collapse": "Collapse",
+    "community": "Community Guidelines",
+    "company": "COMPANY",
+    "contact": "Contact",
+    "expand": "Expand",
+    "faq": "Frequently Asked Questions",
+    "help": "HELP",
+    "legal": "LEGAL",
+    "press": "Press",
+    "privacy": "Privacy Policy",
+    "rights": "All rights reserved.",
+    "security": "Security",
+    "support": "Support",
+    "tagline": "Meaningful connections inspired by the legend of the red thread.",
+    "terms": "Terms of Service"
+  },
+  "card": {
+    "potentialConnection": "Potential Connection • Photos Hidden",
+    "firstGlimpse": "First narrative glimpse",
+    "swipeCompatibility": "Swipe to see compatibility >",
+    "compatibilityAnalysis": "COMPATIBILITY ANALYSIS",
+    "goalAlignment": "Goal Alignment",
+    "musicTaste": "Music Tastes",
+    "valuesVision": "Values & Vision",
+    "lifestyle": "Lifestyle",
+    "scenario": "Scenario",
+    "personality": "PERSONALITY",
+    "deepTalksQuote": "I prefer deep talks to small talk...",
+    "unlockHint": "Tap the lock if match happens.",
+    "distance": "{{count}} km away",
+    "nearby": "Nearby",
+    "discovery": "Discovery",
+    "curiositySuggestion": "Curiosity suggestion",
+    "veryActive": "Very active",
+    "vibesInterests": "MY VIBES & INTERESTS",
+    "professionalAcademic": "PROFESSIONAL & ACADEMIC",
+    "atCompany": "at {{company}}",
+    "emotionalSide": "MY EMOTIONAL SIDE",
+    "myAnthem": "My Anthem",
+    "lookingFor": "Looking for:",
+    "uniqueMind": "MY UNIQUE MIND",
+    "neurodiversity": "Neurodiversity",
+    "viewMoreDetails": "See more details...",
+    "locationNotAvailable": "Location not available",
+    "identityTooltipDefault": "This identity is part of your journey. CARE uses it to connect with respect and affinity.",
+    "careHarmony": "CARE Harmony",
+    "totalCompatibility": "Total Compatibility",
+    "technicalBreakdown": "Technical Breakdown",
+    "emotionalBalance": "Emotional Balance",
+    "viewFullProfile": "View Full Profile",
+    "firstFlash": "First narrative glimpse",
+    "swipeForCompat": "Swipe to see compatibility >",
+    "analysisTitle": "COMPATIBILITY ANALYSIS",
+    "breakdownIntent": "Goal Alignment",
+    "breakdownMusic": "Music Tastes",
+    "breakdownValues": "Values & Vision",
+    "breakdownLifestyle": "Lifestyle",
+    "personalityTitle": "PERSONALITY",
+    "noPrompt": "I prefer deep talks to small talk...",
+    "tapLock": "Tap the lock if match happens.",
+    "distanceKm": "{{count}} km away",
+    "nearYou": "Nearby",
+    "discoveryChip": "Discovery",
+    "curiousChip": "Curiosity suggestion",
+    "veryActiveChip": "Very active",
+    "vibesTitle": "MY VIBES & INTERESTS",
+    "professionalTitle": "PROFESSIONAL & ACADEMIC",
+    "emotionalTitle": "MY EMOTIONAL SIDE",
+    "myHimno": "My Anthem",
+    "uniqueMindTitle": "MY UNIQUE MIND",
+    "viewMore": "See more details...",
+    "vibesWithYourInterests": "MY VIBES & INTERESTS"
+  },
+  "battery": {
+    "high": {
+      "phrase": "High vital energy. Your thread is ready to connect ✨",
+      "label": "High Energy"
+    },
+    "medium": {
+      "phrase": "Medium battery. A quick break wouldn't hurt ☕",
+      "label": "Medium Energy"
+    },
+    "low": {
+      "phrase": "Low battery. Introspection mode activated 🕯️",
+      "label": "Low Battery"
+    },
+    "off": {
+      "phrase": "Cave Mode: Recharging in silence 🌙",
+      "label": "Offline"
     }
   }
 }

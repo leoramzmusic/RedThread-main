@@ -1,5 +1,5 @@
 import { Paper, Box, Typography, Chip, Switch, Button } from '@mui/material';
-import { MENU_ROLES, MENU_STATUSES, type MenuConfig } from './types';
+import { MENU_STATUSES, describeRoleAccess, type MenuConfig } from './types';
 
 interface MenuCardProps {
   id: string;
@@ -11,7 +11,6 @@ interface MenuCardProps {
 
 export default function MenuCard({ id, label, config, onToggleVisible, onOpenRules }: MenuCardProps) {
   const statusMeta = MENU_STATUSES.find((s) => s.value === config.status) ?? MENU_STATUSES[0];
-  const roleLabels = config.roles.map((r) => MENU_ROLES.find((x) => x.value === r)?.label ?? r);
 
   return (
     <Paper
@@ -34,15 +33,19 @@ export default function MenuCard({ id, label, config, onToggleVisible, onOpenRul
         <Typography variant="subtitle1" fontWeight={600} noWrap>
           {label}
         </Typography>
-        <Chip size="small" label={statusMeta.label} color={statusMeta.color} />
+        <Chip
+          size="small"
+          label={config.visible ? statusMeta.label : 'Desactivado'}
+          color={config.visible ? statusMeta.color : 'error'}
+        />
       </Box>
 
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
         <Typography variant="caption" color="text.secondary">
           v{config.version}
         </Typography>
-        {roleLabels.length > 0 && (
-          <Chip size="small" variant="outlined" label={`Solo: ${roleLabels.join(', ')}`} />
+        {config.roles.length > 0 && (
+          <Chip size="small" variant="outlined" label={describeRoleAccess(config.roles)} />
         )}
         {config.rules.length > 0 && (
           <Chip

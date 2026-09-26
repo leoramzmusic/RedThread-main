@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -260,4 +261,13 @@ export default function HelpCenter() {
       </Container>
     </Layout>
   );
+}
+
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 }

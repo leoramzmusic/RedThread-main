@@ -1,0 +1,325 @@
+{
+  "title": "Teroka",
+  "subtitle": "Cari orang yang berkongsi benang anda",
+  "friendshipMode": {
+    "title": "Mod Kawan-kawan Diaktifkan",
+    "description": "Kerana anda dalam hubungan, anda hanya akan melihat orang yang mencari persahabatan atau aktiviti."
+  },
+  "errors": {
+    "loadFailed": "Gagal memuatkan profil. Sila cuba lagi kemudian.",
+    "updateFailed": "Kami tidak dapat mengemas kini profil anda. Sila cuba lagi.",
+    "boostFailed": "Ralat semasa mengaktifkan Boost"
+  },
+  "match": {
+    "title": "Ia satu Padanan!",
+    "description": "Anda dan {{name}} saling menyukai"
+  },
+  "noProfiles": {
+    "title": "Tiada lagi profil berdekatan",
+    "description": "Perluaskan kriteria carian anda atau kembali kemudian.",
+    "button": "Laras Penapis"
+  },
+  "filters": {
+    "title": "Laras Carian",
+    "ageRange": "Julat Umur",
+    "ageNoLimit": "Tiada had umur",
+    "distance": {
+      "label": "Jejari Carian",
+      "unit": "km",
+      "unlimited": "Tanpa had",
+      "syncMessage": "Tetapan ini juga akan disimpan dalam profil anda.",
+      "currentLocation": "Mencari berhampiran: ",
+      "noLocation": "Tetapkan lokasi anda dalam profil untuk melihat peta"
+    },
+    "onlineOnly": "Papar hanya pengguna dalam talian",
+    "mode": {
+      "label": "Mod Penjelajahan",
+      "suggested": "Padanan dicadangkan",
+      "suggestedDesc": "Berasaskan benang keserasian anda",
+      "free": "Penjelajahan bebas",
+      "freeDesc": "Profil rawak berhampiran anda"
+    },
+    "premium": {
+      "states": "Teroka mengikut Negeri (Premium)",
+      "countries": "Teroka mengikut Negara (Premium)",
+      "upsellTitle": "Teroka melepasi kawasan anda",
+      "upsellDesc": "Melanggan ReTh Premium atau VIP untuk mencari orang di mana-mana negeri atau negara.",
+      "upsellAction": "Lihat Pelan Premium"
+    },
+    "cancel": "Batal",
+    "apply": "Guna Penapis",
+    "syncSuccess": "Keutamaan disimpan dalam profil anda.",
+    "highCompatibility": "Keserasian tinggi sahaja (>70%)",
+    "highCompatibilityDesc": "Menapis profil dengan keserasian lebih rendah.",
+    "online": {
+      "label": "Pengguna dalam talian sahaja",
+      "desc": "Hanya memaparkan orang yang aktif sekarang."
+    }
+  },
+  "emptyState": {
+    "title": "Belum ada padanan...",
+    "subtitle": "Lengkapkan profil anda supaya kami dapat mencari orang yang berkongsi benang anda.",
+    "progressLabel": "Profil anda ialah",
+    "keepGoing": "Hampir sampai!",
+    "complete": "Hebat!",
+    "buttonEdit": "Lengkapkan profil",
+    "buttonExpand": "Teroka tanpa penapis",
+    "quickAdds": "TAMBAH MINAT DENGAN CEPAT",
+    "interestAdded": "Minat ditambah! Mencari padanan baharu..."
+  },
+  "undo": {
+    "message": "Anda kembali ke profil sebelumnya"
+  },
+  "vipMessage": {
+    "comingSoon": "Mesej VIP: Akan datang"
+  },
+  "boost": {
+    "activated": "Boost diaktifkan! Profil anda akan bersinar selama 30 minit",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "Profil dikemas kini! Anda lebih hampir dengan versi terbaik anda ✨",
+    "profileProgress": "KEMAJUAN PROFIL",
+    "carePhrase": "\"Apa yang anda pilih menambah, apa yang tidak anda pilih tidak pernah mengurangkan. Tetapkan citarasa anda untuk bergetar dengan lebih baik.\"",
+    "placeholder": "Taip di sini..."
+  },
+  "discoverLocked": {
+    "title": "Hubungan Disahkan",
+    "message": "Hubungan anda telah disahkan. Discover telah dinyahaktifkan untuk menghormati hubungan anda. Golth masih tersedia untuk meneroka keserasian yang dikongsi."
+  },
+  "lowCompletenessAlert": "Semakin banyak butiran yang anda tambah pada profil anda, semakin baik padanan yang anda terima",
+  "compatibility": {
+    "whyOpposites": "Mengapa mereka melengkapi antara satu sama lain",
+    "whyCompatible": "Mengapa mereka serasi",
+    "interests": "Minat yang dikongsi",
+    "uniqueInterests": "Minat yang akan mereka bawa kepada anda",
+    "values": "Nilai & Gaya Hidup",
+    "intentions": "Niat yang dikongsi",
+    "basicsOnly": "Keserasian berdasarkan umur, lokasi, dan pilihan asas."
+  },
+  "quickInterests": {
+    "title": "Tambah minat dengan cepat",
+    "subtitle": "Bantu kami mencari orang seperti anda",
+    "search": "Cari minat...",
+    "searchResults": "Keputusan",
+    "yourInterests": "Minat Anda",
+    "suggested": "✨ Dicadangkan untuk anda"
+  },
+  "common": {
+    "skip": "Langkau",
+    "saving": "Menyimpan...",
+    "save": "Simpan",
+    "done": "Selesai"
+  },
+  "modes": {
+    "suggested": {
+      "label": "Untuk anda",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Berlawanan",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "Buta",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Bebas",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Lagi",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "MATCH NARRATIVE",
+    "syncingNarratives": "Synchronizing narrative threads...",
+    "visualHarmony": "VISUAL HARMONY",
+    "startWithSong": "Want to start with a song that touched you?",
+    "suggestedRituals": "SUGGESTED RITUALS",
+    "interpretingThread": "Interpreting your current thread...",
+    "narrativeLink": "Ikatan naratif",
+    "sharedRhythm": "Ritma bersama",
+    "purpose": "Tujuan"
+  },
+  "card": {
+    "potentialConnection": "Sambungan Berpotensi • Foto Tersembunyi",
+    "firstGlimpse": "First narrative glimpse",
+    "swipeCompatibility": "Swipe to see compatibility >",
+    "compatibilityAnalysis": "COMPATIBILITY ANALYSIS",
+    "goalAlignment": "Goal Alignment",
+    "musicTaste": "Music Tastes",
+    "valuesVision": "Values & Vision",
+    "lifestyle": "Lifestyle",
+    "scenario": "Scenario",
+    "personality": "PERSONALITY",
+    "deepTalksQuote": "I prefer deep talks to small talk...",
+    "unlockHint": "Tap the lock if match happens.",
+    "distance": "{{count}} km away",
+    "nearby": "Nearby",
+    "discovery": "Discovery",
+    "curiositySuggestion": "Curiosity suggestion",
+    "veryActive": "Very active",
+    "vibesInterests": "MY VIBES & INTERESTS",
+    "professionalAcademic": "PROFESSIONAL & ACADEMIC",
+    "atCompany": "di {{company}}",
+    "emotionalSide": "MY EMOTIONAL SIDE",
+    "myAnthem": "My Anthem",
+    "lookingFor": "Mencari:",
+    "uniqueMind": "MY UNIQUE MIND",
+    "neurodiversity": "Neurodiversiti",
+    "viewMoreDetails": "See more details...",
+    "locationNotAvailable": "Location not available",
+    "identityTooltipDefault": "This identity is part of your journey. CARE uses it to connect with respect and affinity.",
+    "careHarmony": "CARE Harmony",
+    "totalCompatibility": "Total Compatibility",
+    "technicalBreakdown": "Technical Breakdown",
+    "emotionalBalance": "Emotional Balance",
+    "viewFullProfile": "View Full Profile",
+    "firstFlash": "Pandangan naratif pertama",
+    "swipeForCompat": "Leret untuk lihat keserasian >",
+    "analysisTitle": "ANALISIS KESERASIAN",
+    "breakdownIntent": "Penyelarasan niat",
+    "breakdownMusic": "Keserasian muzik",
+    "breakdownValues": "Nilai & Visi",
+    "breakdownLifestyle": "Gaya hidup",
+    "personalityTitle": "PERSONALITI",
+    "noPrompt": "Saya lebih suka perbualan mendalam berbanding bual kosong...",
+    "tapLock": "Ketik kunci jika sepadan.",
+    "distanceKm": "{{count}} km dari anda",
+    "nearYou": "Berhampiran anda",
+    "discoveryChip": "Penemuan",
+    "curiousChip": "Cadangan rasa ingin tahu",
+    "veryActiveChip": "Sangat aktif",
+    "vibesTitle": "SERASI DENGAN MINAT ANDA",
+    "professionalTitle": "PROFESIONAL & AKADEMIK",
+    "emotionalTitle": "SISI EMOSI SAYA",
+    "myHimno": "Lagu Tema Saya",
+    "uniqueMindTitle": "MINDA UNIK SAYA",
+    "viewMore": "Lihat butiran lanjut...",
+    "vibesWithYourInterests": "SERASI DENGAN MINAT ANDA"
+  }
+}

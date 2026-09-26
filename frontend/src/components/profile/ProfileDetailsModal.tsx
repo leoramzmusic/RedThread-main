@@ -24,6 +24,7 @@ import { Profile } from './ProfileCard';
 import PlanBadge from '../subscription/PlanBadge';
 import { CompatibilityMeter } from '../discovery/CompatibilityMeter';
 import { IDENTITY_COLORS } from '../../constants/profileOptions';
+import { useTranslation } from 'next-i18next';
 
 interface ProfileDetailsModalProps {
     open: boolean;
@@ -42,6 +43,7 @@ export default function ProfileDetailsModal({
     photos,
     isOwnProfile
 }: ProfileDetailsModalProps) {
+    const { t } = useTranslation(['discover', 'common']);
 
     return (
         <Dialog
@@ -93,7 +95,7 @@ export default function ProfileDetailsModal({
                     <Stack direction="row" spacing={1} mt={1}>
                         <Chip
                             icon={<LocationOnIcon sx={{ color: 'white !important' }} />}
-                            label={profile.location_name || 'Ubicación no disponible'}
+                            label={profile.location_name || t('card.locationNotAvailable', 'Ubicación no disponible')}
                             size="small"
                             sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }}
                         />
@@ -107,7 +109,7 @@ export default function ProfileDetailsModal({
                     <Box>
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                             {profile.gender && (
-                                <Tooltip title={profile.identity_context?.description || "Esta identidad forma parte de tu camino. CARE la usa para conectar con respeto y afinidad."}>
+                                <Tooltip title={profile.identity_context?.description || t('card.identityTooltipDefault', "Esta identidad forma parte de tu camino. CARE la usa para conectar con respeto y afinidad.")}>
                                     <Chip
                                         icon={<FingerprintIcon sx={{ color: 'white !important', fontSize: 18 }} />}
                                         label={profile.gender}
@@ -132,9 +134,9 @@ export default function ProfileDetailsModal({
 
                     {/* Bio Section */}
                     <Box>
-                        <Typography variant="overline" color="primary" fontWeight={800}>SOBRE MÍ</Typography>
+                        <Typography variant="overline" color="primary" fontWeight={800}>{t('common:profile.aboutMe', 'SOBRE MÍ')}</Typography>
                         <Typography variant="body1" sx={{ mt: 1, lineHeight: 1.6, opacity: 0.9 }}>
-                            {profile.bio || 'Sin biografía disponible.'}
+                            {profile.bio || t('common:profile.noBio', 'Sin biografía disponible.')}
                         </Typography>
                     </Box>
 
@@ -175,7 +177,7 @@ export default function ProfileDetailsModal({
                         <Box sx={{ bgcolor: 'rgba(255, 77, 79, 0.05)', p: 3, borderRadius: 2, borderLeft: '4px solid', borderColor: 'primary.main' }}>
                             <Stack direction="row" spacing={1} alignItems="center" mb={1}>
                                 <CompatibilityMeter score={profile.compatibility_score || profile.affinity_score || 0} size={40} />
-                                <Typography variant="subtitle1" fontWeight="bold">Sintonía CARE</Typography>
+                                <Typography variant="subtitle1" fontWeight="bold">{t('card.careHarmony', 'Sintonía CARE')}</Typography>
                             </Stack>
                             <Typography variant="body2" sx={{ fontStyle: 'italic', opacity: 0.8 }}>
                                 "{matchReason}"

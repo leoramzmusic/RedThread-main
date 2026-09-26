@@ -1,6 +1,7 @@
 import { Grid, Paper, Typography, Box, IconButton, Tooltip, keyframes, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { Info as InfoIcon, Search, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'next-i18next';
 import { INTENTION_OPTIONS } from '../../../../constants/profileOptions';
 import { BaseSectionProps } from '../types';
 
@@ -34,6 +35,8 @@ export default function RelationshipGoalsSection({
     setGoalsInfoOpen,
     isDiscovery = false
 }: RelationshipGoalsSectionProps) {
+    const { t } = useTranslation('common');
+
     return (
         <Grid item xs={12}>
             <Accordion
@@ -56,9 +59,9 @@ export default function RelationshipGoalsSection({
                         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" pr={2}>
                             <Box display="flex" alignItems="center" gap={1}>
                                 <Search color="action" fontSize="small" />
-                                <Typography variant="h6">Objetivos de relación</Typography>
+                                <Typography variant="h6">{t('profile.fields.goals', 'Objetivos de relación')}</Typography>
                             </Box>
-                            <Tooltip title="Más información">
+                            <Tooltip title={t('common.moreInfo', 'Más información')}>
                                 <IconButton
                                     size="small"
                                     onClick={(e) => {
@@ -74,7 +77,7 @@ export default function RelationshipGoalsSection({
                 )}
                 <AccordionDetails sx={{ px: isDiscovery ? 1 : 3, pb: 3, pt: 0 }}>
                     <Typography variant="body2" sx={{ color: isDiscovery ? 'rgba(255,255,255,0.7)' : 'text.secondary', mb: 2 }}>
-                        Selecciona lo que buscas en este momento
+                        {t('profile.goals_subtitle', 'Selecciona lo que buscas en este momento')}
                     </Typography>
                     <Controller
                         name="relationship_goals"
@@ -155,7 +158,7 @@ export default function RelationshipGoalsSection({
                                                         fontWeight={isSelected ? 700 : 400}
                                                         color={isSelected ? (isDiscovery ? 'gold' : '#3B82F6') : (isDiscovery ? 'white' : 'text.primary')}
                                                     >
-                                                        {option.label}
+                                                        {t(`profile.intentions_map.${option.value}`, option.label)}
                                                     </Typography>
                                                 </Paper>
                                             </Tooltip>

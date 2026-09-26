@@ -1,0 +1,325 @@
+{
+  "title": "استكشف",
+  "subtitle": "اعثر على أشخاص يشاركون خيطك",
+  "friendshipMode": {
+    "title": "تفعيل وضع الصداقة",
+    "description": "بما أنك في علاقة، سترى فقط الأشخاص الباحثين عن الصداقة أو الأنشطة."
+  },
+  "errors": {
+    "loadFailed": "فشل تحميل الملفات الشخصية. يرجى المحاولة لاحقًا.",
+    "updateFailed": "تعذر تحديث ملفك الشخصي. يرجى المحاولة مرة أخرى.",
+    "boostFailed": "خطأ في تفعيل Boost"
+  },
+  "match": {
+    "title": "هذا تطابق!",
+    "description": "أنت و{{name}} تعجبان ببعضكما"
+  },
+  "noProfiles": {
+    "title": "لا مزيد من الملفات القريبة",
+    "description": "وسّع معايير البحث أو عد لاحقًا.",
+    "button": "ضبط الفلاتر"
+  },
+  "filters": {
+    "title": "ضبط البحث",
+    "ageRange": "نطاق العمر",
+    "ageNoLimit": "بدون حد للعمر",
+    "distance": {
+      "label": "نطاق البحث",
+      "unit": "كم",
+      "unlimited": "غير محدود",
+      "syncMessage": "سيتم حفظ هذا الإعداد أيضًا في ملفك الشخصي.",
+      "currentLocation": "البحث بالقرب من: ",
+      "noLocation": "حدد موقعك في الملف الشخصي لرؤية الخريطة"
+    },
+    "onlineOnly": "إظهار المتصلين فقط",
+    "mode": {
+      "label": "وضع الاستكشاف",
+      "suggested": "تطابقات مقترحة",
+      "suggestedDesc": "بناءً على خيط التوافق الخاص بك",
+      "free": "استكشاف حر",
+      "freeDesc": "ملفات عشوائية بالقرب منك"
+    },
+    "premium": {
+      "states": "استكشف حسب الولاية (Premium)",
+      "countries": "استكشف حسب الدولة (Premium)",
+      "upsellTitle": "استكشف خارج منطقتك",
+      "upsellDesc": "اشترك في ReTh Premium أو VIP للبحث عن أشخاص في أي ولاية أو دولة.",
+      "upsellAction": "عرض خطط Premium"
+    },
+    "cancel": "إلغاء",
+    "apply": "تطبيق الفلاتر",
+    "syncSuccess": "تم حفظ التفضيلات في ملفك الشخصي.",
+    "highCompatibility": "التوافق العالي فقط (>70%)",
+    "highCompatibilityDesc": "يصفّي الملفات ذات التوافق الأقل.",
+    "online": {
+      "label": "المتصلون فقط",
+      "desc": "يُظهر الأشخاص النشطين الآن فقط."
+    }
+  },
+  "emptyState": {
+    "title": "لا توجد تطابقات بعد...",
+    "subtitle": "أكمل ملفك الشخصي لنجد أشخاصًا يشاركون خيطك.",
+    "progressLabel": "ملفك الشخصي",
+    "keepGoing": "أوشكت!",
+    "complete": "ممتاز!",
+    "buttonEdit": "أكمل الملف الشخصي",
+    "buttonExpand": "استكشف بدون فلاتر",
+    "quickAdds": "أضف الاهتمامات بسرعة",
+    "interestAdded": "تمت إضافة الاهتمام! جارٍ البحث عن تطابقات جديدة..."
+  },
+  "undo": {
+    "message": "عدت إلى الملف السابق"
+  },
+  "vipMessage": {
+    "comingSoon": "رسالة VIP: قريبًا"
+  },
+  "boost": {
+    "activated": "تم تفعيل Boost! سيلمع ملفك الشخصي لمدة 30 دقيقة",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "تم تحديث الملف! أصبحت أقرب إلى أفضل نسخة منك ✨",
+    "profileProgress": "تقدم الملف الشخصي",
+    "carePhrase": "ما تختاره يُضاف، وما لا تختاره لا يُنقص أبدًا. حدّد ذوقك لتتناغم بشكل أفضل.",
+    "placeholder": "اكتب هنا..."
+  },
+  "discoverLocked": {
+    "title": "تم تأكيد العلاقة",
+    "message": "تم تأكيد علاقتك. تم تعطيل Discover احترامًا لعلاقتك. لا يزال Golth متاحًا لاستكشاف التوافق المشترك."
+  },
+  "lowCompletenessAlert": "كلما أضفت المزيد من التفاصيل إلى ملفك، كلما حصلت على تطابقات أفضل",
+  "compatibility": {
+    "whyOpposites": "لماذا يكملون بعضهم",
+    "whyCompatible": "لماذا هم متوافقون",
+    "interests": "اهتمامات مشتركة",
+    "uniqueInterests": "اهتمامات يقدمونها لك",
+    "values": "القيم ونمط الحياة",
+    "intentions": "نوايا مشتركة",
+    "basicsOnly": "توافق مبني على العمر والموقع والتفضيلات الأساسية."
+  },
+  "quickInterests": {
+    "title": "أضف الاهتمامات بسرعة",
+    "subtitle": "ساعدنا في العثور على أشخاص مثلك",
+    "search": "ابحث عن اهتمامات...",
+    "searchResults": "النتائج",
+    "yourInterests": "اهتماماتك",
+    "suggested": "✨ مقترحة لك"
+  },
+  "common": {
+    "skip": "تخطٍ",
+    "saving": "جارٍ الحفظ...",
+    "save": "حفظ",
+    "done": "تم"
+  },
+  "modes": {
+    "suggested": {
+      "label": "من أجلك",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "الأضداد",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "بدون رؤية",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "حر",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "المزيد",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "سردية التطابق",
+    "syncingNarratives": "مزامنة خيوط السرد...",
+    "visualHarmony": "التناغم البصري",
+    "startWithSong": "هل تود البدء بأغنية أثرت فيك؟",
+    "suggestedRituals": "طقوس مقترحة",
+    "interpretingThread": "تفسير خيطك الحالي...",
+    "narrativeLink": "رابط سردي",
+    "sharedRhythm": "إيقاع مشترك",
+    "purpose": "هدف"
+  },
+  "card": {
+    "potentialConnection": "اتصال محتمل • الصور مخفية",
+    "firstGlimpse": "لمحة سردية أولى",
+    "swipeCompatibility": "اسحب لرؤية التوافق >",
+    "compatibilityAnalysis": "تحليل التوافق",
+    "goalAlignment": "تناغم الأهداف",
+    "musicTaste": "الذوق الموسيقي",
+    "valuesVision": "القيم والرؤية",
+    "lifestyle": "نمط الحياة",
+    "scenario": "السيناريو",
+    "personality": "الشخصية",
+    "deepTalksQuote": "أفضل المحادثات العميقة على الأحاديث السطحية...",
+    "unlockHint": "المس القفل عند حدوث التطابق.",
+    "distance": "على بعد {{count}} كم",
+    "nearby": "بالقرب منك",
+    "discovery": "اكتشاف",
+    "curiositySuggestion": "اقتراح بدافع الفضول",
+    "veryActive": "نشط جداً",
+    "vibesInterests": "أجوائي واهتماماتي",
+    "professionalAcademic": "المهني والأكاديمي",
+    "atCompany": "في {{company}}",
+    "emotionalSide": "جانبي العاطفي",
+    "myAnthem": "نشيدي الخاص",
+    "lookingFor": "أبحث عن:",
+    "uniqueMind": "عقلي الفريد",
+    "neurodiversity": "التنوع العصبي",
+    "viewMoreDetails": "عرض المزيد من التفاصيل...",
+    "locationNotAvailable": "الموقع غير متوفر",
+    "identityTooltipDefault": "هذه الهوية جزء من رحلتك. يستخدمها CARE للتواصل باحترام وألفة.",
+    "careHarmony": "تناغم CARE",
+    "totalCompatibility": "التوافق الكلي",
+    "technicalBreakdown": "التفصيل التقني",
+    "emotionalBalance": "التوازن العاطفي",
+    "viewFullProfile": "عرض الملف الشخصي بالكامل",
+    "firstFlash": "اللمحة السردية الأولى",
+    "swipeForCompat": "اسحب لرؤية التوافق >",
+    "analysisTitle": "تحليل الانسجام",
+    "breakdownIntent": "انسجام النوايا",
+    "breakdownMusic": "انسجام موسيقي",
+    "breakdownValues": "القيم والرؤية",
+    "breakdownLifestyle": "نمط الحياة",
+    "personalityTitle": "الشخصية",
+    "noPrompt": "أفضل المحادثات العميقة على الأحاديث السطحية...",
+    "tapLock": "اضغط على القفل عند حدوث التطابق.",
+    "distanceKm": "على بعد {{count}} كم منك",
+    "nearYou": "بالقرب منك",
+    "discoveryChip": "اكتشاف",
+    "curiousChip": "اقتراح فضول",
+    "veryActiveChip": "نشط جداً",
+    "vibesTitle": "ينسجم مع اهتماماتك",
+    "professionalTitle": "المجال المهني والأكاديمي",
+    "emotionalTitle": "جانبي العاطفي",
+    "myHimno": "نشيدي",
+    "uniqueMindTitle": "عقلي الفريد",
+    "viewMore": "عرض المزيد من التفاصيل...",
+    "vibesWithYourInterests": "ينسجم مع اهتماماتك"
+  }
+}

@@ -3,6 +3,7 @@ import { Box, Typography, Chip, Tooltip } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { keyframes } from '@mui/system';
 import { useAppTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'next-i18next';
 
 const pulseGlow = keyframes`
   0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
@@ -25,6 +26,7 @@ export default function BoostStatusBadge({
     multiplier = 10,
     onActivate
 }: BoostStatusBadgeProps) {
+    const { t } = useTranslation('discover');
     const { mode } = useAppTheme();
     const isLight = mode === 'light';
 
@@ -40,7 +42,7 @@ export default function BoostStatusBadge({
 
     if (!isActive) {
         return (
-            <Tooltip title="Activar Boost: Brilla ante el resto" arrow>
+            <Tooltip title={t('boost.inactiveTooltip', 'Activar Boost: Brilla ante el resto')} arrow>
                 <Box
                     onClick={onActivate}
                     sx={{
@@ -66,7 +68,7 @@ export default function BoostStatusBadge({
                 >
                     <BoltIcon sx={{ fontSize: '1.1rem' }} />
                     <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: '0.1em' }}>
-                        BOOST
+                        {t('boost.label', 'BOOST')}
                     </Typography>
                 </Box>
             </Tooltip>
@@ -74,7 +76,7 @@ export default function BoostStatusBadge({
     }
 
     return (
-        <Tooltip title="Tu hilo está vibrando. ¿Quién lo sentirá? ✨" arrow>
+        <Tooltip title={t('boost.activeTooltip', 'Tu hilo está vibrando. ¿Quién lo sentirá? ✨')} arrow>
             <Box
                 sx={{
                     display: 'flex',

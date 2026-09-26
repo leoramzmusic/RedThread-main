@@ -195,7 +195,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
   const menuSections: MenuSection[] = useMemo(() => [
     {
       id: 'social',
-      label: 'SOCIAL',
+      label: t('nav.section.social', 'SOCIAL'),
       items: [
         { id: 'home', label: t('nav.home', 'Inicio'), icon: <DashboardIcon className="rt-dash" />, path: '/home' },
         {
@@ -214,18 +214,18 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
         },
         {
           id: 'goldth',
-          label: 'Golth',
+          label: t('nav.goldth', 'Golth'),
           icon: <HubIcon className="rt-orbit" />,
           path: '/golth',
           threadId: 'goldth'
         },
-        { id: 'chat', label: 'Chat', icon: <ChatIcon className="rt-bubble" />, path: '/chat' },
-        { id: 'visits', label: 'Visitas', icon: <VisibilityIcon className="rt-blink" />, path: '/visits' },
+        { id: 'chat', label: t('nav.chat', 'Chat'), icon: <ChatIcon className="rt-bubble" />, path: '/chat' },
+        { id: 'visits', label: t('nav.visits', 'Visitas'), icon: <VisibilityIcon className="rt-blink" />, path: '/visits' },
       ]
     },
     {
       id: 'entertainment',
-      label: 'ENTRETENIMIENTO',
+      label: t('nav.section.entertainment', 'ENTRETENIMIENTO'),
       items: [
         {
           id: 'purpleth',
@@ -235,33 +235,33 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           threadId: 'purpleth'
         },
         { id: 'likes', label: t('nav.likes', 'Likes'), icon: <HeartIcon className="rt-heart" />, path: '/likes' },
-        { id: 'roulette', label: 'Ruleta', icon: <CasinoIcon className="rt-wheel" />, path: '/roulette' },
-        { id: 'radar', label: 'Radar', icon: <RadarIcon className="rt-ping" />, path: '/radar' },
+        { id: 'roulette', label: t('nav.roulette', 'Ruleta'), icon: <CasinoIcon className="rt-wheel" />, path: '/roulette' },
+        { id: 'radar', label: t('nav.radar', 'Radar'), icon: <RadarIcon className="rt-ping" />, path: '/radar' },
       ]
     },
     {
       id: 'organization',
-      label: 'ORGANIZACIÓN',
+      label: t('nav.section.organization', 'ORGANIZACIÓN'),
       items: [
         { id: 'events', label: t('nav.events', 'Eventos'), icon: <EventIcon className="rt-flip" />, path: '/events' },
-        { id: 'premium', label: 'Suscripción', icon: <DiamondIcon className="rt-gem" />, path: '/suscripcion' },
+        { id: 'premium', label: t('nav.premium', 'Suscripción'), icon: <DiamondIcon className="rt-gem" />, path: '/suscripcion' },
       ]
     },
     {
       id: 'system',
-      label: 'SISTEMA',
+      label: t('nav.section.system', 'SISTEMA'),
       items: [
         {
           id: 'settings',
-          label: 'Configuración',
+          label: t('nav.settings', 'Configuración'),
           icon: <SettingsIcon className="rt-settings-icon" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />,
           children: [
-            { id: 'appearance', label: 'Apariencia', icon: <PaletteIcon className="rt-palette" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />, path: '/settings?section=appearance' },
-            { id: 'notifications-settings', label: 'Notificaciones', icon: <NotificationsIcon className="rt-bell" />, path: '/settings?section=notifications' },
-            { id: 'security-settings', label: 'Seguridad', icon: <SecurityIcon className="rt-shield" />, path: '/settings?section=security' },
-            { id: 'accessibility', label: 'Accesibilidad', icon: <AccessibilityIcon className="rt-wave" />, path: '/settings?section=accessibility' },
-            { id: 'privacy', label: 'Privacidad', icon: <LockIcon className="rt-unlock" />, path: '/settings?section=privacy' },
-            { id: 'advanced', label: 'Avanzado', icon: <TuneIcon className="rt-sliders" />, path: '/settings?section=advanced' },
+            { id: 'appearance', label: t('nav.appearance', 'Apariencia'), icon: <PaletteIcon className="rt-palette" sx={{ transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />, path: '/settings?section=appearance' },
+            { id: 'notifications-settings', label: t('nav.notifications', 'Notificaciones'), icon: <NotificationsIcon className="rt-bell" />, path: '/settings?section=notifications' },
+            { id: 'security-settings', label: t('nav.security', 'Seguridad'), icon: <SecurityIcon className="rt-shield" />, path: '/settings?section=security' },
+            { id: 'accessibility', label: t('nav.accessibility', 'Accesibilidad'), icon: <AccessibilityIcon className="rt-wave" />, path: '/settings?section=accessibility' },
+            { id: 'privacy', label: t('nav.privacy', 'Privacidad'), icon: <LockIcon className="rt-unlock" />, path: '/settings?section=privacy' },
+            { id: 'advanced', label: t('nav.advanced', 'Avanzado'), icon: <TuneIcon className="rt-sliders" />, path: '/settings?section=advanced' },
           ],
         },
 

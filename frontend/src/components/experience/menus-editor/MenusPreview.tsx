@@ -123,6 +123,7 @@ export default function MenusPreview({ metadata, ctx, device, onCtxChange, onDev
 
       <Paper
         variant="outlined"
+        data-testid="menus-preview-surface"
         sx={{
           p: 1.5,
           ...DEVICE_SX[device],
@@ -130,7 +131,8 @@ export default function MenusPreview({ metadata, ctx, device, onCtxChange, onDev
           display: 'flex',
           flexDirection: device === 'tablet' ? 'row' : 'column',
           gap: device === 'tablet' ? 2 : 0,
-          bgcolor: 'grey.50',
+          bgcolor: 'background.default',
+          borderColor: 'divider',
         }}
       >
         {USER_MENU_SECTIONS.map((section) => (

@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Box,
@@ -263,4 +264,13 @@ export default function VisitsPage() {
       </Container>
     </Layout>
   );
+}
+
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
 }

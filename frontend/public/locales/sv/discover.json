@@ -1,0 +1,325 @@
+{
+  "title": "Upptäck",
+  "subtitle": "Hitta personer som delar din tråd",
+  "friendshipMode": {
+    "title": "Vänskapsläge aktiverat",
+    "description": "Eftersom du är i ett förhållande ser du bara personer som söker vänskap eller aktiviteter."
+  },
+  "errors": {
+    "loadFailed": "Kunde inte ladda profiler. Försök igen senare.",
+    "updateFailed": "Vi kunde inte uppdatera din profil. Försök igen.",
+    "boostFailed": "Fel vid aktivering av Boost"
+  },
+  "match": {
+    "title": "Det är en match!",
+    "description": "Du och {{name}} gillar varandra"
+  },
+  "noProfiles": {
+    "title": "Inga fler profiler i närheten",
+    "description": "Utöka dina sökkriterier eller kom tillbaka senare.",
+    "button": "Justera filter"
+  },
+  "filters": {
+    "title": "Justera sökning",
+    "ageRange": "Åldersspann",
+    "ageNoLimit": "Ingen åldersgräns",
+    "distance": {
+      "label": "Sökradie",
+      "unit": "km",
+      "unlimited": "Obegränsat",
+      "syncMessage": "Denna inställning sparas också i din profil.",
+      "currentLocation": "Söker nära: ",
+      "noLocation": "Ange din plats i profilen för att se kartan"
+    },
+    "onlineOnly": "Visa bara användare som är online",
+    "mode": {
+      "label": "Utforskningsläge",
+      "suggested": "Föreslagna matchningar",
+      "suggestedDesc": "Baserat på din kompatibilitetstråd",
+      "free": "Fri utforskning",
+      "freeDesc": "Slumpmässiga profiler nära dig"
+    },
+    "premium": {
+      "states": "Utforska per delstat (Premium)",
+      "countries": "Utforska per land (Premium)",
+      "upsellTitle": "Utforska bortom ditt område",
+      "upsellDesc": "Prenumerera på ReTh Premium eller VIP för att söka personer i vilken delstat som helst eller land.",
+      "upsellAction": "Visa Premium-planer"
+    },
+    "cancel": "Avbryt",
+    "apply": "Tillämpa filter",
+    "syncSuccess": "Inställningar sparade i din profil.",
+    "highCompatibility": "Endast hög kompatibilitet (>70%)",
+    "highCompatibilityDesc": "Filtrerar profiler med lägre affinitet.",
+    "online": {
+      "label": "Endast användare som är online",
+      "desc": "Visar bara personer som är aktiva just nu."
+    }
+  },
+  "emptyState": {
+    "title": "Inga matchningar ännu...",
+    "subtitle": "Komplettera din profil så att vi kan hitta personer som delar din tråd.",
+    "progressLabel": "Din profil är",
+    "keepGoing": "Nästan där!",
+    "complete": "Utmärkt!",
+    "buttonEdit": "Komplettera profil",
+    "buttonExpand": "Utforska utan filter",
+    "quickAdds": "LÄGG TILL INTRESSEN SNABBT",
+    "interestAdded": "Intresse tillagt! Letar efter nya matchningar..."
+  },
+  "undo": {
+    "message": "Du gick tillbaka till föregående profil"
+  },
+  "vipMessage": {
+    "comingSoon": "VIP-meddelande: Kommer snart"
+  },
+  "boost": {
+    "activated": "Boost aktiverad! Din profil kommer att lysa i 30 minuter",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "Profil uppdaterad! Du är närmare din bästa version ✨",
+    "profileProgress": "PROFILPROGRESS",
+    "carePhrase": "“Det du väljer lägger till, det du inte väljer drar aldrig ifrån. Definiera dina smaker för att vibrera bättre.”",
+    "placeholder": "Skriv här..."
+  },
+  "discoverLocked": {
+    "title": "Koppling bekräftad",
+    "message": "Din koppling är bekräftad. Discover har inaktiverats för att respektera din relation. Golth finns fortfarande tillgängligt för att utforska delade affiniteter."
+  },
+  "lowCompletenessAlert": "Ju mer detaljer du lägger till i din profil, desto bättre matchningar får du",
+  "compatibility": {
+    "whyOpposites": "Varför de kompletterar varandra",
+    "whyCompatible": "Varför de är kompatibla",
+    "interests": "Gemensamma intressen",
+    "uniqueInterests": "Intressen de tillför dig",
+    "values": "Värderingar & livsstil",
+    "intentions": "Gemensamma avsikter",
+    "basicsOnly": "Kompatibilitet baserad på ålder, plats och grundläggande preferenser."
+  },
+  "quickInterests": {
+    "title": "Lägg till intressen snabbt",
+    "subtitle": "Hjälp oss att hitta personer som dig",
+    "search": "Sök intressen...",
+    "searchResults": "Resultat",
+    "yourInterests": "Dina intressen",
+    "suggested": "✨ Föreslaget för dig"
+  },
+  "common": {
+    "skip": "Hoppa över",
+    "saving": "Sparar...",
+    "save": "Spara",
+    "done": "Klar"
+  },
+  "modes": {
+    "suggested": {
+      "label": "För dig",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Motsatser",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "I blindo",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Fritt",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Mer",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "MATCHNINGSBERÄTTELSE",
+    "syncingNarratives": "Synkroniserar narrativa trådar...",
+    "visualHarmony": "VISUELL HARMONI",
+    "startWithSong": "Vill du börja med en låt som berörde dig?",
+    "suggestedRituals": "FÖRESLAGNA RITUALER",
+    "interpretingThread": "Tolkar din nuvarande tråd...",
+    "narrativeLink": "Narrativt band",
+    "sharedRhythm": "Delad rytm",
+    "purpose": "Syfte"
+  },
+  "card": {
+    "potentialConnection": "Möjlig anslutning • Dolda foton",
+    "firstGlimpse": "Första narrativa glimten",
+    "swipeCompatibility": "Svep för att se kompatibilitet >",
+    "compatibilityAnalysis": "KOMPATIBILITETSANALYS",
+    "goalAlignment": "Målsynk",
+    "musicTaste": "Musiksmak",
+    "valuesVision": "Värderingar & Vision",
+    "lifestyle": "Livsstil",
+    "scenario": "Scenario",
+    "personality": "PERSONLIGHET",
+    "deepTalksQuote": "Jag föredrar djupa samtal framför kallprat...",
+    "unlockHint": "Tryck på låset om en matchning sker.",
+    "distance": "{{count}} km bort",
+    "nearby": "Nära dig",
+    "discovery": "Upptäckt",
+    "curiositySuggestion": "Nyfikenhetsförslag",
+    "veryActive": "Mycket aktiv",
+    "vibesInterests": "MINA VIBBAR & INTRESSEN",
+    "professionalAcademic": "YRKESLIV & STUDIER",
+    "atCompany": "på {{company}}",
+    "emotionalSide": "MIN EMOTIONELLA SIDA",
+    "myAnthem": "Min hymn",
+    "lookingFor": "Söker:",
+    "uniqueMind": "MITT UNIKA SINNE",
+    "neurodiversity": "Neurodiversitet",
+    "viewMoreDetails": "Se fler detaljer...",
+    "locationNotAvailable": "Plats ej tillgänglig",
+    "identityTooltipDefault": "Denna identitet är en del av din resa. CARE använder den för att koppla ihop med respekt och affinitet.",
+    "careHarmony": "CARE-harmoni",
+    "totalCompatibility": "Total kompatibilitet",
+    "technicalBreakdown": "Teknisk uppdelning",
+    "emotionalBalance": "Emotionell balans",
+    "viewFullProfile": "Visa hela profilen",
+    "firstFlash": "Första narrativa glimten",
+    "swipeForCompat": "Svep för att se matchning >",
+    "analysisTitle": "HARMONIANALYS",
+    "breakdownIntent": "Målharmoni",
+    "breakdownMusic": "Musikalisk harmoni",
+    "breakdownValues": "Värderingar & vision",
+    "breakdownLifestyle": "Livsstil",
+    "personalityTitle": "PERSONLIGHET",
+    "noPrompt": "Jag föredrar djupa samtal framför kallprat...",
+    "tapLock": "Tryck på låset vid matchning.",
+    "distanceKm": "{{count}} km från dig",
+    "nearYou": "Nära dig",
+    "discoveryChip": "Upptäckt",
+    "curiousChip": "Nyfikenhetsförslag",
+    "veryActiveChip": "Mycket aktiv",
+    "vibesTitle": "MATCHAR DINA INTRESSEN",
+    "professionalTitle": "YRKES- & UTBILDNINGSLIV",
+    "emotionalTitle": "MIN EMOTIONELLA SIDA",
+    "myHimno": "Min hymn",
+    "uniqueMindTitle": "MITT UNIKA SINNE",
+    "viewMore": "Se fler detaljer...",
+    "vibesWithYourInterests": "MATCHAR DINA INTRESSEN"
+  }
+}

@@ -1,0 +1,325 @@
+{
+  "title": "Gano",
+  "subtitle": "Nemo mutane da ke raba fitsari naka",
+  "friendshipMode": {
+    "title": "Yanayin Abokin Renza An Kunna",
+    "description": "Saboda kana cikin alaƙa, za ka ga kawai mutane da ke neman abokanci ko ayyuka."
+  },
+  "errors": {
+    "loadFailed": "An gaza loda profiles. Da fatan za a sake gwadawa daga baya.",
+    "updateFailed": "Ba mu iya sabunta profile naka. Da fatan za a sake gwadawa.",
+    "boostFailed": "Kuskure dalam kunna Boost"
+  },
+  "match": {
+    "title": "Match ne!",
+    "description": "Kuma {{name}} kuna jin daɗin juna"
+  },
+  "noProfiles": {
+    "title": "Ba akwai profiles a kusa da ka ko",
+    "description": "Faɗaɗa ma'aunin nema naka ko dawo a baya.",
+    "button": "Daidaita Suke-suke"
+  },
+  "filters": {
+    "title": "Daidaita Nema",
+    "ageRange": "Iyalin Shekaru",
+    "ageNoLimit": "Babu iyakar shekaru",
+    "distance": {
+      "label": "Rufin Nema",
+      "unit": "km",
+      "unlimited": "Maraba da iyaka",
+      "syncMessage": "Wanann saiti ma za a ajiye a cikin profile naka.",
+      "currentLocation": "Neman kusa da: ",
+      "noLocation": "Saita wurin naka a profile don ganin taswira"
+    },
+    "onlineOnly": "Nuna masu amfani da ke kan layi kawai",
+    "mode": {
+      "label": "Yanayin Bincike",
+      "suggested": "Match da aka bayar",
+      "suggestedDesc": "Bisa ga fitsarin dacewa naka",
+      "free": "Bincike kyauta",
+      "freeDesc": "Profiles na sati a kusa da ka"
+    },
+    "premium": {
+      "states": "Bincike ta Jihar (Premium)",
+      "countries": "Bincike ta Ƙasa (Premium)",
+      "upsellTitle": "Bincike bar yankin ka",
+      "upsellDesc": "Yi rijista da ReTh Premium ko VIP don neman mutane a kowace jihar ko ƙasa.",
+      "upsellAction": "Duba Shirin Premium"
+    },
+    "cancel": "Soke",
+    "apply": "Aiwatar da Suke-suke",
+    "syncSuccess": "An ajiye saitunan a profile naka.",
+    "highCompatibility": "Dacewa mafi girma kawai (>70%)",
+    "highCompatibilityDesc": "Yan tace profiles da karamin dacewa.",
+    "online": {
+      "label": "Masu amfani da ke kan layi kawai",
+      "desc": "Yana nuna kawai mutane da suke aiki yanzu."
+    }
+  },
+  "emptyState": {
+    "title": "Ba a samu Match ba tukuna...",
+    "subtitle": "Cika profile naka don mu sami mutane da ke raba fitsari naka.",
+    "progressLabel": "Profile naka ya wa",
+    "keepGoing": "Kusan an kai!",
+    "complete": "Madalla!",
+    "buttonEdit": "Cika profile",
+    "buttonExpand": "Bincike ba tare da suke-suke ba",
+    "quickAdds": "Sanya Gwiya Cikin Sauri",
+    "interestAdded": "An sanya gwiya! Ana neman sababbin Match..."
+  },
+  "undo": {
+    "message": "Ka dawo ga profile da ta wuce"
+  },
+  "vipMessage": {
+    "comingSoon": "Saƙon VIP: Nan take"
+  },
+  "boost": {
+    "activated": "An kunna Boost! Profile naka za ta haskaka sau 30",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "An sabunta profile! Kusa da kyakkyawan siga naka ✨",
+    "profileProgress": "CIKIN GIRMAR PROFILE",
+    "carePhrase": "\"Abin da ka zaɓa yana ƙara, abin da ba ka zaɓa ba ba ya ɗauwa ko dai. Bayyana so-so naka domin ya dace daidai.\"",
+    "placeholder": "Rubuta nan..."
+  },
+  "discoverLocked": {
+    "title": "An Tabbatar da Alaƙa",
+    "message": "An tabbatar da alaƙarka. An kashe Discover don girmaman alaƙarka. Golth har yanzu na samu don bincike dacewa da ke raba."
+  },
+  "lowCompletenessAlert": "Kowane bayani da ka sanya a profile naka, mafi kyawun Match za ka sami",
+  "compatibility": {
+    "whyOpposites": "Me ya sa suke cikawa juna",
+    "whyCompatible": "Me ya sa suke da dacewa",
+    "interests": "Gwiyojin da suka haɗa",
+    "uniqueInterests": "Gwiyoji da za su kai maka",
+    "values": "Kimuna da Salin Rayuwa",
+    "intentions": "Manufofin da suka haɗa",
+    "basicsOnly": "Dacewa bisa shekaru, wuri da so-so na asali."
+  },
+  "quickInterests": {
+    "title": "Sanya gwiya cikin sauri",
+    "subtitle": "Taimaka mu mu sami mutane kama da ka",
+    "search": "Nema gwiya...",
+    "searchResults": "Sakamako",
+    "yourInterests": "Gwiyojinka",
+    "suggested": "✨ An bayar miki"
+  },
+  "common": {
+    "skip": "Tsallake",
+    "saving": "Ana ajiye...",
+    "save": "Ajiye",
+    "done": "An gama"
+  },
+  "modes": {
+    "suggested": {
+      "label": "Domin ku",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Akasin juna",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "Ba tare da gani ba",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Kyauta",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Ƙari",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "MATCH NARRATIVE",
+    "syncingNarratives": "Synchronizing narrative threads...",
+    "visualHarmony": "VISUAL HARMONY",
+    "startWithSong": "Want to start with a song that touched you?",
+    "suggestedRituals": "SUGGESTED RITUALS",
+    "interpretingThread": "Interpreting your current thread...",
+    "narrativeLink": "Hadin labari",
+    "sharedRhythm": "Salon rayuwa tare",
+    "purpose": "Manufa"
+  },
+  "card": {
+    "potentialConnection": "Yiwuwar Haɗi • Hotuna a Ɓoye",
+    "firstGlimpse": "First narrative glimpse",
+    "swipeCompatibility": "Swipe to see compatibility >",
+    "compatibilityAnalysis": "COMPATIBILITY ANALYSIS",
+    "goalAlignment": "Goal Alignment",
+    "musicTaste": "Music Tastes",
+    "valuesVision": "Values & Vision",
+    "lifestyle": "Lifestyle",
+    "scenario": "Scenario",
+    "personality": "PERSONALITY",
+    "deepTalksQuote": "I prefer deep talks to small talk...",
+    "unlockHint": "Tap the lock if match happens.",
+    "distance": "{{count}} km away",
+    "nearby": "Nearby",
+    "discovery": "Discovery",
+    "curiositySuggestion": "Curiosity suggestion",
+    "veryActive": "Very active",
+    "vibesInterests": "MY VIBES & INTERESTS",
+    "professionalAcademic": "PROFESSIONAL & ACADEMIC",
+    "atCompany": "a {{company}}",
+    "emotionalSide": "MY EMOTIONAL SIDE",
+    "myAnthem": "My Anthem",
+    "lookingFor": "Ina neman:",
+    "uniqueMind": "MY UNIQUE MIND",
+    "neurodiversity": "Bambancin tunani",
+    "viewMoreDetails": "See more details...",
+    "locationNotAvailable": "Location not available",
+    "identityTooltipDefault": "This identity is part of your journey. CARE uses it to connect with respect and affinity.",
+    "careHarmony": "CARE Harmony",
+    "totalCompatibility": "Total Compatibility",
+    "technicalBreakdown": "Technical Breakdown",
+    "emotionalBalance": "Emotional Balance",
+    "viewFullProfile": "View Full Profile",
+    "firstFlash": "Farkon hasken labari",
+    "swipeForCompat": "Shafa don ganin dacewa >",
+    "analysisTitle": "NAZARIN DACิEWA",
+    "breakdownIntent": "Dacewar manufa",
+    "breakdownMusic": "Hadin kide-kide",
+    "breakdownValues": "Ɗabi'u da buri",
+    "breakdownLifestyle": "Salon rayuwa",
+    "personalityTitle": "HALI",
+    "noPrompt": "Na fi son tattaunawa mai ma'ana fiye da hira mara amfani...",
+    "tapLock": "Danna kwadon idan an dace.",
+    "distanceKm": "tazarar kilomita {{count}} daga gare ka",
+    "nearYou": "Kusa da kai",
+    "discoveryChip": "Gano",
+    "curiousChip": "Shawarar sani",
+    "veryActiveChip": "Mai aiki sosai",
+    "vibesTitle": "YA YI DAIDAI DA RA'AYINKA",
+    "professionalTitle": "SASHEN AIKI DA ILIMI",
+    "emotionalTitle": "SAHEN RA'AYINA NA ZUCIYA",
+    "myHimno": "Waƙata",
+    "uniqueMindTitle": "HANKALINA NA MUSAMMAN",
+    "viewMore": "Duba ƙarin bayani...",
+    "vibesWithYourInterests": "YA YI DAIDAI DA RA'AYINKA"
+  }
+}

@@ -265,6 +265,45 @@
       "superpower": "Mi superpoder",
       "achillesHeel": "Mi talón de Aquiles",
       "soundtrack": "Mi soundtrack personal"
+    },
+    "intentions_map": {
+      "serious_relationship": "Relación",
+      "open_relationship": "Relación, pero no me cierro",
+      "casual_fun": "Diversión, pero no me cierro",
+      "short_term_fun": "Relación abierta",
+      "friendship": "Hacer amigos",
+      "hobbies": "Compartir gustos",
+      "travel": "Viajar/Eventos",
+      "undecided": "Lo sigo pensando"
+    },
+    "essentials": {
+      "title": "Esenciales",
+      "occupation": "Ocupación",
+      "education": "Estudios",
+      "location": "Ubicación",
+      "languages": "Idiomas",
+      "moreAboutMe": "Más sobre mí",
+      "zodiac": "Signo",
+      "height": "Altura",
+      "level": "Nivel",
+      "heightIrrelevant": "La estatura no influye en tu compatibilidad.",
+      "heightContextual": "Altura contextual activada."
+    },
+    "follow": "Seguir",
+    "uploadStory": "Subir historia",
+    "viewEditPhoto": "Ver/Editar foto",
+    "aboutMe": "Sobre mí",
+    "intentions_title": "Busco",
+    "notSpecified": "No especificado",
+    "showMore": "Ver más",
+    "showLess": "Ver menos",
+    "anthem_subtitle": "Comparte tu música favorita",
+    "lifestyle_tags": {
+      "pets": "Mascotas",
+      "drinking": "Beber",
+      "smoking": "Fumar",
+      "exercise": "Ejercicio",
+      "interests": "Intereses"
     }
   },
   "settings_title": "Configuración",
@@ -309,17 +348,17 @@
   "menu_language": "Idioma",
   "menu_theme": "Tema",
   "menu_notifications": "Notificaciones",
-"menu_privacy": "Privacidad",
-"menu_appearance": "Apariencia",
-"menu_navbar": "Personalizar Navbar",
-"menu_logout": "Cerrar Sesión",
-"menu_toggleSidebar": "Alternar barra lateral de perfil",
-"settings_accessibility": "Accesibilidad",
-"settings_advanced": "Configuración Avanzada",
-"settings_wip_title": "Sección en desarrollo",
-"settings_wip_desc": "Esta funcionalidad estará disponible próximamente",
-"settings_welcome_title": "Bienvenido a Configuración",
-"settings_welcome_desc": "Selecciona una opción del menú lateral para comenzar",
+  "menu_privacy": "Privacidad",
+  "menu_appearance": "Apariencia",
+  "menu_navbar": "Personalizar Navbar",
+  "menu_logout": "Cerrar Sesión",
+  "menu_toggleSidebar": "Alternar barra lateral de perfil",
+  "settings_accessibility": "Accesibilidad",
+  "settings_advanced": "Configuración Avanzada",
+  "settings_wip_title": "Sección en desarrollo",
+  "settings_wip_desc": "Esta funcionalidad estará disponible próximamente",
+  "settings_welcome_title": "Bienvenido a Configuración",
+  "settings_welcome_desc": "Selecciona una opción del menú lateral para comenzar",
   "settings_security_delete_action": "Sí, estoy completamente seguro",
   "settings_security_delete_talkToUs": "Habla con nosotros",
   "settings_security_password_title": "Cambiar Contraseña",
@@ -493,7 +532,8 @@
       "passwordRequirements": "La contraseña no cumple con los requisitos de seguridad",
       "usernameMin": "El nombre de usuario debe tener al menos 3 caracteres",
       "generic": "Error al procesar la solicitud. Intenta nuevamente."
-    }
+    },
+    "logout": "Cerrar Sesión"
   },
   "actions": {
     "back_to_edit": "Volver a edición",
@@ -539,23 +579,25 @@
     "statVisits": "Visitas"
   },
   "errors": {
-    "goHome": "Volver al inicio",
-    "login": "Iniciar sesión",
-    "back": "Volver atrás",
-    "retry": "Reintentar",
-    "redirecting": "Redirigiendo en {{s}} segundos…",
-    "sessionExpired": "Tu sesión expiró, tejiendo tu hilo de nuevo",
-    "404": {
-      "title": "Este hilo se perdió",
-      "narrative": "La página que buscas no está en este telar. Quizá se movió, se cortó o se tejió en otro lugar."
+    "401": {
+      "title": "Tu hilo se quedó dormido",
+      "narrative": "Necesitas iniciar sesión para seguir tejiendo. Tu historia aún te espera donde la dejaste."
     },
     "403": {
       "title": "Este hilo está sellado",
       "narrative": "No tienes acceso a este tramo de la red. Si crees que es un error, vuelve a intentar o pide permiso."
     },
-    "401": {
-      "title": "Tu hilo se quedó dormido",
-      "narrative": "Necesitas iniciar sesión para seguir tejiendo. Tu historia aún te espera donde la dejaste."
+    "404": {
+      "title": "Este hilo se perdió",
+      "narrative": "La página que buscas no está en este telar. Quizá se movió, se cortó o se tejió en otro lugar."
+    },
+    "408": {
+      "title": "El hilo se está arrastrando",
+      "narrative": "La conexión tardó demasiado en responder. Revisa tu red y vuelve a intentarlo; la hebra no se escapa."
+    },
+    "422": {
+      "title": "Esta puntada no encaja",
+      "narrative": "Algunos datos que enviaste no son válidos. Revisa los campos señalados y vuelve a intentarlo."
     },
     "500": {
       "title": "El telar se enredó",
@@ -569,13 +611,143 @@
       "title": "Estamos retocando el telar",
       "narrative": "Red Thread está en mantenimiento por un momento. Tu hilo queda guardado; pronto seguimos tejiendo."
     },
-    "408": {
-      "title": "El hilo se está arrastrando",
-      "narrative": "La conexión tardó demasiado en responder. Revisa tu red y vuelve a intentarlo; la hebra no se escapa."
+    "goHome": "Volver al inicio",
+    "login": "Iniciar sesión",
+    "back": "Volver atrás",
+    "retry": "Reintentar",
+    "redirecting": "Redirigiendo en {{s}} segundos…",
+    "sessionExpired": "Tu sesión expiró, tejiendo tu hilo de nuevo"
+  },
+  "nav": {
+    "home": "Inicio",
+    "discover": "Descubrir",
+    "blueth": "Amigos",
+    "goldth": "Golth",
+    "chat": "Chat",
+    "visits": "Visitas",
+    "purpleth": "Zona Gaming",
+    "likes": "Likes",
+    "roulette": "Ruleta",
+    "radar": "Radar",
+    "events": "Eventos",
+    "premium": "Suscripción",
+    "settings": "Configuración",
+    "appearance": "Apariencia",
+    "notifications": "Notificaciones",
+    "security": "Seguridad",
+    "accessibility": "Accesibilidad",
+    "privacy": "Privacidad",
+    "advanced": "Avanzado",
+    "section": {
+      "social": "SOCIAL",
+      "entertainment": "ENTRETENIMIENTO",
+      "organization": "ORGANIZACIÓN",
+      "system": "SISTEMA"
     },
-    "422": {
-      "title": "Esta puntada no encaja",
-      "narrative": "Algunos datos que enviaste no son válidos. Revisa los campos señalados y vuelve a intentarlo."
+    "chats": "Chats",
+    "favorites": "Favoritos",
+    "help": "Ayuda",
+    "language": "Idioma",
+    "plans": "Planes",
+    "profile": "Perfil",
+    "recent": "Recientes"
+  },
+  "theme": {
+    "dark": "Modo Oscuro",
+    "light": "Modo Claro"
+  },
+  "footer": {
+    "about": "Acerca de",
+    "careers": "Carreras",
+    "collapse": "Colapsar",
+    "community": "Normas de la Comunidad",
+    "company": "EMPRESA",
+    "contact": "Contacto",
+    "expand": "Expandir",
+    "faq": "Preguntas Frecuentes",
+    "help": "AYUDA",
+    "legal": "LEGAL",
+    "press": "Prensa",
+    "privacy": "Política de Privacidad",
+    "rights": "Todos los derechos reservados.",
+    "security": "Seguridad",
+    "support": "Soporte",
+    "tagline": "Conexiones significativas inspiradas en la leyenda del hilo rojo.",
+    "terms": "Términos de Servicio"
+  },
+  "card": {
+    "potentialConnection": "Conexión Potencial • Fotos Ocultas",
+    "firstGlimpse": "Primer destello narrativo",
+    "swipeCompatibility": "Desliza para ver compatibilidad >",
+    "compatibilityAnalysis": "ANÁLISIS DE COMPATIBILIDAD",
+    "goalAlignment": "Sintonía de Objetivos",
+    "musicTaste": "Gustos Musicales",
+    "valuesVision": "Valores & Visión",
+    "lifestyle": "Estilo de Vida",
+    "scenario": "Escenario",
+    "personality": "PERSONALIDAD",
+    "deepTalksQuote": "Prefiero las charlas profundas a las triviales...",
+    "unlockHint": "Toca el candado si el match ocurre.",
+    "distance": "A {{count}} km de distancia",
+    "nearby": "Cerca de ti",
+    "discovery": "Descubrimiento",
+    "curiositySuggestion": "Sugerencia por curiosidad",
+    "veryActive": "Muy activo",
+    "vibesInterests": "MIS VIBRAS & INTERESES",
+    "professionalAcademic": "PROFESIONAL & ACADÉMICO",
+    "atCompany": "en {{company}}",
+    "emotionalSide": "MI LADO EMOCIONAL",
+    "myAnthem": "Mi Himno",
+    "lookingFor": "Busco:",
+    "uniqueMind": "MI MENTE ÚNICA",
+    "neurodiversity": "Neurodiversidad",
+    "viewMoreDetails": "Ver más detalles...",
+    "locationNotAvailable": "Ubicación no disponible",
+    "identityTooltipDefault": "Esta identidad forma parte de tu camino. CARE la usa para conectar con respeto y afinidad.",
+    "careHarmony": "Sintonía CARE",
+    "totalCompatibility": "Compatibilidad total",
+    "technicalBreakdown": "Desglose Técnico",
+    "emotionalBalance": "Balance Emocional",
+    "viewFullProfile": "Ver Perfil Completo",
+    "firstFlash": "Primer destello narrativo",
+    "swipeForCompat": "Desliza para ver afinidad >",
+    "analysisTitle": "ANÁLISIS DE SINTONÍA",
+    "breakdownIntent": "Sintonía de intenciones",
+    "breakdownMusic": "Sintonía musical",
+    "breakdownValues": "Valores y visión",
+    "breakdownLifestyle": "Estilo de vida",
+    "personalityTitle": "PERSONALIDAD",
+    "noPrompt": "Prefiero conversaciones profundas que charlas superficiales...",
+    "tapLock": "Toca el candado si hay match.",
+    "distanceKm": "a {{count}} km de ti",
+    "nearYou": "Cerca de ti",
+    "discoveryChip": "Descubrimiento",
+    "curiousChip": "Sugerencia de curiosidad",
+    "veryActiveChip": "Muy activo",
+    "vibesTitle": "VIBRA CON TUS INTERESES",
+    "professionalTitle": "ÁMBITO PROFESIONAL Y ACADÉMICO",
+    "emotionalTitle": "MI LADO EMOCIONAL",
+    "myHimno": "Mi Himno",
+    "uniqueMindTitle": "MI MENTE ÚNICA",
+    "viewMore": "Ver más detalles...",
+    "vibesWithYourInterests": "VIBRA CON TUS INTERESES"
+  },
+  "battery": {
+    "high": {
+      "phrase": "Energía vital alta. Tu hilo está listo para conectar ✨",
+      "label": "Energía Alta"
+    },
+    "medium": {
+      "phrase": "Batería media. Un descanso pronto no vendría mal ☕",
+      "label": "Energía Media"
+    },
+    "low": {
+      "phrase": "Batería baja. Modo introspección activado 🕯️",
+      "label": "Batería Baja"
+    },
+    "off": {
+      "phrase": "Modo Cueva: Recargando en silencio 🌙",
+      "label": "Desconectado"
     }
   }
 }

@@ -39,6 +39,20 @@ describe('MenuCard', () => {
     expect(screen.getByText('Activo')).toBeInTheDocument();
   });
 
+  it('shows Desactivado in red on the status chip when the module is hidden', () => {
+    const { rerender } = render(
+      <MenuCard id="x" label="X" config={cfg({ status: 'beta', visible: false })} onToggleVisible={jest.fn()} onOpenRules={jest.fn()} />
+    );
+    const chip = screen.getByText('Desactivado').closest('.MuiChip-root');
+    expect(chip).toHaveClass('MuiChip-colorError');
+    expect(screen.queryByText('Beta')).not.toBeInTheDocument();
+    rerender(
+      <MenuCard id="x" label="X" config={cfg({ status: 'beta', visible: true })} onToggleVisible={jest.fn()} onOpenRules={jest.fn()} />
+    );
+    expect(screen.getByText('Beta')).toBeInTheDocument();
+    expect(screen.queryByText('Desactivado')).not.toBeInTheDocument();
+  });
+
   it('binds the switch to the visible flag and reports toggles', () => {
     const { onToggleVisible } = setup(cfg({ visible: false }));
     const toggle = screen.getByLabelText('Visibilidad de Descubrir');
@@ -53,15 +67,20 @@ describe('MenuCard', () => {
     expect(onOpenRules).toHaveBeenCalledTimes(1);
   });
 
-  it('summarizes role and rule restrictions when present', () => {
+  it('summarizes role and rule restrictions with the dynamic access label', () => {
     setup(cfg({ roles: ['premium', 'vip'], rules: [{ kind: 'geo', countries: ['MX'] }, { kind: 'energy', min: 2, max: 4 }] }));
-    expect(screen.getByText('Solo: Premium, VIP')).toBeInTheDocument();
+    expect(screen.getByText('Visible para usuarios Premium y VIP')).toBeInTheDocument();
     expect(screen.getByText('2 reglas')).toBeInTheDocument();
+  });
+
+  it('flags the VIP inclusion on the card label', () => {
+    setup(cfg({ roles: ['vip'] }));
+    expect(screen.getByText('Visible solo para usuarios VIP (incluye Premium)')).toBeInTheDocument();
   });
 
   it('shows no restriction badges when unrestricted', () => {
     setup();
-    expect(screen.queryByText(/Solo:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Visible para/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^\d+ reglas$/)).not.toBeInTheDocument();
   });
 });

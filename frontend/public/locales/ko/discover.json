@@ -1,0 +1,325 @@
+{
+  "title": "발견",
+  "subtitle": "당신의 실을 공유하는 사람을 찾아보세요",
+  "friendshipMode": {
+    "title": "우정 모드 활성화",
+    "description": "연애 관계에 있어 우정이나 활동을 찾는 사람만 표시됩니다."
+  },
+  "errors": {
+    "loadFailed": "프로필을 불러오지 못했습니다. 나중에 다시 시도해 주세요.",
+    "updateFailed": "프로필을 업데이트하지 못했습니다. 다시 시도해 주세요.",
+    "boostFailed": "Boost 활성화 오류"
+  },
+  "match": {
+    "title": "매치되었습니다!",
+    "description": "당신과 {{name}}이 서로를 좋아합니다"
+  },
+  "noProfiles": {
+    "title": "더 이상 주변에 프로필이 없습니다",
+    "description": "검색 조건을 넓히거나 나중에 다시 확인하세요.",
+    "button": "필터 조정"
+  },
+  "filters": {
+    "title": "검색 조정",
+    "ageRange": "나이 범위",
+    "ageNoLimit": "나이 제한 없음",
+    "distance": {
+      "label": "검색 반경",
+      "unit": "km",
+      "unlimited": "무제한",
+      "syncMessage": "이 설정은 프로필에도 저장됩니다.",
+      "currentLocation": "다음 주변 검색: ",
+      "noLocation": "지도를 보려면 프로필에서 위치를 설정하세요"
+    },
+    "onlineOnly": "온라인 사용자만 표시",
+    "mode": {
+      "label": "탐색 모드",
+      "suggested": "추천 매치",
+      "suggestedDesc": "당신의 궁합 실을 기반으로",
+      "free": "자유 탐색",
+      "freeDesc": "주변의 무작위 프로필"
+    },
+    "premium": {
+      "states": "주별로 탐색 (Premium)",
+      "countries": "국가별로 탐색 (Premium)",
+      "upsellTitle": "내 지역 너머를 탐색하세요",
+      "upsellDesc": "ReTh Premium 또는 VIP에 구독하여 어떤 주나 국가에서든 사람을 검색하세요.",
+      "upsellAction": "Premium 플랜 보기"
+    },
+    "cancel": "취소",
+    "apply": "필터 적용",
+    "syncSuccess": "환경설정이 프로필에 저장되었습니다.",
+    "highCompatibility": "높은 궁합만 (>70%)",
+    "highCompatibilityDesc": "궁합이 낮은 프로필을 걸러냅니다.",
+    "online": {
+      "label": "온라인 사용자만",
+      "desc": "지금 활동 중인 사람만 표시합니다."
+    }
+  },
+  "emptyState": {
+    "title": "아직 매치가 없습니다...",
+    "subtitle": "프로필을 완성하여 당신의 실을 공유하는 사람을 찾아보세요.",
+    "progressLabel": "프로필 완성도",
+    "keepGoing": "거의 다 왔어요!",
+    "complete": "훌륭해요!",
+    "buttonEdit": "프로필 완성하기",
+    "buttonExpand": "필터 없이 탐색",
+    "quickAdds": "관심사를 빠르게 추가하세요",
+    "interestAdded": "관심사가 추가되었습니다! 새 매치를 찾는 중..."
+  },
+  "undo": {
+    "message": "이전 프로필로 돌아갔습니다"
+  },
+  "vipMessage": {
+    "comingSoon": "VIP 메시지: 곧 공개됩니다"
+  },
+  "boost": {
+    "activated": "Boost 활성화! 프로필이 30분간 빛납니다",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "프로필 업데이트! 최고의 나에 한 발짝 더 다가갔어요 ✨",
+    "profileProgress": "프로필 진행 상황",
+    "carePhrase": "\"선택한 것은 더해지고, 선택하지 않은 것은 절대 빼앗기지 않아요. 더 잘 어울리도록 취향을 정의하세요.\"",
+    "placeholder": "여기에 입력..."
+  },
+  "discoverLocked": {
+    "title": "관계 확인됨",
+    "message": "관계가 확인되었습니다. 관계를 존중하기 위해 Discover는 비활성화되었습니다. 공통의 궁합을 탐색하려면 Golth는 계속 이용할 수 있습니다."
+  },
+  "lowCompletenessAlert": "프로필에 자세한 정보를 더할수록 더 좋은 매치를 받게 됩니다",
+  "compatibility": {
+    "whyOpposites": "왜 서로 보완하는가",
+    "whyCompatible": "왜 잘 맞는가",
+    "interests": "공통 관심사",
+    "uniqueInterests": "그들이 가져다줄 관심사",
+    "values": "가치관과 라이프스타일",
+    "intentions": "공통된 의도",
+    "basicsOnly": "나이, 위치, 기본 취향 기반의 궁합입니다."
+  },
+  "quickInterests": {
+    "title": "관심사를 빠르게 추가하세요",
+    "subtitle": "당신과 비슷한 사람을 찾는 데 도와주세요",
+    "search": "관심사 검색...",
+    "searchResults": "결과",
+    "yourInterests": "내 관심사",
+    "suggested": "✨ 회원님을 위한 추천"
+  },
+  "common": {
+    "skip": "건너뛰기",
+    "saving": "저장 중...",
+    "save": "저장",
+    "done": "완료"
+  },
+  "modes": {
+    "suggested": {
+      "label": "추천",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "정반대",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "블라인드",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "자유",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "더보기",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "매치 서사",
+    "syncingNarratives": "서사적 붉은 실 동기화 중...",
+    "visualHarmony": "시각적 조화",
+    "startWithSong": "당신을 감동시킨 노래로 대화를 시작해 볼까요?",
+    "suggestedRituals": "추천 리추얼",
+    "interpretingThread": "현재 인연의 실을 해석 중입니다...",
+    "narrativeLink": "서사적 유대",
+    "sharedRhythm": "공유된 리듬",
+    "purpose": "목적"
+  },
+  "card": {
+    "potentialConnection": "잠재적 인연 • 사진 숨김",
+    "firstGlimpse": "첫 번째 서사의 번뜩임",
+    "swipeCompatibility": "밀어서 호환성 보기 >",
+    "compatibilityAnalysis": "호환성 분석",
+    "goalAlignment": "목표의 조화",
+    "musicTaste": "음악 취향",
+    "valuesVision": "가치관 및 비전",
+    "lifestyle": "라이프스타일",
+    "scenario": "시나리오",
+    "personality": "성격",
+    "deepTalksQuote": "가벼운 잡담보다는 깊은 대화를 선호해요...",
+    "unlockHint": "매치되면 자물쇠를 터치하세요.",
+    "distance": "{{count}} km 거리",
+    "nearby": "가까이 있음",
+    "discovery": "탐색",
+    "curiositySuggestion": "호기심 추천",
+    "veryActive": "매우 활동적",
+    "vibesInterests": "나의 분위기 & 관심사",
+    "professionalAcademic": "직업 및 학력",
+    "atCompany": "{{company}} 재직",
+    "emotionalSide": "나의 감성적인 면",
+    "myAnthem": "나의 앤섬",
+    "lookingFor": "찾는 인연:",
+    "uniqueMind": "나만의 독특한 마인드",
+    "neurodiversity": "신경 다양성",
+    "viewMoreDetails": "자세한 정보 보기...",
+    "locationNotAvailable": "위치 정보 없음",
+    "identityTooltipDefault": "이 정체성은 당신의 여정의 일부입니다. CARE는 존중과 공감으로 연결합니다.",
+    "careHarmony": "CARE 조화",
+    "totalCompatibility": "총 호환성",
+    "technicalBreakdown": "상세 분석",
+    "emotionalBalance": "감정적 균형",
+    "viewFullProfile": "전체 프로필 보기",
+    "firstFlash": "첫 번째 서사적 인상",
+    "swipeForCompat": "밀어서 궁합 확인 >",
+    "analysisTitle": "궁합 분석",
+    "breakdownIntent": "지향점 일치",
+    "breakdownMusic": "음악적 취향",
+    "breakdownValues": "가치관과 비전",
+    "breakdownLifestyle": "라이프스타일",
+    "personalityTitle": "성격",
+    "noPrompt": "가벼운 대화보다 깊은 대화를 선호합니다...",
+    "tapLock": "매칭되면 자물쇠를 탭하세요.",
+    "distanceKm": "{{count}}km 거리",
+    "nearYou": "근처",
+    "discoveryChip": "발견",
+    "curiousChip": "호기심 추천",
+    "veryActiveChip": "매우 활발함",
+    "vibesTitle": "관심사와 통하는 점",
+    "professionalTitle": "직업 및 학력",
+    "emotionalTitle": "나의 감성적인 면",
+    "myHimno": "나의 대표곡",
+    "uniqueMindTitle": "나만의 특별한 마인드",
+    "viewMore": "자세히 보기...",
+    "vibesWithYourInterests": "관심사와 통하는 점"
+  }
+}

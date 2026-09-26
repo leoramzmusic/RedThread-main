@@ -28,6 +28,7 @@ import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useAppTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'next-i18next';
 
 export type InteractionMode = 'buttons' | 'taps' | 'swipes' | 'keyboard';
 export type LayoutMode = 'stack' | 'sticker_book' | 'carousel' | 'grid'; // New Layout Modes
@@ -153,6 +154,7 @@ export default function InteractionSettingsDialog({
     onLayoutChange,
     containerRef
 }: InteractionSettingsDialogProps) {
+    const { t } = useTranslation('discover');
     const { mode } = useAppTheme();
     const isLight = mode === 'light';
     const [tabValue, setTabValue] = React.useState(0);
@@ -221,10 +223,10 @@ export default function InteractionSettingsDialog({
         >
             <DialogTitle sx={{ px: 2, pt: 4, pb: 1 }}>
                 <Typography variant="h4" sx={{ fontSize: '24px', fontWeight: 800, color: isLight ? 'text.primary' : 'white', letterSpacing: 0.5 }}>
-                    Configuración de Interacción
+                    {t('interaction.title', 'Configuración de Interacción')}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1, fontSize: '15px' }}>
-                    Elige cómo quieres interactuar con los perfiles en Discover.
+                    {t('interaction.subtitle', 'Elige cómo quieres interactuar con los perfiles en Discover.')}
                 </Typography>
             </DialogTitle>
 
@@ -245,8 +247,8 @@ export default function InteractionSettingsDialog({
                             }
                         }}
                     >
-                        <Tab label="Interacción" />
-                        <Tab label="Presentación (Layout)" />
+                        <Tab label={t('interaction.tabInteraction', 'Interacción')} />
+                        <Tab label={t('interaction.tabLayout', 'Presentación (Layout)')} />
                     </Tabs>
                 </Box>
 
@@ -279,7 +281,7 @@ export default function InteractionSettingsDialog({
                                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                                 <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
                                                     <Typography variant="subtitle1" sx={{ fontSize: '18px', fontWeight: 700, color: isLight ? 'text.primary' : 'white' }}>
-                                                        {mode.label}
+                                                        {t(`interaction.mode.${mode.value}.label`, mode.label)}
                                                     </Typography>
                                                     <Radio
                                                         checked={currentMode === mode.value}
@@ -288,7 +290,7 @@ export default function InteractionSettingsDialog({
                                                     />
                                                 </Box>
                                                 <Typography variant="body2" sx={{ color: isLight ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)', fontSize: '14px', mb: 2, lineHeight: 1.4 }}>
-                                                    {mode.description}
+                                                    {t(`interaction.mode.${mode.value}.description`, mode.description)}
                                                 </Typography>
                                                 <Box sx={{ mt: 'auto' }}>
                                                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap gap={1}>
@@ -300,7 +302,7 @@ export default function InteractionSettingsDialog({
                                                                 borderColor: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'
                                                             }}>
                                                                 <Typography sx={{ color: isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 600 }}>
-                                                                    {detail}
+                                                                    {t(`interaction.mode.${mode.value}.detail${idx + 1}`, detail)}
                                                                 </Typography>
                                                             </Box>
                                                         ))}
@@ -322,7 +324,7 @@ export default function InteractionSettingsDialog({
                                 display: 'flex', alignItems: 'center', gap: 2
                             }}>
                                 <Typography sx={{ fontStyle: 'italic', fontWeight: 600, color: '#FF80AB' }}>
-                                    CARE: {currentModeConfig.carePhrase}
+                                    CARE: {t(`interaction.mode.${currentModeConfig.value}.carePhrase`, currentModeConfig.carePhrase)}
                                 </Typography>
                             </Box>
                         )}
@@ -357,7 +359,7 @@ export default function InteractionSettingsDialog({
                                         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                             <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
                                                 <Typography variant="subtitle1" sx={{ fontSize: '18px', fontWeight: 700, color: isLight ? 'text.primary' : 'white' }}>
-                                                    {layout.label}
+                                                    {t(`interaction.layout.${layout.value}.label`, layout.label)}
                                                 </Typography>
                                                 <Radio
                                                     checked={currentLayout === layout.value}
@@ -366,13 +368,13 @@ export default function InteractionSettingsDialog({
                                                 />
                                             </Box>
                                             <Typography variant="body2" sx={{ color: isLight ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)', fontSize: '14px', mb: 2, lineHeight: 1.4 }}>
-                                                {layout.description}
+                                                {t(`interaction.layout.${layout.value}.description`, layout.description)}
                                             </Typography>
                                             <Box sx={{ mt: 'auto' }}>
                                                 <Stack direction="row" spacing={0.5} flexWrap="wrap">
                                                     {layout.details.map((detail, idx) => (
                                                         <Typography key={idx} variant="caption" sx={{ color: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
-                                                            • {detail}
+                                                            • {t(`interaction.layout.${layout.value}.detail${idx + 1}`, detail)}
                                                         </Typography>
                                                     ))}
                                                 </Stack>
@@ -401,7 +403,7 @@ export default function InteractionSettingsDialog({
                         '&:hover': { bgcolor: '#F50057' }
                     }}
                 >
-                    Listo
+                    {t('common.done', 'Listo')}
                 </Button>
             </DialogActions>
         </Dialog>

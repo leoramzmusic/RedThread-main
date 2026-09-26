@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { 
@@ -163,4 +164,13 @@ export default function LegalDocumentPage() {
       </Container>
     </Layout>
   );
+}
+
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale || 'es', ['common'])),
+    },
+  };
 }

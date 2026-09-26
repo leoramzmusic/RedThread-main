@@ -1,0 +1,325 @@
+{
+  "title": "Scopri",
+  "subtitle": "Trova persone che condividono il tuo filo",
+  "friendshipMode": {
+    "title": "Modalità Amicizia attivata",
+    "description": "Essendo in una relazione, vedrai solo persone che cercano amicizia o attività."
+  },
+  "errors": {
+    "loadFailed": "Impossibile caricare i profili. Riprova più tardi.",
+    "updateFailed": "Non siamo riusciti ad aggiornare il tuo profilo. Riprova.",
+    "boostFailed": "Errore nell’attivazione di Boost"
+  },
+  "match": {
+    "title": "È un Match!",
+    "description": "Tu e {{name}} vi piacete a vicenda"
+  },
+  "noProfiles": {
+    "title": "Nient’altro profili nelle vicinanze",
+    "description": "Amplia i criteri di ricerca o torna più tardi.",
+    "button": "Regola Filtri"
+  },
+  "filters": {
+    "title": "Regola Ricerca",
+    "ageRange": "Fascia d’età",
+    "ageNoLimit": "Nessun limite d’età",
+    "distance": {
+      "label": "Raggio di ricerca",
+      "unit": "km",
+      "unlimited": "Illimitato",
+      "syncMessage": "Questa impostazione verrà salvata anche nel tuo profilo.",
+      "currentLocation": "Ricerca vicino a: ",
+      "noLocation": "Imposta la tua posizione nel profilo per vedere la mappa"
+    },
+    "onlineOnly": "Mostra solo utenti connessi",
+    "mode": {
+      "label": "Modalità Esplorazione",
+      "suggested": "Match suggeriti",
+      "suggestedDesc": "Basato sul tuo filo di compatibilità",
+      "free": "Esplorazione libera",
+      "freeDesc": "Profili casuali vicino a te"
+    },
+    "premium": {
+      "states": "Esplora per Stato (Premium)",
+      "countries": "Esplora per Paese (Premium)",
+      "upsellTitle": "Esplora oltre la tua zona",
+      "upsellDesc": "Abbonati a ReTh Premium o VIP per cercare persone in qualsiasi stato o paese.",
+      "upsellAction": "Vedi Piani Premium"
+    },
+    "cancel": "Annulla",
+    "apply": "Applica Filtri",
+    "syncSuccess": "Preferenze salvate nel tuo profilo.",
+    "highCompatibility": "Solo alta compatibilità (>70%)",
+    "highCompatibilityDesc": "Filtra i profili con minore affinità.",
+    "online": {
+      "label": "Solo utenti connessi",
+      "desc": "Mostra solo persone attive in questo momento."
+    }
+  },
+  "emptyState": {
+    "title": "Ancora nessun match...",
+    "subtitle": "Completa il tuo profilo per trovare persone che condividono il tuo filo.",
+    "progressLabel": "Il tuo profilo è al",
+    "keepGoing": "Ci quasi sei!",
+    "complete": "Eccellente!",
+    "buttonEdit": "Completa profilo",
+    "buttonExpand": "Esplora senza filtri",
+    "quickAdds": "AGGIUNGI INTERESSI RAPIDAMENTE",
+    "interestAdded": "Interesse aggiunto! Ricerca di nuovi match..."
+  },
+  "undo": {
+    "message": "Sei tornato al profilo precedente"
+  },
+  "vipMessage": {
+    "comingSoon": "Messaggio VIP: In arrivo"
+  },
+  "boost": {
+    "activated": "Boost attivato! Il tuo profilo brillerà per 30 minuti",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "Profilo aggiornato! Sei più vicino alla tua versione migliore ✨",
+    "profileProgress": "PROGRESSO DEL PROFILO",
+    "carePhrase": "“Ciò che scegli somma, ciò che non scegli mai sottrae. Defini i tuoi gusti per vibrare meglio.”",
+    "placeholder": "Scrivi qui..."
+  },
+  "discoverLocked": {
+    "title": "Collegamento Confermato",
+    "message": "Il tuo collegamento è confermato. Discover è stato disattivato per rispettare la tua relazione. Golth resta disponibile per esplorare affinità condivise."
+  },
+  "lowCompletenessAlert": "Più dettagli aggiungi al tuo profilo, migliori match riceverai",
+  "compatibility": {
+    "whyOpposites": "Perché si completano",
+    "whyCompatible": "Perché sono compatibili",
+    "interests": "Interessi in comune",
+    "uniqueInterests": "Interessi che ti portano loro",
+    "values": "Valori e Stile di vita",
+    "intentions": "Intenzioni condivise",
+    "basicsOnly": "Compatibilità basata su età, posizione e preferenze di base."
+  },
+  "quickInterests": {
+    "title": "Aggiungi interessi rapidamente",
+    "subtitle": "Aiutaci a trovare persone come te",
+    "search": "Cerca interessi...",
+    "searchResults": "Risultati",
+    "yourInterests": "I tuoi Interessi",
+    "suggested": "✨ Suggeriti per te"
+  },
+  "common": {
+    "skip": "Salta",
+    "saving": "Salvataggio...",
+    "save": "Salva",
+    "done": "Fatto"
+  },
+  "modes": {
+    "suggested": {
+      "label": "Per te",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Opposti",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "Al buio",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Libero",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Altro",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "NARRAZIONE DEL MATCH",
+    "syncingNarratives": "Sincronizzazione dei fili narrativi...",
+    "visualHarmony": "ARMONIA VISIVA",
+    "startWithSong": "Vuoi iniziare con una canzone che ti ha emozionato?",
+    "suggestedRituals": "RITUALI SUGGERITI",
+    "interpretingThread": "Interpretando il tuo filo attuale...",
+    "narrativeLink": "Legame narrativo",
+    "sharedRhythm": "Ritmo condiviso",
+    "purpose": "Scopo"
+  },
+  "card": {
+    "potentialConnection": "Connessione potenziale • Foto nascoste",
+    "firstGlimpse": "Primo scorcio narrativo",
+    "swipeCompatibility": "Scorri per vedere la compatibilità >",
+    "compatibilityAnalysis": "ANALISI DI COMPATIBILITÀ",
+    "goalAlignment": "Sintonia degli obiettivi",
+    "musicTaste": "Gusti musicali",
+    "valuesVision": "Valori & Visione",
+    "lifestyle": "Stile di vita",
+    "scenario": "Scenario",
+    "personality": "PERSONALITÀ",
+    "deepTalksQuote": "Preferisco le conversazioni profonde alle banalità...",
+    "unlockHint": "Tocca il lucchetto se c'è un match.",
+    "distance": "A {{count}} km di distanza",
+    "nearby": "Vicino a te",
+    "discovery": "Scoperta",
+    "curiositySuggestion": "Suggerimento per curiosità",
+    "veryActive": "Molto attivo",
+    "vibesInterests": "LE MIE VIBRAZIONI & INTERESSI",
+    "professionalAcademic": "PROFESSIONALE & ACCADEMICO",
+    "atCompany": "presso {{company}}",
+    "emotionalSide": "IL MIO LATO EMOTIVO",
+    "myAnthem": "Il mio inno",
+    "lookingFor": "Cerco:",
+    "uniqueMind": "LA MIA MENTE UNICA",
+    "neurodiversity": "Neurodiversità",
+    "viewMoreDetails": "Vedi altri dettagli...",
+    "locationNotAvailable": "Posizione non disponibile",
+    "identityTooltipDefault": "Questa identità fa parte del tuo percorso. CARE la usa per connettere con rispetto e affinità.",
+    "careHarmony": "Sintonia CARE",
+    "totalCompatibility": "Compatibilità totale",
+    "technicalBreakdown": "Analisi tecnica",
+    "emotionalBalance": "Equilibrio emotivo",
+    "viewFullProfile": "Visualizza profilo completo",
+    "firstFlash": "Primo bagliore narrativo",
+    "swipeForCompat": "Scorri per vedere l'affinità >",
+    "analysisTitle": "ANALISI DI SINTONIA",
+    "breakdownIntent": "Sintonia di intenzioni",
+    "breakdownMusic": "Sintonia musicale",
+    "breakdownValues": "Valori e visione",
+    "breakdownLifestyle": "Stile di vita",
+    "personalityTitle": "PERSONALITÀ",
+    "noPrompt": "Preferisco conversazioni profonde alle chiacchiere superficiali...",
+    "tapLock": "Tocca il lucchetto se c'è un match.",
+    "distanceKm": "a {{count}} km da te",
+    "nearYou": "Vicino a te",
+    "discoveryChip": "Scoperta",
+    "curiousChip": "Suggerimento di curiosità",
+    "veryActiveChip": "Molto attivo",
+    "vibesTitle": "IN SINTONIA CON I TUOI INTERESSI",
+    "professionalTitle": "AMBITO PROFESSIONALE E ACCADEMICO",
+    "emotionalTitle": "IL MIO LATO EMOZIONALE",
+    "myHimno": "Il mio inno",
+    "uniqueMindTitle": "LA MIA MENTE UNICA",
+    "viewMore": "Vedi altri dettagli...",
+    "vibesWithYourInterests": "IN SINTONIA CON I TUOI INTERESSI"
+  }
+}

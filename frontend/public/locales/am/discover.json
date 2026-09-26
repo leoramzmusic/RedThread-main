@@ -1,0 +1,325 @@
+{
+  "title": "ፈልግ",
+  "subtitle": "እርስዎን ክር የሚጋሩ ሰዎችን ያግኙ",
+  "friendshipMode": {
+    "title": "የጓደኝነት ሁነታ በርቷል",
+    "description": "በስተቀር ስለሆናችሁ ጓደኝነት ወይም እንቅስቃሴ የሚፈልጉ ሰዎችን ብቻ ይታያችኋል።"
+  },
+  "errors": {
+    "loadFailed": "መገለጫዎችን መጫን አልተሳካም። እባክዎ በኋላ እንደገና ይሞክሩ።",
+    "updateFailed": "መገለጫዎን ማዘመን አልቻልንም። እባክዎ እንደገና ይሞክሩ።",
+    "boostFailed": "Boost ማንቂያ ስህተት"
+  },
+  "match": {
+    "title": "ግንኙነት ተገናኘ!",
+    "description": "እርስዎና {{name}} በአንድ ላይ ይጠወጣሉ"
+  },
+  "noProfiles": {
+    "title": "በአቅራቢያዎ ተጨማሪ መገለጫዎች የሉም",
+    "description": "የፍለጋ መስፈርቶችዎን ያስፋፉ ወይም በኋላ ይመለሱ።",
+    "button": "ማጣሪያዎችን ማስተካከያ"
+  },
+  "filters": {
+    "title": "ፍለጋውን ማስተካከያ",
+    "ageRange": "የዕድል ክልል",
+    "ageNoLimit": "የዕድል ገደብ የለም",
+    "distance": {
+      "label": "የፍለጋ አካባቢ",
+      "unit": "ኪ.ሜ",
+      "unlimited": "ያልተወሰነ",
+      "syncMessage": "ይህ ቅንብር በመገለጫዎ ውስጥም ይቀመጣል።",
+      "currentLocation": "በአቅራቢያው ፍለጋ: ",
+      "noLocation": "ካርቱን ለማየት በመገለጫዎ ውስጥ ቦታዎን ያሰኩ"
+    },
+    "onlineOnly": "በመስመር ላይ ያሉ ተጠቃሚዎችን ብቻ ያሳዩ",
+    "mode": {
+      "label": "የማሰሻ ሁነታ",
+      "suggested": "የሚመረቱ ግንኙነቶች",
+      "suggestedDesc": "በእርስዎ የአይነት ክር ላይ የተመሰረተ",
+      "free": "ነፃ ማሰሻ",
+      "freeDesc": "በአቅራቢያዎ ያሉ በደብሮ መገለጫዎች"
+    },
+    "premium": {
+      "states": "በግዛት ይፈልጉ (Premium)",
+      "countries": "በአገር ይፈልጉ (Premium)",
+      "upsellTitle": "ከአካባቢዎ ወጥተው ይፈልጉ",
+      "upsellDesc": "በማንኛውም ግዛት ወይም አገር ሰዎችን ለመፈለግ ReTh Premium ወይም VIP ይመዝገቡ።",
+      "upsellAction": "የPremium ዕቅድ ይመልከቱ"
+    },
+    "cancel": "ሰርዝ",
+    "apply": "ማጣሪያዎችን ግብር",
+    "syncSuccess": "ምርጫዎች በመገለጫዎ ውስጥ ተቀምጠዋል።",
+    "highCompatibility": "ከፍተኛ የአይነት ተመራጭ ብቻ (>70%)",
+    "highCompatibilityDesc": "ዝቅተኛ ግንኙነት ያላቸውን መገለጫዎች ያጣራል።",
+    "online": {
+      "label": "በመስመር ላይ ያሉ ተጠቃሚዎች ብቻ",
+      "desc": "አሁን ንቁ ያሉ ሰዎችን ብቻ ያሳያል።"
+    }
+  },
+  "emptyState": {
+    "title": "እስካሁን ግንኙነት የለም...",
+    "subtitle": "እርስዎን ክር የሚጋሩ ሰዎችን ለማግኘት መገለጫዎን ያጠናቅቁ።",
+    "progressLabel": "መገለጫዎ",
+    "keepGoing": "በመጨረሻው ላይነዎት!",
+    "complete": "በጣም ጥሩ!",
+    "buttonEdit": "መገለጫ ያጠናቅቁ",
+    "buttonExpand": "ያለ ማጣሪያ ይፈልጉ",
+    "quickAdds": "ፍላጎትን በፍጥነት ያክሉ",
+    "interestAdded": "ፍላጎት ታክሏል! አዲስ ግንኙነቶች ይፈለጋሉ..."
+  },
+  "undo": {
+    "message": "ወደ ቀደም መገለጫ ተመልሰዋል"
+  },
+  "vipMessage": {
+    "comingSoon": "የVIP መልዕክት: በቅርቡ ይመጣል"
+  },
+  "boost": {
+    "activated": "Boost በርቷል! መገለጫዎ ለ30 ደቂቃ ያብራል",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "መገለጫ ተዘምኗል! ከተሻለ ክርጸትዎ በአንድ እርምጃ ቅርብ ነዎት ✨",
+    "profileProgress": "የመገለጫ እድገት",
+    "carePhrase": "\"የሚመረጡት ይደራደራል፤ ያልመረጡት ግን አይቀንስም። የተሻለ ለመጣሰር ፍላጎትዎን ይግዙ።\"",
+    "placeholder": "እዚህ ይጻፉ..."
+  },
+  "discoverLocked": {
+    "title": "ግንኙነት ተረጋግጧል",
+    "message": "ግንኙነትዎ ተረጋግጧል። ግንኙነትዎን ለክብር Discover በነጥበው ተቀምጧል። የጋራ የአይነት ግንኙነት ለማሰሻ Golth አሁንም ይገኛል።"
+  },
+  "lowCompletenessAlert": "በመገለጫዎ ላይ ስለሚጨምሩ ዝርዝሮች በጣም ጥሩ ግንኙነቶችን ይቀበላሉ",
+  "compatibility": {
+    "whyOpposites": "ለምን አንድ ላይ ይካፍላሉ",
+    "whyCompatible": "ለምን የሚስማሙናቸው",
+    "interests": "የጋራ ፍላጎቶች",
+    "uniqueInterests": "የሚያምጡልዎት ፍላጎቶች",
+    "values": "እሴቶችና የሕይወት ዘይቤ",
+    "intentions": "የጋራ ዓላማዎች",
+    "basicsOnly": "በዕድል፣ ቦታና መሠረታዊ ምርጫ ላይ የተመሰረተ የአይነት ተመራጭነት።"
+  },
+  "quickInterests": {
+    "title": "ፍላጎቶችን በፍጥነት ያክሉ",
+    "subtitle": "እንደእርስዎ የሆኑ ሰዎችን አግኝት ያግዙን",
+    "search": "ፍላጎቶችን ይፈልጉ...",
+    "searchResults": "ውጤቶች",
+    "yourInterests": "የእርስዎ ፍላጎቶች",
+    "suggested": "✨ ለእርስዎ የሚመረቱ"
+  },
+  "common": {
+    "skip": "ዝለል",
+    "saving": "በመቀመጥ ላይ...",
+    "save": "አስቀምጥ",
+    "done": "ተከናውኗል"
+  },
+  "modes": {
+    "suggested": {
+      "label": "ለእርስዎ",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "ተቃራኒዎች",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "በዓይነ ስውር",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "ነፃ",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "ተጨማሪ",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "MATCH NARRATIVE",
+    "syncingNarratives": "Synchronizing narrative threads...",
+    "visualHarmony": "VISUAL HARMONY",
+    "startWithSong": "Want to start with a song that touched you?",
+    "suggestedRituals": "SUGGESTED RITUALS",
+    "interpretingThread": "Interpreting your current thread...",
+    "narrativeLink": "የትረካ ትስስር",
+    "sharedRhythm": "የጋራ ሪትም",
+    "purpose": "ዓላማ"
+  },
+  "card": {
+    "potentialConnection": "እምቅ ግንኙነት • ፎቶዎች ተደብቀዋል",
+    "firstGlimpse": "First narrative glimpse",
+    "swipeCompatibility": "Swipe to see compatibility >",
+    "compatibilityAnalysis": "COMPATIBILITY ANALYSIS",
+    "goalAlignment": "Goal Alignment",
+    "musicTaste": "Music Tastes",
+    "valuesVision": "Values & Vision",
+    "lifestyle": "Lifestyle",
+    "scenario": "Scenario",
+    "personality": "PERSONALITY",
+    "deepTalksQuote": "I prefer deep talks to small talk...",
+    "unlockHint": "Tap the lock if match happens.",
+    "distance": "{{count}} km away",
+    "nearby": "Nearby",
+    "discovery": "Discovery",
+    "curiositySuggestion": "Curiosity suggestion",
+    "veryActive": "Very active",
+    "vibesInterests": "MY VIBES & INTERESTS",
+    "professionalAcademic": "PROFESSIONAL & ACADEMIC",
+    "atCompany": "በ {{company}}",
+    "emotionalSide": "MY EMOTIONAL SIDE",
+    "myAnthem": "My Anthem",
+    "lookingFor": "የምፈልገው፦",
+    "uniqueMind": "MY UNIQUE MIND",
+    "neurodiversity": "የነርቭ ልዩነት",
+    "viewMoreDetails": "See more details...",
+    "locationNotAvailable": "Location not available",
+    "identityTooltipDefault": "This identity is part of your journey. CARE uses it to connect with respect and affinity.",
+    "careHarmony": "CARE Harmony",
+    "totalCompatibility": "Total Compatibility",
+    "technicalBreakdown": "Technical Breakdown",
+    "emotionalBalance": "Emotional Balance",
+    "viewFullProfile": "View Full Profile",
+    "firstFlash": "የመጀመሪያ የትረካ ብልጭታ",
+    "swipeForCompat": "ተኳሃኝነትን ለማየት ያንሸራትቱ >",
+    "analysisTitle": "የትስስር ትንተና",
+    "breakdownIntent": "የዓላማዎች ስምምነት",
+    "breakdownMusic": "የሙዚቃ ስምምነት",
+    "breakdownValues": "እሴቶች እና ራዕይ",
+    "breakdownLifestyle": "የአኗኗር ዘይቤ",
+    "personalityTitle": "ስብዕና",
+    "noPrompt": "ከቀላል ወሬ ይልቅ ጥልቅ ውይይቶችን እመርጣለሁ...",
+    "tapLock": "ግጥሚያ ሲፈጠር ቁልፉን ይንኩ።",
+    "distanceKm": "ከእርስዎ {{count}} ኪ.ሜ ርቀት ላይ",
+    "nearYou": "በአቅራቢያዎ",
+    "discoveryChip": "ግኝት",
+    "curiousChip": "የጉጉት ጥቆማ",
+    "veryActiveChip": "በጣም ንቁ",
+    "vibesTitle": "ከፍላጎቶችዎ ጋር ይጣጣማል",
+    "professionalTitle": "የሙያ እና የትምህርት መስክ",
+    "emotionalTitle": "ስሜታዊ ጎኔ",
+    "myHimno": "የኔ መዝሙር",
+    "uniqueMindTitle": "ልዩ አእምሮዬ",
+    "viewMore": "ተጨማሪ ዝርዝሮችን ይመልከቱ...",
+    "vibesWithYourInterests": "ከፍላጎቶችዎ ጋር ይጣጣማል"
+  }
+}

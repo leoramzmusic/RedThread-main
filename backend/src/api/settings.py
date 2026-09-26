@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
@@ -54,11 +56,17 @@ async def get_settings(current_user: User = Depends(get_current_user)):
     user_settings = await UserSettings.find_one({"user_id": str(current_user.id)})
     
     if not user_settings:
-        # Create default settings
-        user_settings = UserSettings(user_id=str(current_user.id))
+        # Create default settings seeded with the authoritative user language
+        user_settings = UserSettings(
+            user_id=str(current_user.id),
+            preferred_language=current_user.preferred_language,
+        )
         await user_settings.insert()
     
-    return user_settings.dict(exclude={"id", "user_id", "created_at"})
+    data = user_settings.dict(exclude={"id", "user_id", "created_at"})
+    # Fuente de verdad del idioma: User.preferred_language (lo escribe PATCH /auth/me)
+    data["preferred_language"] = current_user.preferred_language
+    return data
 
 
 @router.put("/me")
@@ -71,12 +79,23 @@ async def update_settings(
     user_settings = await UserSettings.find_one({"user_id": str(current_user.id)})
     
     if not user_settings:
-        user_settings = UserSettings(user_id=str(current_user.id))
+        user_settings = UserSettings(
+            user_id=str(current_user.id),
+            preferred_language=current_user.preferred_language,
+        )
     
-   # Update fields
+    # Update fields
     update_data = request.dict(exclude_unset=True)
+    language = update_data.pop("preferred_language", None)
     for field, value in update_data.items():
         setattr(user_settings, field, value)
+
+    if language is not None:
+        # Keep both stores in sync; User is the source of truth for language
+        user_settings.preferred_language = language
+        current_user.preferred_language = language
+        current_user.updated_at = datetime.utcnow()
+        await current_user.save()
     
     # Update timestamp
     user_settings.update_timestamp()
@@ -87,7 +106,9 @@ async def update_settings(
     else:
         await user_settings.insert()
     
-    return user_settings.dict(exclude={"id", "user_id", "created_at"})
+    data = user_settings.dict(exclude={"id", "user_id", "created_at"})
+    data["preferred_language"] = current_user.preferred_language
+    return data
 
 
 @router.post("/reset-visual")

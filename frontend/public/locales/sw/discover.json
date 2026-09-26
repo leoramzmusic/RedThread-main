@@ -1,0 +1,325 @@
+{
+  "title": "Gundua",
+  "subtitle": "Tupu watu wanaoshiriki uzi wako",
+  "friendshipMode": {
+    "title": "Hali ya Urafiki Imewashwa",
+    "description": "Kwa kuwa uko kwenye uhusiano, utaona tu watu wanaotafuta urafiki au shughuli."
+  },
+  "errors": {
+    "loadFailed": "Imeshindwa kupakia wasifu. Tafadhali jaribu tena baadaye.",
+    "updateFailed": "Hatukuweza kusasisha wasifu wako. Tafadhali jaribu tena.",
+    "boostFailed": "Hitilafu wakati wa kuwasha Boost"
+  },
+  "match": {
+    "title": "Ni Mechi!",
+    "description": "Wewe na {{name}} mnapendana"
+  },
+  "noProfiles": {
+    "title": "Hakuna wasifu zaidi karibu nawe",
+    "description": "Panua vigezo vya utafutaji wako au rudi baadaye.",
+    "button": "Sanidi Vichujio"
+  },
+  "filters": {
+    "title": "Sanidi Utafutaji",
+    "ageRange": "Kipindi cha Umri",
+    "ageNoLimit": "Hakuna kikomo cha umri",
+    "distance": {
+      "label": "Duara la Utafutaji",
+      "unit": "km",
+      "unlimited": "Bila kikomo",
+      "syncMessage": "Mpangilio huu pia utahifadhiwa kwenye wasifu wako.",
+      "currentLocation": "Kutafuta karibu na: ",
+      "noLocation": "Weka mahali pako kwenye wasifu ili kuona ramani"
+    },
+    "onlineOnly": "Onyesha watumiaji walio mtandaoni pekee",
+    "mode": {
+      "label": "Hali ya Uchunguzi",
+      "suggested": "Mechi zinazopendekezwa",
+      "suggestedDesc": "Kulingana na uzi wako wa ulinganifu",
+      "free": "Uchunguzi huru",
+      "freeDesc": "Wasifu nasibu karibu nawe"
+    },
+    "premium": {
+      "states": "Chunguza kwa Jimbo (Premium)",
+      "countries": "Chunguza kwa Nchi (Premium)",
+      "upsellTitle": "Chunguza zaidi ya eneo lako",
+      "upsellDesc": "Jiandikishe ReTh Premium au VIP ili kutafuta watu wowote kwenye jimbo lolote au nchi.",
+      "upsellAction": "Onyesha Vifurushi vya Premium"
+    },
+    "cancel": "Ghairi",
+    "apply": "Tekeleza Vichujio",
+    "syncSuccess": "Mapendeleo yamehifadhiwa kwenye wasifu wako.",
+    "highCompatibility": "Ulinganifu wa juu pekee (>70%)",
+    "highCompatibilityDesc": "Huchuja wasifu wenye ulinganifu mdogo.",
+    "online": {
+      "label": "Watumiaji walio mtandaoni pekee",
+      "desc": "Inaonyesha watu wanaotendasha sasa pekee."
+    }
+  },
+  "emptyState": {
+    "title": "Bado hakuna mechi...",
+    "subtitle": "Kamilia wasifu wako ili tuweze kupata watu wanaoshiriki uzi wako.",
+    "progressLabel": "Wasifu wako uko",
+    "keepGoing": "Karibu umefika!",
+    "complete": "Vizuri sana!",
+    "buttonEdit": "Kamilia wasifu",
+    "buttonExpand": "Chunguza bila vichujio",
+    "quickAdds": "Ongeza Viungo haraka",
+    "interestAdded": "Kiungo kimeongezwa! Kutafuta mechi mpya..."
+  },
+  "undo": {
+    "message": "Umerudi kwenye wasifu wa awali"
+  },
+  "vipMessage": {
+    "comingSoon": "Ujumbe wa VIP: Unakuja hivi karibuni"
+  },
+  "boost": {
+    "activated": "Boost imewashwa! Wasifu wako utang'aza kwa dakika 30",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "Wasifu umesasishwa! Umekaribu na toleo lako bora zaidi ✨",
+    "profileProgress": "MAENDELEO YA WASIFU",
+    "carePhrase": "\"Unachochagua huongeza, usichochagua huondoi kamwe. Fahamu mapendeleo yako ili kutanuliwa vizuri zaidi.\"",
+    "placeholder": "Andika hapa..."
+  },
+  "discoverLocked": {
+    "title": "Uhusiano Uthibitishwa",
+    "message": "Uhusiano wako uthibitishwa. Discover imezimwa kuheshimu uhusiano wako. Golth bado inapatikana kuchunguza ulinganifu unaoshirikiwa."
+  },
+  "lowCompletenessAlert": "Unapoongeza maelezo zaidi kwenye wasifu wako, ndivyo utakavyopata mechi bora zaidi",
+  "compatibility": {
+    "whyOpposites": "Kwa nini wanajazana",
+    "whyCompatible": "Kwa nini wanaolingana",
+    "interests": "Viungo vinavyoshirikiwa",
+    "uniqueInterests": "Viungo watakavyokuletea",
+    "values": "Maadili na Mtindo wa Maisha",
+    "intentions": "Nia zinazoshirikiwa",
+    "basicsOnly": "Ulinganifu unaojengwa na umri, mahali na mapendeleo ya msingi."
+  },
+  "quickInterests": {
+    "title": "Ongeza viungo haraka",
+    "subtitle": "Tusaidie kupata watu kama wewe",
+    "search": "Tafuta viungo...",
+    "searchResults": "Matokeo",
+    "yourInterests": "Viungo Vyako",
+    "suggested": "✨ Vinapendekezwa kwako"
+  },
+  "common": {
+    "skip": "Ruka",
+    "saving": "Inahifadhi...",
+    "save": "Hifadhi",
+    "done": "Tayari"
+  },
+  "modes": {
+    "suggested": {
+      "label": "Kwa ajili yako",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Tofauti",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "Kipofu",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Huria",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Zaidi",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "MATCH NARRATIVE",
+    "syncingNarratives": "Synchronizing narrative threads...",
+    "visualHarmony": "VISUAL HARMONY",
+    "startWithSong": "Want to start with a song that touched you?",
+    "suggestedRituals": "SUGGESTED RITUALS",
+    "interpretingThread": "Interpreting your current thread...",
+    "narrativeLink": "Uhusiano wa simulizi",
+    "sharedRhythm": "Mdundo wa pamoja",
+    "purpose": "Kusudi"
+  },
+  "card": {
+    "potentialConnection": "Muunganisho Unaowezekana • Picha Zimefichwa",
+    "firstGlimpse": "First narrative glimpse",
+    "swipeCompatibility": "Swipe to see compatibility >",
+    "compatibilityAnalysis": "COMPATIBILITY ANALYSIS",
+    "goalAlignment": "Goal Alignment",
+    "musicTaste": "Music Tastes",
+    "valuesVision": "Values & Vision",
+    "lifestyle": "Lifestyle",
+    "scenario": "Scenario",
+    "personality": "PERSONALITY",
+    "deepTalksQuote": "I prefer deep talks to small talk...",
+    "unlockHint": "Tap the lock if match happens.",
+    "distance": "{{count}} km away",
+    "nearby": "Nearby",
+    "discovery": "Discovery",
+    "curiositySuggestion": "Curiosity suggestion",
+    "veryActive": "Very active",
+    "vibesInterests": "MY VIBES & INTERESTS",
+    "professionalAcademic": "PROFESSIONAL & ACADEMIC",
+    "atCompany": "katika {{company}}",
+    "emotionalSide": "MY EMOTIONAL SIDE",
+    "myAnthem": "My Anthem",
+    "lookingFor": "Natafuta:",
+    "uniqueMind": "MY UNIQUE MIND",
+    "neurodiversity": "Uanuwai wa kinyurolojia",
+    "viewMoreDetails": "See more details...",
+    "locationNotAvailable": "Location not available",
+    "identityTooltipDefault": "This identity is part of your journey. CARE uses it to connect with respect and affinity.",
+    "careHarmony": "CARE Harmony",
+    "totalCompatibility": "Total Compatibility",
+    "technicalBreakdown": "Technical Breakdown",
+    "emotionalBalance": "Emotional Balance",
+    "viewFullProfile": "View Full Profile",
+    "firstFlash": "Mtazamo wa kwanza wa simulizi",
+    "swipeForCompat": "Telezesha kidole kuona upatanifu >",
+    "analysisTitle": "UCHAMBUZI WA UPATANIFU",
+    "breakdownIntent": "Ulinganifu wa nia",
+    "breakdownMusic": "Upatanifu wa muziki",
+    "breakdownValues": "Maadili na maono",
+    "breakdownLifestyle": "Mtindo wa maisha",
+    "personalityTitle": "UTU",
+    "noPrompt": "Napendelea mazungumzo ya kina kuliko porojo...",
+    "tapLock": "Gusa kufuli iwapo kutakuwa na mechi.",
+    "distanceKm": "kilomita {{count}} kutoka kwako",
+    "nearYou": "Karibu nawe",
+    "discoveryChip": "Ugunduzi",
+    "curiousChip": "Pendekezo la udadisi",
+    "veryActiveChip": "Mwenye shughuli sana",
+    "vibesTitle": "INAVUTIWA NA MAPENZI YAKO",
+    "professionalTitle": "KITAALUMA NA KIKAZI",
+    "emotionalTitle": "UPANDE WANGU WA HISIA",
+    "myHimno": "Wimbo wangu",
+    "uniqueMindTitle": "AKILI YANGU YA KIPEKEE",
+    "viewMore": "Angalia maelezo zaidi...",
+    "vibesWithYourInterests": "INAVUTIWA NA MAPENZI YAKO"
+  }
+}

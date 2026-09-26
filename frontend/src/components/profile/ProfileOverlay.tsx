@@ -13,6 +13,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HeightIcon from '@mui/icons-material/Height';
 import { Profile } from './ProfileCard';
+import { useTranslation } from 'next-i18next';
 
 interface ProfileOverlayProps {
     profile: Profile;
@@ -33,6 +34,7 @@ export default function ProfileOverlay({
     isDiscovery,
     isCurious = false
 }: ProfileOverlayProps) {
+    const { t } = useTranslation(['common', 'discover']);
 
     // BLIND MODE OVERLAY - Multi-slide Experience
     if (isBlind) {
@@ -70,7 +72,7 @@ export default function ProfileOverlay({
                     </Typography>
 
                     <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
-                        Conexión Potencial • Fotos Ocultas
+                        {t('card.potentialConnection', 'Conexión Potencial • Fotos Ocultas')}
                     </Typography>
 
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', maxWidth: '90%' }}>
@@ -82,7 +84,7 @@ export default function ProfileOverlay({
                     {profile.highlighted_fragments && profile.highlighted_fragments.length > 0 && (
                         <Box sx={{ mt: 3, px: 4, textAlign: 'center' }}>
                             <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 800, letterSpacing: 1 }}>
-                                Primer destello narrativo
+                                {t('card.firstFlash', 'Primer destello narrativo')}
                             </Typography>
                             <Typography variant="body2" sx={{ fontStyle: 'italic', mt: 1, opacity: 0.9, lineHeight: 1.4 }}>
                                 "{profile.highlighted_fragments[0]}"
@@ -91,7 +93,7 @@ export default function ProfileOverlay({
                     )}
 
                     <Typography variant="caption" sx={{ mt: 4, opacity: 0.6 }}>
-                        Desliza para ver compatibilidad &gt;
+                        {t('card.swipeForCompat', 'Desliza para ver afinidad >')}
                     </Typography>
                 </Box>
             );
@@ -103,16 +105,16 @@ export default function ProfileOverlay({
             return (
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 2, pb: 6 }}>
                     <Typography variant="overline" color="primary" fontWeight={700} align="center" gutterBottom>
-                        ANÁLISIS DE COMPATIBILIDAD
+                        {t('card.analysisTitle', 'ANÁLISIS DE SINTONÍA')}
                     </Typography>
 
                     <Stack spacing={3} sx={{ mt: 2 }}>
                         {[
-                            { label: 'Sintonía de Objetivos', val: breakdown.intent, icon: <FavoriteIcon sx={{ color: '#F06292' }} /> },
-                            { label: 'Gustos Musicales', val: breakdown.interests, icon: <MusicNoteIcon color="secondary" /> },
-                            { label: 'Valores & Visión', val: breakdown.values, icon: <PsychologyIcon sx={{ color: '#FFD700' }} /> },
-                            { label: 'Estilo de Vida', val: breakdown.lifestyle, icon: <ExploreIcon sx={{ color: '#4CAF50' }} /> },
-                            { label: 'Escenario', val: profile.scenario_label || 'Global', icon: <LocationOnIcon sx={{ color: '#64B5F6' }} /> },
+                            { label: t('card.breakdownIntent', 'Sintonía de intenciones'), val: breakdown.intent, icon: <FavoriteIcon sx={{ color: '#F06292' }} /> },
+                            { label: t('card.breakdownMusic', 'Sintonía musical'), val: breakdown.interests, icon: <MusicNoteIcon color="secondary" /> },
+                            { label: t('card.breakdownValues', 'Valores y visión'), val: breakdown.values, icon: <PsychologyIcon sx={{ color: '#FFD700' }} /> },
+                            { label: t('card.breakdownLifestyle', 'Estilo de vida'), val: breakdown.lifestyle, icon: <ExploreIcon sx={{ color: '#4CAF50' }} /> },
+                            { label: t('card.scenario', 'Escenario'), val: profile.scenario_label || 'Global', icon: <LocationOnIcon sx={{ color: '#64B5F6' }} /> },
                         ].map((item, i) => (
                             <Box key={i}>
                                 <Box display="flex" justifyContent="space-between" mb={0.5}>
@@ -146,7 +148,7 @@ export default function ProfileOverlay({
             return (
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 2, pb: 6 }}>
                     <Typography variant="overline" color="secondary" fontWeight={700} align="center" gutterBottom>
-                        PERSONALIDAD
+                        {t('card.personalityTitle', 'PERSONALIDAD')}
                     </Typography>
 
                     {prompt ? (
@@ -160,13 +162,13 @@ export default function ProfileOverlay({
                         </Box>
                     ) : (
                         <Box sx={{ textAlign: 'center', opacity: 0.7 }}>
-                            <Typography fontStyle="italic">"Prefiero las charlas profundas a las triviales..."</Typography>
+                            <Typography fontStyle="italic">{t('card.noPrompt', 'Prefiero conversaciones profundas que charlas superficiales...')}</Typography>
                         </Box>
                     )}
 
                     <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
                         <Typography variant="caption" sx={{ opacity: 0.6 }}>
-                            Toca el candado si el match ocurre.
+                            {t('card.tapLock', 'Toca el candado si hay match.')}
                         </Typography>
                     </Box>
                 </Box>
@@ -236,8 +238,8 @@ export default function ProfileOverlay({
                         }}
                     >
                         {profile.distance_km !== undefined
-                            ? `A ${Math.round(profile.distance_km)} km de distancia`
-                            : 'Cerca de ti'
+                            ? t('card.distanceKm', { count: Math.round(profile.distance_km), defaultValue: `a ${Math.round(profile.distance_km)} km de ti` })
+                            : t('card.nearYou', 'Cerca de ti')
                         }
                     </Typography>
                 </Box>
@@ -295,7 +297,7 @@ export default function ProfileOverlay({
                     {(isDiscovery || profile.is_discovery) && (
                         <Chip
                             icon={<ExploreIcon sx={{ fontSize: '1rem', color: '#E1BEE7' }} />}
-                            label="Descubrimiento"
+                            label={t('card.discoveryChip', 'Descubrimiento')}
                             size="small"
                             sx={{
                                 background: 'linear-gradient(45deg, #4A148C 30%, #9C27B0 90%)',
@@ -314,7 +316,7 @@ export default function ProfileOverlay({
                     {(isCurious || profile.is_curious) && (
                         <Chip
                             icon={<ExploreIcon sx={{ fontSize: '1rem', color: '#B39DDB' }} />}
-                            label="Sugerencia por curiosidad"
+                            label={t('card.curiousChip', 'Sugerencia de curiosidad')}
                             size="small"
                             sx={{
                                 background: 'linear-gradient(45deg, #7B1FA2 30%, #4527A0 90%)',
@@ -349,7 +351,7 @@ export default function ProfileOverlay({
                     {profile.activity_score && profile.activity_score > 0.8 && (
                         <Chip
                             icon={<BoltIcon sx={{ fontSize: '1rem', color: '#4CAF50' }} />}
-                            label="Muy activo"
+                            label={t('card.veryActiveChip', 'Muy activo')}
                             size="small"
                             sx={{
                                 bgcolor: 'rgba(76, 175, 80, 0.15)',
@@ -371,7 +373,7 @@ export default function ProfileOverlay({
         return (
             <Box>
                 <Typography variant="overline" fontWeight={800} sx={{ color: '#FFD700', letterSpacing: 1.5, mb: 1, display: 'block' }}>
-                    MIS VIBRAS &amp; INTERESES
+                    {t('card.vibesTitle', 'VIBRA CON TUS INTERESES')}
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8 }}>
                     {profile.interests.slice(0, 6).map(tag => (
@@ -404,14 +406,14 @@ export default function ProfileOverlay({
         return (
             <Box>
                 <Typography variant="overline" fontWeight={800} sx={{ color: '#64B5F6', letterSpacing: 1.5, mb: 1, display: 'block' }}>
-                    PROFESIONAL &amp; ACADÉMICO
+                    {t('card.professionalTitle', 'ÁMBITO PROFESIONAL Y ACADÉMICO')}
                 </Typography>
                 <Stack spacing={1.5}>
                     {(profile.occupation || profile.work_company) && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <WorkIcon sx={{ color: '#64B5F6' }} />
                             <Typography variant="body1" fontWeight={500}>
-                                {profile.occupation} {profile.work_company ? `en ${profile.work_company}` : ''}
+                                {profile.occupation} {profile.work_company ? t('card.atCompany', { company: profile.work_company, defaultValue: `en ${profile.work_company}` }) : ''}
                             </Typography>
                         </Box>
                     )}
@@ -441,7 +443,7 @@ export default function ProfileOverlay({
         return (
             <Box>
                 <Typography variant="overline" fontWeight={800} sx={{ color: '#F06292', letterSpacing: 1.5, mb: 1, display: 'block' }}>
-                    MI LADO EMOCIONAL
+                    {t('card.emotionalTitle', 'MI LADO EMOCIONAL')}
                 </Typography>
 
                 {profile.mi_himno && profile.mi_himno.featured_songs?.[0] && (
@@ -457,7 +459,7 @@ export default function ProfileOverlay({
                     }}>
                         <MusicNoteIcon sx={{ color: '#F06292', fontSize: 32 }} />
                         <Box>
-                            <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>Mi Himno</Typography>
+                            <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>{t('card.myHimno', 'Mi Himno')}</Typography>
                             <Typography variant="body1" fontWeight={700}>
                                 {profile.mi_himno.featured_songs[0].title}
                             </Typography>
@@ -472,10 +474,11 @@ export default function ProfileOverlay({
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <FavoriteIcon sx={{ color: '#F06292' }} />
                         <Typography>
-                            Busco: <strong>{
+                            {t('card.lookingFor', 'Busco:')} <strong>{
                                 profile.relationship_goals.map(val => {
                                     const { INTENTION_OPTIONS } = require('../../constants/profileOptions');
-                                    return INTENTION_OPTIONS.find((o: any) => o.value === val)?.label || val;
+                                    const fallback = INTENTION_OPTIONS.find((o: any) => o.value === val)?.label || val;
+                                    return t(`common:profile.intentions_map.${val}`, fallback);
                                 }).join(', ')
                             }</strong>
                         </Typography>
@@ -490,14 +493,14 @@ export default function ProfileOverlay({
         return (
             <Box>
                 <Typography variant="overline" fontWeight={800} sx={{ color: '#BA68C8', letterSpacing: 1.5, mb: 1, display: 'block' }}>
-                    MI MENTE ÚNICA
+                    {t('card.uniqueMindTitle', 'MI MENTE ÚNICA')}
                 </Typography>
 
                 {profile.neurodiversity && (
                     <Box sx={{ mb: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                             <PsychologyIcon sx={{ color: '#BA68C8' }} />
-                            <Typography fontWeight={600}>Neurodiversidad</Typography>
+                            <Typography fontWeight={600}>{t('card.neurodiversity', 'Neurodiversidad')}</Typography>
                         </Box>
                         <Typography variant="body2" sx={{ opacity: 0.9 }}>
                             {profile.neurodiversity.join(', ')}
@@ -542,7 +545,7 @@ export default function ProfileOverlay({
     return (
         <Box>
             <Typography variant="h5" fontWeight={700}>{profile.display_name}</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.7 }}>Ver más detalles...</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.7 }}>{t('card.viewMore', 'Ver más detalles...')}</Typography>
         </Box>
     );
 }

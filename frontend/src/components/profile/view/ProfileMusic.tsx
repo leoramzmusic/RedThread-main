@@ -1,7 +1,10 @@
 import { Paper, Box, Typography, Button } from '@mui/material';
 import { MusicNote as MusicIcon } from '@mui/icons-material';
+import { useTranslation } from 'next-i18next';
 
 export default function ProfileMusic() {
+    const { t } = useTranslation('common');
+
     return (
         <Paper
             className="profile-section"
@@ -27,10 +30,10 @@ export default function ProfileMusic() {
                 </Box>
                 <Box>
                     <Typography variant="h6" fontWeight={700} mb={0.5}>
-                        Mi Himno
+                        {t('profile.fields.anthem', 'Mi Himno')}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                        Comparte tu música favorita
+                        {t('profile.anthem_subtitle', 'Comparte tu música favorita')}
                     </Typography>
                 </Box>
             </Box>
@@ -59,10 +62,10 @@ export default function ProfileMusic() {
             >
                 <Box textAlign="left">
                     <Typography variant="body1" fontWeight={700}>
-                        Conectar con Spotify
+                        {t('profile.connectSpotify', 'Conectar con Spotify')}
                     </Typography>
                     <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                        Muestra tu personalidad musical
+                        {t('profile.showMusicPersonality', 'Muestra tu personalidad musical')}
                     </Typography>
                 </Box>
             </Button>

@@ -1,0 +1,325 @@
+{
+  "title": "Ontdekken",
+  "subtitle": "Vind mensen die jouw draad delen",
+  "friendshipMode": {
+    "title": "Vriendschapsmodus geactiveerd",
+    "description": "Omdat je in een relatie bent, zie je alleen mensen die op zoek zijn naar vriendschap of activiteiten."
+  },
+  "errors": {
+    "loadFailed": "Profielen konden niet worden geladen. Probeer het later opnieuw.",
+    "updateFailed": "We konden je profiel niet bijwerken. Probeer het opnieuw.",
+    "boostFailed": "Fout bij het activeren van Boost"
+  },
+  "match": {
+    "title": "Het is een Match!",
+    "description": "Jij en {{name}} vinden elkaar leuk"
+  },
+  "noProfiles": {
+    "title": "Geen profielen meer in de buurt",
+    "description": "Vergroot je zoekcriteria of kom later terug.",
+    "button": "Filters aanpassen"
+  },
+  "filters": {
+    "title": "Zoekopdracht aanpassen",
+    "ageRange": "Leeftijdsbereik",
+    "ageNoLimit": "Geen leeftijdsgrens",
+    "distance": {
+      "label": "Zoekstraal",
+      "unit": "km",
+      "unlimited": "Onbeperkt",
+      "syncMessage": "Deze instelling wordt ook opgeslagen in je profiel.",
+      "currentLocation": "Zoeken bij: ",
+      "noLocation": "Stel je locatie in je profiel in om de kaart te zien"
+    },
+    "onlineOnly": "Alleen online gebruikers tonen",
+    "mode": {
+      "label": "Verkenningsmodus",
+      "suggested": "Voorgestelde matches",
+      "suggestedDesc": "Gebaseerd op jouw compatibiliteitsdraad",
+      "free": "Vrije verkenning",
+      "freeDesc": "Willekeurige profielen bij jou in de buurt"
+    },
+    "premium": {
+      "states": "Verken per staat (Premium)",
+      "countries": "Verken per land (Premium)",
+      "upsellTitle": "Verken voorbij je eigen gebied",
+      "upsellDesc": "Abonneer je op ReTh Premium of VIP om mensen in elke staat of het land te zoeken.",
+      "upsellAction": "Bekijk Premium-abonnementen"
+    },
+    "cancel": "Annuleren",
+    "apply": "Filters toepassen",
+    "syncSuccess": "Voorkeuren opgeslagen in je profiel.",
+    "highCompatibility": "Alleen hoge compatibiliteit (>70%)",
+    "highCompatibilityDesc": "Filtert profielen met mindere affiniteit.",
+    "online": {
+      "label": "Alleen online gebruikers",
+      "desc": "Toont alleen mensen die nu actief zijn."
+    }
+  },
+  "emptyState": {
+    "title": "Nog geen matches...",
+    "subtitle": "Voltooi je profiel zodat we mensen kunnen vinden die jouw draad delen.",
+    "progressLabel": "Je profiel is voor",
+    "keepGoing": "Bijna daar!",
+    "complete": "Uitstekend!",
+    "buttonEdit": "Profiel voltooien",
+    "buttonExpand": "Verkennen zonder filters",
+    "quickAdds": "VOEG SNEL INTERESSES TOE",
+    "interestAdded": "Interesse toegevoegd! Op zoek naar nieuwe matches..."
+  },
+  "undo": {
+    "message": "Je ging terug naar het vorige profiel"
+  },
+  "vipMessage": {
+    "comingSoon": "VIP-bericht: Binnenkort"
+  },
+  "boost": {
+    "activated": "Boost geactiveerd! Je profiel schittert 30 minuten lang",
+    "label": "BOOST",
+    "inactiveTooltip": "Activate Boost: Stand out from the rest",
+    "activeTooltip": "Your thread is vibrating. Who will feel it? ✨"
+  },
+  "refinement": {
+    "saved": "Profiel bijgewerkt! Je bent dichter bij je beste versie ✨",
+    "profileProgress": "PROFIELVOORTGANG",
+    "carePhrase": "\"Wat je kiest telt op, wat je niet kiest trekt nooit af. Bepaal je smaken om beter te vibreren.\"",
+    "placeholder": "Typ hier..."
+  },
+  "discoverLocked": {
+    "title": "Verbinding bevestigd",
+    "message": "Je verbinding is bevestigd. Discover is uitgeschakeld om je relatie te respecteren. Golth blijft beschikbaar om gedeelde affiniteiten te verkennen."
+  },
+  "lowCompletenessAlert": "Hoe meer details je aan je profiel toevoegt, hoe betere matches je krijgt",
+  "compatibility": {
+    "whyOpposites": "Waarom ze elkaar aanvullen",
+    "whyCompatible": "Waarom ze compatibel zijn",
+    "interests": "Gedeelde interesses",
+    "uniqueInterests": "Interesses die ze je brengen",
+    "values": "Waarden & levensstijl",
+    "intentions": "Gedeelde intenties",
+    "basicsOnly": "Compatibiliteit op basis van leeftijd, locatie en basisvoorkeuren."
+  },
+  "quickInterests": {
+    "title": "Voeg snel interesses toe",
+    "subtitle": "Help ons mensen zoals jij te vinden",
+    "search": "Zoek interesses...",
+    "searchResults": "Resultaten",
+    "yourInterests": "Jouw interesses",
+    "suggested": "✨ Voorgesteld voor jou"
+  },
+  "common": {
+    "skip": "Overslaan",
+    "saving": "Opslaan...",
+    "save": "Opslaan",
+    "done": "Klaar"
+  },
+  "modes": {
+    "suggested": {
+      "label": "Voor jou",
+      "description": "Based on your compatibility thread",
+      "carePhrase": "“Here you'll see who vibes with you.”"
+    },
+    "opposites": {
+      "label": "Tegenpolen",
+      "description": "Opposites attract",
+      "carePhrase": "“Dare to connect with your opposite?”"
+    },
+    "blind": {
+      "label": "Blind",
+      "description": "Feel without seeing. Pure connection",
+      "carePhrase": "“Feel without seeing. Trust the energy.”"
+    },
+    "free": {
+      "label": "Vrij",
+      "description": "Adventure with no limits or filters",
+      "carePhrase": "“Explore without filters, without limits.”"
+    },
+    "more": {
+      "label": "Meer",
+      "description": "Broaden your search to shared interests",
+      "carePhrase": "“What brings us together builds endless bridges.”"
+    }
+  },
+  "toolbar": {
+    "settings": "Interaction settings",
+    "boost": "BOOST"
+  },
+  "moreMode": {
+    "title": "What are you looking for?",
+    "subtitle": "Find people looking for the same thing as you.",
+    "cat": {
+      "stable_partner": "Long-term partner",
+      "serious_rel": "Serious relationship",
+      "free_today": "Free today",
+      "nothing_serious": "Nothing serious",
+      "friends": "Make friends",
+      "non_monogamy": "Non-monogamous relationship",
+      "verified": "Verified",
+      "wants_kids": "Wants kids",
+      "no_kids": "Doesn't want kids",
+      "hobbies": "Hobbies",
+      "music": "Music",
+      "foodies": "Foodies",
+      "travel": "Travel",
+      "sports": "Athletes",
+      "coffee": "Coffee",
+      "dates": "Dates",
+      "extreme": "Extreme sports",
+      "nature": "Nature",
+      "photography": "Photographers",
+      "pets": "Pet lovers",
+      "gaming": "Gamers"
+    }
+  },
+  "interaction": {
+    "title": "Interaction Settings",
+    "subtitle": "Choose how you want to interact with profiles in Discover.",
+    "tabInteraction": "Interaction",
+    "tabLayout": "Layout",
+    "mode": {
+      "buttons": {
+        "label": "Buttons Only",
+        "description": "Gestures disabled. Full control via on-screen buttons.",
+        "carePhrase": "“You prefer total control. Nothing escapes you.”",
+        "detail1": "Rewind: Arrow",
+        "detail2": "Dislike: X",
+        "detail3": "Like: Heart",
+        "detail4": "Superlike: Star"
+      },
+      "taps": {
+        "label": "Buttons + Taps",
+        "description": "Quick actions by tapping the screen.",
+        "carePhrase": "“You explore with intuition. Every tap counts.”",
+        "detail1": "2 taps: Like",
+        "detail2": "3 taps: Dislike",
+        "detail3": "4 taps: Superlike",
+        "detail4": "Long tap: Info"
+      },
+      "swipes": {
+        "label": "Buttons + Swipes",
+        "description": "Swipe to decide. Classic and fluid.",
+        "carePhrase": "“You like fluidity. Let the gesture speak.”",
+        "detail1": "Right: Like",
+        "detail2": "Left: Dislike",
+        "detail3": "Up: Superlike",
+        "detail4": "Down: Info"
+      },
+      "keyboard": {
+        "label": "Buttons + Keyboard",
+        "description": "Ideal for desktop. Use your keyboard arrow keys.",
+        "carePhrase": "“Precision from the keyboard. Your connection is methodical.”",
+        "detail1": "→: Like",
+        "detail2": "←: Dislike",
+        "detail3": "↑: Superlike",
+        "detail4": "↓: Info"
+      }
+    },
+    "layout": {
+      "stack": {
+        "label": "Cards (Stack)",
+        "description": "The classic experience. One card at a time.",
+        "detail1": "Total focus on one profile",
+        "detail2": "Swipe to decide",
+        "detail3": "Game-like feel"
+      },
+      "sticker_book": {
+        "label": "Sticker Book",
+        "description": "Collect moments. Visual and fun.",
+        "detail1": "Multiple profiles view",
+        "detail2": "Ideal for visual exploration",
+        "detail3": "Tap to view details"
+      },
+      "carousel": {
+        "label": "Carousel",
+        "description": "Fluid horizontal scroll.",
+        "detail1": "Relaxed exploration",
+        "detail2": "Less pressure to discard",
+        "detail3": "Smooth navigation"
+      },
+      "grid": {
+        "label": "Gallery (Grid)",
+        "description": "Efficient panoramic view.",
+        "detail1": "View many options quickly",
+        "detail2": "Instagram/Pinterest style",
+        "detail3": "Visual efficiency"
+      }
+    }
+  },
+  "toast": {
+    "layout": {
+      "stack": "Layout changed to Cards (Stack)",
+      "sticker_book": "Layout changed to Sticker Book",
+      "carousel": "Layout changed to Carousel",
+      "grid": "Layout changed to Gallery (Grid)"
+    }
+  },
+  "careNarrative": {
+    "title": "CARE Interprets",
+    "narrativeOfMatch": "MATCHVERHAAL",
+    "syncingNarratives": "Narratieve draden synchroniseren...",
+    "visualHarmony": "VISUELE HARMONIE",
+    "startWithSong": "Wil je beginnen met een lied dat je heeft geraakt?",
+    "suggestedRituals": "VOORGESTELDE RITUELEN",
+    "interpretingThread": "Je huidige draad interpreteren...",
+    "narrativeLink": "Verhalende band",
+    "sharedRhythm": "Gedeeld ritme",
+    "purpose": "Doel"
+  },
+  "card": {
+    "potentialConnection": "Mogelijke connectie • Foto's verborgen",
+    "firstGlimpse": "Eerste verhalende glimp",
+    "swipeCompatibility": "Veeg voor compatibiliteit >",
+    "compatibilityAnalysis": "COMPATIBILITEITSANALYSE",
+    "goalAlignment": "Doelenafstemming",
+    "musicTaste": "Muzieksmaak",
+    "valuesVision": "Waarden & Visie",
+    "lifestyle": "Levensstijl",
+    "scenario": "Scenario",
+    "personality": "PERSOONLIJKHEID",
+    "deepTalksQuote": "Ik hou meer van diepe gesprekken dan van koetjes en kalfjes...",
+    "unlockHint": "Tik op het slot als er een match ontstaat.",
+    "distance": "{{count}} km afstand",
+    "nearby": "Bij jou in de buurt",
+    "discovery": "Ontdekking",
+    "curiositySuggestion": "Nieuwsgierigheidssuggestie",
+    "veryActive": "Zeer actief",
+    "vibesInterests": "MIJN VIBES & INTERESSES",
+    "professionalAcademic": "PROFESSIONEEL & ACADEMISCH",
+    "atCompany": "bij {{company}}",
+    "emotionalSide": "MIJN EMOTIONELE KANT",
+    "myAnthem": "Mijn lijflied",
+    "lookingFor": "Op zoek naar:",
+    "uniqueMind": "MIJN UNIEKE GEEST",
+    "neurodiversity": "Neurodiversiteit",
+    "viewMoreDetails": "Bekijk meer details...",
+    "locationNotAvailable": "Locatie niet beschikbaar",
+    "identityTooltipDefault": "Deze identiteit maakt deel uit van jouw reis. CARE gebruikt dit om met respect en affiniteit te verbinden.",
+    "careHarmony": "CARE-harmonie",
+    "totalCompatibility": "Totale compatibiliteit",
+    "technicalBreakdown": "Technische uitsplitsing",
+    "emotionalBalance": "Emotionele balans",
+    "viewFullProfile": "Bekijk volledig profiel",
+    "firstFlash": "Eerste narratieve glimp",
+    "swipeForCompat": "Veeg voor compatibiliteit >",
+    "analysisTitle": "COMPATIBILITEITSANALYSE",
+    "breakdownIntent": "Intentieharmonie",
+    "breakdownMusic": "Muzikale harmonie",
+    "breakdownValues": "Waarden & visie",
+    "breakdownLifestyle": "Levensstijl",
+    "personalityTitle": "PERSOONLIJKHEID",
+    "noPrompt": "Ik heb liever diepe gesprekken dan koetjes en kalfjes...",
+    "tapLock": "Tik op het slot als er een match is.",
+    "distanceKm": "op {{count}} km van jou",
+    "nearYou": "Dichtbij jou",
+    "discoveryChip": "Ontdekking",
+    "curiousChip": "Nieuwsgierigheidssuggestie",
+    "veryActiveChip": "Erg actief",
+    "vibesTitle": "PAST BIJ JE INTERESSES",
+    "professionalTitle": "PROFESSIONEEL & ACADEMISCH",
+    "emotionalTitle": "MIJN EMOTIONELE KANT",
+    "myHimno": "Mijn volkslied",
+    "uniqueMindTitle": "MIJN UNIEKE GEEST",
+    "viewMore": "Bekijk meer details...",
+    "vibesWithYourInterests": "PAST BIJ JE INTERESSES"
+  }
+}
