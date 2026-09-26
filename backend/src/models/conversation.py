@@ -1,4 +1,4 @@
-from beanie import Document
+from beanie import Document, Indexed
 from pydantic import Field
 from typing import Optional, Dict
 from datetime import datetime
@@ -21,7 +21,7 @@ class Conversation(Document):
     """
     
     # Link to relationship
-    relationship_id: str  # Reference to Relationship document
+    relationship_id: Indexed(str, unique=True)  # Reference to Relationship document
     
     # Conversation metadata
     type: ConversationType  # Derived from relationship type
@@ -46,7 +46,6 @@ class Conversation(Document):
     class Settings:
         name = "conversations"
         indexes = [
-            "relationship_id",
             "participants",
             "type",
             [("participants", 1), ("last_message_at", -1)],

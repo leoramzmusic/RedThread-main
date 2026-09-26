@@ -1,4 +1,5 @@
 from beanie import Document
+from pymongo import IndexModel
 from pydantic import Field
 from typing import Optional
 from datetime import datetime
@@ -77,7 +78,7 @@ class Relationship(Document):
             "user_b_id",
             "type",
             "status",
-            [("user_a_id", 1), ("user_b_id", 1)],  # Compound index
+            IndexModel([("user_a_id", 1), ("user_b_id", 1), ("type", 1)], unique=True),  # Compound index
             [("user_a_id", 1), ("type", 1), ("status", 1)],
             [("user_b_id", 1), ("type", 1), ("status", 1)],
         ]
