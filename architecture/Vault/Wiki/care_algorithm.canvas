@@ -1,6 +1,6 @@
 {
 	"nodes":[
-		{"id":"eng-core","type":"text","text":"### 🧠 **CARE ENGINE**\n**Compatibility + Authenticity + Responsiveness**\n\nCentro del matching: concilia una señal de compatibilidad estática con señales de comportamiento.","x":-350,"y":-190,"width":720,"height":220,"color":"1"},
+		{"id":"eng-core","type":"text","text":"### 🧠 **CARE ENGINE**\n**Compatibility + Authenticity + Responsiveness**\n\nCentro del matching: concilia una señal de compatibilidad estática con señales de comportamiento.\n\n**Fórmula objetivo (roadmap):** `α·Compat + β·Auth + γ·Resp + δ·Eng + ε·Chaos(t)`\nHoy: `0.60·compat + 0.30·dynamic + 0.10·human` → [[CARE_ROADMAP]]","x":-350,"y":-190,"width":720,"height":260,"color":"1"},
 		{"id":"dim-context","type":"text","text":"### 🧭 **Context**\n_Dónde y bajo qué criterios se busca._","x":-1220,"y":-670,"width":540,"height":130,"color":"5"},
 		{"id":"dim-attributes","type":"text","text":"### 🧬 **Attributes**\n_Qué es el candidato observado._","x":-1220,"y":120,"width":540,"height":130,"color":"4"},
 		{"id":"dim-relevance","type":"text","text":"### 🎯 **Relevance**\n_Cuánto encaja con el usuario._","x":640,"y":-670,"width":540,"height":130,"color":"6"},
@@ -35,7 +35,7 @@
 		{"id":"mod-messages","type":"text","text":"💬 **Messages**","x":1300,"y":-40,"width":380,"height":100,"color":"1"},
 		{"id":"mod-profile","type":"text","text":"👤 **Profile**","x":1300,"y":90,"width":380,"height":100,"color":"1"},
 		{"id":"mod-visits","type":"text","text":"👁️ **Visits**","x":1300,"y":220,"width":380,"height":100,"color":"1"},
-		{"id":"node-kb","type":"text","text":"### 🧠 CodeGraph & Docs\n- `.codegraph/codegraph.db` (índice semántico)\n- [[ADR-003]] · `knowledge/index.md`\n- Cada 📄 salta al código real","x":1300,"y":470,"width":380,"height":160,"color":"3"},
+		{"id":"node-kb","type":"text","text":"### 🧠 CodeGraph & Docs\n- `.codegraph/codegraph.db` (índice semántico)\n- [[ADR-003]] · `knowledge/index.md`\n- 📄 `docs/CARE_ALGORITHM.md` (estado actual)\n- 📄 `docs/CARE_ROADMAP.md` (fases F0–F6)\n- [[care_neural_portal.canvas]] (portal CARE)\n- Cada 📄 salta al código real","x":1300,"y":470,"width":380,"height":200,"color":"3"},
 		{"id":"legend","type":"text","text":"#### 🎨 **Colores**\n🔵 Context · 🟢 Attributes · 🟣 Relevance · 🟠 Engagement · 🔴 CARE Engine · 🟡 Output & Docs","x":-350,"y":-960,"width":720,"height":100,"color":"3"}
 	],
 	"edges":[

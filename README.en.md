@@ -27,7 +27,7 @@
 ## ✨ How it works
 
 - **Dynamic profiles** with interests, playlists and vibes.
-- **CARE** intelligent discovery engine: **C**ompatibility · **A**uthenticity · **R**esponsiveness · **E**ngagement.
+- **CARE** intelligent discovery engine: **C**ompatibility · **A**uthenticity · **R**esponsiveness · **E**ngagement → [Current state](docs/CARE_ALGORITHM.md) · [Roadmap](docs/CARE_ROADMAP.md).
 - **Real-time chat**, proximity radar and a conversation roulette.
 - **Rest and social energy** tools to manage your time in the app.
 - 🌍 21 languages · user portal · admin panel with a visual landing-page editor.

@@ -27,7 +27,7 @@
 ## ✨ Funcionamiento
 
 - **Perfiles dinámicos** con intereses, playlists y vibras.
-- Motor **CARE** de descubrimiento inteligente: **C**ompatibilidad · **A**utenticidad · **R**esponsividad · **E**ngagement.
+- Motor **CARE** de descubrimiento inteligente: **C**ompatibilidad · **A**utenticidad · **R**esponsividad · **E**ngagement → [Estado actual](docs/CARE_ALGORITHM.md) · [Hoja de ruta](docs/CARE_ROADMAP.md).
 - **Chat en tiempo real**, radar de proximidad y ruleta de conversación.
 - Herramientas de **descanso y energía social** para gestionar tu tiempo en la app.
 - 🌍 21 idiomas · portal de usuario · panel admin con editor visual del landing.

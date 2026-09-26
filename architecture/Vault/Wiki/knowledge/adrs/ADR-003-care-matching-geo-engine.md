@@ -28,3 +28,8 @@ Diseñar el motor **CARE**:
 ## 📊 Consecuencias
 - Resultados de alta calidad emocional para los usuarios.
 - Complejidad algorítmica mitigada mediante índices geoespaciales y precálculo de vectores de intereses.
+
+## 🔗 Relacionados
+- [[../../../../docs/CARE_ALGORITHM|CARE_ALGORITHM]] — estado actual del motor (referencia `archivo:línea`).
+- [[../../../../docs/CARE_ROADMAP|CARE_ROADMAP]] — hoja de ruta F0–F6: señales dinámicas, caos ε·Chaos(t), feedback loop, portal CARE y MLP.
+- Diagrama: [[care_algorithm.canvas]] · [[care_neural_portal.canvas]]

@@ -54,7 +54,7 @@ Red Thread is a social network for **meeting people with purpose** —romance, f
 ### ✅ Available today
 
 - **Rich profiles**: bio, photos, interests, relationship goals, energy level, playlists (Spotify) and integrations.
-- **Affinity discovery**: swipe, filters and a visible compatibility percentage.
+- **Affinity discovery**: swipe, filters and a visible compatibility percentage → [CARE](./CARE_ALGORITHM.md) engine with its [roadmap](./CARE_ROADMAP.md).
 - **Radar and proximity**: nearby users with explicit opt-in.
 - **Conversation roulette**: random matching to break the ice.
 - **Chat and visits**: active conversations with activity tracking.

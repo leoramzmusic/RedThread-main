@@ -1,5 +1,8 @@
 # CARE Engine - Testing Guide
 
+> Roadmap: [docs/CARE_ROADMAP.md](../../../docs/CARE_ROADMAP.md) — each phase
+> (F0–F6) defines its own acceptance tests; this guide covers the base suite.
+
 ## Running Tests
 
 The CARE Engine tests require the module to be importable. There are two options:

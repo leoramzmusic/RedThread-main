@@ -1,0 +1,43 @@
+{
+	"nodes":[
+		{"id":"hdr","type":"text","text":"### 🧬 **PORTAL CARE — Red Neuronal Administrable**\n_Diseño inspirado en constelación de partículas (void #000000 · acento #8052ff · chispa #ffb829)_\nFases: [[CARE_ROADMAP]] §7 · Migración de `/admin/care-analytics` → *Métricas*\n**Leyenda:** 🔵 Fórmula/Pesos · 🟣 Señales · 🟠 Caos · 🟢 Feedback · 🟡 Simulador · 🔴 Métricas","x":-460,"y":-1160,"width":860,"height":180,"color":"1"},
+		{"id":"neural-core","type":"text","text":"### ⚛️ **Núcleo: CAREScore**\n`α·Compat + β·Auth + γ·Resp + δ·Eng + ε·Chaos(t)`\n\nCada nodo inferior es un *espín* del acrónimo: se ajusta con sliders y su contribución se refleja en tiempo real.","x":-360,"y":-460,"width":680,"height":190,"color":"1"},
+		{"id":"n-alpha","type":"text","text":"🔵 **α · Compatibilidad**\n0.60 actual → bloques: intereses, identidad, metas, personalidad, neuro, ubicación, idiomas, profesional, himno, amor, comunicación + **F2: valores / expectativas**","x":-900,"y":-180,"width":400,"height":160,"color":"5"},
+		{"id":"n-beta","type":"text","text":"🟣 **β · Autenticidad**\nCastigo vanidad · ghosting · fairness\nHoy ≈ constante → **F1: poblar `popularity_signals` / `authenticity_signals`**","x":-460,"y":-180,"width":380,"height":160,"color":"6"},
+		{"id":"n-gamma","type":"text","text":"🟣 **γ · Responsiveness**\n`responsiveness_score` · `reciprocity_score`\nHoy = 0.5 → **F1: chats y likes reales**","x":-40,"y":-180,"width":380,"height":160,"color":"6"},
+		{"id":"n-delta","type":"text","text":"🟣 **δ · Engagement**\n`activity_score` · momentum · tags\nHoy ≈ 0.5 → **F1: actividad y `photo_tags`/`bio_tags`**","x":380,"y":-180,"width":380,"height":160,"color":"6"},
+		{"id":"n-epsilon","type":"text","text":"🟠 **ε · Chaos(t)** *(nuevo — F3)*\n`noise(hash(user, candidate, t))` · semilla determinista\nAdaptativo: `ε_eff = ε/(1+k·interacciones)`\nUI: **\"75% ± 10%\"** · techo duro: Identidad intacta","x":820,"y":-180,"width":420,"height":160,"color":"2"},
+		{"id":"menu-pesos","type":"text","text":"### 🔵 **Pesos y Fórmula**\nSliders α, β, γ, δ, ε · toggle caos · fórmula renderizada\n(usa `admin_algorithms.py` — requiere P1-4)","x":-1320,"y":160,"width":420,"height":150,"color":"5"},
+		{"id":"menu-senales","type":"text","text":"### 🟣 **Señales activas**\nQué campos están poblados y cuáles faltan\nAlertas: `photo_tags` ✗ · `activity_score` ✗ · `reciprocity_score` ✗ → **F1**","x":-840,"y":160,"width":420,"height":150,"color":"6"},
+		{"id":"menu-caos","type":"text","text":"### 🟠 **Caos y diversidad**\nSlider ε · techo duro · frecuencia de perfiles \"fuera de patrón\"\nIntegra `apply_diversity_reranking()` → **F3**","x":-360,"y":160,"width":420,"height":150,"color":"2"},
+		{"id":"menu-ab","type":"text","text":"### 🟡 **Experimentos A/B**\nCrear · monitorear · cerrar\n`weight_test_001` · `DIVERSITY_EXPERIMENT` · lineal vs MLP (F6)\nRequiere `p_value` real (P1)","x":120,"y":160,"width":420,"height":150,"color":"3"},
+		{"id":"menu-feedback","type":"text","text":"### 🟢 **Feedback Loop**\nEmbudo: match → chat → amistad → pareja\nTasa por modo (Para ti · Opuestos · A ciegas · Libre)\nRecalibración semanal revisable → **F4**","x":600,"y":160,"width":420,"height":150,"color":"4"},
+		{"id":"menu-sim","type":"text","text":"### 🟡 **Simulador**\nPerfil ficticio → cola Discover en cada modo\nMuestra efecto del caos ε antes de desplegar","x":1080,"y":160,"width":420,"height":150,"color":"3"},
+		{"id":"menu-metricas","type":"text","text":"### 🔴 **Métricas** *(migrado de `/admin/care-analytics`)*\nMetric cards · diversidad de buckets · A/B results\nRedirect en `next.config.js` · item `metricas-care` reubicado","x":-360,"y":420,"width":680,"height":150,"color":"1"},
+		{"id":"inspo","type":"text","text":"#### 🎨 **Dirección visual (Refero / Dala)**\n- Void `#000000` sin cards ni bordes · partículas triangulares = nodos\n- Violeta `#8052ff` = acento activo · Ámbar `#ffb829` = ε y alertas · Verdant `#15846e` = feedback\n- Jerarquía por escala, no por peso · labels 14px uppercase","x":-1320,"y":420,"width":880,"height":170,"color":"3"},
+		{"id":"mlp","type":"text","text":"### 🧠 **F6 — Red neuronal ligera**\nEmbeddings de perfiles → MLP → *probabilidad de relación exitosa*\nLabels del embudo (F4) · blend `λ·MLP + (1-λ)·lineal`\n**Explicabilidad obligatoria:** \"CARE cree que… porque…\"","x":460,"y":420,"width":680,"height":170,"color":"4"},
+		{"id":"doc-links","type":"text","text":"#### 📄 **Docs**\n[[CARE_ALGORITHM]] (actual) · [[CARE_ROADMAP]] (F0–F6) · [[ADR-003]]\nDiagrama del motor: [[care_algorithm.canvas]]","x":1200,"y":420,"width":360,"height":170,"color":"3"}
+	],
+	"edges":[
+		{"id":"e-pesos-a","fromNode":"menu-pesos","fromSide":"top","toNode":"n-alpha","toSide":"bottom","color":"5"},
+		{"id":"e-pesos-b","fromNode":"menu-pesos","fromSide":"top","toNode":"n-beta","toSide":"bottom","color":"5","label":"α β γ δ ε"},
+		{"id":"e-sen-b","fromNode":"menu-senales","fromSide":"top","toNode":"n-beta","toSide":"bottom","color":"6"},
+		{"id":"e-sen-g","fromNode":"menu-senales","fromSide":"top","toNode":"n-gamma","toSide":"bottom","color":"6"},
+		{"id":"e-sen-d","fromNode":"menu-senales","fromSide":"top","toNode":"n-delta","toSide":"bottom","color":"6","label":"pobla F1"},
+		{"id":"e-caos-e","fromNode":"menu-caos","fromSide":"top","toNode":"n-epsilon","toSide":"bottom","color":"2"},
+		{"id":"e-ab-a","fromNode":"menu-ab","fromSide":"top","toNode":"n-alpha","toSide":"bottom","color":"3","label":"compara variantes"},
+		{"id":"e-fb-b","fromNode":"menu-feedback","fromSide":"top","toNode":"n-beta","toSide":"bottom","color":"4","label":"outcome → recalibra"},
+		{"id":"e-fb-g","fromNode":"menu-feedback","fromSide":"top","toNode":"n-gamma","toSide":"bottom","color":"4"},
+		{"id":"e-sim-e","fromNode":"menu-sim","fromSide":"top","toNode":"n-epsilon","toSide":"bottom","color":"3","label":"previsualiza ε"},
+		{"id":"e-alpha","fromNode":"n-alpha","fromSide":"top","toNode":"neural-core","toSide":"bottom","color":"5"},
+		{"id":"e-beta","fromNode":"n-beta","fromSide":"top","toNode":"neural-core","toSide":"bottom","color":"6"},
+		{"id":"e-gamma","fromNode":"n-gamma","fromSide":"top","toNode":"neural-core","toSide":"bottom","color":"6"},
+		{"id":"e-delta","fromNode":"n-delta","fromSide":"top","toNode":"neural-core","toSide":"bottom","color":"6"},
+		{"id":"e-epsilon","fromNode":"n-epsilon","fromSide":"top","toNode":"neural-core","toSide":"bottom","color":"2","label":"+ ε·Chaos(t)"},
+		{"id":"e-met-1","fromNode":"menu-metricas","fromSide":"top","toNode":"neural-core","toSide":"bottom","color":"1","label":"observa (F4)"},
+		{"id":"e-mlp-1","fromNode":"mlp","fromSide":"left","toNode":"neural-core","toSide":"right","color":"4","label":"blend λ (F6)"},
+		{"id":"e-inspo-1","fromNode":"inspo","fromSide":"right","toNode":"menu-metricas","toSide":"left","color":"3","label":"estética panel"},
+		{"id":"e-core-hdr","fromNode":"neural-core","fromSide":"top","toNode":"hdr","toSide":"bottom","color":"1"},
+		{"id":"e-docs-1","fromNode":"doc-links","fromSide":"left","toNode":"mlp","toSide":"right","color":"3"}
+	]
+}

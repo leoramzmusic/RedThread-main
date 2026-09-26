@@ -54,7 +54,7 @@ Red Thread es una red social para **conocer personas con propósito** —amor, a
 ### ✅ Disponibles hoy
 
 - **Perfiles ricos**: bio, fotos, gustos, metas de relación, nivel de energía, playlists (Spotify) e integraciones.
-- **Descubrimiento con afinidad**: swipe, filtros y porcentaje de compatibilidad visible.
+- **Descubrimiento con afinidad**: swipe, filtros y porcentaje de compatibilidad visible → motor [CARE](./CARE_ALGORITHM.md) con [hoja de ruta](./CARE_ROADMAP.md).
 - **Radar y cercanía**: usuarios cercanos con opt-in explícito.
 - **Ruleta de conversación**: emparejamiento aleatorio para romper el hielo.
 - **Chat y visitas**: conversaciones activas con seguimiento de actividad.

@@ -6,6 +6,9 @@
 > **Sprint Duration:** 2 weeks
 > **Planning Horizon:** 22 sprints (11 months)
 > **Velocity Estimate:** 25–30 story points per sprint (solo)
+>
+> **CARE items** (BE-005, AD-009, AD-015, TEST-008) follow the phased roadmap in
+> [`CARE_ROADMAP.md`](./CARE_ROADMAP.md) — phases F0–F6 with acceptance criteria.
 
 ---
 
@@ -143,13 +146,13 @@ RedThread is a social matching app (dating/friendship/gaming) built with Next.js
 | AD-006 | Finance dashboard | Revenue charts, subscription metrics, Stripe integration status | Recharts revenue graphs; MRR/ARR; churn rate; Stripe connection status indicator | None | 8 | S11 |
 | AD-007 | Campaign management | Create/edit/delete marketing campaigns with glass UI | Glass campaign cards; form with glass inputs; scheduling; A/B test support | AD-001 | 8 | S11 |
 | AD-008 | Support ticket system | Ticket list, detail view, response form with internal notes | Glass ticket cards; status workflow (open→pending→resolved); internal notes; priority | AD-001 | 8 | S11 |
-| AD-009 | Algorithm management UI | Visual interface for CARE engine weights and A/B tests | Glass weight sliders; test creation form; results dashboard; rollback capability | AD-001 | 8 | S12 |
+| AD-009 | Algorithm management UI | Visual interface for CARE engine weights and A/B tests → CARE_ROADMAP F5 (sliders α–ε, simulator, A/B) | Glass weight sliders; test creation form; results dashboard; rollback capability | AD-001 | 8 | S12 |
 | AD-010 | Event management | Create/edit/delete events with glass UI | Glass event cards; date picker; location; capacity; RSVP tracking | AD-001 | 5 | S12 |
 | AD-011 | System config enhancement | Feature flags, rate limits, system settings with glass UI | Glass toggle cards for feature flags; rate limit sliders; config validation | AD-001 | 5 | S12 |
 | AD-012 | Employee management enhancement | Improved employee onboarding, performance tracking | Glass employee cards; onboarding wizard; performance metrics; contract management | AD-001 | 5 | S12 |
 | AD-013 | Roles & permissions UI | Visual RBAC editor with permission matrix | Glass role cards; permission matrix grid; drag-drop permission assignment | AD-001 | 8 | S13 |
 | AD-014 | Branding management (apariencia) | Enhanced branding tools with preview | Glass theme editor; live preview; logo/icon/banner upload with glass preview | AD-001 | 5 | S13 |
-| AD-015 | Analytics deep-dive | Extended CARE analytics with cohort analysis | Glass chart containers; cohort tables; funnel visualization; export | AD-001 | 8 | S13 |
+| AD-015 | Analytics deep-dive | Extended CARE analytics with cohort analysis → CARE_ROADMAP F4+F5 (migrated /admin/care-analytics) | Glass chart containers; cohort tables; funnel visualization; export | AD-001 | 8 | S13 |
 
 ---
 
@@ -176,7 +179,7 @@ RedThread is a social matching app (dating/friendship/gaming) built with Next.js
 | BE-002 | Real SMS integration | Twilio (or equivalent) for phone OTP delivery | OTP sent via SMS in non-DEBUG; rate limit on resend; delivery status logging | None | 8 | S10 |
 | BE-003 | Email service production | SMTP with TLS, email templates for welcome/reset/notifications | TLS enforced in prod; HTML templates; queue via Kafka; delivery logging | None | 5 | S10 |
 | BE-004 | OAuth providers (Google, Facebook, Apple) | Implement real OAuth flows (currently 501 placeholders) | Google/Facebook/Apple sign-in working; token exchange; profile merge; account linking | None | 13 | S11 |
-| BE-005 | CARE Engine Phase 2 | Enhanced matching: ML features, real-time signal processing | Feature engineering pipeline; model training; A/B test framework; latency < 200ms | None | 13 | S13 |
+| BE-005 | CARE Engine Phase 2 | Enhanced matching: ML features, real-time signal processing → CARE_ROADMAP F1+F4+F6 | Feature engineering pipeline; model training; A/B test framework; latency < 200ms | None | 13 | S13 |
 | BE-006 | API versioning | Introduce `/api/v1/` prefix with backward compatibility | v1 prefix on all endpoints; deprecation headers for old paths; migration guide | None | 5 | S14 |
 | BE-007 | WebSocket real-time events | Real-time notifications, typing indicators, online status via WebSocket | Socket.io rooms; presence tracking; typing broadcasts; reconnection logic | None | 8 | S15 |
 | BE-008 | Data export (GDPR) | User data export endpoint (JSON/CSV) for compliance | Export endpoint returns all user data; async for large datasets; rate limited | None | 5 | S16 |
@@ -314,7 +317,7 @@ RedThread is a social matching app (dating/friendship/gaming) built with Next.js
 | TEST-005 | Admin unit tests | Tests for all admin endpoints, RBAC, employee management | Permission checks; CRUD operations; audit logging | None | 8 | S5 |
 | TEST-006 | Payment unit tests | Tests for subscription, Stripe webhook, tier management | Webhook verification; subscription lifecycle; edge cases | BE-001 | 5 | S10 |
 | TEST-007 | Integration tests | End-to-end API tests with test database | Full flows tested against MongoDB; Kafka event verification | None | 13 | S6 |
-| TEST-008 | CARE engine tests | Comprehensive scoring, ranking, feedback tests | All CARE phases tested; edge cases; performance benchmarks | TEST-003 | 8 | S7 |
+| TEST-008 | CARE engine tests | Comprehensive scoring, ranking, feedback tests → CARE_ROADMAP F0–F6 acceptance tests | All CARE phases tested; edge cases; performance benchmarks | TEST-003 | 8 | S7 |
 
 #### Frontend Tests
 

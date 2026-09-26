@@ -47,22 +47,35 @@ Ensures fairness and authenticity:
 - Boosts underexposed profiles
 - Enforces segment-aware fairness
 
+## Target Formula (Roadmap)
+
+The roadmap formula adds a controlled-chaos term (inspired by Dirac's unification
+of seemingly incompatible theories — here: the measurable and the chaotic in
+human relationships):
+
+```
+CAREScore = α·Compat + β·Auth + γ·Resp + δ·Eng + ε·Chaos(t)
+```
+
+- Today's implemented score: `0.60·compat + 0.30·dynamic + 0.10·human`
+  (`care/ranking/ranker.py`) — see `docs/CARE_ALGORITHM.md` §3.1.
+- `ε·Chaos(t)`: bounded, deterministic-seed noise that decays as interaction
+  history grows (uncertainty shown to users as `75% ± 10%`).
+
 ## Implementation Phases
 
-**Phase 1** (Current): Foundation
-- Data models
-- Compatibility scoring
-- Basic ranking with diversity
+Full roadmap with acceptance criteria, dependencies, and file-level detail:
+**[docs/CARE_ROADMAP.md](../../../docs/CARE_ROADMAP.md)**
 
-**Phase 2**: Dynamic Intelligence
-- Behavioral signals
-- Human adjustments
-- Feedback loops
-
-**Phase 3**: Advanced Features
-- Cold start handling
-- Score explanations
-- A/B testing framework
+| Phase | Scope |
+|---|---|
+| **F0** | Prerequisites: P0-1/P0-2 (chat), P1-4 (admin weights disconnected) |
+| **F1** | Real dynamic signals (stop the 0.30/0.10 constants) |
+| **F2** | Qualitative blocks → narrative labels + configurable weights |
+| **F3** | `ε·Chaos(t)` term + uncertainty UI |
+| **F4** | Feedback loop: match → chat → friend → couple, weekly recalibration |
+| **F5** | Admin portal CARE menu (sliders, simulator, metrics migration) |
+| **F6** | Light neural net: embeddings + MLP with mandatory explainability |
 
 ## Usage
 
@@ -93,6 +106,8 @@ on_user_action({
 
 ## Development Status
 
-🚧 **In Development** - Phase 1 (Foundation)
+🚧 **In Development** — F0/F1 of the roadmap.
 
-See [implementation_plan.md](file:///C:/Users/leora/.gemini/antigravity/brain/f0e75734-3d32-4bb3-b4e7-74db2c57a172/implementation_plan.md) for detailed roadmap.
+See [docs/CARE_ROADMAP.md](../../../docs/CARE_ROADMAP.md) for the detailed
+roadmap and [docs/CARE_ALGORITHM.md](../../../docs/CARE_ALGORITHM.md) for the
+current-state reference.
