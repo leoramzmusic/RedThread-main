@@ -75,25 +75,124 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             action = message_data.get("action")
             
             if action == "send_message":
-                # Handle sending message
-                match_id = message_data.get("match_id")
                 content = message_data.get("content")
                 message_type = message_data.get("message_type", "text")
                 temp_id = message_data.get("temp_id")
-                
+
+                send_mode = resolve_ws_send_mode(
+                    message_data.get("conversation_id"),
+                    message_data.get("match_id"),
+                )
+
+                if send_mode == "error":
+                    await websocket.send_json(
+                        {"error": "Either conversation_id or match_id must be provided"}
+                    )
+                    continue
+
+                if send_mode == "conversation":
+                    conversation_id = message_data.get("conversation_id")
+                    conversation = await Conversation.get(conversation_id)
+                    if not conversation or user_id not in conversation.participants:
+                        await websocket.send_json({"error": "Invalid conversation"})
+                        continue
+
+                    is_blocked = False
+                    relationship = await Relationship.get(conversation.relationship_id)
+                    if relationship and relationship.status == RelationshipStatus.BLOCKED:
+                        is_blocked = True
+                    if conversation.type == ConversationType.MATCH:
+                        existing_match = await Match.find_one({
+                            "$or": [
+                                {"user_id_1": conversation.participants[0],
+                                 "user_id_2": conversation.participants[1]},
+                                {"user_id_1": conversation.participants[1],
+                                 "user_id_2": conversation.participants[0]},
+                            ]
+                        })
+                        if existing_match and existing_match.status == MatchStatus.BLOCKED:
+                            is_blocked = True
+                    if is_blocked:
+                        await websocket.send_json({"error": "Conversation is blocked"})
+                        continue
+
+                    receiver_id = (
+                        conversation.participants[0]
+                        if conversation.participants[1] == user_id
+                        else conversation.participants[1]
+                    )
+
+                    message = Message(
+                        conversation_id=conversation_id,
+                        sender_id=user_id,
+                        receiver_id=receiver_id,
+                        message_type=message_type,
+                        content=content,
+                        created_at=datetime.utcnow()
+                    )
+                    await message.insert()
+
+                    conversation.last_message_at = message.created_at
+                    conversation.last_message_content = content
+                    conversation.last_message_sender_id = user_id
+                    conversation.increment_unread(receiver_id)
+                    await conversation.save()
+
+                    await redis_service.invalidar_usuario(["stats", "recent"], user_id)
+                    await redis_service.invalidar_usuario(["stats", "recent"], receiver_id)
+
+                    await manager.send_personal_message(receiver_id, {
+                        "action": "new_message",
+                        "message": {
+                            "id": str(message.id),
+                            "conversation_id": conversation_id,
+                            "sender_id": user_id,
+                            "content": content,
+                            "message_type": message_type,
+                            "created_at": message.created_at.isoformat()
+                        }
+                    })
+
+                    await websocket.send_json({
+                        "action": "message_sent",
+                        "message_id": str(message.id),
+                        "temp_id": temp_id
+                    })
+
+                    try:
+                        await kafka_service.publish(
+                            topic=KafkaTopic.CHAT_MESSAGES,
+                            event_type=KafkaEventType.MESSAGE_SENT,
+                            payload={
+                                "message_id": str(message.id),
+                                "conversation_id": conversation_id,
+                                "sender_id": user_id,
+                                "recipient_id": receiver_id,
+                                "content": content,
+                                "created_at": message.created_at.isoformat(),
+                            },
+                            key=conversation_id or user_id,
+                        )
+                    except Exception as k_err:
+                        print(f"Kafka publish error (ws chat conv): {k_err}")
+
+                    continue
+
+                match_id = message_data.get("match_id")
+
                 # Verify match exists and user is part of it
                 match = await Match.get(match_id)
                 if not match or (match.user_id_1 != user_id and match.user_id_2 != user_id):
                     await websocket.send_json({"error": "Invalid match"})
                     continue
-                
+
                 if match.status == MatchStatus.BLOCKED:
                     await websocket.send_json({"error": "Conversation is blocked"})
                     continue
-                
+
                 # Get receiver ID
                 receiver_id = match.user_id_2 if match.user_id_1 == user_id else match.user_id_1
-                
+
                 # Create message
                 message = Message(
                     match_id=match_id,
@@ -104,14 +203,11 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     created_at=datetime.utcnow()
                 )
                 await message.insert()
-                
+
                 # Invalidate dashboard cache for both users (new unread message)
                 await redis_service.invalidar_usuario(["stats", "recent"], user_id)
                 await redis_service.invalidar_usuario(["stats", "recent"], receiver_id)
-                
-                # Cache message
-                # await redis_service.cache_message(str(message.id), message.dict())
-                
+
                 # Send to receiver if online
                 await manager.send_personal_message(receiver_id, {
                     "action": "new_message",
@@ -124,7 +220,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                         "created_at": message.created_at.isoformat()
                     }
                 })
-                
+
                 # Confirm to sender
                 await websocket.send_json({
                     "action": "message_sent",
