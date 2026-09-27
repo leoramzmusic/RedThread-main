@@ -364,6 +364,8 @@ async def get_conversations(current_user: User = Depends(get_current_user)):
             "is_archived": conv.is_archived_by(str(current_user.id)),
             "is_muted": conv.is_muted_by(str(current_user.id)),
             "relationship_status": relationship.status,
+            "status": "blocked" if relationship.status == RelationshipStatus.BLOCKED else "matched",
+            "blocked_by": relationship.blocked_by,
             # Emotional Dynamics
             "emotional_status": "neutral", # Default
             "theme_color": "#FF6B6B" # Default Red
@@ -618,40 +620,58 @@ async def send_message(
         )
 
 
-@router.post("/clear/{match_id}")
+@router.post("/clear/{conversation_id}")
 async def clear_chat(
-    match_id: str,
+    conversation_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Clear chat history for the current user"""
-    
-    # Verify match exists and user is part of it
-    match = await Match.get(match_id)
-    
+    """Clear chat history for the current user (Conversation or legacy Match id)"""
+
+    conversation = await Conversation.get(conversation_id)
+    if conversation:
+        if str(current_user.id) not in conversation.participants:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized"
+            )
+
+        await Message.find(
+            Message.conversation_id == conversation_id,
+            Message.sender_id == str(current_user.id)
+        ).update({"$set": {"deleted_by_sender": True}})
+
+        await Message.find(
+            Message.conversation_id == conversation_id,
+            Message.receiver_id == str(current_user.id)
+        ).update({"$set": {"deleted_by_receiver": True}})
+
+        return {"message": "Chat cleared successfully"}
+
+    # Legacy match-based chat
+    match = await Match.get(conversation_id)
+
     if not match:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Match not found"
         )
-    
+
     if match.user_id_1 != str(current_user.id) and match.user_id_2 != str(current_user.id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized"
         )
-        
-    # Soft delete messages where user is sender
+
     await Message.find(
-        Message.match_id == match_id,
+        Message.match_id == conversation_id,
         Message.sender_id == str(current_user.id)
     ).update({"$set": {"deleted_by_sender": True}})
-    
-    # Soft delete messages where user is receiver
+
     await Message.find(
-        Message.match_id == match_id,
+        Message.match_id == conversation_id,
         Message.receiver_id == str(current_user.id)
     ).update({"$set": {"deleted_by_receiver": True}})
-    
+
     return {"message": "Chat cleared successfully"}
 
 
