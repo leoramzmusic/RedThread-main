@@ -1,4 +1,4 @@
-"""CARE F0 backfill: create Relationship+Conversation for existing connections.
+r"""CARE F0 backfill: create Relationship+Conversation for existing connections.
 
 Idempotent — safe to re-run. From backend/ with Mongo running:
     $env:PYTHONPATH="."; .\venv\Scripts\python scripts\backfill_conversations.py
