@@ -330,7 +330,7 @@ async def get_conversations(current_user: User = Depends(get_current_user)):
         
         # Get profile for display info
         profile = await Profile.find_one(Profile.user_id == other_user_id)
-        display_name = profile.display_name if profile else "Usuario"
+        display_name = profile.nickname if profile and profile.nickname else (other_user.display_name if other_user else "Usuario")
         photo = profile.photos[0] if profile and profile.photos else None
         
         # Get unread count for current user

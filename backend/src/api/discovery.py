@@ -908,7 +908,7 @@ async def get_matches(current_user: User = Depends(get_current_user)):
             result.append({
                 "match_id": str(match.id),
                 "user_id": other_user_id,
-                "display_name": other_profile.display_name,
+                "display_name": other_profile.nickname if other_profile.nickname else "Usuario",
                 "age": other_profile.age,
                 "photos": other_profile.photos,
                 "bio": other_profile.bio,
@@ -996,7 +996,7 @@ async def _build_discovery_profile(
     
     return DiscoveryProfile(
         user_id=profile.user_id,
-        display_name=profile.display_name,
+        display_name=profile.nickname if profile.nickname else "Usuario",
         age=profile.age if profile.show_age else 0,
         bio=profile.bio,
         photos=profile.photos[:5],  # Limit to first 5 photos
@@ -1064,7 +1064,7 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
             result.append(ReceivedLike(
                 match_id=str(match.id),
                 user_id=liker_id,
-                display_name=liker_profile.display_name,
+                display_name=liker_profile.nickname if liker_profile.nickname else "Usuario",
                 age=liker_profile.age,
                 bio=liker_profile.bio,
                 photos=liker_profile.photos[:5],
@@ -1134,7 +1134,7 @@ async def get_second_chance(
                 result.append(SecondChanceProfile(
                     match_id=str(match.id),
                     user_id=passed_user_id,
-                    display_name=passed_profile.display_name,
+                    display_name=passed_profile.nickname if passed_profile.nickname else "Usuario",
                     age=passed_profile.age,
                     bio=passed_profile.bio,
                     photos=passed_profile.photos[:5],
