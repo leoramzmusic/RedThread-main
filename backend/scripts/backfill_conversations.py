@@ -26,41 +26,49 @@ from src.services.conversation_service import (
 
 async def main() -> int:
     client = AsyncIOMotorClient(settings.MONGODB_URL)
-    await init_beanie(
-        database=client[settings.MONGODB_DB_NAME],
-        document_models=[Match, Relationship, Conversation],
-    )
+    try:
+        await init_beanie(
+            database=client[settings.MONGODB_DB_NAME],
+            document_models=[Match, Relationship, Conversation],
+        )
 
-    before = await Conversation.find_all().count()
+        before = await Conversation.find_all().count()
 
-    matches = await Match.find({"status": MatchStatus.MATCHED}).to_list()
-    match_errors = 0
-    for match in matches:
-        try:
-            await ensure_match_conversation(match)
-        except Exception as err:
-            match_errors += 1
-            print(f"match {match.id}: {err}")
+        matches = await Match.find({"status": MatchStatus.MATCHED}).to_list()
+        match_errors = 0
+        for match in matches:
+            try:
+                await ensure_match_conversation(match)
+            except Exception as err:
+                match_errors += 1
+                print(f"match {match.id}: {err}")
 
-    friend_relationships = await Relationship.find({
-        "type": RelationshipType.FRIEND,
-        "status": RelationshipStatus.ACTIVE,
-    }).to_list()
-    friend_errors = 0
-    for relationship in friend_relationships:
-        try:
-            await ensure_friend_conversation(relationship)
-        except Exception as err:
-            friend_errors += 1
-            print(f"relationship {relationship.id}: {err}")
+        friend_relationships = await Relationship.find({
+            "type": RelationshipType.FRIEND,
+            "status": RelationshipStatus.ACTIVE,
+        }).to_list()
+        friend_errors = 0
+        for relationship in friend_relationships:
+            try:
+                await ensure_friend_conversation(relationship)
+            except Exception as err:
+                friend_errors += 1
+                print(f"relationship {relationship.id}: {err}")
 
-    after = await Conversation.find_all().count()
-    print(f"MATCHED matches processed: {len(matches)} ({match_errors} errors)")
-    print(f"ACTIVE friend relationships processed: {len(friend_relationships)} ({friend_errors} errors)")
-    print(f"Conversations: {before} -> {after} (+{after - before})")
+        after = await Conversation.find_all().count()
+        print(f"MATCHED matches processed: {len(matches)} ({match_errors} errors)")
+        print(f"ACTIVE friend relationships processed: {len(friend_relationships)} ({friend_errors} errors)")
+        print(f"Conversations: {before} -> {after} (+{after - before})")
+        if not matches and not friend_relationships:
+            print("WARNING: no MATCHED matches or ACTIVE friend relationships matched; nothing was backfilled")
 
-    client.close()
-    return 1 if (match_errors or friend_errors) else 0
+        return 1 if (match_errors or friend_errors) else 0
+    except Exception as err:
+        print(f"Backfill failed before completion: {err}")
+        print("If this is a duplicate-key or index conflict, run scripts/dedupe_relationship_conversations.py --apply first: init_beanie builds the unique indexes.")
+        return 2
+    finally:
+        client.close()
 
 
 if __name__ == "__main__":
