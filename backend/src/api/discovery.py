@@ -10,6 +10,7 @@ from src.services.affinity import AffinityService
 from src.services.compatibility_service import CompatibilityService
 from src.services.kafka_service import kafka_service
 from src.services.kafka_topics import KafkaTopic, KafkaEventType
+from src.services.conversation_service import ensure_match_conversation
 import random
 
 # Import CARE Engine
@@ -748,6 +749,11 @@ async def swipe(
         
         await existing_match.save()
         await current_user.save() # Save user counters
+        if existing_match.status == MatchStatus.MATCHED:
+            try:
+                await ensure_match_conversation(existing_match)
+            except Exception as conv_err:
+                print(f"Conversation creation error (swipe): {conv_err}")
 
         # Emit Kafka events
         try:
@@ -1186,6 +1192,11 @@ async def reconsider_profile(
         match.is_superlike = True
     
     await match.save()
+    if match.status == MatchStatus.MATCHED:
+        try:
+            await ensure_match_conversation(match)
+        except Exception as conv_err:
+            print(f"Conversation creation error (reconsider): {conv_err}")
     
     return {
         "match_id": str(match.id),

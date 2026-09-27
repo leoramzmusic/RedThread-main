@@ -5,6 +5,7 @@ from src.models.user import User
 from src.models.report import Report
 from src.models.match import Match, MatchStatus
 from src.api.auth import get_current_user
+from src.services.conversation_service import ensure_match_conversation
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -103,6 +104,10 @@ async def unblock_user(
     match.blocked_by = None
     match.unmatched_at = None
     await match.save()
+    try:
+        await ensure_match_conversation(match)
+    except Exception as conv_err:
+        print(f"Conversation creation error (unblock): {conv_err}")
     
     return {"message": "User unblocked successfully"}
 
