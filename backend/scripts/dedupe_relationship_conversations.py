@@ -13,7 +13,9 @@ repeated runs converge to the same result; exit code 1 means manual relationship
 problems are still pending.
 
 The merged unread_count is the SUM of the duplicates' counters, so it can over-count a user who
-already read one copy: treat it as an upper bound, not an authoritative count.
+already read one copy: treat it as an upper bound, not an authoritative count. It is also the one
+merged field that is NOT re-run safe: the keeper is saved before the losers are deleted, so a crash
+in that window double-counts on the next run. Every other merged field is order-independent.
 """
 
 import argparse
@@ -87,11 +89,11 @@ async def merge_relationship_groups(rel_dups: dict, conv_rel_ids: set) -> tuple[
         )
         best_affinity = max((r.affinity_score or 0.0 for r in group), default=0.0)
         if best_affinity > 0:
-            keeper.affinity_score = best_affinity
             source = next(
                 (r for r in group if (r.affinity_score or 0.0) == best_affinity),
                 keeper,
             )
+            keeper.affinity_score = best_affinity
             keeper.affinity_breakdown = source.affinity_breakdown
         keeper.matched_at = min(
             (_naive(r.matched_at) for r in group if r.matched_at),
@@ -102,7 +104,7 @@ async def merge_relationship_groups(rel_dups: dict, conv_rel_ids: set) -> tuple[
             default=None,
         )
         keeper.is_superlike = any(r.is_superlike for r in group)
-        for field in ("origin", "requester_id"):
+        for field in ("origin", "requester_id", "blocked_by", "user_a_interaction", "user_b_interaction"):
             values = {str(getattr(r, field)) for r in group}
             if len(values) > 1:
                 warnings.append(
@@ -207,7 +209,7 @@ async def reconcile_indexes() -> list[str]:
         await conv_coll.create_index("relationship_id", unique=True)
         print("created unique index: conversations (relationship_id)")
     except OperationFailure as err:
-        if getattr(err, "code", None) != 85:
+        if getattr(err, "code", None) not in (85, 86):
             problems.append(f"conversations unique index: {err}")
             return problems
         conv_indexes = await conv_coll.index_information()
@@ -262,7 +264,14 @@ async def main() -> int:
     print(f"relationships: {len(relationships)}, duplicate groups: {len(rel_dups)}")
     for key, group in rel_dups.items():
         statuses = sorted({str(r.status) for r in group})
+        diverged = sorted(
+            field
+            for field in ("origin", "requester_id", "blocked_by", "user_a_interaction", "user_b_interaction")
+            if len({str(getattr(r, field)) for r in group}) > 1
+        )
         flag = "MANUAL" if len(statuses) > 1 else "auto-merge"
+        if diverged and len(statuses) == 1:
+            flag = f"auto-merge (divergent: {','.join(diverged)})"
         print(f"  {key}: ids={[str(r.id) for r in group]} statuses={statuses} -> {flag}")
     print(f"unnormalized pairs: {len(unnormalized)}")
     print(f"conversations: {len(conversations)}, duplicate groups: {len(conv_dups)}")
