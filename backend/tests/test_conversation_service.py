@@ -89,7 +89,9 @@ async def test_ensure_match_upserts_relationship_and_conversation_when_missing()
     assert rel_insert["status"] == RelationshipStatus.ACTIVE
     assert rel_insert["origin"] == RelationshipOrigin.DISCOVER
     assert isinstance(rel_insert["created_at"], datetime)
+    assert rel_insert["is_superlike"] is False
     assert "matched_at" not in rel_insert
+    assert set(rel_update) == {"$setOnInsert"}
     rel_find.assert_awaited_once_with(rel_query)
 
     conv_col.find_one_and_update.assert_awaited_once()
@@ -101,6 +103,10 @@ async def test_ensure_match_upserts_relationship_and_conversation_when_missing()
     assert conv_insert["type"] == ConversationType.MATCH
     assert conv_insert["participants"] == ["u1", "u2"]
     assert isinstance(conv_insert["created_at"], datetime)
+    assert conv_insert["unread_count"] == {}
+    assert conv_insert["archived_by"] == []
+    assert conv_insert["muted_by"] == []
+    assert set(conv_update) == {"$setOnInsert"}
     conv_find.assert_awaited_once_with(conv_query)
     assert result is conv
 
@@ -219,6 +225,10 @@ async def test_ensure_friend_creates_conversation_when_missing():
     assert conv_insert["type"] == ConversationType.FRIEND
     assert conv_insert["participants"] == ["u1", "u2"]
     assert isinstance(conv_insert["created_at"], datetime)
+    assert conv_insert["unread_count"] == {}
+    assert conv_insert["archived_by"] == []
+    assert conv_insert["muted_by"] == []
+    assert set(conv_update) == {"$setOnInsert"}
     conv_find.assert_awaited_once_with(conv_query)
     assert result is conv
 
@@ -240,3 +250,25 @@ async def test_ensure_friend_duplicate_key_falls_back_to_find():
     conv_col.find_one_and_update.assert_awaited_once()
     conv_find.assert_awaited_once_with({"relationship_id": "rel1"})
     assert result is existing
+
+
+@pytest.mark.asyncio
+async def test_ensure_match_raises_when_relationship_missing_after_upsert():
+    match = SimpleNamespace(user_id_1="u1", user_id_2="u2", matched_at=None)
+    rel_col = MagicMock()
+    rel_col.find_one_and_update = AsyncMock(side_effect=DuplicateKeyError("E11000 duplicate key"))
+    with patch.object(Relationship, "get_motor_collection", return_value=rel_col), \
+            patch.object(Relationship, "find_one", new=AsyncMock(return_value=None)):
+        with pytest.raises(RuntimeError, match="upsert produced no relationship"):
+            await ensure_match_conversation(match)
+
+
+@pytest.mark.asyncio
+async def test_ensure_friend_raises_when_conversation_missing_after_upsert():
+    rel = SimpleNamespace(id="rel1", user_a_id="u1", user_b_id="u2")
+    conv_col = MagicMock()
+    conv_col.find_one_and_update = AsyncMock(side_effect=DuplicateKeyError("E11000 duplicate key"))
+    with patch.object(Conversation, "get_motor_collection", return_value=conv_col), \
+            patch.object(Conversation, "find_one", new=AsyncMock(return_value=None)):
+        with pytest.raises(RuntimeError, match="upsert produced no conversation"):
+            await ensure_friend_conversation(rel)

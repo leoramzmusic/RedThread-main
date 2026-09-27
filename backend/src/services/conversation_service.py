@@ -87,6 +87,7 @@ async def ensure_match_conversation(match: "Match") -> Conversation:
         {
             **fields,
             "created_at": datetime.utcnow(),
+            "is_superlike": False,
             **({"matched_at": match.matched_at} if match.matched_at else {}),
         },
     )
@@ -101,6 +102,9 @@ async def ensure_match_conversation(match: "Match") -> Conversation:
                 ConversationType.MATCH,
             ),
             "created_at": datetime.utcnow(),
+            "unread_count": {},
+            "archived_by": [],
+            "muted_by": [],
         },
     )
     return conversation
@@ -118,5 +122,8 @@ async def ensure_friend_conversation(relationship: "Relationship") -> Conversati
                 ConversationType.FRIEND,
             ),
             "created_at": datetime.utcnow(),
+            "unread_count": {},
+            "archived_by": [],
+            "muted_by": [],
         },
     )

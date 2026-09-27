@@ -7,6 +7,13 @@ Dry-run by default: prints a report and changes nothing. From backend/ with Mong
 Run with --apply BEFORE the first boot with the R12 unique indexes whenever data may contain
 duplicates: beanie creates model indexes at init and unique-index creation fails while
 duplicates exist. Fresh databases need no data cleanup; --apply then only (re)creates indexes.
+
+--apply is not transactional: if it aborts, re-run it. Every step reloads from the database, so
+repeated runs converge to the same result; exit code 1 means manual relationship groups or index
+problems are still pending.
+
+The merged unread_count is the SUM of the duplicates' counters, so it can over-count a user who
+already read one copy: treat it as an upper bound, not an authoritative count.
 """
 
 import argparse
@@ -19,7 +26,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import OperationFailure
 
-from src.config import settings
+from src.core.config import settings
 from src.models.conversation import Conversation
 from src.models.message import Message
 from src.models.relationship import Relationship
@@ -28,6 +35,12 @@ from src.models.relationship import Relationship
 def pair_key(rel: Relationship) -> tuple[str, str, str]:
     user_lo, user_hi = sorted((rel.user_a_id, rel.user_b_id))
     return (user_lo, user_hi, str(rel.type))
+
+
+def _naive(value):
+    if value is None:
+        return None
+    return value.replace(tzinfo=None) if value.tzinfo else value
 
 
 async def load() -> tuple[list, list]:
@@ -59,15 +72,43 @@ async def fix_orientation(unnormalized: list) -> int:
     return len(unnormalized)
 
 
-async def merge_relationship_groups(rel_dups: dict, conv_rel_ids: set) -> tuple[int, list]:
+async def merge_relationship_groups(rel_dups: dict, conv_rel_ids: set) -> tuple[int, list, list]:
     merged = 0
     manual = []
+    warnings = []
     for key, group in rel_dups.items():
         if len({str(r.status) for r in group}) > 1:
             manual.append((key, group))
             continue
         candidates = [r for r in group if str(r.id) in conv_rel_ids] or group
-        keeper = min(candidates, key=lambda r: r.id)
+        keeper = min(
+            candidates,
+            key=lambda r: (_naive(r.created_at) or datetime.min, str(r.id)),
+        )
+        best_affinity = max((r.affinity_score or 0.0 for r in group), default=0.0)
+        if best_affinity > 0:
+            keeper.affinity_score = best_affinity
+            source = next(
+                (r for r in group if (r.affinity_score or 0.0) == best_affinity),
+                keeper,
+            )
+            keeper.affinity_breakdown = source.affinity_breakdown
+        keeper.matched_at = min(
+            (_naive(r.matched_at) for r in group if r.matched_at),
+            default=None,
+        )
+        keeper.accepted_at = min(
+            (_naive(r.accepted_at) for r in group if r.accepted_at),
+            default=None,
+        )
+        keeper.is_superlike = any(r.is_superlike for r in group)
+        for field in ("origin", "requester_id"):
+            values = {str(getattr(r, field)) for r in group}
+            if len(values) > 1:
+                warnings.append(
+                    f"{key}: divergent {field} {sorted(values)}; kept {getattr(keeper, field)}"
+                )
+        await keeper.save()
         for loser in group:
             if loser.id == keeper.id:
                 continue
@@ -77,7 +118,7 @@ async def merge_relationship_groups(rel_dups: dict, conv_rel_ids: set) -> tuple[
             await loser.delete()
             merged += 1
         print(f"merged relationship {key}: keeper={keeper.id}, removed={len(group) - 1}")
-    return merged, manual
+    return merged, manual, warnings
 
 
 async def merge_conversation_groups(conv_dups: dict) -> int:
@@ -100,9 +141,12 @@ async def merge_conversation_groups(conv_dups: dict) -> int:
             )
         best = max(
             group,
-            key=lambda c: (c.last_message_at is not None, c.last_message_at or datetime.min),
+            key=lambda c: (
+                c.last_message_at is not None,
+                _naive(c.last_message_at) or datetime.min,
+            ),
         )
-        keeper.last_message_at = best.last_message_at
+        keeper.last_message_at = _naive(best.last_message_at)
         keeper.last_message_content = best.last_message_content
         keeper.last_message_sender_id = best.last_message_sender_id
         unread: dict = {}
@@ -151,6 +195,13 @@ async def reconcile_indexes() -> list[str]:
         if getattr(err, "code", None) == 11000:
             print("relationships still have duplicates — resolve manual groups first")
         problems.append(f"relationships unique index: {err}")
+    rel_indexes = await rel_coll.index_information()
+    if "user_a_id_1_user_b_id_1" in rel_indexes:
+        try:
+            await rel_coll.drop_index("user_a_id_1_user_b_id_1")
+            print("dropped obsolete index: relationships (user_a_id, user_b_id)")
+        except OperationFailure as err:
+            problems.append(f"obsolete relationships index: {err}")
     conv_coll = Conversation.get_motor_collection()
     try:
         await conv_coll.create_index("relationship_id", unique=True)
@@ -159,10 +210,25 @@ async def reconcile_indexes() -> list[str]:
         if getattr(err, "code", None) != 85:
             problems.append(f"conversations unique index: {err}")
             return problems
-        await conv_coll.drop_index("relationship_id")
+        conv_indexes = await conv_coll.index_information()
+        conflicting = next(
+            (
+                name
+                for name, info in conv_indexes.items()
+                if list(info["key"]) == [("relationship_id", 1)]
+            ),
+            None,
+        )
+        if conflicting is None:
+            problems.append("conversations index conflict without a matching key pattern")
+            return problems
+        await conv_coll.drop_index(conflicting)
         try:
             await conv_coll.create_index("relationship_id", unique=True)
-            print("recreated index as unique: conversations (relationship_id)")
+            print(
+                "recreated index as unique: conversations (relationship_id) "
+                f"[dropped {conflicting}]"
+            )
         except OperationFailure as err2:
             problems.append(f"conversations unique index: {err2}")
     return problems
@@ -213,7 +279,7 @@ async def main() -> int:
     if unnormalized:
         print(f"normalizing {await fix_orientation(unnormalized)} relationships")
     conv_rel_ids = {c.relationship_id for c in conversations}
-    _, manual = await merge_relationship_groups(rel_dups, conv_rel_ids)
+    _, manual, warnings = await merge_relationship_groups(rel_dups, conv_rel_ids)
     conversations = (await load())[1]
     conv_dups = conversation_groups(conversations)
     merged = await merge_conversation_groups(conv_dups)
@@ -222,6 +288,8 @@ async def main() -> int:
     print(f"manual relationship groups pending: {len(manual)}")
     for problem in problems:
         print(f"PROBLEM: {problem}")
+    for warning in warnings:
+        print(f"WARNING: {warning}")
     client.close()
     return 1 if (problems or manual) else 0
 
