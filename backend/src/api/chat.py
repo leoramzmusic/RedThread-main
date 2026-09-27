@@ -9,6 +9,7 @@ from src.models.conversation import Conversation, ConversationType
 from src.models.relationship import Relationship, RelationshipType, RelationshipStatus
 from src.models.profile import Profile
 from src.api.auth import get_current_user
+from src.api.chat_resolvers import resolve_message_source, resolve_ws_send_mode
 from src.services.kafka_service import kafka_service
 from src.services.kafka_topics import KafkaTopic, KafkaEventType
 from src.services.redis_service import redis_service
@@ -301,8 +302,11 @@ async def get_messages(
     
     # Try new system first (conversation_id)
     conversation = await Conversation.get(conversation_id)
-    
-    if conversation:
+    source_kind, source_id = resolve_message_source(
+        conversation is not None, conversation_id, match_id
+    )
+
+    if source_kind == "conversation":
         # Verify user is a participant
         if str(current_user.id) not in conversation.participants:
             raise HTTPException(
@@ -335,9 +339,9 @@ async def get_messages(
         
         return messages
     
-    # Fallback to legacy match_id system
-    if match_id:
-        match = await Match.get(match_id)
+    # Fallback to legacy match_id system (P0-1: the path id may itself be a match id)
+    if source_kind == "match":
+        match = await Match.get(source_id)
         
         if not match:
             raise HTTPException(
@@ -353,7 +357,7 @@ async def get_messages(
         
         # Get messages by match_id (legacy)
         messages = await Message.find({
-            "match_id": match_id,
+            "match_id": source_id,
             "$or": [
                 {"sender_id": str(current_user.id), "deleted_by_sender": {"$ne": True}},
                 {"receiver_id": str(current_user.id), "deleted_by_receiver": {"$ne": True}}
