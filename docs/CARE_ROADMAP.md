@@ -76,12 +76,21 @@ Bugs y gaps documentados en `CARE_ALGORITHM.md` §11.2-11.3 que deben resolverse
 
 | # | Problema | Evidencia | Bloquea | Criterio "listo" |
 |---|---|---|---|---|
-| **P0-1** | `GET /chat/messages/{id}` envía `match_id` como `conversation_id` → 404 | `chat/index.tsx:329` vs `chat.py:292-368` | Feedback loop (F4): sin chat no hay señal que registrar | like → match → chat E2E pasa sin 404 |
-| **P0-2** | `GET /chat/conversations` solo lee `Conversation`, que nadie crea en runtime | `chat.py:216-226`, `migrate_to_relationships.py:139` | F4 | `Conversation` se crea al nacer el match (gancho Kafka `MATCH_CREATED`) y al aceptar amistad/pareja; DTO alineado |
+| 🟡 **P0-1** | `GET /chat/messages/{id}` envía `match_id` como `conversation_id` → 404 | `chat/index.tsx:332` vs `chat.py:391-470` | Feedback loop (F4): sin chat no hay señal que registrar | **Código ✅ / E2E ⬜.** El criterio literal ("like → match → chat E2E pasa sin 404") **sigue sin comprobar**: el checklist manual quedó bloqueado sin Docker (R48). Fallback `resolve_message_source` en backend, cubierto por 8 tests de función pura |
+| 🟡 **P0-2** | `GET /chat/conversations` solo lee `Conversation`, que nadie crea en runtime | `chat.py:308-388`, `migrate_to_relationships.py:139` | F4 | **Código ✅ / E2E ⬜.** `Conversation` ya se crea al nacer el match y al aceptar amistad, DTO alineado, y verificado contra Mongo real por `scripts/verify_chat_flow.py`. Falta el E2E en navegador (R48) |
 | **P1-3** | Icebreaker: doble prefijo `/api/icebreaker/icebreaker/…`, campos inexistentes en modelos | `main.py:187`, `IcebreakerButton.tsx:50` | Narrativas de chat (§9) | Flujo invite→ambos responden→revealed funciona en E2E |
 | **P1-4** | Pesos del admin desconectados: solo "Metas de Relación" coincide de nombre con las llaves del score | `compatibility.py:21-45` vs `:73-115`; `seed_algorithm_factors.py:104-145` | **F2 completo** (los pesos configurables dependen de que el admin mande de verdad) | Renombrar criterios sembrados = llaves del score, o mapeo explícito; editar en admin cambia el score |
 | **P1-7** | `GET /discovery/care-recommendations` sin montar (código muerto) | `discovery_care.py` sin import | Claridad de arquitectura | Montar o eliminar |
 | **P1-métrica** | `p_value: 0.05 # TODO` en métricas A/B | `analytics/metrics.py` | F4 (A/B avanzado) | Cálculo estadístico real (χ² o t-test) |
+
+> **Estado (2026-09-27):** **P0-1 y P0-2 resueltos _en código_** (implementado en
+> `docs/superpowers/plans/2026-09-26-care-fase0-chat-blockers.md`; verificado con
+> `backend/scripts/verify_chat_flow.py` contra Mongo real y 25 tests de chat de 137).
+> **El E2E like→match→chat en navegador no se ejecutó** — el daemon de Docker no
+> estaba corriendo (R48) — así que el criterio de aceptación literal de P0-1 sigue
+> sin comprobar; de ahí el 🟡. Runbook manual: `CARE_ALGORITHM.md` §11.6.
+> Deuda aceptada de Fase 0 con tickets: [`CARE_F0_FOLLOWUPS.md`](./CARE_F0_FOLLOWUPS.md).
+> P1-3/P1-4/P1-7/P1-métrica: pendientes.
 
 > **P0-1/P0-2 son gate de Fase 4**; **P1-4 es gate de Fase 2**; el resto son
 > mejoras paralelas de bajo riesgo.

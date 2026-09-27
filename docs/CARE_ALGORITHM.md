@@ -357,7 +357,7 @@ affinity_score, matched_at` (no expone `mode` ni `unlock_state`).
 - **REST**: `POST /chat/send` acepta `conversation_id` (sistema nuevo, requiere
   participante + relación no bloqueada) o `match_id` (legacy, exige `status=MATCHED`).
 - **Lectura**: `GET /chat/messages/{conversation_id}` marca en bloque lo leído y
-  resetea el contador; fallback legacy con query `?match_id=` (`chat.py:292-368`).
+  resetea el contador; fallback legacy con query `?match_id=` (`chat.py:391-470`).
 - **Sugerencias**: `GET /chat/suggestions?target_user_id=` (`chat.py:558-590`) →
   base ["Hola! 👋", "¿Cómo va tu día?"] + "¡Vi que también te gusta {interés}!" por
   cada interés común (máx 3). En UI son chips sobre el compositor
@@ -464,15 +464,15 @@ rechazar/eliminar/ir al chat), `FriendManager.tsx` para *enviar* solicitud.
 | Objetivo | ¿Listo? | Por qué |
 |---|---|---|
 | **Discover en operación** | ✅ **Sí, con reservas** | El pipeline `/discovery/queue` está completo y conectado (CARE → filtros → seguridad → UI). Funciona con perfiles reales; los gaps afectan calidad, no la operación. |
-| **Pruebas de chats** | ❇️ **No del todo — 2 bloqueadores** | La carga de historial y la lista de conversaciones no encajan frontend↔backend (ver P0-1/P0-2). El envío por WebSocket sí funciona. |
+| **Pruebas de chats** | 🟡 **Código listo — E2E sin verificar** | P0-1/P0-2 están **resueltos en código** (Fase 0) y verificados a dos niveles: **datos** (`backend/scripts/verify_chat_flow.py` contra Mongo real: ciclo `Relationship`+`Conversation`, idempotencia y normalización) y **tests** — ojo con el número: la suite completa son 137 tests, pero **sólo 25 tocan el chat** (`test_chat_resolvers.py` 8, `test_conversation_service.py` 12, `test_dedupe_script.py` 5); los otros 112 son auth, caché, DTOs y scoring de CARE. Los de chat son de función pura y de servicio: **cero cobertura a nivel de ruta o de WS**, que es justo lo que el E2E tiene que cubrir. **El E2E like→match→chat en navegador NO se ejecutó** (R48 — el daemon de Docker no estaba corriendo), luego **el criterio de aceptación de `CARE_ROADMAP.md` §2 sigue sin comprobar**. Runbook manual en §11.6. Quedan P1 (icebreaker, blind) — ver §11.3. |
 | **Refinar el algoritmo** | 🔧 **Recomendado antes de escalar** | dynamic/human hoy son casi constantes; los pesos del admin no conectan con el score. |
 
 ### 11.2 Bloqueadores para pruebas de chat (P0)
 
 | # | Problema | Evidencia | Arreglo sugerido |
 |---|---|---|---|
-| P0-1 | `GET /chat/messages/{match_id}` envía el `match_id` como `conversation_id` y sin `?match_id=` → el backend responde **404 "Conversation not found"** (si no existe `Conversation` con ese id) | `chat/index.tsx:329` vs `chat.py:292-368` | Frontend: `GET /chat/messages/{id}?match_id={id}` **o** backend: fallback con el path como `match_id` |
-| P0-2 | `GET /chat/conversations` solo devuelve documentos `Conversation`, que **nadie crea en runtime** (solo la migración, y siempre `type=MATCH`); además devuelve `conversation_id` y el frontend espera `match_id` | `chat.py:216-226`, `migrate_to_relationships.py:139`, `chat/index.tsx:64-81` | Crear `Conversation` al confirmar match (Kafka `MATCH_CREATED` es el gancho natural) y al aceptar amistad/pareja (`friends.py:291` tiene el TODO); alinear llaves del DTO |
+| P0-1 | `GET /chat/messages/{match_id}` envía el `match_id` como `conversation_id` y sin `?match_id=` → el backend responde **404 "Conversation not found"** (si no existe `Conversation` con ese id) | `chat/index.tsx:332` vs `chat.py:391-470` | ✅ **Resuelto en código (Fase 0, 2026-09-27)** — fallback `resolve_message_source` en backend (`chat_resolvers.py`): el path también sirve de `match_id` legacy. Cubierto por tests; el E2E en navegador sigue pendiente (R48) |
+| P0-2 | `GET /chat/conversations` solo devuelve documentos `Conversation`, que **nadie crea en runtime** (solo la migración, y siempre `type=MATCH`); además devuelve `conversation_id` y el frontend espera `match_id` | `chat.py:308-388` (DTO en `:349-372`), `migrate_to_relationships.py:139`, `chat/index.tsx:64-81` | ✅ **Resuelto en código (Fase 0, 2026-09-27)** — `ensure_match_conversation` enganchado en los puntos de transición a `MATCHED` + `ensure_friend_conversation` en `friends.py`; backfill en `scripts/backfill_conversations.py`; frontend migrado a `conversation_id`. Verificado contra Mongo real por `scripts/verify_chat_flow.py`; el E2E en navegador sigue pendiente (R48) |
 
 ### 11.3 Bugs conocidos (P1) — afectan features concretas
 
@@ -513,8 +513,10 @@ rechazar/eliminar/ir al chat), `FriendManager.tsx` para *enviar* solicitud.
 > ↳ Plan detallado con fases, criterios de aceptación y dependencias:
 > [`CARE_ROADMAP.md`](./CARE_ROADMAP.md) §10.
 
-1. **Corto plazo (desbloquea pruebas de chat)**: resolver P0-1 y P0-2 (conversación
-   al nacer el match) → recién ahí correr la prueba E2E like→match→chat *(Fase 0)*.
+1. ~~**Corto plazo (desbloquea pruebas de chat)**: resolver P0-1 y P0-2 (conversación
+   al nacer el match)~~ ✅ hecho en código (Fase 0, 2026-09-27) → **falta** correr la
+   prueba E2E like→match→chat en navegador (runbook en §11.6; R48). Verificado hasta
+   ahora con `backend/scripts/verify_chat_flow.py` (datos) y 25 tests de chat de 137.
 2. **Medio**: P1-3 (icebreaker real) y P1-1/P1-2 (blind) si van incluidos en el
    alcance de la prueba.
 3. **Algoritmo**: implementar señales dinámicas (§11.4.1-2 → *Fase 1*) antes de
@@ -522,6 +524,138 @@ rechazar/eliminar/ir al chat), `FriendManager.tsx` para *enviar* solicitud.
    son casi constantes. Con señales reales, recién tiene sentido calibrar
    0.6/0.3/0.1 (el A/B `weight_test_001` ya está listo para comparar
    0.60/0.30 vs 0.50/0.40).
+
+### 11.6 Runbook: comprobar el chat like → match → E2E (a mano)
+
+> **Por qué existe:** el E2E en navegador **no se ejecutó** en Fase 0 (R48 — el daemon de
+> Docker no estaba corriendo). El criterio de aceptación de P0-1 en `CARE_ROADMAP.md` §2 es
+> literalmente *"like → match → chat E2E pasa sin 404"*, así que **P0-1 y P0-2 no están
+> verificados de punta a punta** aunque el código esté resuelto. Esto es lo que falta.
+>
+> Es un runbook manual a propósito. Automatizarlo exigiría un harness de navegador que el
+> repo no tiene (mismo motivo por el que Task 8 no añadió tests de componente).
+> **Los commands se ejecutaron y se verificaron contra el repo** — si alguno falla, el resto del
+> runbook sigue siendo válido **salvo el paso 1**: sin match no hay pasos 2-7, así que si el
+> paso 1 falla el atajo está en el paso 0B.
+
+**A. Levantar el stack** (4 servicios; puertos de `docker-compose.yml`)
+
+```powershell
+docker compose up -d            # mongodb:27017 · redis:6379 · backend:8000 · frontend:3000
+docker compose ps               # los 4 deben quedar Up
+```
+
+El frontend llama al backend por URL absoluta —`NEXT_PUBLIC_API_URL || http://localhost:8000`
+(`frontend/src/services/api.ts:3`)— y **no hay `rewrites` en `next.config.js`**, así que no
+hay proxy: si el front no ve al back, es CORS o red. `CORS_ORIGINS` por defecto ya incluye
+`http://localhost:3000` y `:3001` (`backend/src/core/config.py:47`).
+
+> **Ojo con el modo de arranque:** el `frontend` del compose hace `npm run build` + `npm start`
+> → `next start` (producción, `frontend/Dockerfile:15,21`) y **sólo publica `3000:3000`**. No hay
+> ningún comando de este runbook que produzca un origen en `:3001`, así que el paso 7 requiere
+> levantar el frontend **fuera** de Docker (`cd frontend; npm run dev`, que sí sirve `:3001`)
+> si quieres probarlo. CORS ya lo permite, no hay que cambiar nada.
+
+**B. Preflight de datos — CORRE ANTES del navegador y no necesita el stack**
+
+```powershell
+cd backend; $env:PYTHONPATH="."; .\venv\Scripts\python scripts\verify_chat_flow.py
+```
+
+Sólo necesita Mongo. Salida esperada: 3 líneas `OK:` y exit 0. Esto prueba el ciclo
+`Relationship`+`Conversation` (creación, idempotencia, normalización de ids) pero **no prueba
+la API, ni el WS, ni la UI**. Si esto falla, no sigas: el problema está abajo, no en el chat.
+
+**C. Dos usuarios** — `POST http://localhost:8000/auth/register` (`auth.router` se monta en
+`prefix="/auth"`, sin prefijo propio: `backend/src/main.py:159` + `auth.py:32`).
+
+```json
+{ "username": "e2e_alice", "password": "...", "display_name": "Alice", "age": 30, "gender": "female" }
+```
+
+> **Trampa real:** si incluyes `phone`, la respuesta llega con `"requires_verification": true`
+> (`auth.py:252-258`) y el alta **no está completa** hasta que pases el OTP por
+> `POST /auth/verify-phone` con `{user_id, otp}` — y ese código sólo se imprime en stdout
+> (`--- [MOCK SMS] ---`) cuando `settings.DEBUG` es true. **Regístrate sin `phone`** para no
+> tener que leer logs: sin teléfono, `is_verified=True` al momento (`auth.py:263`).
+
+Dos navegadores = **dos perfiles o una ventana incógnito**, no dos pestañas: la sesión es por
+cookie. **Rutas de UI que sí existen** (las verifiqué; una versión anterior de este runbook
+señalaba `/portal-redthread/auth/register` y **ese 404** — `portal-redthread/auth/` sólo tiene
+`login.tsx` y `forgot-password.tsx`):
+
+| Para | Ruta |
+|---|---|
+| Registrarse | `http://localhost:3000/auth?tab=register` — `/auth/register` es un redirect a esta (`pages/auth/register.tsx:7`) y el POST real sale de `RegisterForm.tsx:218` |
+| Iniciar sesión | `http://localhost:3000/portal-redthread/auth/login` **o** `http://localhost:3000/auth/login` |
+| Chat | `http://localhost:3000/chat` |
+
+**Paso 0B — atajo si el paso 1 falla.** Dos usuarios recién registrados no tienen por qué
+aparecer en la cola de discovery del otro (perfil incompleto, preferencias/atracción
+incompatibles). Para saltar a `MATCHED` sin depender de la UI:
+
+```powershell
+cd backend; $env:PYTHONPATH="."; .\venv\Scripts\python scripts\create_test_match.py
+```
+
+Ojo: este script tiene **usuarios hardcodeados** (`maria@redthread.com` y
+`admin@testemail.com`) y falla si no existen. Si es tu caso, crea un par con esos correos al
+registrar y listo.
+
+**El recorrido, en orden. El paso 3 es el que más información da — no lo saltes**
+
+| # | Paso | Criterio de éxito | Si falla |
+|---|---|---|---|
+| 1 | Alice da like a Bob; Bob da like a Alice | ambos lados ven el match | discovery, no chat — Fase 0 no lo tocó. Usa el **paso 0B** |
+| 2 | `Match.status` pasa a `MATCHED` y hay `Conversation` | `ensure_match_conversation` corrió | **No mires `src/services/*`: está muerto** (F0-13). El gancho vivo está en el router montado, `backend/src/api/discovery.py:753-756` y `:1196-1199`, y cada uno va envuelto en `try/except Exception` que **sólo hace un `print`**: si el gancho falla, no hay error visible, sólo una línea en los logs del contenedor. Ese es el punto ciego |
+| 3 | **Al abrir `/chat`, la lista muestra la conversación** | fila con el nombre del otro | **`activeConversationId` queda `null` y todo lo demás pasa desapercibido** (R45: el fetch no se llamaba al montar). Es la comprobación que más discrimina: separa "backend roto" de "frontend roto" |
+| 4 | Abrir la conversación y enviar un mensaje | la burbuja sale y el WS la confirma | frame de error sin `temp_id` → burbuja colgada (F0-10, F0-23) |
+| 5 | El mensaje aparece en el otro navegador sin recargar | el WS trae `new_message` | revisar paridad de payload (F0-07) |
+| 6 | Recargar la página: el historial persiste | los mensajes se leen del backend, no del estado | `/chat/messages/{id}` con `conversation_id` (P0-1) |
+| 7 | Enviar desde la UI con el otro navegador en `localhost:3001` | CORS OK | `CORS_ORIGINS` incluye `:3001`; requiere `npm run dev` fuera de Docker (ver §A) |
+
+En el paso 3, el registro en Mongo es la confirmación independiente de que la UI no miente.
+Se lee así con un **here-string**, que evita todo el escaping de `$in`:
+
+```powershell
+# en backend\, con $env:PYTHONPATH="."
+@'
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+
+async def m():
+    db = AsyncIOMotorClient("mongodb://localhost:27017")["redthread"]
+    pair = {"$in": ["<alice_id>", "<bob_id>"]}   # sustituye por los ids reales
+    doc = await db.conversations.find_one({"participants": pair},
+                                          {"type": 1, "relationship_id": 1, "_id": 0})
+    print("conversacion del par:", doc)
+    print("total conversations:", await db.conversations.count_documents({}))
+
+asyncio.run(m())
+'@ | .\venv\Scripts\python -
+```
+
+`None` significa "no hay conversación para ese par" (o que los ids están mal puestos — mira el
+`total` para distinguirlos). Con datos reales, `type` debe existir y ser `"match"`, y
+`relationship_id` debe apuntar a una `Relationship` de tipo `match`. **Nota:** el mismo par
+**puede tener dos conversaciones** —una `match` y otra `friend`— y eso es **por diseño**: el
+chat tiene un sub-tab `match`/`friend` que filtra por `Conversation.type`
+(`frontend/src/pages/chat/index.tsx:109,413-414`). No lo trates como bug.
+
+**E. Lo que este runbook NO cubre, y por qué sigue en la lista de deudas**
+
+- **P1-3 / icebreaker está roto y lo seguirá durante este runbook.** La ruta viva es
+  `/api/icebreaker/icebreaker/chat/invite` y el frontend hace POST a
+  `/api/icebreaker/chat/invite` → **404**. No pruebes el flujo de invitación esperando que
+  funcione; si lo pruebas, el 404 es el resultado **esperado** (deuda 22).
+- **R37 — la UI de bloqueado no funciona en runtime.** `Relationship.status = BLOCKED` no lo
+  escribe nadie; un par bloqueado se ve como `matched` y sin banner. No lo uses como criterio
+  de éxito (deuda 1).
+- Las ramas de exit 1 y 2 del backfill no se ejercitaron (deuda 29).
+
+Al terminar, la respuesta a la pregunta que P0-1 se hace es una de dos: **"pasa sin 404"** →
+cambiar el 🟡 por ✅ en `CARE_ROADMAP.md` §2 y en §11.1-11.2 de este doc; o **falla** → el
+diagnóstico va en el site donde se rompió, no en una nota.
 
 ---
 
