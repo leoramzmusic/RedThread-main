@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from pydantic import BaseModel
+from pymongo.errors import DuplicateKeyError
 from src.models.user import User
 from src.models.profile import Profile
 from src.models.relationship import (
@@ -13,6 +14,7 @@ from src.models.relationship import (
 from src.api.auth import get_current_user
 from src.models.user import SubscriptionTier
 from src.models.message import Message, MessageType
+from src.services.conversation_service import ensure_friend_conversation
 import math
 
 def calculate_distance(coord1: List[float], coord2: List[float]) -> float:
@@ -153,7 +155,13 @@ async def send_friend_request(
         created_at=datetime.utcnow()
     )
     
-    await relationship.insert()
+    try:
+        await relationship.insert()
+    except DuplicateKeyError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Friend request already pending"
+        )
     
     # TODO: Send notification to target user
     
@@ -288,7 +296,10 @@ async def respond_to_friend_request(
         relationship.accepted_at = datetime.utcnow()
         await relationship.save()
         
-        # TODO: Create conversation for friend chat
+        try:
+            await ensure_friend_conversation(relationship)
+        except Exception as conv_err:
+            print(f"Conversation creation error (friend accept): {conv_err}")
         # TODO: Send notification to requester
         
         return {
