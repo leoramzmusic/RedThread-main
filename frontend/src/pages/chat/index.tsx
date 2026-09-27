@@ -62,11 +62,11 @@ import PlanAvatar from '../../components/subscription/PlanAvatar';
 import IcebreakerButton from '../../components/chat/IcebreakerButton';
 
 interface Conversation {
-  match_id: string;
+  conversation_id: string;
   other_user_id: string;
   display_name: string;
   photo: string;
-  last_message?: Message;
+  last_message_content?: string;
   unread_count: number;
   is_online: boolean;
   last_active?: string;
@@ -104,7 +104,7 @@ export default function Chat() {
   };
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0); // 0: Messages, 1: Notifications
   const [messageFilter, setMessageFilter] = useState<'match' | 'friend'>('match'); // Sub-tab for messages
   const [messages, setMessages] = useState<Message[]>([]);
@@ -211,7 +211,7 @@ export default function Chat() {
       setConfirmDialogMessage(t('chat.clear_confirm', "¿Vaciar chat? Esto solo borrará tu copia de los mensajes."));
       setConfirmAction(() => async () => {
         try {
-          await apiClient.post(`/chat/clear/${activeConversation.match_id}`);
+          await apiClient.post(`/chat/clear/${activeConversation.conversation_id}`);
           setMessages([]);
         } catch (error) {
           console.error("Error clearing chat:", error);
@@ -259,14 +259,16 @@ export default function Chat() {
     }
   };
 
-  const activeMatchIdRef = useRef(activeMatchId);
-  activeMatchIdRef.current = activeMatchId;
+  const activeConversationIdRef = useRef(activeConversationId);
+  activeConversationIdRef.current = activeConversationId;
 
   useEffect(() => {
     if (!isAuthenticated || !user?.user_id) {
       if (!isAuthenticated) router.push('/auth/login');
       return;
     }
+
+    fetchConversations();
 
     // Initialize WebSocket
     const wsUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace('http', 'ws') + `/chat/ws/${user.user_id}`;
@@ -280,7 +282,8 @@ export default function Chat() {
       const data = JSON.parse(event.data);
 
       if (data.action === 'new_message') {
-        if (data.message.match_id === activeMatchIdRef.current) {
+        const msgConvId = data.message.conversation_id ?? data.message.match_id;
+        if (msgConvId === activeConversationIdRef.current) {
           setMessages((prev) => [...prev, data.message]);
           scrollToBottom();
         } else {
@@ -295,7 +298,7 @@ export default function Chat() {
           m.id === data.message_id ? { ...m, is_read: true } : m
         ));
         setConversations(prev => prev.map(c => {
-          if (c.match_id === activeMatchIdRef.current) {
+          if (c.conversation_id === activeConversationIdRef.current) {
             return { ...c, unread_count: Math.max(0, c.unread_count - 1) };
           }
           return c;
@@ -315,18 +318,18 @@ export default function Chat() {
   }, [isAuthenticated, user?.user_id]);
 
   useEffect(() => {
-    if (activeMatchId) {
-      fetchMessages(activeMatchId);
-      const conv = conversations.find(c => c.match_id === activeMatchId);
+    if (activeConversationId) {
+      fetchMessages(activeConversationId);
+      const conv = conversations.find(c => c.conversation_id === activeConversationId);
       if (conv) {
         fetchSuggestions(conv.other_user_id);
       }
     }
-  }, [activeMatchId]);
+  }, [activeConversationId]);
 
-  const fetchMessages = async (matchId: string) => {
+  const fetchMessages = async (conversationId: string) => {
     try {
-      const response = await apiClient.get(`/chat/messages/${matchId}`);
+      const response = await apiClient.get(`/chat/messages/${conversationId}`);
       setMessages(response.data.reverse()); // API returns newest first
       scrollToBottom();
     } catch (err) {
@@ -338,13 +341,13 @@ export default function Chat() {
     if (e) e.preventDefault();
     const msgContent = content || newMessage;
 
-    if (!msgContent.trim() || !activeMatchId || !socket) return;
+    if (!msgContent.trim() || !activeConversationId || !socket) return;
 
     const tempId = Date.now().toString();
 
     const messageData = {
       action: 'send_message',
-      match_id: activeMatchId,
+      conversation_id: activeConversationId,
       content: msgContent,
       message_type: 'text',
       temp_id: tempId
@@ -401,8 +404,8 @@ export default function Chat() {
   };
 
   const activeConversation = useMemo(
-    () => conversations.find(c => c.match_id === activeMatchId),
-    [conversations, activeMatchId]
+    () => conversations.find(c => c.conversation_id === activeConversationId),
+    [conversations, activeConversationId]
   );
 
   const filteredConversations = useMemo(() => {
@@ -485,14 +488,14 @@ export default function Chat() {
                     </Box>
                   )}
                   {filteredConversations.map((conv) => (
-                    <ListItem key={conv.match_id} disablePadding>
+                    <ListItem key={conv.conversation_id} disablePadding>
                       <ListItemButton
-                        selected={activeMatchId === conv.match_id}
-                        onClick={() => setActiveMatchId(conv.match_id)}
+                        selected={activeConversationId === conv.conversation_id}
+                        onClick={() => setActiveConversationId(conv.conversation_id)}
                         sx={{
                           bgcolor: conv.status === 'blocked' ? 'action.disabledBackground' : undefined,
                           opacity: conv.status === 'blocked' ? 0.7 : 1,
-                          borderLeft: activeMatchId === conv.match_id ? `4px solid ${conv.theme_color || theme.palette.primary.main}` : 'none'
+                          borderLeft: activeConversationId === conv.conversation_id ? `4px solid ${conv.theme_color || theme.palette.primary.main}` : 'none'
                         }}
                       >
                         <ListItemAvatar>
@@ -523,7 +526,7 @@ export default function Chat() {
                           secondary={
                             <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
                               <Typography variant="body2" component="span" noWrap color="text.primary" fontWeight={conv.unread_count > 0 ? 700 : 400}>
-                                {conv.last_message?.content || t('chat.start_chatting', 'Comienza a chatear...')}
+                                {conv.last_message_content || t('chat.start_chatting', 'Comienza a chatear...')}
                               </Typography>
                               <Typography variant="caption" component="span" color="text.secondary">
                                 {getOnlineStatusText(conv)}
@@ -546,9 +549,9 @@ export default function Chat() {
         </Grid>
 
         {/* Chat Window */}
-        <Grid item xs={12} md={8} sx={{ height: '100%', display: { xs: activeMatchId ? 'block' : 'none', md: 'block' } }}>
+        <Grid item xs={12} md={8} sx={{ height: '100%', display: { xs: activeConversationId ? 'block' : 'none', md: 'block' } }}>
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
-            {activeMatchId ? (
+            {activeConversationId ? (
               <>
                 {/* Header */}
                 <Box sx={{
@@ -678,7 +681,7 @@ export default function Chat() {
 
                     <Box component="form" onSubmit={(e) => handleSendMessage(e)} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                       <IcebreakerButton
-                        matchId={activeConversation!.match_id}
+                        matchId={activeConversation!.conversation_id}
                         otherUserId={activeConversation!.other_user_id}
                         onSend={(text) => handleSendMessage(undefined, text)}
                         color={activeThemeColor}
