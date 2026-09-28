@@ -241,7 +241,7 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
 
 // Placeholder for future compatibility logic
 export const calculateCompatibility = (userA: any, userB: any): number => {
-  let score = 0;
+  const score = 0;
   const maxScore = 20;
 
   // Simple matches
