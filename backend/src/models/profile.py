@@ -375,6 +375,7 @@ class Profile(Document):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     profile_completion: int = 0  # 0-100%
+    completion_steps: int = 0  # Number of completion steps completed (0-5)
 
     class Settings:
         name = "profiles"

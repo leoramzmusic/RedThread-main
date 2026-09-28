@@ -62,6 +62,7 @@ class DiscoveryProfile(BaseModel):
     is_discovery: bool = False
     activity_score: Optional[float] = None
     responsiveness_score: Optional[float] = None
+    affinity_breakdown: Optional[dict] = None
     is_blind: bool = False  # New field to indicate if profile is in blind mode
     scenario_label: Optional[str] = None
     connection_tone: Optional[str] = None
@@ -71,6 +72,12 @@ class DiscoveryProfile(BaseModel):
     show_age: bool = True
     show_location: bool = True
     is_curious: bool = False
+    # Cold start / onboarding metadata
+    profile_completion: Optional[int] = None
+    profile_completion_steps: Optional[int] = None
+    profile_completion_total: Optional[int] = None
+    completion_card_message: Optional[str] = None
+    show_completion_card: bool = False
 
 
 class ReceivedLike(BaseModel):
@@ -131,6 +138,7 @@ async def get_discovery_queue(
     curiosity_mode: Optional[bool] = None,
     curiosity_genders: Optional[List[str]] = Query(None),  # Transient curiosity genders
     only_high_compatibility: bool = False,  # New filter for Sugeridos mode
+    skip_completion_card: bool = False,  # Force recommendations even if profile incomplete
     current_user: User = Depends(get_current_user),
 ):
     """Get discovery queue with affinity scores and filters"""
@@ -155,9 +163,15 @@ async def get_discovery_queue(
         # --- COMPLETENESS-BASED LOGIC ---
         # Don't force override mode to 'free', but track low completion to relax filters later.
         is_incomplete_profile = my_profile.profile_completion < 60
-        if is_incomplete_profile:
+        # If skip_completion_card is true, force recommendations even with incomplete profile
+        force_recommendations = skip_completion_card or not is_incomplete_profile
+        if is_incomplete_profile and not skip_completion_card:
             print(
                 f"[DISCOVERY] User {current_user.id} has low completion ({my_profile.profile_completion}%), relaxing filters."
+            )
+        elif skip_completion_card and is_incomplete_profile:
+            print(
+                f"[DISCOVERY] User {current_user.id} skipped completion card, forcing recommendations despite low completion ({my_profile.profile_completion}%)."
             )
         # ----------------------------------------
 
@@ -444,7 +458,7 @@ async def get_discovery_queue(
                 "[DISCOVERY] No candidates found for query. Attempting FALLBACK with relaxed filters."
             )
 
-            # FALLBACK QUERY: Minimal constraints to ensure visibility
+            # FALLBACK QUERY: Minimal constraints to ensure visibility (cold start seed)
             fallback_query = {
                 "profile_visible": True,
                 "show_me_in_discovery": True,
@@ -455,11 +469,42 @@ async def get_discovery_queue(
             if my_profile.attraction_preferences:
                 fallback_query["gender"] = {"$in": normalized_attraction}
 
-            # Fetch again
+            # Fetch again with generous limit to ensure cold start minimum
             candidate_profiles = (
-                await Profile.find(fallback_query).limit(limit * 3).to_list()
+                await Profile.find(fallback_query).limit(max(limit * 3, 10)).to_list()
             )
             print(f"[DISCOVERY] Fallback found {len(candidate_profiles)} candidates")
+
+            # COLD START SEED: If still too few, add diverse active users as seed
+            if len(candidate_profiles) < 3:
+                print("[DISCOVERY] Cold start: fewer than 3 candidates, adding seed profiles...")
+                seed_query = {
+                    "profile_visible": True,
+                    "show_me_in_discovery": True,
+                    "user_id": {"$nin": excluded_ids + [p.user_id for p in candidate_profiles]},
+                }
+                # Add diverse active users (recently active, different genders/interests)
+                from datetime import timedelta
+                week_ago = datetime.utcnow() - timedelta(days=7)
+                seed_query["user_id"]["$nin"] = excluded_ids + [p.user_id for p in candidate_profiles]
+                # Find recently active users with profiles
+                active_users = await User.find(
+                    {"last_seen": {"$gte": week_ago}, "is_active": True}
+                ).limit(20).to_list()
+                if active_users:
+                    seed_user_ids = [str(u.id) for u in active_users]
+                    seed_profiles = await Profile.find(
+                        {"user_id": {"$in": seed_user_ids}, "profile_visible": True}
+                    ).limit(10).to_list()
+                    # Add unique seed profiles
+                    existing_ids = {p.user_id for p in candidate_profiles}
+                    for sp in seed_profiles:
+                        if sp.user_id not in existing_ids:
+                            candidate_profiles.append(sp)
+                            existing_ids.add(sp.user_id)
+                            if len(candidate_profiles) >= 3:
+                                break
+                print(f"[DISCOVERY] After seed, total candidates: {len(candidate_profiles)}")
 
         if not candidate_profiles:
             print("[DISCOVERY] Still no candidates found after fallback.")
@@ -484,11 +529,12 @@ async def get_discovery_queue(
 
         # 6. Rank with CARE Engine
         # Determine strictness: Relax mutual orientation in 'free' mode or if user has no gender specified
-        # ALSO relax if profile is incomplete
+        # ALSO relax if profile is incomplete (unless user skipped completion card)
+        force_recommendations = skip_completion_card or not is_incomplete_profile
         strict_mode = (
             mode != "free"
             and my_profile.gender != Gender.PREFER_NOT_TO_SAY
-            and not is_incomplete_profile
+            and force_recommendations
         )
 
         print(f"[DEBUG] Calling ranker with {len(candidates)} candidates")
@@ -673,6 +719,18 @@ async def get_discovery_queue(
                         active_curiosity
                         and original_profile.gender
                         in (my_profile.curiosity_genders or [])
+                    ),
+                    # Cold start / onboarding metadata (only on first item)
+                    profile_completion=my_profile.profile_completion if len(result) == 0 else None,
+                    profile_completion_steps=my_profile.completion_steps if len(result) == 0 else None,
+                    profile_completion_total=5 if len(result) == 0 else None,
+                    completion_card_message=(
+                        "Para darte mejores recomendaciones, necesitamos un detalle más: ¿qué buscas?"
+                        if len(result) == 0 and is_incomplete_profile
+                        else None
+                    ),
+                    show_completion_card=(
+                        True if len(result) == 0 and is_incomplete_profile and not skip_completion_card else False
                     ),
                 )
             )
