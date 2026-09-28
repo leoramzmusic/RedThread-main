@@ -12,15 +12,15 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
     print(f"🚀 Starting Profile Service v{settings.APP_VERSION}")
-    
+
     # Initialize database
     await init_db()
-    
+
     # Initialize Redis
     await redis_service.connect()
-    
+
     yield
-    
+
     # Shutdown
     print("🛑 Shutting down Profile Service...")
     await close_db()
@@ -52,4 +52,3 @@ app.include_router(profiles_router, prefix="/profiles", tags=["Profiles"])
 async def health_check():
     """Health check"""
     return {"status": "healthy", "service": "profiles"}
-

@@ -1,33 +1,58 @@
 from datetime import datetime
-from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, HTTPException, status, Depends, Response, Request, Header, UploadFile, File
+from typing import Optional, List
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    status,
+    Depends,
+    Response,
+    Request,
+    Header,
+    UploadFile,
+    File,
+)
 from pydantic import BaseModel, EmailStr
 from src.models.employee import Employee
 from src.models.session import Session
 from src.models.employee_audit import EmployeeAudit
 from src.services.employee_service import employee_service
-from src.services.security_service import calculate_session_expiration, enforce_max_sessions, parse_user_agent
-from src.core.utils.security import create_access_token, create_refresh_token, decode_token, hash_token
+from src.services.security_service import (
+    calculate_session_expiration,
+    enforce_max_sessions,
+    parse_user_agent,
+)
+from src.core.utils.security import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    hash_token,
+)
 from src.core.config import settings
 
 router = APIRouter(prefix="/portal-redthread/auth", tags=["Admin Auth"])
+
 
 class AdminLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+
 class RefreshTokenRequest(BaseModel):
     refresh_token: Optional[str] = None
+
 
 class AdminAuthResponse(BaseModel):
     employee: dict
     message: str = "ok"
 
+
 class Update2FARequest(BaseModel):
     enabled: bool
 
+
 class UpdateEmployeeLanguageRequest(BaseModel):
     preferred_language: str
+
 
 class EmployeeRegisterRequest(BaseModel):
     first_name: str
@@ -43,6 +68,7 @@ class EmployeeRegisterRequest(BaseModel):
     city: Optional[str] = None
     is_2fa_enabled: bool = False
 
+
 def _set_admin_cookies(response: Response, access_token: str, refresh_token: str):
     secure = settings.ENVIRONMENT != "local"
     response.set_cookie(
@@ -52,7 +78,7 @@ def _set_admin_cookies(response: Response, access_token: str, refresh_token: str
         secure=secure,
         samesite="strict",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        path="/"
+        path="/",
     )
     response.set_cookie(
         key="admin_refresh_token",
@@ -61,7 +87,7 @@ def _set_admin_cookies(response: Response, access_token: str, refresh_token: str
         secure=secure,
         samesite="strict",
         max_age=7 * 24 * 60 * 60,
-        path="/"
+        path="/",
     )
 
 
@@ -77,13 +103,12 @@ def _employee_summary(employee: Employee) -> dict:
         "first_name": employee.first_name,
         "last_name": employee.last_name,
         "roles": employee.roles,
-        "avatar": employee.avatar
+        "avatar": employee.avatar,
     }
 
 
 async def get_current_employee(
-    request: Request,
-    authorization: Optional[str] = Header(None)
+    request: Request, authorization: Optional[str] = Header(None)
 ) -> Employee:
     """Get current authenticated employee from Authorization header or HttpOnly cookie"""
     token = None
@@ -102,7 +127,7 @@ async def get_current_employee(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials"
+            detail="Invalid authentication credentials",
         )
 
     payload = decode_token(token)
@@ -110,55 +135,53 @@ async def get_current_employee(
     if not payload or payload.get("type") != "access":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials"
+            detail="Invalid authentication credentials",
         )
-    
+
     # Check if it's an employee token
     if payload.get("scope") != "employee":
-         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token scope"
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token scope"
         )
 
     employee_id = payload.get("sub")
     if not employee_id:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
         )
-    
+
     employee = await Employee.get(employee_id)
     if not employee:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Employee not found"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Employee not found"
         )
-        
+
     return employee
+
 
 @router.post("/login", response_model=AdminAuthResponse)
 async def login(request: AdminLoginRequest, response: Response, http_request: Request):
     print(f"[AUTH DEBUG] Login request received for email: {request.email}")
-    employee = await employee_service.authenticate_employee(request.email, request.password)
-    
+    employee = await employee_service.authenticate_employee(
+        request.email, request.password
+    )
+
     if not employee:
         print(f"[AUTH DEBUG] Authentication failed for: {request.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password"
+            detail="Incorrect email or password",
         )
-    
-    
+
     # Generate tokens with employee scope
     access_token = create_access_token(
         {"sub": str(employee.id), "scope": "employee"},
-        device_type="web" # Admin portal is web-only for now
+        device_type="web",  # Admin portal is web-only for now
     )
     refresh_token = create_refresh_token(
-        {"sub": str(employee.id), "scope": "employee"},
-        device_type="web"
+        {"sub": str(employee.id), "scope": "employee"}, device_type="web"
     )
-    
+
     await employee_service.update_last_login(str(employee.id))
 
     # Create session record for multi-device management
@@ -185,11 +208,10 @@ async def login(request: AdminLoginRequest, response: Response, http_request: Re
 
     return AdminAuthResponse(employee=_employee_summary(employee))
 
+
 @router.post("/refresh", response_model=AdminAuthResponse)
 async def refresh_token(
-    request: Request,
-    response: Response,
-    body: Optional[RefreshTokenRequest] = None
+    request: Request, response: Response, body: Optional[RefreshTokenRequest] = None
 ):
     """Refresh admin access token from HttpOnly cookie or request body"""
     refresh_token_val = request.cookies.get("admin_refresh_token")
@@ -198,46 +220,42 @@ async def refresh_token(
 
     if not refresh_token_val:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
         )
 
     payload = decode_token(refresh_token_val)
-    
+
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
         )
-    
+
     if payload.get("scope") != "employee":
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token scope"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token scope"
         )
-    
+
     employee_id = payload.get("sub")
     employee = await Employee.get(employee_id)
-    
+
     if not employee:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Employee not found"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Employee not found"
         )
-    
+
     # Generate new tokens
     access_token = create_access_token(
-        {"sub": str(employee.id), "scope": "employee"},
-        device_type="web"
+        {"sub": str(employee.id), "scope": "employee"}, device_type="web"
     )
     new_refresh_token = create_refresh_token(
-        {"sub": str(employee.id), "scope": "employee"},
-        device_type="web"
+        {"sub": str(employee.id), "scope": "employee"}, device_type="web"
     )
 
     # Update or create session record for this refresh
     token_hash = hash_token(refresh_token_val)
-    session = await Session.find_one(Session.refresh_token_hash == token_hash, Session.is_active == True)
+    session = await Session.find_one(
+        Session.refresh_token_hash == token_hash, Session.is_active == True
+    )
     if session:
         session.refresh_token_hash = hash_token(new_refresh_token)
         session.last_activity_at = datetime.utcnow()
@@ -266,6 +284,7 @@ async def refresh_token(
 
     return AdminAuthResponse(employee=_employee_summary(employee))
 
+
 @router.post("/logout")
 async def logout(response: Response, request: Request):
     """Logout admin - deactivates session if present and clears HttpOnly cookies"""
@@ -285,8 +304,11 @@ async def logout(response: Response, request: Request):
     _clear_admin_cookies(response)
     return {"message": "Logged out successfully"}
 
+
 @router.get("/me")
-async def get_current_employee_info(current_employee: Employee = Depends(get_current_employee)):
+async def get_current_employee_info(
+    current_employee: Employee = Depends(get_current_employee),
+):
     return await _me_payload(current_employee)
 
 
@@ -297,10 +319,13 @@ async def update_current_employee_language(
 ):
     """Update the employee's own language preference (per-employee, never global)."""
     from src.api.auth import get_enabled_languages
+
     code = request.preferred_language.lower()
     enabled = await get_enabled_languages()
     if code not in enabled:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Language not available")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Language not available"
+        )
     current_employee.preferred_language = code
     current_employee.updated_at = datetime.utcnow()
     await current_employee.save()
@@ -308,12 +333,18 @@ async def update_current_employee_language(
 
 
 @router.get("/sessions")
-async def get_active_sessions(current_employee: Employee = Depends(get_current_employee)):
+async def get_active_sessions(
+    current_employee: Employee = Depends(get_current_employee),
+):
     """Get all active sessions for the current employee"""
-    sessions = await Session.find(
-        Session.user_id == str(current_employee.id),
-        Session.is_active == True,
-    ).sort(-Session.last_activity_at).to_list()
+    sessions = (
+        await Session.find(
+            Session.user_id == str(current_employee.id),
+            Session.is_active == True,
+        )
+        .sort(-Session.last_activity_at)
+        .to_list()
+    )
 
     return [
         {
@@ -353,7 +384,9 @@ async def revoke_session(
 
 
 @router.post("/logout-all")
-async def logout_all_devices(current_employee: Employee = Depends(get_current_employee)):
+async def logout_all_devices(
+    current_employee: Employee = Depends(get_current_employee),
+):
     """Deactivate all sessions for the current employee"""
     await Session.find(
         Session.user_id == str(current_employee.id),
@@ -424,7 +457,9 @@ async def update_current_employee_info(
         try:
             data["birth_date"] = datetime.fromisoformat(data["birth_date"])
         except ValueError:
-            raise HTTPException(status_code=400, detail="birth_date must be ISO format (YYYY-MM-DD)")
+            raise HTTPException(
+                status_code=400, detail="birth_date must be ISO format (YYYY-MM-DD)"
+            )
 
     if not data:
         raise HTTPException(status_code=400, detail="No fields to update")
@@ -450,7 +485,9 @@ async def upload_my_avatar(
     """Self-service 1:1 avatar upload (same bucket + audit as admin upload."""
     admin_id = str(current_employee.id)
     admin_name = f"{current_employee.first_name} {current_employee.last_name}"
-    url = await employee_service.save_avatar(current_employee, file, admin_id, admin_name)
+    url = await employee_service.save_avatar(
+        current_employee, file, admin_id, admin_name
+    )
     return {"url": url, "message": "Avatar actualizado"}
 
 
@@ -471,12 +508,17 @@ async def _me_payload(employee: Employee) -> dict:
         "department_id": employee.department_id,
         "hire_date": employee.hire_date.isoformat() if employee.hire_date else None,
         "is_2fa_enabled": employee.is_2fa_enabled,
-        "status": employee.status.value if hasattr(employee.status, "value") else employee.status,
+        "status": (
+            employee.status.value
+            if hasattr(employee.status, "value")
+            else employee.status
+        ),
         "admin_theme_mode": employee.admin_theme_mode,
         "admin_visual_theme": employee.admin_visual_theme,
         "preferred_language": employee.preferred_language,
         "permissions": await employee.get_all_permissions(),
     }
+
 
 @router.post("/register")
 async def register_employee(request: EmployeeRegisterRequest):
@@ -485,7 +527,7 @@ async def register_employee(request: EmployeeRegisterRequest):
     existing = await employee_service.get_by_email(request.email)
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-        
+
     employee = await employee_service.create_employee(**request.dict())
     return {"status": "success", "id": str(employee.id)}
 
@@ -498,28 +540,27 @@ class UpdateAdminThemeRequest(BaseModel):
 @router.patch("/profile/theme")
 async def update_admin_theme(
     request: UpdateAdminThemeRequest,
-    current_employee: Employee = Depends(get_current_employee)
+    current_employee: Employee = Depends(get_current_employee),
 ):
     """Update admin theme preferences (mode and/or visual theme) - independent from user portal"""
-    
-    if request.admin_theme_mode and request.admin_theme_mode not in ['light', 'dark']:
+
+    if request.admin_theme_mode and request.admin_theme_mode not in ["light", "dark"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="admin_theme_mode must be 'light' or 'dark'"
+            detail="admin_theme_mode must be 'light' or 'dark'",
         )
-    
+
     if request.admin_theme_mode:
         current_employee.admin_theme_mode = request.admin_theme_mode
-    
+
     if request.admin_visual_theme:
         current_employee.admin_visual_theme = request.admin_visual_theme
-    
+
     current_employee.updated_at = datetime.utcnow()
     await current_employee.save()
-    
+
     return {
         "message": "Admin theme updated successfully",
         "admin_theme_mode": current_employee.admin_theme_mode,
-        "admin_visual_theme": current_employee.admin_visual_theme
+        "admin_visual_theme": current_employee.admin_visual_theme,
     }
-

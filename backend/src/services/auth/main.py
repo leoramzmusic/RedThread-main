@@ -12,15 +12,15 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
     print(f"🚀 Starting Auth Service v{settings.APP_VERSION}")
-    
+
     # Initialize database
     await init_db()
-    
+
     # Initialize Redis
     await redis_service.connect()
-    
+
     yield
-    
+
     # Shutdown
     print("🛑 Shutting down Auth Service...")
     await close_db()
@@ -51,4 +51,3 @@ app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 @app.get("/")
 def root():
     return {"status": "Auth service running", "version": "1.0.0"}
-

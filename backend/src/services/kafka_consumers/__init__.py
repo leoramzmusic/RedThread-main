@@ -2,6 +2,7 @@
 Paquete de consumers de Kafka para RedThread.
 Cada consumer maneja un dominio específico de eventos.
 """
+
 from .match_consumer import handle_match_event
 from .chat_consumer import handle_chat_message
 from .analytics_consumer import handle_analytics_event

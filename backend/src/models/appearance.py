@@ -1,8 +1,9 @@
-from beanie import Document, Indexed
+from beanie import Document
 from pydantic import Field
 from typing import Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
+
 
 class AppearanceType(str, Enum):
     FAVICON = "favicon"
@@ -21,11 +22,13 @@ class AppearanceType(str, Enum):
     USER_MENUS = "user_menus"
     FAVICON_USER = "favicon_user"
 
+
 class Platform(str, Enum):
     WEB = "web"
     ANDROID = "android"
     IOS = "ios"
     ALL = "all"
+
 
 class AppearanceResource(Document):
     type: AppearanceType
@@ -42,8 +45,4 @@ class AppearanceResource(Document):
 
     class Settings:
         name = "appearance_resources"
-        indexes = [
-            "type",
-            "platform",
-            "is_active"
-        ]
+        indexes = ["type", "platform", "is_active"]

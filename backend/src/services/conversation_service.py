@@ -23,7 +23,9 @@ if TYPE_CHECKING:
 
 def build_match_relationship_fields(user_id_1: str, user_id_2: str) -> dict[str, Any]:
     """Pure: kwargs to create a MATCH Relationship (normalized id order)."""
-    user_a_id, user_b_id = Relationship.normalize_user_ids(str(user_id_1), str(user_id_2))
+    user_a_id, user_b_id = Relationship.normalize_user_ids(
+        str(user_id_1), str(user_id_2)
+    )
     return {
         "user_a_id": user_a_id,
         "user_b_id": user_b_id,
@@ -47,7 +49,9 @@ def build_conversation_fields(
     }
 
 
-async def _upsert_relationship(query: dict[str, Any], on_insert: dict[str, Any]) -> Relationship:
+async def _upsert_relationship(
+    query: dict[str, Any], on_insert: dict[str, Any]
+) -> Relationship:
     """Atomic create-or-fetch: unique (user_a_id, user_b_id, type) index + upsert."""
     try:
         await Relationship.get_motor_collection().find_one_and_update(
@@ -61,7 +65,9 @@ async def _upsert_relationship(query: dict[str, Any], on_insert: dict[str, Any])
     return relationship
 
 
-async def _upsert_conversation(query: dict[str, Any], on_insert: dict[str, Any]) -> Conversation:
+async def _upsert_conversation(
+    query: dict[str, Any], on_insert: dict[str, Any]
+) -> Conversation:
     """Atomic create-or-fetch: unique relationship_id index + upsert."""
     try:
         await Conversation.get_motor_collection().find_one_and_update(

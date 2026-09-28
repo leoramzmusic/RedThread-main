@@ -22,7 +22,6 @@ INTEREST_CATALOG: Dict[str, Dict[str, str]] = {
     "Teatro": {"category": InterestCategory.CREATIVE, "icon": "🎭"},
     "Danza": {"category": InterestCategory.CREATIVE, "icon": "💃"},
     "Pintura": {"category": InterestCategory.CREATIVE, "icon": "🖌️"},
-    
     # Adventurous
     "Viajes": {"category": InterestCategory.ADVENTUROUS, "icon": "✈️"},
     "Naturaleza": {"category": InterestCategory.ADVENTUROUS, "icon": "🌲"},
@@ -32,7 +31,6 @@ INTEREST_CATALOG: Dict[str, Dict[str, str]] = {
     "Ciclismo": {"category": InterestCategory.ADVENTUROUS, "icon": "🚴"},
     "Escalada": {"category": InterestCategory.ADVENTUROUS, "icon": "🧗"},
     "Surf": {"category": InterestCategory.ADVENTUROUS, "icon": "🏄"},
-    
     # Digital
     "Gaming": {"category": InterestCategory.DIGITAL, "icon": "🎮"},
     "Tecnología": {"category": InterestCategory.DIGITAL, "icon": "💻"},
@@ -42,7 +40,6 @@ INTEREST_CATALOG: Dict[str, Dict[str, str]] = {
     "Podcasts": {"category": InterestCategory.DIGITAL, "icon": "🎙️"},
     "Anime": {"category": InterestCategory.DIGITAL, "icon": "🎌"},
     "E-sports": {"category": InterestCategory.DIGITAL, "icon": "🏆"},
-    
     # Lifestyle
     "Cocina": {"category": InterestCategory.LIFESTYLE, "icon": "🍳"},
     "Fitness": {"category": InterestCategory.LIFESTYLE, "icon": "💪"},
@@ -66,7 +63,6 @@ LOCATION_INTERESTS: Dict[str, List[str]] = {
     "Monterrey": ["Tecnología", "Fitness", "Senderismo", "Gaming"],
     "Cancún": ["Viajes", "Surf", "Naturaleza", "Fotografía"],
     "Oaxaca": ["Cocina", "Arte", "Fotografía", "Naturaleza"],
-    
     # Generic fallbacks
     "default_urban": ["Café", "Cine", "Fitness", "Música"],
     "default_rural": ["Naturaleza", "Senderismo", "Fotografía", "Camping"],
@@ -75,12 +71,12 @@ LOCATION_INTERESTS: Dict[str, List[str]] = {
 
 class InterestService:
     """Service for managing interests with categorization and smart suggestions"""
-    
+
     @staticmethod
     def get_categorized_interests() -> Dict[str, List[Dict[str, str]]]:
         """
         Returns all interests grouped by category
-        
+
         Returns:
             {
                 "creative": [{"name": "Música", "icon": "🎵"}, ...],
@@ -94,39 +90,38 @@ class InterestService:
             InterestCategory.DIGITAL: [],
             InterestCategory.LIFESTYLE: [],
         }
-        
+
         for interest_name, data in INTEREST_CATALOG.items():
             category = data["category"]
-            categorized[category].append({
-                "name": interest_name,
-                "icon": data["icon"]
-            })
-        
+            categorized[category].append({"name": interest_name, "icon": data["icon"]})
+
         return {cat.value: interests for cat, interests in categorized.items()}
-    
+
     @staticmethod
-    def get_suggested_interests(user_profile: Profile, limit: int = 8) -> List[Dict[str, str]]:
+    def get_suggested_interests(
+        user_profile: Profile, limit: int = 8
+    ) -> List[Dict[str, str]]:
         """
         Generate smart interest suggestions based on:
         - User's location (city/state)
         - Age range
         - Existing interests (complementary suggestions)
-        
+
         Args:
             user_profile: User's profile
             limit: Maximum number of suggestions
-            
+
         Returns:
             List of suggested interests with metadata
         """
         suggestions: Set[str] = set()
         existing_interests = set(user_profile.interests or [])
-        
+
         # 1. Location-based suggestions
         if user_profile.location:
             city = user_profile.location.city
             state = user_profile.location.state
-            
+
             # Try city-specific
             if city and city in LOCATION_INTERESTS:
                 suggestions.update(LOCATION_INTERESTS[city])
@@ -138,7 +133,7 @@ class InterestService:
                 # Simple heuristic: if city exists, assume urban
                 fallback = "default_urban" if city else "default_rural"
                 suggestions.update(LOCATION_INTERESTS.get(fallback, []))
-        
+
         # 2. Age-based suggestions
         age = user_profile.age
         if age < 25:
@@ -147,7 +142,7 @@ class InterestService:
             suggestions.update(["Viajes", "Fitness", "Cocina", "Tecnología"])
         else:
             suggestions.update(["Lectura", "Vino", "Jardinería", "Yoga"])
-        
+
         # 3. Complementary suggestions based on existing interests
         if "Música" in existing_interests:
             suggestions.update(["Cine", "Teatro", "Danza"])
@@ -157,49 +152,53 @@ class InterestService:
             suggestions.update(["Gaming", "Programación", "Podcasts"])
         if "Viajes" in existing_interests:
             suggestions.update(["Fotografía", "Naturaleza", "Camping"])
-        
+
         # Remove interests user already has
         suggestions -= existing_interests
-        
+
         # Convert to list with metadata
         result = []
         for interest in suggestions:
             if interest in INTEREST_CATALOG:
-                result.append({
-                    "name": interest,
-                    "icon": INTEREST_CATALOG[interest]["icon"],
-                    "category": INTEREST_CATALOG[interest]["category"].value
-                })
-        
+                result.append(
+                    {
+                        "name": interest,
+                        "icon": INTEREST_CATALOG[interest]["icon"],
+                        "category": INTEREST_CATALOG[interest]["category"].value,
+                    }
+                )
+
         # Shuffle and limit
         random.shuffle(result)
         return result[:limit]
-    
+
     @staticmethod
     def search_interests(query: str, limit: int = 10) -> List[Dict[str, str]]:
         """
         Search interests by name (autocomplete)
-        
+
         Args:
             query: Search query
             limit: Maximum results
-            
+
         Returns:
             List of matching interests
         """
         query_lower = query.lower()
         results = []
-        
+
         for interest_name, data in INTEREST_CATALOG.items():
             if query_lower in interest_name.lower():
-                results.append({
-                    "name": interest_name,
-                    "icon": data["icon"],
-                    "category": data["category"].value
-                })
-        
+                results.append(
+                    {
+                        "name": interest_name,
+                        "icon": data["icon"],
+                        "category": data["category"].value,
+                    }
+                )
+
         return results[:limit]
-    
+
     @staticmethod
     def get_interest_metadata(interest_name: str) -> Optional[Dict[str, str]]:
         """Get metadata for a specific interest"""
@@ -208,6 +207,6 @@ class InterestService:
             return {
                 "name": interest_name,
                 "icon": data["icon"],
-                "category": data["category"].value
+                "category": data["category"].value,
             }
         return None

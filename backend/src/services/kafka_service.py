@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 # Lazy import — sólo si aiokafka está disponible
 try:
     from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
+
     AIOKAFKA_AVAILABLE = True
 except ImportError:
     AIOKAFKA_AVAILABLE = False
@@ -60,7 +61,9 @@ class KafkaService:
     async def connect(self) -> None:
         """Conecta el producer de Kafka. No-op si KAFKA_ENABLED=false."""
         if not self._enabled:
-            logger.info("⚠️  Kafka deshabilitado (KAFKA_ENABLED=false o aiokafka no disponible)")
+            logger.info(
+                "⚠️  Kafka deshabilitado (KAFKA_ENABLED=false o aiokafka no disponible)"
+            )
             return
 
         try:
@@ -70,13 +73,15 @@ class KafkaService:
                 key_serializer=lambda k: k.encode("utf-8") if k else None,
                 max_batch_size=settings.KAFKA_MAX_BATCH_SIZE,
                 linger_ms=settings.KAFKA_LINGER_MS,
-                acks="all",              # Garantía de entrega fuerte
-                enable_idempotence=True, # Exactly-once semantics a nivel de producer
+                acks="all",  # Garantía de entrega fuerte
+                enable_idempotence=True,  # Exactly-once semantics a nivel de producer
                 compression_type="gzip",
             )
             await self._producer.start()
             self._connected = True
-            logger.info(f"✅ Kafka Producer conectado → {settings.KAFKA_BOOTSTRAP_SERVERS}")
+            logger.info(
+                f"✅ Kafka Producer conectado → {settings.KAFKA_BOOTSTRAP_SERVERS}"
+            )
         except Exception as exc:
             self._connected = False
             logger.error(f"❌ Kafka Producer falló al conectar: {exc}")
@@ -187,13 +192,17 @@ class KafkaService:
                         await handler(msg.value)
                         await consumer.commit()
                     except Exception as exc:
-                        logger.error(f"Error procesando mensaje Kafka [{msg.topic}]: {exc}")
+                        logger.error(
+                            f"Error procesando mensaje Kafka [{msg.topic}]: {exc}"
+                        )
 
             except asyncio.CancelledError:
                 logger.info(f"Kafka Consumer [{topics}] cancelado")
                 break
             except Exception as exc:
-                logger.error(f"Error en Kafka Consumer [{topics}]: {exc}. Reconectando en 5s...")
+                logger.error(
+                    f"Error en Kafka Consumer [{topics}]: {exc}. Reconectando en 5s..."
+                )
                 await asyncio.sleep(5)
             finally:
                 if consumer:

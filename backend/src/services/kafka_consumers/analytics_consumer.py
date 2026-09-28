@@ -7,6 +7,7 @@ Responsabilidades:
 2. Registrar eventos de sesión (login, logout, registro)
 3. Actualizar señales de engagement para el algoritmo de matching
 """
+
 import logging
 from src.services.kafka_topics import KafkaEventType
 
@@ -49,7 +50,9 @@ async def handle_analytics_event(message: dict) -> None:
         await _on_user_event(event_type, data)
 
     else:
-        logger.debug(f"[AnalyticsConsumer] Evento no específico para analytics: {event_type}")
+        logger.debug(
+            f"[AnalyticsConsumer] Evento no específico para analytics: {event_type}"
+        )
 
 
 async def _on_swipe_event(event_type: str, data: dict) -> None:
@@ -57,11 +60,14 @@ async def _on_swipe_event(event_type: str, data: dict) -> None:
     swiper_id = data.get("swiper_id")
     target_id = data.get("target_id")
 
-    logger.info(f"[AnalyticsConsumer] 👆 Swipe ({event_type}): {swiper_id} → {target_id}")
+    logger.info(
+        f"[AnalyticsConsumer] 👆 Swipe ({event_type}): {swiper_id} → {target_id}"
+    )
 
     # Incrementar contador de swipes diarios en Redis para control de límites / cuotas
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected() and swiper_id:
             key = f"metrics:swipes_daily:{swiper_id}"
             await redis_service.client.incr(key)
@@ -70,20 +76,27 @@ async def _on_swipe_event(event_type: str, data: dict) -> None:
             if ttl < 0:
                 await redis_service.client.expire(key, 86400)
     except Exception as exc:
-        logger.error(f"[AnalyticsConsumer] Error actualizando métricas de swipe en Redis: {exc}")
+        logger.error(
+            f"[AnalyticsConsumer] Error actualizando métricas de swipe en Redis: {exc}"
+        )
 
 
 async def _on_user_event(event_type: str, data: dict) -> None:
     """Procesa eventos de actividad de usuario."""
     user_id = data.get("user_id")
-    logger.info(f"[AnalyticsConsumer] 👤 Evento de usuario: {event_type} | user_id={user_id}")
+    logger.info(
+        f"[AnalyticsConsumer] 👤 Evento de usuario: {event_type} | user_id={user_id}"
+    )
 
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected() and user_id:
             if event_type == KafkaEventType.USER_LOGIN:
                 await redis_service.set_user_online(user_id)
             elif event_type == KafkaEventType.USER_LOGOUT:
                 await redis_service.set_user_offline(user_id)
     except Exception as exc:
-        logger.error(f"[AnalyticsConsumer] Error actualizando presencia en Redis: {exc}")
+        logger.error(
+            f"[AnalyticsConsumer] Error actualizando presencia en Redis: {exc}"
+        )

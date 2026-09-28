@@ -39,165 +39,157 @@ class UpdateLocationRequest(BaseModel):
 @router.get("/me")
 async def get_my_profile(current_user: User = Depends(get_current_user)):
     """Get current user's profile"""
-    
+
     profile = await Profile.find_one(Profile.user_id == str(current_user.id))
-    
+
     if not profile:
         # Auto-create profile if missing (self-healing)
         profile = Profile(
             user_id=str(current_user.id),
-            display_name=current_user.email.split('@')[0] if current_user.email else "User",
+            display_name=(
+                current_user.email.split("@")[0] if current_user.email else "User"
+            ),
             age=18,
             gender="prefer_not_to_say",
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
         await profile.insert()
-    
+
     return profile
 
 
 @router.put("/me")
 async def update_my_profile(
-    request: UpdateProfileRequest,
-    current_user: User = Depends(get_current_user)
+    request: UpdateProfileRequest, current_user: User = Depends(get_current_user)
 ):
     """Update current user's profile"""
-    
+
     profile = await Profile.find_one(Profile.user_id == str(current_user.id))
-    
+
     if not profile:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
         )
-    
+
     # Update fields
     update_data = request.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(profile, field, value)
-    
+
     profile.updated_at = datetime.utcnow()
-    
+
     # Calculate profile completion
     profile.profile_completion = calculate_profile_completion(profile)
-    
+
     await profile.save()
-    
+
     return profile
 
 
 @router.post("/location")
 async def update_location(
-    request: UpdateLocationRequest,
-    current_user: User = Depends(get_current_user)
+    request: UpdateLocationRequest, current_user: User = Depends(get_current_user)
 ):
     """Update user location for proximity radar"""
-    
+
     profile = await Profile.find_one(Profile.user_id == str(current_user.id))
-    
+
     if not profile:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
         )
-    
+
     if not profile.location_sharing_enabled:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Location sharing is disabled"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Location sharing is disabled"
         )
-    
+
     # Update location
     profile.location = {
         "type": "Point",
         "coordinates": [request.longitude, request.latitude],
         "city": request.city,
-        "country": request.country
+        "country": request.country,
     }
     profile.updated_at = datetime.utcnow()
-    
+
     await profile.save()
-    
+
     return {"message": "Location updated successfully"}
 
 
 @router.get("/{user_id}")
 async def get_profile(user_id: str, current_user: User = Depends(get_current_user)):
     """Get another user's profile"""
-    
+
     profile = await Profile.find_one(Profile.user_id == user_id)
-    
+
     if not profile or not profile.profile_visible:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found or not visible"
+            detail="Profile not found or not visible",
         )
-    
+
     return profile
 
 
 @router.post("/photos/upload")
 async def upload_photo(
-    file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user)
+    file: UploadFile = File(...), current_user: User = Depends(get_current_user)
 ):
     """Upload profile photo"""
-    
+
     # TODO: Implement actual file upload to storage (S3, Azure Blob, etc.)
     # For now, return placeholder
-    
+
     profile = await Profile.find_one(Profile.user_id == str(current_user.id))
-    
+
     if not profile:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
         )
-    
+
     # Placeholder URL
     photo_url = f"https://storage.example.com/photos/{current_user.id}/{file.filename}"
-    
+
     profile.photos.append(photo_url)
     profile.updated_at = datetime.utcnow()
     await profile.save()
-    
+
     return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
 
 
 @router.delete("/photos/{photo_index}")
 async def delete_photo(
-    photo_index: int,
-    current_user: User = Depends(get_current_user)
+    photo_index: int, current_user: User = Depends(get_current_user)
 ):
     """Delete profile photo by index"""
-    
+
     profile = await Profile.find_one(Profile.user_id == str(current_user.id))
-    
+
     if not profile:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
         )
-    
+
     if photo_index < 0 or photo_index >= len(profile.photos):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid photo index"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid photo index"
         )
-    
+
     profile.photos.pop(photo_index)
     profile.updated_at = datetime.utcnow()
     await profile.save()
-    
+
     return {"message": "Photo deleted successfully"}
 
 
 def calculate_profile_completion(profile: Profile) -> int:
     """Calculate profile completion percentage"""
-    
+
     total_fields = 15
     completed_fields = 0
-    
+
     if profile.display_name:
         completed_fields += 1
     if profile.bio:
@@ -228,6 +220,5 @@ def calculate_profile_completion(profile: Profile) -> int:
         completed_fields += 1
     if profile.location:
         completed_fields += 1
-    
-    return int((completed_fields / total_fields) * 100)
 
+    return int((completed_fields / total_fields) * 100)

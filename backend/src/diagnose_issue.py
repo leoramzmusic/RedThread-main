@@ -10,14 +10,15 @@ from src.models.user import User
 from src.models.profile import Profile
 from src.models.employee import Employee
 
+
 async def diagnose():
     try:
         await init_db()
         email = "admin@testemail.com"
-        
+
         output = []
         output.append(f"--- DIAGNOSING {email} ---")
-        
+
         # 1. Check User
         user = await User.find_one(User.email == email)
         if not user:
@@ -27,7 +28,7 @@ async def diagnose():
             output.append(f"User.real_name: '{user.real_name}'")
             output.append(f"User.verified: {user.verified}")
             output.append(f"User.is_admin: {user.is_admin}")
-            
+
             # 2. Check Profile
             profile = await Profile.find_one(Profile.user_id == str(user.id))
             if not profile:
@@ -45,13 +46,14 @@ async def diagnose():
             output.append("Employee: MISSING")
         else:
             output.append(f"Employee: FOUND (ID={employee.id})")
-            
+
         with open("status_report.txt", "w") as f:
             f.write("\n".join(output))
-            
+
     except Exception as e:
         with open("status_report.txt", "w") as f:
             f.write(f"ERROR: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(diagnose())

@@ -7,6 +7,7 @@ Responsabilidades:
 2. Registrar el match en Redis para presencia en tiempo real
 3. Actualizar métricas de CARE analytics
 """
+
 import logging
 from src.services.kafka_topics import KafkaEventType
 
@@ -34,7 +35,9 @@ async def handle_match_event(message: dict) -> None:
     event_type = message.get("event_type")
     data = message.get("data", {})
 
-    logger.info(f"[MatchConsumer] Procesando evento: {event_type} | match_id={data.get('match_id')}")
+    logger.info(
+        f"[MatchConsumer] Procesando evento: {event_type} | match_id={data.get('match_id')}"
+    )
 
     if event_type == KafkaEventType.MATCH_CREATED:
         await _on_match_created(data)
@@ -79,6 +82,7 @@ async def _on_match_created(data: dict) -> None:
     # 2. Registrar en Redis para presencia/chat instantáneo
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected():
             pipe_key = f"match:{match_id}:users"
             await redis_service.client.sadd(pipe_key, user_a_id, user_b_id)
@@ -94,6 +98,7 @@ async def _on_match_expired(data: dict) -> None:
 
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected():
             await redis_service.client.delete(f"match:{match_id}:users")
     except Exception as exc:

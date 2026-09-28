@@ -19,11 +19,31 @@ from src.models.department import Department
 # ─── Catálogo de Departamentos ────────────────────────────────────────────────
 
 DEPARTMENTS: list[dict] = [
-    {"name": "Gerencia", "code": "ADM", "description": "Alta dirección y administración general"},
-    {"name": "Recursos Humanos", "code": "HR", "description": "Gestión de talento y personal"},
-    {"name": "Finanzas", "code": "FIN", "description": "Contabilidad, pagos y análisis financiero"},
-    {"name": "Tecnología", "code": "TECH", "description": "Desarrollo de software y sistemas"},
-    {"name": "Marketing", "code": "MKT", "description": "Publicidad, campañas y diseño"},
+    {
+        "name": "Gerencia",
+        "code": "ADM",
+        "description": "Alta dirección y administración general",
+    },
+    {
+        "name": "Recursos Humanos",
+        "code": "HR",
+        "description": "Gestión de talento y personal",
+    },
+    {
+        "name": "Finanzas",
+        "code": "FIN",
+        "description": "Contabilidad, pagos y análisis financiero",
+    },
+    {
+        "name": "Tecnología",
+        "code": "TECH",
+        "description": "Desarrollo de software y sistemas",
+    },
+    {
+        "name": "Marketing",
+        "code": "MKT",
+        "description": "Publicidad, campañas y diseño",
+    },
     {"name": "Ventas", "code": "SALE", "description": "Ventas y gestión de cuentas"},
     {"name": "Operaciones", "code": "OPS", "description": "Logística y almacén"},
     {"name": "Soporte", "code": "SUPP", "description": "Atención al cliente y tickets"},
@@ -52,21 +72,27 @@ ROLES: list[dict] = [
         "name": "Administrador",
         "dept": "ADM",
         "perms": [
-            Permission.VIEW_USERS, Permission.EDIT_USERS,
-            Permission.VIEW_METRICS, Permission.VIEW_EMPLOYEES,
-            Permission.VIEW_CONFIG, Permission.VIEW_FINANCES,
+            Permission.VIEW_USERS,
+            Permission.EDIT_USERS,
+            Permission.VIEW_METRICS,
+            Permission.VIEW_EMPLOYEES,
+            Permission.VIEW_CONFIG,
+            Permission.VIEW_FINANCES,
         ],
         "level": 1,
         "system": True,
         "description": "Administración general con acceso de lectura amplio.",
     },
-
     # ── Recursos Humanos ──────────────────────────────────────────────────────
     {
         "slug": "hr",
         "name": "Recursos Humanos",
         "dept": "HR",
-        "perms": [Permission.VIEW_EMPLOYEES, Permission.MANAGE_EMPLOYEES, Permission.VIEW_USERS],
+        "perms": [
+            Permission.VIEW_EMPLOYEES,
+            Permission.MANAGE_EMPLOYEES,
+            Permission.VIEW_USERS,
+        ],
         "level": 2,
         "system": False,
         "description": "Gestión de personal y talento humano.",
@@ -76,8 +102,10 @@ ROLES: list[dict] = [
         "name": "Gestor de Empleados",
         "dept": "HR",
         "perms": [
-            Permission.VIEW_EMPLOYEES, Permission.MANAGE_EMPLOYEES,
-            Permission.ASSIGN_ROLES, Permission.MANAGE_LEAVE_REQUESTS,
+            Permission.VIEW_EMPLOYEES,
+            Permission.MANAGE_EMPLOYEES,
+            Permission.ASSIGN_ROLES,
+            Permission.MANAGE_LEAVE_REQUESTS,
         ],
         "level": 3,
         "system": False,
@@ -88,8 +116,10 @@ ROLES: list[dict] = [
         "name": "Especialista en Nómina",
         "dept": "HR",
         "perms": [
-            Permission.VIEW_EMPLOYEES, Permission.VIEW_FINANCES,
-            Permission.HANDLE_CONTRACTS, Permission.HANDLE_INVOICES,
+            Permission.VIEW_EMPLOYEES,
+            Permission.VIEW_FINANCES,
+            Permission.HANDLE_CONTRACTS,
+            Permission.HANDLE_INVOICES,
         ],
         "level": 3,
         "system": False,
@@ -104,15 +134,16 @@ ROLES: list[dict] = [
         "system": False,
         "description": "Selección y contratación de candidatos.",
     },
-
     # ── Finanzas ──────────────────────────────────────────────────────────────
     {
         "slug": "contador",
         "name": "Contador",
         "dept": "FIN",
         "perms": [
-            Permission.VIEW_FINANCES, Permission.EDIT_FINANCES,
-            Permission.HANDLE_INVOICES, Permission.APPROVE_BUDGETS,
+            Permission.VIEW_FINANCES,
+            Permission.EDIT_FINANCES,
+            Permission.HANDLE_INVOICES,
+            Permission.APPROVE_BUDGETS,
         ],
         "level": 3,
         "system": False,
@@ -123,8 +154,10 @@ ROLES: list[dict] = [
         "name": "Analista Financiero",
         "dept": "FIN",
         "perms": [
-            Permission.VIEW_FINANCES, Permission.VIEW_METRICS,
-            Permission.EXPORT_METRICS, Permission.VIEW_USERS,
+            Permission.VIEW_FINANCES,
+            Permission.VIEW_METRICS,
+            Permission.EXPORT_METRICS,
+            Permission.VIEW_USERS,
         ],
         "level": 3,
         "system": False,
@@ -135,20 +168,25 @@ ROLES: list[dict] = [
         "name": "Gestor de Pagos",
         "dept": "FIN",
         "perms": [
-            Permission.VIEW_FINANCES, Permission.PROCESS_REFUNDS,
-            Permission.MANAGE_SUBSCRIPTIONS, Permission.VIEW_USERS,
+            Permission.VIEW_FINANCES,
+            Permission.PROCESS_REFUNDS,
+            Permission.MANAGE_SUBSCRIPTIONS,
+            Permission.VIEW_USERS,
         ],
         "level": 4,
         "system": False,
         "description": "Gestión de pagos, reembolsos y suscripciones.",
     },
-
     # ── Tecnología ────────────────────────────────────────────────────────────
     {
         "slug": "desarrollador",
         "name": "Desarrollador",
         "dept": "TECH",
-        "perms": [Permission.VIEW_CONFIG, Permission.ACCESS_LOGS, Permission.DEPLOY_UPDATES],
+        "perms": [
+            Permission.VIEW_CONFIG,
+            Permission.ACCESS_LOGS,
+            Permission.DEPLOY_UPDATES,
+        ],
         "level": 4,
         "system": False,
         "description": "Desarrollo y despliegue de software.",
@@ -158,8 +196,10 @@ ROLES: list[dict] = [
         "name": "Administrador de Sistemas",
         "dept": "TECH",
         "perms": [
-            Permission.VIEW_CONFIG, Permission.EDIT_CONFIG,
-            Permission.ACCESS_LOGS, Permission.MANAGE_INTEGRATIONS,
+            Permission.VIEW_CONFIG,
+            Permission.EDIT_CONFIG,
+            Permission.ACCESS_LOGS,
+            Permission.MANAGE_INTEGRATIONS,
             Permission.MANAGE_BACKUPS,
         ],
         "level": 3,
@@ -170,19 +210,23 @@ ROLES: list[dict] = [
         "slug": "soporte_ti",
         "name": "Soporte Técnico",
         "dept": "TECH",
-        "perms": [Permission.VIEW_CONFIG, Permission.ACCESS_LOGS, Permission.RESET_PASSWORDS],
+        "perms": [
+            Permission.VIEW_CONFIG,
+            Permission.ACCESS_LOGS,
+            Permission.RESET_PASSWORDS,
+        ],
         "level": 4,
         "system": False,
         "description": "Soporte interno de TI y resolución de incidencias.",
     },
-
     # ── Marketing ─────────────────────────────────────────────────────────────
     {
         "slug": "community_manager",
         "name": "Community Manager",
         "dept": "MKT",
         "perms": [
-            Permission.VIEW_CAMPAIGNS, Permission.MANAGE_SOCIAL_ACCOUNTS,
+            Permission.VIEW_CAMPAIGNS,
+            Permission.MANAGE_SOCIAL_ACCOUNTS,
             Permission.SCHEDULE_POSTS,
         ],
         "level": 4,
@@ -194,9 +238,12 @@ ROLES: list[dict] = [
         "name": "Especialista en Campañas",
         "dept": "MKT",
         "perms": [
-            Permission.VIEW_CAMPAIGNS, Permission.CREATE_CAMPAIGNS,
-            Permission.MANAGE_CAMPAIGNS, Permission.VIEW_METRICS,
-            Permission.SEND_NOTIFICATIONS, Permission.VIEW_USERS,
+            Permission.VIEW_CAMPAIGNS,
+            Permission.CREATE_CAMPAIGNS,
+            Permission.MANAGE_CAMPAIGNS,
+            Permission.VIEW_METRICS,
+            Permission.SEND_NOTIFICATIONS,
+            Permission.VIEW_USERS,
         ],
         "level": 3,
         "system": False,
@@ -211,15 +258,16 @@ ROLES: list[dict] = [
         "system": False,
         "description": "Diseño de activos visuales y contenido gráfico.",
     },
-
     # ── Ventas ────────────────────────────────────────────────────────────────
     {
         "slug": "ejecutivo_ventas",
         "name": "Ejecutivo de Ventas",
         "dept": "SALE",
         "perms": [
-            Permission.VIEW_USERS, Permission.MANAGE_LEADS,
-            Permission.TRACK_SALES, Permission.ASSIGN_CLIENTS,
+            Permission.VIEW_USERS,
+            Permission.MANAGE_LEADS,
+            Permission.TRACK_SALES,
+            Permission.ASSIGN_CLIENTS,
         ],
         "level": 4,
         "system": False,
@@ -229,7 +277,11 @@ ROLES: list[dict] = [
         "slug": "gestor_cuentas",
         "name": "Gestor de Cuentas",
         "dept": "SALE",
-        "perms": [Permission.VIEW_USERS, Permission.MANAGE_LEADS, Permission.ASSIGN_CLIENTS],
+        "perms": [
+            Permission.VIEW_USERS,
+            Permission.MANAGE_LEADS,
+            Permission.ASSIGN_CLIENTS,
+        ],
         "level": 4,
         "system": False,
         "description": "Administración de cuentas de clientes clave.",
@@ -243,13 +295,16 @@ ROLES: list[dict] = [
         "system": False,
         "description": "Representación comercial y seguimiento de ventas.",
     },
-
     # ── Operaciones ───────────────────────────────────────────────────────────
     {
         "slug": "super_ops",
         "name": "Supervisor de Operaciones",
         "dept": "OPS",
-        "perms": [Permission.VIEW_EVENTS, Permission.ASSIGN_TASKS, Permission.MANAGE_INVENTORY],
+        "perms": [
+            Permission.VIEW_EVENTS,
+            Permission.ASSIGN_TASKS,
+            Permission.MANAGE_INVENTORY,
+        ],
         "level": 3,
         "system": False,
         "description": "Supervisión de operaciones logísticas.",
@@ -258,7 +313,11 @@ ROLES: list[dict] = [
         "slug": "coord_logistico",
         "name": "Coordinador Logístico",
         "dept": "OPS",
-        "perms": [Permission.VIEW_EVENTS, Permission.TRACK_SHIPMENTS, Permission.ASSIGN_TASKS],
+        "perms": [
+            Permission.VIEW_EVENTS,
+            Permission.TRACK_SHIPMENTS,
+            Permission.ASSIGN_TASKS,
+        ],
         "level": 4,
         "system": False,
         "description": "Coordinación de envíos y logística operativa.",
@@ -272,15 +331,16 @@ ROLES: list[dict] = [
         "system": False,
         "description": "Control de inventario y almacén.",
     },
-
     # ── Soporte ───────────────────────────────────────────────────────────────
     {
         "slug": "agente_soporte",
         "name": "Agente de Soporte",
         "dept": "SUPP",
         "perms": [
-            Permission.VIEW_TICKETS, Permission.HANDLE_TICKETS,
-            Permission.CLOSE_TICKETS, Permission.VIEW_USERS,
+            Permission.VIEW_TICKETS,
+            Permission.HANDLE_TICKETS,
+            Permission.CLOSE_TICKETS,
+            Permission.VIEW_USERS,
         ],
         "level": 4,
         "system": False,
@@ -291,7 +351,8 @@ ROLES: list[dict] = [
         "name": "Gestor de Tickets",
         "dept": "SUPP",
         "perms": [
-            Permission.VIEW_TICKETS, Permission.HANDLE_TICKETS,
+            Permission.VIEW_TICKETS,
+            Permission.HANDLE_TICKETS,
             Permission.ASSIGN_REPORTS,
         ],
         "level": 3,
@@ -303,22 +364,25 @@ ROLES: list[dict] = [
         "name": "Especialista en Satisfacción",
         "dept": "SUPP",
         "perms": [
-            Permission.VIEW_TICKETS, Permission.VIEW_METRICS,
-            Permission.EXPORT_METRICS, Permission.SEND_NOTIFICATIONS,
+            Permission.VIEW_TICKETS,
+            Permission.VIEW_METRICS,
+            Permission.EXPORT_METRICS,
+            Permission.SEND_NOTIFICATIONS,
         ],
         "level": 4,
         "system": False,
         "description": "Análisis de satisfacción del cliente.",
     },
-
     # ── Legal ─────────────────────────────────────────────────────────────────
     {
         "slug": "compliance",
         "name": "Especialista en Compliance",
         "dept": "LEG",
         "perms": [
-            Permission.VIEW_USERS, Permission.VIEW_REPORTS,
-            Permission.AUDIT_ROLES, Permission.APPROVE_POLICIES,
+            Permission.VIEW_USERS,
+            Permission.VIEW_REPORTS,
+            Permission.AUDIT_ROLES,
+            Permission.APPROVE_POLICIES,
             Permission.VIEW_CONFIG,
         ],
         "level": 3,
@@ -329,7 +393,11 @@ ROLES: list[dict] = [
         "slug": "abogado_interno",
         "name": "Abogado Interno",
         "dept": "LEG",
-        "perms": [Permission.VIEW_REPORTS, Permission.APPROVE_POLICIES, Permission.VIEW_USERS],
+        "perms": [
+            Permission.VIEW_REPORTS,
+            Permission.APPROVE_POLICIES,
+            Permission.VIEW_USERS,
+        ],
         "level": 3,
         "system": False,
         "description": "Asesoría legal interna.",
@@ -357,7 +425,7 @@ def evaluate_seed_condition(
 
     Retorna: (should_run: bool, reason: str)
     """
-    is_empty = (role_count == 0 and dept_count == 0)
+    is_empty = role_count == 0 and dept_count == 0
 
     if force:
         return True, "forced"
@@ -500,7 +568,9 @@ async def seed_system_data(env: Optional[str] = None, force: bool = False) -> di
                 "Seed omitido porque la tabla no está vacía."
             )
         else:
-            print(f"[seed] ℹ️ Ambiente '{target_env}': Existen registros. Omitiendo seed por precaución.")
+            print(
+                f"[seed] ℹ️ Ambiente '{target_env}': Existen registros. Omitiendo seed por precaución."
+            )
 
         return {
             "status": "skipped",
@@ -511,11 +581,17 @@ async def seed_system_data(env: Optional[str] = None, force: bool = False) -> di
         }
 
     if reason == "prod_empty":
-        print("[seed] 🚀 Ambiente PROD: Base de datos vacía. Ejecutando seed inicial del sistema...")
+        print(
+            "[seed] 🚀 Ambiente PROD: Base de datos vacía. Ejecutando seed inicial del sistema..."
+        )
     elif reason == "local_empty":
-        print("[seed] 🚀 Ambiente LOCAL: Base de datos vacía. Ejecutando seed inicial del sistema...")
+        print(
+            "[seed] 🚀 Ambiente LOCAL: Base de datos vacía. Ejecutando seed inicial del sistema..."
+        )
     elif "_deploy_consistency" in reason:
-        print(f"[seed] 🔄 Ambiente {target_env.upper()}: Ejecutando seed para asegurar consistencia tras despliegue...")
+        print(
+            f"[seed] 🔄 Ambiente {target_env.upper()}: Ejecutando seed para asegurar consistencia tras despliegue..."
+        )
 
     return await _perform_seed(target_env)
 
@@ -533,9 +609,15 @@ if __name__ == "__main__":
 
     from src.core.database import init_db, close_db
 
-    parser = argparse.ArgumentParser(description="Seed system departments, roles and permissions by environment")
-    parser.add_argument("--env", type=str, default=None, help="Environment: local, dev, qa, prod")
-    parser.add_argument("--force", action="store_true", help="Force execution even if data exists")
+    parser = argparse.ArgumentParser(
+        description="Seed system departments, roles and permissions by environment"
+    )
+    parser.add_argument(
+        "--env", type=str, default=None, help="Environment: local, dev, qa, prod"
+    )
+    parser.add_argument(
+        "--force", action="store_true", help="Force execution even if data exists"
+    )
     cli_args = parser.parse_args()
 
     async def main():

@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Body
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from pydantic import BaseModel
 from src.models.yuki_config import YukiConfig, YukiSkin, YukiAppearanceRule
 from src.models.employee import Employee
 from src.models.admin_rbac import Permission
-from src.core.middleware.employee_rbac import require_employee_permission, require_any_employee_permission
-from src.core.config import settings
+from src.core.middleware.employee_rbac import (
+    require_employee_permission,
+)
 import os
 import uuid
 
@@ -16,7 +17,13 @@ UPLOAD_DIR = "static/uploads/yuki"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".json"}
-ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "image/webp", "image/svg+xml", "application/json"}
+ALLOWED_MIME_TYPES = {
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "image/svg+xml",
+    "application/json",
+}
 
 
 class YukiConfigUpdate(BaseModel):
@@ -79,6 +86,7 @@ def _config_to_dict(config: YukiConfig) -> Dict[str, Any]:
 
 # ─── Config Endpoints ─────────────────────────────────────────────
 
+
 @router.get("/config")
 async def get_yuki_config(
     env: Optional[str] = None,
@@ -125,14 +133,17 @@ async def get_config_history(
     config = await YukiConfig.find_one({})
     if not config:
         return []
-    return [{
-        "updated_by": config.updated_by,
-        "updated_at": config.updated_at.isoformat() if config.updated_at else None,
-        "environment": config.environment,
-    }]
+    return [
+        {
+            "updated_by": config.updated_by,
+            "updated_at": config.updated_at.isoformat() if config.updated_at else None,
+            "environment": config.environment,
+        }
+    ]
 
 
 # ─── Skins Endpoints ──────────────────────────────────────────────
+
 
 @router.get("/skins")
 async def list_skins(
@@ -199,6 +210,7 @@ async def delete_skin(
 
 
 # ─── Rules Endpoints ──────────────────────────────────────────────
+
 
 @router.get("/rules")
 async def list_rules(
@@ -268,6 +280,7 @@ async def delete_rule(
 
 # ─── Assets Upload ────────────────────────────────────────────────
 
+
 @router.post("/assets")
 async def upload_asset(
     file: UploadFile = File(...),
@@ -308,13 +321,15 @@ async def list_assets(
             fpath = os.path.join(UPLOAD_DIR, fname)
             if os.path.isfile(fpath):
                 ext = os.path.splitext(fname)[1].lower()
-                assets.append({
-                    "id": fname,
-                    "filename": fname,
-                    "url": f"/static/uploads/yuki/{fname}",
-                    "type": "lottie" if ext == ".json" else "image",
-                    "size": os.path.getsize(fpath),
-                })
+                assets.append(
+                    {
+                        "id": fname,
+                        "filename": fname,
+                        "url": f"/static/uploads/yuki/{fname}",
+                        "type": "lottie" if ext == ".json" else "image",
+                        "size": os.path.getsize(fpath),
+                    }
+                )
     return assets
 
 

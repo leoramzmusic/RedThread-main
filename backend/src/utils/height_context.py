@@ -46,7 +46,6 @@ COUNTRY_TO_REGION_MAP: Dict[str, str] = {
     "panama": "central_america",
     "belice": "central_america",
     "nicaragua": "central_america",
-    
     "argentina": "south_america",
     "brasil": "south_america",
     "chile": "south_america",
@@ -57,10 +56,8 @@ COUNTRY_TO_REGION_MAP: Dict[str, str] = {
     "paraguay": "south_america",
     "bolivia": "south_america",
     "venezuela": "south_america",
-    
     "usa": "north_america",
     "canada": "north_america",
-    
     "españa": "southern_europe",
     "italia": "southern_europe",
     "francia": "western_europe",
@@ -69,13 +66,15 @@ COUNTRY_TO_REGION_MAP: Dict[str, str] = {
     # ... can be expanded as needed
 }
 
+
 def map_country_to_region(country: Optional[str]) -> str:
     """Map a country name to a regional key for data averages."""
     if not country:
         return "global"
-    
+
     country_lower = country.lower().strip()
     return COUNTRY_TO_REGION_MAP.get(country_lower, "global")
+
 
 # Regional specific thresholds (overrides default logic)
 # Format: {region: {label: (min, max)}}
@@ -127,36 +126,45 @@ REGIONAL_THRESHOLDS: Dict[str, Dict[str, Tuple[float, float]]] = {
         "average": (1.58, 1.73),
         "tall": (1.73, 1.95),
         "giant": (1.95, 2.50),
-    }
+    },
 }
+
 
 def get_height_range_labels(region: Optional[str] = None) -> Dict[str, str]:
     """Return human-readable range labels for a region."""
-    thresholds = REGIONAL_THRESHOLDS.get(region or "global", REGIONAL_THRESHOLDS["central_america"])
+    thresholds = REGIONAL_THRESHOLDS.get(
+        region or "global", REGIONAL_THRESHOLDS["central_america"]
+    )
     return {
-        key: f"{min_val:.2f} m – {max_val:.2f} m" if max_val < 2.50 else f"> {min_val:.2f} m"
+        key: (
+            f"{min_val:.2f} m – {max_val:.2f} m"
+            if max_val < 2.50
+            else f"> {min_val:.2f} m"
+        )
         for key, (min_val, max_val) in thresholds.items()
     }
+
 
 def classify_height(cm: int, gender: str, region: Optional[str] = None) -> str:
     """
     Classify height as 'short', 'average', 'tall', or 'giant' based on region and gender.
-    
+
     Uses REGIONAL_THRESHOLDS if available for the region, otherwise falls back to Avg +/- 5cm.
     """
     if not cm:
         return "none"
-        
+
     # Check for custom thresholds first
     if region in REGIONAL_THRESHOLDS:
         m = cm / 100.0
         for label, (min_m, max_m) in REGIONAL_THRESHOLDS[region].items():
             if min_m <= m < max_m:
                 return label
-        if m >= 2.0: return "giant"
-        
+        if m >= 2.0:
+            return "giant"
+
     avg_m, avg_f = REGIONAL_AVERAGES.get(region, GLOBAL_AVERAGE)
-    
+
     # Select average based on gender
     if gender == "female":
         avg = avg_f
@@ -164,7 +172,7 @@ def classify_height(cm: int, gender: str, region: Optional[str] = None) -> str:
         avg = avg_m
     else:
         avg = (avg_m + avg_f) / 2
-        
+
     if cm > avg + 15:
         return "giant"
     elif cm > avg + 5:

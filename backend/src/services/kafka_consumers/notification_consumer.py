@@ -7,6 +7,7 @@ Responsabilidades:
 2. Enrutar emails transaccionales si aplica
 3. Registrar notificaciones en la bandeja interna de la app
 """
+
 import logging
 from src.services.kafka_topics import KafkaEventType
 
@@ -39,7 +40,9 @@ async def handle_notification_event(message: dict) -> None:
     elif event_type in [KafkaEventType.EMAIL_MATCH, KafkaEventType.EMAIL_WELCOME]:
         await _handle_email_notification(event_type, data)
     else:
-        logger.warning(f"[NotificationConsumer] Tipo de notificación no soportado: {event_type}")
+        logger.warning(
+            f"[NotificationConsumer] Tipo de notificación no soportado: {event_type}"
+        )
 
 
 async def _handle_push_match(data: dict) -> None:
@@ -55,15 +58,17 @@ async def _handle_push_match(data: dict) -> None:
     # Registrar en Redis cola de notificaciones no leídas para la bandeja del usuario
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected() and recipient_id:
             await redis_service.client.lpush(
-                f"notifications:{recipient_id}",
-                f"NEW_MATCH:{match_id}"
+                f"notifications:{recipient_id}", f"NEW_MATCH:{match_id}"
             )
             # Limitar tamaño de cola a 50 notificaciones recientes
             await redis_service.client.ltrim(f"notifications:{recipient_id}", 0, 49)
     except Exception as exc:
-        logger.error(f"[NotificationConsumer] Error guardando notificación en Redis: {exc}")
+        logger.error(
+            f"[NotificationConsumer] Error guardando notificación en Redis: {exc}"
+        )
 
 
 async def _handle_push_message(data: dict) -> None:
@@ -78,27 +83,35 @@ async def _handle_push_message(data: dict) -> None:
     )
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected() and recipient_id:
             await redis_service.client.lpush(
-                f"notifications:{recipient_id}",
-                f"MESSAGE:{sender_id}:{preview}"
+                f"notifications:{recipient_id}", f"MESSAGE:{sender_id}:{preview}"
             )
             await redis_service.client.ltrim(f"notifications:{recipient_id}", 0, 49)
     except Exception as exc:
-        logger.error(f"[NotificationConsumer] Error guardando notificación de chat en Redis: {exc}")
+        logger.error(
+            f"[NotificationConsumer] Error guardando notificación de chat en Redis: {exc}"
+        )
 
 
 async def _handle_push_like(data: dict) -> None:
     """Envía notificación de nuevo like recibido."""
     recipient_id = data.get("recipient_user_id")
-    logger.info(f"[NotificationConsumer] ❤️ Push Notification [NEW LIKE] → Usuario {recipient_id}")
+    logger.info(
+        f"[NotificationConsumer] ❤️ Push Notification [NEW LIKE] → Usuario {recipient_id}"
+    )
 
 
 async def _handle_email_notification(event_type: str, data: dict) -> None:
     """Envía un email transaccional usando MailService si está configurado."""
     email_to = data.get("email")
     if not email_to:
-        logger.warning("[NotificationConsumer] No se proporcionó dirección de correo para notificación email")
+        logger.warning(
+            "[NotificationConsumer] No se proporcionó dirección de correo para notificación email"
+        )
         return
 
-    logger.info(f"[NotificationConsumer] 📧 Enviando correo tipo {event_type} a {email_to}")
+    logger.info(
+        f"[NotificationConsumer] 📧 Enviando correo tipo {event_type} a {email_to}"
+    )

@@ -3,7 +3,7 @@ User Data Transfer Objects (DTOs)
 Provides filtered and sanitized user data for different access levels.
 """
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List, Dict
 from datetime import datetime
 
@@ -13,24 +13,25 @@ class PublicUserDTO(BaseModel):
     Public user data visible to everyone.
     Used when viewing other users' profiles.
     """
+
     model_config = ConfigDict(use_enum_values=True)
-    
+
     user_id: str
     display_name: str
     nickname: str
     verified: bool = False
     subscription_tier: str = "free"
-    
+
     # Profile data (public)
     age: Optional[int] = None
     gender: Optional[str] = None
     bio: Optional[str] = None
     photos: List[str] = []
     city: Optional[str] = None
-    
+
     # Verification status (public badge)
     identity_verification_status: Optional[str] = None  # Only "approved" or None
-    
+
     @classmethod
     def from_user_and_profile(cls, user, profile):
         """Create PublicUserDTO from User and Profile models"""
@@ -39,14 +40,17 @@ class PublicUserDTO(BaseModel):
             display_name=user.display_name,
             nickname=user.nickname,
             verified=user.verified,
-            subscription_tier=str(user.subscription_tier.value) if user.subscription_tier else "free",
+            subscription_tier=(
+                str(user.subscription_tier.value) if user.subscription_tier else "free"
+            ),
             age=profile.age if profile else None,
             gender=profile.gender if profile else None,
             bio=profile.bio if profile else None,
             photos=profile.photos if profile else [],
-            city=profile.city or (profile.location.city if profile and profile.location else None),
+            city=profile.city
+            or (profile.location.city if profile and profile.location else None),
             # Only show "approved" status, hide "pending" or "rejected"
-            identity_verification_status="approved" if user.verified else None
+            identity_verification_status="approved" if user.verified else None,
         )
 
 
@@ -55,24 +59,25 @@ class PrivateUserDTO(BaseModel):
     Private user data visible only to the owner.
     Used for /auth/me and /profiles/me endpoints.
     """
+
     model_config = ConfigDict(use_enum_values=True)
-    
+
     user_id: str
     display_name: str
     nickname: str
-    
+
     # Identity
     real_name: Optional[str] = None
-    
+
     # Masked sensitive data
     email_masked: Optional[str] = None
     phone_masked: Optional[str] = None
-    
+
     # Account status
     verified: bool = False
     is_verified: bool = False  # Email/phone verification
     subscription_tier: str = "free"
-    
+
     # Verification status (detailed for owner)
     identity_verification_status: str = "none"
     identity_document_type: Optional[str] = None
@@ -80,38 +85,44 @@ class PrivateUserDTO(BaseModel):
     identity_submitted_at: Optional[datetime] = None
 
     preferred_language: str = "en"
-    
+
     # Profile data
     profile: Optional[dict] = None
-    
+
     @classmethod
     def from_user_and_profile(cls, user, profile, mask_data: bool = True):
         """
         Create PrivateUserDTO from User and Profile models.
-        
+
         Args:
             user: User model instance
             profile: Profile model instance
             mask_data: If True, mask email and phone. Set to False for admin access.
         """
         from src.services.data_privacy_service import mask_email, mask_phone
-        
+
         return cls(
             user_id=str(user.id),
             real_name=user.real_name,
             display_name=user.display_name,
             nickname=user.nickname,
-            email_masked=mask_email(user.email) if mask_data and user.email else user.email,
-            phone_masked=mask_phone(user.phone) if mask_data and user.phone else user.phone,
+            email_masked=(
+                mask_email(user.email) if mask_data and user.email else user.email
+            ),
+            phone_masked=(
+                mask_phone(user.phone) if mask_data and user.phone else user.phone
+            ),
             verified=user.verified,
             is_verified=user.is_verified,
-            subscription_tier=str(user.subscription_tier.value) if user.subscription_tier else "free",
+            subscription_tier=(
+                str(user.subscription_tier.value) if user.subscription_tier else "free"
+            ),
             identity_verification_status=user.identity_verification_status,
             identity_document_type=user.identity_document_type,
             identity_rejection_reason=user.identity_rejection_reason,
             identity_submitted_at=user.identity_submitted_at,
-            preferred_language=getattr(user, 'preferred_language', 'en') or "en",
-            profile=profile.model_dump(mode='json') if profile else None
+            preferred_language=getattr(user, "preferred_language", "en") or "en",
+            profile=profile.model_dump(mode="json") if profile else None,
         )
 
 
@@ -120,20 +131,21 @@ class AdminUserDTO(BaseModel):
     Complete user data visible only to administrators.
     Includes all sensitive fields for admin operations.
     """
+
     model_config = ConfigDict(use_enum_values=True)
-    
+
     user_id: str
-    
+
     # Identity (full access)
     real_name: Optional[str] = None
     display_name: str
     nickname: str
-    
+
     # Authentication (full access)
     email: Optional[str] = None
     phone: Optional[str] = None
     auth_provider: str
-    
+
     # Account status
     is_active: bool = True
     is_verified: bool = False
@@ -141,7 +153,7 @@ class AdminUserDTO(BaseModel):
     is_banned: bool = False
     is_admin: bool = False
     subscription_tier: str = "free"
-    
+
     # Identity verification (full details)
     identity_document_type: Optional[str] = None
     identity_document_url: Optional[str] = None  # Only for admins
@@ -149,15 +161,15 @@ class AdminUserDTO(BaseModel):
     identity_submitted_at: Optional[datetime] = None
     identity_rejection_reason: Optional[str] = None
     identity_verified_at: Optional[datetime] = None
-    
+
     # Metadata
     created_at: datetime
     updated_at: datetime
     last_login_at: Optional[datetime] = None
-    
+
     # Profile data
     profile: Optional[dict] = None
-    
+
     @classmethod
     def from_user_and_profile(cls, user, profile):
         """Create AdminUserDTO from User and Profile models"""
@@ -174,7 +186,9 @@ class AdminUserDTO(BaseModel):
             verified=user.verified,
             is_banned=user.is_banned,
             is_admin=user.is_admin,
-            subscription_tier=str(user.subscription_tier.value) if user.subscription_tier else "free",
+            subscription_tier=(
+                str(user.subscription_tier.value) if user.subscription_tier else "free"
+            ),
             identity_document_type=user.identity_document_type,
             identity_document_url=user.identity_document_url,
             identity_verification_status=user.identity_verification_status,
@@ -184,7 +198,7 @@ class AdminUserDTO(BaseModel):
             created_at=user.created_at,
             updated_at=user.updated_at,
             last_login_at=user.last_login_at,
-            profile=profile.model_dump(mode='json') if profile else None
+            profile=profile.model_dump(mode="json") if profile else None,
         )
 
 
@@ -193,34 +207,35 @@ class UserProfileResponseDTO(BaseModel):
     Combined user and profile response for /profiles/me endpoint.
     Automatically filters sensitive data based on viewer permissions.
     """
+
     model_config = ConfigDict(use_enum_values=True)
-    
+
     user_id: str
     display_name: str
     nickname: str
-    
+
     # Masked sensitive data (for owner view)
     email_masked: Optional[str] = None
     phone_masked: Optional[str] = None
-    
+
     # Account status
     verified: bool = False
     email_verified: bool = False
     phone_verified: bool = False
     subscription_tier: str = "free"
-    
+
     # Verification status (no document URL)
     identity_verification_status: str = "none"
     identity_document_type: Optional[str] = None
     identity_rejection_reason: Optional[str] = None
     identity_submitted_at: Optional[datetime] = None
-    
+
     # Real credentials (for owner view)
     real_name: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     country_code: Optional[str] = None
-    
+
     # Profile fields (merged)
     age: Optional[int] = None
     gender: Optional[str] = None
@@ -233,7 +248,7 @@ class UserProfileResponseDTO(BaseModel):
     preferred_languages: List[str] = []
     auto_preferred_languages: bool = True
     city: Optional[str] = None
-    
+
     # Details
     birth_date: Optional[datetime] = None
     sexual_orientation: Optional[str] = None
@@ -249,7 +264,7 @@ class UserProfileResponseDTO(BaseModel):
     height_relevant: bool = True
     height_preferences: List[str] = []
     height_range_labels: Dict[str, str] = {}
-    
+
     # Lifestyle Details
     mbti: Optional[str] = None
     mood: Optional[str] = None
@@ -263,12 +278,12 @@ class UserProfileResponseDTO(BaseModel):
     smoking: Optional[str] = None
     exercise: Optional[str] = None
     activity_pattern: Optional[str] = None
-    
+
     # Pets
     has_pets: bool = False
     pet_types: List[str] = []
     pets: List[str] = []
-    
+
     # Preferences
     intentions: List[str] = []
     favorite_interests: List[str] = []
@@ -283,7 +298,7 @@ class UserProfileResponseDTO(BaseModel):
     age_range_max: int = 99
     search_radius_km: int = 50
     distance_preference_km: int = 50
-    
+
     # Personality & Health
     social_style: Optional[str] = None
     processing_style: Optional[str] = None
@@ -305,13 +320,13 @@ class UserProfileResponseDTO(BaseModel):
     interaction_preference: Optional[str] = None
     openness_to_experience: Optional[str] = None
     collaboration_style: Optional[str] = None
-    
+
     # Creative
     superpower: Optional[str] = None
     achilles_heel: Optional[str] = None
     personal_soundtrack: List[dict] = []
     personal_soundtrack_text: Optional[str] = None
-    
+
     # Music & Media
     mi_himno: Optional[dict] = None
     favorite_songs: List[dict] = []
@@ -319,7 +334,7 @@ class UserProfileResponseDTO(BaseModel):
     music_genres: List[str] = []
     loops: List[str] = []
     instagram_photos: List[str] = []
-    
+
     # Visibility
     show_age: bool = True
     show_location: bool = True
@@ -331,50 +346,65 @@ class UserProfileResponseDTO(BaseModel):
     profile_visible: bool = True
     show_me_in_discovery: bool = True
     global_mode_enabled: bool = False
-    
+
     # Smart Photos
     smart_photos_enabled: bool = False
     smart_photos_last_evaluated: Optional[datetime] = None
-    
+
     # Search Preferences
     search_states: List[str] = []
     search_countries: List[str] = []
     excluded_states: List[str] = []
     excluded_countries: List[str] = []
-    
+
     # Prompts
     prompts: List[dict] = []
     show_professional_only_matches: bool = False
-    
+
     # Location
     location: Optional[dict] = None
-    
+
     # Additional
     profile_completion: Optional[int] = None
-    
+
     @classmethod
     def from_user_and_profile(cls, user, profile, mask_data: bool = True):
         """
         Create UserProfileResponseDTO from User and Profile models.
-        
+
         Args:
             user: User model instance
             profile: Profile model instance
             mask_data: If True, mask email and phone
         """
         from src.services.data_privacy_service import mask_email, mask_phone
-        from src.utils.height_context import get_height_range_labels, map_country_to_region
-        
-        country = (profile.location.country if profile and profile.location else (profile.city if profile else None)) if profile else None
+        from src.utils.height_context import (
+            get_height_range_labels,
+            map_country_to_region,
+        )
+
+        country = (
+            (
+                profile.location.country
+                if profile and profile.location
+                else (profile.city if profile else None)
+            )
+            if profile
+            else None
+        )
         region = map_country_to_region(country)
         range_labels = get_height_range_labels(region)
-        
+
         return cls(
             user_id=str(user.id),
             display_name=user.display_name,
             nickname=user.nickname,
-            email_masked=mask_email(user.email) if mask_data and user.email else user.email,
-            phone_masked=mask_phone(user.phone) if mask_data and user.phone else user.phone,
+            email_masked=(
+                mask_email(user.email) if mask_data and user.email else user.email
+            ),
+            phone_masked=(
+                mask_phone(user.phone) if mask_data and user.phone else user.phone
+            ),
             real_name=user.real_name if not mask_data else None,
             email=user.email if not mask_data else None,
             phone=profile.phone if profile and not mask_data else None,
@@ -382,7 +412,9 @@ class UserProfileResponseDTO(BaseModel):
             verified=user.verified,
             email_verified=user.is_verified,
             phone_verified=profile.phone_verified if profile else False,
-            subscription_tier=str(user.subscription_tier.value) if user.subscription_tier else "free",
+            subscription_tier=(
+                str(user.subscription_tier.value) if user.subscription_tier else "free"
+            ),
             identity_verification_status=user.identity_verification_status,
             identity_document_type=user.identity_document_type,
             identity_rejection_reason=user.identity_rejection_reason,
@@ -396,8 +428,14 @@ class UserProfileResponseDTO(BaseModel):
             hobbies=profile.hobbies if profile else [],
             languages=profile.languages if profile else [],
             preferred_languages=profile.preferred_languages if profile else [],
-            auto_preferred_languages=profile.auto_preferred_languages if profile else True,
-            city=profile.city or (profile.location.city if profile.location else None) if profile else None,
+            auto_preferred_languages=(
+                profile.auto_preferred_languages if profile else True
+            ),
+            city=(
+                profile.city or (profile.location.city if profile.location else None)
+                if profile
+                else None
+            ),
             birth_date=profile.birth_date if profile else None,
             sexual_orientation=profile.sexual_orientation if profile else None,
             height_cm=profile.height_cm if profile else None,
@@ -445,7 +483,9 @@ class UserProfileResponseDTO(BaseModel):
             decision_making=profile.decision_making if profile else None,
             risk_tolerance=profile.risk_tolerance if profile else None,
             neurodiversity=profile.neurodiversity if profile else [],
-            neurodiversity_diagnoses=profile.neurodiversity_diagnoses if profile else [],
+            neurodiversity_diagnoses=(
+                profile.neurodiversity_diagnoses if profile else []
+            ),
             learning_preferences=profile.learning_preferences if profile else [],
             energy_level=profile.energy_level if profile else None,
             disabilities=profile.disabilities if profile else [],
@@ -463,8 +503,14 @@ class UserProfileResponseDTO(BaseModel):
             superpower=profile.superpower if profile else None,
             achilles_heel=profile.achilles_heel if profile else None,
             personal_soundtrack=profile.personal_soundtrack if profile else [],
-            personal_soundtrack_text=profile.personal_soundtrack_text if profile else None,
-            mi_himno=profile.mi_himno.model_dump(mode='json') if profile and profile.mi_himno else None,
+            personal_soundtrack_text=(
+                profile.personal_soundtrack_text if profile else None
+            ),
+            mi_himno=(
+                profile.mi_himno.model_dump(mode="json")
+                if profile and profile.mi_himno
+                else None
+            ),
             favorite_songs=profile.favorite_songs if profile else [],
             spotify_playlists=profile.spotify_playlists if profile else [],
             music_genres=profile.music_genres if profile else [],
@@ -485,9 +531,17 @@ class UserProfileResponseDTO(BaseModel):
             excluded_states=profile.excluded_states if profile else [],
             excluded_countries=profile.excluded_countries if profile else [],
             prompts=profile.prompts if profile else [],
-            show_professional_only_matches=profile.show_professional_only_matches if profile else False,
-            location=profile.location.model_dump(mode='json') if profile and profile.location else None,
+            show_professional_only_matches=(
+                profile.show_professional_only_matches if profile else False
+            ),
+            location=(
+                profile.location.model_dump(mode="json")
+                if profile and profile.location
+                else None
+            ),
             profile_completion=profile.profile_completion if profile else None,
             smart_photos_enabled=profile.smart_photos_enabled if profile else False,
-            smart_photos_last_evaluated=profile.smart_photos_last_evaluated if profile else None
+            smart_photos_last_evaluated=(
+                profile.smart_photos_last_evaluated if profile else None
+            ),
         )

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any
 from datetime import datetime, timedelta
 from collections import Counter
 from bson import ObjectId
@@ -21,9 +21,12 @@ async def get_visits(current_user: User = Depends(get_current_user)) -> Dict[str
     collection = ProfileVisit.get_motor_collection()
 
     # Recent visits (last 50, all time)
-    recent = await collection.find(
-        {"viewed_user_id": viewed_user_id}
-    ).sort("created_at", -1).limit(50).to_list(50)
+    recent = (
+        await collection.find({"viewed_user_id": viewed_user_id})
+        .sort("created_at", -1)
+        .limit(50)
+        .to_list(50)
+    )
 
     viewer_ids = {v.get("viewer_id") for v in recent if v.get("viewer_id")}
 
@@ -51,13 +54,15 @@ async def get_visits(current_user: User = Depends(get_current_user)) -> Dict[str
         u = users_map.get(viewer_id)
         p = profiles_map.get(viewer_id)
         created_at = v.get("created_at")
-        visits.append({
-            "viewer_id": viewer_id,
-            "display_name": (u.display_name if u else None) or "Usuario",
-            "nickname": u.nickname if u else None,
-            "photo": (p.photos[0] if p and p.photos else None),
-            "visited_at": created_at.isoformat() + "Z" if created_at else None,
-        })
+        visits.append(
+            {
+                "viewer_id": viewer_id,
+                "display_name": (u.display_name if u else None) or "Usuario",
+                "nickname": u.nickname if u else None,
+                "photo": (p.photos[0] if p and p.photos else None),
+                "visited_at": created_at.isoformat() + "Z" if created_at else None,
+            }
+        )
 
     # Stats (today / week / month) + daily buckets for the chart (last 14 days)
     since_month = now - timedelta(days=30)
@@ -87,10 +92,14 @@ async def get_visits(current_user: User = Depends(get_current_user)) -> Dict[str
     daily = [{"date": day, "count": daily_counts.get(day, 0)} for day in day_keys]
 
     settings = await UserSettings.find_one({"user_id": viewed_user_id})
-    hide_visit_activity = bool(settings and getattr(settings, "hide_visit_activity", False))
+    hide_visit_activity = bool(
+        settings and getattr(settings, "hide_visit_activity", False)
+    )
 
     # Distinct visitors all-time (matches dashboard profile_visits)
-    distinct_viewers = await collection.distinct("viewer_id", {"viewed_user_id": viewed_user_id})
+    distinct_viewers = await collection.distinct(
+        "viewer_id", {"viewed_user_id": viewed_user_id}
+    )
 
     return {
         "visits": visits,

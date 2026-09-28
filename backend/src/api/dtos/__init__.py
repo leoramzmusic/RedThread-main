@@ -7,12 +7,7 @@ from .user_dtos import (
     PublicUserDTO,
     PrivateUserDTO,
     AdminUserDTO,
-    UserProfileResponseDTO
+    UserProfileResponseDTO,
 )
 
-__all__ = [
-    "PublicUserDTO",
-    "PrivateUserDTO",
-    "AdminUserDTO",
-    "UserProfileResponseDTO"
-]
+__all__ = ["PublicUserDTO", "PrivateUserDTO", "AdminUserDTO", "UserProfileResponseDTO"]

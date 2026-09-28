@@ -1,13 +1,13 @@
 from datetime import datetime
-from typing import List
 from src.models.media import MediaItem, MediaType
 from src.models.profile import Profile
 from src.models.photo_metric import PhotoMetric
 
+
 class SmartPhotosService:
     # Scoring coefficients
     ALPHA = 0.5  # Matches/Views weight
-    BETA = 0.3   # Clicks/Views weight
+    BETA = 0.3  # Clicks/Views weight
     GAMMA = 0.2  # View Time weight (normalized)
 
     @staticmethod
@@ -21,15 +21,15 @@ class SmartPhotosService:
 
         match_rate = metric.matches / metric.views
         click_rate = metric.clicks / metric.views
-        
+
         # Normalize view time: assuming 10s is a very good view time per view
         avg_view_time = metric.view_time / metric.views
         normalized_view_time = min(avg_view_time / 10.0, 1.0)
 
         score = (
-            SmartPhotosService.ALPHA * match_rate +
-            SmartPhotosService.BETA * click_rate +
-            SmartPhotosService.GAMMA * normalized_view_time
+            SmartPhotosService.ALPHA * match_rate
+            + SmartPhotosService.BETA * click_rate
+            + SmartPhotosService.GAMMA * normalized_view_time
         )
         return score
 
@@ -44,8 +44,7 @@ class SmartPhotosService:
 
         # Get all photo media items
         photos = await MediaItem.find(
-            MediaItem.user_id == user_id,
-            MediaItem.type == MediaType.PHOTO
+            MediaItem.user_id == user_id, MediaItem.type == MediaType.PHOTO
         ).to_list()
 
         if len(photos) < 2:
@@ -76,8 +75,9 @@ class SmartPhotosService:
         if changed:
             # Sync to profile
             from src.api.media import sync_profile_photos
+
             await sync_profile_photos(user_id)
-            
+
             profile.smart_photos_last_evaluated = datetime.utcnow()
             await profile.save()
             print(f"✅ Smart Photos reordered for user {user_id}")

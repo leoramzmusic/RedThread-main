@@ -39,10 +39,10 @@ from src.models.yuki_config import YukiConfig, YukiSkin, YukiAppearanceRule
 
 async def init_db():
     """Initialize MongoDB connection and Beanie ODM"""
-    
+
     # Create Motor client
     client = AsyncIOMotorClient(settings.MONGODB_URL)
-    
+
     # Initialize Beanie with document models
     await init_beanie(
         database=client[settings.MONGODB_DB_NAME],
@@ -87,13 +87,14 @@ async def init_db():
             YukiConfig,
             YukiSkin,
             YukiAppearanceRule,
-        ]
+        ],
     )
-    
+
     print(f"✅ Connected to MongoDB: {settings.MONGODB_DB_NAME}")
 
     # Seed automático de datos del sistema (idempotente)
     from src.core.seed import seed_system_data
+
     await seed_system_data()
 
 
@@ -101,5 +102,3 @@ async def close_db():
     """Close MongoDB connection"""
     # Beanie handles connection cleanup automatically
     print("✅ MongoDB connection closed")
-
-

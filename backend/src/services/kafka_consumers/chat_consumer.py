@@ -8,6 +8,7 @@ Responsabilidades:
 3. Cachear mensajes recientes en Redis
 4. Actualizar estado de lectura
 """
+
 import logging
 from src.services.kafka_topics import KafkaEventType
 
@@ -36,7 +37,9 @@ async def handle_chat_message(message: dict) -> None:
     event_type = message.get("event_type")
     data = message.get("data", {})
 
-    logger.info(f"[ChatConsumer] Procesando evento: {event_type} | message_id={data.get('message_id')}")
+    logger.info(
+        f"[ChatConsumer] Procesando evento: {event_type} | message_id={data.get('message_id')}"
+    )
 
     if event_type == KafkaEventType.MESSAGE_SENT:
         await _on_message_sent(data)
@@ -59,6 +62,7 @@ async def _on_message_sent(data: dict) -> None:
     # 1. Cachear mensaje en Redis si está disponible
     try:
         from src.services.redis_service import redis_service
+
         if redis_service.is_connected() and message_id:
             await redis_service.cache_message(message_id, data, ttl=3600)
     except Exception as exc:
@@ -67,12 +71,15 @@ async def _on_message_sent(data: dict) -> None:
     # 2. Verificar presencia del destinatario; si está offline, emitir notificación push
     try:
         from src.services.redis_service import redis_service
+
         recipient_online = False
         if redis_service.is_connected() and recipient_id:
             recipient_online = await redis_service.is_user_online(recipient_id)
 
         if not recipient_online and recipient_id:
-            logger.info(f"[ChatConsumer] Destinatario {recipient_id} está offline. Generando notificación.")
+            logger.info(
+                f"[ChatConsumer] Destinatario {recipient_id} está offline. Generando notificación."
+            )
             from src.services.kafka_service import kafka_service
             from src.services.kafka_topics import KafkaTopic, KafkaEventType
 
@@ -92,7 +99,9 @@ async def _on_message_sent(data: dict) -> None:
                 key=recipient_id,
             )
     except Exception as exc:
-        logger.error(f"[ChatConsumer] Error despachando notificación para destinatario offline: {exc}")
+        logger.error(
+            f"[ChatConsumer] Error despachando notificación para destinatario offline: {exc}"
+        )
 
 
 async def _on_message_read(data: dict) -> None:

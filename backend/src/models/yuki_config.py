@@ -1,11 +1,12 @@
 from beanie import Document
 from pydantic import Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from datetime import datetime
 
 
 class YukiAnimationState(Document):
     """A single animation state configuration for Yuki"""
+
     state_name: str  # "idle" | "loading" | "success" | "error"
     enabled: bool = True
     animation: str = "default"  # Lottie filename or animation key
@@ -17,6 +18,7 @@ class YukiAnimationState(Document):
 
 class YukiScreenOverride(Document):
     """Per-screen override for Yuki behavior"""
+
     screen_path: str  # e.g. "/discover", "/chat"
     enabled: bool = True
     custom_animation: Optional[str] = None
@@ -28,6 +30,7 @@ class YukiScreenOverride(Document):
 
 class YukiSkin(Document):
     """A custom skin/variant for Yuki"""
+
     name: str
     image_url: str
     unlocked_by: Optional[str] = None  # "subscription" | "achievement" | None
@@ -40,6 +43,7 @@ class YukiSkin(Document):
 
 class YukiAppearanceRule(Document):
     """Rule for conditional Yuki appearance"""
+
     condition: str  # e.g. "screen == '/discover'", "time between 18-22"
     action: str  # "show" | "hide" | "use_style" | "use_animation"
     value: Optional[str] = None  # style name, animation name, etc.

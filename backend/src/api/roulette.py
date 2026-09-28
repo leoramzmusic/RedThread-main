@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
 from datetime import datetime
@@ -10,17 +10,18 @@ from src.api.auth import get_current_user
 
 router = APIRouter()
 
+
 class RouletteFilter(BaseModel):
     language: Optional[str] = None
     topic: Optional[str] = None
 
+
 @router.post("/start")
 async def start_roulette(
-    filters: RouletteFilter = None,
-    current_user: User = Depends(get_current_user)
+    filters: RouletteFilter = None, current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """Start a roulette session and find a match with filters"""
-    
+
     # Get current user profile to check preferences
     current_profile = await Profile.find_one(Profile.user_id == str(current_user.id))
     if not current_profile:
@@ -33,10 +34,10 @@ async def start_roulette(
         "profile_visible": True,
         "age": {
             "$gte": current_profile.age_range_min,
-            "$lte": current_profile.age_range_max
-        }
+            "$lte": current_profile.age_range_max,
+        },
     }
-    
+
     if filters:
         if filters.language:
             query["languages"] = filters.language
@@ -47,7 +48,9 @@ async def start_roulette(
     candidates = await Profile.find(query).to_list()
 
     if not candidates:
-        raise HTTPException(status_code=404, detail="No matches found with these criteria")
+        raise HTTPException(
+            status_code=404, detail="No matches found with these criteria"
+        )
 
     # Pick a random candidate
     match_profile = random.choice(candidates)
@@ -57,7 +60,7 @@ async def start_roulette(
         {
             "$or": [
                 {"user1_id": str(current_user.id), "user2_id": match_profile.user_id},
-                {"user1_id": match_profile.user_id, "user2_id": str(current_user.id)}
+                {"user1_id": match_profile.user_id, "user2_id": str(current_user.id)},
             ]
         }
     )
@@ -67,7 +70,7 @@ async def start_roulette(
             user1_id=str(current_user.id),
             user2_id=match_profile.user_id,
             match_type="roulette",
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
         await new_match.insert()
         match_id = str(new_match.id)
@@ -81,19 +84,19 @@ async def start_roulette(
         "photo": match_profile.photos[0] if match_profile.photos else None,
         "age": match_profile.age,
         "bio": match_profile.bio,
-        "interests": match_profile.interests
+        "interests": match_profile.interests,
     }
+
 
 @router.post("/next")
 async def next_match(
-    filters: RouletteFilter = None,
-    current_user: User = Depends(get_current_user)
+    filters: RouletteFilter = None, current_user: User = Depends(get_current_user)
 ):
     """Skip current match and find another one"""
     return await start_roulette(filters, current_user)
+
 
 @router.post("/end")
 async def end_roulette(current_user: User = Depends(get_current_user)):
     """End the roulette session"""
     return {"message": "Roulette session ended"}
-

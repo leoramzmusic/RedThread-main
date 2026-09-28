@@ -14,28 +14,23 @@ class AuditLog(Document):
     Audit log for tracking access to sensitive user data.
     Used for security monitoring and compliance (GDPR, etc.)
     """
-    
+
     user_id: str  # User whose data was accessed
     accessed_by: str  # User who accessed the data
     action: str  # Type of action (e.g., "view_profile", "view_identity_document")
     sensitive_fields: List[str] = []  # List of sensitive fields accessed
-    
+
     # Request metadata
     ip_address: str = "unknown"
     user_agent: str = "unknown"
-    
+
     # Timestamp
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    
+
     class Settings:
         name = "audit_logs"
-        indexes = [
-            "user_id",
-            "accessed_by",
-            "timestamp",
-            "action"
-        ]
-    
+        indexes = ["user_id", "accessed_by", "timestamp", "action"]
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -45,6 +40,6 @@ class AuditLog(Document):
                 "sensitive_fields": ["email", "phone", "real_name"],
                 "ip_address": "192.168.1.1",
                 "user_agent": "Mozilla/5.0...",
-                "timestamp": "2024-01-11T12:00:00Z"
+                "timestamp": "2024-01-11T12:00:00Z",
             }
         }

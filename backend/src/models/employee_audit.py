@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 from beanie import Document, Indexed
 from pydantic import Field
+
 
 class EmployeeAudit(Document):
     employee_id: Indexed(str)
@@ -16,8 +17,4 @@ class EmployeeAudit(Document):
 
     class Settings:
         name = "employee_audit"
-        indexes = [
-            "employee_id",
-            "created_at",
-            "admin_id"
-        ]
+        indexes = ["employee_id", "created_at", "admin_id"]
