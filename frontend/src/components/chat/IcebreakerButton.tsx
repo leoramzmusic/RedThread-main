@@ -19,13 +19,13 @@ import { useTranslation } from 'react-i18next';
 import apiClient from '../../services/api';
 
 interface IcebreakerButtonProps {
-    matchId: string;
+    conversationId: string;
     otherUserId: string;
     onSend: (text: string) => void;
     color?: string;
 }
 
-export default function IcebreakerButton({ matchId, otherUserId, onSend, color }: IcebreakerButtonProps) {
+export default function IcebreakerButton({ conversationId, otherUserId, onSend, color }: IcebreakerButtonProps) {
     const { t } = useTranslation('common');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -48,8 +48,7 @@ export default function IcebreakerButton({ matchId, otherUserId, onSend, color }
     const send36QuestionInvite = async (questionId: string) => {
         try {
             await apiClient.post('/api/icebreaker/chat/invite', {
-                match_id: matchId,
-                other_user_id: otherUserId,
+                conversation_id: conversationId,
                 question_id: questionId
             });
             // Allow Chat socket to handle the incoming message update

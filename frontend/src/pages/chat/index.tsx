@@ -681,7 +681,7 @@ export default function Chat() {
 
                     <Box component="form" onSubmit={(e) => handleSendMessage(e)} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                       <IcebreakerButton
-                        matchId={activeConversation!.conversation_id}
+                        conversationId={activeConversation!.conversation_id}
                         otherUserId={activeConversation!.other_user_id}
                         onSend={(text) => handleSendMessage(undefined, text)}
                         color={activeThemeColor}
