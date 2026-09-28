@@ -8,7 +8,7 @@ export const defaultLocale = 'en';
 
 export async function getEnabledLanguages(): Promise<string[]> {
   try {
-    const res = await appearanceService.getResources(AppearanceType.LANDING_LANGUAGES);
+    const res = await appearanceService.getPublicResources(AppearanceType.LANDING_LANGUAGES);
     const enabled = res?.[0]?.metadata?.enabled;
     if (Array.isArray(enabled) && enabled.length) return enabled;
   } catch {}

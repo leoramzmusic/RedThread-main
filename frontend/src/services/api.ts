@@ -7,6 +7,7 @@ interface CreateClientOptions {
   refreshPath?: string;
   logoutRedirect?: string;
   authEndpoints?: string[];
+  redirectFrom?: string;
 }
 
 export function createApiClient(options: CreateClientOptions = {}): AxiosInstance {
@@ -15,6 +16,7 @@ export function createApiClient(options: CreateClientOptions = {}): AxiosInstanc
     refreshPath = '/auth/refresh',
     logoutRedirect = '/auth?expired=1',
     authEndpoints = ['/auth/refresh', '/auth/logout', '/auth/login', '/auth/me'],
+    redirectFrom,
   } = options;
 
   const client: AxiosInstance = axios.create({
@@ -69,7 +71,8 @@ export function createApiClient(options: CreateClientOptions = {}): AxiosInstanc
           if (typeof window !== 'undefined') {
             const currentPath = window.location.pathname;
             const isAuthPage = currentPath.startsWith(authPrefix);
-            if (!isAuthPage) {
+            const inRedirectScope = !redirectFrom || currentPath.startsWith(redirectFrom);
+            if (!isAuthPage && inRedirectScope) {
               window.location.href = logoutRedirect;
             }
           }
@@ -98,8 +101,10 @@ export default apiClient;
 
 // Admin API client
 export const adminApiClient = createApiClient({
+  authPrefix: '/portal-redthread/auth',
   refreshPath: '/portal-redthread/auth/refresh',
   logoutRedirect: '/portal-redthread/auth/login',
+  redirectFrom: '/portal-redthread',
   authEndpoints: [
     '/portal-redthread/auth/refresh',
     '/portal-redthread/auth/logout',
