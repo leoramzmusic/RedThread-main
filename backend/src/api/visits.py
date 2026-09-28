@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import Dict, Any
 from datetime import datetime, timedelta
 from collections import Counter
@@ -17,6 +17,7 @@ router = APIRouter()
 async def get_visits(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
     """List recent profile visitors with stats and privacy setting."""
     viewed_user_id = str(current_user.id)
+    print(f"[VISITS] GET /visits called for user: {viewed_user_id}")
     now = datetime.utcnow()
     collection = ProfileVisit.get_motor_collection()
 
@@ -27,6 +28,7 @@ async def get_visits(current_user: User = Depends(get_current_user)) -> Dict[str
         .limit(50)
         .to_list(50)
     )
+    print(f"[VISITS] Found {len(recent)} recent visits for user {viewed_user_id}")
 
     viewer_ids = {v.get("viewer_id") for v in recent if v.get("viewer_id")}
 
@@ -112,3 +114,47 @@ async def get_visits(current_user: User = Depends(get_current_user)) -> Dict[str
         },
         "hide_visit_activity": hide_visit_activity,
     }
+
+
+@router.post("/record")
+async def record_visit(
+    target_user_id: str,
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    Record a profile visit when an authenticated user views another user's profile.
+    Respects the viewer's privacy setting (hide_visit_activity).
+    """
+    print(f"[VISITS] record_visit called: viewer={current_user.id}, target={target_user_id}")
+    if current_user.id == target_user_id:
+        return {"recorded": False, "reason": "self_visit"}
+
+    # Validate target_user_id is a valid user
+    target_user = await User.get(target_user_id)
+    if not target_user:
+        print(f"[VISITS] Target user not found: {target_user_id}")
+        return {"recorded": False, "reason": "target_user_not_found"}
+
+    viewer = await User.find_one({"_id": current_user.id})
+    if not viewer:
+        raise HTTPException(status_code=404, detail="Viewer not found")
+
+    viewer_settings = await UserSettings.find_one({"user_id": str(current_user.id)})
+    if viewer_settings and getattr(viewer_settings, "hide_visit_activity", False):
+        return {"recorded": False, "reason": "incognito_mode"}
+
+    try:
+        visit = ProfileVisit(
+            viewer_id=str(current_user.id),
+            viewed_user_id=target_user_id,
+        )
+        print(f"[VISITS] Before insert: visitor={current_user.id}, viewed={target_user_id}")
+        result = await visit.insert()
+        print(f"[VISITS] Insert result: {result}")
+        print(f"[VISITS] Visit ID after insert: {visit.id}")
+        return {"recorded": True}
+    except Exception as e:
+        print(f"[VISITS] Error recording visit: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to record visit: {e}")

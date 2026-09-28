@@ -70,5 +70,33 @@ verificadas en revisión durante Fase 0. Se conservan porque el patrón se repet
    `verify_chat_flow.py` (sin `try/finally`; cleanup keyed en la misma invariante que las
    aserciones) estaban los dos en rutas de error y ninguno se vio ejecutando el script en verde.
 5. **Un hallazgo de revisión no es un bug.** El revisor señaló "dos conversaciones para el mismo
-   par"; es el diseño (sub-tab `match`/`friend`). La segunda mitad de una revisión es refutar
-   sus hallazgos, igual que la primera es aceptarlos.
+par"; es el diseño (sub-tab `match`/`friend`). La segunda mitad de una revisión es refutar
+sus hallazgos, igual que la primera es aceptarlos.
+
+---
+
+## F0-30 (P1) — Cold Start UX en Discover: onboarding progresivo sin bloquear
+
+**Problema:** usuarios nuevos ven tarjetas de completitud antes que perfiles, rompiendo inmediatez.
+
+**Flujo objetivo (ver discusión):**
+1. **Bienvenida** (tarjeta 0): "¡Bienvenido a ReTh! Comienza conociendo nuevos perfiles"
+2. **Primeros 2–3 swipes** → perfiles reales inmediatos
+3. **Tarjeta "Una cosa antes de empezar"** (atracción/intenciones) con narrativa: *"Completa esto para mejorar recomendaciones. Mientras tanto, aquí tienes perfiles sugeridos"*
+4. **Intercalado progresivo**: tras 5–7 swipes → tarjeta completitud (intereses, idioma, etc.) + narrativa + **Skip funcional** (forza recomendaciones aunque perfil incompleto)
+5. **Gamificación**: contador *"Tus recomendaciones mejorarán al completar más datos (2/5 pasos)"*
+5. **Cold start balanceado**: `discovery.py` fallback → siempre ≥3 perfiles visibles (semilla: usuarios activos + diversidad básica)
+
+**Fix backend (`discovery.py:384-400`):**
+- Fallback cold start → siempre ≥3 perfiles (semilla: activos + diversidad)
+- Parámetro `skip_completion_card` en `/discovery/queue` → fuerza recomendaciones
+- Límite: tarjetas de completitud intercaladas cada 5–7 swipes, nunca cola vacía
+
+**Frontend (Discover queue):**
+- Interleaving: welcome → 2–3 perfiles → completion card (skip) → perfiles → completion card cada 5–7
+- Skip funcional: `skip_completion_card=true` en request → fuerza recomendaciones
+- Narrativa en tarjeta: *"Completa esto para mejorar recomendaciones. Mientras tanto, aquí tienes perfiles sugeridos"*
+- Gamificación: contador *"Tus recomendaciones mejorarán al completar más datos (X/5 pasos)"*
+
+**Prioridad:** P1 (impacto directo en onboarding / retención día 1)
+**Owner:** unassigned

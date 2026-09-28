@@ -93,6 +93,7 @@ class ReceivedLike(BaseModel):
     affinity_score: float
     is_superlike: bool
     liked_at: datetime
+    last_seen: Optional[datetime] = None  # Online indicator
 
 
 class SecondChanceProfile(BaseModel):
@@ -116,9 +117,13 @@ class SentLike(BaseModel):
     user_id: str
     display_name: str
     age: int
+    bio: Optional[str]
     photos: List[str]
+    interests: List[str]
+    affinity_score: float
     is_superlike: bool
     liked_at: datetime
+    last_seen: Optional[datetime] = None  # Online indicator
 
 
 @router.get("/queue", response_model=List[DiscoveryProfile])
@@ -1268,6 +1273,9 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
                 else AffinityService.calculate_score(my_profile, liker_profile)
             )
 
+            # Get user for last_seen
+            user = await User.get(liker_id)
+
             result.append(
                 ReceivedLike(
                     match_id=str(match.id),
@@ -1282,6 +1290,7 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
                     affinity_score=affinity,
                     is_superlike=is_superlike,
                     liked_at=match.created_at,
+                    last_seen=user.last_seen if user else None,
                 )
             )
 
@@ -1432,58 +1441,78 @@ async def reconsider_profile(
     }
 
 
-# OLD ENDPOINT - COMMENTED OUT (duplicate, use the new one at line 850)
-# @router.get("/likes-sent", response_model=List[SentLike])
-# async def get_sent_likes(current_user: User = Depends(get_current_user)):
-#     """
-#     Get list of users you liked in the last 7 days.
-#     """
-#     seven_days_ago = datetime.utcnow() - timedelta(days=7)
-#
-#     # Find matches where YOU liked the other person
-#     matches = await Match.find({
-#         "$or": [
-#             {
-#                 "user_id_1": str(current_user.id),
-#                 "user_1_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
-#                 "created_at": {"$gte": seven_days_ago}
-#             },
-#             {
-#                 "user_id_2": str(current_user.id),
-#                 "user_2_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
-#                 "created_at": {"$gte": seven_days_ago}
-#             }
-#         ]
-#     }).to_list()
-#
-#     result = []
-#
-#     for match in matches:
-#         # Determine who you liked
-#         if match.user_id_1 == str(current_user.id):
-#             liked_user_id = match.user_id_2
-#             is_superlike = match.user_1_interaction == InteractionType.SUPERLIKE
-#         else:
-#             liked_user_id = match.user_id_1
-#             is_superlike = match.user_2_interaction == InteractionType.SUPERLIKE
-#
-#         # Get their profile
-#         liked_profile = await Profile.find_one(Profile.user_id == liked_user_id)
-#
-#         if liked_profile:
-#             result.append(SentLike(
-#                 match_id=str(match.id),
-#                 user_id=liked_user_id,
-#                 display_name=liked_profile.display_name,  # ERROR: Profile doesn't have display_name
-#                 age=liked_profile.age,
-#                 photos=liked_profile.photos[:1],  # Just need main photo
-#                 is_superlike=is_superlike,
-#                 liked_at=match.created_at
-#             ))
-#
-#     # Sort by most recent
-#     result.sort(key=lambda x: x.liked_at, reverse=True)
-#     return result
+# Sort by most recent first
+    result.sort(key=lambda x: x.liked_at, reverse=True)
+
+    return result
+
+
+@router.get("/likes-sent", response_model=List[SentLike])
+async def get_sent_likes(current_user: User = Depends(get_current_user)):
+    """
+    Get list of users you liked in the last 7 days.
+    """
+
+    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+
+    # Find matches where YOU liked the other person
+    matches = await Match.find({
+        "$or": [
+            {
+                "user_id_1": str(current_user.id),
+                "user_1_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
+                "created_at": {"$gte": seven_days_ago}
+            },
+            {
+                "user_id_2": str(current_user.id),
+                "user_2_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
+                "created_at": {"$gte": seven_days_ago}
+            }
+        ]
+    }).to_list()
+
+    result = []
+
+    for match in matches:
+        # Determine who you liked
+        if match.user_id_1 == str(current_user.id):
+            liked_user_id = match.user_id_2
+            is_superlike = match.user_1_interaction == InteractionType.SUPERLIKE
+        else:
+            liked_user_id = match.user_id_1
+            is_superlike = match.user_2_interaction == InteractionType.SUPERLIKE
+
+        # Get their profile
+        liked_profile = await Profile.find_one(Profile.user_id == liked_user_id)
+
+        if liked_profile:
+            # Calculate affinity if not already stored
+            affinity = (
+                match.affinity_score
+                if match.affinity_score > 0
+                else AffinityService.calculate_score(my_profile, liked_profile)
+            )
+
+            # Get user for display_name and last_seen
+            user = await User.get(liked_user_id)
+
+            result.append(SentLike(
+                match_id=str(match.id),
+                user_id=liked_user_id,
+                display_name=user.display_name if user else "Usuario",
+                age=liked_profile.age,
+                bio=liked_profile.bio,
+                photos=liked_profile.photos[:1],
+                interests=liked_profile.interests,
+                affinity_score=affinity,
+                is_superlike=is_superlike,
+                liked_at=match.created_at,
+                last_seen=user.last_seen if user else None,
+            ))
+
+    # Sort by most recent
+    result.sort(key=lambda x: x.liked_at, reverse=True)
+    return result
 
 
 @router.get("/top-picks", response_model=List[DiscoveryProfile])

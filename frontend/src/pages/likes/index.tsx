@@ -46,6 +46,7 @@ interface LikeProfile {
   is_superlike?: boolean;
   liked_at?: string;
   passed_at?: string;
+  last_seen?: string;
 }
 
 interface TabPanelProps {
@@ -141,8 +142,8 @@ export default function LikesPage() {
   }, []);
 
   const handleProfileClick = (profile: LikeProfile) => {
-    // Only allow interaction for received likes, top picks, and second chance
-    if (tabValue === 0 || tabValue === 2 || tabValue === 3) {
+    // Allow interaction for received likes, sent likes, top picks, and second chance
+    if (tabValue === 0 || tabValue === 1 || tabValue === 2 || tabValue === 3) {
       setSelectedProfile(profile);
     }
   };
@@ -222,10 +223,10 @@ export default function LikesPage() {
                 borderRadius: 4,
                 overflow: 'hidden',
                 transition: 'transform 0.2s',
-                cursor: (type === 'received' || type === 'top' || type === 'second') ? 'pointer' : 'default',
+                cursor: (type === 'received' || type === 'sent' || type === 'top' || type === 'second') ? 'pointer' : 'default',
                 '&:hover': {
-                  transform: (type === 'received' || type === 'top' || type === 'second') ? 'translateY(-4px)' : 'none',
-                  boxShadow: (type === 'received' || type === 'top' || type === 'second') ? 6 : 1
+                  transform: (type === 'received' || type === 'sent' || type === 'top' || type === 'second') ? 'translateY(-4px)' : 'none',
+                  boxShadow: (type === 'received' || type === 'sent' || type === 'top' || type === 'second') ? 6 : 1
                 }
               }}
             >
