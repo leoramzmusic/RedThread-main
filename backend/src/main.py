@@ -158,6 +158,7 @@ from src.api import (
     admin_departments,  # New
     admin_algorithms,  # New
     admin_appearance,  # New: Appearance Module
+    admin_profile_modules,  # New: Profile Modules
     admin_credentials,  # New: Credentials Assets
     admin_yuki,  # New: Yuki Mascot Config
     interests,  # New: Interest management
@@ -289,6 +290,16 @@ app.include_router(
     admin_appearance.router,
     prefix="/portal-redthread/apariencia",
     tags=["Admin - Apariencia"],
+)  # New
+app.include_router(
+    admin_profile_modules.router,
+    prefix="/portal-redthread/profile-modules",
+    tags=["Admin - Profile Modules"],
+)  # New
+app.include_router(
+    admin_profile_modules.public_router,
+    prefix="/api/profile-modules",
+    tags=["Profile Modules"],
 )  # New
 app.include_router(
     admin_credentials.router,
