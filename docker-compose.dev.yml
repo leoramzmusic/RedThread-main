@@ -2,9 +2,19 @@ version: '3.8'
 
 # Override para ambiente DEV / QA
 # Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
 services:
+  frontend:
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    command: npm run dev
+    environment:
+      - ENVIRONMENT=dev
+      - DEBUG=true
+
   backend:
     environment:
       - ENVIRONMENT=dev
       - DEBUG=true
-    # En DEV/QA el seed se ejecuta en cada inicio/despliegue para garantizar consistencia
+    command: sh -c "python manage.py migrate && python manage.py loaddata seed.json && python manage.py runserver 0.0.0.0:8000"

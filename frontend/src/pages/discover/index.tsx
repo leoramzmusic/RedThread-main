@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
+import { useState, useEffect, useMemo, useRef } from "react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import {
   Box,
   Typography,
@@ -28,8 +28,9 @@ import {
   Paper,
   Collapse,
   Fade,
-  Tooltip
-} from '@mui/material';
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
 import {
   FilterList as FilterIcon,
   ExpandMore as ExpandMoreIcon,
@@ -41,74 +42,124 @@ import {
   Settings as SettingsIcon,
   Favorite as FavoriteIcon,
   Psychology as PsychologyIcon,
-  BarChart as BarChartIcon
-} from '@mui/icons-material';
-import Layout from '../../components/layout/Layout';
-import ProfileCard, { Profile } from '../../components/profile/ProfileCard';
-import apiClient from '../../services/api';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import DiscoverEmptyState from '../../components/discovery/DiscoverEmptyState';
-import QuickInterests from '../../components/discovery/QuickInterests';
-import { useSnackbar } from 'notistack';
-import { calculateProfileScore, calculateCompletionPercentage, getProfileSuggestions } from '../../utils/profileScoring';
-import AsyncLocationSelector from '../../components/common/AsyncLocationSelector';
-import { RADIUS_MARKS, RADIUS_MIN, RADIUS_MAX } from '../../utils/radius';
+  BarChart as BarChartIcon,
+} from "@mui/icons-material";
+import Layout from "../../components/layout/Layout";
+import ProfileCard, { Profile } from "../../components/profile/ProfileCard";
+import apiClient from "../../services/api";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import DiscoverEmptyState from "../../components/discovery/DiscoverEmptyState";
+import QuickInterests from "../../components/discovery/QuickInterests";
+import { useSnackbar } from "notistack";
+import {
+  calculateProfileScore,
+  calculateCompletionPercentage,
+  getProfileSuggestions,
+} from "../../utils/profileScoring";
+import AsyncLocationSelector from "../../components/common/AsyncLocationSelector";
+import { RADIUS_MARKS, RADIUS_MIN, RADIUS_MAX } from "../../utils/radius";
 
-const LocationMap = dynamic(() => import('../../components/common/LocationMap'), {
-  ssr: false,
-  loading: () => <Box sx={{ height: 200, bgcolor: 'action.hover', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <CircularProgress size={24} />
-  </Box>
-});
+const LocationMap = dynamic(
+  () => import("../../components/common/LocationMap"),
+  {
+    ssr: false,
+    loading: () => (
+      <Box
+        sx={{
+          height: 200,
+          bgcolor: "action.hover",
+          borderRadius: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={24} />
+      </Box>
+    ),
+  },
+);
 
-const MoreModeSelection = dynamic(() => import('../../components/discovery/MoreModeSelection'));
-const DiscoveryRadarLoader = dynamic(() => import('../../components/discovery/DiscoveryRadarLoader'));
-const StickerBookLayout = dynamic(() => import('../../components/discovery/layouts/StickerBookLayout'));
-const CarouselLayout = dynamic(() => import('../../components/discovery/layouts/CarouselLayout'));
-const GridLayout = dynamic(() => import('../../components/discovery/layouts/GridLayout'));
-const CareNarrativePanel = dynamic(() => import('../../components/discovery/CareNarrativePanel'));
-const CompatibilityTechnicalPanel = dynamic(() => import('../../components/discovery/CompatibilityTechnicalPanel'));
-const ProfileDetailModal = dynamic(() => import('../../components/discovery/ProfileDetailModal'));
-const BoostActivationModal = dynamic(() => import('../../components/discovery/BoostActivationModal'));
-const DiscoveryRefinementCard = dynamic(() => import('../../components/discovery/DiscoveryRefinementCard'));
-const CuriosityGenderSelector = dynamic(() => import('../../components/discovery/CuriosityGenderSelector'));
+const MoreModeSelection = dynamic(
+  () => import("../../components/discovery/MoreModeSelection"),
+);
+const DiscoveryRadarLoader = dynamic(
+  () => import("../../components/discovery/DiscoveryRadarLoader"),
+);
+const StickerBookLayout = dynamic(
+  () => import("../../components/discovery/layouts/StickerBookLayout"),
+);
+const CarouselLayout = dynamic(
+  () => import("../../components/discovery/layouts/CarouselLayout"),
+);
+const GridLayout = dynamic(
+  () => import("../../components/discovery/layouts/GridLayout"),
+);
+const CareNarrativePanel = dynamic(
+  () => import("../../components/discovery/CareNarrativePanel"),
+);
+const CompatibilityTechnicalPanel = dynamic(
+  () => import("../../components/discovery/CompatibilityTechnicalPanel"),
+);
+const ProfileDetailModal = dynamic(
+  () => import("../../components/discovery/ProfileDetailModal"),
+);
+const BoostActivationModal = dynamic(
+  () => import("../../components/discovery/BoostActivationModal"),
+);
+const DiscoveryRefinementCard = dynamic(
+  () => import("../../components/discovery/DiscoveryRefinementCard"),
+);
+const CuriosityGenderSelector = dynamic(
+  () => import("../../components/discovery/CuriosityGenderSelector"),
+);
 
-import SocialBatteryWidget from '../../components/common/SocialBatteryWidget';
-import TimeOutModal from '../../components/common/TimeOutModal';
-import InteractionSettingsDialog, { InteractionMode, LayoutMode } from '../../components/discovery/InteractionSettingsDialog';
-import StackLayout from '../../components/discovery/layouts/StackLayout';
-import DiscoverToolbar from '../../components/discovery/DiscoverToolbar';
-import boostService, { BoostStatus } from '../../services/boostService';
-import DiscoveryModeSelector, { DiscoveryMode } from '../../components/discovery/DiscoveryModeSelector';
-import { useAppTheme } from '../../context/ThemeContext';
+import SocialBatteryWidget from "../../components/common/SocialBatteryWidget";
+import TimeOutModal from "../../components/common/TimeOutModal";
+import InteractionSettingsDialog, {
+  InteractionMode,
+  LayoutMode,
+} from "../../components/discovery/InteractionSettingsDialog";
+import StackLayout from "../../components/discovery/layouts/StackLayout";
+import DiscoverToolbar from "../../components/discovery/DiscoverToolbar";
+import boostService, { BoostStatus } from "../../services/boostService";
+import DiscoveryModeSelector, {
+  DiscoveryMode,
+} from "../../components/discovery/DiscoveryModeSelector";
+import { useAppTheme } from "../../context/ThemeContext";
 
 export default function Discover() {
   const { mode } = useAppTheme();
-  const isLight = mode === 'light';
+  const isLight = mode === "light";
   const router = useRouter();
-  const { t, i18n } = useTranslation('discover');
+  const { t, i18n } = useTranslation("discover");
   const { enqueueSnackbar } = useSnackbar();
   const containerRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const isCompactLandscape = useMediaQuery(
+    "(orientation: landscape) and (max-height: 500px)",
+  );
 
   const [queue, setQueue] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [matchAnimation, setMatchAnimation] = useState(false);
 
   // Auto-dismiss floating error toast after 6s
   useEffect(() => {
     if (!error) return;
-    const timer = setTimeout(() => setError(''), 6000);
+    const timer = setTimeout(() => setError(""), 6000);
     return () => clearTimeout(timer);
   }, [error]);
   const [myProfile, setMyProfile] = useState<any>(null);
   const [viewStartTime, setViewStartTime] = useState<number>(Date.now()); // CARE: Track dwell time
   const [history, setHistory] = useState<Profile[]>([]); // New: Track swiped profiles for Undo
-  const [shownProfileIds, setShownProfileIds] = useState<Set<string>>(new Set()); // Track all shown profiles
+  const [shownProfileIds, setShownProfileIds] = useState<Set<string>>(
+    new Set(),
+  ); // Track all shown profiles
 
   // Filters state
   const [showFilters, setShowFilters] = useState(false);
@@ -118,7 +169,8 @@ export default function Discover() {
   const [searchStates, setSearchStates] = useState<string[]>([]);
   const [searchCountries, setSearchCountries] = useState<string[]>([]);
   const [onlineOnly, setOnlineOnly] = useState<boolean>(false);
-  const [discoveryMode, setDiscoveryMode] = useState<DiscoveryMode>('suggested');
+  const [discoveryMode, setDiscoveryMode] =
+    useState<DiscoveryMode>("suggested");
   const [minCompatibility, setMinCompatibility] = useState<number>(0);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [showInterests, setShowInterests] = useState(false);
@@ -129,7 +181,7 @@ export default function Discover() {
   const [boostTimeLeft, setBoostTimeLeft] = useState(0);
   const [boostMultiplier, setBoostMultiplier] = useState(1);
   const [showBoostModal, setShowBoostModal] = useState(false);
-  const [boostCareMessage, setBoostCareMessage] = useState('');
+  const [boostCareMessage, setBoostCareMessage] = useState("");
 
   const [isCurious, setIsCurious] = useState(false); // Curiosity Mode State
   const [showCuriositySelector, setShowCuriositySelector] = useState(false);
@@ -144,9 +196,11 @@ export default function Discover() {
 
   // Interaction State
   const [showInteractionSettings, setShowInteractionSettings] = useState(false);
-  const [interactionMode, setInteractionMode] = useState<InteractionMode>('buttons'); // Default per blueprint
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('stack'); // Default layout
-  const [selectedProfileDetail, setSelectedProfileDetail] = useState<Profile | null>(null);
+  const [interactionMode, setInteractionMode] =
+    useState<InteractionMode>("buttons"); // Default per blueprint
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("stack"); // Default layout
+  const [selectedProfileDetail, setSelectedProfileDetail] =
+    useState<Profile | null>(null);
   const [showCompatibility, setShowCompatibility] = useState(false); // Mobile toggle for panels
   const [showCareNarrative, setShowCareNarrative] = useState(false); // Mobile toggle for CARE
 
@@ -154,25 +208,37 @@ export default function Discover() {
   const [likesSinceLastCard, setLikesSinceLastCard] = useState(0);
   const [refinementSuggestion, setRefinementSuggestion] = useState<any>(null);
   const [options, setOptions] = useState<any>({});
-  const [recentlyShownSections, setRecentlyShownSections] = useState<string[]>([]);
+  const [recentlyShownSections, setRecentlyShownSections] = useState<string[]>(
+    [],
+  );
 
   // Load preferences from localStorage on mount
   useEffect(() => {
-    const savedInteraction = localStorage.getItem('interactionMode');
-    const savedLayout = localStorage.getItem('layoutMode');
-    if (savedInteraction) setInteractionMode(savedInteraction as InteractionMode);
+    const savedInteraction = localStorage.getItem("interactionMode");
+    const savedLayout = localStorage.getItem("layoutMode");
+    if (savedInteraction)
+      setInteractionMode(savedInteraction as InteractionMode);
     if (savedLayout) setLayoutMode(savedLayout as LayoutMode);
   }, []);
 
   const isFilterActive = useMemo(() => {
-    return ageRange[0] !== 18 ||
+    return (
+      ageRange[0] !== 18 ||
       ageRange[1] !== 50 ||
       distance !== 50 ||
       searchStates.length > 0 ||
       searchCountries.length > 0 ||
       onlineOnly ||
-      minCompatibility > 0;
-  }, [ageRange, distance, searchStates, searchCountries, onlineOnly, minCompatibility]);
+      minCompatibility > 0
+    );
+  }, [
+    ageRange,
+    distance,
+    searchStates,
+    searchCountries,
+    onlineOnly,
+    minCompatibility,
+  ]);
 
   // Auto-collapse logic when cards are present
   useEffect(() => {
@@ -186,13 +252,16 @@ export default function Discover() {
     setViewStartTime(Date.now());
   }, [queue[0]?.user_id]);
 
-  const userPlan = myProfile?.subscription_tier || 'free';
-  const isPremium = ['premium', 'vip'].includes(userPlan);
-  const isVIP = userPlan === 'vip';
+  const userPlan = myProfile?.subscription_tier || "free";
+  const isPremium = ["premium", "vip"].includes(userPlan);
+  const isVIP = userPlan === "vip";
 
   const profileCompletion = useMemo(
-    () => myProfile ? calculateCompletionPercentage(calculateProfileScore(myProfile)) : 0,
-    [myProfile]
+    () =>
+      myProfile
+        ? calculateCompletionPercentage(calculateProfileScore(myProfile))
+        : 0,
+    [myProfile],
   );
 
   // More Mode State
@@ -200,16 +269,16 @@ export default function Discover() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/auth/login');
+      router.push("/auth/login");
       return;
     }
     // Only fetch queue automatically if NOT in 'more' mode OR if a category is selected in 'more' mode
-    const queuePromise = (discoveryMode !== 'more' || selectedMoreCategory)
-      ? fetchQueue()
-      : Promise.resolve();
+    const queuePromise =
+      discoveryMode !== "more" || selectedMoreCategory
+        ? fetchQueue()
+        : Promise.resolve();
     Promise.all([queuePromise, fetchMyProfile(), fetchBoostStatus()]);
   }, [isAuthenticated, router, discoveryMode, selectedMoreCategory]);
-
 
   const fetchBoostStatus = async () => {
     try {
@@ -219,13 +288,13 @@ export default function Discover() {
       setBoostTimeLeft(status.time_left_seconds);
       setBoostMultiplier(status.multiplier || 1);
     } catch (err) {
-      console.error('Failed to fetch boost status', err);
+      console.error("Failed to fetch boost status", err);
     }
   };
 
   const fetchMyProfile = async () => {
     try {
-      const res = await apiClient.get('/profiles/me');
+      const res = await apiClient.get("/profiles/me");
       setMyProfile(res.data);
       if (res.data.distance_preference_km) {
         setDistance(res.data.distance_preference_km);
@@ -247,11 +316,11 @@ export default function Discover() {
       }
 
       // Fetch metadata options
-      const lang = i18n.language || 'es';
+      const lang = i18n.language || "es";
       const optionsRes = await apiClient.get(`/options?lang=${lang}`);
       setOptions(optionsRes.data);
     } catch (err) {
-      console.error('Failed to fetch my profile', err);
+      console.error("Failed to fetch my profile", err);
     }
   };
 
@@ -264,7 +333,7 @@ export default function Discover() {
   // Single source of truth for /discovery/queue query params (used by fetchQueue and handleSwipe refill)
   const buildQueueParams = () => {
     const params: any = {
-      mode: discoveryMode
+      mode: discoveryMode,
     };
     if (ageRange[0] !== 18 || ageRange[1] !== 50) {
       params.age_min = ageRange[0];
@@ -282,7 +351,7 @@ export default function Discover() {
     }
     // Compatibility Logic
     if (minCompatibility > 0) {
-      if (discoveryMode === 'opposites') {
+      if (discoveryMode === "opposites") {
         // For opposites, user wants "Low Similarity" (<70%)
         // We use minCompatibility state variable to track "is compatibility filter active",
         // but here we invert it for the API query
@@ -293,16 +362,18 @@ export default function Discover() {
     }
 
     // MORE MODE LOGIC
-    if (discoveryMode === 'more' && selectedMoreCategory) {
-      if (selectedMoreCategory.type === 'relationship') {
+    if (discoveryMode === "more" && selectedMoreCategory) {
+      if (selectedMoreCategory.type === "relationship") {
         params.intention = selectedMoreCategory.id;
-      } else if (selectedMoreCategory.type === 'interest') {
+      } else if (selectedMoreCategory.type === "interest") {
         params.interest = selectedMoreCategory.id;
-      } else if (selectedMoreCategory.type === 'status') {
+      } else if (selectedMoreCategory.type === "status") {
         // Map status IDs to specific params
-        if (selectedMoreCategory.id === 'verified') params.is_verified = true;
-        else if (selectedMoreCategory.id === 'wants_kids') params.family_plans = 'wants_children';
-        else if (selectedMoreCategory.id === 'no_kids') params.family_plans = 'does_not_want_children';
+        if (selectedMoreCategory.id === "verified") params.is_verified = true;
+        else if (selectedMoreCategory.id === "wants_kids")
+          params.family_plans = "wants_children";
+        else if (selectedMoreCategory.id === "no_kids")
+          params.family_plans = "does_not_want_children";
       }
     }
     return params;
@@ -319,29 +390,30 @@ export default function Discover() {
       setLoading(true);
       const params: any = {
         limit: 10,
-        ...buildQueueParams()
+        ...buildQueueParams(),
       };
 
-
-      const response = await apiClient.get('/discovery/queue', { params });
+      const response = await apiClient.get("/discovery/queue", { params });
 
       // A newer fetch superseded this one — let it own the queue state
       if (seq !== fetchSeqRef.current) return;
 
       // Filter out profiles already shown in this session
       const newProfiles = response.data.filter(
-        (p: Profile) => !shownProfileIds.has(p.user_id)
+        (p: Profile) => !shownProfileIds.has(p.user_id),
       );
 
       // Update shown profiles set
-      setShownProfileIds(prev => {
+      setShownProfileIds((prev) => {
         const updated = new Set(prev);
         newProfiles.forEach((p: Profile) => updated.add(p.user_id));
         return updated;
       });
 
       if (newProfiles.length === 0 && myProfile) {
-        const completion = calculateCompletionPercentage(calculateProfileScore(myProfile));
+        const completion = calculateCompletionPercentage(
+          calculateProfileScore(myProfile),
+        );
         if (completion < 100) {
           const suggestions = getProfileSuggestions(myProfile);
           if (suggestions.length > 0) {
@@ -349,7 +421,7 @@ export default function Discover() {
               user_id: `refinement-empty-${Date.now()}`,
               isRefinement: true,
               suggestion: suggestions[0],
-              currentCompletion: completion
+              currentCompletion: completion,
             };
             setQueue([refinementItem as any]);
             setLoading(false);
@@ -360,7 +432,7 @@ export default function Discover() {
 
       setQueue(newProfiles);
     } catch (err) {
-      setError(t('errors.loadFailed'));
+      setError(t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -373,11 +445,14 @@ export default function Discover() {
       setIsCurious(false);
       setCuriosityGenders([]);
       try {
-        await apiClient.put('/profiles/me', {
+        await apiClient.put("/profiles/me", {
           feeling_curious: false,
-          curiosity_genders: []
+          curiosity_genders: [],
         });
-        enqueueSnackbar("Modo Curioso desactivado.", { variant: 'info', autoHideDuration: 2000 });
+        enqueueSnackbar("Modo Curioso desactivado.", {
+          variant: "info",
+          autoHideDuration: 2000,
+        });
       } catch (err) {
         console.error("Failed to save curiosity state", err);
       }
@@ -395,32 +470,38 @@ export default function Discover() {
       };
 
       // Determine current access level
-      const currentAccessLevel = isVIP ? 'vip' : isPremium ? 'premium' : 'free';
+      const currentAccessLevel = isVIP ? "vip" : isPremium ? "premium" : "free";
 
       // If we have an active locationScope (e.g. from continent selection)
-      if (locationScope?.mode === 'continent') {
+      if (locationScope?.mode === "continent") {
         payload.location_scope = {
           ...locationScope,
-          access_level: currentAccessLevel
+          access_level: currentAccessLevel,
         };
       } else {
         // Default countries mode
         payload.location_scope = {
-          mode: 'countries',
+          mode: "countries",
           selected_continent: null,
           selected_countries: searchCountries,
           excluded_countries: locationScope?.excluded_countries || [],
           limit: isVIP ? 20 : isPremium ? 10 : 0,
-          access_level: currentAccessLevel
+          access_level: currentAccessLevel,
         };
       }
 
-      await apiClient.put('/profiles/me', payload);
-      enqueueSnackbar(t('filters.syncSuccess', 'Preferencias guardadas en tu perfil.'), { variant: 'success' });
+      await apiClient.put("/profiles/me", payload);
+      enqueueSnackbar(
+        t("filters.syncSuccess", "Preferencias guardadas en tu perfil."),
+        { variant: "success" },
+      );
       setShowFilters(false);
     } catch (err) {
-      console.error('Failed to sync preferences', err);
-      enqueueSnackbar(t('errors.updateFailed', 'Error al sincronizar preferencias'), { variant: 'error' });
+      console.error("Failed to sync preferences", err);
+      enqueueSnackbar(
+        t("errors.updateFailed", "Error al sincronizar preferencias"),
+        { variant: "error" },
+      );
     } finally {
       setIsUpdatingProfile(false);
     }
@@ -433,22 +514,28 @@ export default function Discover() {
     // Sync with profile
     try {
       setIsUpdatingProfile(true);
-      await apiClient.put('/profiles/distancia', {
+      await apiClient.put("/profiles/distancia", {
         distance_km: distance,
         search_states: searchStates,
-        search_countries: searchCountries
+        search_countries: searchCountries,
       });
-      enqueueSnackbar(t('filters.distance.syncMessage', 'Este ajuste también se guardará en tu perfil.'), { variant: 'info', autoHideDuration: 2000 });
+      enqueueSnackbar(
+        t(
+          "filters.distance.syncMessage",
+          "Este ajuste también se guardará en tu perfil.",
+        ),
+        { variant: "info", autoHideDuration: 2000 },
+      );
     } catch (err) {
-      console.error('Failed to sync distance preference', err);
+      console.error("Failed to sync distance preference", err);
     } finally {
       setIsUpdatingProfile(false);
     }
   };
 
   const handleSwipe = async (
-    interaction: 'like' | 'pass' | 'superlike',
-    explicitProfile?: Profile
+    interaction: "like" | "pass" | "superlike",
+    explicitProfile?: Profile,
   ) => {
     const targetProfile = explicitProfile ?? queue[0];
     if (!targetProfile) return;
@@ -456,25 +543,27 @@ export default function Discover() {
     // Check if it's a refinement card
     if ((targetProfile as any).isRefinement) {
       // Refinement cards don't use standard swipe API
-      setQueue(prev => prev.filter(p => p.user_id !== targetProfile.user_id));
+      setQueue((prev) =>
+        prev.filter((p) => p.user_id !== targetProfile.user_id),
+      );
       return;
     }
 
     const dwellTime = Date.now() - viewStartTime; // CARE: Calculate dwell time
 
     // Optimistic update
-    setHistory(prev => [targetProfile, ...prev].slice(0, 10)); // Keep last 10
-    setQueue((prev) => prev.filter(p => p.user_id !== targetProfile.user_id));
+    setHistory((prev) => [targetProfile, ...prev].slice(0, 10)); // Keep last 10
+    setQueue((prev) => prev.filter((p) => p.user_id !== targetProfile.user_id));
 
-    if (interaction === 'like') {
-      setLikesSinceLastCard(prev => prev + 1);
+    if (interaction === "like") {
+      setLikesSinceLastCard((prev) => prev + 1);
     }
 
     try {
-      const response = await apiClient.post('/discovery/swipe', {
+      const response = await apiClient.post("/discovery/swipe", {
         target_user_id: targetProfile.user_id,
         interaction,
-        dwell_time_ms: dwellTime // CARE: Send dwell time
+        dwell_time_ms: dwellTime, // CARE: Send dwell time
       });
 
       if (response.data.is_match) {
@@ -483,20 +572,24 @@ export default function Discover() {
         setTimeout(() => setMatchAnimation(false), 3000);
       }
     } catch (err) {
-      console.error('Swipe failed', err);
+      console.error("Swipe failed", err);
       // Revert optimistic update if needed (complex in practice)
     }
 
     // Fetch more if queue is low
     if (queue.length < 3) {
-      const response = await apiClient.get('/discovery/queue', { params: buildQueueParams() });
+      const response = await apiClient.get("/discovery/queue", {
+        params: buildQueueParams(),
+      });
       // Append new profiles avoiding duplicates (check against all shown profiles)
       const newProfiles = response.data.filter(
-        (p: Profile) => !shownProfileIds.has(p.user_id) && !queue.find((q) => q.user_id === p.user_id)
+        (p: Profile) =>
+          !shownProfileIds.has(p.user_id) &&
+          !queue.find((q) => q.user_id === p.user_id),
       );
 
       // Update shown profiles set
-      setShownProfileIds(prev => {
+      setShownProfileIds((prev) => {
         const updated = new Set(prev);
         newProfiles.forEach((p: Profile) => updated.add(p.user_id));
         return updated;
@@ -509,35 +602,45 @@ export default function Discover() {
   const handleUndo = () => {
     if (history.length === 0) return;
     const previousProfile = history[0];
-    setQueue(prev => [previousProfile, ...prev]);
-    setHistory(prev => prev.slice(1));
-    enqueueSnackbar(t('undo.message', 'Regresaste al perfil anterior'), { variant: 'info', autoHideDuration: 1500 });
+    setQueue((prev) => [previousProfile, ...prev]);
+    setHistory((prev) => prev.slice(1));
+    enqueueSnackbar(t("undo.message", "Regresaste al perfil anterior"), {
+      variant: "info",
+      autoHideDuration: 1500,
+    });
   };
 
   const handleVIPMessage = (profile: Profile) => {
     if (!isPremium) {
-      router.push('/premium');
+      router.push("/premium");
       return;
     }
     // Logic for VIP Message modal would go here
-    enqueueSnackbar(t('vipMessage.comingSoon', 'Mensaje VIP: Próximamente'), { variant: 'info' });
+    enqueueSnackbar(t("vipMessage.comingSoon", "Mensaje VIP: Próximamente"), {
+      variant: "info",
+    });
   };
 
   const handleAddInterest = async (interest: string) => {
     try {
-      const currentInterests = myProfile?.lifestyle_interests || myProfile?.interests || [];
+      const currentInterests =
+        myProfile?.lifestyle_interests || myProfile?.interests || [];
       const updatedInterests = [...currentInterests, interest];
 
-      const res = await apiClient.put('/profiles/me', {
-        lifestyle_interests: updatedInterests
+      const res = await apiClient.put("/profiles/me", {
+        lifestyle_interests: updatedInterests,
       });
 
       setMyProfile(res.data);
-      enqueueSnackbar(t('emptyState.interestAdded', 'Interés añadido'), { variant: 'success' });
+      enqueueSnackbar(t("emptyState.interestAdded", "Interés añadido"), {
+        variant: "success",
+      });
       fetchQueue();
     } catch (err) {
-      console.error('Failed to add interest', err);
-      enqueueSnackbar(t('errors.updateFailed', 'Error al actualizar perfil'), { variant: 'error' });
+      console.error("Failed to add interest", err);
+      enqueueSnackbar(t("errors.updateFailed", "Error al actualizar perfil"), {
+        variant: "error",
+      });
     }
   };
 
@@ -545,7 +648,7 @@ export default function Discover() {
     setAgeRange([18, 99]);
     setDistance(100);
     setOnlineOnly(false);
-    setDiscoveryMode('free');
+    setDiscoveryMode("free");
     setCuriosityGenders([]); // Reset curiosity genders on full expand
 
     // Small timeout to ensure state update is reflected in the next fetch if it relies on local state
@@ -555,9 +658,12 @@ export default function Discover() {
     }, 100);
   };
 
-  const handleProfileAction = (profileId: string, action: 'like' | 'pass' | 'superlike') => {
+  const handleProfileAction = (
+    profileId: string,
+    action: "like" | "pass" | "superlike",
+  ) => {
     // Find profile in queue
-    const profile = queue.find(p => p.user_id === profileId);
+    const profile = queue.find((p) => p.user_id === profileId);
     if (!profile) return;
 
     // Perform action on the CLICKED profile (handleSwipe removes it from the
@@ -567,7 +673,7 @@ export default function Discover() {
 
   const handleToggleBoost = async () => {
     if (!isPremium) {
-      router.push('/suscripcion');
+      router.push("/suscripcion");
       return;
     }
 
@@ -582,11 +688,20 @@ export default function Discover() {
         setBoostTimeLeft(1800); // 30 minutes
         setBoostActive(true);
         setBoostMultiplier(res.multiplier || 1);
-        enqueueSnackbar(res.care_message || t('boost.activated', '¡Boost activado! Tu perfil brillará durante 30 minutos'), { variant: 'success' });
+        enqueueSnackbar(
+          res.care_message ||
+            t(
+              "boost.activated",
+              "¡Boost activado! Tu perfil brillará durante 30 minutos",
+            ),
+          { variant: "success" },
+        );
       }
     } catch (err) {
-      console.error('Failed to activate boost', err);
-      enqueueSnackbar(t('errors.boostFailed', 'Error al activar Boost'), { variant: 'error' });
+      console.error("Failed to activate boost", err);
+      enqueueSnackbar(t("errors.boostFailed", "Error al activar Boost"), {
+        variant: "error",
+      });
     }
   };
 
@@ -595,7 +710,7 @@ export default function Discover() {
     let timer: NodeJS.Timeout;
     if (boostActive && boostTimeLeft > 0) {
       timer = setInterval(() => {
-        setBoostTimeLeft(prev => {
+        setBoostTimeLeft((prev) => {
           if (prev <= 1) {
             setBoostActive(false);
             return 0;
@@ -613,19 +728,22 @@ export default function Discover() {
   useEffect(() => {
     if (!myProfile) return;
 
-    const completion = calculateCompletionPercentage(calculateProfileScore(myProfile));
+    const completion = calculateCompletionPercentage(
+      calculateProfileScore(myProfile),
+    );
     if (completion >= 100) return;
 
-    const threshold = completion < 50 ? 5 : (5 + Math.floor(Math.random() * 3)); // 5 or random 5-7
+    const threshold = completion < 50 ? 5 : 5 + Math.floor(Math.random() * 3); // 5 or random 5-7
 
     if (likesSinceLastCard >= threshold) {
-      import('../../utils/profileScoring').then(({ getProfileSuggestions }) => {
+      import("../../utils/profileScoring").then(({ getProfileSuggestions }) => {
         const suggestions = getProfileSuggestions(myProfile);
         // Filter out recently shown sections to ensure variety
         const filteredSuggestions = suggestions.filter(
-          s => !recentlyShownSections.includes(s.sectionId)
+          (s) => !recentlyShownSections.includes(s.sectionId),
         );
-        const availableSuggestions = filteredSuggestions.length > 0 ? filteredSuggestions : suggestions;
+        const availableSuggestions =
+          filteredSuggestions.length > 0 ? filteredSuggestions : suggestions;
 
         if (availableSuggestions.length > 0) {
           const suggestion = availableSuggestions[0];
@@ -633,11 +751,11 @@ export default function Discover() {
             user_id: `refinement-${Date.now()}`,
             isRefinement: true,
             suggestion,
-            currentCompletion: completion
+            currentCompletion: completion,
           };
 
           // Inject at next position in queue (or current if empty, but here we usually have a queue)
-          setQueue(prev => {
+          setQueue((prev) => {
             const newQueue = [...prev];
             // Insert at index 1 (right after the current profile)
             newQueue.splice(1, 0, refinementItem as any);
@@ -646,7 +764,7 @@ export default function Discover() {
           setLikesSinceLastCard(0);
 
           // Track this section as recently shown (keep last 3)
-          setRecentlyShownSections(prev => {
+          setRecentlyShownSections((prev) => {
             const updated = [suggestion.sectionId, ...prev];
             return updated.slice(0, 3); // Keep only last 3 sections
           });
@@ -657,32 +775,41 @@ export default function Discover() {
 
   const handleRefinementSave = async (field: string, value: any) => {
     try {
-      const payload = field === 'MULTIPLE' ? value : { [field]: value };
-      const res = await apiClient.put('/profiles/me', payload);
+      const payload = field === "MULTIPLE" ? value : { [field]: value };
+      const res = await apiClient.put("/profiles/me", payload);
       setMyProfile(res.data);
-      enqueueSnackbar(t('refinement.saved', '¡Perfil actualizado! Estás más cerca de tu mejor versión ✨'), { variant: 'success' });
+      enqueueSnackbar(
+        t(
+          "refinement.saved",
+          "¡Perfil actualizado! Estás más cerca de tu mejor versión ✨",
+        ),
+        { variant: "success" },
+      );
 
       // Auto-remove the refinement card from queue to continue exploration
-      setQueue(prev => prev.slice(1));
+      setQueue((prev) => prev.slice(1));
 
       // Refresh profile to get updated suggestions
       fetchMyProfile();
     } catch (err) {
-      console.error('Failed to save refinement', err);
-      enqueueSnackbar(t('errors.updateFailed'), { variant: 'error' });
+      console.error("Failed to save refinement", err);
+      enqueueSnackbar(t("errors.updateFailed"), { variant: "error" });
     }
   };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleSetTimeOut = (hours: number) => {
     // Logic: Setting a timeout drains the battery to 0 or low
     setBatteryLevel(0);
-    enqueueSnackbar(`Modo Cueva activado por ${hours} horas 🦴. Nos vemos luego.`, { variant: 'warning', autoHideDuration: 4000 });
+    enqueueSnackbar(
+      `Modo Cueva activado por ${hours} horas 🦴. Nos vemos luego.`,
+      { variant: "warning", autoHideDuration: 4000 },
+    );
     // Here we would sync with backend
   };
 
@@ -690,10 +817,13 @@ export default function Discover() {
   useEffect(() => {
     const fetchRegionData = async () => {
       const newRegions: any[] = [];
-      const types: ('state' | 'country')[] = ['state', 'country'];
+      const types: ("state" | "country")[] = ["state", "country"];
 
       // 1. Check if we are in Continent Mode (VIP)
-      if (locationScope?.mode === 'continent' && locationScope.selected_continent) {
+      if (
+        locationScope?.mode === "continent" &&
+        locationScope.selected_continent
+      ) {
         const continent = locationScope.selected_continent;
         const cacheKey = `continent:${continent}`;
 
@@ -701,40 +831,51 @@ export default function Discover() {
           if (regionCache.current.has(cacheKey)) {
             newRegions.push(regionCache.current.get(cacheKey));
           } else {
-            const resp = await apiClient.get(`/profiles/continents/${continent}/geojson`);
+            const resp = await apiClient.get(
+              `/profiles/continents/${continent}/geojson`,
+            );
             if (resp.data) {
               const region = {
                 id: `continent-${continent}`,
                 label: continent,
-                type: 'country',
+                type: "country",
                 geojson: resp.data,
-                isAllSelection: true // This triggers weight: 4 in LocationMap
+                isAllSelection: true, // This triggers weight: 4 in LocationMap
               };
               regionCache.current.set(cacheKey, region);
               newRegions.push(region);
             }
           }
         } catch (err) {
-          console.error(`Failed to fetch continent GeoJSON for ${continent}`, err);
+          console.error(
+            `Failed to fetch continent GeoJSON for ${continent}`,
+            err,
+          );
         }
       }
 
       // 2. Fetch individual regions (if not in continent mode or for states)
       for (const type of types) {
         // Skip countries if already showing continent
-        if (type === 'country' && locationScope?.mode === 'continent') continue;
+        if (type === "country" && locationScope?.mode === "continent") continue;
 
-        const items = type === 'state' ? searchStates : searchCountries;
-        const missing = items.filter(name => !regionCache.current.has(`${type}:${name}`) && !name.startsWith('Todos'));
+        const items = type === "state" ? searchStates : searchCountries;
+        const missing = items.filter(
+          (name) =>
+            !regionCache.current.has(`${type}:${name}`) &&
+            !name.startsWith("Todos"),
+        );
 
         if (missing.length > 0) {
           try {
             const params = new URLSearchParams();
-            missing.forEach(m => params.append('q', m));
-            params.append('place_type', type);
-            params.append('include_geojson', 'true');
+            missing.forEach((m) => params.append("q", m));
+            params.append("place_type", type);
+            params.append("include_geojson", "true");
 
-            const resp = await apiClient.get(`/profiles/places/bulk-search?${params.toString()}`);
+            const resp = await apiClient.get(
+              `/profiles/places/bulk-search?${params.toString()}`,
+            );
             resp.data.forEach((item: any) => {
               if (item.geojson) {
                 const region = {
@@ -742,9 +883,12 @@ export default function Discover() {
                   label: item.label,
                   type,
                   geojson: item.geojson,
-                  isAllSelection: false
+                  isAllSelection: false,
                 };
-                regionCache.current.set(`${type}:${item.query || item.label}`, region);
+                regionCache.current.set(
+                  `${type}:${item.query || item.label}`,
+                  region,
+                );
               }
             });
           } catch (err) {
@@ -752,8 +896,8 @@ export default function Discover() {
           }
         }
 
-        items.forEach(name => {
-          if (!name.startsWith('Todos')) {
+        items.forEach((name) => {
+          if (!name.startsWith("Todos")) {
             const cached = regionCache.current.get(`${type}:${name}`);
             if (cached) newRegions.push(cached);
           }
@@ -762,13 +906,16 @@ export default function Discover() {
       setRegions(newRegions);
     };
 
-    if (searchCountries.length > 0 || searchStates.length > 0 || locationScope?.mode === 'continent') {
+    if (
+      searchCountries.length > 0 ||
+      searchStates.length > 0 ||
+      locationScope?.mode === "continent"
+    ) {
       fetchRegionData();
     } else {
       setRegions([]);
     }
   }, [searchCountries, searchStates, locationScope]);
-
 
   if (loading && queue.length === 0) {
     return (
@@ -779,18 +926,24 @@ export default function Discover() {
   }
 
   // Confirmed Partner Lock
-  const isLinked = myProfile?.partner_id && (myProfile.relationship_status === 'in_relationship' || myProfile.relationship_status === 'married');
+  const isLinked =
+    myProfile?.partner_id &&
+    (myProfile.relationship_status === "in_relationship" ||
+      myProfile.relationship_status === "married");
 
   if (isLinked) {
     return (
       <Layout>
-        <Container maxWidth="sm" sx={{ mt: 10, textAlign: 'center' }}>
-          <FavoriteIcon sx={{ fontSize: 80, color: 'gold', mb: 2 }} />
+        <Container maxWidth="sm" sx={{ mt: 10, textAlign: "center" }}>
+          <FavoriteIcon sx={{ fontSize: 80, color: "gold", mb: 2 }} />
           <Typography variant="h4" gutterBottom fontWeight="bold">
-            {t('discoverLocked.title', 'Vínculo Confirmado')}
+            {t("discoverLocked.title", "Vínculo Confirmado")}
           </Typography>
           <Typography variant="body1" paragraph color="text.secondary">
-            {t('discoverLocked.message', 'Tu vínculo está confirmado. Discover se ha desactivado para respetar tu relación. Golth sigue disponible para explorar afinidades compartidas.')}
+            {t(
+              "discoverLocked.message",
+              "Tu vínculo está confirmado. Discover se ha desactivado para respetar tu relación. Golth sigue disponible para explorar afinidades compartidas.",
+            )}
           </Typography>
           <Button variant="contained" color="secondary" href="/golth">
             Ir a Golth
@@ -808,20 +961,21 @@ export default function Discover() {
           pt: { xs: 0, sm: 3 },
           pb: { xs: 0, sm: 3 },
           px: { xs: 0, sm: 2 },
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          position: 'relative',
-          width: '100%',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          position: "relative",
+          width: "100%",
           maxWidth: { xs: 900, md: 1200 }, // Increased for desktop to allow side space
-          mx: 'auto',
-          boxSizing: 'border-box',
+          mx: "auto",
+          boxSizing: "border-box",
           // overflowX: 'hidden' // Removed to avoid clipping floating buttons
-        }}>
+        }}
+      >
         {/* Mobile Toolbar — xs only, tablet/desktop use unified header */}
-        <Box sx={{ display: { xs: 'block', sm: 'none' }, width: '100%' }}>
+        <Box sx={{ display: { xs: "block", sm: "none" }, width: "100%" }}>
           <DiscoverToolbar
-            title={t('title', 'Discover')}
+            title={t("title", "Discover")}
             isFilterActive={isFilterActive}
             setShowFilters={setShowFilters}
             setShowInteractionSettings={setShowInteractionSettings}
@@ -830,7 +984,7 @@ export default function Discover() {
             boostActive={boostActive}
             onActivateBoost={handleToggleBoost}
             boostTimeLeft={boostTimeLeft}
-            tier={isVIP ? 'vip' : isPremium ? 'premium' : 'free'}
+            tier={isVIP ? "vip" : isPremium ? "premium" : "free"}
             multiplier={boostMultiplier}
             currentMode={discoveryMode}
             onModeChange={(mode) => {
@@ -846,85 +1000,133 @@ export default function Discover() {
         <Box
           className="discover-container discover-tabs"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            width: '100%',
+            display: { xs: "none", sm: "block" },
+            width: "100%",
             maxWidth: 1120,
-            mx: 'auto',
+            mx: "auto",
             mb: 0,
-            position: 'relative',
+            position: "relative",
             zIndex: 100,
-            bgcolor: '#1a1a1a',
-            borderRadius: '12px 12px 0 0',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderBottom: 'none',
+            bgcolor: "#1a1a1a",
+            borderRadius: "12px 12px 0 0",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderBottom: "none",
             p: { sm: 2 },
             pt: { sm: 1.5 },
-            boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
-            '@media (min-width:768px) and (max-width:1024px)': {
-              p: '1rem',
-              pt: '0.75rem',
-              pb: '0.75rem',
-              mb: '0.5rem',
+            boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+            "@media (min-width:768px) and (max-width:1024px)": {
+              p: "1rem",
+              pt: "0.75rem",
+              pb: "0.75rem",
+              mb: "0.5rem",
             },
           }}
         >
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              bgcolor: 'transparent',
-              border: 'none',
+              display: "flex",
+              flexDirection: isCompactLandscape ? "row" : "column",
+              alignItems: isCompactLandscape ? "center" : "stretch",
+              bgcolor: "transparent",
+              border: "none",
               p: 0,
-              width: '100%',
-              boxShadow: 'none',
-              gap: 0.25,
+              width: "100%",
+              boxShadow: "none",
+              gap: isCompactLandscape ? 1.5 : 0.25,
             }}
           >
             {/* TOP ROW: Tools - Title - Status */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: isCompactLandscape ? "auto" : "100%",
+                flexShrink: 0,
+              }}
+            >
               {/* LEFT: Tools */}
-              <Box sx={{ display: 'flex', gap: 1.5, width: '140px' }}>
-                <Tooltip title={t('interaction.title', 'Configuración de interacción')} arrow>
-                  <IconButton onClick={() => setShowInteractionSettings(true)} size="small" sx={{ color: 'rgba(255,255,255,0.8)', p: 0.5 }}>
+              <Box sx={{ display: "flex", gap: 1.5, width: "140px" }}>
+                <Tooltip
+                  title={t("interaction.title", "Configuración de interacción")}
+                  arrow
+                >
+                  <IconButton
+                    onClick={() => setShowInteractionSettings(true)}
+                    size="small"
+                    sx={{ color: "rgba(255,255,255,0.8)", p: 0.5 }}
+                  >
                     <SettingsIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title={t('filters.title', 'Ajustar Búsqueda')} arrow>
-                  <IconButton onClick={() => setShowFilters(true)} size="small" sx={{ color: isFilterActive ? '#69F0AE' : 'rgba(255,255,255,0.8)', p: 0.5 }}>
+                <Tooltip title={t("filters.title", "Ajustar Búsqueda")} arrow>
+                  <IconButton
+                    onClick={() => setShowFilters(true)}
+                    size="small"
+                    sx={{
+                      color: isFilterActive
+                        ? "#69F0AE"
+                        : "rgba(255,255,255,0.8)",
+                      p: 0.5,
+                    }}
+                  >
                     <FilterIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
               </Box>
 
               {/* CENTER: Title */}
-              <Typography variant="overline" sx={{ letterSpacing: 5, fontWeight: 900, color: 'white', fontSize: '14px', textAlign: 'center', opacity: 0.9 }}>
-                {t('title', 'Descubrir').toUpperCase()}
+              <Typography
+                variant="overline"
+                sx={{
+                  letterSpacing: 5,
+                  fontWeight: 900,
+                  color: "white",
+                  fontSize: "14px",
+                  textAlign: "center",
+                  opacity: 0.9,
+                  display: isCompactLandscape ? "none" : "block",
+                }}
+              >
+                {t("title", "Descubrir").toUpperCase()}
               </Typography>
 
               {/* RIGHT: Boost & Battery */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '140px', justifyContent: 'flex-end' }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  width: "140px",
+                  justifyContent: "flex-end",
+                }}
+              >
                 <Button
                   variant="contained"
                   size="small"
                   onClick={handleToggleBoost}
-                  startIcon={<BoltIcon sx={{ fontSize: '1rem !important' }} />}
+                  startIcon={<BoltIcon sx={{ fontSize: "1rem !important" }} />}
                   sx={{
-                    borderRadius: '20px',
-                    bgcolor: 'rgba(255,255,255,0.08)',
-                    color: boostActive ? '#FFD700' : 'rgba(255,255,255,0.6)',
-                    textTransform: 'uppercase',
+                    borderRadius: "20px",
+                    bgcolor: "rgba(255,255,255,0.08)",
+                    color: boostActive ? "#FFD700" : "rgba(255,255,255,0.6)",
+                    textTransform: "uppercase",
                     fontWeight: 800,
-                    fontSize: '0.65rem',
+                    fontSize: "0.65rem",
                     letterSpacing: 1,
-                    minWidth: 'auto',
+                    minWidth: "auto",
                     px: 1.5,
                     py: 0.4,
-                    boxShadow: 'none',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.12)', boxShadow: 'none' }
+                    boxShadow: "none",
+                    "&:hover": {
+                      bgcolor: "rgba(255,255,255,0.12)",
+                      boxShadow: "none",
+                    },
                   }}
                 >
-                  {boostActive ? `X${boostMultiplier} ${formatTime(boostTimeLeft)}` : t('boost.label', 'BOOST')}
+                  {boostActive
+                    ? `X${boostMultiplier} ${formatTime(boostTimeLeft)}`
+                    : t("boost.label", "BOOST")}
                 </Button>
                 <SocialBatteryWidget
                   batteryLevel={batteryLevel}
@@ -935,13 +1137,20 @@ export default function Discover() {
             </Box>
 
             {/* BOTTOM ROW: Modes */}
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                flex: isCompactLandscape ? "1 1 auto" : undefined,
+                minWidth: isCompactLandscape ? 0 : undefined,
+              }}
+            >
               <DiscoveryModeSelector
                 currentMode={discoveryMode}
                 onModeChange={(mode) => {
                   setDiscoveryMode(mode);
                   setSelectedMoreCategory(null); // Reset sub-category on mode switch
-                  if (mode !== 'more') fetchQueue(); // Fetch immediately for other modes
+                  if (mode !== "more") fetchQueue(); // Fetch immediately for other modes
                 }}
                 isCurious={isCurious}
                 onCuriousChange={handleCuriosityChange}
@@ -949,1206 +1158,1616 @@ export default function Discover() {
             </Box>
           </Box>
         </Box>
-
       </Box>
 
       {/* MORE MODE: Selection Grid */}
-      {
-        discoveryMode === 'more' && !selectedMoreCategory ? (
-          <Box sx={{ mt: 1, mb: 10 }}>
-            <MoreModeSelection onSelectCategory={(cat: any) => setSelectedMoreCategory(cat)} />
-          </Box>
-        ) : null
-      }
+      {discoveryMode === "more" && !selectedMoreCategory ? (
+        <Box sx={{ mt: 1, mb: 10 }}>
+          <MoreModeSelection
+            onSelectCategory={(cat: any) => setSelectedMoreCategory(cat)}
+          />
+        </Box>
+      ) : null}
 
       {/* Normal Discovery Flow (Queue or Empty) - Hide if in More Mode Selection */}
-      {
-        (discoveryMode !== 'more' || selectedMoreCategory) && (
-          <>
-            {/* ... Existing alerts and queue rendering ... */}
+      {(discoveryMode !== "more" || selectedMoreCategory) && (
+        <>
+          {/* ... Existing alerts and queue rendering ... */}
 
-            {/* Relationship Status Context Alert */}
-            {(() => {
-              const romanticDiscoveryWhitelist = [
-                'single',
-                'prefer_not_to_say',
-                'open_relationship',
-                'complicated',
-                'divorced',
-                'widowed'
-              ];
-              const isRomanticDiscoveryAllowed = romanticDiscoveryWhitelist.includes(myProfile?.relationship_status);
+          {/* Relationship Status Context Alert */}
+          {(() => {
+            const romanticDiscoveryWhitelist = [
+              "single",
+              "prefer_not_to_say",
+              "open_relationship",
+              "complicated",
+              "divorced",
+              "widowed",
+            ];
+            const isRomanticDiscoveryAllowed =
+              romanticDiscoveryWhitelist.includes(
+                myProfile?.relationship_status,
+              );
 
-              if (myProfile && !isRomanticDiscoveryAllowed) {
-                return (
-                  <Alert severity="info" sx={{ mb: 3, width: '100%', borderRadius: 3 }}>
-                    <strong>{t('friendshipMode.title')}</strong>: {t('friendshipMode.description')}
-                  </Alert>
-                );
-              }
-              return null;
-            })()}
+            if (myProfile && !isRomanticDiscoveryAllowed) {
+              return (
+                <Alert
+                  severity="info"
+                  sx={{ mb: 3, width: "100%", borderRadius: 3 }}
+                >
+                  <strong>{t("friendshipMode.title")}</strong>:{" "}
+                  {t("friendshipMode.description")}
+                </Alert>
+              );
+            }
+            return null;
+          })()}
 
-            {/* Completeness alert moved below for mobile or kept above for desktop if needed, 
+          {/* Completeness alert moved below for mobile or kept above for desktop if needed, 
                 but here we follow user request to avoid opaquing cards in vertical mode */}
-            {myProfile && profileCompletion < 60 && (
-              <Alert
-                severity="warning"
-                sx={{
-                  mb: 4,
-                  width: 'fit-content',
-                  maxWidth: '90%',
-                  mx: 'auto',
-                  borderRadius: '20px',
-                  bgcolor: isLight ? 'rgba(255, 152, 0, 0.08)' : 'rgba(255, 152, 0, 0.05)',
-                  color: isLight ? '#e65100' : '#ffa726',
-                  border: '1px solid',
-                  borderColor: isLight ? 'rgba(255, 152, 0, 0.3)' : 'rgba(255, 152, 0, 0.2)',
-                  px: 3,
-                  display: { xs: 'none', md: 'flex' }, // Hide on mobile (will appear below)
-                  alignItems: 'center',
-                  '& .MuiAlert-message': {
-                    width: '100%',
-                    textAlign: 'center',
-                    fontWeight: 600,
-                    fontSize: '0.875rem'
-                  },
-                  '& .MuiAlert-icon': {
-                    mr: 1,
-                    opacity: 0.9
-                  }
-                }}
-              >
-                {t('lowCompletenessAlert', 'Entre más detalles agregues a tu perfil, mejores coincidencias recibirás')}
-              </Alert>
-            )}
+          {myProfile && profileCompletion < 60 && (
+            <Alert
+              severity="warning"
+              sx={{
+                mb: 4,
+                width: "fit-content",
+                maxWidth: "90%",
+                mx: "auto",
+                borderRadius: "20px",
+                bgcolor: isLight
+                  ? "rgba(255, 152, 0, 0.08)"
+                  : "rgba(255, 152, 0, 0.05)",
+                color: isLight ? "#e65100" : "#ffa726",
+                border: "1px solid",
+                borderColor: isLight
+                  ? "rgba(255, 152, 0, 0.3)"
+                  : "rgba(255, 152, 0, 0.2)",
+                px: 3,
+                display: { xs: "none", md: "flex" }, // Hide on mobile (will appear below)
+                alignItems: "center",
+                "& .MuiAlert-message": {
+                  width: "100%",
+                  textAlign: "center",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                },
+                "& .MuiAlert-icon": {
+                  mr: 1,
+                  opacity: 0.9,
+                },
+              }}
+            >
+              {t(
+                "lowCompletenessAlert",
+                "Entre más detalles agregues a tu perfil, mejores coincidencias recibirás",
+              )}
+            </Alert>
+          )}
 
-            {error && (
-              <Box
-                sx={{
-                  position: 'fixed',
-                  top: { xs: 'auto', sm: 88 },
-                  bottom: { xs: 16, sm: 'auto' },
-                  right: { xs: 'auto', sm: 16 },
-                  left: { xs: '50%', sm: 'auto' },
-                  transform: { xs: 'translateX(-50%)', sm: 'none' },
-                  zIndex: 2000,
-                  width: { xs: 'calc(100% - 32px)', sm: 'auto' },
-                  maxWidth: 360,
-                  pointerEvents: 'none',
-                }}
-              >
-                <Fade in={!!error} timeout={250}>
-                  <Alert
-                    severity="error"
-                    onClose={() => setError('')}
-                    sx={{
-                      pointerEvents: 'auto',
-                      py: 0.6,
-                      px: 1.6,
-                      maxWidth: 360,
-                      borderRadius: { xs: '8px', sm: '12px' },
-                      fontSize: '0.875rem',
-                      fontWeight: 500,
-                      alignItems: 'center',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      bgcolor: 'error.main',
-                      color: 'white',
-                      '& .MuiAlert-icon': { color: 'white', opacity: 0.95, mr: 1 },
-                      '& .MuiAlert-action': { ml: 1, mr: -0.5, pt: 0, alignItems: 'center' },
-                      '& .MuiAlert-message': { py: 0.5, pr: 0.5 },
-                    }}
-                  >
-                    {error}
-                  </Alert>
-                </Fade>
-              </Box>
-            )}
-
-
-            {matchAnimation && (
-              <Box
-                sx={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  bgcolor: 'rgba(0,0,0,0.8)',
-                  zIndex: 9999,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  color: 'white',
-                }}
-              >
-                <Typography variant="h2" fontWeight={700} sx={{ color: '#FF6B6B', mb: 2 }}>
-                  {t('match.title')}
-                </Typography>
-                <Typography variant="h5">
-                  {t('match.description', { name: queue[0]?.display_name })}
-                </Typography>
-              </Box>
-            )}
-
-            {queue.length > 0 ? (
-              <Box
-                className="cards-container"
-                sx={{
-                  display: { xs: 'contents', sm: 'block' },
-                  width: '100%',
-                  maxWidth: 1120,
-                  mx: { xs: 0, sm: 'auto' },
-                  bgcolor: { xs: 'transparent', sm: '#1a1a1a' },
-                  border: { xs: 'none', sm: '1px solid rgba(255,255,255,0.06)' },
-                  borderTop: { sm: 'none' },
-                  borderRadius: { xs: 0, sm: '0 0 12px 12px' },
-                  p: { xs: 0, sm: 2 },
-                  pt: { xs: 0, sm: 1.5 },
-                  mt: 0,
-                  boxShadow: { xs: 'none', sm: '0 4px 16px rgba(0,0,0,0.18)' },
-                  backdropFilter: { xs: 'none', sm: 'none' },
-                  '@media (max-width:375px)': { mt: '0.2rem !important', maxHeight: '500px !important' },
-                  '@media (min-width:768px) and (max-width:1024px)': {
-                    p: '1rem',
-                    pt: '0.75rem',
-                    pb: '0.75rem',
-                    mt: 0,
-                  },
-                }}
-              >
-                <Box
+          {error && (
+            <Box
+              sx={{
+                position: "fixed",
+                top: { xs: "auto", sm: 88 },
+                bottom: { xs: 16, sm: "auto" },
+                right: { xs: "auto", sm: 16 },
+                left: { xs: "50%", sm: "auto" },
+                transform: { xs: "translateX(-50%)", sm: "none" },
+                zIndex: 2000,
+                width: { xs: "calc(100% - 32px)", sm: "auto" },
+                maxWidth: 360,
+                pointerEvents: "none",
+              }}
+            >
+              <Fade in={!!error} timeout={250}>
+                <Alert
+                  severity="error"
+                  onClose={() => setError("")}
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    width: '100%',
-                    gap: { xs: '0.8rem', md: 2, lg: 3 },
-                    position: 'relative',
-                    px: { xs: 0, md: 0 },
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    '@media (max-width:375px)': {
-                      gap: '0.8rem',
-                      pt: '0.5rem',
+                    pointerEvents: "auto",
+                    py: 0.6,
+                    px: 1.6,
+                    maxWidth: 360,
+                    borderRadius: { xs: "8px", sm: "12px" },
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    alignItems: "center",
+                    boxShadow:
+                      "0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    bgcolor: "error.main",
+                    color: "white",
+                    "& .MuiAlert-icon": {
+                      color: "white",
+                      opacity: 0.95,
+                      mr: 1,
                     },
-                    ...(showCareNarrative || showCompatibility ? {
-                      '@media (min-width:768px) and (max-width:1024px)': {
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '1rem',
-                        alignItems: 'start',
-                      },
-                    } : {}),
+                    "& .MuiAlert-action": {
+                      ml: 1,
+                      mr: -0.5,
+                      pt: 0,
+                      alignItems: "center",
+                    },
+                    "& .MuiAlert-message": { py: 0.5, pr: 0.5 },
                   }}
                 >
-                  {/* Left Sidebar: CARE Interpretation — tablet 1fr + desktop sticky */}
-                  <Box
-                    sx={{
-                      display: { xs: 'none', sm: showCareNarrative ? 'block' : 'none' },
-                      width: { xs: '320px', sm: '100%', md: '320px' },
-                      position: { sm: 'relative', md: 'sticky' },
-                      top: { md: '20px' },
-                      zIndex: 5,
-                      '@media (min-width:768px) and (max-width:1024px)': {
-                        display: showCareNarrative ? 'block' : 'none',
-                        width: '100%',
-                        maxWidth: '320px',
-                        minWidth: 0,
-                      },
-                    }}
-                  >
-                    <CareNarrativePanel
-                      profile={queue[0]}
-                      isVisible={showCareNarrative}
-                      standalone={true}
-                    />
-                  </Box>
+                  {error}
+                </Alert>
+              </Fade>
+            </Box>
+          )}
 
-                  <Box sx={{
-                    width: { xs: '100%', md: '430px' }, // Fix width on desktop to mimic mobile card
-                    maxWidth: '100%', // Never exceed the grid column (tablet 1fr 1fr)
-                    minWidth: 0,
-                    position: 'relative',
-                    flexShrink: 0,
-                    '@media (min-width:768px) and (max-width:1024px)': {
-                      width: '100%',
-                      maxWidth: '430px',
+          {matchAnimation && (
+            <Box
+              sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                bgcolor: "rgba(0,0,0,0.8)",
+                zIndex: 9999,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              <Typography
+                variant="h2"
+                fontWeight={700}
+                sx={{ color: "#FF6B6B", mb: 2 }}
+              >
+                {t("match.title")}
+              </Typography>
+              <Typography variant="h5">
+                {t("match.description", { name: queue[0]?.display_name })}
+              </Typography>
+            </Box>
+          )}
+
+          {queue.length > 0 ? (
+            <Box
+              className="cards-container"
+              sx={{
+                display: { xs: "contents", sm: "block" },
+                width: "100%",
+                maxWidth: 1120,
+                mx: { xs: 0, sm: "auto" },
+                bgcolor: { xs: "transparent", sm: "#1a1a1a" },
+                border: { xs: "none", sm: "1px solid rgba(255,255,255,0.06)" },
+                borderTop: { sm: "none" },
+                borderRadius: { xs: 0, sm: "0 0 12px 12px" },
+                p: { xs: 0, sm: 2 },
+                pt: { xs: 0, sm: 1.5 },
+                mt: 0,
+                boxShadow: { xs: "none", sm: "0 4px 16px rgba(0,0,0,0.18)" },
+                backdropFilter: { xs: "none", sm: "none" },
+                "@media (max-width:375px)": {
+                  mt: "0.2rem !important",
+                  maxHeight: "500px !important",
+                },
+                "@media (min-width:768px) and (max-width:1024px)": {
+                  p: "1rem",
+                  pt: "0.75rem",
+                  pb: "0.75rem",
+                  mt: 0,
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  width: "100%",
+                  gap: { xs: "0.8rem", md: 2, lg: 3 },
+                  position: "relative",
+                  px: { xs: 0, md: 0 },
+                  flexDirection: { xs: "column", sm: "row" },
+                  "@media (max-width:375px)": {
+                    gap: "0.8rem",
+                    pt: "0.5rem",
+                  },
+                  ...(showCareNarrative || showCompatibility
+                    ? {
+                        "@media (min-width:768px) and (max-width:1024px)": {
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "1rem",
+                          alignItems: "start",
+                        },
+                      }
+                    : {}),
+                }}
+              >
+                {/* Left Sidebar: CARE Interpretation — tablet 1fr + desktop sticky */}
+                <Box
+                  sx={{
+                    display: {
+                      xs: "none",
+                      sm: showCareNarrative ? "block" : "none",
+                    },
+                    width: { xs: "320px", sm: "100%", md: "320px" },
+                    position: { sm: "relative", md: "sticky" },
+                    top: { md: "20px" },
+                    zIndex: 5,
+                    "@media (min-width:768px) and (max-width:1024px)": {
+                      display: showCareNarrative ? "block" : "none",
+                      width: "100%",
+                      maxWidth: "320px",
                       minWidth: 0,
                     },
-                  }}>
-                    {/* Floating Side Action Buttons (Desktop Only) */}
-                    <Box sx={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '-60px', // Adjusted since now there's more space
-                      transform: 'translateY(-50%)',
-                      display: { xs: 'none', md: 'flex' },
-                      zIndex: 10
-                    }}>
+                  }}
+                >
+                  <CareNarrativePanel
+                    profile={queue[0]}
+                    isVisible={showCareNarrative}
+                    standalone={true}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    width: { xs: "100%", md: "430px" }, // Fix width on desktop to mimic mobile card
+                    maxWidth: "100%", // Never exceed the grid column (tablet 1fr 1fr)
+                    minWidth: 0,
+                    position: "relative",
+                    flexShrink: 0,
+                    "@media (min-width:768px) and (max-width:1024px)": {
+                      width: "100%",
+                      maxWidth: "430px",
+                      minWidth: 0,
+                    },
+                  }}
+                >
+                  {/* Floating Side Action Buttons (Desktop Only) */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "-60px", // Adjusted since now there's more space
+                      transform: "translateY(-50%)",
+                      display: { xs: "none", md: "flex" },
+                      zIndex: 10,
+                    }}
+                  >
+                    <Tooltip
+                      title={t("care.interpretation", "Interpretación CARE")}
+                      placement="right"
+                    >
                       <IconButton
-                        aria-label="Interpretación CARE"
-                        onClick={() => { setShowCareNarrative(!showCareNarrative); }}
+                        aria-label={t(
+                          "care.interpretation",
+                          "Interpretación CARE",
+                        )}
+                        onClick={() => {
+                          setShowCareNarrative(!showCareNarrative);
+                        }}
                         sx={{
-                          bgcolor: 'rgba(18,18,20,0.95)',
-                          color: showCareNarrative ? '#AB47BC' : 'white',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          '&:hover': { bgcolor: 'rgba(30,30,32,1)' },
+                          bgcolor: "rgba(18,18,20,0.95)",
+                          color: showCareNarrative ? "#AB47BC" : "white",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          "&:hover": { bgcolor: "rgba(30,30,32,1)" },
                           width: 48,
-                          height: 48
+                          height: 48,
                         }}
                       >
                         <PsychologyIcon />
                       </IconButton>
-                    </Box>
+                    </Tooltip>
+                  </Box>
 
-                    <Box sx={{
-                      position: 'absolute',
-                      top: '50%',
-                      right: '-60px',
-                      transform: 'translateY(-50%)',
-                      display: { xs: 'none', md: 'flex' },
-                      zIndex: 10
-                    }}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "-60px",
+                      transform: "translateY(-50%)",
+                      display: { xs: "none", md: "flex" },
+                      zIndex: 10,
+                    }}
+                  >
+                    <Tooltip
+                      title={t("compatibility.title", "Compatibilidad")}
+                      placement="left"
+                    >
                       <IconButton
-                        aria-label="Compatibilidad"
-                        onClick={() => { setShowCompatibility(!showCompatibility); }}
+                        aria-label={t("compatibility.title", "Compatibilidad")}
+                        onClick={() => {
+                          setShowCompatibility(!showCompatibility);
+                        }}
                         sx={{
-                          bgcolor: 'rgba(18,18,20,0.95)',
-                          color: showCompatibility ? 'primary.main' : 'white',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          '&:hover': { bgcolor: 'rgba(30,30,32,1)' },
+                          bgcolor: "rgba(18,18,20,0.95)",
+                          color: showCompatibility ? "primary.main" : "white",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          "&:hover": { bgcolor: "rgba(30,30,32,1)" },
                           width: 48,
-                          height: 48
+                          height: 48,
                         }}
                       >
                         <BarChartIcon />
                       </IconButton>
-                    </Box>
-
-                    {layoutMode === 'stack' && (
-                      (queue[0] as any).isRefinement ? (
-                        <DiscoveryRefinementCard
-                          currentCompletion={(queue[0] as any).currentCompletion}
-                          suggestion={(queue[0] as any).suggestion}
-                          profile={myProfile}
-                          options={options}
-                          onSave={handleRefinementSave}
-                          onSkip={() => setQueue(prev => prev.slice(1))}
-                        />
-                      ) : (
-                        <StackLayout
-                          profiles={queue}
-                          currentIndex={0}
-                          onLike={() => handleSwipe('like')}
-                          onPass={() => handleSwipe('pass')}
-                          onSuperLike={() => handleSwipe('superlike')}
-                          onUndo={history.length > 0 ? handleUndo : undefined}
-                          onVIPMessage={() => handleVIPMessage(queue[0])}
-                          isPremium={isPremium}
-                          isBlind={queue[0]?.is_blind || discoveryMode === 'blind'}
-                          isCurious={isCurious}
-                          interactionMode={interactionMode}
-                        />
-                      )
-                    )}
-
-                    {layoutMode === 'sticker_book' && (
-                      <StickerBookLayout
-                        profiles={queue}
-                        onProfileAction={(id, act) => {
-                          const profile = queue.find(p => p.user_id === id);
-                          if ((profile as any)?.isRefinement) {
-                            setQueue(prev => prev.filter(p => p.user_id !== id));
-                            return;
-                          }
-                          handleProfileAction(id, act);
-                        }}
-                        isPremium={isPremium}
-                        isBlind={discoveryMode === 'blind'}
-                        isCurious={isCurious}
-                        interactionMode={interactionMode}
-                      />
-                    )}
-
-                    {layoutMode === 'carousel' && (
-                      <CarouselLayout
-                        profiles={queue}
-                        onProfileAction={(id, act) => {
-                          const profile = queue.find(p => p.user_id === id);
-                          if ((profile as any)?.isRefinement) {
-                            setQueue(prev => prev.filter(p => p.user_id !== id));
-                            return;
-                          }
-                          handleProfileAction(id, act);
-                        }}
-                        isPremium={isPremium}
-                        isBlind={discoveryMode === 'blind'}
-                        isCurious={isCurious}
-                        interactionMode={interactionMode}
-                      />
-                    )}
-
-                    {layoutMode === 'grid' && (
-                      <GridLayout
-                        profiles={queue}
-                        onProfileAction={(id, act) => {
-                          const profile = queue.find(p => p.user_id === id);
-                          if ((profile as any)?.isRefinement) {
-                            setQueue(prev => prev.filter(p => p.user_id !== id));
-                            return;
-                          }
-                          handleProfileAction(id, act);
-                        }}
-                        isPremium={isPremium}
-                        isBlind={discoveryMode === 'blind'}
-                        isCurious={isCurious}
-                        interactionMode={interactionMode}
-                      />
-                    )}
+                    </Tooltip>
                   </Box>
 
-                  {/* Right Sidebar: Technical Breakdown (Desktop Only) */}
-                  <Box
-                    sx={{
-                      display: { xs: 'none', md: showCompatibility ? 'block' : 'none' },
-                      width: '320px',
-                      position: 'sticky',
-                      top: '20px',
-                      zIndex: 5,
-                      '@media (min-width:768px) and (max-width:1024px)': {
-                        width: '100%',
-                        maxWidth: '320px',
-                        minWidth: 0,
-                      },
-                    }}
-                  >
-                    <CompatibilityTechnicalPanel
-                      profile={queue[0]}
-                      isVisible={showCompatibility}
-                      onViewProfile={(p) => setSelectedProfileDetail(p)}
-                      standalone={true}
+                  {layoutMode === "stack" &&
+                    ((queue[0] as any).isRefinement ? (
+                      <DiscoveryRefinementCard
+                        currentCompletion={(queue[0] as any).currentCompletion}
+                        suggestion={(queue[0] as any).suggestion}
+                        profile={myProfile}
+                        options={options}
+                        onSave={handleRefinementSave}
+                        onSkip={() => setQueue((prev) => prev.slice(1))}
+                      />
+                    ) : (
+                      <StackLayout
+                        profiles={queue}
+                        currentIndex={0}
+                        onLike={() => handleSwipe("like")}
+                        onPass={() => handleSwipe("pass")}
+                        onSuperLike={() => handleSwipe("superlike")}
+                        onUndo={history.length > 0 ? handleUndo : undefined}
+                        onVIPMessage={() => handleVIPMessage(queue[0])}
+                        isPremium={isPremium}
+                        isBlind={
+                          queue[0]?.is_blind || discoveryMode === "blind"
+                        }
+                        isCurious={isCurious}
+                        interactionMode={interactionMode}
+                      />
+                    ))}
+
+                  {layoutMode === "sticker_book" && (
+                    <StickerBookLayout
+                      profiles={queue}
+                      onProfileAction={(id, act) => {
+                        const profile = queue.find((p) => p.user_id === id);
+                        if ((profile as any)?.isRefinement) {
+                          setQueue((prev) =>
+                            prev.filter((p) => p.user_id !== id),
+                          );
+                          return;
+                        }
+                        handleProfileAction(id, act);
+                      }}
+                      isPremium={isPremium}
+                      isBlind={discoveryMode === "blind"}
+                      isCurious={isCurious}
+                      interactionMode={interactionMode}
                     />
-                  </Box>
+                  )}
+
+                  {layoutMode === "carousel" && (
+                    <CarouselLayout
+                      profiles={queue}
+                      onProfileAction={(id, act) => {
+                        const profile = queue.find((p) => p.user_id === id);
+                        if ((profile as any)?.isRefinement) {
+                          setQueue((prev) =>
+                            prev.filter((p) => p.user_id !== id),
+                          );
+                          return;
+                        }
+                        handleProfileAction(id, act);
+                      }}
+                      isPremium={isPremium}
+                      isBlind={discoveryMode === "blind"}
+                      isCurious={isCurious}
+                      interactionMode={interactionMode}
+                    />
+                  )}
+
+                  {layoutMode === "grid" && (
+                    <GridLayout
+                      profiles={queue}
+                      onProfileAction={(id, act) => {
+                        const profile = queue.find((p) => p.user_id === id);
+                        if ((profile as any)?.isRefinement) {
+                          setQueue((prev) =>
+                            prev.filter((p) => p.user_id !== id),
+                          );
+                          return;
+                        }
+                        handleProfileAction(id, act);
+                      }}
+                      isPremium={isPremium}
+                      isBlind={discoveryMode === "blind"}
+                      isCurious={isCurious}
+                      interactionMode={interactionMode}
+                    />
+                  )}
                 </Box>
-              </Box>
-            ) : (
-              <DiscoverEmptyState
-                profile={myProfile}
-                onRefresh={fetchQueue}
-                onExpandSearch={handleExpandSearch}
-                t={t}
-              />
-            )}
 
-            {/* Completeness alert for mobile - MOVED BELOW CARDS */}
-            {myProfile && profileCompletion < 60 && (
-              <Alert
-                severity="warning"
-                sx={{
-                  mt: 3,
-                  mb: 2,
-                  width: 'fit-content',
-                  maxWidth: '90%',
-                  mx: 'auto',
-                  borderRadius: '20px',
-                  bgcolor: isLight ? 'rgba(255, 152, 0, 0.08)' : 'rgba(255, 152, 0, 0.05)',
-                  color: isLight ? '#e65100' : '#ffa726',
-                  border: '1px solid',
-                  borderColor: isLight ? 'rgba(255, 152, 0, 0.3)' : 'rgba(255, 152, 0, 0.2)',
-                  px: 3,
-                  display: { xs: 'flex', md: 'none' }, // Only show on mobile here
-                  alignItems: 'center',
-                  '& .MuiAlert-message': {
-                    width: '100%',
-                    textAlign: 'center',
-                    fontWeight: 600,
-                    fontSize: '0.875rem'
-                  },
-                  '& .MuiAlert-icon': {
-                    mr: 1,
-                    opacity: 0.9
-                  }
-                }}
-              >
-                {t('lowCompletenessAlert', 'Entre más detalles agregues a tu perfil, mejores coincidencias recibirás')}
-              </Alert>
-            )}
-
-            {/* Mobile Action Toggles (Below Cards) — extra-options */}
-            {queue.length > 0 && !((queue[0] as any).isRefinement) && (
-              <Box
-                className="extra-options"
-                sx={{
-                  display: { xs: 'flex', md: 'none' },
-                  width: '100%',
-                  justifyContent: 'center',
-                  gap: 1.5,
-                  mt: 2.5,
-                  mb: 0.5,
-                  px: 2,
-                  flexWrap: 'nowrap',
-                  overflowX: 'auto',
-                  '&::-webkit-scrollbar': { display: 'none' },
-                  '@media (max-width:375px)': {
-                    flexDirection: 'column !important',
-                    alignItems: 'center !important',
-                    gap: '0.4rem !important',
-                    mt: '0.4rem !important',
-                    '& .MuiButton-root': {
-                      fontSize: '0.7rem !important',
-                      py: '0.25rem !important',
-                      px: '0.5rem !important',
-                      margin: '0 !important',
-                    },
-                    '& .MuiSwitch-root': { transform: 'scale(0.85) !important', margin: '0 !important' },
-                  },
-                }}
-              >
-                {/* 1. CARE interpreta (Primary Action) */}
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => { setShowCareNarrative(!showCareNarrative); setShowCompatibility(false); }}
-                  startIcon={<InterestsIcon sx={{ fontSize: '1rem' }} />}
-                  endIcon={showCareNarrative ? <ExpandLessIcon sx={{ fontSize: '0.9rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '0.9rem' }} />}
-                  sx={{
-                    borderRadius: '20px',
-                    textTransform: 'none',
-                    borderColor: showCareNarrative ? 'secondary.main' : 'rgba(255,255,255,0.2)',
-                    bgcolor: 'rgba(255,255,255,0.05)',
-                    color: 'white',
-                    fontSize: '0.85rem',
-                    py: 0.8,
-                    px: 2,
-                    '&:hover': { borderColor: 'secondary.main', bgcolor: 'rgba(255,255,255,0.1)' },
-                    whiteSpace: 'nowrap',
-                    minWidth: 'fit-content'
-                  }}
-                >
-                  {showCareNarrative ? 'Cerrar' : 'CARE interpreta'}
-                </Button>
-
-                {/* 2. Compatibilidad (Secondary Action) */}
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => { setShowCompatibility(!showCompatibility); setShowCareNarrative(false); }}
-                  startIcon={<TuneIcon sx={{ fontSize: '1rem' }} />}
-                  endIcon={showCompatibility ? <ExpandLessIcon sx={{ fontSize: '0.9rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '0.9rem' }} />}
-                  sx={{
-                    borderRadius: '20px',
-                    textTransform: 'none',
-                    borderColor: showCompatibility ? 'primary.main' : 'rgba(255,255,255,0.2)',
-                    bgcolor: 'rgba(255,255,255,0.05)',
-                    color: 'white',
-                    fontSize: '0.85rem',
-                    py: 0.8,
-                    px: 2,
-                    '&:hover': { borderColor: 'primary.main', bgcolor: 'rgba(255,255,255,0.1)' },
-                    whiteSpace: 'nowrap',
-                    minWidth: 'fit-content'
-                  }}
-                >
-                  {showCompatibility ? 'Ocultar info' : 'Compatibilidad'}
-                </Button>
-              </Box>
-            )}
-
-            {/* Mobile-only Curiosity Switch (Immediately Below Layouts) */}
-            {queue.length > 0 && (
-              <Box
-                className="extra-options"
-                sx={{
-                  display: { xs: 'flex', sm: 'none' },
-                  justifyContent: 'center',
-                  width: '100%',
-                  mt: 1.5,
-                  mb: 1.5,
-                  px: 2,
-                  '@media (max-width:375px)': {
-                    flexDirection: 'column !important',
-                    alignItems: 'center !important',
-                    gap: '0.4rem !important',
-                    mt: '0.4rem !important',
-                    mb: '0.4rem !important',
-                    '& .MuiTypography-root': { fontSize: '0.7rem !important', textAlign: 'center !important' },
-                    '& .MuiSwitch-root': { transform: 'scale(0.85) !important' },
-                  },
-                }}
-              >
+                {/* Right Sidebar: Technical Breakdown (Desktop Only) */}
                 <Box
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    maxWidth: '300px',
-                    bgcolor: isCurious ? 'rgba(171, 71, 188, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(10px)',
-                    px: 2.5,
-                    py: 0.8,
-                    borderRadius: { xs: '8px', sm: '12px' },
-                    border: '1.5px solid',
-                    borderColor: isCurious ? 'rgba(171, 71, 188, 0.5)' : 'rgba(255, 255, 255, 0.12)',
-                    transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
-                    boxShadow: isCurious ? '0 4px 12px rgba(171, 71, 188, 0.2)' : '0 1px 4px rgba(0,0,0,0.08)',
-                    '@media (max-width:375px)': {
-                      px: 1.5,
-                      py: 0.5,
-                      gap: '0.4rem',
-                      '& .MuiTypography-root': { fontSize: '0.75rem' },
+                    display: {
+                      xs: "none",
+                      md: showCompatibility ? "block" : "none",
+                    },
+                    width: "320px",
+                    position: "sticky",
+                    top: "20px",
+                    zIndex: 5,
+                    "@media (min-width:768px) and (max-width:1024px)": {
+                      width: "100%",
+                      maxWidth: "320px",
+                      minWidth: 0,
                     },
                   }}
                 >
-                  <Switch
-                    checked={isCurious}
-                    onChange={(e) => handleCuriosityChange(e.target.checked)}
-                    color="secondary"
-                    sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#AB47BC',
-                        '&:hover': {
-                          backgroundColor: 'rgba(171, 71, 188, 0.08)',
-                        },
-                      },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#AB47BC',
-                      },
-                    }}
+                  <CompatibilityTechnicalPanel
+                    profile={queue[0]}
+                    isVisible={showCompatibility}
+                    onViewProfile={(p) => setSelectedProfileDetail(p)}
+                    standalone={true}
                   />
-                  <Typography sx={{
-                    fontWeight: 700,
-                    fontSize: '15px',
-                    color: isCurious ? '#E1BEE7' : 'rgba(255, 255, 255, 0.75)',
-                    letterSpacing: '0.3px'
-                  }}>
-                    Hoy me siento curioso
-                  </Typography>
                 </Box>
               </Box>
-            )}
-            <Divider sx={{ my: 5 }} />
+            </Box>
+          ) : (
+            <DiscoverEmptyState
+              profile={myProfile}
+              onRefresh={fetchQueue}
+              onExpandSearch={handleExpandSearch}
+              t={t}
+            />
+          )}
 
-            {/* Desktop Curiosity Switch (Aligned Right above Interests) */}
-            {queue.length > 0 && (
-              <Box sx={{
-                display: { xs: 'none', sm: 'flex' },
-                justifyContent: 'flex-end',
-                width: '100%',
+          {/* Completeness alert for mobile - MOVED BELOW CARDS */}
+          {myProfile && profileCompletion < 60 && (
+            <Alert
+              severity="warning"
+              sx={{
+                mt: 3,
+                mb: 2,
+                width: "fit-content",
+                maxWidth: "90%",
+                mx: "auto",
+                borderRadius: "20px",
+                bgcolor: isLight
+                  ? "rgba(255, 152, 0, 0.08)"
+                  : "rgba(255, 152, 0, 0.05)",
+                color: isLight ? "#e65100" : "#ffa726",
+                border: "1px solid",
+                borderColor: isLight
+                  ? "rgba(255, 152, 0, 0.3)"
+                  : "rgba(255, 152, 0, 0.2)",
+                px: 3,
+                display: { xs: "flex", md: "none" }, // Only show on mobile here
+                alignItems: "center",
+                "& .MuiAlert-message": {
+                  width: "100%",
+                  textAlign: "center",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                },
+                "& .MuiAlert-icon": {
+                  mr: 1,
+                  opacity: 0.9,
+                },
+              }}
+            >
+              {t(
+                "lowCompletenessAlert",
+                "Entre más detalles agregues a tu perfil, mejores coincidencias recibirás",
+              )}
+            </Alert>
+          )}
+
+          {/* Mobile Action Toggles (Below Cards) — extra-options */}
+          {queue.length > 0 && !(queue[0] as any).isRefinement && (
+            <Box
+              className="extra-options"
+              sx={{
+                display: { xs: "flex", md: "none" },
+                width: "100%",
+                justifyContent: "center",
+                gap: 1.5,
+                mt: 2.5,
+                mb: 0.5,
+                px: 2,
+                flexWrap: "nowrap",
+                overflowX: "auto",
+                "&::-webkit-scrollbar": { display: "none" },
+                "@media (max-width:375px)": {
+                  flexDirection: "column !important",
+                  alignItems: "center !important",
+                  gap: "0.4rem !important",
+                  mt: "0.4rem !important",
+                  "& .MuiButton-root": {
+                    fontSize: "0.7rem !important",
+                    py: "0.25rem !important",
+                    px: "0.5rem !important",
+                    margin: "0 !important",
+                  },
+                  "& .MuiSwitch-root": {
+                    transform: "scale(0.85) !important",
+                    margin: "0 !important",
+                  },
+                },
+              }}
+            >
+              {/* 1. CARE interpreta (Primary Action) */}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  setShowCareNarrative(!showCareNarrative);
+                  setShowCompatibility(false);
+                }}
+                startIcon={<InterestsIcon sx={{ fontSize: "1rem" }} />}
+                endIcon={
+                  showCareNarrative ? (
+                    <ExpandLessIcon sx={{ fontSize: "0.9rem" }} />
+                  ) : (
+                    <ExpandMoreIcon sx={{ fontSize: "0.9rem" }} />
+                  )
+                }
+                sx={{
+                  borderRadius: "20px",
+                  textTransform: "none",
+                  borderColor: showCareNarrative
+                    ? "secondary.main"
+                    : "rgba(255,255,255,0.2)",
+                  bgcolor: "rgba(255,255,255,0.05)",
+                  color: "white",
+                  fontSize: "0.85rem",
+                  py: 0.8,
+                  px: 2,
+                  "&:hover": {
+                    borderColor: "secondary.main",
+                    bgcolor: "rgba(255,255,255,0.1)",
+                  },
+                  whiteSpace: "nowrap",
+                  minWidth: "fit-content",
+                }}
+              >
+                {showCareNarrative ? "Cerrar" : "CARE interpreta"}
+              </Button>
+
+              {/* 2. Compatibilidad (Secondary Action) */}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  setShowCompatibility(!showCompatibility);
+                  setShowCareNarrative(false);
+                }}
+                startIcon={<TuneIcon sx={{ fontSize: "1rem" }} />}
+                endIcon={
+                  showCompatibility ? (
+                    <ExpandLessIcon sx={{ fontSize: "0.9rem" }} />
+                  ) : (
+                    <ExpandMoreIcon sx={{ fontSize: "0.9rem" }} />
+                  )
+                }
+                sx={{
+                  borderRadius: "20px",
+                  textTransform: "none",
+                  borderColor: showCompatibility
+                    ? "primary.main"
+                    : "rgba(255,255,255,0.2)",
+                  bgcolor: "rgba(255,255,255,0.05)",
+                  color: "white",
+                  fontSize: "0.85rem",
+                  py: 0.8,
+                  px: 2,
+                  "&:hover": {
+                    borderColor: "primary.main",
+                    bgcolor: "rgba(255,255,255,0.1)",
+                  },
+                  whiteSpace: "nowrap",
+                  minWidth: "fit-content",
+                }}
+              >
+                {showCompatibility ? "Ocultar info" : "Compatibilidad"}
+              </Button>
+            </Box>
+          )}
+
+          {/* Mobile-only Curiosity Switch (Immediately Below Layouts) */}
+          {queue.length > 0 && (
+            <Box
+              className="extra-options"
+              sx={{
+                display: { xs: "flex", sm: "none" },
+                justifyContent: "center",
+                width: "100%",
+                mt: 1.5,
+                mb: 1.5,
+                px: 2,
+                "@media (max-width:375px)": {
+                  flexDirection: "column !important",
+                  alignItems: "center !important",
+                  gap: "0.4rem !important",
+                  mt: "0.4rem !important",
+                  mb: "0.4rem !important",
+                  "& .MuiTypography-root": {
+                    fontSize: "0.7rem !important",
+                    textAlign: "center !important",
+                  },
+                  "& .MuiSwitch-root": { transform: "scale(0.85) !important" },
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  maxWidth: "300px",
+                  bgcolor: isCurious
+                    ? "rgba(171, 71, 188, 0.15)"
+                    : "rgba(255, 255, 255, 0.05)",
+                  backdropFilter: "blur(10px)",
+                  px: 2.5,
+                  py: 0.8,
+                  borderRadius: { xs: "8px", sm: "12px" },
+                  border: "1.5px solid",
+                  borderColor: isCurious
+                    ? "rgba(171, 71, 188, 0.5)"
+                    : "rgba(255, 255, 255, 0.12)",
+                  transition:
+                    "border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease",
+                  boxShadow: isCurious
+                    ? "0 4px 12px rgba(171, 71, 188, 0.2)"
+                    : "0 1px 4px rgba(0,0,0,0.08)",
+                  "@media (max-width:375px)": {
+                    px: 1.5,
+                    py: 0.5,
+                    gap: "0.4rem",
+                    "& .MuiTypography-root": { fontSize: "0.75rem" },
+                  },
+                }}
+              >
+                <Switch
+                  checked={isCurious}
+                  onChange={(e) => handleCuriosityChange(e.target.checked)}
+                  color="secondary"
+                  sx={{
+                    "& .MuiSwitch-switchBase.Mui-checked": {
+                      color: "#AB47BC",
+                      "&:hover": {
+                        backgroundColor: "rgba(171, 71, 188, 0.08)",
+                      },
+                    },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: "#AB47BC",
+                    },
+                  }}
+                />
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "15px",
+                    color: isCurious ? "#E1BEE7" : "rgba(255, 255, 255, 0.75)",
+                    letterSpacing: "0.3px",
+                  }}
+                >
+                  Hoy me siento curioso
+                </Typography>
+              </Box>
+            </Box>
+          )}
+          <Divider sx={{ my: 5 }} />
+
+          {/* Desktop Curiosity Switch (Aligned Right above Interests) */}
+          {queue.length > 0 && (
+            <Box
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                justifyContent: "flex-end",
+                width: "100%",
                 mt: 2,
                 mb: 1,
-                px: 0
-              }}>
-                <Box
+                px: 0,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "auto",
+                  gap: 2,
+                  bgcolor: isCurious
+                    ? "rgba(171, 71, 188, 0.15)"
+                    : "rgba(255, 255, 255, 0.05)",
+                  backdropFilter: "blur(10px)",
+                  px: 3,
+                  py: 1,
+                  borderRadius: "12px",
+                  border: "1.5px solid",
+                  borderColor: isCurious
+                    ? "rgba(171, 71, 188, 0.5)"
+                    : "rgba(255, 255, 255, 0.12)",
+                  transition:
+                    "border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease",
+                  boxShadow: isCurious
+                    ? "0 4px 12px rgba(171, 71, 188, 0.2)"
+                    : "0 1px 4px rgba(0,0,0,0.08)",
+                }}
+              >
+                <Switch
+                  checked={isCurious}
+                  onChange={(e) => handleCuriosityChange(e.target.checked)}
+                  color="secondary"
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: 'auto',
-                    gap: 2,
-                    bgcolor: isCurious ? 'rgba(171, 71, 188, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(10px)',
-                    px: 3,
-                    py: 1,
-                    borderRadius: '12px',
-                    border: '1.5px solid',
-                    borderColor: isCurious ? 'rgba(171, 71, 188, 0.5)' : 'rgba(255, 255, 255, 0.12)',
-                    transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
-                    boxShadow: isCurious ? '0 4px 12px rgba(171, 71, 188, 0.2)' : '0 1px 4px rgba(0,0,0,0.08)',
-                    cursor: 'pointer'
+                    mr: 0,
+                    "& .MuiSwitch-switchBase.Mui-checked": {
+                      color: "#AB47BC",
+                      "&:hover": {
+                        backgroundColor: "rgba(171, 71, 188, 0.08)",
+                      },
+                    },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: "#AB47BC",
+                    },
                   }}
-                  onClick={(e) => {
-                    if ((e.target as HTMLElement).closest('input')) return;
-                    handleCuriosityChange(!isCurious);
+                />
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "15px",
+                    color: isCurious ? "#E1BEE7" : "rgba(255, 255, 255, 0.75)",
+                    letterSpacing: "0.3px",
+                    userSelect: "none",
                   }}
                 >
-                  <Switch
-                    checked={isCurious}
-                    onChange={(e) => handleCuriosityChange(e.target.checked)}
-                    color="secondary"
-                    sx={{
-                      mr: 0,
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#AB47BC',
-                        '&:hover': {
-                          backgroundColor: 'rgba(171, 71, 188, 0.08)',
-                        },
-                      },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#AB47BC',
-                      },
-                    }}
-                  />
-                  <Typography sx={{
-                    fontWeight: 700,
-                    fontSize: '15px',
-                    color: isCurious ? '#E1BEE7' : 'rgba(255, 255, 255, 0.75)',
-                    letterSpacing: '0.3px',
-                    userSelect: 'none'
-                  }}>
-                    Hoy me siento curioso
-                  </Typography>
-                </Box>
+                  Hoy me siento curioso
+                </Typography>
               </Box>
-            )}
+            </Box>
+          )}
 
-            {/* Profile Detail Modal */}
-            <ProfileDetailModal
-              open={!!selectedProfileDetail}
-              onClose={() => setSelectedProfileDetail(null)}
-              profile={selectedProfileDetail}
-              isPremium={isPremium}
-              isBlind={selectedProfileDetail?.is_blind || discoveryMode === 'blind'}
-              isCurious={isCurious}
-              interactionMode={interactionMode}
-              onLike={() => {
-                handleSwipe('like');
-                setSelectedProfileDetail(null);
-              }}
-              onPass={() => {
-                handleSwipe('pass');
-                setSelectedProfileDetail(null);
-              }}
-              onSuperLike={() => {
-                handleSwipe('superlike');
-                setSelectedProfileDetail(null);
-              }}
-            />
+          {/* Profile Detail Modal */}
+          <ProfileDetailModal
+            open={!!selectedProfileDetail}
+            onClose={() => setSelectedProfileDetail(null)}
+            profile={selectedProfileDetail}
+            isPremium={isPremium}
+            isBlind={
+              selectedProfileDetail?.is_blind || discoveryMode === "blind"
+            }
+            isCurious={isCurious}
+            interactionMode={interactionMode}
+            onLike={() => {
+              handleSwipe("like");
+              setSelectedProfileDetail(null);
+            }}
+            onPass={() => {
+              handleSwipe("pass");
+              setSelectedProfileDetail(null);
+            }}
+            onSuperLike={() => {
+              handleSwipe("superlike");
+              setSelectedProfileDetail(null);
+            }}
+          />
 
+          {/* TimeOut Modal */}
+          <TimeOutModal
+            open={showTimeOutModal}
+            onClose={() => setShowTimeOutModal(false)}
+            onSetTimeOut={handleSetTimeOut}
+            onRecharge={(amount) => {
+              setBatteryLevel(amount);
+              enqueueSnackbar("¡Batería recargada! 🔋⚡", {
+                variant: "success",
+              });
+            }}
+            currentBattery={batteryLevel}
+            userPersonality={myProfile?.social_style}
+          />
 
-            {/* TimeOut Modal */}
-            <TimeOutModal
-              open={showTimeOutModal}
-              onClose={() => setShowTimeOutModal(false)}
-              onSetTimeOut={handleSetTimeOut}
-              onRecharge={(amount) => {
-                setBatteryLevel(amount);
-                enqueueSnackbar("¡Batería recargada! 🔋⚡", { variant: 'success' });
-              }}
-              currentBattery={batteryLevel}
-              userPersonality={myProfile?.social_style}
-            />
+          {/* Interaction Settings Dialog */}
+          <InteractionSettingsDialog
+            open={showInteractionSettings}
+            containerRef={containerRef}
+            onClose={() => setShowInteractionSettings(false)}
+            currentMode={interactionMode}
+            onModeChange={(mode) => {
+              setInteractionMode(mode);
+              localStorage.setItem("interactionMode", mode);
+              enqueueSnackbar(
+                `Modo de interacción: ${mode === "buttons" ? "Solo Botones" : mode === "taps" ? "Botones + Taps" : mode === "swipes" ? "Botones + Swipes" : "Botones + Teclado"}`,
+                { variant: "success", autoHideDuration: 2000 },
+              );
+            }}
+            currentLayout={layoutMode}
+            onLayoutChange={(layout) => {
+              setLayoutMode(layout);
+              localStorage.setItem("layoutMode", layout);
+              enqueueSnackbar(
+                `Layout: ${layout === "stack" ? "Cartas" : layout === "sticker_book" ? "Álbum" : layout === "carousel" ? "Carrusel" : "Galería"}`,
+                { variant: "success", autoHideDuration: 2000 },
+              );
+            }}
+          />
 
-            {/* Interaction Settings Dialog */}
-            <InteractionSettingsDialog
-              open={showInteractionSettings}
-              containerRef={containerRef}
-              onClose={() => setShowInteractionSettings(false)}
-              currentMode={interactionMode}
-              onModeChange={(mode) => {
-                setInteractionMode(mode);
-                localStorage.setItem('interactionMode', mode);
-                enqueueSnackbar(`Modo de interacción: ${mode === 'buttons' ? 'Solo Botones' : mode === 'taps' ? 'Botones + Taps' : mode === 'swipes' ? 'Botones + Swipes' : 'Botones + Teclado'}`, { variant: 'success', autoHideDuration: 2000 });
-              }}
-              currentLayout={layoutMode}
-              onLayoutChange={(layout) => {
-                setLayoutMode(layout);
-                localStorage.setItem('layoutMode', layout);
-                enqueueSnackbar(`Layout: ${layout === 'stack' ? 'Cartas' : layout === 'sticker_book' ? 'Álbum' : layout === 'carousel' ? 'Carrusel' : 'Galería'}`, { variant: 'success', autoHideDuration: 2000 });
-              }}
-            />
+          {/* Modal Behavior (Mobile/Tablet Only) */}
+          <Dialog
+            open={showCareNarrative}
+            onClose={() => setShowCareNarrative(false)}
+            maxWidth="md"
+            fullWidth
+            sx={{ display: { xs: "block", md: "none" } }} // Only modal on mobile/tablet
+            PaperProps={{
+              sx: {
+                bgcolor: "transparent",
+                boxShadow: "none",
+                backgroundImage: "none",
+              },
+            }}
+          >
+            <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+              <CareNarrativePanel
+                profile={queue[0]}
+                isVisible={showCareNarrative}
+                mobileOpen={true}
+              />
+            </Box>
+          </Dialog>
 
-            {/* Modal Behavior (Mobile/Tablet Only) */}
-            <Dialog
-              open={showCareNarrative}
-              onClose={() => setShowCareNarrative(false)}
-              maxWidth="md"
-              fullWidth
-              sx={{ display: { xs: 'block', md: 'none' } }} // Only modal on mobile/tablet
-              PaperProps={{
-                sx: {
-                  bgcolor: 'transparent',
-                  boxShadow: 'none',
-                  backgroundImage: 'none'
-                }
-              }}
-            >
-              <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-                <CareNarrativePanel
-                  profile={queue[0]}
-                  isVisible={showCareNarrative}
-                  mobileOpen={true}
-                />
-              </Box>
-            </Dialog>
+          <Dialog
+            open={showCompatibility}
+            onClose={() => setShowCompatibility(false)}
+            maxWidth="md"
+            fullWidth
+            sx={{ display: { xs: "block", lg: "none" } }} // Only modal on mobile/tablet
+            PaperProps={{
+              sx: {
+                bgcolor: "transparent",
+                boxShadow: "none",
+                backgroundImage: "none",
+              },
+            }}
+          >
+            <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+              <CompatibilityTechnicalPanel
+                profile={queue[0]}
+                isVisible={showCompatibility}
+                onViewProfile={(p) => setSelectedProfileDetail(p)}
+                mobileOpen={true}
+              />
+            </Box>
+          </Dialog>
 
-            <Dialog
-              open={showCompatibility}
-              onClose={() => setShowCompatibility(false)}
-              maxWidth="md"
-              fullWidth
-              sx={{ display: { xs: 'block', lg: 'none' } }} // Only modal on mobile/tablet
-              PaperProps={{
-                sx: {
-                  bgcolor: 'transparent',
-                  boxShadow: 'none',
-                  backgroundImage: 'none'
-                }
-              }}
-            >
-              <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-                <CompatibilityTechnicalPanel
-                  profile={queue[0]}
-                  isVisible={showCompatibility}
-                  onViewProfile={(p) => setSelectedProfileDetail(p)}
-                  mobileOpen={true}
-                />
-              </Box>
-            </Dialog>
-
-            {/* Filters Dialog - Locked to container context */}
-            <Dialog
-              open={showFilters}
-              onClose={() => setShowFilters(false)}
-              fullWidth
-              maxWidth={false}
-              disablePortal // Render inside containerRef
-              PaperProps={{
-                sx: {
-                  width: '100%',
-                  maxWidth: 800,
-                  borderRadius: 4,
-                  backgroundImage: 'none',
-                  bgcolor: 'background.paper',
-                  m: 0,
-                  ml: { xs: 0, md: '250px' }, // Shift right as requested only on desktop
-                }
-              }}
+          {/* Filters Dialog - Locked to container context */}
+          <Dialog
+            open={showFilters}
+            onClose={() => setShowFilters(false)}
+            fullWidth
+            maxWidth={false}
+            disablePortal // Render inside containerRef
+            PaperProps={{
+              sx: {
+                width: "100%",
+                maxWidth: 800,
+                borderRadius: 4,
+                backgroundImage: "none",
+                bgcolor: "background.paper",
+                m: 0,
+                ml: { xs: 0, md: "250px" }, // Shift right as requested only on desktop
+              },
+            }}
+            sx={{
+              position: "absolute", // Absolute to the relative Box
+              zIndex: 1300,
+              "& .MuiDialog-container": {
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                p: 0,
+              },
+              "& .MuiBackdrop-root": {
+                position: "absolute",
+                borderRadius: 4,
+              },
+            }}
+          >
+            <DialogTitle
               sx={{
-                position: 'absolute', // Absolute to the relative Box
-                zIndex: 1300,
-                '& .MuiDialog-container': {
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  p: 0
-                },
-                '& .MuiBackdrop-root': {
-                  position: 'absolute',
-                  borderRadius: 4
-                }
+                fontWeight: 700,
+                px: 2,
+                pt: 2,
+                pb: 1,
+                color: "text.primary",
+                fontSize: "1.25rem",
               }}
             >
-              <DialogTitle sx={{ fontWeight: 700, px: 2, pt: 2, pb: 1, color: 'text.primary', fontSize: '1.25rem' }}>
-                {t('filters.title')}
-              </DialogTitle>
-              <DialogContent sx={{ px: 2, pb: 2 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+              {t("filters.title")}
+            </DialogTitle>
+            <DialogContent sx={{ px: 2, pb: 2 }}>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
+              >
+                {/* Group 1: Age & Distance */}
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    bgcolor: "#121212",
+                    borderRadius: 3,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2.5,
+                  }}
+                >
+                  {/* Age Filter */}
+                  <Box>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      mb={1}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "text.secondary", fontWeight: 600 }}
+                      >
+                        {t("filters.ageRange")}:{" "}
+                        <Box
+                          component="span"
+                          sx={{ color: "primary.main", fontWeight: 700 }}
+                        >
+                          {ageRange[0]} - {ageRange[1]}
+                        </Box>
+                      </Typography>
 
-                  {/* Group 1: Age & Distance */}
+                      {/* Half Plus Seven Rule Switch */}
+                      <Tooltip
+                        title={
+                          !myProfile?.birth_date
+                            ? "Agrega tu fecha de nacimiento en tu perfil para usar esta regla."
+                            : "Regla ½ + 7: Sugiere un rango de edad socialmente aceptado basado en tu edad."
+                        }
+                        arrow
+                      >
+                        <Box component="span" sx={{ display: "inline-flex" }}>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                size="small"
+                                checked={useAgeRule}
+                                disabled={!myProfile?.birth_date}
+                                onChange={(e) => {
+                                  setUseAgeRule(e.target.checked);
+                                  if (e.target.checked) {
+                                    let age = myProfile?.age;
+
+                                    if (!age && myProfile?.birth_date) {
+                                      // Fallback: Calculate Age from birth_date
+                                      const birthDate = new Date(
+                                        myProfile.birth_date,
+                                      );
+                                      const ageDifMs =
+                                        Date.now() - birthDate.getTime();
+                                      const ageDate = new Date(ageDifMs);
+                                      age = Math.abs(
+                                        ageDate.getUTCFullYear() - 1970,
+                                      );
+                                    }
+
+                                    if (age) {
+                                      const min = Math.floor(age / 2) + 7;
+                                      const max = (age - 7) * 2;
+                                      setAgeRange([
+                                        Math.max(18, min),
+                                        Math.min(99, max),
+                                      ]);
+                                      enqueueSnackbar(
+                                        `Regla ½+7 aplicada (${age} años): ${Math.max(18, min)} - ${Math.min(99, max)} años`,
+                                        {
+                                          variant: "success",
+                                          autoHideDuration: 3000,
+                                        },
+                                      );
+                                    }
+                                  }
+                                }}
+                              />
+                            }
+                            label={
+                              <Box display="flex" alignItems="center" gap={0.5}>
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontWeight: 600,
+                                    color: useAgeRule
+                                      ? "primary.main"
+                                      : "text.secondary",
+                                  }}
+                                >
+                                  Regla ½ + 7
+                                </Typography>
+                                <InfoIcon
+                                  sx={{ fontSize: 14, color: "text.disabled" }}
+                                />
+                              </Box>
+                            }
+                            sx={{ mr: 0 }}
+                          />
+                        </Box>
+                      </Tooltip>
+                    </Box>
+
+                    <Slider
+                      value={ageRange}
+                      onChange={(_, newValue) => {
+                        if (!useAgeRule) setAgeRange(newValue as number[]);
+                      }}
+                      valueLabelDisplay="auto"
+                      min={18}
+                      max={99}
+                      disabled={useAgeRule}
+                      size="small"
+                      sx={{ color: "primary.main", py: 1 }}
+                    />
+                  </Box>
+
+                  {/* Distance Slider */}
+                  <Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 0.5,
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          color: "text.secondary",
+                          fontWeight: 600,
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {t("filters.distance.label")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="primary.main"
+                        fontWeight={700}
+                        sx={{ fontSize: "0.85rem" }}
+                      >
+                        {`${distance} ${t("filters.distance.unit", "km")}`}
+                      </Typography>
+                    </Box>
+                    <Slider
+                      value={distance}
+                      min={RADIUS_MIN}
+                      max={RADIUS_MAX}
+                      step={null}
+                      marks={RADIUS_MARKS}
+                      valueLabelDisplay="auto"
+                      onChange={(_, val) => setDistance(val as number)}
+                      size="small"
+                      sx={{ color: "primary.main", py: 1 }}
+                    />
+                  </Box>
+
+                  {/* Map Integration */}
+                  <Box
+                    sx={{
+                      height: 160,
+                      width: "100%",
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      border: "1px solid",
+                      borderColor: "divider",
+                      position: "relative",
+                    }}
+                  >
+                    {myProfile?.location?.coordinates ? (
+                      <LocationMap
+                        lat={myProfile.location.coordinates[1]}
+                        lng={myProfile.location.coordinates[0]}
+                        radiusKm={distance}
+                        regions={regions}
+                        hasLocation={true}
+                        zoom={distance > 80 ? 7 : distance > 40 ? 8 : 9}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          bgcolor: "action.hover",
+                        }}
+                      >
+                        <Typography variant="caption" color="text.secondary">
+                          {t(
+                            "filters.distance.noLocation",
+                            "Configura tu ubicación en el perfil para ver el mapa",
+                          )}
+                        </Typography>
+                      </Box>
+                    )}
+                    {myProfile?.city && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          bottom: 8,
+                          left: 8,
+                          zIndex: 1000,
+                          bgcolor: "background.paper",
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: 1.5,
+                          boxShadow: 2,
+                          border: "1px solid",
+                          borderColor: "divider",
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          fontWeight={600}
+                          sx={{ fontSize: "0.65rem" }}
+                        >
+                          {t(
+                            "filters.distance.currentLocation",
+                            "Buscando cerca de: ",
+                          )}
+                          {myProfile.city}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ fontSize: "0.75rem", opacity: 0.8 }}
+                  >
+                    {t(
+                      "filters.distance.syncMessage",
+                      "Este ajuste también se guardará en tu perfil.",
+                    )}
+                  </Typography>
+                </Paper>
+
+                {/* Group 2: Premium Filters */}
+                {isPremium ? (
                   <Paper
                     elevation={0}
                     sx={{
                       p: 2,
-                      bgcolor: '#121212',
+                      bgcolor: "#121212",
                       borderRadius: 3,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 2.5
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
                     }}
                   >
-                    {/* Age Filter */}
-                    <Box>
-                      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                        <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                          {t('filters.ageRange')}: <Box component="span" sx={{ color: 'primary.main', fontWeight: 700 }}>{ageRange[0]} - {ageRange[1]}</Box>
-                        </Typography>
-
-                        {/* Half Plus Seven Rule Switch */}
-                        <Tooltip
-                          title={
-                            !myProfile?.birth_date
-                              ? "Agrega tu fecha de nacimiento en tu perfil para usar esta regla."
-                              : "Regla ½ + 7: Sugiere un rango de edad socialmente aceptado basado en tu edad."
-                          }
-                          arrow
-                        >
-                          <Box component="span" sx={{ display: 'inline-flex' }}>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  size="small"
-                                  checked={useAgeRule}
-                                  disabled={!myProfile?.birth_date}
-                                  onChange={(e) => {
-                                    setUseAgeRule(e.target.checked);
-                                    if (e.target.checked) {
-                                      let age = myProfile?.age;
-
-                                      if (!age && myProfile?.birth_date) {
-                                        // Fallback: Calculate Age from birth_date
-                                        const birthDate = new Date(myProfile.birth_date);
-                                        const ageDifMs = Date.now() - birthDate.getTime();
-                                        const ageDate = new Date(ageDifMs);
-                                        age = Math.abs(ageDate.getUTCFullYear() - 1970);
-                                      }
-
-                                      if (age) {
-                                        const min = Math.floor(age / 2) + 7;
-                                        const max = (age - 7) * 2;
-                                        setAgeRange([Math.max(18, min), Math.min(99, max)]);
-                                        enqueueSnackbar(`Regla ½+7 aplicada (${age} años): ${Math.max(18, min)} - ${Math.min(99, max)} años`, { variant: 'success', autoHideDuration: 3000 });
-                                      }
-                                    }
-                                  }}
-                                />
-                              }
-                              label={
-                                <Box display="flex" alignItems="center" gap={0.5}>
-                                  <Typography variant="caption" sx={{ fontWeight: 600, color: useAgeRule ? 'primary.main' : 'text.secondary' }}>
-                                    Regla ½ + 7
-                                  </Typography>
-                                  <InfoIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
-                                </Box>
-                              }
-                              sx={{ mr: 0 }}
-                            />
-                          </Box>
-                        </Tooltip>
-                      </Box>
-
-                      <Slider
-                        value={ageRange}
-                        onChange={(_, newValue) => {
-                          if (!useAgeRule) setAgeRange(newValue as number[]);
-                        }}
-                        valueLabelDisplay="auto"
-                        min={18}
-                        max={99}
-                        disabled={useAgeRule}
-                        size="small"
-                        sx={{ color: 'primary.main', py: 1 }}
-                      />
-                    </Box>
-
-                    {/* Distance Slider */}
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                        <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.85rem' }}>
-                          {t('filters.distance.label')}
-                        </Typography>
-                        <Typography variant="body2" color="primary.main" fontWeight={700} sx={{ fontSize: '0.85rem' }}>
-                          {`${distance} ${t('filters.distance.unit', 'km')}`}
-                        </Typography>
-                      </Box>
-                      <Slider
-                        value={distance}
-                        min={RADIUS_MIN}
-                        max={RADIUS_MAX}
-                        step={null}
-                        marks={RADIUS_MARKS}
-                        valueLabelDisplay="auto"
-                        onChange={(_, val) => setDistance(val as number)}
-                        size="small"
-                        sx={{ color: 'primary.main', py: 1 }}
-                      />
-                    </Box>
-
-                    {/* Map Integration */}
-                    <Box sx={{ height: 160, width: '100%', borderRadius: 2, overflow: 'hidden', border: '1px solid', borderColor: 'divider', position: 'relative' }}>
-                      {myProfile?.location?.coordinates ? (
-                        <LocationMap
-                          lat={myProfile.location.coordinates[1]}
-                          lng={myProfile.location.coordinates[0]}
-                          radiusKm={distance}
-                          regions={regions}
-                          hasLocation={true}
-                          zoom={distance > 80 ? 7 : distance > 40 ? 8 : 9}
-                        />
-                      ) : (
-                        <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'action.hover' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            {t('filters.distance.noLocation', 'Configura tu ubicación en el perfil para ver el mapa')}
-                          </Typography>
-                        </Box>
-                      )}
-                      {myProfile?.city && (
-                        <Box sx={{ position: 'absolute', bottom: 8, left: 8, zIndex: 1000, bgcolor: 'background.paper', px: 1, py: 0.5, borderRadius: 1.5, boxShadow: 2, border: '1px solid', borderColor: 'divider' }}>
-                          <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.65rem' }}>
-                            {t('filters.distance.currentLocation', 'Buscando cerca de: ')}{myProfile.city}
-                          </Typography>
-                        </Box>
-                      )}
-                    </Box>
-
-                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                      {t('filters.distance.syncMessage', 'Este ajuste también se guardará en tu perfil.')}
-                    </Typography>
-                  </Paper>
-
-                  {/* Group 2: Premium Filters */}
-                  {isPremium ? (
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#121212', borderRadius: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      {/* Derived base country for state search context */}
-                      {(() => {
-                        const baseCountry = myProfile?.location?.country || myProfile?.country;
-                        return (
-                          <AsyncLocationSelector
-                            label={searchStates.includes(baseCountry ? `Todos:${baseCountry}` : 'Todos') || searchStates.some(s => s.startsWith('Todos'))
+                    {/* Derived base country for state search context */}
+                    {(() => {
+                      const baseCountry =
+                        myProfile?.location?.country || myProfile?.country;
+                      return (
+                        <AsyncLocationSelector
+                          label={
+                            searchStates.includes(
+                              baseCountry ? `Todos:${baseCountry}` : "Todos",
+                            ) || searchStates.some((s) => s.startsWith("Todos"))
                               ? "Todos los estados"
-                              : "Explorar por Estados (Premium)"}
-                            placeholder={baseCountry ? `Estados de ${baseCountry}...` : "Escribe un estado..."}
-                            value={searchStates}
-                            onChange={(v: string[]) => {
-                              if (v.some(s => s.startsWith('Todos') || s === 'Todos') && !searchStates.some(s => s.startsWith('Todos'))) {
-                                // User selected "Todos"
-                                const todosValue = baseCountry ? `Todos:${baseCountry}` : 'Todos';
-                                setSearchStates([todosValue]);
-                              } else if (v.some(s => s.startsWith('Todos')) && v.length > 1) {
-                                // Force single selection if Todos is present
-                                const todosValue = baseCountry ? `Todos:${baseCountry}` : 'Todos';
-                                setSearchStates([todosValue]);
-                              } else {
-                                // Normal selection
-                                setSearchStates(v);
-                              }
-                            }}
-                            placeType="state"
-                            forceCountry={baseCountry}
-                          />
-                        );
-                      })()}
-                      <AsyncLocationSelector
-                        label={t('filters.premium.countries', 'Explorar por Países (Premium)')}
-                        value={searchCountries}
-                        onChange={async (v: string[]) => {
-                          const newSelection = v.filter(x => !searchCountries.includes(x))[0];
-                          const isContinent = newSelection && (
-                            newSelection.startsWith('Continente: ') ||
-                            (newSelection.startsWith('🌎 ') && newSelection.includes('(Todo el continente)'))
-                          );
-
-                          if (isContinent) {
-                            if (locationScope?.mode === 'continent') {
-                              enqueueSnackbar('⚠️ Solo puedes seleccionar un continente completo a la vez.', { variant: 'warning' });
-                              return;
-                            }
-
-                            let continentName = '';
-                            if (newSelection.startsWith('Continente: ')) {
-                              continentName = newSelection.replace('Continente: ', '');
+                              : "Explorar por Estados (Premium)"
+                          }
+                          placeholder={
+                            baseCountry
+                              ? `Estados de ${baseCountry}...`
+                              : "Escribe un estado..."
+                          }
+                          value={searchStates}
+                          onChange={(v: string[]) => {
+                            if (
+                              v.some(
+                                (s) => s.startsWith("Todos") || s === "Todos",
+                              ) &&
+                              !searchStates.some((s) => s.startsWith("Todos"))
+                            ) {
+                              // User selected "Todos"
+                              const todosValue = baseCountry
+                                ? `Todos:${baseCountry}`
+                                : "Todos";
+                              setSearchStates([todosValue]);
+                            } else if (
+                              v.some((s) => s.startsWith("Todos")) &&
+                              v.length > 1
+                            ) {
+                              // Force single selection if Todos is present
+                              const todosValue = baseCountry
+                                ? `Todos:${baseCountry}`
+                                : "Todos";
+                              setSearchStates([todosValue]);
                             } else {
-                              continentName = newSelection.split(' ')[1];
+                              // Normal selection
+                              setSearchStates(v);
                             }
+                          }}
+                          placeType="state"
+                          forceCountry={baseCountry}
+                        />
+                      );
+                    })()}
+                    <AsyncLocationSelector
+                      label={t(
+                        "filters.premium.countries",
+                        "Explorar por Países (Premium)",
+                      )}
+                      value={searchCountries}
+                      onChange={async (v: string[]) => {
+                        const newSelection = v.filter(
+                          (x) => !searchCountries.includes(x),
+                        )[0];
+                        const isContinent =
+                          newSelection &&
+                          (newSelection.startsWith("Continente: ") ||
+                            (newSelection.startsWith("🌎 ") &&
+                              newSelection.includes("(Todo el continente)")));
 
-                            try {
-                              const resp = await apiClient.get(`/profiles/continents/${continentName}/countries`);
-                              const continentCountries = resp.data || [];
-                              if (continentCountries.length > 0) {
-                                setLocationScope({
-                                  mode: 'continent',
-                                  selected_continent: continentName,
-                                  selected_countries: continentCountries,
-                                  excluded_countries: [],
-                                  limit: 20
-                                });
-                                setSearchCountries(continentCountries);
-                                enqueueSnackbar(`✅ Se agregaron países de ${continentName}`, { variant: 'success' });
-                              }
-                            } catch (err) {
-                              console.error("Error fetching continent countries", err);
-                            }
+                        if (isContinent) {
+                          if (locationScope?.mode === "continent") {
+                            enqueueSnackbar(
+                              "⚠️ Solo puedes seleccionar un continente completo a la vez.",
+                              { variant: "warning" },
+                            );
+                            return;
+                          }
+
+                          let continentName = "";
+                          if (newSelection.startsWith("Continente: ")) {
+                            continentName = newSelection.replace(
+                              "Continente: ",
+                              "",
+                            );
                           } else {
-                            if (v.length > 20 && !v.includes('Todos')) {
-                              enqueueSnackbar('⚠️ Máximo 20 países permitidos.', { variant: 'warning' });
-                              return;
+                            continentName = newSelection.split(" ")[1];
+                          }
+
+                          try {
+                            const resp = await apiClient.get(
+                              `/profiles/continents/${continentName}/countries`,
+                            );
+                            const continentCountries = resp.data || [];
+                            if (continentCountries.length > 0) {
+                              setLocationScope({
+                                mode: "continent",
+                                selected_continent: continentName,
+                                selected_countries: continentCountries,
+                                excluded_countries: [],
+                                limit: 20,
+                              });
+                              setSearchCountries(continentCountries);
+                              enqueueSnackbar(
+                                `✅ Se agregaron países de ${continentName}`,
+                                { variant: "success" },
+                              );
                             }
-                            setLocationScope({
-                              mode: 'countries',
-                              selected_continent: null,
-                              selected_countries: v,
-                              excluded_countries: [],
-                              limit: 20
+                          } catch (err) {
+                            console.error(
+                              "Error fetching continent countries",
+                              err,
+                            );
+                          }
+                        } else {
+                          if (v.length > 20 && !v.includes("Todos")) {
+                            enqueueSnackbar("⚠️ Máximo 20 países permitidos.", {
+                              variant: "warning",
                             });
-                            setSearchCountries(v);
+                            return;
                           }
-                        }}
-                        placeType="country"
-                        maxItems={20}
-                      />
-                    </Paper>
-                  ) : (
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2,
-                        bgcolor: '#121212',
-                        borderRadius: 3,
-                        border: '1px dashed',
-                        borderColor: 'primary.main',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        '&:hover': { bgcolor: 'rgba(255, 77, 79, 0.05)' }
+                          setLocationScope({
+                            mode: "countries",
+                            selected_continent: null,
+                            selected_countries: v,
+                            excluded_countries: [],
+                            limit: 20,
+                          });
+                          setSearchCountries(v);
+                        }
                       }}
-                      onClick={() => router.push('/suscripcion')}
-                    >
-                      <Typography variant="subtitle2" fontWeight={700} color="primary.main" gutterBottom sx={{ fontSize: '0.85rem' }}>
-                        {t('filters.premium.upsellTitle', 'Explora más allá de tu zona')}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5, fontSize: '0.75rem' }}>
-                        {t('filters.premium.upsellDesc', 'Suscríbete a ReTh Premium o VIP para buscar personas en cualquier estado o país.')}
-                      </Typography>
-                      <Button size="small" variant="contained" fullWidth sx={{ textTransform: 'none', borderRadius: 1.5, py: 0.5, fontSize: '0.75rem' }}>
-                        {t('filters.premium.upsellAction', 'Ver Planes Premium')}
-                      </Button>
-                    </Paper>
-                  )}
-
-                  {/* Group 3: Compatibility Only (Mode moved to main view) */}
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: '#121212', borderRadius: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-
-                      {/* DYNAMIC FILTER: High Compatibility (>70%) */}
-                      {/* Visible in: Suggested (Optional) */}
-                      {/* Hidden in: Opposites (N/A), Blind (Mandatory), Free (N/A) */}
-                      {discoveryMode === 'suggested' && (
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={minCompatibility === 70}
-                              onChange={(e) => setMinCompatibility(e.target.checked ? 70 : 0)}
-                              color="primary"
-                              size="small"
-                            />
-                          }
-                          label={
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
-                                {t('filters.highCompatibility', 'Solo alta compatibilidad (>70%)')}
-                              </Typography>
-                              <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.7rem' }}>
-                                {t('filters.highCompatibilityDesc', 'Filtra perfiles con menor afinidad.')}
-                              </Typography>
-                            </Box>
-                          }
-                          sx={{ ml: -0.5, alignItems: 'flex-start' }}
-                        />
-                      )}
-
-                      {/* Contextual Messages for hidden filters */}
-                      {discoveryMode === 'blind' && (
-                        <Box sx={{ p: 1.5, bgcolor: 'rgba(225, 190, 231, 0.1)', borderRadius: 2, mb: 1 }}>
-                          <Typography variant="caption" sx={{ color: '#E1BEE7', fontStyle: 'italic' }}>
-                            En <strong>Blind Mode</strong> solo verás perfiles con alta compatibilidad (&gt;70%). Esta regla se aplica automáticamente.
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {discoveryMode === 'opposites' && (
-                        <Box sx={{ p: 1.5, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, mb: 1 }}>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-                            En <strong>Opuestos</strong> verás perfiles con diferencias marcadas. La compatibilidad alta no se aplica aquí.
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {discoveryMode === 'free' && (
-                        <Box sx={{ p: 1.5, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, mb: 1 }}>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-                            En <strong>Exploración libre</strong> todos los filtros de afinidad están deshabilitados para que explores sin límites.
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {/* DYNAMIC FILTER: Online Only */}
-                      {/* Visible in: Suggested, Opposites, Blind */}
-                      {/* Hidden in: Free */}
-                      {discoveryMode !== 'free' && (
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={onlineOnly}
-                              onChange={(e) => setOnlineOnly(e.target.checked)}
-                              color="primary"
-                              size="small"
-                            />
-                          }
-                          label={
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
-                                {t('filters.online.label', 'Solo usuarios conectados')}
-                              </Typography>
-                              <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.7rem' }}>
-                                {t('filters.online.desc', 'Muestra solo personas activas ahora mismo.')}
-                              </Typography>
-                            </Box>
-                          }
-                          sx={{ ml: -0.5, alignItems: 'flex-start' }}
-                        />
-                      )}
-
-
-                    </Box>
+                      placeType="country"
+                      maxItems={20}
+                    />
                   </Paper>
+                ) : (
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: "#121212",
+                      borderRadius: 3,
+                      border: "1px dashed",
+                      borderColor: "primary.main",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      "&:hover": { bgcolor: "rgba(255, 77, 79, 0.05)" },
+                    }}
+                    onClick={() => router.push("/suscripcion")}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={700}
+                      color="primary.main"
+                      gutterBottom
+                      sx={{ fontSize: "0.85rem" }}
+                    >
+                      {t(
+                        "filters.premium.upsellTitle",
+                        "Explora más allá de tu zona",
+                      )}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      sx={{ mb: 1.5, fontSize: "0.75rem" }}
+                    >
+                      {t(
+                        "filters.premium.upsellDesc",
+                        "Suscríbete a ReTh Premium o VIP para buscar personas en cualquier estado o país.",
+                      )}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      fullWidth
+                      sx={{
+                        textTransform: "none",
+                        borderRadius: 1.5,
+                        py: 0.5,
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      {t("filters.premium.upsellAction", "Ver Planes Premium")}
+                    </Button>
+                  </Paper>
+                )}
 
-                </Box>
-              </DialogContent>
-              <DialogActions sx={{ px: 2, pb: 2.5, pt: 0.5, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                <Button
-                  onClick={() => setShowFilters(false)}
+                {/* Group 3: Compatibility Only (Mode moved to main view) */}
+                <Paper
+                  elevation={0}
                   sx={{
-                    color: 'text.secondary',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
-                    minWidth: 100
+                    p: 2,
+                    bgcolor: "#121212",
+                    borderRadius: 3,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
                   }}
                 >
-                  {t('filters.cancel')}
-                </Button>
-                <Button
-                  onClick={handleApplyFilters}
-                  variant="contained"
-                  sx={{
-                    borderRadius: 2,
-                    px: 3,
-                    py: 1,
-                    textTransform: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.9rem',
-                    minWidth: 140,
-                    boxShadow: '0 4px 12px rgba(255, 77, 79, 0.2)'
-                  }}
-                >
-                  {t('filters.apply')}
-                </Button>
-              </DialogActions>
-            </Dialog>
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+                  >
+                    {/* DYNAMIC FILTER: High Compatibility (>70%) */}
+                    {/* Visible in: Suggested (Optional) */}
+                    {/* Hidden in: Opposites (N/A), Blind (Mandatory), Free (N/A) */}
+                    {discoveryMode === "suggested" && (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={minCompatibility === 70}
+                            onChange={(e) =>
+                              setMinCompatibility(e.target.checked ? 70 : 0)
+                            }
+                            color="primary"
+                            size="small"
+                          />
+                        }
+                        label={
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600, fontSize: "0.85rem" }}
+                            >
+                              {t(
+                                "filters.highCompatibility",
+                                "Solo alta compatibilidad (>70%)",
+                              )}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.disabled"
+                              sx={{ fontSize: "0.7rem" }}
+                            >
+                              {t(
+                                "filters.highCompatibilityDesc",
+                                "Filtra perfiles con menor afinidad.",
+                              )}
+                            </Typography>
+                          </Box>
+                        }
+                        sx={{ ml: -0.5, alignItems: "flex-start" }}
+                      />
+                    )}
 
-            <CuriosityGenderSelector
-              open={showCuriositySelector}
-              containerRef={containerRef}
-              onClose={() => setShowCuriositySelector(false)}
-              initialSelected={curiosityGenders}
-              onSave={async (genders) => {
-                setCuriosityGenders(genders);
-                setIsCurious(true);
-                setShowCuriositySelector(false);
-                try {
-                  await apiClient.put('/profiles/me', {
-                    feeling_curious: true,
-                    curiosity_genders: genders
-                  });
-                  enqueueSnackbar("Modo Curioso activado 🌌: Explorando más allá de tus filtros habituales.", { variant: 'info' });
-                } catch (err) {
-                  console.error("Failed to save curiosity settings", err);
-                }
+                    {/* Contextual Messages for hidden filters */}
+                    {discoveryMode === "blind" && (
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          bgcolor: "rgba(225, 190, 231, 0.1)",
+                          borderRadius: 2,
+                          mb: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "#E1BEE7", fontStyle: "italic" }}
+                        >
+                          En <strong>Blind Mode</strong> solo verás perfiles con
+                          alta compatibilidad (&gt;70%). Esta regla se aplica
+                          automáticamente.
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {discoveryMode === "opposites" && (
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          bgcolor: "rgba(255, 255, 255, 0.05)",
+                          borderRadius: 2,
+                          mb: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "text.secondary", fontStyle: "italic" }}
+                        >
+                          En <strong>Opuestos</strong> verás perfiles con
+                          diferencias marcadas. La compatibilidad alta no se
+                          aplica aquí.
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {discoveryMode === "free" && (
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          bgcolor: "rgba(255, 255, 255, 0.05)",
+                          borderRadius: 2,
+                          mb: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "text.secondary", fontStyle: "italic" }}
+                        >
+                          En <strong>Exploración libre</strong> todos los
+                          filtros de afinidad están deshabilitados para que
+                          explores sin límites.
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {/* DYNAMIC FILTER: Online Only */}
+                    {/* Visible in: Suggested, Opposites, Blind */}
+                    {/* Hidden in: Free */}
+                    {discoveryMode !== "free" && (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={onlineOnly}
+                            onChange={(e) => setOnlineOnly(e.target.checked)}
+                            color="primary"
+                            size="small"
+                          />
+                        }
+                        label={
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600, fontSize: "0.85rem" }}
+                            >
+                              {t(
+                                "filters.online.label",
+                                "Solo usuarios conectados",
+                              )}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.disabled"
+                              sx={{ fontSize: "0.7rem" }}
+                            >
+                              {t(
+                                "filters.online.desc",
+                                "Muestra solo personas activas ahora mismo.",
+                              )}
+                            </Typography>
+                          </Box>
+                        }
+                        sx={{ ml: -0.5, alignItems: "flex-start" }}
+                      />
+                    )}
+                  </Box>
+                </Paper>
+              </Box>
+            </DialogContent>
+            <DialogActions
+              sx={{
+                px: 2,
+                pb: 2.5,
+                pt: 0.5,
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 1,
               }}
-            />
-          </>
-        )
-      }
-    </Layout >
+            >
+              <Button
+                onClick={() => setShowFilters(false)}
+                sx={{
+                  color: "text.secondary",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  minWidth: 100,
+                }}
+              >
+                {t("filters.cancel")}
+              </Button>
+              <Button
+                onClick={handleApplyFilters}
+                variant="contained"
+                sx={{
+                  borderRadius: 2,
+                  px: 3,
+                  py: 1,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                  minWidth: 140,
+                  boxShadow: "0 4px 12px rgba(255, 77, 79, 0.2)",
+                }}
+              >
+                {t("filters.apply")}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <CuriosityGenderSelector
+            open={showCuriositySelector}
+            containerRef={containerRef}
+            onClose={() => setShowCuriositySelector(false)}
+            initialSelected={curiosityGenders}
+            onSave={async (genders) => {
+              setCuriosityGenders(genders);
+              setIsCurious(true);
+              setShowCuriositySelector(false);
+              try {
+                await apiClient.put("/profiles/me", {
+                  feeling_curious: true,
+                  curiosity_genders: genders,
+                });
+                enqueueSnackbar(
+                  "Modo Curioso activado 🌌: Explorando más allá de tus filtros habituales.",
+                  { variant: "info" },
+                );
+              } catch (err) {
+                console.error("Failed to save curiosity settings", err);
+              }
+            }}
+          />
+        </>
+      )}
+    </Layout>
   );
 }
 
 export async function getServerSideProps({ locale }: { locale: string }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'discover'])),
+      ...(await serverSideTranslations(locale, ["common", "discover"])),
     },
   };
 }

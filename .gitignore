@@ -107,3 +107,11 @@ architecture/
 
 # Credenciales locales de prueba (nunca commitear)
 login.json
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# ESLint cache (lint incremental)
+.eslintcache
+frontend/.eslintcache
