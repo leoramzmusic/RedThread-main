@@ -1,4 +1,6 @@
+# =========================
 # Python
+# =========================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -13,7 +15,9 @@ pip-delete-this-directory.txt
 .coverage
 htmlcov/
 
-# Node
+# =========================
+# Node / Frontend
+# =========================
 node_modules/
 .next/
 out/
@@ -24,18 +28,24 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE
+# =========================
+# IDE / Editor
+# =========================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# =========================
+# OS / Sistema
+# =========================
 .DS_Store
 Thumbs.db
 
-# Environment
+# =========================
+# Environment / Config
+# =========================
 .env
 .env.local
 .env.*.local
@@ -44,18 +54,56 @@ config/*.env
 backend/config/local.env
 backend/config/*.env
 
+# =========================
 # Kubernetes Secrets
+# =========================
 k8s/base/secrets.yaml
 k8s/overlays/*/secrets.yaml
 
-# Uploads
+# =========================
+# Uploads / Archivos de usuario
+# =========================
 backend/static/uploads/
 backend/uploads/
 
+# =========================
 # Database
+# =========================
 *.db
 *.sqlite3
 
+# =========================
 # Logs
+# =========================
 *.log
 logs/
+
+# =========================
+# Carpetas internas de RETH
+# =========================
+agents/
+augment/
+claude/
+codebuddy/
+codewhale/
+continue/
+cursor/
+factory/
+gemini/
+githooks/
+github/
+_husky/
+kiro/
+obsidian/
+opencode/
+pytest_cache/
+qpoder/
+roo/
+superpowers/
+trae/
+warp/
+windsurf/
+architecture/
+
+# Credenciales locales de prueba (nunca commitear)
+login.json
