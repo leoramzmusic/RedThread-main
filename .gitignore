@@ -113,3 +113,6 @@ frontend/tsconfig.tsbuildinfo
 # ESLint cache (lint incremental)
 .eslintcache
 frontend/.eslintcache
+
+# Isolated git worktrees (feature work)
+.worktrees/
