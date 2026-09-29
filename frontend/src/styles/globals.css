@@ -1240,6 +1240,14 @@ a:hover {
     transform: none !important;
   }
 }
+/* ProfileDetailsModal: absolute centering + width control on small screens.
+   Higher specificity than the generic MuiPaper override above so it always wins. */
+@media (max-width: 1024px) {
+  .MuiDialog-root .profile-details-modal {
+    transform: translate(-50%, -50%) !important;
+    max-width: none !important;
+  }
+}
 @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) {
   .modal-container,
   .modal-container.MuiPaper-root {

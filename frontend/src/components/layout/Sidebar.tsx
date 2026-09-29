@@ -220,6 +220,7 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           threadId: 'goldth'
         },
         { id: 'chat', label: t('nav.chat', 'Chat'), icon: <ChatIcon className="rt-bubble" />, path: '/chat' },
+        { id: 'likes', label: t('nav.likes', 'Likes'), icon: <HeartIcon className="rt-heart" />, path: '/likes' },
         { id: 'visits', label: t('nav.visits', 'Visitas'), icon: <VisibilityIcon className="rt-blink" />, path: '/visits' },
       ]
     },
@@ -234,7 +235,6 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
           path: '/purpleth',
           threadId: 'purpleth'
         },
-        { id: 'likes', label: t('nav.likes', 'Likes'), icon: <HeartIcon className="rt-heart" />, path: '/likes' },
         { id: 'roulette', label: t('nav.roulette', 'Ruleta'), icon: <CasinoIcon className="rt-wheel" />, path: '/roulette' },
         { id: 'radar', label: t('nav.radar', 'Radar'), icon: <RadarIcon className="rt-ping" />, path: '/radar' },
       ]

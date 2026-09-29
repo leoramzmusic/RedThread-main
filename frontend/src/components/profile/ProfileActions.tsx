@@ -57,6 +57,7 @@ export default function ProfileActions({
             <Tooltip title="Retroceder">
                 <span>
                     <IconButton
+                        aria-label="Retroceder"
                         onClick={(e) => { e.stopPropagation(); onUndo && onUndo(); }}
                         disabled={!onUndo}
                         sx={{
@@ -81,6 +82,7 @@ export default function ProfileActions({
             {/* 2. Dislike Button */}
             <Tooltip title="No me interesa">
                 <IconButton
+                    aria-label="No me interesa"
                     onClick={(e) => { e.stopPropagation(); onPass && onPass(); }}
                     sx={{
                         bgcolor: 'rgba(20, 20, 20, 0.6)',
@@ -115,6 +117,7 @@ export default function ProfileActions({
             {/* 3. Superlike Button - Center Axis */}
             <Tooltip title="Superlike">
                 <IconButton
+                    aria-label="Superlike"
                     onClick={(e) => { e.stopPropagation(); onSuperLike && onSuperLike(); }}
                     sx={{
                         bgcolor: 'rgba(20, 20, 20, 0.6)',
@@ -142,6 +145,7 @@ export default function ProfileActions({
             {/* 4. Like Button */}
             <Tooltip title="Me gusta">
                 <IconButton
+                    aria-label="Me gusta"
                     onClick={(e) => { e.stopPropagation(); onLike && onLike(); }}
                     sx={{
                         bgcolor: 'rgba(20, 20, 20, 0.6)',
@@ -174,6 +178,7 @@ export default function ProfileActions({
             {/* 5. Enviar Hilo (Thread) Button */}
             <Tooltip title={isPremium ? 'Enviar hilo' : 'Requiere Premium'}>
                 <IconButton
+                    aria-label="Enviar hilo"
                     onClick={(e) => { e.stopPropagation(); onVIPMessage && onVIPMessage(); }}
                     sx={{
                         bgcolor: 'rgba(20, 20, 20, 0.4)',

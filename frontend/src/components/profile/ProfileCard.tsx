@@ -20,6 +20,7 @@ import apiClient from '../../services/api';
 import ProfileOverlay from './ProfileOverlay';
 import ProfileActions from './ProfileActions';
 import ProfileDetailsModal from './ProfileDetailsModal';
+import PresenceIndicator from './PresenceIndicator';
 import { InteractionMode } from '../discovery/InteractionSettingsDialog';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -38,6 +39,7 @@ export interface Profile {
   verified?: boolean;
   online_status?: boolean;
   last_seen?: string;
+  connection_status?: string;
   distance_km?: number;
   location_name?: string;
   plan?: string;
@@ -136,6 +138,7 @@ interface ProfileCardProps {
   interactionMode?: InteractionMode;
   showSwipeControls?: boolean; // Hide like/pass/superlike/undo/vip bar (e.g. Likes management view)
   showDetailsButton?: boolean; // Hide "view details" arrow (e.g. Likes view)
+  detailsFooterActions?: React.ReactNode; // Extra actions in the details modal footer (e.g. Responder / Eliminar like)
 }
 
 export default function ProfileCard({
@@ -156,6 +159,7 @@ export default function ProfileCard({
   interactionMode = 'buttons', // Default mode
   showSwipeControls = true,
   showDetailsButton = true,
+  detailsFooterActions,
 }: ProfileCardProps) {
   const { t } = useTranslation(['discover', 'common']);
   const { mode } = useAppTheme();
@@ -460,23 +464,18 @@ export default function ProfileCard({
           ))}
         </Box>
 
-        {/* Online Status Indicator - Minimal Green Dot */}
-        {(isOwnProfile || profile.online_status) && (
-          <Tooltip title={isOwnProfile ? "Estás conectado y visible en Discover" : "Este usuario está conectado en Reth"}>
-            <Box sx={{
-              position: 'absolute',
-              top: 35,
-              left: 16,
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              bgcolor: '#4CAF50',
-              boxShadow: '0 0 12px rgba(76, 175, 80, 0.8), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '2px solid white',
-              zIndex: 4,
-              cursor: 'help'
-            }} />
-          </Tooltip>
+        {/* Presence Indicator - green/amber/gray dot */}
+        {(isOwnProfile || profile.connection_status || profile.last_seen || profile.online_status) && (
+          <Box sx={{ position: 'absolute', top: 35, left: 16, zIndex: 4, cursor: 'help' }}>
+            <PresenceIndicator
+              status={isOwnProfile ? 'online' : profile.connection_status}
+              lastSeen={profile.last_seen}
+              size={12}
+              tooltipTitle={
+                isOwnProfile ? 'Estás conectado y visible en Discover' : undefined
+              }
+            />
+          </Box>
         )}
 
         {/* Compatibility Indicator - Circular Percentage */}
@@ -534,6 +533,7 @@ export default function ProfileCard({
         {showActions && showDetailsButton && (
           <Tooltip title={t('card.viewProfileDetails', "Ver detalles del perfil")}>
             <IconButton
+              aria-label={t('card.viewProfileDetails', 'Ver detalles del perfil')}
               onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
               sx={{
                 position: 'absolute',
@@ -628,6 +628,7 @@ export default function ProfileCard({
           matchReason={matchReason}
           photos={photos}
           isOwnProfile={isOwnProfile}
+          footerActions={detailsFooterActions}
         />
 
       </Card>

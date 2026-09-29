@@ -261,55 +261,72 @@ export default function Discover() {
     fetchQueue();
   }, [discoveryMode, isCurious, curiosityGenders]);
 
+  // Single source of truth for /discovery/queue query params (used by fetchQueue and handleSwipe refill)
+  const buildQueueParams = () => {
+    const params: any = {
+      mode: discoveryMode
+    };
+    if (ageRange[0] !== 18 || ageRange[1] !== 50) {
+      params.age_min = ageRange[0];
+      params.age_max = ageRange[1];
+    }
+    if (distance < 100) params.distance_km = distance;
+    if (searchStates.length > 0) params.states = searchStates;
+    if (searchCountries.length > 0) params.countries = searchCountries;
+    if (onlineOnly) params.online = true;
+    if (isCurious) {
+      params.curiosity_mode = true;
+      if (curiosityGenders.length > 0) {
+        params.curiosity_genders = curiosityGenders;
+      }
+    }
+    // Compatibility Logic
+    if (minCompatibility > 0) {
+      if (discoveryMode === 'opposites') {
+        // For opposites, user wants "Low Similarity" (<70%)
+        // We use minCompatibility state variable to track "is compatibility filter active",
+        // but here we invert it for the API query
+        params.max_compatibility = 70;
+      } else {
+        params.min_compatibility = minCompatibility;
+      }
+    }
+
+    // MORE MODE LOGIC
+    if (discoveryMode === 'more' && selectedMoreCategory) {
+      if (selectedMoreCategory.type === 'relationship') {
+        params.intention = selectedMoreCategory.id;
+      } else if (selectedMoreCategory.type === 'interest') {
+        params.interest = selectedMoreCategory.id;
+      } else if (selectedMoreCategory.type === 'status') {
+        // Map status IDs to specific params
+        if (selectedMoreCategory.id === 'verified') params.is_verified = true;
+        else if (selectedMoreCategory.id === 'wants_kids') params.family_plans = 'wants_children';
+        else if (selectedMoreCategory.id === 'no_kids') params.family_plans = 'does_not_want_children';
+      }
+    }
+    return params;
+  };
+
+  // Only the latest queue fetch may apply; concurrent fetches (auth + mode effects
+  // firing on mount) used to race, each replacing the queue and filtering out ids
+  // shown by the others, shrinking the queue to ~0 cards intermittently.
+  const fetchSeqRef = useRef(0);
+
   const fetchQueue = async () => {
+    const seq = ++fetchSeqRef.current;
     try {
       setLoading(true);
       const params: any = {
         limit: 10,
-        mode: discoveryMode
+        ...buildQueueParams()
       };
-      if (ageRange[0] !== 18 || ageRange[1] !== 50) {
-        params.age_min = ageRange[0];
-        params.age_max = ageRange[1];
-      }
-      if (distance < 100) params.distance_km = distance;
-      if (searchStates.length > 0) params.states = searchStates;
-      if (searchCountries.length > 0) params.countries = searchCountries;
-      if (onlineOnly) params.online = true;
-      if (isCurious) {
-        params.curiosity_mode = true;
-        if (curiosityGenders.length > 0) {
-          params.curiosity_genders = curiosityGenders;
-        }
-      }
-      // Compatibility Logic
-      if (minCompatibility > 0) {
-        if (discoveryMode === 'opposites') {
-          // For opposites, user wants "Low Similarity" (<70%)
-          // We use minCompatibility state variable to track "is compatibility filter active",
-          // but here we invert it for the API query
-          params.max_compatibility = 70;
-        } else {
-          params.min_compatibility = minCompatibility;
-        }
-      }
-
-      // MORE MODE LOGIC
-      if (discoveryMode === 'more' && selectedMoreCategory) {
-        if (selectedMoreCategory.type === 'relationship') {
-          params.intention = selectedMoreCategory.id;
-        } else if (selectedMoreCategory.type === 'interest') {
-          params.interest = selectedMoreCategory.id;
-        } else if (selectedMoreCategory.type === 'status') {
-          // Map status IDs to specific params
-          if (selectedMoreCategory.id === 'verified') params.is_verified = true;
-          if (selectedMoreCategory.id === 'wants_kids') params.family_plans = 'wants_children';
-          if (selectedMoreCategory.id === 'no_kids') params.family_plans = 'does_not_want_children';
-        }
-      }
 
 
       const response = await apiClient.get('/discovery/queue', { params });
+
+      // A newer fetch superseded this one — let it own the queue state
+      if (seq !== fetchSeqRef.current) return;
 
       // Filter out profiles already shown in this session
       const newProfiles = response.data.filter(
@@ -429,15 +446,17 @@ export default function Discover() {
     }
   };
 
-  const handleSwipe = async (interaction: 'like' | 'pass' | 'superlike') => {
-    if (queue.length === 0) return;
-
-    const targetProfile = queue[0];
+  const handleSwipe = async (
+    interaction: 'like' | 'pass' | 'superlike',
+    explicitProfile?: Profile
+  ) => {
+    const targetProfile = explicitProfile ?? queue[0];
+    if (!targetProfile) return;
 
     // Check if it's a refinement card
     if ((targetProfile as any).isRefinement) {
       // Refinement cards don't use standard swipe API
-      setQueue(prev => prev.slice(1));
+      setQueue(prev => prev.filter(p => p.user_id !== targetProfile.user_id));
       return;
     }
 
@@ -445,7 +464,7 @@ export default function Discover() {
 
     // Optimistic update
     setHistory(prev => [targetProfile, ...prev].slice(0, 10)); // Keep last 10
-    setQueue((prev) => prev.slice(1));
+    setQueue((prev) => prev.filter(p => p.user_id !== targetProfile.user_id));
 
     if (interaction === 'like') {
       setLikesSinceLastCard(prev => prev + 1);
@@ -470,19 +489,7 @@ export default function Discover() {
 
     // Fetch more if queue is low
     if (queue.length < 3) {
-      const params: any = {
-        mode: discoveryMode
-      };
-      if (ageRange[0] !== 18 || ageRange[1] !== 50) {
-        params.age_min = ageRange[0];
-        params.age_max = ageRange[1];
-      }
-      if (distance < 100) params.distance_km = distance;
-      if (searchStates.length > 0) params.states = searchStates;
-      if (searchCountries.length > 0) params.countries = searchCountries;
-      if (onlineOnly) params.online = true;
-
-      const response = await apiClient.get('/discovery/queue', { params });
+      const response = await apiClient.get('/discovery/queue', { params: buildQueueParams() });
       // Append new profiles avoiding duplicates (check against all shown profiles)
       const newProfiles = response.data.filter(
         (p: Profile) => !shownProfileIds.has(p.user_id) && !queue.find((q) => q.user_id === p.user_id)
@@ -553,14 +560,9 @@ export default function Discover() {
     const profile = queue.find(p => p.user_id === profileId);
     if (!profile) return;
 
-    // Remove from queue
-    setQueue(prev => prev.filter(p => p.user_id !== profileId));
-
-    // Add to history for undo
-    setHistory(prev => [profile, ...prev]);
-
-    // Perform action (same as handleSwipe)
-    handleSwipe(action);
+    // Perform action on the CLICKED profile (handleSwipe removes it from the
+    // queue by user_id and records history itself)
+    handleSwipe(action, profile);
   };
 
   const handleToggleBoost = async () => {
@@ -804,7 +806,7 @@ export default function Discover() {
         ref={containerRef}
         sx={{
           pt: { xs: 0, sm: 3 },
-          pb: { xs: 8, sm: 3 },
+          pb: { xs: 0, sm: 3 },
           px: { xs: 0, sm: 2 },
           display: 'flex',
           flexDirection: 'column',
@@ -1131,12 +1133,14 @@ export default function Discover() {
                       gap: '0.8rem',
                       pt: '0.5rem',
                     },
-                    '@media (min-width:768px) and (max-width:1024px)': {
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '1rem',
-                      alignItems: 'start',
-                    },
+                    ...(showCareNarrative || showCompatibility ? {
+                      '@media (min-width:768px) and (max-width:1024px)': {
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '1rem',
+                        alignItems: 'start',
+                      },
+                    } : {}),
                   }}
                 >
                   {/* Left Sidebar: CARE Interpretation — tablet 1fr + desktop sticky */}
@@ -1149,6 +1153,9 @@ export default function Discover() {
                       zIndex: 5,
                       '@media (min-width:768px) and (max-width:1024px)': {
                         display: showCareNarrative ? 'block' : 'none',
+                        width: '100%',
+                        maxWidth: '320px',
+                        minWidth: 0,
                       },
                     }}
                   >
@@ -1161,8 +1168,15 @@ export default function Discover() {
 
                   <Box sx={{
                     width: { xs: '100%', md: '430px' }, // Fix width on desktop to mimic mobile card
+                    maxWidth: '100%', // Never exceed the grid column (tablet 1fr 1fr)
+                    minWidth: 0,
                     position: 'relative',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    '@media (min-width:768px) and (max-width:1024px)': {
+                      width: '100%',
+                      maxWidth: '430px',
+                      minWidth: 0,
+                    },
                   }}>
                     {/* Floating Side Action Buttons (Desktop Only) */}
                     <Box sx={{
@@ -1174,6 +1188,7 @@ export default function Discover() {
                       zIndex: 10
                     }}>
                       <IconButton
+                        aria-label="Interpretación CARE"
                         onClick={() => { setShowCareNarrative(!showCareNarrative); }}
                         sx={{
                           bgcolor: 'rgba(18,18,20,0.95)',
@@ -1197,6 +1212,7 @@ export default function Discover() {
                       zIndex: 10
                     }}>
                       <IconButton
+                        aria-label="Compatibilidad"
                         onClick={() => { setShowCompatibility(!showCompatibility); }}
                         sx={{
                           bgcolor: 'rgba(18,18,20,0.95)',
@@ -1301,6 +1317,11 @@ export default function Discover() {
                       position: 'sticky',
                       top: '20px',
                       zIndex: 5,
+                      '@media (min-width:768px) and (max-width:1024px)': {
+                        width: '100%',
+                        maxWidth: '320px',
+                        minWidth: 0,
+                      },
                     }}
                   >
                     <CompatibilityTechnicalPanel
@@ -1538,7 +1559,10 @@ export default function Discover() {
                     boxShadow: isCurious ? '0 4px 12px rgba(171, 71, 188, 0.2)' : '0 1px 4px rgba(0,0,0,0.08)',
                     cursor: 'pointer'
                   }}
-                  onClick={() => handleCuriosityChange(!isCurious)}
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest('input')) return;
+                    handleCuriosityChange(!isCurious);
+                  }}
                 >
                   <Switch
                     checked={isCurious}

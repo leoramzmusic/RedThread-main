@@ -33,6 +33,7 @@ import Layout from '../../components/layout/Layout';
 import ParallaxImage from '../../components/motion/ParallaxImage';
 import apiClient from '../../services/api';
 import ProfileCard, { Profile } from '../../components/profile/ProfileCard';
+import PresenceIndicator, { parseServerDate } from '../../components/profile/PresenceIndicator';
 import { useTranslation } from 'next-i18next';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -51,6 +52,7 @@ interface LikeProfile {
   liked_at?: string;
   passed_at?: string;
   last_seen?: string;
+  connection_status?: string;
 }
 
 interface TabPanelProps {
@@ -62,9 +64,8 @@ interface TabPanelProps {
 const ONLINE_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
 
 const isOnline = (lastSeen?: string): boolean => {
-  if (!lastSeen) return false;
-  const seenAt = new Date(lastSeen).getTime();
-  if (Number.isNaN(seenAt)) return false;
+  const seenAt = parseServerDate(lastSeen);
+  if (seenAt === null) return false;
   return Date.now() - seenAt < ONLINE_WINDOW_MS;
 };
 
@@ -77,9 +78,8 @@ const PERIOD_LABELS: Record<PeriodKey, string> = {
 };
 
 const getPeriodKey = (dateStr?: string): PeriodKey => {
-  if (!dateStr) return 'month';
-  const ts = new Date(dateStr).getTime();
-  if (Number.isNaN(ts)) return 'month';
+  const ts = parseServerDate(dateStr);
+  if (ts === null) return 'month';
   const now = Date.now();
   const startOfToday = (() => {
     const d = new Date();
@@ -331,21 +331,11 @@ export default function LikesPage() {
                     sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                   >
                     {profile.display_name}, {profile.age}
-                    {isOnline(profile.last_seen) && (
-                      <Box
-                        component="span"
-                        role="img"
-                        aria-label="En línea ahora"
-                        sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          bgcolor: '#4CAF50',
-                          boxShadow: '0 0 6px rgba(76, 175, 80, 0.9)',
-                          flexShrink: 0
-                        }}
-                      />
-                    )}
+                    <PresenceIndicator
+                      status={profile.connection_status}
+                      lastSeen={profile.last_seen}
+                      size={8}
+                    />
                   </Typography>
 
                   {profile.affinity_score && (
@@ -562,6 +552,28 @@ export default function LikesPage() {
               showActions={true}
               showSwipeControls={tabValue >= 2}
               showDetailsButton={false}
+              detailsFooterActions={
+                selectedProfile && tabValue <= 1 ? (
+                  tabValue === 0 ? (
+                    <Button
+                      variant="contained"
+                      startIcon={<HeartIcon />}
+                      onClick={() => handleSwipe('like')}
+                    >
+                      Responder
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => handleRemoveLike(selectedProfile)}
+                    >
+                      Eliminar like
+                    </Button>
+                  )
+                ) : undefined
+              }
             />
           )}
 
