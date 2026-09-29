@@ -79,31 +79,29 @@ backend/uploads/
 logs/
 
 # =========================
-# Carpetas internas de RETH
+# Tooling de agentes/IDEs (no versionar)
+# NOTA: .github/ y .husky/ SÍ se versionan (CI + hooks)
 # =========================
-agents/
-augment/
-claude/
-codebuddy/
-codewhale/
-continue/
-cursor/
-factory/
-gemini/
-githooks/
-github/
-_husky/
-kiro/
-obsidian/
-opencode/
-pytest_cache/
-qpoder/
-roo/
-superpowers/
-trae/
-warp/
-windsurf/
-architecture/
+.agents/
+.augment/
+.claude/
+.codebuddy/
+.codegraph/
+.codewhale/
+.continue/
+.cursor/
+.factory/
+.gemini/
+.kiro/
+.obsidian/
+.opencode/
+.pytest_cache/
+.qoder/
+.roo/
+.superpowers/
+.trae/
+.warp/
+.windsurf/
 
 # Credenciales locales de prueba (nunca commitear)
 login.json
