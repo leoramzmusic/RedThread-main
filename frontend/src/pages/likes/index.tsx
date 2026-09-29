@@ -1,5 +1,5 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -23,7 +23,11 @@ import {
   Star as StarIcon,
   Send as SendIcon,
   AccessTime as TimeIcon,
-  Chat as ChatIcon
+  Chat as ChatIcon,
+  Close as CloseIcon,
+  DeleteOutline as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Replay as ReplayIcon
 } from '@mui/icons-material';
 import Layout from '../../components/layout/Layout';
 import ParallaxImage from '../../components/motion/ParallaxImage';
@@ -54,6 +58,38 @@ interface TabPanelProps {
   index: number;
   value: number;
 }
+
+const ONLINE_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+
+const isOnline = (lastSeen?: string): boolean => {
+  if (!lastSeen) return false;
+  const seenAt = new Date(lastSeen).getTime();
+  if (Number.isNaN(seenAt)) return false;
+  return Date.now() - seenAt < ONLINE_WINDOW_MS;
+};
+
+type PeriodKey = 'today' | 'week' | 'month';
+
+const PERIOD_LABELS: Record<PeriodKey, string> = {
+  today: 'Likes de hoy',
+  week: 'Likes de esta semana',
+  month: 'Likes de este mes'
+};
+
+const getPeriodKey = (dateStr?: string): PeriodKey => {
+  if (!dateStr) return 'month';
+  const ts = new Date(dateStr).getTime();
+  if (Number.isNaN(ts)) return 'month';
+  const now = Date.now();
+  const startOfToday = (() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  })();
+  if (ts >= startOfToday) return 'today';
+  if (now - ts < 7 * 24 * 60 * 60 * 1000) return 'week';
+  return 'month';
+};
 
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -88,6 +124,7 @@ export default function LikesPage() {
   const [secondChance, setSecondChance] = useState<LikeProfile[]>([]);
 
   const [selectedProfile, setSelectedProfile] = useState<LikeProfile | null>(null);
+  const lastVisitRef = useRef<{ userId: string; at: number } | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean, message: string, severity: 'success' | 'info' | 'error' }>({
     open: false,
     message: '',
@@ -141,9 +178,26 @@ export default function LikesPage() {
     fetchData();
   }, []);
 
+  const recordVisit = (userId: string) => {
+    // Dedup: same profile clicked twice within 60s counts once
+    const now = Date.now();
+    if (
+      lastVisitRef.current &&
+      lastVisitRef.current.userId === userId &&
+      now - lastVisitRef.current.at < 60_000
+    ) {
+      return;
+    }
+    lastVisitRef.current = { userId, at: now };
+    apiClient
+      .post(`/visits/record?target_user_id=${userId}`)
+      .catch((err) => console.warn('Error recording visit:', err));
+  };
+
   const handleProfileClick = (profile: LikeProfile) => {
     // Allow interaction for received likes, sent likes, top picks, and second chance
     if (tabValue === 0 || tabValue === 1 || tabValue === 2 || tabValue === 3) {
+      recordVisit(profile.user_id);
       setSelectedProfile(profile);
     }
   };
@@ -152,22 +206,26 @@ export default function LikesPage() {
     setSelectedProfile(null);
   };
 
-  const handleSwipe = async (interaction: 'like' | 'pass' | 'superlike') => {
-    if (!selectedProfile) return;
+  const handleSwipe = async (
+    interaction: 'like' | 'pass' | 'superlike',
+    profileOverride?: LikeProfile
+  ) => {
+    const target = profileOverride || selectedProfile;
+    if (!target) return;
 
     try {
       const response = await apiClient.post('/discovery/swipe', {
-        target_user_id: selectedProfile.user_id,
+        target_user_id: target.user_id,
         interaction
       });
 
-      handleCloseProfile();
+      if (!profileOverride) handleCloseProfile();
 
       if (response.data.is_match) {
         setMatchDialogOpen(true);
         setSnackbar({
           open: true,
-          message: `¡Es un Match con ${selectedProfile.display_name}! 🎉`,
+          message: `¡Es un Match con ${target.display_name}! 🎉`,
           severity: 'success'
         });
       } else {
@@ -180,16 +238,33 @@ export default function LikesPage() {
 
       // Remove from list
       if (tabValue === 0) { // Received likes
-        setReceivedLikes(prev => prev.filter(p => p.user_id !== selectedProfile.user_id));
+        setReceivedLikes(prev => prev.filter(p => p.user_id !== target.user_id));
       } else if (tabValue === 2) { // Top picks
-        setTopPicks(prev => prev.filter(p => p.user_id !== selectedProfile.user_id));
+        setTopPicks(prev => prev.filter(p => p.user_id !== target.user_id));
       } else if (tabValue === 3) { // Second chance
-        setSecondChance(prev => prev.filter(p => p.user_id !== selectedProfile.user_id));
+        setSecondChance(prev => prev.filter(p => p.user_id !== target.user_id));
       }
 
     } catch (error) {
       console.error('Error swiping:', error);
       setSnackbar({ open: true, message: 'Error al procesar la acción', severity: 'error' });
+    }
+  };
+
+  const handleRemoveLike = async (profile: LikeProfile) => {
+    try {
+      await apiClient.delete(`/discovery/likes-sent/${profile.match_id}`);
+      setSentLikes(prev => prev.filter(p => p.match_id !== profile.match_id));
+      if (selectedProfile?.match_id === profile.match_id) handleCloseProfile();
+      setSnackbar({ open: true, message: 'Like eliminado', severity: 'info' });
+    } catch (error: any) {
+      console.error('Error removing like:', error);
+      const detail = error?.response?.data?.detail;
+      setSnackbar({
+        open: true,
+        message: detail || 'Error al eliminar el like',
+        severity: 'error'
+      });
     }
   };
 
@@ -209,10 +284,12 @@ export default function LikesPage() {
       );
     }
 
-    return (
-      <Grid container spacing={3}>
-        {profiles.map((profile) => (
-          <Grid item key={profile.user_id} xs={12} sm={6} md={4} lg={3}>
+    const dateField = type === 'second' ? 'passed_at' : 'liked_at';
+    const buckets: Record<PeriodKey, LikeProfile[]> = { today: [], week: [], month: [] };
+    profiles.forEach((p) => buckets[getPeriodKey(p[dateField])].push(p));
+
+    const renderCard = (profile: LikeProfile) => (
+          <Grid item key={`${type}-${profile.match_id || profile.user_id}`} xs={12} sm={6} md={4} lg={3}>
             <Card
               onClick={() => handleProfileClick(profile)}
               sx={{
@@ -220,13 +297,13 @@ export default function LikesPage() {
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
-                borderRadius: 4,
+                borderRadius: '12px',
                 overflow: 'hidden',
                 transition: 'transform 0.2s',
-                cursor: (type === 'received' || type === 'sent' || type === 'top' || type === 'second') ? 'pointer' : 'default',
+                cursor: 'pointer',
                 '&:hover': {
-                  transform: (type === 'received' || type === 'sent' || type === 'top' || type === 'second') ? 'translateY(-4px)' : 'none',
-                  boxShadow: (type === 'received' || type === 'sent' || type === 'top' || type === 'second') ? 6 : 1
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
                 }
               }}
             >
@@ -247,8 +324,28 @@ export default function LikesPage() {
                   p: 2,
                   pt: 6
                 }}>
-                  <Typography variant="h6" color="white" fontWeight="bold">
+                  <Typography
+                    variant="h6"
+                    color="white"
+                    fontWeight="bold"
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
                     {profile.display_name}, {profile.age}
+                    {isOnline(profile.last_seen) && (
+                      <Box
+                        component="span"
+                        role="img"
+                        aria-label="En línea ahora"
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: '#4CAF50',
+                          boxShadow: '0 0 6px rgba(76, 175, 80, 0.9)',
+                          flexShrink: 0
+                        }}
+                      />
+                    )}
                   </Typography>
 
                   {profile.affinity_score && (
@@ -294,11 +391,87 @@ export default function LikesPage() {
                     {type === 'second' && profile.passed_at && `Lo descartaste ${formatDistanceToNow(new Date(profile.passed_at), { addSuffix: true, locale: es })}`}
                   </Typography>
                 </Stack>
+
+                {(type === 'received' || type === 'sent' || type === 'second') && (
+                  <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<VisibilityIcon fontSize="small" />}
+                      onClick={(e) => { e.stopPropagation(); handleProfileClick(profile); }}
+                      sx={{ flex: 1 }}
+                    >
+                      Ver perfil
+                    </Button>
+                    {type === 'received' && (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        startIcon={<HeartIcon fontSize="small" />}
+                        onClick={(e) => { e.stopPropagation(); handleSwipe('like', profile); }}
+                        sx={{ flex: 1 }}
+                      >
+                        Responder
+                      </Button>
+                    )}
+                    {type === 'sent' && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteIcon fontSize="small" />}
+                        onClick={(e) => { e.stopPropagation(); handleRemoveLike(profile); }}
+                        sx={{ flex: 1 }}
+                      >
+                        Eliminar like
+                      </Button>
+                    )}
+                    {type === 'second' && (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        startIcon={<ReplayIcon fontSize="small" />}
+                        onClick={(e) => { e.stopPropagation(); handleSwipe('like', profile); }}
+                        sx={{ flex: 1 }}
+                      >
+                        Reconsiderar
+                      </Button>
+                    )}
+                  </Stack>
+                )}
               </CardContent>
             </Card>
           </Grid>
-        ))}
-      </Grid>
+    );
+
+    if (type === 'top') {
+      return (
+        <Grid container spacing={3}>
+          {profiles.map((p) => renderCard(p))}
+        </Grid>
+      );
+    }
+
+    return (
+      <>
+        {(['today', 'week', 'month'] as PeriodKey[])
+          .filter((k) => buckets[k].length > 0)
+          .map((k) => (
+            <Box key={k} sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <Typography variant="h6" fontWeight={700}>
+                  {PERIOD_LABELS[k]}
+                </Typography>
+                <Chip size="small" label={buckets[k].length} />
+              </Box>
+              <Grid container spacing={3}>
+                {buckets[k].map((p) => renderCard(p))}
+              </Grid>
+            </Box>
+          ))}
+      </>
     );
   };
 
@@ -366,7 +539,7 @@ export default function LikesPage() {
           scroll="body"
           PaperProps={{
             sx: {
-              borderRadius: 4,
+              borderRadius: '12px',
               overflow: 'hidden',
               maxWidth: 400,
               width: '100%',
@@ -380,13 +553,53 @@ export default function LikesPage() {
                 ...selectedProfile,
                 interests: selectedProfile.interests || [],
                 bio: selectedProfile.bio || '',
-                affinity_score: selectedProfile.affinity_score || 0
+                affinity_score: selectedProfile.affinity_score || 0,
+                online_status: isOnline(selectedProfile.last_seen)
               }}
               onLike={() => handleSwipe('like')}
               onPass={() => handleSwipe('pass')}
               onSuperLike={() => handleSwipe('superlike')}
               showActions={true}
+              showSwipeControls={tabValue >= 2}
+              showDetailsButton={false}
             />
+          )}
+
+          {/* Management actions (Likes recibidos / enviados) - no swipe controls */}
+          {selectedProfile && tabValue <= 1 && (
+            <Box sx={{ display: 'flex', gap: 1.5, p: 2, pt: 0 }}>
+              {tabValue === 0 ? (
+                <>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<HeartIcon />}
+                    onClick={() => handleSwipe('like')}
+                  >
+                    Responder
+                  </Button>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    color="inherit"
+                    startIcon={<CloseIcon />}
+                    onClick={() => handleSwipe('pass')}
+                  >
+                    Ignorar
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => handleRemoveLike(selectedProfile)}
+                >
+                  Eliminar like
+                </Button>
+              )}
+            </Box>
           )}
         </Dialog>
 
@@ -397,7 +610,7 @@ export default function LikesPage() {
           maxWidth="xs"
           fullWidth
           PaperProps={{
-            sx: { borderRadius: 4, textAlign: 'center', p: 2 }
+            sx: { borderRadius: '12px', textAlign: 'center', p: 2 }
           }}
         >
           <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

@@ -1221,9 +1221,9 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
     # 1. Other user liked you (LIKE or SUPERLIKE)
     # 2. You haven't responded yet (your interaction is None)
     # 3. Status is still PENDING
-    # 4. Created within last 7 days
+    # 4. Created within last 30 days (grouped by Hoy / Semana / Mes in the UI)
 
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
 
     matches = await Match.find(
         {
@@ -1235,7 +1235,7 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
                     },
                     "user_2_interaction": None,
                     "status": MatchStatus.PENDING,
-                    "created_at": {"$gte": seven_days_ago},
+                    "created_at": {"$gte": thirty_days_ago},
                 },
                 {
                     "user_id_1": str(current_user.id),
@@ -1244,7 +1244,7 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
                     },
                     "user_1_interaction": None,
                     "status": MatchStatus.PENDING,
-                    "created_at": {"$gte": seven_days_ago},
+                    "created_at": {"$gte": thirty_days_ago},
                 },
             ]
         }
@@ -1450,10 +1450,11 @@ async def reconsider_profile(
 @router.get("/likes-sent", response_model=List[SentLike])
 async def get_sent_likes(current_user: User = Depends(get_current_user)):
     """
-    Get list of users you liked in the last 7 days.
+    Get list of users you liked in the last 30 days.
     """
 
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    my_profile = await Profile.find_one(Profile.user_id == str(current_user.id))
 
     # Find matches where YOU liked the other person
     matches = await Match.find({
@@ -1461,12 +1462,12 @@ async def get_sent_likes(current_user: User = Depends(get_current_user)):
             {
                 "user_id_1": str(current_user.id),
                 "user_1_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
-                "created_at": {"$gte": seven_days_ago}
+                "created_at": {"$gte": thirty_days_ago}
             },
             {
                 "user_id_2": str(current_user.id),
                 "user_2_interaction": {"$in": [InteractionType.LIKE, InteractionType.SUPERLIKE]},
-                "created_at": {"$gte": seven_days_ago}
+                "created_at": {"$gte": thirty_days_ago}
             }
         ]
     }).to_list()
@@ -1489,7 +1490,7 @@ async def get_sent_likes(current_user: User = Depends(get_current_user)):
             # Calculate affinity if not already stored
             affinity = (
                 match.affinity_score
-                if match.affinity_score > 0
+                if match.affinity_score > 0 or my_profile is None
                 else AffinityService.calculate_score(my_profile, liked_profile)
             )
 
@@ -1513,6 +1514,59 @@ async def get_sent_likes(current_user: User = Depends(get_current_user)):
     # Sort by most recent
     result.sort(key=lambda x: x.liked_at, reverse=True)
     return result
+
+
+@router.delete("/likes-sent/{match_id}")
+async def remove_sent_like(match_id: str, current_user: User = Depends(get_current_user)):
+    """
+    Revert a like you sent.
+    - If the other user hasn't responded yet: the interaction record is removed
+      so they can appear in your discovery queue again.
+    - If they already passed you: your like is cleared (their pass is preserved).
+    - If they already liked you back (mutual match): use unmatch instead.
+    """
+    match = await Match.get(match_id)
+
+    if not match:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Like not found"
+        )
+
+    me = str(current_user.id)
+    if match.user_id_1 == me:
+        my_side, their_side = "user_1_interaction", "user_2_interaction"
+    elif match.user_id_2 == me:
+        my_side, their_side = "user_2_interaction", "user_1_interaction"
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Like not found"
+        )
+
+    my_interaction = getattr(match, my_side)
+    if my_interaction not in (InteractionType.LIKE, InteractionType.SUPERLIKE):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No active like to remove",
+        )
+
+    their_interaction = getattr(match, their_side)
+    if their_interaction in (InteractionType.LIKE, InteractionType.SUPERLIKE):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Esta persona ya te dio like de vuelta. Usa deshacer match en su lugar.",
+        )
+
+    if their_interaction is None:
+        # Clean revert: remove the record entirely so both users
+        # can appear in each other's discovery queue again.
+        await match.delete()
+    else:
+        # They already passed: keep their decision, just clear my like.
+        setattr(match, my_side, None)
+        match.interaction_updated_at = datetime.utcnow()
+        await match.save()
+
+    return {"removed": True, "match_id": match_id}
 
 
 @router.get("/top-picks", response_model=List[DiscoveryProfile])

@@ -100,3 +100,34 @@ sus hallazgos, igual que la primera es aceptarlos.
 
 **Prioridad:** P1 (impacto directo en onboarding / retención día 1)
 **Owner:** unassigned
+---
+
+## F0-31 (P2) — Historial de interacciones (`interactions_history`) para memoria de CARE
+
+**Contexto (decisión de diseño):** la UI muestra solo likes de día/semana/mes (ventana de 30 días
+en `likes-received`/`likes-sent`), pero CARE necesita memoria larga (6–12 meses) para no
+recomendar perfiles ya interactuados sin contexto, y para mostrar avisos como
+*"Ya interactuaste con este perfil en el pasado"*.
+
+**Estado actual (ya cumple parte de la estrategia, sin código nuevo):**
+- `Match` **no se borra nunca** (salvo "Eliminar like" explícito) → guarda like/pass/superlike
+  de forma permanente con `created_at`, `interaction_updated_at`, `status`.
+- Discover excluye de la cola a todo usuario con doc en `matches` → memoria ya activa.
+- `ProfileVisit` guarda visitas; colecciones de chat guardan mensajes.
+- **No hay** esquema unificado, campo `context` ni `status` (activo/archivado/revertido).
+
+**Diseño propuesto (cuando se implemente):**
+Colección `interactions_history`:
+- `interaction_id`, `actor_id`, `target_id`
+- `type`: like | dislike | visit | superlike | message
+- `created_at`, `context` (ej. "desde Discover", "desde Likes enviados")
+- `status`: activo | archivado | revertido
+
+**Fases:**
+1. Escribir eventos desde swipe, visits/record y chat (append-only, sin tocar la cola de Discover).
+2. Migración/backfill desde `matches` + `profile_visits`.
+3. CARE consulta historial → indicador "Ya interactuaste…" en reapariciones y desempate.
+4. Archivado: docs >30 días → solo lectura (no borrar; la memoria emocional es el valor).
+
+**Prioridad:** P2 (CARE ya tiene memoria vía `matches`; esto es consolidación y trazabilidad)
+**Owner:** unassigned

@@ -134,6 +134,8 @@ interface ProfileCardProps {
   isBlind?: boolean;
   isCurious?: boolean;
   interactionMode?: InteractionMode;
+  showSwipeControls?: boolean; // Hide like/pass/superlike/undo/vip bar (e.g. Likes management view)
+  showDetailsButton?: boolean; // Hide "view details" arrow (e.g. Likes view)
 }
 
 export default function ProfileCard({
@@ -152,6 +154,8 @@ export default function ProfileCard({
   isBlind = false,
   isCurious = false,
   interactionMode = 'buttons', // Default mode
+  showSwipeControls = true,
+  showDetailsButton = true,
 }: ProfileCardProps) {
   const { t } = useTranslation(['discover', 'common']);
   const { mode } = useAppTheme();
@@ -527,7 +531,7 @@ export default function ProfileCard({
         </Tooltip>
 
         {/* Info/Upward Arrow Button - Mobile Story Style */}
-        {showActions && (
+        {showActions && showDetailsButton && (
           <Tooltip title={t('card.viewProfileDetails', "Ver detalles del perfil")}>
             <IconButton
               onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
@@ -553,7 +557,7 @@ export default function ProfileCard({
 
 
         {/* Action Buttons - Refined Solid Container */}
-        {showActions && (
+        {showActions && showSwipeControls && (
           <ProfileActions
             onLike={onLike}
             onPass={onPass}
