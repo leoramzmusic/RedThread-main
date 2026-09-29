@@ -112,7 +112,7 @@ async def get_recent_activity(
                 else match.user_id_1
             )
             other_profile = await Profile.find_one(Profile.user_id == other_user_id)
-            other_user = await User.find_one(User.id == other_user_id)
+            other_user = await User.get(other_user_id)
 
             if other_profile and other_user:
                 matches_with_profiles.append(
@@ -161,7 +161,7 @@ async def get_recent_activity(
         conversations_with_profiles = []
         for user_id, last_msg in list(conversations_dict.items())[:3]:
             other_profile = await Profile.find_one(Profile.user_id == user_id)
-            other_user = await User.find_one(User.id == user_id)
+            other_user = await User.get(user_id)
 
             if other_profile and other_user:
                 conversations_with_profiles.append(
@@ -229,7 +229,7 @@ async def get_suggestions(
         suggestions = []
         for profile in suggested_profiles:
             # Get user for display_name
-            user = await User.find_one(User.id == profile.user_id)
+            user = await User.get(profile.user_id)
             if not user:
                 continue
 

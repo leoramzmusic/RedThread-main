@@ -204,8 +204,8 @@ async def get_care_recommendations(
             if not original_profile:
                 continue
 
-            # Get user for display_name and tier
-            user = await User.find_one(User.id == str(candidate.id))
+            # Get user for display_name and tier (User.get coerces str -> ObjectId)
+            user = await User.get(str(candidate.id))
 
             # Generate explanation
             explanation = explain_score(user_profile, candidate, item)

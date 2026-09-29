@@ -21,6 +21,7 @@ from src.services.kafka_service import kafka_service
 from src.services.kafka_topics import KafkaTopic, KafkaEventType
 from src.services.redis_service import redis_service
 import json
+from bson import ObjectId
 
 
 router = APIRouter()
@@ -66,10 +67,19 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 
     await manager.connect(user_id, websocket)
 
+    # str -> ObjectId: User.find_one(User.id == str) never matches the stored
+    # ObjectId, so this update used to be a silent no-op.
+    try:
+        user_oid = ObjectId(user_id)
+    except Exception:
+        user_oid = None
+
     # Update user online status atomically
-    await User.find_one(User.id == user_id).update(
-        {"$set": {"last_active": datetime.utcnow()}}
-    )
+    if user_oid:
+        now = datetime.utcnow()
+        await User.find_one(User.id == user_oid).update(
+            {"$set": {"last_active": now, "last_seen": now}}
+        )
 
     try:
         while True:
@@ -77,9 +87,11 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = await websocket.receive_text()
 
             # Update activity on any message atomically
-            await User.find_one(User.id == user_id).update(
-                {"$set": {"last_active": datetime.utcnow()}}
-            )
+            if user_oid:
+                now = datetime.utcnow()
+                await User.find_one(User.id == user_oid).update(
+                    {"$set": {"last_active": now, "last_seen": now}}
+                )
 
             message_data = json.loads(data)
 

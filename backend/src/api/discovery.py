@@ -11,6 +11,7 @@ from src.services.compatibility_service import CompatibilityService
 from src.services.kafka_service import kafka_service
 from src.services.kafka_topics import KafkaTopic, KafkaEventType
 from src.services.conversation_service import ensure_match_conversation
+from src.services.presence import presence_for_user
 
 # Import CARE Engine
 from src.care.ranking.ranker import rank_candidates, cold_start_recommendations
@@ -78,6 +79,9 @@ class DiscoveryProfile(BaseModel):
     profile_completion_total: Optional[int] = None
     completion_card_message: Optional[str] = None
     show_completion_card: bool = False
+    # Presence
+    last_seen: Optional[datetime] = None
+    connection_status: Optional[str] = None  # online|active_recent|away|idle|offline
 
 
 class ReceivedLike(BaseModel):
@@ -94,6 +98,7 @@ class ReceivedLike(BaseModel):
     is_superlike: bool
     liked_at: datetime
     last_seen: Optional[datetime] = None  # Online indicator
+    connection_status: Optional[str] = None
 
 
 class SecondChanceProfile(BaseModel):
@@ -108,6 +113,8 @@ class SecondChanceProfile(BaseModel):
     interests: List[str]
     affinity_score: float
     passed_at: datetime
+    last_seen: Optional[datetime] = None  # Online indicator
+    connection_status: Optional[str] = None
 
 
 class SentLike(BaseModel):
@@ -124,6 +131,7 @@ class SentLike(BaseModel):
     is_superlike: bool
     liked_at: datetime
     last_seen: Optional[datetime] = None  # Online indicator
+    connection_status: Optional[str] = None
 
 
 @router.get("/queue", response_model=List[DiscoveryProfile])
@@ -663,8 +671,10 @@ async def get_discovery_queue(
             if not original_profile:
                 continue
 
-            # Get user for display_name
-            user = await User.find_one(User.id == str(candidate.id))
+            # Get user for display_name (User.get coerces str -> ObjectId;
+            # User.find_one(User.id == str) never matches the stored ObjectId)
+            user = await User.get(str(candidate.id))
+            candidate_last_seen, candidate_status = presence_for_user(user)
 
             # Generate explanation & highlights
             explanation = explain_score(user_profile, candidate, item)
@@ -695,6 +705,8 @@ async def get_discovery_queue(
                     match_highlights=highlights,
                     is_discovery=item.get("is_discovery", False),
                     subscription_tier=user.subscription_tier if user else "free",
+                    last_seen=candidate_last_seen,
+                    connection_status=candidate_status,
                     distance_km=breakdown.get("proximity_km"),
                     activity_score=candidate.activity_score,
                     responsiveness_score=candidate.responsiveness_score,
@@ -1194,8 +1206,9 @@ async def _build_discovery_profile(
         score = AffinityService.calculate_score(my_profile, profile)
 
     # Get user subscription tier for visual identity
-    user = await User.find_one(User.id == profile.user_id)
+    user = await User.get(profile.user_id)
     subscription_tier = user.subscription_tier.value if user else "free"
+    user_last_seen, user_status = presence_for_user(user)
 
     return DiscoveryProfile(
         user_id=profile.user_id,
@@ -1207,6 +1220,8 @@ async def _build_discovery_profile(
         affinity_score=score,
         subscription_tier=subscription_tier,
         affinity_breakdown={"total": score},  # Simple breakdown for now
+        last_seen=user_last_seen,
+        connection_status=user_status,
     )
 
 
@@ -1275,6 +1290,7 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
 
             # Get user for last_seen
             user = await User.get(liker_id)
+            liker_last_seen, liker_status = presence_for_user(user)
 
             result.append(
                 ReceivedLike(
@@ -1290,7 +1306,8 @@ async def get_received_likes(current_user: User = Depends(get_current_user)):
                     affinity_score=affinity,
                     is_superlike=is_superlike,
                     liked_at=match.created_at,
-                    last_seen=user.last_seen if user else None,
+                    last_seen=liker_last_seen,
+                    connection_status=liker_status,
                 )
             )
 
@@ -1355,6 +1372,9 @@ async def get_second_chance(
                     else AffinityService.calculate_score(my_profile, passed_profile)
                 )
 
+                passed_user = await User.get(passed_user_id)
+                passed_last_seen, passed_status = presence_for_user(passed_user)
+
                 result.append(
                     SecondChanceProfile(
                         match_id=str(match.id),
@@ -1369,7 +1389,9 @@ async def get_second_chance(
                         photos=passed_profile.photos[:5],
                         interests=passed_profile.interests,
                         affinity_score=affinity,
-                        passed_at=match.created_at,
+                        passed_at=match.interaction_updated_at or match.created_at,
+                        last_seen=passed_last_seen,
+                        connection_status=passed_status,
                     )
                 )
 
@@ -1441,12 +1463,6 @@ async def reconsider_profile(
     }
 
 
-# Sort by most recent first
-    result.sort(key=lambda x: x.liked_at, reverse=True)
-
-    return result
-
-
 @router.get("/likes-sent", response_model=List[SentLike])
 async def get_sent_likes(current_user: User = Depends(get_current_user)):
     """
@@ -1496,6 +1512,7 @@ async def get_sent_likes(current_user: User = Depends(get_current_user)):
 
             # Get user for display_name and last_seen
             user = await User.get(liked_user_id)
+            liked_last_seen, liked_status = presence_for_user(user)
 
             result.append(SentLike(
                 match_id=str(match.id),
@@ -1508,7 +1525,8 @@ async def get_sent_likes(current_user: User = Depends(get_current_user)):
                 affinity_score=affinity,
                 is_superlike=is_superlike,
                 liked_at=match.created_at,
-                last_seen=user.last_seen if user else None,
+                last_seen=liked_last_seen,
+                connection_status=liked_status,
             ))
 
     # Sort by most recent
@@ -1655,7 +1673,7 @@ async def get_likes_received(current_user: User = Depends(get_current_user)):
             profile = await Profile.find_one(Profile.user_id == match.user_id_1)
             if profile:
                 # Get user to fetch display_name
-                user = await User.find_one(User.id == match.user_id_1)
+                user = await User.get(match.user_id_1)
                 display_name = user.display_name if user else "Unknown"
 
                 # Return simple profile data
@@ -1708,7 +1726,7 @@ async def get_likes_sent(current_user: User = Depends(get_current_user)):
             profile = await Profile.find_one(Profile.user_id == match.user_id_2)
             if profile:
                 # Get user to fetch display_name
-                user = await User.find_one(User.id == match.user_id_2)
+                user = await User.get(match.user_id_2)
                 display_name = user.display_name if user else "Unknown"
 
                 # Return simple profile data

@@ -126,6 +126,16 @@ async def get_current_user(
             detail="User not found or inactive",
         )
 
+    # Presence: refresh last_seen at most once every 30s so active sessions
+    # always read as "online" without a write on every single request.
+    try:
+        now = datetime.utcnow()
+        if user.last_seen is None or (now - user.last_seen).total_seconds() > 30:
+            user.last_seen = now
+            await user.save()
+    except Exception:
+        pass  # presence must never break authentication
+
     return user
 
 
