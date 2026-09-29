@@ -138,12 +138,17 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         const keys: ProfileSectionKey[] = [];
         for (const mod of data) {
           const k: unknown = mod?.key;
-          if (typeof k !== 'string' || !(k in PROFILE_SECTION_REGISTRY)) {
+          if (typeof k !== 'string' || !Object.hasOwn(PROFILE_SECTION_REGISTRY, k)) {
             console.warn(`[ProfileEdit] Skipping unknown profile module key: ${String(k)}`);
             continue;
           }
           const key = k as ProfileSectionKey;
           if (!keys.includes(key)) keys.push(key);
+        }
+        for (const registryKey of Object.keys(PROFILE_SECTION_REGISTRY) as ProfileSectionKey[]) {
+          if (!keys.includes(registryKey)) {
+            console.warn(`[ProfileEdit] Profile module missing from backend response: ${registryKey}`);
+          }
         }
         if (keys.length > 0) setModuleOrder(keys);
       })
