@@ -408,6 +408,7 @@ interface SortableModuleRowProps {
 }
 
 function SortableModuleRow({ mod, disabled, onToggle, onEdit, onDelete }: SortableModuleRowProps) {
+    const { t } = useTranslation('common');
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: mod.key, disabled });
     const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
@@ -462,16 +463,16 @@ function SortableModuleRow({ mod, disabled, onToggle, onEdit, onDelete }: Sortab
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
-                    <Tooltip title={mod.visible ? 'Visible' : 'Oculto'}>
+                    <Tooltip title={mod.visible ? t('profileModules.visible', 'Visible') : t('profileModules.hidden', 'Oculto')}>
                         <Switch size="small" checked={mod.visible} onChange={(e) => onToggle(e.target.checked)} disabled={disabled} />
                     </Tooltip>
-                    <Tooltip title="Editar">
+                    <Tooltip title={t('profileModules.edit', 'Editar')}>
                         <IconButton size="small" onClick={onEdit} disabled={disabled}>
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
                     {mod.origen === 'integracion' && (
-                        <Tooltip title="Eliminar">
+                        <Tooltip title={t('profileModules.delete', 'Eliminar')}>
                             <IconButton size="small" onClick={onDelete} color="error" disabled={disabled}>
                                 <DeleteIcon />
                             </IconButton>

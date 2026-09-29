@@ -5,9 +5,9 @@ jest.mock('country-codes-list', () => ({
   customList: () => ({ MX: 'Mexico|52' }),
 }));
 
-import { PROFILE_SECTION_REGISTRY } from './registry';
+import { PROFILE_SECTION_REGISTRY, type ProfileSectionKey } from './registry';
 
-const SEED_KEYS = ['section-photos','section-basic','section-location','section-aboutme','section-goals','section-interests','section-pronouns','section-additional','section-professional','section-music','section-identity','section-personality','section-cognitive','section-wellness','section-status','section-languages'];
+const SEED_KEYS: ProfileSectionKey[] = ['section-photos','section-basic','section-location','section-aboutme','section-goals','section-interests','section-pronouns','section-additional','section-professional','section-music','section-identity','section-personality','section-cognitive','section-wellness','section-status','section-languages'];
 
 test('registry covers every seeded key', () => {
   for (const key of SEED_KEYS) {
