@@ -121,8 +121,8 @@ Texto extraído: NOMBRE JUAN PEREZ
 ### Documentación
 - `OCR_IMPLEMENTATION_GUIDE.md` - Guía completa de OCR
 - `TESSERACT_INSTALLATION.md` - Instalación de Tesseract
-- `install-tesseract.ps1` - Script de instalación
-- `install-spanish-lang.ps1` - Script para idioma español (opcional)
+- `scripts/install-tesseract.ps1` - Script de instalación
+- `scripts/install-spanish-lang.ps1` - Script para idioma español (opcional)
 
 ---
 
@@ -132,7 +132,7 @@ Texto extraído: NOMBRE JUAN PEREZ
 Instalar idioma español para documentos en español:
 ```powershell
 # Como Administrador
-.\install-spanish-lang.ps1
+.\scripts\install-spanish-lang.ps1
 ```
 
 Luego cambiar en `profiles.py` línea 456:
