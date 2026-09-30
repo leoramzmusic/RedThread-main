@@ -1071,7 +1071,9 @@
           "label": "Sapioerótico/Sapiosexual",
           "desc": "Atracción por la inteligencia y el mundo interno."
         }
-      }
+      },
+      "doneClose": "Cerrar",
+      "multiCloseHint": "Selecciona una o más opciones y pulsa Cerrar."
     },
     "interests": {
       "title": "Intereses",

@@ -994,7 +994,9 @@
           "label": "Sapioerotic/Sapiosexual",
           "desc": "Attraction to intelligence and inner world."
         }
-      }
+      },
+      "doneClose": "Done",
+      "multiCloseHint": "Select one or more options, then press Done."
     },
     "interests": {
       "title": "Interests",

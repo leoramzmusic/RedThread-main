@@ -155,6 +155,10 @@ export default function IdentitySection({
     t(`profileSections.identity.orientOpt.${normOptKey(label)}.label`, label);
   const oOptDesc = (label: string, desc: string) =>
     t(`profileSections.identity.orientOpt.${normOptKey(label)}.desc`, desc);
+  // Sentinel value for the "Cerrar" footer item in multiselects (never stored)
+  const CLOSE_MENU = "__close_menu__";
+  const [attractionOpen, setAttractionOpen] = React.useState(false);
+  const [orientationOpen, setOrientationOpen] = React.useState(false);
   const gender = watch("gender");
   const orientation = watch("sexual_orientation");
   const attractionPreferences = watch("attraction_preferences") || [];
@@ -379,7 +383,9 @@ export default function IdentitySection({
                             "profileSections.identity.genderLabel",
                             "Género",
                           )}
-                          renderValue={(selected) => selected as string}
+                          renderValue={(selected) =>
+                            gOptLabel((selected as string) || "")
+                          }
                           onChange={(e) => {
                             field.onChange(e);
                             const newGender = e.target.value as string;
@@ -529,6 +535,9 @@ export default function IdentitySection({
                         {...field}
                         multiple
                         value={field.value || []}
+                        open={attractionOpen}
+                        onOpen={() => setAttractionOpen(true)}
+                        onClose={() => setAttractionOpen(false)}
                         input={
                           <OutlinedInput
                             label={t(
@@ -538,7 +547,11 @@ export default function IdentitySection({
                           />
                         }
                         onChange={(e) => {
-                          const newValue = e.target.value as string[];
+                          let newValue = e.target.value as string[];
+                          if (newValue.includes(CLOSE_MENU)) {
+                            setAttractionOpen(false);
+                            newValue = newValue.filter((v) => v !== CLOSE_MENU);
+                          }
                           const fixed = getFixedAttractions(
                             gender,
                             orientation,
@@ -656,7 +669,38 @@ export default function IdentitySection({
                             </MenuItem>
                           )),
                         ])}
+                        <MenuItem
+                          value={CLOSE_MENU}
+                          sx={{
+                            justifyContent: "center",
+                            borderTop: "1px solid",
+                            borderColor: "divider",
+                            mt: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="button"
+                            color="primary"
+                            fontWeight="bold"
+                          >
+                            {t("profileSections.identity.doneClose", "Cerrar")}
+                          </Typography>
+                        </MenuItem>
                       </Select>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          mt: 0.5,
+                          display: "block",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        {t(
+                          "profileSections.identity.multiCloseHint",
+                          "Selecciona una o más opciones y pulsa Cerrar.",
+                        )}
+                      </Typography>
                     </FormControl>
                   )}
                 />
@@ -676,6 +720,9 @@ export default function IdentitySection({
                         {...field}
                         multiple
                         value={field.value || []}
+                        open={orientationOpen}
+                        onOpen={() => setOrientationOpen(true)}
+                        onClose={() => setOrientationOpen(false)}
                         input={
                           <OutlinedInput
                             label={t(
@@ -685,7 +732,11 @@ export default function IdentitySection({
                           />
                         }
                         onChange={(e) => {
-                          const newValue = e.target.value as string[];
+                          let newValue = e.target.value as string[];
+                          if (newValue.includes(CLOSE_MENU)) {
+                            setOrientationOpen(false);
+                            newValue = newValue.filter((v) => v !== CLOSE_MENU);
+                          }
                           const missingFixed = lockedOrientations.filter(
                             (f: string) => !newValue.includes(f),
                           );
@@ -791,7 +842,38 @@ export default function IdentitySection({
                             </Box>
                           </MenuItem>
                         ))}
+                        <MenuItem
+                          value={CLOSE_MENU}
+                          sx={{
+                            justifyContent: "center",
+                            borderTop: "1px solid",
+                            borderColor: "divider",
+                            mt: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="button"
+                            color="primary"
+                            fontWeight="bold"
+                          >
+                            {t("profileSections.identity.doneClose", "Cerrar")}
+                          </Typography>
+                        </MenuItem>
                       </Select>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          mt: 0.5,
+                          display: "block",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        {t(
+                          "profileSections.identity.multiCloseHint",
+                          "Selecciona una o más opciones y pulsa Cerrar.",
+                        )}
+                      </Typography>
                       <Box display="flex" alignItems="center" gap={1} mt={0.5}>
                         <Typography
                           variant="caption"
