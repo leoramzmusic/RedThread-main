@@ -520,5 +520,331 @@
       "phrase": "Grottläge: Laddar i tystnad 🌙",
       "label": "Frånkopplad"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Identitet",
+      "titleFull": "Identitet & Attraktion",
+      "exploratoryTooltip": "Din nuvarande sökning sträcker sig bortom din basorientering.",
+      "explorerMode": "Utforskarläge",
+      "personalTitle": "Personlig identitet (Vem du är)",
+      "genderLabel": "Kön",
+      "orientationLabel": "Sexuell läggning",
+      "attractionTitle": "Attraktionspreferenser (Vem du söker)",
+      "attractionHint": "Din läggning är en utgångspunkt, inte en gräns. Du kan utforska utan att omdefiniera dig.",
+      "attractionPlaceholder": "Attraherad av personer med kön...",
+      "fixedAttractionTooltip": "Denna preferens baseras på din läggning. Du kan utforska andra alternativ utan att omdefiniera dig.",
+      "orientationPlaceholder": "Vilka läggningar attraherar dig hos andra?",
+      "fixedOrientationTooltip": "Denna preferens är din logiska utgångspunkt.",
+      "multiHint": "Du kan välja fler än en. Det hjälper till att hitta mer äkta kopplingar.",
+      "orientationInfoTooltip": "Din läggning begränsar inte din sökning. Du kan utforska utan att omdefiniera dig.",
+      "curiousTooltip": "Du utforskar bortom dina vanliga filter. CARE följer dig med respekt.",
+      "curiousTitle": "Nyfiken idag",
+      "curiousDesc": "Utöka förslag med olika kön utan att ändra dina permanenta preferenser.",
+      "exploreLabel": "Vilka kön vill du utforska idag?",
+      "exploreHint": "Utforska utan etiketter. Dessa val ändrar inte din läggning.",
+      "careNote": "CARE använder dessa preferenser för att filtrera matchningar med ömsesidig attraktion.",
+      "doneClose": "Klar",
+      "multiCloseHint": "Välj ett eller flera alternativ och tryck på Klar.",
+      "genderCat": {
+        "generos_tradicionales": "Traditionella kön",
+        "no_binarios_y_multigenero": "Ickebinära och multikönade",
+        "generos_basados_en_experiencia_individual": "Erfarenhetsbaserade kön",
+        "dentro_del_espectro_trans": "Inom transspektrumet",
+        "generos_raros_o_microlabels": "Sällsynta kön och mikrolabels"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Manligt",
+          "desc": "Manlig identitet."
+        },
+        "femenino": {
+          "label": "Kvinnligt",
+          "desc": "Kvinnlig identitet."
+        },
+        "comun_no_especificado": {
+          "label": "Allmänt / Ej angivet",
+          "desc": "Inget markerat kön."
+        },
+        "androgino": {
+          "label": "Androgynt",
+          "desc": "Blandning av manliga och kvinnliga drag."
+        },
+        "epiceno": {
+          "label": "Epicent",
+          "desc": "Språkligt neutralt kön."
+        },
+        "agenero": {
+          "label": "Agender",
+          "desc": "Känsla av total avsaknad av kön."
+        },
+        "ambigenero": {
+          "label": "Ambigender",
+          "desc": "Leva könet tvetydigt, utan tydlig definition."
+        },
+        "bigenero": {
+          "label": "Bigender",
+          "desc": "Identifiera sig med två kön, samtidigt eller växelvis."
+        },
+        "omnigenero": {
+          "label": "Omnigender",
+          "desc": "Känna sig identifierad med alla möjliga kön."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Paraplyterm för icke-normativa identiteter."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Könsflöde",
+          "desc": "Kön som förändras med tid eller omständigheter."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Flöde mot det feminina."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Varierande intensitet av manlig identitet."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Varierande intensitet av kvinnlig identitet."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Flöde med varierande intensitet."
+        },
+        "semifluido": {
+          "label": "Semiflytande",
+          "desc": "Partiellt flytande."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Begränsat flytande."
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "Självdefinierat."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Känsla av partiell avsaknad av kön."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Icke-existerande eller tomt kön."
+        },
+        "ceterogenero": {
+          "label": "Cetergender",
+          "desc": "Relaterat till ett annat, eget kön."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "Påverkad av kärlek."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Likgiltigt kön."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Likgiltighet med variation."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Kön med inre tomhet."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Dimmigt, oklart."
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "Associerat med färger."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Som ett moln, odefinierat."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Konstant flöde av kön."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Dimmigt, förvirrande."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Känsla av tomhet."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "Påverkad av känslor."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "Relaterat till det himmelska."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Behagligt kön."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Dominant kön."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Varaktigt kön."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Andligt kön."
+        },
+        "existencia_de_genero": {
+          "label": "Könsexistens",
+          "desc": "Baserat på att existera som kön."
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "Helande kön."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "Speglat i andra."
+        },
+        "cisgenero": {
+          "label": "Ciskönad",
+          "desc": "Identitet stämmer med tilldelat kön."
+        },
+        "transgenero": {
+          "label": "Transkönad",
+          "desc": "Identitet skiljer sig från tilldelat kön."
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "Djupt, avgrundslikt kön."
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "Lätt som luft."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Svårdefinierat kön."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Annat än vanligt kön."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Manligt och kvinnligt, men passar inte."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Vänligt kön."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Bedövat, avstängt kön."
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "Utan relation till genitalier."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Anonymt kön."
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "Kön före definiering."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "Påverkad av ångest."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Kön betingat av omständigheter."
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "Relaterat till stjärnor."
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "Kön kopplat till autism."
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "Kön med central axel."
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "Relaterat till det biologiska."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Explosivt, föränderligt kön."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Askgrått, slocknat kön."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluid",
+          "desc": "Flöde mot annat kön."
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "Villkorat kön."
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "Delvis identifierad med ett kön."
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "Definierat av jaget."
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "Tvilling- eller dualkön."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heterosexuell",
+          "desc": "Attraktion till motsatt kön."
+        },
+        "bisexual": {
+          "label": "Bisexuell",
+          "desc": "Attraktion till båda traditionella könen."
+        },
+        "pansexual": {
+          "label": "Pansexuell",
+          "desc": "Attraktion till personer oavsett kön."
+        },
+        "asexual": {
+          "label": "Asexuell",
+          "desc": "Avsaknad av sexuell attraktion till andra."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Icke-normativa identiteter och läggningar."
+        },
+        "demisexual": {
+          "label": "Demisexuell",
+          "desc": "Sexuell attraktion efter emotionellt band."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerotisk/Sapiosexuell",
+          "desc": "Attraktion till intelligens och inre värld."
+        }
+      }
+    }
   }
 }

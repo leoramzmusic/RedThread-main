@@ -520,5 +520,331 @@
       "phrase": "洞穴模式：在静默中充电 🌙",
       "label": "离线"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "身份认同",
+      "titleFull": "身份认同与吸引偏好",
+      "exploratoryTooltip": "你当前的搜索超出了你的基本取向范围。",
+      "explorerMode": "探索模式",
+      "personalTitle": "个人身份（你是谁）",
+      "genderLabel": "性别",
+      "orientationLabel": "性取向",
+      "attractionTitle": "吸引偏好（你在寻找谁）",
+      "attractionHint": "你的取向是起点，而不是边界。你可以探索而不必重新定义自己。",
+      "attractionPlaceholder": "被具有……性别的人吸引...",
+      "fixedAttractionTooltip": "此偏好基于你的取向。你可以探索其他选项而不必重新定义自己。",
+      "orientationPlaceholder": "他人的哪些取向吸引你？",
+      "fixedOrientationTooltip": "此偏好是你的逻辑起点。",
+      "multiHint": "可以选择多项。这有助于找到更真实的连接。",
+      "orientationInfoTooltip": "你的取向不会限制你的搜索。你可以探索而不必重新定义自己。",
+      "curiousTooltip": "你正在探索常用筛选之外的领域。CARE 以尊重陪伴你。",
+      "curiousTitle": "今天想尝新",
+      "curiousDesc": "用多元性别扩展推荐，不改变你的固定偏好。",
+      "exploreLabel": "今天想探索哪些性别？",
+      "exploreHint": "无标签探索。这些选择不会改变你的取向。",
+      "careNote": "CARE 将使用这些偏好筛选相互吸引的匹配。",
+      "doneClose": "完成",
+      "multiCloseHint": "选择一项或多项，然后按“完成”。",
+      "genderCat": {
+        "generos_tradicionales": "传统性别",
+        "no_binarios_y_multigenero": "非二元与多性别",
+        "generos_basados_en_experiencia_individual": "基于个人体验的性别",
+        "dentro_del_espectro_trans": "跨性别谱系内",
+        "generos_raros_o_microlabels": "稀有性别与微标签"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "男性",
+          "desc": "男性身份。"
+        },
+        "femenino": {
+          "label": "女性",
+          "desc": "女性身份。"
+        },
+        "comun_no_especificado": {
+          "label": "通用 / 未指定",
+          "desc": "未标记性别。"
+        },
+        "androgino": {
+          "label": "双性",
+          "desc": "男女特征的混合。"
+        },
+        "epiceno": {
+          "label": "通性",
+          "desc": "语言上中性的性别。"
+        },
+        "agenero": {
+          "label": "无性别",
+          "desc": "完全没有性别的感觉。"
+        },
+        "ambigenero": {
+          "label": "模糊性别",
+          "desc": "以模糊、不明确的方式体验性别。"
+        },
+        "bigenero": {
+          "label": "双性别",
+          "desc": "同时或交替认同两种性别。"
+        },
+        "omnigenero": {
+          "label": "全性别",
+          "desc": "认同所有可能的性别。"
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "非规范身份的统称。"
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / 性别流动",
+          "desc": "随时间或环境变化的性别。"
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "向女性方向流动。"
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "男性身份强度可变。"
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "女性身份强度可变。"
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "强度变化的流动。"
+        },
+        "semifluido": {
+          "label": "半流动",
+          "desc": "部分流动。"
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "有限的流动。"
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "自我定义。"
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "部分缺失性别的感觉。"
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "不存在或空无的性别。"
+        },
+        "ceterogenero": {
+          "label": "Ceterogender",
+          "desc": "与另一种独特的性别相关。"
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "受爱影响。"
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "漠然的性别。"
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "带变化的漠然。"
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "有内在空洞的性别。"
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "模糊、不清楚。"
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "与颜色相关。"
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "如云一般，未定义。"
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "持续的性别流动。"
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "模糊、困惑。"
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "空虚感。"
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "受情绪影响。"
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "与天空相关。"
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "愉悦的性别。"
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "主导的性别。"
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "持久的性别。"
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "灵性的性别。"
+        },
+        "existencia_de_genero": {
+          "label": "性别存在",
+          "desc": "基于作为性别而存在。"
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "治愈的性别。"
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "映射在他人身上。"
+        },
+        "cisgenero": {
+          "label": "顺性别",
+          "desc": "身份与指定性别一致。"
+        },
+        "transgenero": {
+          "label": "跨性别",
+          "desc": "身份与指定性别不同。"
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "深邃、无底的性别。"
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "轻如空气。"
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "难以定义的性别。"
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "与常见不同的性别。"
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "男性和女性，但都不契合。"
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "友善的性别。"
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "麻木、关闭的性别。"
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "与生殖器无关。"
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "匿名的性别。"
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "定义之前的性别。"
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "受焦虑影响。"
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "受环境制约的性别。"
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "与星星相关。"
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "与自闭症相关的性别。"
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "有中心轴的性别。"
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "与生物性相关。"
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "爆发性、多变的性别。"
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "灰烬般、熄灭的性别。"
+        },
+        "ceterofluido": {
+          "label": "Ceterofluid",
+          "desc": "向另一种性别流动。"
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "有条件的性别。"
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "部分认同某一性别。"
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "由自我定义。"
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "双生或双重性别。"
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "异性恋",
+          "desc": "对异性的吸引。"
+        },
+        "bisexual": {
+          "label": "双性恋",
+          "desc": "对两种传统性别的吸引。"
+        },
+        "pansexual": {
+          "label": "泛性恋",
+          "desc": "不分性别地被他人吸引。"
+        },
+        "asexual": {
+          "label": "无性恋",
+          "desc": "对他人缺乏性吸引。"
+        },
+        "queer": {
+          "label": "酷儿",
+          "desc": "非规范的身份与取向。"
+        },
+        "demisexual": {
+          "label": "半性恋",
+          "desc": "建立情感纽带后才产生性吸引。"
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "智性恋",
+          "desc": "被智慧与内心世界吸引。"
+        }
+      }
+    }
   }
 }

@@ -519,5 +519,331 @@
       "phrase": "隠れ家モード：静寂の中で充電中 🌙",
       "label": "オフライン"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "アイデンティティ",
+      "titleFull": "アイデンティティと惹かれ方",
+      "exploratoryTooltip": "今の検索はあなたの基本的な指向を超えて広がっています。",
+      "explorerMode": "エクスプローラーモード",
+      "personalTitle": "パーソナルアイデンティティ（あなたとは）",
+      "genderLabel": "性別",
+      "orientationLabel": "性的指向",
+      "attractionTitle": "惹かれ方の好み（探している相手）",
+      "attractionHint": "あなたの指向は出発点であり、境界ではありません。再定義せずに探検できます。",
+      "attractionPlaceholder": "惹かれる性別...",
+      "fixedAttractionTooltip": "この好みはあなたの指向に基づいています。再定義せずに他の選択肢を探せます。",
+      "orientationPlaceholder": "他人のどんな指向に惹かれますか？",
+      "fixedOrientationTooltip": "この好みはあなたの論理的な出発点です。",
+      "multiHint": "複数選択できます。より本物のつながりを見つける助けになります。",
+      "orientationInfoTooltip": "あなたの指向は検索を制限しません。再定義せずに探検できます。",
+      "curiousTooltip": "いつものフィルターを超えて探検中です。CAREが敬意を持って寄り添います。",
+      "curiousTitle": "今日は好奇心モード",
+      "curiousDesc": "固定の好みを変えずに、多様な性別で提案を広げます。",
+      "exploreLabel": "今日はどんな性別を探検したいですか？",
+      "exploreHint": "ラベルなしで探検。これらの選択はあなたの指向を変えません。",
+      "careNote": "CAREはこれらの好みを使って相互に惹かれ合うマッチを絞ります。",
+      "doneClose": "完了",
+      "multiCloseHint": "1つ以上選択して「完了」を押してください。",
+      "genderCat": {
+        "generos_tradicionales": "伝統的な性別",
+        "no_binarios_y_multigenero": "ノンバイナリーとマルチジェンダー",
+        "generos_basados_en_experiencia_individual": "個人的経験に基づく性別",
+        "dentro_del_espectro_trans": "トランススペクトラム内",
+        "generos_raros_o_microlabels": "レアな性別とマイクロラベル"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "男性",
+          "desc": "男性のアイデンティティ。"
+        },
+        "femenino": {
+          "label": "女性",
+          "desc": "女性のアイデンティティ。"
+        },
+        "comun_no_especificado": {
+          "label": "共通 / 未指定",
+          "desc": "性別は無表示。"
+        },
+        "androgino": {
+          "label": "アンドロジナス",
+          "desc": "男性的・女性的特徴の混合。"
+        },
+        "epiceno": {
+          "label": "エピセン",
+          "desc": "言語上中性な性別。"
+        },
+        "agenero": {
+          "label": "アジェンダー",
+          "desc": "性別が完全にない感覚。"
+        },
+        "ambigenero": {
+          "label": "アンビジェンダー",
+          "desc": "曖昧に、定義なく性別を生きる。"
+        },
+        "bigenero": {
+          "label": "バイジェンダー",
+          "desc": "2つの性別に同時または交互に同一化。"
+        },
+        "omnigenero": {
+          "label": "オムニジェンダー",
+          "desc": "あらゆる性別に同一性を感じる。"
+        },
+        "genderqueer": {
+          "label": "ジェンダークィア",
+          "desc": "規範外のアイデンティティの総称。"
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "ジェンダーフルイド / 性別の流れ",
+          "desc": "時間や状況で変わる性別。"
+        },
+        "femfluid": {
+          "label": "フェムフルイド",
+          "desc": "女性的方向への流動。"
+        },
+        "boyflux": {
+          "label": "ボーイフラックス",
+          "desc": "男性的アイデンティティの強度が変動。"
+        },
+        "girlflux": {
+          "label": "ガールフラックス",
+          "desc": "女性的アイデンティティの強度が変動。"
+        },
+        "fluidflux": {
+          "label": "フルイドフラックス",
+          "desc": "強度が変わる流動。"
+        },
+        "semifluido": {
+          "label": "セミフルイド",
+          "desc": "部分的な流動。"
+        },
+        "demiflux": {
+          "label": "デミフラックス",
+          "desc": "限定的な流動。"
+        },
+        "autogenero": {
+          "label": "オートジェンダー",
+          "desc": "自分で定義。"
+        },
+        "apagender": {
+          "label": "アパジェンダー",
+          "desc": "性別の部分的欠如の感覚。"
+        },
+        "anogender": {
+          "label": "アノジェンダー",
+          "desc": "存在しない、空の性別。"
+        },
+        "ceterogenero": {
+          "label": "セテロジェンダー",
+          "desc": "別の独自の性別に関連。"
+        },
+        "amaregender": {
+          "label": "アマレジェンダー",
+          "desc": "愛に影響される。"
+        },
+        "cassgender": {
+          "label": "キャスジェンダー",
+          "desc": "無関心な性別。"
+        },
+        "cassflux": {
+          "label": "キャスフラックス",
+          "desc": "変化を伴う無関心。"
+        },
+        "cavusgender": {
+          "label": "カヴスジェンダー",
+          "desc": "内的空虚のある性別。"
+        },
+        "blurgender": {
+          "label": "ブラージェンダー",
+          "desc": "ぼやけた、不明瞭。"
+        },
+        "colorgenero": {
+          "label": "カラージェンダー",
+          "desc": "色に関連。"
+        },
+        "cloudgender": {
+          "label": "クラウドジェンダー",
+          "desc": "雲のように未定義。"
+        },
+        "genderflow": {
+          "label": "ジェンダーフロー",
+          "desc": "絶え間ない性別の流れ。"
+        },
+        "genderfuzz": {
+          "label": "ジェンダーファズ",
+          "desc": "ぼやけた、混乱。"
+        },
+        "genderblank": {
+          "label": "ジェンダーブランク",
+          "desc": "空虚感。"
+        },
+        "affectugender": {
+          "label": "アフェクトゥジェンダー",
+          "desc": "感情に影響される。"
+        },
+        "caelgender": {
+          "label": "カエルジェンダー",
+          "desc": "天空に関連。"
+        },
+        "deliciagender": {
+          "label": "デリシアジェンダー",
+          "desc": "心地よい性別。"
+        },
+        "domgender": {
+          "label": "ドムジェンダー",
+          "desc": "支配的な性別。"
+        },
+        "duragender": {
+          "label": "デュラジェンダー",
+          "desc": "持続する性別。"
+        },
+        "esspigender": {
+          "label": "エスピジェンダー",
+          "desc": "スピリチュアルな性別。"
+        },
+        "existencia_de_genero": {
+          "label": "性別の存在",
+          "desc": "性別として存在することに基づく。"
+        },
+        "healgender": {
+          "label": "ヒールジェンダー",
+          "desc": "癒す性別。"
+        },
+        "mirrorgender": {
+          "label": "ミラージェンダー",
+          "desc": "他者に映る。"
+        },
+        "cisgenero": {
+          "label": "シスジェンダー",
+          "desc": "指定された性別と一致。"
+        },
+        "transgenero": {
+          "label": "トランスジェンダー",
+          "desc": "指定された性別と異なる。"
+        },
+        "abimegenero": {
+          "label": "アバイメジェンダー",
+          "desc": "深く、底なしの性別。"
+        },
+        "aerogenero": {
+          "label": "アエロジェンダー",
+          "desc": "空気のように軽い。"
+        },
+        "alexigender": {
+          "label": "アレキシジェンダー",
+          "desc": "定義困難な性別。"
+        },
+        "aliusgender": {
+          "label": "アリウスジェンダー",
+          "desc": "ありふれたものと異なる性別。"
+        },
+        "ambonec": {
+          "label": "アンボネク",
+          "desc": "男性的でも女性的でも、しっくりこない。"
+        },
+        "amicagender": {
+          "label": "アミカジェンダー",
+          "desc": "友好的な性別。"
+        },
+        "anesigender": {
+          "label": "アネシジェンダー",
+          "desc": "麻痺した、消えた性別。"
+        },
+        "angenital": {
+          "label": "アンジェニタル",
+          "desc": "生殖器と無関係。"
+        },
+        "anongender": {
+          "label": "アノンジェンダー",
+          "desc": "匿名の性別。"
+        },
+        "antegenero": {
+          "label": "アンテジェンダー",
+          "desc": "定義される前の性別。"
+        },
+        "anxiegender": {
+          "label": "アンクシジェンダー",
+          "desc": "不安に影響される。"
+        },
+        "apconsugender": {
+          "label": "アプコンスジェンダー",
+          "desc": "状況に条件づけられた性別。"
+        },
+        "astergenero": {
+          "label": "アステルジェンダー",
+          "desc": "星に関連。"
+        },
+        "autigendromo": {
+          "label": "オーティジェンダー",
+          "desc": "自閉症に関連する性別。"
+        },
+        "axigenero": {
+          "label": "アキシジェンダー",
+          "desc": "中心軸のある性別。"
+        },
+        "biogenero": {
+          "label": "バイオジェンダー",
+          "desc": "生物学に関連。"
+        },
+        "burstgender": {
+          "label": "バーストジェンダー",
+          "desc": "爆発的で変わる性別。"
+        },
+        "cendgender": {
+          "label": "センドジェンダー",
+          "desc": "灰のように消えた性別。"
+        },
+        "ceterofluido": {
+          "label": "セテロフルイド",
+          "desc": "別の性別への流動。"
+        },
+        "condigenero": {
+          "label": "コンディジェンダー",
+          "desc": "条件つき性別。"
+        },
+        "demigenero": {
+          "label": "デミジェンダー",
+          "desc": "ある性別に部分的に同一化。"
+        },
+        "egogenero": {
+          "label": "エゴジェンダー",
+          "desc": "自己で定義。"
+        },
+        "gemigmander": {
+          "label": "ジェミジェンダー",
+          "desc": "双子または二重の性別。"
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "異性愛",
+          "desc": "異性への惹かれ。"
+        },
+        "bisexual": {
+          "label": "両性愛",
+          "desc": "両方の伝統的性別への惹かれ。"
+        },
+        "pansexual": {
+          "label": "全性愛",
+          "desc": "性別に関わらず人への惹かれ。"
+        },
+        "asexual": {
+          "label": "無性愛",
+          "desc": "他者への性的惹かれの欠如。"
+        },
+        "queer": {
+          "label": "クィア",
+          "desc": "規範外のアイデンティティと指向。"
+        },
+        "demisexual": {
+          "label": "デミセクシュアル",
+          "desc": "感情的絆の後の性的惹かれ。"
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "サピオエロティック/サピオセクシュアル",
+          "desc": "知性と内面世界への惹かれ。"
+        }
+      }
+    }
   }
 }

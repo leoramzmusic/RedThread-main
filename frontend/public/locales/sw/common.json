@@ -473,5 +473,331 @@
       "phrase": "Hali ya Pango: Kuchaji kimya kimya 🌙",
       "label": "Nje ya Mtandao"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Utambulisho",
+      "titleFull": "Utambulisho na Mvuto",
+      "exploratoryTooltip": "Utafutaji wako wa sasa unavuka msingi wako wa mwelekeo.",
+      "explorerMode": "Hali ya Mpelelezi",
+      "personalTitle": "Utambulisho wa Kibinafsi (Wewe ni nani)",
+      "genderLabel": "Jinsia",
+      "orientationLabel": "Mwelekeo wa kijinsia",
+      "attractionTitle": "Mapendeleo ya Mvuto (Unamtafuta nani)",
+      "attractionHint": "Mwelekeo wako ni hatua ya kuanzia, si kikomo. Unaweza kuchunguza bila kujifafanua upya.",
+      "attractionPlaceholder": "Wavutiwa na watu wa jinsia...",
+      "fixedAttractionTooltip": "Pendekezo hili linatokana na mwelekeo wako. Unaweza kuchunguza chaguzi nyingine bila kujifafanua upya.",
+      "orientationPlaceholder": "Mielekeo gani inakuvutia kwa wengine?",
+      "fixedOrientationTooltip": "Pendekezo hili ni hatua yako ya kuanzia ya kimantiki.",
+      "multiHint": "Unaweza kuchagua zaidi ya moja. Hii husaidia kupata miunganisho ya kweli zaidi.",
+      "orientationInfoTooltip": "Mwelekeo wako hauzuiu utafutaji wako. Unaweza kuchunguza bila kujifafanua upya.",
+      "curiousTooltip": "Unachunguza zaidi ya vichujio vyako vya kawaida. CARE inakuandamana kwa heshima.",
+      "curiousTitle": "Leo najisikia mdadisi",
+      "curiousDesc": "Panua mapendekezo na jinsia mbalimbali bila kubadilisha mapendeleo yako ya kudumu.",
+      "exploreLabel": "Ni jinsia gani ungependa kuchunguza leo?",
+      "exploreHint": "Chunguza bila lebo. Chaguzi hizi hazibadili mwelekeo wako.",
+      "careNote": "CARE itatumia mapendeleo haya kuchuja mechi zenye mvuto wa pande zote.",
+      "doneClose": "Nimemaliza",
+      "multiCloseHint": "Chagua moja au zaidi kisha bonyeza Nimemaliza.",
+      "genderCat": {
+        "generos_tradicionales": "Jinsia za kitamaduni",
+        "no_binarios_y_multigenero": "Jinsia zisizo za binary na nyingi",
+        "generos_basados_en_experiencia_individual": "Jinsia za uzoefu binafsi",
+        "dentro_del_espectro_trans": "Ndani ya wigo wa trans",
+        "generos_raros_o_microlabels": "Jinsia adimu na microlebo"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Kiume",
+          "desc": "Utambulisho wa kiume."
+        },
+        "femenino": {
+          "label": "Kike",
+          "desc": "Utambulisho wa kike."
+        },
+        "comun_no_especificado": {
+          "label": "Kawaida / Haijabainishwa",
+          "desc": "Hakuna jinsia iliyowekwa alama."
+        },
+        "androgino": {
+          "label": "Androjini",
+          "desc": "Mchanganyiko wa sifa za kiume na za kike."
+        },
+        "epiceno": {
+          "label": "Episini",
+          "desc": "Jinsia isiyoegemea upande kwa lugha."
+        },
+        "agenero": {
+          "label": "Agender",
+          "desc": "Hisia ya kutokuwepo kabisa kwa jinsia."
+        },
+        "ambigenero": {
+          "label": "Ambigender",
+          "desc": "Kuishi jinsia kwa utata, bila ufafanuzi wazi."
+        },
+        "bigenero": {
+          "label": "Bigender",
+          "desc": "Kujitambulisha na jinsia mbili, kwa pamoja au kwa kubadilishana."
+        },
+        "omnigenero": {
+          "label": "Omnigender",
+          "desc": "Kujihisi kushikamana na jinsia zote zinazowezekana."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Neno mwamvuli kwa vitambulisho visivyo vya kawaida."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Mtiririko wa jinsia",
+          "desc": "Jinsia inayobadilika na wakati au hali."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Mtiririko kuelekea uke."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Ukali unaobadilika wa utambulisho wa kiume."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Ukali unaobadilika wa utambulisho wa kike."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Mtiririko wenye ukali unaobadilika."
+        },
+        "semifluido": {
+          "label": "Semifluido",
+          "desc": "Mtiririko wa sehemu."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Mtiririko mdogo."
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "Iliyojifafanua yenyewe."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Hisia ya kutokuwepo kwa sehemu kwa jinsia."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Jinsia isiyokuwepo au tupu."
+        },
+        "ceterogenero": {
+          "label": "Ceterogender",
+          "desc": "Inayohusiana na jinsia nyingine tofauti."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "Yathiriwa na upendo."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Jinsia isiyojali."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Kutokujali na mabadiliko."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Jinsia yenye utupu wa ndani."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Ukungu, isiyo wazi."
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "Inayohusiana na rangi."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Kama wingu, haijafafanuliwa."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Mtiririko wa kudumu wa jinsia."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Ukungu, inachanganya."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Hisia ya utupu."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "Yathiriwa na hisia."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "Inayohusiana na mbingu."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Jinsia ya kupendeza."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Jinsia inayotawala."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Jinsia ya kudumu."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Jinsia ya kiroho."
+        },
+        "existencia_de_genero": {
+          "label": "Kuwepo kwa jinsia",
+          "desc": "Kulingana na kuwepo kama jinsia."
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "Jinsia inayotibu."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "Inayoakisiwa kwa wengine."
+        },
+        "cisgenero": {
+          "label": "Cisgender",
+          "desc": "Utambulisho unaendana na jinsia iliyotolewa."
+        },
+        "transgenero": {
+          "label": "Transgender",
+          "desc": "Utambulisho tofauti na jinsia iliyotolewa."
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "Jinsia ya kina, isiyo na mwisho."
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "Nyepesi kama hewa."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Jinsia ngumu kufafanua."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Jinsia tofauti na ya kawaida."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Kiume na kike, lakini haifai."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Jinsia ya kirafiki."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Jinsia iliyopooza, iliyozimwa."
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "Haina uhusiano na viungo."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Jinsia isiyojulikana."
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "Jinsia kabla ya kufafanuliwa."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "Yathiriwa na wasiwasi."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Jinsia iliyoamuliwa na hali."
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "Inayohusiana na nyota."
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "Jinsia inayohusiana na tawahudi."
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "Jinsia yenye mhimili wa kati."
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "Inayohusiana na biolojia."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Jinsia inayolipuka, inayobadilika."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Jinsia ya majivu, iliyozimika."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluid",
+          "desc": "Mtiririko kuelekea jinsia nyingine."
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "Jinsia yenye masharti."
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "Imejitambulisha kisehemu na jinsia."
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "Iliyofafanuliwa na nafsi."
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "Jinsia pacha au mbili."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heterosexual",
+          "desc": "Mvuto kwa jinsia tofauti."
+        },
+        "bisexual": {
+          "label": "Bisexual",
+          "desc": "Mvuto kwa jinsia zote mbili za kitamaduni."
+        },
+        "pansexual": {
+          "label": "Pansexual",
+          "desc": "Mvuto kwa watu bila kujali jinsia."
+        },
+        "asexual": {
+          "label": "Asexual",
+          "desc": "Ukosefu wa mvuto wa kijinsia kwa wengine."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Vitambulisho na mielekeo isiyo ya kawaida."
+        },
+        "demisexual": {
+          "label": "Demisexual",
+          "desc": "Mvuto wa kijinsia baada ya uhusiano wa kihisia."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerotic",
+          "desc": "Mvuto kwa akili na ulimwengu wa ndani."
+        }
+      }
+    }
   }
 }

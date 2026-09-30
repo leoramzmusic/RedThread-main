@@ -519,5 +519,331 @@
       "phrase": "동굴 모드: 조용히 충전 중 🌙",
       "label": "오프라인"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "정체성",
+      "titleFull": "정체성과 끌림",
+      "exploratoryTooltip": "현재 검색이 기본 지향을 넘어 확장되고 있습니다.",
+      "explorerMode": "탐험가 모드",
+      "personalTitle": "개인 정체성 (당신은 누구인가)",
+      "genderLabel": "성별",
+      "orientationLabel": "성적 지향",
+      "attractionTitle": "끌림 선호 (찾는 상대)",
+      "attractionHint": "당신의 지향은 출발점이지 경계가 아닙니다. 자신을 재정의하지 않고 탐색할 수 있습니다.",
+      "attractionPlaceholder": "끌리는 성별...",
+      "fixedAttractionTooltip": "이 선호는 당신의 지향에 근거합니다. 자신을 재정의하지 않고 다른 옵션을 탐색할 수 있습니다.",
+      "orientationPlaceholder": "타인의 어떤 지향에 끌리나요?",
+      "fixedOrientationTooltip": "이 선호는 당신의 논리적 출발점입니다.",
+      "multiHint": "여러 개를 선택할 수 있습니다. 더 진정한 연결을 찾는 데 도움이 됩니다.",
+      "orientationInfoTooltip": "당신의 지향은 검색을 제한하지 않습니다. 자신을 재정의하지 않고 탐색할 수 있습니다.",
+      "curiousTooltip": "평소 필터를 넘어 탐색 중입니다. CARE가 존중하며 함께합니다.",
+      "curiousTitle": "오늘은 호기심 모드",
+      "curiousDesc": "고정 선호를 바꾸지 않고 다양한 성별로 제안을 넓힙니다.",
+      "exploreLabel": "오늘 어떤 성별을 탐색하고 싶나요?",
+      "exploreHint": "라벨 없이 탐색하세요. 이 선택은 당신의 지향을 바꾸지 않습니다.",
+      "careNote": "CARE는 이 선호를 사용해 서로 끌리는 매치를 걸러냅니다.",
+      "doneClose": "완료",
+      "multiCloseHint": "하나 이상 선택하고 완료를 누르세요.",
+      "genderCat": {
+        "generos_tradicionales": "전통적인 성별",
+        "no_binarios_y_multigenero": "논바이너리와 멀티젠더",
+        "generos_basados_en_experiencia_individual": "개인 경험 기반 성별",
+        "dentro_del_espectro_trans": "트랜스 스펙트럼 내",
+        "generos_raros_o_microlabels": "희귀 성별과 마이크로라벨"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "남성",
+          "desc": "남성 정체성."
+        },
+        "femenino": {
+          "label": "여성",
+          "desc": "여성 정체성."
+        },
+        "comun_no_especificado": {
+          "label": "공통 / 미지정",
+          "desc": "표시된 성별 없음."
+        },
+        "androgino": {
+          "label": "안드로진",
+          "desc": "남성적·여성적 특징의 혼합."
+        },
+        "epiceno": {
+          "label": "에피신",
+          "desc": "언어상 중립적인 성별."
+        },
+        "agenero": {
+          "label": "에이젠더",
+          "desc": "성별이 완전히 없다는 느낌."
+        },
+        "ambigenero": {
+          "label": "앰비젠더",
+          "desc": "모호하게, 정의 없이 성별을 삶."
+        },
+        "bigenero": {
+          "label": "바이젠더",
+          "desc": "두 성별에 동시 또는 번갈아 동일시."
+        },
+        "omnigenero": {
+          "label": "옴니젠더",
+          "desc": "모든 가능한 성별에 동일시 느낌."
+        },
+        "genderqueer": {
+          "label": "젠더퀴어",
+          "desc": "비규범 정체성의 포괄 용어."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "젠더플루이드 / 성별 흐름",
+          "desc": "시간이나 상황에 따라 바뀌는 성별."
+        },
+        "femfluid": {
+          "label": "펨플루이드",
+          "desc": "여성 쪽으로의 흐름."
+        },
+        "boyflux": {
+          "label": "보이플럭스",
+          "desc": "남성 정체성의 강도가 변동."
+        },
+        "girlflux": {
+          "label": "걸플럭스",
+          "desc": "여성 정체성의 강도가 변동."
+        },
+        "fluidflux": {
+          "label": "플루이드플럭스",
+          "desc": "강도가 바뀌는 흐름."
+        },
+        "semifluido": {
+          "label": "세미플루이드",
+          "desc": "부분적 흐름."
+        },
+        "demiflux": {
+          "label": "데미플럭스",
+          "desc": "제한적 흐름."
+        },
+        "autogenero": {
+          "label": "오토젠더",
+          "desc": "스스로 정의."
+        },
+        "apagender": {
+          "label": "아파젠더",
+          "desc": "성별의 부분적 부재 느낌."
+        },
+        "anogender": {
+          "label": "아노젠더",
+          "desc": "존재하지 않거나 빈 성별."
+        },
+        "ceterogenero": {
+          "label": "세테로젠더",
+          "desc": "다른 고유한 성별과 관련."
+        },
+        "amaregender": {
+          "label": "아마레젠더",
+          "desc": "사랑의 영향."
+        },
+        "cassgender": {
+          "label": "캐스젠더",
+          "desc": "무관심한 성별."
+        },
+        "cassflux": {
+          "label": "캐스플럭스",
+          "desc": "변화가 있는 무관심."
+        },
+        "cavusgender": {
+          "label": "카부스젠더",
+          "desc": "내면의 공백이 있는 성별."
+        },
+        "blurgender": {
+          "label": "블러젠더",
+          "desc": "흐릿하고 불분명."
+        },
+        "colorgenero": {
+          "label": "컬러젠더",
+          "desc": "색과 관련."
+        },
+        "cloudgender": {
+          "label": "클라우드젠더",
+          "desc": "구름처럼 미정의."
+        },
+        "genderflow": {
+          "label": "젠더플로",
+          "desc": "끊임없는 성별의 흐름."
+        },
+        "genderfuzz": {
+          "label": "젠더퍼즈",
+          "desc": "흐릿하고 혼란스러움."
+        },
+        "genderblank": {
+          "label": "젠더블랭크",
+          "desc": "공허감."
+        },
+        "affectugender": {
+          "label": "어펙투젠더",
+          "desc": "감정의 영향."
+        },
+        "caelgender": {
+          "label": "카엘젠더",
+          "desc": "천상과 관련."
+        },
+        "deliciagender": {
+          "label": "델리시아젠더",
+          "desc": "기분 좋은 성별."
+        },
+        "domgender": {
+          "label": "돔젠더",
+          "desc": "지배적인 성별."
+        },
+        "duragender": {
+          "label": "두라젠더",
+          "desc": "지속되는 성별."
+        },
+        "esspigender": {
+          "label": "에스피젠더",
+          "desc": "영적인 성별."
+        },
+        "existencia_de_genero": {
+          "label": "성별 존재",
+          "desc": "성별로 존재함에 기반."
+        },
+        "healgender": {
+          "label": "힐젠더",
+          "desc": "치유하는 성별."
+        },
+        "mirrorgender": {
+          "label": "미러젠더",
+          "desc": "타인에게 비침."
+        },
+        "cisgenero": {
+          "label": "시스젠더",
+          "desc": "지정 성별과 일치."
+        },
+        "transgenero": {
+          "label": "트랜스젠더",
+          "desc": "지정 성별과 다름."
+        },
+        "abimegenero": {
+          "label": "아비메젠더",
+          "desc": "깊고 끝없는 성별."
+        },
+        "aerogenero": {
+          "label": "에어로젠더",
+          "desc": "공기처럼 가벼움."
+        },
+        "alexigender": {
+          "label": "알렉시젠더",
+          "desc": "정의하기 어려운 성별."
+        },
+        "aliusgender": {
+          "label": "알리우스젠더",
+          "desc": "흔한 것과 다른 성별."
+        },
+        "ambonec": {
+          "label": "앰보넥",
+          "desc": "남성적이고 여성적이지만 맞지 않음."
+        },
+        "amicagender": {
+          "label": "아미카젠더",
+          "desc": "친화적인 성별."
+        },
+        "anesigender": {
+          "label": "아네시젠더",
+          "desc": "마비되고 꺼진 성별."
+        },
+        "angenital": {
+          "label": "안제니탈",
+          "desc": "성기와 무관."
+        },
+        "anongender": {
+          "label": "아농젠더",
+          "desc": "익명의 성별."
+        },
+        "antegenero": {
+          "label": "안테젠더",
+          "desc": "정의되기 전의 성별."
+        },
+        "anxiegender": {
+          "label": "앵시젠더",
+          "desc": "불안의 영향."
+        },
+        "apconsugender": {
+          "label": "압콘수젠더",
+          "desc": "상황에 조건화된 성별."
+        },
+        "astergenero": {
+          "label": "아스테르젠더",
+          "desc": "별과 관련."
+        },
+        "autigendromo": {
+          "label": "오티젠더",
+          "desc": "자폐와 관련된 성별."
+        },
+        "axigenero": {
+          "label": "악시젠더",
+          "desc": "중심축이 있는 성별."
+        },
+        "biogenero": {
+          "label": "바이오젠더",
+          "desc": "생물학과 관련."
+        },
+        "burstgender": {
+          "label": "버스트젠더",
+          "desc": "폭발적이고 변하는 성별."
+        },
+        "cendgender": {
+          "label": "센드젠더",
+          "desc": "재처럼 꺼진 성별."
+        },
+        "ceterofluido": {
+          "label": "세테로플루이드",
+          "desc": "다른 성별로의 흐름."
+        },
+        "condigenero": {
+          "label": "콘디젠더",
+          "desc": "조건부 성별."
+        },
+        "demigenero": {
+          "label": "데미젠더",
+          "desc": "어느 성별에 부분 동일시."
+        },
+        "egogenero": {
+          "label": "에고젠더",
+          "desc": "자기로 정의."
+        },
+        "gemigmander": {
+          "label": "제미젠더",
+          "desc": "쌍둥이 또는 이중 성별."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "이성애",
+          "desc": "반대 성별에 대한 끌림."
+        },
+        "bisexual": {
+          "label": "양성애",
+          "desc": "두 전통적 성별에 대한 끌림."
+        },
+        "pansexual": {
+          "label": "범성애",
+          "desc": "성별에 관계없이 사람에 대한 끌림."
+        },
+        "asexual": {
+          "label": "무성애",
+          "desc": "타인에 대한 성적 끌림 없음."
+        },
+        "queer": {
+          "label": "퀴어",
+          "desc": "비규범 정체성과 지향."
+        },
+        "demisexual": {
+          "label": "데미섹슈얼",
+          "desc": "정서적 유대 후 성적 끌림."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "사피오에로틱/사피오섹슈얼",
+          "desc": "지성과 내면세계에 대한 끌림."
+        }
+      }
+    }
   }
 }

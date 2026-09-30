@@ -473,5 +473,331 @@
       "phrase": "Aratau Ana: Whakahōu i runga i te rangimārie 🌙",
       "label": "Tūhonokore"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Tuakiri",
+      "titleFull": "Tuakiri me te Whakapoapoa",
+      "exploratoryTooltip": "Kei te toro atu tō rapunga i tua atu i tō takenga mai.",
+      "explorerMode": "Aratau Kaitoro",
+      "personalTitle": "Tuakiri Whaiaro (Ko wai koe)",
+      "genderLabel": "Ira",
+      "orientationLabel": "Takenga ā-moepuku",
+      "attractionTitle": "Manakohanga Whakapoapoa (Ko wai e rapua ana)",
+      "attractionHint": "He tīmatanga tō takenga, ehara i te rohe. Ka taea e koe te tūhura me te kore e tautuhi anō i a koe.",
+      "attractionPlaceholder": "Ka rata ki ngā tāngata whai ira...",
+      "fixedAttractionTooltip": "I ahu mai tēnei manako i tō takenga. Ka taea e koe te tūhura ētahi atu kōwhiringa.",
+      "orientationPlaceholder": "He aha ngā takenga e rata ana koe ki ētahi atu?",
+      "fixedOrientationTooltip": "Ko tēnei manako tō tīmatanga arorau.",
+      "multiHint": "Ka taea e koe te kōwhiri neke atu i te tahi. Ka āwhina tēnei ki te kimi hononga tūturu ake.",
+      "orientationInfoTooltip": "Kāore tō takenga e whakawhāiti i tō rapunga.",
+      "curiousTooltip": "Kei te tūhura koe i tua atu i ō tātari o mua. Kei te haere tahi a CARE me te whakaute.",
+      "curiousTitle": "E pākiki ana i tēnei rā",
+      "curiousDesc": "Whakawhānuihia ngā marohitanga me ngā ira kanorau me te kore e huri i ō manako pūmau.",
+      "exploreLabel": "He aha ngā ira e hiahia ana koe ki te tūhura i tēnei rā?",
+      "exploreHint": "Tūhuratia me te kore tapanga. Kāore ēnei kōwhiringa e huri i tō takenga.",
+      "careNote": "Ka whakamahi a CARE i ēnei manako ki te tātari i ngā nohoanga whai whakapoapoa tahi.",
+      "doneClose": "Kua oti",
+      "multiCloseHint": "Kōwhiria tētahi, neke atu rānei, ka pēhi Kua oti.",
+      "genderCat": {
+        "generos_tradicionales": "Ngā ira tuku iho",
+        "no_binarios_y_multigenero": "Kore-rua me ngā ira-maha",
+        "generos_basados_en_experiencia_individual": "Ngā ira o te wheako whaiaro",
+        "dentro_del_espectro_trans": "I roto i te awhe ira-whakawhiti",
+        "generos_raros_o_microlabels": "Ngā ira onge me ngā microtapanga"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Tāne",
+          "desc": "Tuakiri tāne."
+        },
+        "femenino": {
+          "label": "Wahine",
+          "desc": "Tuakiri wahine."
+        },
+        "comun_no_especificado": {
+          "label": "Whānui / Kāore i tohua",
+          "desc": "Kāore he ira i tohua."
+        },
+        "androgino": {
+          "label": "Ira-rua",
+          "desc": "Ranu o ngā āhuatanga tāne me wahine."
+        },
+        "epiceno": {
+          "label": "Ira-kūpapa",
+          "desc": "Ira kūpapa ā-reo."
+        },
+        "agenero": {
+          "label": "Agender",
+          "desc": "Te rongo o te korenga katoa o te ira."
+        },
+        "ambigenero": {
+          "label": "Ambigender",
+          "desc": "Te noho ira māngina, kāore he tautuhinga mārama."
+        },
+        "bigenero": {
+          "label": "Bigender",
+          "desc": "Te tautuhi ki ngā ira e rua, tahi, hurihuri rānei."
+        },
+        "omnigenero": {
+          "label": "Omnigender",
+          "desc": "Te rongo hononga ki ngā ira katoa."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Kupu maru mō ngā tuakiri ehara i te tikanga."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Rere ira",
+          "desc": "Ira ka huri i te wā, i te horopaki rānei."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Rere ki te wahine."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Te kaha hurihuri o te tuakiri tāne."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Te kaha hurihuri o te tuakiri wahine."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Rere me te kaha hurihuri."
+        },
+        "semifluido": {
+          "label": "Semifluido",
+          "desc": "Rere wāhanga."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Rere herenga."
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "I tautuhia e ia anō."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Te rongo o te korenga wāhanga o te ira."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Ira kāore i konā, putu kau."
+        },
+        "ceterogenero": {
+          "label": "Cetergender",
+          "desc": "E pā ana ki tētahi atu ira motuhake."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "I awehia e te aroha."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Ira haukore."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Haukore me te huringa."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Ira me te wāhi takoto o roto."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Pōuriuri, kāore i mārama."
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "E pā ana ki ngā tae."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Pērā i te kapua, kāore i tautuhia."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Rere tonu o te ira."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Pōuriuri, raruraru."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Rongo o te putu kau."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "I awehia e ngā kare ā-roto."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "E pā ana ki te rangi."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Ira āhuareka."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Ira rangatira."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Ira mauroa."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Ira wairua."
+        },
+        "existencia_de_genero": {
+          "label": "Te kononga o te ira",
+          "desc": "I ahu mai i te konoheitanga hei ira."
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "Ira whakaora."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "E whakaatahia ana ki ētahi atu."
+        },
+        "cisgenero": {
+          "label": "Cisgender",
+          "desc": "E ōrite ana te tuakiri ki te ira i tohua."
+        },
+        "transgenero": {
+          "label": "Transgender",
+          "desc": "He rerekē te tuakiri i te ira i tohua."
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "Ira hōhonu, kore rawa."
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "Māmā pērā i te hau."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Ira uaua ki te tautuhi."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Ira rerekē i te ira o mua."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Tāne me wahine, engari kāore e tika."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Ira hoahoa."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Ira kōpā, mate."
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "Kāore he pānga ki ngā taihemahema."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Ira ingoakore."
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "Ira i mua i te tautuhinga."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "I awehia e te māharahara."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Ira i whakaritea e ngā āhuatanga."
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "E pā ana ki ngā whetū."
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "Ira e pā ana ki te takiwātanga."
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "Ira me te pou waenga."
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "E pā ana ki te koiora."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Ira pahū, hurihuri."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Ira pungarehu, mate."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluid",
+          "desc": "Rere ki tētahi atu ira."
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "Ira herenga."
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "Kua tautuhia wāhangatia ki tētahi ira."
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "I tautuhia e te whaiaro."
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "Ira māhanga, ira rua rānei."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Takatahitahi",
+          "desc": "Whakapoapoa ki te ira kē."
+        },
+        "bisexual": {
+          "label": "Takahitua",
+          "desc": "Whakapoapoa ki ngā ira tuku iho e rua."
+        },
+        "pansexual": {
+          "label": "Takamaha",
+          "desc": "Whakapoapoa ki te tangata ahakoa te ira."
+        },
+        "asexual": {
+          "label": "Takakore",
+          "desc": "Kāore he whakapoapoa ā-moepuku ki ētahi atu."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Ngā tuakiri me ngā takenga ehara i te tikanga."
+        },
+        "demisexual": {
+          "label": "Demisexual",
+          "desc": "Whakapoapoa ā-moepuku i muri i te hononga ngākau."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerotic",
+          "desc": "Whakapoapoa ki te māramatanga me te ao o roto."
+        }
+      }
+    }
   }
 }

@@ -473,5 +473,331 @@
       "phrase": "Yanayin Kogo: Yin caji a hankali 🌙",
       "label": "A Kashe"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Asali",
+      "titleFull": "Asali da Jan hankali",
+      "exploratoryTooltip": "Bincikenka na yanzu ya wuce gindin asalin ka.",
+      "explorerMode": "Yanayin Bincike",
+      "personalTitle": "Asalin Kai (Waye kai)",
+      "genderLabel": "Jinsi",
+      "orientationLabel": "Yanayin jima'i",
+      "attractionTitle": "Zaɓin Jan hankali (Waye kake nema)",
+      "attractionHint": "Yanayin jima'i naka matakin farawa ne, ba iyaka ba. Zaka iya bincike ba tare da sake ayyana kanka ba.",
+      "attractionPlaceholder": "Jinsin mutanen da ke jan hankalin...",
+      "fixedAttractionTooltip": "Wannan zaɓi ya dogara ne akan yanayin jima'inka. Zaka iya binciken wasu zaɓuɓɓuka ba tare da sake ayyana kanka ba.",
+      "orientationPlaceholder": "Wadanne yanayi ne ke jan hankalin wasu?",
+      "fixedOrientationTooltip": "Wannan zaɓi shine matakin farawa na ma'ana.",
+      "multiHint": "Zaka iya zaɓar fiye da ɗaya. Wannan yana taimakawa wajen samun alaƙa ta gaskiya.",
+      "orientationInfoTooltip": "Yanayin jima'inka ba ya iyakance bincikenka ba.",
+      "curiousTooltip": "Kana bincike fiye da matatun da ka saba. CARE na tare da kai cikin girmamawa.",
+      "curiousTitle": "Yau ina jin son sani",
+      "curiousDesc": "Faɗaɗa shawarwari da jinsuna daban ba tare da canza zaɓin dindindin ba.",
+      "exploreLabel": "Wadanne jinsuna kake son bincike yau?",
+      "exploreHint": "Bincika ba tare da lakabi ba. Waɗannan zaɓuɓɓuka ba sa canza yanayin jima'inka ba.",
+      "careNote": "CARE za ta yi amfani da waɗannan zaɓuɓɓuka don tace waɗanda aka yi daidai da jan hankali.",
+      "doneClose": "An gama",
+      "multiCloseHint": "Zaɓi ɗaya ko fiye da ɗaya sannan ka danna An gama.",
+      "genderCat": {
+        "generos_tradicionales": "Jinsuna na gargajiya",
+        "no_binarios_y_multigenero": "Jinsunan da ba na binary ba da masu yawa",
+        "generos_basados_en_experiencia_individual": "Jinsuna na gogewa ta mutum",
+        "dentro_del_espectro_trans": "Cikin bakan trans",
+        "generos_raros_o_microlabels": "Jinsuna masu wuya ko ƙananan lakabi"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Namiji",
+          "desc": "Asalin namiji."
+        },
+        "femenino": {
+          "label": "Mace",
+          "desc": "Asalin mace."
+        },
+        "comun_no_especificado": {
+          "label": "Gama-gari / Ba a bayyana ba",
+          "desc": "Babu jinsi da aka yiwa alama."
+        },
+        "androgino": {
+          "label": "Androjini",
+          "desc": "Haɗin siffofin namiji da mace."
+        },
+        "epiceno": {
+          "label": "Episini",
+          "desc": "Jinsi mai tsaka a harshe."
+        },
+        "agenero": {
+          "label": "Ajenda",
+          "desc": "Jin rashin jinsi gaba ɗaya."
+        },
+        "ambigenero": {
+          "label": "Ambijenda",
+          "desc": "Rayuwar jinsi cikin rashin tabbas, ba tare da bayyanannen ma'ana ba."
+        },
+        "bigenero": {
+          "label": "Bijenda",
+          "desc": "Ayyana da jinsuna biyu, tare ko a madadin juna."
+        },
+        "omnigenero": {
+          "label": "Omnijenda",
+          "desc": "Jin alaƙa da duk jinsunan da ke yiwuwa."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Babban suna ga asalin da ba na al'ada ba."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Gudanar jinsi",
+          "desc": "Jinsi mai canzawa da lokaci ko yanayi."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Guduwa zuwa mace."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Canjin ƙarfin asalin namiji."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Canjin ƙarfin asalin mace."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Guduwa da canjin ƙarfi."
+        },
+        "semifluido": {
+          "label": "Semifluido",
+          "desc": "Guduwa ta ɓangare."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Iyakantaccen guduwa."
+        },
+        "autogenero": {
+          "label": "Autojenda",
+          "desc": "Wanda aka ayyana da kai."
+        },
+        "apagender": {
+          "label": "Apajenda",
+          "desc": "Jin rashin jinsi ta ɓangare."
+        },
+        "anogender": {
+          "label": "Anojenda",
+          "desc": "Jinsi maras wanzuwa ko fanko."
+        },
+        "ceterogenero": {
+          "label": "Seterojenda",
+          "desc": "Mai alaƙa da wani jinsi dabam."
+        },
+        "amaregender": {
+          "label": "Amarejenda",
+          "desc": "Wanda ƙauna ta rinjaya."
+        },
+        "cassgender": {
+          "label": "Kassjenda",
+          "desc": "Jinsi maras damuwa."
+        },
+        "cassflux": {
+          "label": "Kassflux",
+          "desc": "Rashin damuwa da canji."
+        },
+        "cavusgender": {
+          "label": "Kavusjenda",
+          "desc": "Jinsi da fanko na ciki."
+        },
+        "blurgender": {
+          "label": "Blurjenda",
+          "desc": "Mara tabbas, mara bayyana."
+        },
+        "colorgenero": {
+          "label": "Kalarjenda",
+          "desc": "Mai alaƙa da launuka."
+        },
+        "cloudgender": {
+          "label": "Girgizajenda",
+          "desc": "Kamar girgije, ba a ayyana ba."
+        },
+        "genderflow": {
+          "label": "Jendaflow",
+          "desc": "Cigaban gudanar jinsi."
+        },
+        "genderfuzz": {
+          "label": "Jendafuzz",
+          "desc": "Mara tabbas, mai ruɗawa."
+        },
+        "genderblank": {
+          "label": "Jendablank",
+          "desc": "Jin fanko."
+        },
+        "affectugender": {
+          "label": "Affectujenda",
+          "desc": "Wanda motsin rai ya rinjaya."
+        },
+        "caelgender": {
+          "label": "Kaeljenda",
+          "desc": "Mai alaƙa da sama."
+        },
+        "deliciagender": {
+          "label": "Delisiajenda",
+          "desc": "Jinsi mai daɗi."
+        },
+        "domgender": {
+          "label": "Domjenda",
+          "desc": "Jinsi mai rinjaye."
+        },
+        "duragender": {
+          "label": "Durajenda",
+          "desc": "Jinsi mai ɗorewa."
+        },
+        "esspigender": {
+          "label": "Espijenda",
+          "desc": "Jinsi na ruhaniya."
+        },
+        "existencia_de_genero": {
+          "label": "Wanzuwar jinsi",
+          "desc": "Bisa ga wanzuwa a matsayin jinsi."
+        },
+        "healgender": {
+          "label": "Hiljenda",
+          "desc": "Jinsi mai warkarwa."
+        },
+        "mirrorgender": {
+          "label": "Mirojenda",
+          "desc": "Wanda aka nuna a wasu."
+        },
+        "cisgenero": {
+          "label": "Sisjenda",
+          "desc": "Asali ya yi daidai da jinsin da aka bayar."
+        },
+        "transgenero": {
+          "label": "Transjenda",
+          "desc": "Asali ya sha bamban da jinsin da aka bayar."
+        },
+        "abimegenero": {
+          "label": "Abimejenda",
+          "desc": "Jinsi mai zurfi, maras ƙasa."
+        },
+        "aerogenero": {
+          "label": "Aerojenda",
+          "desc": "Mai sauƙi kamar iska."
+        },
+        "alexigender": {
+          "label": "Alexijenda",
+          "desc": "Jinsi mai wuyar ayyanawa."
+        },
+        "aliusgender": {
+          "label": "Aliusjenda",
+          "desc": "Jinsi dabam da na gama-gari."
+        },
+        "ambonec": {
+          "label": "Ambonek",
+          "desc": "Namiji da mace, amma bai dace ba."
+        },
+        "amicagender": {
+          "label": "Amikajenda",
+          "desc": "Jinsi na abota."
+        },
+        "anesigender": {
+          "label": "Anesijenda",
+          "desc": "Jinsi maras motsi, kashe."
+        },
+        "angenital": {
+          "label": "Anjenital",
+          "desc": "Babu alaƙa da gabobi."
+        },
+        "anongender": {
+          "label": "Anonjenda",
+          "desc": "Jinsi maras suna."
+        },
+        "antegenero": {
+          "label": "Antejenda",
+          "desc": "Jinsi kafin ayyanawa."
+        },
+        "anxiegender": {
+          "label": "Anxijenda",
+          "desc": "Wanda damuwa ta rinjaya."
+        },
+        "apconsugender": {
+          "label": "Apkonsujenda",
+          "desc": "Jinsi da yanayi ya ƙayyade."
+        },
+        "astergenero": {
+          "label": "Asterjenda",
+          "desc": "Mai alaƙa da taurari."
+        },
+        "autigendromo": {
+          "label": "Otijenda",
+          "desc": "Jinsi mai alaƙa da autism."
+        },
+        "axigenero": {
+          "label": "Axijenda",
+          "desc": "Jinsi da tsakiyar jigo."
+        },
+        "biogenero": {
+          "label": "Biojenda",
+          "desc": "Mai alaƙa da halitta."
+        },
+        "burstgender": {
+          "label": "Burstjenda",
+          "desc": "Jinsi mai fashewa, mai canzawa."
+        },
+        "cendgender": {
+          "label": "Sendjenda",
+          "desc": "Jinsi kamar toka, kashe."
+        },
+        "ceterofluido": {
+          "label": "Seterofluido",
+          "desc": "Guduwa zuwa wani jinsi."
+        },
+        "condigenero": {
+          "label": "Kondijenda",
+          "desc": "Jinsi mai sharɗi."
+        },
+        "demigenero": {
+          "label": "Demijenda",
+          "desc": "Ayyana ta ɓangare da jinsi."
+        },
+        "egogenero": {
+          "label": "Igojenda",
+          "desc": "Wanda aka ayyana da kai."
+        },
+        "gemigmander": {
+          "label": "Jemijenda",
+          "desc": "Jinsi tagwaye ko biyu."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heterosexual",
+          "desc": "Jan hankali ga kishiyar jinsi."
+        },
+        "bisexual": {
+          "label": "Bisexual",
+          "desc": "Jan hankali ga jinsunan gargajiya biyu."
+        },
+        "pansexual": {
+          "label": "Pansexual",
+          "desc": "Jan hankali ga mutane ba tare da la'akari da jinsi ba."
+        },
+        "asexual": {
+          "label": "Asexual",
+          "desc": "Rashin jan hankalin jima'i ga wasu."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Asalai da yanayi maras al'ada."
+        },
+        "demisexual": {
+          "label": "Demisexual",
+          "desc": "Jan hankalin jima'i bayan alaƙar motsin rai."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerotic",
+          "desc": "Jan hankali ga hankali da duniyar ciki."
+        }
+      }
+    }
   }
 }

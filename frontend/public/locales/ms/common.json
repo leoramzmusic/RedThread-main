@@ -473,5 +473,331 @@
       "phrase": "Mod Gua: Mengecas dalam senyap 🌙",
       "label": "Luar Talian"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Identiti",
+      "titleFull": "Identiti & Tarikan",
+      "exploratoryTooltip": "Carian semasa anda melampaui orientasi asas anda.",
+      "explorerMode": "Mod Penjelajah",
+      "personalTitle": "Identiti Peribadi (Siapa anda)",
+      "genderLabel": "Jantina",
+      "orientationLabel": "Orientasi seksual",
+      "attractionTitle": "Keutamaan Tarikan (Siapa yang anda cari)",
+      "attractionHint": "Orientasi anda titik mula, bukan sempadan. Anda boleh meneroka tanpa mentakrif semula diri.",
+      "attractionPlaceholder": "Tertarik dengan orang yang berjantina...",
+      "fixedAttractionTooltip": "Keutamaan ini berdasarkan orientasi anda. Anda boleh meneroka pilihan lain tanpa mentakrif semula diri.",
+      "orientationPlaceholder": "Orientasi apakah yang menarik anda pada orang lain?",
+      "fixedOrientationTooltip": "Keutamaan ini titik mula logik anda.",
+      "multiHint": "Anda boleh memilih lebih daripada satu. Ini membantu mencari hubungan yang lebih tulen.",
+      "orientationInfoTooltip": "Orientasi anda tidak mengehadkan carian anda.",
+      "curiousTooltip": "Anda meneroka melampaui penapis biasa anda. CARE mengiringi dengan hormat.",
+      "curiousTitle": "Hari ini rasa ingin tahu",
+      "curiousDesc": "Luaskan cadangan dengan pelbagai jantina tanpa mengubah keutamaan kekal anda.",
+      "exploreLabel": "Jantina apakah yang ingin anda terokai hari ini?",
+      "exploreHint": "Teroka tanpa label. Pilihan ini tidak mengubah orientasi anda.",
+      "careNote": "CARE akan menggunakan keutamaan ini untuk menapis padanan dengan tarikan bersama.",
+      "doneClose": "Siap",
+      "multiCloseHint": "Pilih satu atau lebih dan tekan Siap.",
+      "genderCat": {
+        "generos_tradicionales": "Jantina tradisional",
+        "no_binarios_y_multigenero": "Bukan binari dan multi-jantina",
+        "generos_basados_en_experiencia_individual": "Jantina berasaskan pengalaman peribadi",
+        "dentro_del_espectro_trans": "Dalam spektrum trans",
+        "generos_raros_o_microlabels": "Jantina jarang dan mikrolabel"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Lelaki",
+          "desc": "Identiti lelaki."
+        },
+        "femenino": {
+          "label": "Perempuan",
+          "desc": "Identiti perempuan."
+        },
+        "comun_no_especificado": {
+          "label": "Umum / Tidak dinyatakan",
+          "desc": "Tiada jantina ditanda."
+        },
+        "androgino": {
+          "label": "Androgini",
+          "desc": "Campuran ciri lelaki dan perempuan."
+        },
+        "epiceno": {
+          "label": "Episina",
+          "desc": "Jantina neutral dari segi bahasa."
+        },
+        "agenero": {
+          "label": "Agender",
+          "desc": "Rasa ketiadaan jantina sepenuhnya."
+        },
+        "ambigenero": {
+          "label": "Ambigender",
+          "desc": "Menghayati jantina secara kabur, tanpa definisi jelas."
+        },
+        "bigenero": {
+          "label": "Bigender",
+          "desc": "Mengenal pasti dengan dua jantina, serentak atau bergilir."
+        },
+        "omnigenero": {
+          "label": "Omnigender",
+          "desc": "Rasa terhubung dengan semua jantina yang mungkin."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Istilah payung untuk identiti bukan norma."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Aliran jantina",
+          "desc": "Jantina yang berubah dengan masa atau keadaan."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Aliran ke arah feminin."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Keamatan identiti lelaki yang berubah."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Keamatan identiti perempuan yang berubah."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Aliran dengan keamatan berubah."
+        },
+        "semifluido": {
+          "label": "Separuh cair",
+          "desc": "Aliran separa."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Aliran terhad."
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "Takrifan sendiri."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Rasa ketiadaan separa jantina."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Jantina yang tidak wujud atau kosong."
+        },
+        "ceterogenero": {
+          "label": "Cetergender",
+          "desc": "Berkaitan dengan jantina lain yang tersendiri."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "Dipengaruhi oleh cinta."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Jantina acuh tak acuh."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Ketidakpedulian dengan variasi."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Jantina dengan kekosongan dalaman."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Kabur, tidak jelas."
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "Berkaitan dengan warna."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Seperti awan, tidak ditakrifkan."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Aliran jantina yang berterusan."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Kabur, mengelirukan."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Rasa kekosongan."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "Dipengaruhi oleh emosi."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "Berkaitan dengan langit."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Jantina yang menyenangkan."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Jantina dominan."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Jantina berkekalan."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Jantina rohani."
+        },
+        "existencia_de_genero": {
+          "label": "Kewujudan jantina",
+          "desc": "Berdasarkan wujud sebagai jantina."
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "Jantina penyembuh."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "Dipantulkan pada orang lain."
+        },
+        "cisgenero": {
+          "label": "Cisgender",
+          "desc": "Identiti sepadan dengan jantina yang ditetapkan."
+        },
+        "transgenero": {
+          "label": "Transgender",
+          "desc": "Identiti berbeza daripada jantina yang ditetapkan."
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "Jantina yang dalam, tiada berpenghujung."
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "Ringan seperti udara."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Jantina sukar ditakrifkan."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Jantina berbeza daripada kebiasaan."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Lelaki dan perempuan, tetapi tidak sesuai."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Jantina mesra."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Jantina kebas, tertutup."
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "Tiada kaitan dengan alat kelamin."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Jantina tanpa nama."
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "Jantina sebelum ditakrifkan."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "Dipengaruhi oleh kebimbangan."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Jantina yang ditentukan oleh keadaan."
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "Berkaitan dengan bintang."
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "Jantina berkaitan dengan autisme."
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "Jantina berpaksi pusat."
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "Berkaitan dengan biologi."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Jantina meletup, berubah."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Jantina abu, terpadam."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluid",
+          "desc": "Aliran ke jantina lain."
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "Jantina bersyarat."
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "Separa dikenal pasti dengan sesuatu jantina."
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "Ditakrifkan oleh diri."
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "Jantina kembar atau dwi."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heteroseksual",
+          "desc": "Tarikan kepada jantina bertentangan."
+        },
+        "bisexual": {
+          "label": "Biseksual",
+          "desc": "Tarikan kepada kedua-dua jantina tradisional."
+        },
+        "pansexual": {
+          "label": "Panseksual",
+          "desc": "Tarikan kepada insan tanpa mengira jantina."
+        },
+        "asexual": {
+          "label": "Aseksual",
+          "desc": "Ketiadaan tarikan seksual kepada orang lain."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Identiti dan orientasi bukan norma."
+        },
+        "demisexual": {
+          "label": "Demiseksual",
+          "desc": "Tarikan seksual selepas ikatan emosi."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerotik",
+          "desc": "Tarikan kepada kecerdasan dan dunia dalaman."
+        }
+      }
+    }
   }
 }

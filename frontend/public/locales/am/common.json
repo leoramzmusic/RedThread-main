@@ -473,5 +473,331 @@
       "phrase": "የዋሻ ሁነታ፡ በጸጥታ መሙላት 🌙",
       "label": "ከመስመር ውጭ"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "ማንነት",
+      "titleFull": "ማንነት እና ስሜት",
+      "exploratoryTooltip": "የአሁኑ ፍለጋህ ከመሠረታዊ ዝንባሌህ ባሻገር ይዘልቃል።",
+      "explorerMode": "የአሳሽ ሁነታ",
+      "personalTitle": "የግል ማንነት (አንተ ማነህ)",
+      "genderLabel": "ጾታ",
+      "orientationLabel": "የግብረ-ሥጋ ዝንባሌ",
+      "attractionTitle": "የስሜት ምርጫዎች (የምትፈልጉት)",
+      "attractionHint": "ዝንባሌህ መነሻ ነጥብ ነው እንጂ ድንበር አይደለም። ራስህን እንደገና ሳትገልጽ ማሰስ ትችላለህ።",
+      "attractionPlaceholder": "ወደዚህ ጾታ ያላቸው ሰዎች ይስባሉ...",
+      "fixedAttractionTooltip": "ይህ ምርጫ በዝንባሌህ ላይ የተመሠረተ ነው። ራስህን እንደገና ሳትገልጽ ሌሎች አማራጮችን ማሰስ ትችላለህ።",
+      "orientationPlaceholder": "የሌሎች የትኞቹ ዝንባሌዎች ያስቡሃል?",
+      "fixedOrientationTooltip": "ይህ ምርጫ ሎጂካዊ መነሻ ነጥብህ ነው።",
+      "multiHint": "ከአንድ በላይ መምረጥ ትችላለህ። ይሄ የበለጠ እውነተኛ ግንኙነቶችን ለማግኘት ይረዳል።",
+      "orientationInfoTooltip": "ዝንባሌህ ፍለጋህን አያግድብም። ራስህን እንደገና ሳትገልጽ ማሰስ ትችላለህ።",
+      "curiousTooltip": "ከተለመዱ ማጣሪያዎችህ ባሻገር እያሰሳህ ነው። CARE በአክብሮት ያጅብሃል።",
+      "curiousTitle": "ዛሬ ጉጉት አለኝ",
+      "curiousDesc": "ቋሚ ምርጫዎችህን ሳትቀይር በተለያዩ ጾታዎች ጥቆማዎችን አስፋ።",
+      "exploreLabel": "ዛሬ የትኞቹ ጾታዎች ማሰስ ትወዳለህ?",
+      "exploreHint": "ያለ መለያ አስስ። እነዚህ ምርጦች ዝንባሌህን አይቀይሩም።",
+      "careNote": "CARE እነዚህን ምርጦች ለጋራ ስሜት ማዛመጃዎች ለማጣራት ይጠቀማል።",
+      "doneClose": "ጨርሷል",
+      "multiCloseHint": "አንድ ወይም ከዚያ በላይ ምረጥ እና «ጨርሷል»ን ጫን።",
+      "genderCat": {
+        "generos_tradicionales": "ባህላዊ ጾታዎች",
+        "no_binarios_y_multigenero": "ሁለትዮሽ ያልሆኑ እና බහු-ලිංග",
+        "generos_basados_en_experiencia_individual": "በግል ልምድ ላይ የተመሠረቱ ጾታዎች",
+        "dentro_del_espectro_trans": "በatileት-ስፔክትረም ውስጥ",
+        "generos_raros_o_microlabels": "አልፎ አልፎ ጾታዎች እና ማይክሮ መለያዎች"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "ወንድ",
+          "desc": "የወንድ ማንነት።"
+        },
+        "femenino": {
+          "label": "ሴት",
+          "desc": "የሴት ማንነት።"
+        },
+        "comun_no_especificado": {
+          "label": "አጠቃላይ / ያልተገለጸ",
+          "desc": "ምልክት ያልተደረገበት ጾታ።"
+        },
+        "androgino": {
+          "label": "አንድሮጂን",
+          "desc": "የወንድ እና የሴት ባህሪያት ድብልቅ።"
+        },
+        "epiceno": {
+          "label": "ኤፒሲን",
+          "desc": "በቋንቋ ገለልተኛ ጾታ።"
+        },
+        "agenero": {
+          "label": "አጄንደር",
+          "desc": "የጾታ ሙሉ አለመኖር ስሜት።"
+        },
+        "ambigenero": {
+          "label": "አምቢጄንደር",
+          "desc": "ያለ ግልጽ ትርጉም በአሻሚነት ጾታ መኖር።"
+        },
+        "bigenero": {
+          "label": "ባይጄንደር",
+          "desc": "በሁለት ጾታዎች በአንድ ጊዜ ወይም በተተካካ መለየት።"
+        },
+        "omnigenero": {
+          "label": "ኦምኒጄንደር",
+          "desc": "ከሁሉም ሊሆኑ ጾታዎች ጋር የመገናኘት ስሜት።"
+        },
+        "genderqueer": {
+          "label": "ጄንደርኩዊር",
+          "desc": "ለተለመዱ ያልሆኑ ማንነቶች የጋራ ቃል።"
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "ጄንደርፍሉይድ / የጾታ ፍሰት",
+          "desc": "በጊዜ ወይም ሁኔታዎች የሚቀየር ጾታ።"
+        },
+        "femfluid": {
+          "label": "femfluid",
+          "desc": "ወደ ሴት አቅጣጫ ፍሰት።"
+        },
+        "boyflux": {
+          "label": "boyflux",
+          "desc": "የወንድ ማንነት ተለዋዋጭ ጥንካሬ።"
+        },
+        "girlflux": {
+          "label": "girlflux",
+          "desc": "የሴት ማንነት ተለዋዋጭ ጥንካሬ።"
+        },
+        "fluidflux": {
+          "label": "fluidflux",
+          "desc": "በጥንካሬ ልዩነት ያለው ፍሰት።"
+        },
+        "semifluido": {
+          "label": "ሰሚፍሉይድ",
+          "desc": "ከፋፍል ፍሰት።"
+        },
+        "demiflux": {
+          "label": "ደሚፍላክስ",
+          "desc": "የተወሰነ ፍሰት።"
+        },
+        "autogenero": {
+          "label": "ኦቶጄንደር",
+          "desc": "በራስ የተገለጸ።"
+        },
+        "apagender": {
+          "label": "አፓጄንደር",
+          "desc": "የጾታ ከፋፍል አለመኖር ስሜት።"
+        },
+        "anogender": {
+          "label": "አኖጄንደር",
+          "desc": "የሌለ ወይም ባዶ ጾታ።"
+        },
+        "ceterogenero": {
+          "label": "ሴቴሮጄንደር",
+          "desc": "ከሌላ ልዩ ጾታ ጋር የተያያዘ።"
+        },
+        "amaregender": {
+          "label": "አማሬጄንደር",
+          "desc": "በፍቅር የተነካ።"
+        },
+        "cassgender": {
+          "label": "ካስጄንደር",
+          "desc": "አላግባብ ጾታ።"
+        },
+        "cassflux": {
+          "label": "ካስፍላክስ",
+          "desc": "በለውጥ ላይ ግድየለሽነት።"
+        },
+        "cavusgender": {
+          "label": "ካቩስጄንደር",
+          "desc": "የውስጥ ባዶነት ያለው ጾታ።"
+        },
+        "blurgender": {
+          "label": "ብሉርጄንደር",
+          "desc": "ደብዛዛ፣ ግልጽ ያልሆነ።"
+        },
+        "colorgenero": {
+          "label": "ኮሎርጄንደር",
+          "desc": "ከቀለማት ጋር የተያያዘ።"
+        },
+        "cloudgender": {
+          "label": "ክላውድጄንደር",
+          "desc": "እንደ ደመና፣ ያልተገለጸ።"
+        },
+        "genderflow": {
+          "label": "ጄንደርፍሎው",
+          "desc": "የጾታ የማያቋርጥ ፍሰት።"
+        },
+        "genderfuzz": {
+          "label": "ጄንደርፈዝ",
+          "desc": "ደብዛዛ፣ ግራ የሚያጋባ።"
+        },
+        "genderblank": {
+          "label": "ጄንደርብላንክ",
+          "desc": "የባዶነት ስሜት።"
+        },
+        "affectugender": {
+          "label": "አፌክቱጄንደር",
+          "desc": "በስሜቶች የተነካ።"
+        },
+        "caelgender": {
+          "label": "ካኤልጄንደር",
+          "desc": "ከሰማያዊ ጋር የተያያዘ።"
+        },
+        "deliciagender": {
+          "label": "ደሊሻጄንደር",
+          "desc": "ደስ የሚል ጾታ።"
+        },
+        "domgender": {
+          "label": "ዶምጄንደር",
+          "desc": "የበላይ ጾታ።"
+        },
+        "duragender": {
+          "label": "ዱራጄንደር",
+          "desc": "ዘላቂ ጾታ።"
+        },
+        "esspigender": {
+          "label": "ኤስፒጄንደር",
+          "desc": "መንፈሳዊ ጾታ።"
+        },
+        "existencia_de_genero": {
+          "label": "የጾታ ሕልውና",
+          "desc": "እንደ ጾታ በመኖር ላይ የተመሠረተ።"
+        },
+        "healgender": {
+          "label": "ሂልጄንደር",
+          "desc": "የሚፈውስ ጾታ።"
+        },
+        "mirrorgender": {
+          "label": "ሚሮርጄንደር",
+          "desc": "በሌሎች ላይ የሚንጸባረቅ።"
+        },
+        "cisgenero": {
+          "label": "ሲስጄንደር",
+          "desc": "ማንነት ከተመደበ ጾታ ጋር ይዛመዳል።"
+        },
+        "transgenero": {
+          "label": "ትራንስጄንደር",
+          "desc": "ማንነት ከተመደበ ጾታ የተለየ ነው።"
+        },
+        "abimegenero": {
+          "label": "አቢሜጄንደር",
+          "desc": "ጥልቅ፣ ወሰን የሌለው ጾታ።"
+        },
+        "aerogenero": {
+          "label": "አይሮጄንደር",
+          "desc": "እንደ ነፋስ ቀላል።"
+        },
+        "alexigender": {
+          "label": "አሌክሲጄንደር",
+          "desc": "ለመግለጽ አስቸጋሪ ጾታ።"
+        },
+        "aliusgender": {
+          "label": "አሊዩስጄንደር",
+          "desc": "ከተለመደው የተለየ ጾታ።"
+        },
+        "ambonec": {
+          "label": "አምቦኔክ",
+          "desc": "ወንድ እና ሴት፣ ግን የማይስማማ።"
+        },
+        "amicagender": {
+          "label": "አሚካጄንደር",
+          "desc": "ወዳጃዊ ጾታ።"
+        },
+        "anesigender": {
+          "label": "አኔሲጄንደር",
+          "desc": "የደነዘዘ፣ የጠፋ ጾታ።"
+        },
+        "angenital": {
+          "label": "አንጄኒታል",
+          "desc": "ከሥጋዊ አካላት ጋር ግንኙነት የሌለው።"
+        },
+        "anongender": {
+          "label": "አኖንጄንደር",
+          "desc": "ስም-አልባ ጾታ።"
+        },
+        "antegenero": {
+          "label": "አንቴጄንደር",
+          "desc": "ከመገለጽ በፊት ያለ ጾታ።"
+        },
+        "anxiegender": {
+          "label": "አንክሲጄንደር",
+          "desc": "በጭንቀት የተነካ።"
+        },
+        "apconsugender": {
+          "label": "አፕኮንሱጄንደር",
+          "desc": "በሁኔታዎች የተወሰነ ጾታ።"
+        },
+        "astergenero": {
+          "label": "አስቴርጄንደር",
+          "desc": "ከከዋክብት ጋር የተያያዘ።"
+        },
+        "autigendromo": {
+          "label": "ኦቲጄንደር",
+          "desc": "ከኦቲዝም ጋር የተያያዘ ጾታ።"
+        },
+        "axigenero": {
+          "label": "አክሲጄንደር",
+          "desc": "ማዕከላዊ ዘንግ ያለው ጾታ።"
+        },
+        "biogenero": {
+          "label": "ባዮጄንደር",
+          "desc": "ከባዮሎጂ ጋር የተያያዘ።"
+        },
+        "burstgender": {
+          "label": "በርስትጄንደር",
+          "desc": "ፈንጣጣ፣ የሚቀየር ጾታ።"
+        },
+        "cendgender": {
+          "label": "ሴንድጄንደር",
+          "desc": "የአመድ-ቀለም፣ የጠፋ ጾታ።"
+        },
+        "ceterofluido": {
+          "label": "ሴቴሮፍሉይድ",
+          "desc": "ወደ ሌላ ጾታ ፍሰት።"
+        },
+        "condigenero": {
+          "label": "ኮንዲጄንደር",
+          "desc": "ሁኔታዊ ጾታ።"
+        },
+        "demigenero": {
+          "label": "ደሚጄንደር",
+          "desc": "ከአንድ ጾታ ጋር ከፋፍል የተገናኘ።"
+        },
+        "egogenero": {
+          "label": "ኢጎጄንደር",
+          "desc": "በራስ የተገለጸ።"
+        },
+        "gemigmander": {
+          "label": "ጌሚጄንደር",
+          "desc": "መንትዮች ወይም ድርብ ጾታ።"
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "ሄትሮሴክሹዋል",
+          "desc": "ወደ ተቃራኒ ጾታ ስሜት።"
+        },
+        "bisexual": {
+          "label": "ባይሴክሹዋል",
+          "desc": "ወደ ሁለቱም ባህላዊ ጾታዎች ስሜት።"
+        },
+        "pansexual": {
+          "label": "ፓንሴክሹዋል",
+          "desc": "ጾታ ሳይለይ ወደ ሰዎች ስሜት።"
+        },
+        "asexual": {
+          "label": "አሴክሹዋል",
+          "desc": "ወደ ሌሎች የግብረ-ሥጋ ስሜት አለመኖር።"
+        },
+        "queer": {
+          "label": "ኩዊር",
+          "desc": "ያልተለመዱ ማንነቶች እና ዝንባሌዎች።"
+        },
+        "demisexual": {
+          "label": "ደሚሴክሹዋል",
+          "desc": "ከስሜታዊ ትስስር በኋላ የግብረ-ሥጋ ስሜት።"
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "ሳፒዮኤሮቲክ",
+          "desc": "ወደ አእምሮ እና ውስጣዊ ዓለም ስሜት።"
+        }
+      }
+    }
   }
 }

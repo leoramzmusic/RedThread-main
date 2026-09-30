@@ -520,5 +520,331 @@
       "phrase": "Grotmodus: In stilte opladen 🌙",
       "label": "Offline"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Identiteit",
+      "titleFull": "Identiteit & Aantrekking",
+      "exploratoryTooltip": "Je huidige zoekopdracht gaat verder dan je basisoriëntatie.",
+      "explorerMode": "Verkennermodus",
+      "personalTitle": "Persoonlijke identiteit (Wie je bent)",
+      "genderLabel": "Geslacht",
+      "orientationLabel": "Seksuele oriëntatie",
+      "attractionTitle": "Aantrekkingsvoorkeuren (Wie je zoekt)",
+      "attractionHint": "Je oriëntatie is een startpunt, geen grens. Je kunt verkennen zonder jezelf opnieuw te definiëren.",
+      "attractionPlaceholder": "Aangetrokken tot mensen met geslacht...",
+      "fixedAttractionTooltip": "Deze voorkeur is gebaseerd op je oriëntatie. Je kunt andere opties verkennen zonder jezelf opnieuw te definiëren.",
+      "orientationPlaceholder": "Welke oriëntaties trekken je aan bij anderen?",
+      "fixedOrientationTooltip": "Deze voorkeur is je logische startpunt.",
+      "multiHint": "Je kunt er meer dan één kiezen. Dit helpt om authentiekere connecties te vinden.",
+      "orientationInfoTooltip": "Je oriëntatie beperkt je zoekopdracht niet. Je kunt verkennen zonder jezelf opnieuw te definiëren.",
+      "curiousTooltip": "Je verkent verder dan je gebruikelijke filters. CARE begeleidt je respectvol.",
+      "curiousTitle": "Vandaag nieuwsgierig",
+      "curiousDesc": "Breid suggesties uit met diverse geslachten zonder je vaste voorkeuren te wijzigen.",
+      "exploreLabel": "Welke geslachten wil je vandaag verkennen?",
+      "exploreHint": "Verken zonder labels. Deze keuzes veranderen je oriëntatie niet.",
+      "careNote": "CARE gebruikt deze voorkeuren om matches met wederzijdse aantrekking te filteren.",
+      "doneClose": "Sluiten",
+      "multiCloseHint": "Selecteer een of meer opties en druk op Sluiten.",
+      "genderCat": {
+        "generos_tradicionales": "Traditionele geslachten",
+        "no_binarios_y_multigenero": "Non-binair en multigender",
+        "generos_basados_en_experiencia_individual": "Op ervaring gebaseerde geslachten",
+        "dentro_del_espectro_trans": "Binnen het transspectrum",
+        "generos_raros_o_microlabels": "Zeldzame geslachten en microlabels"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Mannelijk",
+          "desc": "Mannelijke identiteit."
+        },
+        "femenino": {
+          "label": "Vrouwelijk",
+          "desc": "Vrouwelijke identiteit."
+        },
+        "comun_no_especificado": {
+          "label": "Algemeen / Niet opgegeven",
+          "desc": "Geen geslacht gemarkeerd."
+        },
+        "androgino": {
+          "label": "Androgyn",
+          "desc": "Mix van mannelijke en vrouwelijke trekken."
+        },
+        "epiceno": {
+          "label": "Epiceen",
+          "desc": "Taalkundig neutraal geslacht."
+        },
+        "agenero": {
+          "label": "Agender",
+          "desc": "Gevoel van totale afwezigheid van geslacht."
+        },
+        "ambigenero": {
+          "label": "Ambigender",
+          "desc": "Geslacht ambigu leven, zonder duidelijke definitie."
+        },
+        "bigenero": {
+          "label": "Bigender",
+          "desc": "Zich identificeren met twee geslachten, tegelijk of afwisselend."
+        },
+        "omnigenero": {
+          "label": "Omnigender",
+          "desc": "Zich geïdentificeerd voelen met alle mogelijke geslachten."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Parapluterm voor niet-normatieve identiteiten."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Genderstroom",
+          "desc": "Geslacht dat verandert met tijd of omstandigheden."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Vloeibaarheid naar het vrouwelijke."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Variabele intensiteit van mannelijke identiteit."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Variabele intensiteit van vrouwelijke identiteit."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Vloeibaarheid met variërende intensiteit."
+        },
+        "semifluido": {
+          "label": "Semivloeiend",
+          "desc": "Gedeeltelijke vloeibaarheid."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Beperkte vloeibaarheid."
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "Zelfgedefinieerd."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Gevoel van gedeeltelijke afwezigheid van geslacht."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Niet-bestaand of leeg geslacht."
+        },
+        "ceterogenero": {
+          "label": "Cetergender",
+          "desc": "Gerelateerd aan een ander, eigen geslacht."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "Beïnvloed door liefde."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Onverschillig geslacht."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Onverschilligheid met variatie."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Geslacht met innerlijke leegte."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Wazig, onduidelijk."
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "Geassocieerd met kleuren."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Als een wolk, ongedefinieerd."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Constante stroom van geslacht."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Wazig, verwarrend."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Gevoel van leegte."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "Beïnvloed door emoties."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "Verbonden met het hemelse."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Plezierig geslacht."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Dominant geslacht."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Duurzaam geslacht."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Spiritueel geslacht."
+        },
+        "existencia_de_genero": {
+          "label": "Geslachtsbestaan",
+          "desc": "Gebaseerd op bestaan als geslacht."
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "Helend geslacht."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "Weerspiegeld in anderen."
+        },
+        "cisgenero": {
+          "label": "Cisgender",
+          "desc": "Identiteit komt overeen met toegewezen geslacht."
+        },
+        "transgenero": {
+          "label": "Transgender",
+          "desc": "Identiteit wijkt af van toegewezen geslacht."
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "Diep, afgrondelijk geslacht."
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "Licht als lucht."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Moeilijk te definiëren geslacht."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Ander dan gangbaar geslacht."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Mannelijk en vrouwelijk, maar niet passend."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Vriendelijk geslacht."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Verdoofd, uitgeschakeld geslacht."
+        },
+        "angenital": {
+          "label": "Angenitaal",
+          "desc": "Zonder relatie tot genitaliën."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Anoniem geslacht."
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "Geslacht vóór definiëring."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "Beïnvloed door angst."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Door omstandigheden bepaald geslacht."
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "Verbonden met sterren."
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "Geslacht verbonden met autisme."
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "Geslacht met centrale as."
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "Verbonden met het biologische."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Explosief, veranderend geslacht."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Asgrauw, uitgedoofd geslacht."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluide",
+          "desc": "Vloeibaarheid naar ander geslacht."
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "Voorwaardelijk geslacht."
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "Gedeeltelijk geïdentificeerd met een geslacht."
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "Gedefinieerd door het zelf."
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "Tweeling- of duaal geslacht."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heteroseksueel",
+          "desc": "Aantrekking tot het andere geslacht."
+        },
+        "bisexual": {
+          "label": "Biseksueel",
+          "desc": "Aantrekking tot beide traditionele geslachten."
+        },
+        "pansexual": {
+          "label": "Panseksueel",
+          "desc": "Aantrekking tot personen ongeacht geslacht."
+        },
+        "asexual": {
+          "label": "Aseksueel",
+          "desc": "Gebrek aan seksuele aantrekking tot anderen."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Niet-normatieve identiteiten en oriëntaties."
+        },
+        "demisexual": {
+          "label": "Demiseksueel",
+          "desc": "Seksuele aantrekking pas na emotionele band."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapio-erotisch/Sapioseksueel",
+          "desc": "Aantrekking door intelligentie en innerlijke wereld."
+        }
+      }
+    }
   }
 }

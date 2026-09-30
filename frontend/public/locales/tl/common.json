@@ -473,5 +473,331 @@
       "phrase": "Cave Mode: Tahimik na nagre-recharge 🌙",
       "label": "Naka-offline"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Pagkakakilanlan",
+      "titleFull": "Pagkakakilanlan at Pagkahumaling",
+      "exploratoryTooltip": "Ang kasalukuyan mong paghahanap ay lampas na sa batayang oryentasyon mo.",
+      "explorerMode": "Explorer Mode",
+      "personalTitle": "Personal na Pagkakakilanlan (Sino ka)",
+      "genderLabel": "Kasarian",
+      "orientationLabel": "Oryentasyong sekswal",
+      "attractionTitle": "Mga Kagustuhan sa Pagkahumaling (Sinong hinahanap mo)",
+      "attractionHint": "Ang oryentasyon mo ay simula, hindi hangganan. Maaari kang mag-explore nang hindi muling binibigyang-kahulugan ang sarili.",
+      "attractionPlaceholder": "Naaakit sa mga taong may kasarian...",
+      "fixedAttractionTooltip": "Ang kagustuhang ito ay batay sa oryentasyon mo. Maaari kang mag-explore ng iba pang opsyon nang hindi muling binibigyang-kahulugan ang sarili.",
+      "orientationPlaceholder": "Anong mga oryentasyon ang nakakaakit sa iyo sa iba?",
+      "fixedOrientationTooltip": "Ang kagustuhang ito ang lohikal mong simula.",
+      "multiHint": "Maaari kang pumili ng higit sa isa. Nakakatulong ito upang makahanap ng mas tunay na koneksyon.",
+      "orientationInfoTooltip": "Hindi nililimitahan ng oryentasyon mo ang paghahanap mo.",
+      "curiousTooltip": "Nage-explore ka lampas sa nakagawian mong filter. Sinasamahan ka ng CARE nang may respeto.",
+      "curiousTitle": "Nakakaramdam ng curiosity ngayon",
+      "curiousDesc": "Palawakin ang mga mungkahi na may ibat-ibang kasarian nang hindi binabago ang permanente mong kagustuhan.",
+      "exploreLabel": "Anong mga kasarian ang gusto mong i-explore ngayon?",
+      "exploreHint": "Mag-explore nang walang label. Hindi binabago ng mga pagpipiliang ito ang oryentasyon mo.",
+      "careNote": "Gagamitin ng CARE ang mga kagustuhang ito upang i-filter ang mga match na may mutual na pagkahumaling.",
+      "doneClose": "Tapos na",
+      "multiCloseHint": "Pumili ng isa o higit pa at pindutin ang Tapos na.",
+      "genderCat": {
+        "generos_tradicionales": "Tradisyonal na kasarian",
+        "no_binarios_y_multigenero": "Non-binary at multi-gender",
+        "generos_basados_en_experiencia_individual": "Mga kasarian batay sa personal na karanasan",
+        "dentro_del_espectro_trans": "Nasa trans spectrum",
+        "generos_raros_o_microlabels": "Mga bihirang kasarian at microlabel"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Lalaki",
+          "desc": "Pagkakakilanlang lalaki."
+        },
+        "femenino": {
+          "label": "Babae",
+          "desc": "Pagkakakilanlang babae."
+        },
+        "comun_no_especificado": {
+          "label": "Karaniwan / Hindi tinukoy",
+          "desc": "Walang minarkahang kasarian."
+        },
+        "androgino": {
+          "label": "Androgynous",
+          "desc": "Pinaghalong panlalaki at pambabaeng katangian."
+        },
+        "epiceno": {
+          "label": "Epicene",
+          "desc": "Kasariang neutral sa wika."
+        },
+        "agenero": {
+          "label": "Agender",
+          "desc": "Pakiramdam ng lubos na kawalan ng kasarian."
+        },
+        "ambigenero": {
+          "label": "Ambigender",
+          "desc": "Pamumuhay ng kasarian nang malabo, nang walang malinaw na kahulugan."
+        },
+        "bigenero": {
+          "label": "Bigender",
+          "desc": "Pagkakakilanlan sa dalawang kasarian, sabay o salitan."
+        },
+        "omnigenero": {
+          "label": "Omnigender",
+          "desc": "Pakiramdam ng koneksyon sa lahat ng posibleng kasarian."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Payong na termino para sa di-pamantayang pagkakakilanlan."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Daloy ng kasarian",
+          "desc": "Kasariang nagbabago sa paglipas ng panahon o sitwasyon."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Daloy patungong pambabae."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Nagbabagong tindi ng panlalaking pagkakakilanlan."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Nagbabagong tindi ng pambabaeng pagkakakilanlan."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Daloy na may nagbabagong tindi."
+        },
+        "semifluido": {
+          "label": "Semifluido",
+          "desc": "Bahagyang daloy."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Limitadong daloy."
+        },
+        "autogenero": {
+          "label": "Autogender",
+          "desc": "Sariling pakahulugan."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Pakiramdam ng bahagyang kawalan ng kasarian."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Di-umiiral o walang lamang kasarian."
+        },
+        "ceterogenero": {
+          "label": "Cetergender",
+          "desc": "Kaugnay ng ibang natatanging kasarian."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "Naiimpluwensyahan ng pag-ibig."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Walang pakialam na kasarian."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Kawalan ng pakialam na may pagbabago."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Kasarian na may panloob na kawalan."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Malabo, hindi malinaw."
+        },
+        "colorgenero": {
+          "label": "Colorgender",
+          "desc": "Kaugnay ng mga kulay."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Tulad ng ulap, hindi natukoy."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Tuloy-tuloy na daloy ng kasarian."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Malabo, nakalilito."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Pakiramdam ng kawalan."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "Naiimpluwensyahan ng emosyon."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "Kaugnay ng langit."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Kasiya-siyang kasarian."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Nangingibabaw na kasarian."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Matibay na kasarian."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Espirituwal na kasarian."
+        },
+        "existencia_de_genero": {
+          "label": "Pag-iral ng kasarian",
+          "desc": "Batay sa pag-iral bilang kasarian."
+        },
+        "healgender": {
+          "label": "Heal gender",
+          "desc": "Nakagagaling na kasarian."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "Nasalamin sa iba."
+        },
+        "cisgenero": {
+          "label": "Cisgender",
+          "desc": "Ang pagkakakilanlan ay tumutugma sa nakatalagang kasarian."
+        },
+        "transgenero": {
+          "label": "Transgender",
+          "desc": "Ang pagkakakilanlan ay iba sa nakatalagang kasarian."
+        },
+        "abimegenero": {
+          "label": "Abimegender",
+          "desc": "Malalim, walang-hanggang kasarian."
+        },
+        "aerogenero": {
+          "label": "Aerogender",
+          "desc": "Magaan tulad ng hangin."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Mahirap tukuying kasarian."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Ibang kasarian sa karaniwan."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Panlalaki at pambabae, pero hindi akma."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Palakaibigang kasarian."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Manhid, patay na kasarian."
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "Walang kaugnayan sa ari."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Di-kilalang kasarian."
+        },
+        "antegenero": {
+          "label": "Antegender",
+          "desc": "Kasarian bago tukuyin."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "Naiimpluwensyahan ng pagkabalisa."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Kasariang itinakda ng sitwasyon."
+        },
+        "astergenero": {
+          "label": "Astergender",
+          "desc": "Kaugnay ng mga bituin."
+        },
+        "autigendromo": {
+          "label": "Autigender",
+          "desc": "Kasariang kaugnay ng autism."
+        },
+        "axigenero": {
+          "label": "Axigender",
+          "desc": "Kasarian na may gitnang aksis."
+        },
+        "biogenero": {
+          "label": "Biogender",
+          "desc": "Kaugnay ng biyolohikal."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Sumasabog, nagbabagong kasarian."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Kulay-abong, patay na kasarian."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluid",
+          "desc": "Daloy patungo sa ibang kasarian."
+        },
+        "condigenero": {
+          "label": "Condigender",
+          "desc": "May-kondisyong kasarian."
+        },
+        "demigenero": {
+          "label": "Demigender",
+          "desc": "Bahagyang nakikilala sa isang kasarian."
+        },
+        "egogenero": {
+          "label": "Egogender",
+          "desc": "Tinukoy ng sarili."
+        },
+        "gemigmander": {
+          "label": "Gemigender",
+          "desc": "Kambal o dalawahang kasarian."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heterosexual",
+          "desc": "Pagkahumaling sa kabaligtarang kasarian."
+        },
+        "bisexual": {
+          "label": "Bisexual",
+          "desc": "Pagkahumaling sa parehong tradisyonal na kasarian."
+        },
+        "pansexual": {
+          "label": "Pansexual",
+          "desc": "Pagkahumaling sa mga tao anuman ang kasarian."
+        },
+        "asexual": {
+          "label": "Asexual",
+          "desc": "Kawalan ng sekswal na pagkahumaling sa iba."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Di-pamantayang pagkakakilanlan at oryentasyon."
+        },
+        "demisexual": {
+          "label": "Demisexual",
+          "desc": "Sekswal na pagkahumaling pagkatapos ng emosyonal na ugnayan."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerotic",
+          "desc": "Pagkahumaling sa talino at panloob na mundo."
+        }
+      }
+    }
   }
 }

@@ -519,5 +519,331 @@
       "phrase": "وضع الكهف: إعادة شحن في هدوء 🌙",
       "label": "غير متصل"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "الهوية",
+      "titleFull": "الهوية والانجذاب",
+      "exploratoryTooltip": "بحثك الحالي يتجاوز توجهك الأساسي.",
+      "explorerMode": "وضع المستكشف",
+      "personalTitle": "الهوية الشخصية (من أنت)",
+      "genderLabel": "الجنس",
+      "orientationLabel": "التوجه الجنسي",
+      "attractionTitle": "تفضيلات الانجذاب (من تبحث عنه)",
+      "attractionHint": "توجهك نقطة بداية وليس حداً. يمكنك الاستكشاف دون إعادة تعريف نفسك.",
+      "attractionPlaceholder": "ينجذب إلى أشخاص بجنس...",
+      "fixedAttractionTooltip": "هذا التفضيل مبني على توجهك. يمكنك استكشاف خيارات أخرى دون إعادة تعريف نفسك.",
+      "orientationPlaceholder": "ما التوجهات التي تجذبك في الآخرين؟",
+      "fixedOrientationTooltip": "هذا التفضيل هو نقطة انطلاقك المنطقية.",
+      "multiHint": "يمكنك اختيار أكثر من واحد. هذا يساعد على إيجاد روابط أكثر صدقاً.",
+      "orientationInfoTooltip": "توجهك لا يحد من بحثك. يمكنك الاستكشاف دون إعادة تعريف نفسك.",
+      "curiousTooltip": "أنت تستكشف خارج فلاترك المعتادة. CARE يرافقك باحترام.",
+      "curiousTitle": "أشعر بالفضول اليوم",
+      "curiousDesc": "وسّع الاقتراحات بأجناس متنوعة دون تغيير تفضيلاتك الدائمة.",
+      "exploreLabel": "ما الأجناس التي تريد استكشافها اليوم؟",
+      "exploreHint": "استكشف دون تسميات. هذه الخيارات لا تغير توجهك.",
+      "careNote": "سيستخدم CARE هذه التفضيلات لتصفية التطابقات ذات الانجذاب المتبادل.",
+      "doneClose": "تم",
+      "multiCloseHint": "اختر واحداً أو أكثر ثم اضغط تم.",
+      "genderCat": {
+        "generos_tradicionales": "أجناس تقليدية",
+        "no_binarios_y_multigenero": "غير ثنائية ومتعددة الأجناس",
+        "generos_basados_en_experiencia_individual": "أجناس مبنية على التجربة الفردية",
+        "dentro_del_espectro_trans": "ضمن طيف الترانس",
+        "generos_raros_o_microlabels": "أجناس نادرة أو تسميات دقيقة"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "ذكوري",
+          "desc": "هوية رجل."
+        },
+        "femenino": {
+          "label": "أنثوي",
+          "desc": "هوية امرأة."
+        },
+        "comun_no_especificado": {
+          "label": "عام / غير محدد",
+          "desc": "بدون جنس محدد."
+        },
+        "androgino": {
+          "label": "أندروجيني",
+          "desc": "مزيج من السمات الذكورية والأنثوية."
+        },
+        "epiceno": {
+          "label": "ملحمي",
+          "desc": "جنس محايد لغوياً."
+        },
+        "agenero": {
+          "label": "أجندر",
+          "desc": "الشعور بغياب تام للجنس."
+        },
+        "ambigenero": {
+          "label": "أمبيجندر",
+          "desc": "عيش الجنس بغموض دون تعريف واضح."
+        },
+        "bigenero": {
+          "label": "بايجندر",
+          "desc": "التعريف بجنسين معاً أو بالتناوب."
+        },
+        "omnigenero": {
+          "label": "أومنيجندر",
+          "desc": "الشعور بالارتباط بكل الأجناس الممكنة."
+        },
+        "genderqueer": {
+          "label": "جندركوير",
+          "desc": "مصطلح شامل للهويات غير المعيارية."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "جندرفلويد / تدفق الجنس",
+          "desc": "جنس يتغير مع الوقت أو الظروف."
+        },
+        "femfluid": {
+          "label": "فيمفلويد",
+          "desc": "تدفق نحو الأنثوي."
+        },
+        "boyflux": {
+          "label": "بويفلوكس",
+          "desc": "شدة متغيرة للهوية الذكورية."
+        },
+        "girlflux": {
+          "label": "غيرلفلوكس",
+          "desc": "شدة متغيرة للهوية الأنثوية."
+        },
+        "fluidflux": {
+          "label": "فلويدفلوكس",
+          "desc": "تدفق بشدة متغيرة."
+        },
+        "semifluido": {
+          "label": "شبه سائل",
+          "desc": "سيولة جزئية."
+        },
+        "demiflux": {
+          "label": "ديميفلوكس",
+          "desc": "سيولة محدودة."
+        },
+        "autogenero": {
+          "label": "أوتوجندر",
+          "desc": "محدد ذاتياً."
+        },
+        "apagender": {
+          "label": "أباجندر",
+          "desc": "الشعور بغياب جزئي للجنس."
+        },
+        "anogender": {
+          "label": "أنوجندر",
+          "desc": "جنس غير موجود أو فارغ."
+        },
+        "ceterogenero": {
+          "label": "سيتيروجندر",
+          "desc": "مرتبط بجنس آخر مميز."
+        },
+        "amaregender": {
+          "label": "أماريجندر",
+          "desc": "متأثر بالحب."
+        },
+        "cassgender": {
+          "label": "كاسجندر",
+          "desc": "جنس غير مكترث."
+        },
+        "cassflux": {
+          "label": "كاسفلوكس",
+          "desc": "عدم اكتراث مع تغير."
+        },
+        "cavusgender": {
+          "label": "كافوسجندر",
+          "desc": "جنس بفراغ داخلي."
+        },
+        "blurgender": {
+          "label": "بلورجندر",
+          "desc": "ضبابي وغير واضح."
+        },
+        "colorgenero": {
+          "label": "كولورجندر",
+          "desc": "مرتبط بالألوان."
+        },
+        "cloudgender": {
+          "label": "كلاودجندر",
+          "desc": "كالغيمة، غير محدد."
+        },
+        "genderflow": {
+          "label": "جندرفلو",
+          "desc": "تدفق مستمر للجنس."
+        },
+        "genderfuzz": {
+          "label": "جندرفز",
+          "desc": "ضبابي ومربك."
+        },
+        "genderblank": {
+          "label": "جندربلانك",
+          "desc": "شعور بالفراغ."
+        },
+        "affectugender": {
+          "label": "أفيكتوجندر",
+          "desc": "متأثر بالمشاعر."
+        },
+        "caelgender": {
+          "label": "كايلجندر",
+          "desc": "مرتبط بالسماوي."
+        },
+        "deliciagender": {
+          "label": "ديليسياجندر",
+          "desc": "جنس ممتع."
+        },
+        "domgender": {
+          "label": "دومجندر",
+          "desc": "جنس مهيمن."
+        },
+        "duragender": {
+          "label": "دوراجندر",
+          "desc": "جنس دائم."
+        },
+        "esspigender": {
+          "label": "إسبيجندر",
+          "desc": "جنس روحي."
+        },
+        "existencia_de_genero": {
+          "label": "وجود الجنس",
+          "desc": "مبني على الوجود كجنس."
+        },
+        "healgender": {
+          "label": "هيلجندر",
+          "desc": "جنس شافٍ."
+        },
+        "mirrorgender": {
+          "label": "ميرورجندر",
+          "desc": "منعكس في الآخرين."
+        },
+        "cisgenero": {
+          "label": "سيسجندر",
+          "desc": "الهوية تطابق الجنس المسند."
+        },
+        "transgenero": {
+          "label": "ترانسجندر",
+          "desc": "الهوية تختلف عن الجنس المسند."
+        },
+        "abimegenero": {
+          "label": "أبيميجندر",
+          "desc": "جنس عميق لا قرار له."
+        },
+        "aerogenero": {
+          "label": "أيروجندر",
+          "desc": "خفيف كالهواء."
+        },
+        "alexigender": {
+          "label": "أليكسيجندر",
+          "desc": "جنس يصعب تعريفه."
+        },
+        "aliusgender": {
+          "label": "أليوسجندر",
+          "desc": "جنس مختلف عن الشائع."
+        },
+        "ambonec": {
+          "label": "أمبونيك",
+          "desc": "ذكوري وأنثوي لكن غير مناسب."
+        },
+        "amicagender": {
+          "label": "أميكاجندر",
+          "desc": "جنس ودود."
+        },
+        "anesigender": {
+          "label": "أنيسيجندر",
+          "desc": "جنس مخدر ومنطفئ."
+        },
+        "angenital": {
+          "label": "أنجينيتال",
+          "desc": "لا علاقة له بالأعضاء."
+        },
+        "anongender": {
+          "label": "أنونجندر",
+          "desc": "جنس مجهول."
+        },
+        "antegenero": {
+          "label": "أنتيجندر",
+          "desc": "جنس قبل التعريف."
+        },
+        "anxiegender": {
+          "label": "أنكسيجندر",
+          "desc": "متأثر بالقلق."
+        },
+        "apconsugender": {
+          "label": "أبكونسوجندر",
+          "desc": "جنس مشروط بالظروف."
+        },
+        "astergenero": {
+          "label": "أستيرجندر",
+          "desc": "مرتبط بالنجوم."
+        },
+        "autigendromo": {
+          "label": "أوتيجندر",
+          "desc": "جنس مرتبط بالتوحد."
+        },
+        "axigenero": {
+          "label": "أكسيجندر",
+          "desc": "جنس بمحور مركزي."
+        },
+        "biogenero": {
+          "label": "بيوجندر",
+          "desc": "مرتبط بالبيولوجي."
+        },
+        "burstgender": {
+          "label": "بيرستجندر",
+          "desc": "جنس متفجر متغير."
+        },
+        "cendgender": {
+          "label": "سيندجندر",
+          "desc": "جنس رمادي منطفئ."
+        },
+        "ceterofluido": {
+          "label": "سيتيروفلويد",
+          "desc": "تدفق نحو جنس آخر."
+        },
+        "condigenero": {
+          "label": "كونديجندر",
+          "desc": "جنس مشروط."
+        },
+        "demigenero": {
+          "label": "ديميجندر",
+          "desc": "محدد جزئياً بجنس."
+        },
+        "egogenero": {
+          "label": "إيغوجندر",
+          "desc": "محدد بالذات."
+        },
+        "gemigmander": {
+          "label": "جيميجندر",
+          "desc": "جنس توأم أو مزدوج."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "مغاير",
+          "desc": "الانجذاب للجنس الآخر."
+        },
+        "bisexual": {
+          "label": "مزدوج",
+          "desc": "الانجذاب لكلا الجنسين التقليديين."
+        },
+        "pansexual": {
+          "label": "شامل",
+          "desc": "الانجذاب للأشخاص بغض النظر عن الجنس."
+        },
+        "asexual": {
+          "label": "لاجنسي",
+          "desc": "غياب الانجذاب الجنسي للآخرين."
+        },
+        "queer": {
+          "label": "كوير",
+          "desc": "هويات وتوجهات غير معيارية."
+        },
+        "demisexual": {
+          "label": "ديميسكشوال",
+          "desc": "انجذاب جنسي بعد رابط عاطفي."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "سابيوإيروتيكي",
+          "desc": "الانجذاب للذكاء والعالم الداخلي."
+        }
+      }
+    }
   }
 }

@@ -436,5 +436,331 @@
       "phrase": "Modo Caverna: Recarregando em silêncio 🌙",
       "label": "Desconectado"
     }
+  },
+  "profileSections": {
+    "identity": {
+      "titleDiscovery": "Identidade",
+      "titleFull": "Identidade e Atração",
+      "exploratoryTooltip": "A tua pesquisa atual explora além da tua orientação base.",
+      "explorerMode": "Modo Explorador",
+      "personalTitle": "Identidade Pessoal (Quem és)",
+      "genderLabel": "Género",
+      "orientationLabel": "Orientação sexual",
+      "attractionTitle": "Preferências de Atração (Quem procuras)",
+      "attractionHint": "A tua orientação é um ponto de partida, não uma fronteira. Podes explorar sem te redefinires.",
+      "attractionPlaceholder": "Atraem-te pessoas com género...",
+      "fixedAttractionTooltip": "Esta preferência baseia-se na tua orientação. Podes explorar outras opções sem te redefinires.",
+      "orientationPlaceholder": "Que orientações te atraem noutras pessoas?",
+      "fixedOrientationTooltip": "Esta preferência é o teu ponto de partida lógico.",
+      "multiHint": "Podes escolher mais de uma. Isto ajuda a encontrar conexões mais autênticas.",
+      "orientationInfoTooltip": "A tua orientação não limita a tua pesquisa. Podes explorar sem te redefinires.",
+      "curiousTooltip": "Estás a explorar além dos teus filtros habituais. A CARE acompanha-te com respeito.",
+      "curiousTitle": "Hoje sinto-me curioso",
+      "curiousDesc": "Amplia sugestões com géneros diversos sem mudar as tuas preferências permanentes.",
+      "exploreLabel": "Que géneros gostarias de explorar hoje?",
+      "exploreHint": "Explora sem rótulos. Estas escolhas não mudam a tua orientação.",
+      "careNote": "A CARE usará estas preferências para filtrar matches com atração mútua.",
+      "doneClose": "Concluir",
+      "multiCloseHint": "Seleciona uma ou mais opções e prime Concluir.",
+      "genderCat": {
+        "generos_tradicionales": "Géneros tradicionais",
+        "no_binarios_y_multigenero": "Não binários e multigénero",
+        "generos_basados_en_experiencia_individual": "Géneros baseados em experiência individual",
+        "dentro_del_espectro_trans": "Dentro do espectro trans",
+        "generos_raros_o_microlabels": "Géneros raros ou microlabels"
+      },
+      "genderOpt": {
+        "masculino": {
+          "label": "Masculino",
+          "desc": "Identidade de homem."
+        },
+        "femenino": {
+          "label": "Feminino",
+          "desc": "Identidade de mulher."
+        },
+        "comun_no_especificado": {
+          "label": "Comum / Não especificado",
+          "desc": "Sem género marcado."
+        },
+        "androgino": {
+          "label": "Andrógino",
+          "desc": "Mistura de traços masculinos e femininos."
+        },
+        "epiceno": {
+          "label": "Epiceno",
+          "desc": "Género neutro na linguagem."
+        },
+        "agenero": {
+          "label": "Agénero",
+          "desc": "Sentir ausência total de género."
+        },
+        "ambigenero": {
+          "label": "Ambigénero",
+          "desc": "Viver o género de forma ambígua, sem definição clara."
+        },
+        "bigenero": {
+          "label": "Bigénero",
+          "desc": "Identificar-se com dois géneros, em simultâneo ou alternando."
+        },
+        "omnigenero": {
+          "label": "Omnigénero",
+          "desc": "Sentir-se identificado com todos os géneros possíveis."
+        },
+        "genderqueer": {
+          "label": "Genderqueer",
+          "desc": "Termo guarda-chuva para identidades fora da norma."
+        },
+        "genderfluid_flujo_de_genero": {
+          "label": "Genderfluid / Fluxo de género",
+          "desc": "Género que muda com o tempo ou as circunstâncias."
+        },
+        "femfluid": {
+          "label": "Femfluid",
+          "desc": "Fluidez para o feminino."
+        },
+        "boyflux": {
+          "label": "Boyflux",
+          "desc": "Intensidade variável de identidade masculina."
+        },
+        "girlflux": {
+          "label": "Girlflux",
+          "desc": "Intensidade variável de identidade feminina."
+        },
+        "fluidflux": {
+          "label": "Fluidflux",
+          "desc": "Fluidez com variação de intensidade."
+        },
+        "semifluido": {
+          "label": "Semifluido",
+          "desc": "Fluidez parcial."
+        },
+        "demiflux": {
+          "label": "Demiflux",
+          "desc": "Fluidez limitada."
+        },
+        "autogenero": {
+          "label": "Autogénero",
+          "desc": "Definido por si mesmo."
+        },
+        "apagender": {
+          "label": "Apagender",
+          "desc": "Sentir ausência parcial de género."
+        },
+        "anogender": {
+          "label": "Anogender",
+          "desc": "Género inexistente ou vazio."
+        },
+        "ceterogenero": {
+          "label": "Ceterogénero",
+          "desc": "Relacionado com outro género distinto."
+        },
+        "amaregender": {
+          "label": "Amaregender",
+          "desc": "Influído pelo amor."
+        },
+        "cassgender": {
+          "label": "Cassgender",
+          "desc": "Género indiferente."
+        },
+        "cassflux": {
+          "label": "Cassflux",
+          "desc": "Indiferença com variação."
+        },
+        "cavusgender": {
+          "label": "Cavusgender",
+          "desc": "Género com vazio interno."
+        },
+        "blurgender": {
+          "label": "Blurgender",
+          "desc": "Difuso, pouco claro."
+        },
+        "colorgenero": {
+          "label": "Colorgénero",
+          "desc": "Associado a cores."
+        },
+        "cloudgender": {
+          "label": "Cloudgender",
+          "desc": "Como uma nuvem, indefinido."
+        },
+        "genderflow": {
+          "label": "Genderflow",
+          "desc": "Fluxo constante de género."
+        },
+        "genderfuzz": {
+          "label": "Genderfuzz",
+          "desc": "Enevoado, confuso."
+        },
+        "genderblank": {
+          "label": "Genderblank",
+          "desc": "Sensação de vazio."
+        },
+        "affectugender": {
+          "label": "Affectugender",
+          "desc": "Influído por emoções."
+        },
+        "caelgender": {
+          "label": "Caelgender",
+          "desc": "Relacionado com o celestial."
+        },
+        "deliciagender": {
+          "label": "Deliciagender",
+          "desc": "Género prazeroso."
+        },
+        "domgender": {
+          "label": "Domgender",
+          "desc": "Género dominante."
+        },
+        "duragender": {
+          "label": "Duragender",
+          "desc": "Género duradouro."
+        },
+        "esspigender": {
+          "label": "Esspigender",
+          "desc": "Género espiritual."
+        },
+        "existencia_de_genero": {
+          "label": "Existência de género",
+          "desc": "Baseado em existir como género."
+        },
+        "healgender": {
+          "label": "Healgender",
+          "desc": "Género curador."
+        },
+        "mirrorgender": {
+          "label": "Mirrorgender",
+          "desc": "Refletido nos outros."
+        },
+        "cisgenero": {
+          "label": "Cisgénero",
+          "desc": "Identidade coincide com sexo atribuído."
+        },
+        "transgenero": {
+          "label": "Transgénero",
+          "desc": "Identidade distinta do sexo atribuído."
+        },
+        "abimegenero": {
+          "label": "Abimegénero",
+          "desc": "Género profundo, abismal."
+        },
+        "aerogenero": {
+          "label": "Aerogénero",
+          "desc": "Leve como o ar."
+        },
+        "alexigender": {
+          "label": "Alexigender",
+          "desc": "Género difícil de definir."
+        },
+        "aliusgender": {
+          "label": "Aliusgender",
+          "desc": "Género distinto do comum."
+        },
+        "ambonec": {
+          "label": "Ambonec",
+          "desc": "Masculino e feminino, mas sem encaixar."
+        },
+        "amicagender": {
+          "label": "Amicagender",
+          "desc": "Género amistoso."
+        },
+        "anesigender": {
+          "label": "Anesigender",
+          "desc": "Género anestesiado, apagado."
+        },
+        "angenital": {
+          "label": "Angenital",
+          "desc": "Sem relação com genitalidade."
+        },
+        "anongender": {
+          "label": "Anongender",
+          "desc": "Género anónimo."
+        },
+        "antegenero": {
+          "label": "Antegénero",
+          "desc": "Género prévio a definir-se."
+        },
+        "anxiegender": {
+          "label": "Anxiegender",
+          "desc": "Influído por ansiedade."
+        },
+        "apconsugender": {
+          "label": "Apconsugender",
+          "desc": "Género condicionado por circunstâncias."
+        },
+        "astergenero": {
+          "label": "Astergénero",
+          "desc": "Relacionado com estrelas."
+        },
+        "autigendromo": {
+          "label": "Autigénero",
+          "desc": "Género ligado ao autismo."
+        },
+        "axigenero": {
+          "label": "Axigénero",
+          "desc": "Género com eixo central."
+        },
+        "biogenero": {
+          "label": "Biogénero",
+          "desc": "Relacionado com o biológico."
+        },
+        "burstgender": {
+          "label": "Burstgender",
+          "desc": "Género explosivo, mutável."
+        },
+        "cendgender": {
+          "label": "Cendgender",
+          "desc": "Género cinza, apagado."
+        },
+        "ceterofluido": {
+          "label": "Ceterofluido",
+          "desc": "Fluidez para outro género."
+        },
+        "condigenero": {
+          "label": "Condigénero",
+          "desc": "Género condicionado."
+        },
+        "demigenero": {
+          "label": "Demigénero",
+          "desc": "Parcialmente identificado com um género."
+        },
+        "egogenero": {
+          "label": "Egogénero",
+          "desc": "Definido pelo eu."
+        },
+        "gemigmander": {
+          "label": "Gemigénero",
+          "desc": "Género gémeo ou dual."
+        }
+      },
+      "orientOpt": {
+        "heterosexual": {
+          "label": "Heterossexual",
+          "desc": "Atração pelo género oposto."
+        },
+        "bisexual": {
+          "label": "Bissexual",
+          "desc": "Atração por ambos os géneros tradicionais."
+        },
+        "pansexual": {
+          "label": "Pansexual",
+          "desc": "Atração por pessoas independentemente do género."
+        },
+        "asexual": {
+          "label": "Assexual",
+          "desc": "Falta de atração sexual por outros."
+        },
+        "queer": {
+          "label": "Queer",
+          "desc": "Identidades e orientações fora da norma."
+        },
+        "demisexual": {
+          "label": "Demissexual",
+          "desc": "Atração sexual só após vínculo emocional."
+        },
+        "sapioerotico_sapiosexual": {
+          "label": "Sapioerótico/Sapiossexual",
+          "desc": "Atração pela inteligência e mundo interior."
+        }
+      }
+    }
   }
 }
