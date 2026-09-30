@@ -25,7 +25,18 @@
     "preview": "Vista Previa",
     "sections": {
       "identity": {
-        "title": "Identidad básica"
+        "title": "Identidad",
+        "required_field": "Este campo es requerido",
+        "min_length_2": "Mínimo 2 caracteres",
+        "nickname_label": "Apodo / Nickname",
+        "nickname_placeholder": "Cómo quieres que te llamen",
+        "nickname_helper": "Este es el nombre que verán los demás. Puede contener espacios y acentos.",
+        "email_label": "Email",
+        "email_helper": "Tu correo electrónico",
+        "country_label": "País",
+        "country_placeholder": "Buscar por país o código...",
+        "phone_label": "Teléfono",
+        "phone_helper": "Puedes usar este número para iniciar sesión en tu cuenta"
       },
       "context": {
         "title": "Contexto personal"

@@ -320,7 +320,23 @@
       }
     },
     "mediaGallery": "Media Gallery",
-    "preview": "Preview"
+    "preview": "Preview",
+    "sections": {
+      "identity": {
+        "title": "Identity",
+        "required_field": "This field is required",
+        "min_length_2": "Minimum 2 characters",
+        "nickname_label": "Nickname",
+        "nickname_placeholder": "What you want to be called",
+        "nickname_helper": "This is the name others will see. It can contain spaces and accents.",
+        "email_label": "Email",
+        "email_helper": "Your email address",
+        "country_label": "Country",
+        "country_placeholder": "Search by country or code...",
+        "phone_label": "Phone",
+        "phone_helper": "You can use this number to log into your account"
+      }
+    }
   },
   "settings_title": "Settings",
   "settings_appearance_title": "Appearance",

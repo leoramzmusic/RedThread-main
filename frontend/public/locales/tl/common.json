@@ -475,7 +475,23 @@
         "ko": "Bagay X"
       }
     },
-    "mediaGallery": "Media Gallery"
+    "mediaGallery": "Media Gallery",
+    "sections": {
+      "identity": {
+        "title": "Pagkakakilanlan",
+        "required_field": "Kinakailangan ang field na ito",
+        "min_length_2": "Hindi bababa sa 2 character",
+        "nickname_label": "Palayaw",
+        "nickname_placeholder": "Anong gusto mong itawag sa iyo",
+        "nickname_helper": "Ito ang pangalang makikita ng iba. Maaaring may espasyo at tuldik.",
+        "email_label": "Email",
+        "email_helper": "Ang email mo",
+        "country_label": "Bansa",
+        "country_placeholder": "Maghanap ayon sa bansa o code...",
+        "phone_label": "Telepono",
+        "phone_helper": "Maaari mong gamitin ang numerong ito sa pag-log in"
+      }
+    }
   },
   "card": {
     "potentialConnection": "Posibleng Koneksyon • Nakatago ang mga Larawan",

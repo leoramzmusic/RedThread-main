@@ -475,7 +475,23 @@
         "ko": "Ahanoa X"
       }
     },
-    "mediaGallery": "Taiwhanga Pāpāho"
+    "mediaGallery": "Taiwhanga Pāpāho",
+    "sections": {
+      "identity": {
+        "title": "Tuakiri",
+        "required_field": "E hiahiatia ana tēnei pānga",
+        "min_length_2": "E 2 neke atu ngā pūriki",
+        "nickname_label": "Ingoa kārangaranga",
+        "nickname_placeholder": "Me pēhea e karanga ai koe",
+        "nickname_helper": "Koinei te ingoa ka kitea e ētahi atu. Ka whai wāhi me ngā tohu.",
+        "email_label": "Īmēra",
+        "email_helper": "Tō īmēra",
+        "country_label": "Whenua",
+        "country_placeholder": "Rapua mā te whenua, waehere rānei...",
+        "phone_label": "Waea",
+        "phone_helper": "Ka taea e koe te whakamahi i tēnei nama ki te takiuru"
+      }
+    }
   },
   "card": {
     "potentialConnection": "Hononga Ka Taea • Kua Huna ngā Whakaahua",

@@ -207,7 +207,18 @@
     },
     "sections": {
       "identity": {
-        "title": "基本身份"
+        "title": "身份",
+        "required_field": "此字段为必填项",
+        "min_length_2": "至少2个字符",
+        "nickname_label": "昵称",
+        "nickname_placeholder": "希望别人怎么称呼你",
+        "nickname_helper": "这是其他人会看到的名字。可以包含空格和重音。",
+        "email_label": "电子邮箱",
+        "email_helper": "你的电子邮箱",
+        "country_label": "国家",
+        "country_placeholder": "按国家或代码搜索...",
+        "phone_label": "电话",
+        "phone_helper": "你可以用此号码登录"
       },
       "relationship": {
         "title": "关系与兼容性"

@@ -206,7 +206,18 @@
     },
     "sections": {
       "identity": {
-        "title": "الهوية الأساسية"
+        "title": "الهوية",
+        "required_field": "هذا الحقل مطلوب",
+        "min_length_2": "الحد الأدنى حرفان",
+        "nickname_label": "اللقب",
+        "nickname_placeholder": "ما الاسم الذي تريد أن ينادوك به",
+        "nickname_helper": "هذا هو الاسم الذي سيراه الآخرون. يمكن أن يحتوي على مسافات وعلامات.",
+        "email_label": "البريد الإلكتروني",
+        "email_helper": "بريدك الإلكتروني",
+        "country_label": "البلد",
+        "country_placeholder": "ابحث بالبلد أو الرمز...",
+        "phone_label": "الهاتف",
+        "phone_helper": "يمكنك استخدام هذا الرقم لتسجيل الدخول"
       },
       "relationship": {
         "title": "العلاقة والتوافق"

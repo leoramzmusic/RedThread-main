@@ -475,7 +475,23 @@
         "ko": "Kitu X"
       }
     },
-    "mediaGallery": "Ghala ya Midia"
+    "mediaGallery": "Ghala ya Midia",
+    "sections": {
+      "identity": {
+        "title": "Utambulisho",
+        "required_field": "Kipengee hiki kinahitajika",
+        "min_length_2": "Chini zaidi herufi 2",
+        "nickname_label": "Jina la utani",
+        "nickname_placeholder": "Unataka kuitwaje",
+        "nickname_helper": "Hili ndilo jina wengine watakaliona. Linaweza kuwa na nafasi na alama.",
+        "email_label": "Barua pepe",
+        "email_helper": "Barua pepe yako",
+        "country_label": "Nchi",
+        "country_placeholder": "Tafuta kwa nchi au msimbo...",
+        "phone_label": "Simu",
+        "phone_helper": "Unaweza kutumia nambari hii kuingia"
+      }
+    }
   },
   "card": {
     "potentialConnection": "Muunganisho Unaowezekana • Picha Zimefichwa",

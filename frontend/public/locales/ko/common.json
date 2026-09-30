@@ -206,7 +206,18 @@
     },
     "sections": {
       "identity": {
-        "title": "기본 정체성"
+        "title": "신원",
+        "required_field": "이 입력란은 필수입니다",
+        "min_length_2": "최소 2자",
+        "nickname_label": "닉네임",
+        "nickname_placeholder": "불리길 원하는 이름",
+        "nickname_helper": "다른 사람이 보게 될 이름입니다. 공백과 악센트를 포함할 수 있습니다.",
+        "email_label": "이메일",
+        "email_helper": "당신의 이메일",
+        "country_label": "국가",
+        "country_placeholder": "국가 또는 코드로 검색...",
+        "phone_label": "전화",
+        "phone_helper": "이 번호로 로그인할 수 있습니다"
       },
       "relationship": {
         "title": "관계 & 호환성"

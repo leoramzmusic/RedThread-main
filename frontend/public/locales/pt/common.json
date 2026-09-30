@@ -144,7 +144,23 @@
       }
     },
     "mediaGallery": "Galeria Multimédia",
-    "preview": "Pré-visualização"
+    "preview": "Pré-visualização",
+    "sections": {
+      "identity": {
+        "title": "Identidade",
+        "required_field": "Este campo é obrigatório",
+        "min_length_2": "Mínimo 2 caracteres",
+        "nickname_label": "Apelido / Nickname",
+        "nickname_placeholder": "Como queres que te chamem",
+        "nickname_helper": "Este é o nome que os outros verão. Pode conter espaços e acentos.",
+        "email_label": "Email",
+        "email_helper": "O teu email",
+        "country_label": "País",
+        "country_placeholder": "Pesquisar por país ou código...",
+        "phone_label": "Telefone",
+        "phone_helper": "Podes usar este número para entrar na tua conta"
+      }
+    }
   },
   "settings_title": "Configurações",
   "settings_appearance_title": "Aparência",

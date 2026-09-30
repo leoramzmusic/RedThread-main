@@ -475,7 +475,23 @@
         "ko": "Objek X"
       }
     },
-    "mediaGallery": "Galeri Media"
+    "mediaGallery": "Galeri Media",
+    "sections": {
+      "identity": {
+        "title": "Identiti",
+        "required_field": "Ruangan ini diperlukan",
+        "min_length_2": "Minimum 2 aksara",
+        "nickname_label": "Nama samaran",
+        "nickname_placeholder": "Apa panggilan yang anda mahu",
+        "nickname_helper": "Ini nama yang akan dilihat orang lain. Boleh mengandungi jarak dan aksen.",
+        "email_label": "E-mel",
+        "email_helper": "E-mel anda",
+        "country_label": "Negara",
+        "country_placeholder": "Cari mengikut negara atau kod...",
+        "phone_label": "Telefon",
+        "phone_helper": "Anda boleh guna nombor ini untuk log masuk"
+      }
+    }
   },
   "card": {
     "potentialConnection": "Sambungan Berpotensi • Foto Tersembunyi",

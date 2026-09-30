@@ -475,7 +475,23 @@
         "ko": "Abu X"
       }
     },
-    "mediaGallery": "Taskar Kafofin Watsa Labarai"
+    "mediaGallery": "Taskar Kafofin Watsa Labarai",
+    "sections": {
+      "identity": {
+        "title": "Asali",
+        "required_field": "Wannan filin wajibi ne",
+        "min_length_2": "Mafi ƙaranci haruffa 2",
+        "nickname_label": "Laƙabi",
+        "nickname_placeholder": "Yadda kake son a kiranka",
+        "nickname_helper": "Wannan shi ne sunan da wasu za su gani. Zai iya ɗauke da sarari da alama.",
+        "email_label": "Imel",
+        "email_helper": "Imel ɗinka",
+        "country_label": "Ƙasa",
+        "country_placeholder": "Bincika da ƙasa ko lamba...",
+        "phone_label": "Waya",
+        "phone_helper": "Zaka iya amfani da wannan lamba don shiga"
+      }
+    }
   },
   "card": {
     "potentialConnection": "Yiwuwar Haɗi • Hotuna a Ɓoye",

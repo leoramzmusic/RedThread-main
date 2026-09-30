@@ -207,7 +207,18 @@
     },
     "sections": {
       "identity": {
-        "title": "Basisidentiteit"
+        "title": "Identiteit",
+        "required_field": "Dit veld is verplicht",
+        "min_length_2": "Minimaal 2 tekens",
+        "nickname_label": "Bijnaam / Nickname",
+        "nickname_placeholder": "Hoe men je moet noemen",
+        "nickname_helper": "Dit is de naam die anderen zien. Mag spaties en accenten bevatten.",
+        "email_label": "E-mail",
+        "email_helper": "Je e-mailadres",
+        "country_label": "Land",
+        "country_placeholder": "Zoeken op land of code...",
+        "phone_label": "Telefoon",
+        "phone_helper": "Je kunt dit nummer gebruiken om in te loggen"
       },
       "relationship": {
         "title": "Relatie & Compatibiliteit"

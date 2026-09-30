@@ -207,7 +207,18 @@
     },
     "sections": {
       "identity": {
-        "title": "Базовая идентичность"
+        "title": "Идентичность",
+        "required_field": "Это поле обязательно",
+        "min_length_2": "Минимум 2 символа",
+        "nickname_label": "Никнейм",
+        "nickname_placeholder": "Как к вам обращаться",
+        "nickname_helper": "Это имя будут видеть другие. Может содержать пробелы и ударения.",
+        "email_label": "Эл. почта",
+        "email_helper": "Ваш адрес электронной почты",
+        "country_label": "Страна",
+        "country_placeholder": "Поиск по стране или коду...",
+        "phone_label": "Телефон",
+        "phone_helper": "Этот номер можно использовать для входа"
       },
       "relationship": {
         "title": "Отношения и совместимость"

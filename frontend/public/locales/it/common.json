@@ -207,7 +207,18 @@
     },
     "sections": {
       "identity": {
-        "title": "Identità di base"
+        "title": "Identità",
+        "required_field": "Questo campo è obbligatorio",
+        "min_length_2": "Minimo 2 caratteri",
+        "nickname_label": "Soprannome / Nickname",
+        "nickname_placeholder": "Come vuoi essere chiamato",
+        "nickname_helper": "Questo è il nome che vedranno gli altri. Può contenere spazi e accenti.",
+        "email_label": "E-mail",
+        "email_helper": "La tua e-mail",
+        "country_label": "Paese",
+        "country_placeholder": "Cerca per paese o codice...",
+        "phone_label": "Telefono",
+        "phone_helper": "Puoi usare questo numero per accedere"
       },
       "relationship": {
         "title": "Relazione & Compatibilità"

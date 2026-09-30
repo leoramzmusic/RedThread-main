@@ -207,7 +207,18 @@
     },
     "sections": {
       "identity": {
-        "title": "Grundlegende Identität"
+        "title": "Identität",
+        "required_field": "Dieses Feld ist erforderlich",
+        "min_length_2": "Mindestens 2 Zeichen",
+        "nickname_label": "Spitzname / Nickname",
+        "nickname_placeholder": "Wie man dich nennen soll",
+        "nickname_helper": "Diesen Namen sehen andere. Er kann Leerzeichen und Akzente enthalten.",
+        "email_label": "E-Mail",
+        "email_helper": "Deine E-Mail-Adresse",
+        "country_label": "Land",
+        "country_placeholder": "Nach Land oder Code suchen...",
+        "phone_label": "Telefon",
+        "phone_helper": "Du kannst diese Nummer zur Anmeldung nutzen"
       },
       "relationship": {
         "title": "Beziehung & Kompatibilität"

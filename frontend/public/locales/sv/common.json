@@ -207,7 +207,18 @@
     },
     "sections": {
       "identity": {
-        "title": "Grundläggande identitet"
+        "title": "Identitet",
+        "required_field": "Detta fält är obligatoriskt",
+        "min_length_2": "Minst 2 tecken",
+        "nickname_label": "Smeknamn / Nickname",
+        "nickname_placeholder": "Vad du vill bli kallad",
+        "nickname_helper": "Detta är namnet andra ser. Det kan innehålla mellanslag och accenter.",
+        "email_label": "E-post",
+        "email_helper": "Din e-postadress",
+        "country_label": "Land",
+        "country_placeholder": "Sök på land eller kod...",
+        "phone_label": "Telefon",
+        "phone_helper": "Du kan använda numret för att logga in"
       },
       "relationship": {
         "title": "Relation & Kompatibilitet"

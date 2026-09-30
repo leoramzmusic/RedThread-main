@@ -206,7 +206,18 @@
     },
     "sections": {
       "identity": {
-        "title": "मूल पहचान"
+        "title": "पहचान",
+        "required_field": "यह फ़ील्ड आवश्यक है",
+        "min_length_2": "न्यूनतम 2 अक्षर",
+        "nickname_label": "उपनाम",
+        "nickname_placeholder": "लोग आपको क्या कहकर बुलाएं",
+        "nickname_helper": "यह वह नाम है जो दूसरे देखेंगे। इसमें स्पेस और एक्सेंट हो सकते हैं।",
+        "email_label": "ईमेल",
+        "email_helper": "आपका ईमेल",
+        "country_label": "देश",
+        "country_placeholder": "देश या कोड से खोजें...",
+        "phone_label": "फ़ोन",
+        "phone_helper": "आप इस नंबर से लॉग इन कर सकते हैं"
       },
       "relationship": {
         "title": "संबंध और अनुकूलता"

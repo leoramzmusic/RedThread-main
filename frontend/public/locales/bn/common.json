@@ -475,7 +475,23 @@
         "ko": "বস্তু X"
       }
     },
-    "mediaGallery": "মিডিয়া গ্যালারি"
+    "mediaGallery": "মিডিয়া গ্যালারি",
+    "sections": {
+      "identity": {
+        "title": "পরিচয়",
+        "required_field": "এই ঘরটি আবশ্যক",
+        "min_length_2": "সর্বনিম্ন ২ অক্ষর",
+        "nickname_label": "ডাকনাম",
+        "nickname_placeholder": "তোমাকে কী বলে ডাকবে",
+        "nickname_helper": "এটি সেই নাম যা অন্যরা দেখবে। স্পেস ও অ্যাকসেন্ট থাকতে পারে।",
+        "email_label": "ইমেইল",
+        "email_helper": "তোমার ইমেইল",
+        "country_label": "দেশ",
+        "country_placeholder": "দেশ বা কোড দিয়ে খুঁজুন...",
+        "phone_label": "ফোন",
+        "phone_helper": "এই নম্বর দিয়ে লগ ইন করতে পারো"
+      }
+    }
   },
   "card": {
     "potentialConnection": "সম্ভাব্য সংযোগ • ছবি লুকানো",

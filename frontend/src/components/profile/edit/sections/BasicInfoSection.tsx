@@ -1,10 +1,28 @@
-import { Grid, Paper, Typography, TextField, Button, Box, InputAdornment, Autocomplete, CircularProgress, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { Controller } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
-import { Edit as EditIcon, VerifiedUser as VerifiedUserIcon, Info, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import IdentityVerificationContainer from '../../IdentityVerificationContainer';
-import { COUNTRY_CODES } from '../../../../constants/countryCodes';
-import { UsernameEditor } from '../../UsernameEditor';
+import {
+  Grid,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  InputAdornment,
+  Autocomplete,
+  CircularProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import { Controller } from "react-hook-form";
+import { useTranslation } from "next-i18next";
+import {
+  Edit as EditIcon,
+  VerifiedUser as VerifiedUserIcon,
+  Info,
+  ExpandMore as ExpandMoreIcon,
+} from "@mui/icons-material";
+import IdentityVerificationContainer from "../../IdentityVerificationContainer";
+import { COUNTRY_CODES } from "../../../../constants/countryCodes";
+import { UsernameEditor } from "../../UsernameEditor";
 
 interface EditBasicInfoProps {
   control: any;
@@ -39,30 +57,29 @@ export default function EditBasicInfo({
   isVerifyingPhone,
   setNicknameDialogOpen,
   handleVerifyPhone,
-  handleChangePhoneRequest
+  handleChangePhoneRequest,
 }: EditBasicInfoProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <Grid item xs={12}>
       <Accordion
         defaultExpanded
         sx={{
-          position: 'relative',
-          border: (theme) => '1px solid ' + theme.palette.divider,
+          position: "relative",
+          border: (theme) => "1px solid " + theme.palette.divider,
           boxShadow: 1,
-          backgroundImage: 'none',
-          borderRadius: '12px !important',
-          '&:before': { display: 'none' }
+          backgroundImage: "none",
+          borderRadius: "12px !important",
+          "&:before": { display: "none" },
         }}
       >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          sx={{ px: 3, py: 1 }}
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
           <Box display="flex" alignItems="center" gap={1}>
             <Info color="action" />
-            <Typography variant="h6">{t('profile.sections.identity.title', 'Información Básica')}</Typography>
+            <Typography variant="h6">
+              {t("profile.sections.identity.title", "Identidad")}
+            </Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
@@ -74,7 +91,9 @@ export default function EditBasicInfo({
                 watch={watch}
                 verified={verified}
                 setVerified={setVerified}
-                verificationStatus={profile.identity_verification_status || 'none'}
+                verificationStatus={
+                  profile.identity_verification_status || "none"
+                }
                 documentUrl={profile.identity_document_url}
                 documentType={profile.identity_document_type}
                 rejectionReason={profile.identity_rejection_reason}
@@ -85,15 +104,33 @@ export default function EditBasicInfo({
               <Controller
                 name="display_name"
                 control={control}
-                rules={{ required: t('profile.required_field', 'Este campo es requerido'), minLength: { value: 2, message: t('profile.min_length_2', 'Mínimo 2 caracteres') } }}
+                rules={{
+                  required: t(
+                    "profile.required_field",
+                    "Este campo es requerido",
+                  ),
+                  minLength: {
+                    value: 2,
+                    message: t("profile.min_length_2", "Mínimo 2 caracteres"),
+                  },
+                }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
                     fullWidth
-                    label={t('profile.nickname_label', 'Apodo / Nickname')}
-                    placeholder={t('profile.nickname_placeholder', 'Cómo quieres que te llamen')}
+                    label={t("profile.nickname_label", "Apodo / Nickname")}
+                    placeholder={t(
+                      "profile.nickname_placeholder",
+                      "Cómo quieres que te llamen",
+                    )}
                     error={!!error}
-                    helperText={error?.message || t('profile.nickname_helper', 'Este es el nombre que verán los demás. Puede contener espacios y acentos.')}
+                    helperText={
+                      error?.message ||
+                      t(
+                        "profile.nickname_helper",
+                        "Este es el nombre que verán los demás. Puede contener espacios y acentos.",
+                      )
+                    }
                   />
                 )}
               />
@@ -101,8 +138,10 @@ export default function EditBasicInfo({
 
             <Grid item xs={12}>
               <UsernameEditor
-                currentUsername={profile.nickname || ''}
-                onUsernameChange={(newUsername) => setValue('nickname', newUsername)}
+                currentUsername={profile.nickname || ""}
+                onUsernameChange={(newUsername) =>
+                  setValue("nickname", newUsername)
+                }
               />
             </Grid>
 
@@ -114,9 +153,12 @@ export default function EditBasicInfo({
                   <TextField
                     {...field}
                     fullWidth
-                    label={t('profile.email_label', 'Email')}
+                    label={t("profile.email_label", "Email")}
                     type="email"
-                    helperText={t('profile.email_helper', 'Tu correo electrónico')}
+                    helperText={t(
+                      "profile.email_helper",
+                      "Tu correo electrónico",
+                    )}
                   />
                 )}
               />
@@ -127,24 +169,34 @@ export default function EditBasicInfo({
                 <Autocomplete
                   options={COUNTRY_CODES}
                   autoHighlight
-                  getOptionLabel={(option) => option.label + ' (+' + option.phone + ')'}
+                  getOptionLabel={(option) =>
+                    option.label + " (+" + option.phone + ")"
+                  }
                   filterOptions={(options, { inputValue }) => {
                     const searchTerm = inputValue.toLowerCase();
-                    return options.filter(option =>
-                      option.label.toLowerCase().includes(searchTerm) ||
-                      option.phone.includes(searchTerm) ||
-                      option.code.toLowerCase().includes(searchTerm)
+                    return options.filter(
+                      (option) =>
+                        option.label.toLowerCase().includes(searchTerm) ||
+                        option.phone.includes(searchTerm) ||
+                        option.code.toLowerCase().includes(searchTerm),
                     );
                   }}
                   renderOption={(props, option) => (
-                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                    <Box
+                      component="li"
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      {...props}
+                    >
                       {option.label} (+{option.phone})
                     </Box>
                   )}
-                  value={COUNTRY_CODES.find(c => '+' + c.phone === countryCode) || null}
+                  value={
+                    COUNTRY_CODES.find((c) => "+" + c.phone === countryCode) ||
+                    null
+                  }
                   onChange={(_, newValue) => {
                     if (newValue) {
-                      setCountryCode('+' + newValue.phone);
+                      setCountryCode("+" + newValue.phone);
                     }
                   }}
                   disabled={phoneVerified}
@@ -152,22 +204,28 @@ export default function EditBasicInfo({
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label={t('profile.country_label', 'País')}
-                      placeholder={t('profile.country_placeholder', 'Buscar por país o código...')}
+                      label={t("profile.country_label", "País")}
+                      placeholder={t(
+                        "profile.country_placeholder",
+                        "Buscar por país o código...",
+                      )}
                       inputProps={{
                         ...params.inputProps,
-                        autoComplete: 'new-password',
+                        autoComplete: "new-password",
                       }}
                     />
                   )}
                 />
                 <TextField
                   fullWidth
-                  label={t('profile.phone_label', 'Teléfono')}
+                  label={t("profile.phone_label", "Teléfono")}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
-                  helperText={t('profile.phone_helper', 'Puedes usar este número para iniciar sesión en tu cuenta')}
+                  helperText={t(
+                    "profile.phone_helper",
+                    "Puedes usar este número para iniciar sesión en tu cuenta",
+                  )}
                 />
               </Box>
             </Grid>

@@ -206,7 +206,18 @@
     },
     "sections": {
       "identity": {
-        "title": "基本的なアイデンティティ"
+        "title": "アイデンティティ",
+        "required_field": "この項目は必須です",
+        "min_length_2": "2文字以上",
+        "nickname_label": "ニックネーム",
+        "nickname_placeholder": "呼ばれたい名前",
+        "nickname_helper": "他の人に表示される名前です。スペースやアクセント可。",
+        "email_label": "メール",
+        "email_helper": "あなたのメールアドレス",
+        "country_label": "国",
+        "country_placeholder": "国またはコードで検索...",
+        "phone_label": "電話",
+        "phone_helper": "この番号でログインできます"
       },
       "relationship": {
         "title": "関係と互換性"

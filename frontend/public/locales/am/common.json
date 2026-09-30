@@ -475,7 +475,23 @@
         "ko": "ዕቃ X"
       }
     },
-    "mediaGallery": "የሚዲያ ማዕከል"
+    "mediaGallery": "የሚዲያ ማዕከል",
+    "sections": {
+      "identity": {
+        "title": "ማንነት",
+        "required_field": "ይህ መስክ ያስፈልጋል",
+        "min_length_2": "ትንሹ 2 ፊደሎች",
+        "nickname_label": "ቅጽል ስም",
+        "nickname_placeholder": "እንዴት እንዲጠሩህ ትወዳለህ",
+        "nickname_helper": "ይህ ሌሎች የሚያዩት ስም ነው። ክፍተቶችን እና አነጋገሮችን ሊይዝ ይችላል።",
+        "email_label": "ኢሜይል",
+        "email_helper": "ኢሜይልህ",
+        "country_label": "ሀገር",
+        "country_placeholder": "በሀገር ወይም በኮድ ፈልግ...",
+        "phone_label": "ስልክ",
+        "phone_helper": "ይህን ቁጥር ለመግባት መጠቀም ትችላለህ"
+      }
+    }
   },
   "card": {
     "potentialConnection": "እምቅ ግንኙነት • ፎቶዎች ተደብቀዋል",
