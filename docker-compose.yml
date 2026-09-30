@@ -69,3 +69,7 @@ services:
 volumes:
   mongodb_data:
     driver: local
+    # Pinned name: without this, the volume is prefixed by the compose
+    # project name and switching project/dir orphans the data
+    # (incident 2026-09-30: accounts "lost" in a fresh volume).
+    name: redthread-main_mongodb_data
