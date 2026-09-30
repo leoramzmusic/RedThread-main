@@ -11,7 +11,7 @@ from src.models.profile_module import ProfileModule
 
 MODULES = [
     {"orden": 0, "key": "section-photos", "nombre": "Fotos", "origen": "core"},
-    {"orden": 1, "key": "section-basic", "nombre": "Identidad básica", "origen": "core"},
+    {"orden": 1, "key": "section-basic", "nombre": "Identidad", "origen": "core"},
     {"orden": 2, "key": "section-location", "nombre": "Ubicación", "origen": "core"},
     {"orden": 3, "key": "section-aboutme", "nombre": "Sobre mí", "origen": "core"},
     {"orden": 4, "key": "section-goals", "nombre": "Objetivos", "origen": "core"},

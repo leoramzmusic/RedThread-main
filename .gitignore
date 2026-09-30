@@ -93,6 +93,7 @@ logs/
 .factory/
 .gemini/
 .kiro/
+.impeccable/
 .obsidian/
 .opencode/
 .pytest_cache/
