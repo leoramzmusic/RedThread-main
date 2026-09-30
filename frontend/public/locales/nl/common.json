@@ -532,6 +532,45 @@
         "ok": "Hobby OK",
         "ko": "Object X"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Echte Naam",
+      "verifiedHint": "Identiteit geverifieerd. Tik om te bewerken (verificatie vervalt).",
+      "lockedHint": "Veld vergrendeld - Document in review",
+      "realNameHelper": "Vul je volledige naam in zoals op je document",
+      "birthDateLabel": "Geboortedatum",
+      "birthDateHelper": "Selecteer je geboortedatum",
+      "unlockTitle": "Gevoelige info bewerken?",
+      "unlockBody1": "Je profiel is geverifieerd of in review. Bij bewerken van naam of geboortedatum vervalt verificatie en moet je opnieuw aanvragen.",
+      "unlockBody2": "Weet je het zeker?",
+      "confirmUnlock": "Ja, bewerken en verificatie verliezen"
+    },
+    "docManager": {
+      "title": "Identiteitsdocument",
+      "infoTooltip": "Upload een duidelijke foto van je officiële document om je identiteit te verifiëren. \n  \nZorg dat:\n• De foto scherp en leesbaar is\n• Je volledige naam zichtbaar is\n• Je geboortedatum zichtbaar is\n• Het document geldig is\n\nJe gegevens worden door ons team beoordeeld en veilig bewaard.",
+      "statusPending": "Verificatie In Behandeling",
+      "statusVerified": "Geverifieerd",
+      "statusRejected": "Afgewezen",
+      "statusNone": "Geen Document",
+      "rejectedTitle": "Document Afgewezen",
+      "rejectedReason": "Reden: {{reason}}",
+      "rejectedHint": "Je kunt een nieuw document uploaden om opnieuw aan te vragen.",
+      "pendingMsg": "Je document wordt beoordeeld. Je krijgt bericht als het klaar is.",
+      "verifiedMsg": "Je identiteit is geverifieerd. Je gegevens zijn beschermd en vergrendeld.",
+      "docTypeLabel": "Documenttype:",
+      "notSpecified": "Niet opgegeven",
+      "uploadTitle": "Identiteitsdocument Uploaden",
+      "uploadHint": "Klik hier om je officiële document te selecteren",
+      "replaceDoc": "Document Vervangen",
+      "deleteDoc": "Document Verwijderen",
+      "uploadNewTitle": "Nieuw Document Uploaden",
+      "uploadNewHint": "Je vorige document is afgewezen. Upload een nieuw document om te verifiëren.",
+      "confirmDeleteTitle": "Verwijderen Bevestigen",
+      "confirmDeleteMsg": "Weet je zeker dat je je officiële document wilt verwijderen?",
+      "deleteConsequences": "Bij verwijderen van het document:",
+      "deleteC1": "Echte-naam- en geboortedatumvelden ontgrendelen",
+      "deleteC2": "Je kunt je info opnieuw bewerken",
+      "deleteC3": "Je moet een nieuw document uploaden om te verifiëren"
     }
   },
   "card": {
@@ -950,5 +989,22 @@
       "generic": "Fout bij uploaden. Controleer limieten en type.",
       "maxVideos": "Limiet bereikt: slechts {{count}} video’s toegestaan."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Identiteitsverificatie",
+    "privacyNotice": "Je document dient alleen om identiteit en leeftijd te verifiëren. Nooit openbaar of gedeeld.",
+    "selectDocument": "Documenttype",
+    "uploadFile": "Sleep je document hierheen of klik om te selecteren",
+    "submit": "Ter Verificatie Verzenden",
+    "formatsHint": "Formaten: JPG, PNG, WEBP, PDF (max 10 MB)",
+    "uploadingMsg": "Document uploaden...",
+    "alertFileType": "Upload een afbeelding (JPG, PNG, WEBP) of PDF",
+    "alertFileSize": "Bestand te groot. Maximaal 10 MB",
+    "alertMissing": "Selecteer documenttype en upload een bestand",
+    "alertUploadError": "Fout bij uploaden. Probeer opnieuw.",
+    "processedOk": "✓ Document verwerkt. Naam: {{name}}",
+    "receivedManual": "Document ontvangen. Naam onleesbaar, handmatige review volgt.",
+    "uploadErrorMsg": "Fout bij uploaden. Probeer opnieuw.",
+    "deletedOk": "✓ Document succesvol verwijderd"
   }
 }

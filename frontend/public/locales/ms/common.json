@@ -491,6 +491,45 @@
         "phone_label": "Telefon",
         "phone_helper": "Anda boleh guna nombor ini untuk log masuk"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Nama Sebenar",
+      "verifiedHint": "Identiti disahkan. Ketik untuk edit (pengesahan akan hilang).",
+      "lockedHint": "Ruangan dikunci - Dokumen dalam semakan",
+      "realNameHelper": "Masukkan nama penuh seperti dalam dokumen",
+      "birthDateLabel": "Tarikh Lahir",
+      "birthDateHelper": "Pilih tarikh lahir anda",
+      "unlockTitle": "Edit maklumat sensitif?",
+      "unlockBody1": "Profil anda disahkan atau dalam semakan. Jika edit nama sebenar atau tarikh lahir, pengesahan hilang dan perlu mohon semula.",
+      "unlockBody2": "Pasti mahu teruskan?",
+      "confirmUnlock": "Ya, edit dan hilang pengesahan"
+    },
+    "docManager": {
+      "title": "Dokumen Identiti",
+      "infoTooltip": "Untuk mengesahkan identiti, muat naik foto jelas dokumen rasmi anda. \n  \nPastikan:\n• Foto jelas dan boleh dibaca\n• Nama penuh kelihatan\n• Tarikh lahir kelihatan\n• Dokumen sah\n\nMaklumat anda disemak pasukan kami dan disimpan selamat.",
+      "statusPending": "Pengesahan Menunggu",
+      "statusVerified": "Disahkan",
+      "statusRejected": "Ditolak",
+      "statusNone": "Tiada Dokumen",
+      "rejectedTitle": "Dokumen Ditolak",
+      "rejectedReason": "Sebab: {{reason}}",
+      "rejectedHint": "Anda boleh muat naik dokumen baru untuk mohon semula.",
+      "pendingMsg": "Dokumen anda dalam semakan. Anda akan dimaklumkan bila selesai.",
+      "verifiedMsg": "Identiti anda disahkan. Data dilindungi dan dikunci.",
+      "docTypeLabel": "Jenis dokumen:",
+      "notSpecified": "Tidak dinyatakan",
+      "uploadTitle": "Muat Naik Dokumen Identiti",
+      "uploadHint": "Klik di sini untuk pilih dokumen rasmi",
+      "replaceDoc": "Ganti Dokumen",
+      "deleteDoc": "Padam Dokumen",
+      "uploadNewTitle": "Muat Naik Dokumen Baru",
+      "uploadNewHint": "Dokumen lama ditolak. Muat naik dokumen baru untuk pengesahan.",
+      "confirmDeleteTitle": "Sahkan Pemadaman",
+      "confirmDeleteMsg": "Pasti mahu padam dokumen rasmi?",
+      "deleteConsequences": "Jika dokumen dipadam:",
+      "deleteC1": "Ruangan nama sebenar dan tarikh lahir dibuka",
+      "deleteC2": "Anda boleh edit maklumat semula",
+      "deleteC3": "Anda mesti muat naik dokumen baru untuk pengesahan"
     }
   },
   "card": {
@@ -909,5 +948,22 @@
       "generic": "Ralat muat naik. Semak had dan jenis.",
       "maxVideos": "Had dicapai: hanya {{count}} video dibenarkan."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Pengesahan Identiti",
+    "privacyNotice": "Dokumen hanya untuk pengesahan identiti dan umur. Tidak dipapar atau dikongsi.",
+    "selectDocument": "Jenis Dokumen",
+    "uploadFile": "Seret dokumen ke sini atau klik untuk pilih",
+    "submit": "Hantar untuk Pengesahan",
+    "formatsHint": "Format: JPG, PNG, WEBP, PDF (maks 10MB)",
+    "uploadingMsg": "Memuat naik dokumen...",
+    "alertFileType": "Muat naik imej (JPG, PNG, WEBP) atau PDF",
+    "alertFileSize": "Fail terlalu besar. Maksimum 10MB",
+    "alertMissing": "Pilih jenis dokumen dan muat naik fail",
+    "alertUploadError": "Ralat muat naik. Cuba lagi.",
+    "processedOk": "✓ Dokumen diproses. Nama: {{name}}",
+    "receivedManual": "Dokumen diterima. Nama tidak dapat dibaca, semakan manual akan dibuat.",
+    "uploadErrorMsg": "Ralat muat naik. Cuba lagi.",
+    "deletedOk": "✓ Dokumen berjaya dipadam"
   }
 }

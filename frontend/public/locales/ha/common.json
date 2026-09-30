@@ -491,6 +491,45 @@
         "phone_label": "Waya",
         "phone_helper": "Zaka iya amfani da wannan lamba don shiga"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Suna na Gaskiya",
+      "verifiedHint": "An tabbatar da asali. Danna don gyarawa (za ka rasa tabbatarwa).",
+      "lockedHint": "Fili a kulle - Takarda na duba",
+      "realNameHelper": "Shigar da cikakken sunanka kamar yadda yake a takarda",
+      "birthDateLabel": "Ranar Haihuwa",
+      "birthDateHelper": "Zaɓi ranar haihuwarka",
+      "unlockTitle": "Gyara bayani mai mahimmanci?",
+      "unlockBody1": "Bayaninka an tabbatar ko ana dubawa. Idan ka gyara suna na gaskiya ko ranar haihuwa, za ka rasa tabbatarwa kuma dole sai ka sake nema.",
+      "unlockBody2": "Kana da tabbas kana son ci gaba?",
+      "confirmUnlock": "I, gyara kuma rasa tabbatarwa"
+    },
+    "docManager": {
+      "title": "Takardar Asali",
+      "infoTooltip": "Don tabbatar da asali, ɗora bayyanannen hoton takardarka ta hukuma. \n  \nTabbatar da:\n• Hoton a bayyane yake ana karantawa\n• Cikakken sunanka yana bayyana\n• Ranar haihuwarka tana bayyana\n• Takardar tana aiki\n\nƘungiyarmu za ta duba bayananka kuma za su kasance lafiya.",
+      "statusPending": "Tabbatarwa na Jiran",
+      "statusVerified": "An Tabbatar",
+      "statusRejected": "An Ƙi",
+      "statusNone": "Babu Takarda",
+      "rejectedTitle": "An Ƙi Takarda",
+      "rejectedReason": "Dalili: {{reason}}",
+      "rejectedHint": "Zaka iya ɗora sabuwar takarda don sake neman tabbatarwa.",
+      "pendingMsg": "Ana duba takardarka. Za a sanar da kai idan an kammala.",
+      "verifiedMsg": "An tabbatar da asalinka. Bayananka suna da kariya kuma an kulle.",
+      "docTypeLabel": "Nau’in takarda:",
+      "notSpecified": "Ba a bayyana ba",
+      "uploadTitle": "Ɗora Takardar Asali",
+      "uploadHint": "Danna nan don zaɓar takardarka ta hukuma",
+      "replaceDoc": "Maye Takarda",
+      "deleteDoc": "Share Takarda",
+      "uploadNewTitle": "Ɗora Sabuwar Takarda",
+      "uploadNewHint": "An ƙi takardarka ta baya. Ɗora sabuwa don tabbatar da asalinka.",
+      "confirmDeleteTitle": "Tabbatar Sharewa",
+      "confirmDeleteMsg": "Kana da tabbas kana son share takardarka ta hukuma?",
+      "deleteConsequences": "Idan ka share takarda:",
+      "deleteC1": "Filayen suna na gaskiya da ranar haihuwa za su buɗe",
+      "deleteC2": "Zaka iya gyara bayananka kuma",
+      "deleteC3": "Dole sai ka ɗora sabuwar takarda don tabbatar da asalinka"
     }
   },
   "card": {
@@ -909,5 +948,22 @@
       "generic": "Kuskuren ɗorawa. Duba iyaka da nau’i.",
       "maxVideos": "An cika iyaka: bidiyo {{count}} kacal aka yarda."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Tabbatar da Asali",
+    "privacyNotice": "Takardarka don tabbatar da asali da shekaru kaɗai ake amfani da ita. Ba za a wallafa ko raba ba.",
+    "selectDocument": "Nau’in Takarda",
+    "uploadFile": "Ja takardarka nan ko danna don zaɓawa",
+    "submit": "Aika don Tabbatarwa",
+    "formatsHint": "Nau’uka: JPG, PNG, WEBP, PDF (mafi yawa 10MB)",
+    "uploadingMsg": "Ana ɗora takarda...",
+    "alertFileType": "Don Allah ɗora hoto (JPG, PNG, WEBP) ko PDF",
+    "alertFileSize": "Fayil ya yi yawa. Mafi yawa 10MB",
+    "alertMissing": "Don Allah zaɓi nau’in takarda kuma ka ɗora fayil",
+    "alertUploadError": "Kuskuren ɗorawa. Sake gwadawa.",
+    "processedOk": "✓ An sarrafa takarda. Sunan da aka ciro: {{name}}",
+    "receivedManual": "An karɓi takarda. Ba a iya karanta suna ba, za a duba da hannu.",
+    "uploadErrorMsg": "Kuskuren ɗorawa. Sake gwadawa.",
+    "deletedOk": "✓ An share takarda"
   }
 }

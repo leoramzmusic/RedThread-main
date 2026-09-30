@@ -160,7 +160,48 @@
         "phone_label": "Telefone",
         "phone_helper": "Podes usar este número para entrar na tua conta"
       }
-    }
+    },
+    "identityDoc": {
+      "realNameLabel": "Nome Real",
+      "verifiedHint": "Identidade verificada. Toca para editar (perderás a verificação).",
+      "lockedHint": "Campo bloqueado - Documento em revisão",
+      "realNameHelper": "Introduz o teu nome completo como no documento",
+      "birthDateLabel": "Data de Nascimento",
+      "birthDateHelper": "Seleciona a tua data de nascimento",
+      "unlockTitle": "Editar informação sensível?",
+      "unlockBody1": "O teu perfil está verificado ou em revisão. Se editares nome real ou data de nascimento, perderás a verificação e terás de pedi-la de novo.",
+      "unlockBody2": "Tens a certeza de que queres continuar?",
+      "confirmUnlock": "Sim, editar e perder verificação"
+    },
+    "docManager": {
+      "title": "Documento de Identidade",
+      "infoTooltip": "Para verificar a tua identidade, precisas de carregar uma foto clara do teu documento oficial. \n  \nCertifica-te de que:\n• A foto é nítida e legível\n• O teu nome completo é visível\n• A tua data de nascimento é visível\n• O documento está válido\n\nA tua informação será revista pela nossa equipa e mantida segura.",
+      "statusPending": "Verificação Pendente",
+      "statusVerified": "Verificado",
+      "statusRejected": "Rejeitado",
+      "statusNone": "Sem Documento",
+      "rejectedTitle": "Documento Rejeitado",
+      "rejectedReason": "Razão: {{reason}}",
+      "rejectedHint": "Podes carregar um novo documento para pedir verificação de novo.",
+      "pendingMsg": "O teu documento está a ser revisto. Serás notificado quando terminar.",
+      "verifiedMsg": "A tua identidade foi verificada. Os teus dados estão protegidos e bloqueados.",
+      "docTypeLabel": "Tipo de documento:",
+      "notSpecified": "Não especificado",
+      "uploadTitle": "Carregar Documento de Identidade",
+      "uploadHint": "Clica aqui para selecionar o teu documento oficial",
+      "replaceDoc": "Substituir Documento",
+      "deleteDoc": "Eliminar Documento",
+      "uploadNewTitle": "Carregar Novo Documento",
+      "uploadNewHint": "O teu documento anterior foi rejeitado. Carrega um novo documento para verificar a tua identidade.",
+      "confirmDeleteTitle": "Confirmar Eliminação",
+      "confirmDeleteMsg": "Tens a certeza de que queres eliminar o teu documento oficial?",
+      "deleteConsequences": "Ao eliminar o documento:",
+      "deleteC1": "Os campos de nome real e data de nascimento desbloqueiam",
+      "deleteC2": "Poderás editar a tua informação de novo",
+      "deleteC3": "Terás de carregar um novo documento para verificar a tua identidade"
+    },
+    "username": "Nickname",
+    "usernameHelp": "O teu identificador único no RETH (3-30 caracteres)"
   },
   "settings_title": "Configurações",
   "settings_appearance_title": "Aparência",
@@ -869,5 +910,22 @@
         }
       }
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Verificação de Identidade",
+    "privacyNotice": "O teu documento serve apenas para verificar a tua identidade e idade. Nunca público nem partilhado.",
+    "selectDocument": "Tipo de Documento",
+    "uploadFile": "Arrasta o teu documento para aqui ou clica para selecionar",
+    "submit": "Enviar para Verificação",
+    "formatsHint": "Formatos: JPG, PNG, WEBP, PDF (máx. 10MB)",
+    "uploadingMsg": "A carregar documento...",
+    "alertFileType": "Por favor carrega uma imagem (JPG, PNG, WEBP) ou PDF",
+    "alertFileSize": "Ficheiro demasiado grande. Máximo 10MB",
+    "alertMissing": "Por favor seleciona o tipo de documento e carrega um ficheiro",
+    "alertUploadError": "Erro ao carregar o documento. Tenta de novo.",
+    "processedOk": "✓ Documento processado. Nome extraído: {{name}}",
+    "receivedManual": "Documento recebido. Não foi possível ler o nome, será revisto manualmente.",
+    "uploadErrorMsg": "Erro ao carregar o documento. Tenta de novo.",
+    "deletedOk": "✓ Documento eliminado com sucesso"
   }
 }

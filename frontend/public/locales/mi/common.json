@@ -491,6 +491,45 @@
         "phone_label": "Waea",
         "phone_helper": "Ka taea e koe te whakamahi i tēnei nama ki te takiuru"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Ingoa Tūturu",
+      "verifiedHint": "Kua manatoko te tuakiri. Patohia hei whakatika (ka ngaro te manatokotanga).",
+      "lockedHint": "Kua raka te pānga - Tuhinga kei te arotakehia",
+      "realNameHelper": "Tāurua tō ingoa katoa pērā i te tuhinga",
+      "birthDateLabel": "Rā Whānau",
+      "birthDateHelper": "Tīpakohia tō rā whānau",
+      "unlockTitle": "Whakatika mōhiohio tairongo?",
+      "unlockBody1": "Kua manatoko tō kōtaha, kei te arotakehia rānei. Ki te whakatika i te ingoa tūturu, te rā whānau rānei, ka ngaro te manatokotanga, me tono anō.",
+      "unlockBody2": "E tino hiahia ana koe ki te haere tonu?",
+      "confirmUnlock": "Āe, whakatika ka ngaro te manatokotanga"
+    },
+    "docManager": {
+      "title": "Tuhinga Tuakiri",
+      "infoTooltip": "Hei manatoko i tō tuakiri, tukua he whakaahua mārama o tō tuhinga whaimana. \n  \nMe mātua kite:\n• He mārama, he pānui te whakaahua\n• Ka kitea tō ingoa katoa\n• Ka kitea tō rā whānau\n• E mana ana te tuhinga\n\nKa arotakehia ō mōhiohio e tā mātou tira, ka tiakina.",
+      "statusPending": "E Tāria Ana te Manatokotanga",
+      "statusVerified": "Kua Manatoko",
+      "statusRejected": "Kua Paopao",
+      "statusNone": "Kāore he Tuhinga",
+      "rejectedTitle": "Tuhinga i Paopaohia",
+      "rejectedReason": "Take: {{reason}}",
+      "rejectedHint": "Ka taea e koe te tukuake tuhinga hou ki te tono anō.",
+      "pendingMsg": "Kei te arotakehia tō tuhinga. Ka whakamōhiotia koe ina oti.",
+      "verifiedMsg": "Kua manatoko tō tuakiri. Kua tiakina, kua raka ō raraunga.",
+      "docTypeLabel": "Momo tuhinga:",
+      "notSpecified": "Kāore i tohua",
+      "uploadTitle": "Tukuake Tuhinga Tuakiri",
+      "uploadHint": "Pāwhiria ki konei hei kōwhiri i tō tuhinga whaimana",
+      "replaceDoc": "Whakakapi Tuhinga",
+      "deleteDoc": "Muku Tuhinga",
+      "uploadNewTitle": "Tukuake Tuhinga Hou",
+      "uploadNewHint": "I paopaohia tō tuhinga o mua. Tukua he tuhinga hou hei manatoko i tō tuakiri.",
+      "confirmDeleteTitle": "Whakaūngia te Mukunga",
+      "confirmDeleteMsg": "E tino hiahia ana koe ki te muku i tō tuhinga whaimana?",
+      "deleteConsequences": "Ki te mukua te tuhinga:",
+      "deleteC1": "Ka wetekina ngā pānga ingoa tūturu me rā whānau",
+      "deleteC2": "Ka taea e koe te whakatika anō i ō mōhiohio",
+      "deleteC3": "Me tukuake tuhinga hou hei manatoko i tō tuakiri"
     }
   },
   "card": {
@@ -909,5 +948,22 @@
       "generic": "Hapa tukuake. Tirohia ngā tepenga me te momo.",
       "maxVideos": "Kua eke te tepenga: e {{count}} ngā ataata e whakaaetia ana."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Manatokotanga Tuakiri",
+    "privacyNotice": "Hei manatoko i te tuakiri me te pakeke noa iho tō tuhinga. Kāore e whakaputaina, e tohatohahia rānei.",
+    "selectDocument": "Momo Tuhinga",
+    "uploadFile": "Tōia tō tuhinga ki konei, pāwhiria rānei hei kōwhiri",
+    "submit": "Tukuna mō te Manatokotanga",
+    "formatsHint": "Hōputu: JPG, PNG, WEBP, PDF (mōrahi 10MB)",
+    "uploadingMsg": "E tukuake ana i te tuhinga...",
+    "alertFileType": "Tukua he atahanga (JPG, PNG, WEBP), PDF rānei",
+    "alertFileSize": "He rahi rawa te kōnae. Mōrahi 10MB",
+    "alertMissing": "Tīpakohia te momo tuhinga ka tukuake he kōnae",
+    "alertUploadError": "Hapa tukuake. Ngana anō.",
+    "processedOk": "✓ Kua tukatukahia te tuhinga. Ingoa: {{name}}",
+    "receivedManual": "Kua tae te tuhinga. Kāore i pānuitia te ingoa, ka arotake ā-ringatia.",
+    "uploadErrorMsg": "Hapa tukuake. Ngana anō.",
+    "deletedOk": "✓ Kua mukua te tuhinga"
   }
 }

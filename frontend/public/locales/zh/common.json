@@ -532,6 +532,45 @@
         "ok": "爱好 OK",
         "ko": "物品 X"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "真实姓名",
+      "verifiedHint": "身份已验证。点击编辑（将失去验证）。",
+      "lockedHint": "字段已锁定 - 证件审核中",
+      "realNameHelper": "输入与证件一致的全名",
+      "birthDateLabel": "出生日期",
+      "birthDateHelper": "选择你的出生日期",
+      "unlockTitle": "编辑敏感信息？",
+      "unlockBody1": "你的资料已验证或正在审核。如编辑真实姓名或出生日期，将失去验证并需重新申请。",
+      "unlockBody2": "确定要继续吗？",
+      "confirmUnlock": "是，编辑并失去验证"
+    },
+    "docManager": {
+      "title": "身份证件",
+      "infoTooltip": "要验证身份，请上传清晰的官方证件照片。\n  \n请确保：\n• 照片清晰可辨\n• 全名可见\n• 出生日期可见\n• 证件有效\n\n你的信息将由我们的团队审核并妥善保管。",
+      "statusPending": "验证待处理",
+      "statusVerified": "已验证",
+      "statusRejected": "已拒绝",
+      "statusNone": "无证件",
+      "rejectedTitle": "证件被拒绝",
+      "rejectedReason": "原因：{{reason}}",
+      "rejectedHint": "你可以上传新证件重新申请验证。",
+      "pendingMsg": "你的证件正在审核。完成后你会收到通知。",
+      "verifiedMsg": "你的身份已验证。你的数据受到保护并已锁定。",
+      "docTypeLabel": "证件类型：",
+      "notSpecified": "未指定",
+      "uploadTitle": "上传身份证件",
+      "uploadHint": "点击此处选择你的官方证件",
+      "replaceDoc": "替换证件",
+      "deleteDoc": "删除证件",
+      "uploadNewTitle": "上传新证件",
+      "uploadNewHint": "你之前的证件被拒绝。上传新证件以验证身份。",
+      "confirmDeleteTitle": "确认删除",
+      "confirmDeleteMsg": "确定要删除你的官方证件吗？",
+      "deleteConsequences": "删除证件后：",
+      "deleteC1": "真实姓名和出生日期字段将解锁",
+      "deleteC2": "你可以重新编辑信息",
+      "deleteC3": "你必须上传新证件以验证身份"
     }
   },
   "card": {
@@ -950,5 +989,22 @@
       "generic": "文件上传出错。请检查限制和类型。",
       "maxVideos": "已达上限：仅允许 {{count}} 个视频。"
     }
+  },
+  "identityVerification": {
+    "title": "🔐 身份验证",
+    "privacyNotice": "你的证件仅用于验证身份和年龄。不会公开或分享。",
+    "selectDocument": "证件类型",
+    "uploadFile": "将证件拖到此处或点击选择",
+    "submit": "提交验证",
+    "formatsHint": "格式：JPG、PNG、WEBP、PDF（最大10MB）",
+    "uploadingMsg": "正在上传证件...",
+    "alertFileType": "请上传图片（JPG、PNG、WEBP）或PDF",
+    "alertFileSize": "文件过大。最大10MB",
+    "alertMissing": "请选择证件类型并上传文件",
+    "alertUploadError": "上传证件出错。请重试。",
+    "processedOk": "✓ 证件已处理。提取姓名：{{name}}",
+    "receivedManual": "已收到证件。无法读取姓名，将人工审核。",
+    "uploadErrorMsg": "上传证件出错。请重试。",
+    "deletedOk": "✓ 证件已删除"
   }
 }

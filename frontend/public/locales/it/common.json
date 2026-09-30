@@ -532,6 +532,45 @@
         "ok": "Hobby OK",
         "ko": "Oggetto X"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Nome Reale",
+      "verifiedHint": "Identità verificata. Tocca per modificare (perderai la verifica).",
+      "lockedHint": "Campo bloccato - Documento in revisione",
+      "realNameHelper": "Inserisci il tuo nome completo come sul documento",
+      "birthDateLabel": "Data di Nascita",
+      "birthDateHelper": "Seleziona la tua data di nascita",
+      "unlockTitle": "Modificare info sensibili?",
+      "unlockBody1": "Il tuo profilo è verificato o in revisione. Modificando nome o data di nascita perderai la verifica e dovrai richiederla.",
+      "unlockBody2": "Sei sicuro di continuare?",
+      "confirmUnlock": "Sì, modifica e perdi la verifica"
+    },
+    "docManager": {
+      "title": "Documento di Identità",
+      "infoTooltip": "Per verificare la tua identità, carica una foto chiara del tuo documento ufficiale. \n  \nAssicurati che:\n• La foto sia nitida e leggibile\n• Il tuo nome completo sia visibile\n• La tua data di nascita sia visibile\n• Il documento sia valido\n\nLe tue informazioni saranno revisionate dal nostro team e tenute al sicuro.",
+      "statusPending": "Verifica in Corso",
+      "statusVerified": "Verificato",
+      "statusRejected": "Rifiutato",
+      "statusNone": "Nessun Documento",
+      "rejectedTitle": "Documento Rifiutato",
+      "rejectedReason": "Motivo: {{reason}}",
+      "rejectedHint": "Puoi caricare un nuovo documento per richiedere di nuovo la verifica.",
+      "pendingMsg": "Il tuo documento è in revisione. Riceverai notifica al termine.",
+      "verifiedMsg": "La tua identità è stata verificata. I tuoi dati sono protetti e bloccati.",
+      "docTypeLabel": "Tipo di documento:",
+      "notSpecified": "Non specificato",
+      "uploadTitle": "Carica Documento di Identità",
+      "uploadHint": "Clicca qui per selezionare il tuo documento ufficiale",
+      "replaceDoc": "Sostituisci Documento",
+      "deleteDoc": "Elimina Documento",
+      "uploadNewTitle": "Carica Nuovo Documento",
+      "uploadNewHint": "Il documento precedente è stato rifiutato. Carica un nuovo documento per verificarti.",
+      "confirmDeleteTitle": "Conferma Eliminazione",
+      "confirmDeleteMsg": "Sei sicuro di voler eliminare il tuo documento ufficiale?",
+      "deleteConsequences": "Eliminando il documento:",
+      "deleteC1": "I campi nome reale e data di nascita si sbloccano",
+      "deleteC2": "Potrai modificare di nuovo le info",
+      "deleteC3": "Dovrai caricare un nuovo documento per verificarti"
     }
   },
   "card": {
@@ -950,5 +989,22 @@
       "generic": "Errore di caricamento. Controlla limiti e tipo.",
       "maxVideos": "Limite raggiunto: solo {{count}} video consentiti."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Verifica Identità",
+    "privacyNotice": "Il tuo documento serve solo a verificare identità ed età. Mai pubblico né condiviso.",
+    "selectDocument": "Tipo di Documento",
+    "uploadFile": "Trascina qui il documento o clicca per selezionare",
+    "submit": "Invia per Verifica",
+    "formatsHint": "Formati: JPG, PNG, WEBP, PDF (max 10 MB)",
+    "uploadingMsg": "Caricamento documento...",
+    "alertFileType": "Carica un’immagine (JPG, PNG, WEBP) o PDF",
+    "alertFileSize": "File troppo grande. Massimo 10 MB",
+    "alertMissing": "Seleziona il tipo di documento e carica un file",
+    "alertUploadError": "Errore di caricamento. Riprova.",
+    "processedOk": "✓ Documento elaborato. Nome estratto: {{name}}",
+    "receivedManual": "Documento ricevuto. Nome illeggibile, revisione manuale prevista.",
+    "uploadErrorMsg": "Errore di caricamento. Riprova.",
+    "deletedOk": "✓ Documento eliminato con successo"
   }
 }

@@ -531,6 +531,45 @@
         "ok": "취미 OK",
         "ko": "물건 X"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "실명",
+      "verifiedHint": "신원 인증됨. 탭하여 편집 (인증이 사라집니다).",
+      "lockedHint": "필드 잠김 - 서류 심사 중",
+      "realNameHelper": "서류와 동일한 전체 이름 입력",
+      "birthDateLabel": "생년월일",
+      "birthDateHelper": "생년월일 선택",
+      "unlockTitle": "민감한 정보를 편집할까요?",
+      "unlockBody1": "프로필이 인증되었거나 심사 중입니다. 실명이나 생년월일을 편집하면 인증이 사라지고 다시 신청해야 합니다.",
+      "unlockBody2": "계속하시겠습니까?",
+      "confirmUnlock": "예, 편집하고 인증 잃기"
+    },
+    "docManager": {
+      "title": "신분증",
+      "infoTooltip": "신원 인증을 위해 공식 서류의 선명한 사진을 업로드하세요.\n  \n확인 사항:\n• 사진이 선명하고 판독 가능\n• 전체 이름이 보임\n• 생년월일이 보임\n• 서류가 유효함\n\n정보는 팀이 심사하고 안전하게 보관합니다.",
+      "statusPending": "인증 대기 중",
+      "statusVerified": "인증됨",
+      "statusRejected": "거부됨",
+      "statusNone": "서류 없음",
+      "rejectedTitle": "서류 거부됨",
+      "rejectedReason": "사유: {{reason}}",
+      "rejectedHint": "새 서류를 업로드하여 다시 인증을 요청할 수 있습니다.",
+      "pendingMsg": "서류를 심사 중입니다. 완료되면 알림을 받습니다.",
+      "verifiedMsg": "신원이 인증되었습니다. 데이터는 보호되고 잠겼습니다.",
+      "docTypeLabel": "서류 종류:",
+      "notSpecified": "미지정",
+      "uploadTitle": "신분증 업로드",
+      "uploadHint": "여기를 클릭하여 공식 서류를 선택",
+      "replaceDoc": "서류 교체",
+      "deleteDoc": "서류 삭제",
+      "uploadNewTitle": "새 서류 업로드",
+      "uploadNewHint": "이전 서류가 거부되었습니다. 신원 인증을 위해 새 서류를 업로드하세요.",
+      "confirmDeleteTitle": "삭제 확인",
+      "confirmDeleteMsg": "공식 서류를 삭제하시겠습니까?",
+      "deleteConsequences": "서류 삭제 시:",
+      "deleteC1": "실명과 생년월일 필드가 잠금 해제됩니다",
+      "deleteC2": "정보를 다시 편집할 수 있습니다",
+      "deleteC3": "신원 인증을 위해 새 서류를 업로드해야 합니다"
     }
   },
   "card": {
@@ -949,5 +988,22 @@
       "generic": "파일 업로드 오류. 제한과 형식을 확인하세요.",
       "maxVideos": "한도 도달: 동영상은 {{count}}개까지 허용됩니다."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 신원 인증",
+    "privacyNotice": "서류는 신원과 나이 확인에만 사용됩니다. 공개·공유되지 않습니다.",
+    "selectDocument": "서류 종류",
+    "uploadFile": "서류를 여기로 드래그하거나 클릭하여 선택",
+    "submit": "인증 요청",
+    "formatsHint": "형식: JPG, PNG, WEBP, PDF (최대 10MB)",
+    "uploadingMsg": "서류 업로드 중...",
+    "alertFileType": "이미지(JPG, PNG, WEBP) 또는 PDF를 업로드하세요",
+    "alertFileSize": "파일이 너무 큽니다. 최대 10MB",
+    "alertMissing": "서류 종류를 선택하고 파일을 업로드하세요",
+    "alertUploadError": "서류 업로드 오류. 다시 시도하세요.",
+    "processedOk": "✓ 서류 처리됨. 추출 이름: {{name}}",
+    "receivedManual": "서류 접수됨. 이름을 읽을 수 없어 수동 심사합니다.",
+    "uploadErrorMsg": "서류 업로드 오류. 다시 시도하세요.",
+    "deletedOk": "✓ 서류 삭제됨"
   }
 }

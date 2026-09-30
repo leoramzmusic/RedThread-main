@@ -491,6 +491,45 @@
         "phone_label": "Telepono",
         "phone_helper": "Maaari mong gamitin ang numerong ito sa pag-log in"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Tunay na Pangalan",
+      "verifiedHint": "Beripikadong pagkakakilanlan. I-tap upang i-edit (mawawala ang beripikasyon).",
+      "lockedHint": "Naka-lock ang field - Sinusuri ang dokumento",
+      "realNameHelper": "Ilagay ang buong pangalan tulad sa dokumento",
+      "birthDateLabel": "Araw ng Kapanganakan",
+      "birthDateHelper": "Piliin ang araw ng kapanganakan",
+      "unlockTitle": "I-edit ang sensitibong impormasyon?",
+      "unlockBody1": "Beripikado ang profile mo o sinusuri. Kung i-edit ang tunay na pangalan o kaarawan, mawawala ang beripikasyon at kailangang humingi ulit.",
+      "unlockBody2": "Sigurado ka bang magpapatuloy?",
+      "confirmUnlock": "Oo, i-edit at mawala ang beripikasyon"
+    },
+    "docManager": {
+      "title": "Dokumento ng Pagkakakilanlan",
+      "infoTooltip": "Upang beripikahin ang pagkakakilanlan, mag-upload ng malinaw na litrato ng opisyal na dokumento. \n  \nSiguraduhin na:\n• Malinaw at nababasa ang litrato\n• Nakikita ang buong pangalan\n• Nakikita ang kaarawan\n• Wasto ang dokumento\n\nSusuriin ng team namin ang impormasyon at mananatiling ligtas.",
+      "statusPending": "Naghihintay ng Beripikasyon",
+      "statusVerified": "Beripikado",
+      "statusRejected": "Tinanggihan",
+      "statusNone": "Walang Dokumento",
+      "rejectedTitle": "Tinanggihang Dokumento",
+      "rejectedReason": "Dahilan: {{reason}}",
+      "rejectedHint": "Maaari kang mag-upload ng bagong dokumento upang humingi ulit.",
+      "pendingMsg": "Sinusuri ang dokumento mo. Aabisuhan ka kapag tapos.",
+      "verifiedMsg": "Beripikado na ang pagkakakilanlan mo. Protektado at naka-lock ang datos mo.",
+      "docTypeLabel": "Uri ng dokumento:",
+      "notSpecified": "Hindi tinukoy",
+      "uploadTitle": "I-upload ang Dokumento ng Pagkakakilanlan",
+      "uploadHint": "I-click dito upang piliin ang opisyal na dokumento",
+      "replaceDoc": "Palitan ang Dokumento",
+      "deleteDoc": "Tanggalin ang Dokumento",
+      "uploadNewTitle": "I-upload ang Bagong Dokumento",
+      "uploadNewHint": "Tinanggihan ang dating dokumento. Mag-upload ng bago upang beripikahin ang pagkakakilanlan.",
+      "confirmDeleteTitle": "Kumpirmahin ang Pagtanggal",
+      "confirmDeleteMsg": "Sigurado ka bang tatanggalin ang opisyal na dokumento?",
+      "deleteConsequences": "Kapag tinanggal ang dokumento:",
+      "deleteC1": "Mabubuksan ang tunay na pangalan at kaarawan",
+      "deleteC2": "Maaari mong i-edit ulit ang impormasyon",
+      "deleteC3": "Kailangang mag-upload ng bagong dokumento upang beripikahin"
     }
   },
   "card": {
@@ -909,5 +948,22 @@
       "generic": "Error sa pag-upload. Suriin ang limit at uri.",
       "maxVideos": "Naabot ang limit: {{count}} video lang ang pinapayagan."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Beripikasyon ng Pagkakakilanlan",
+    "privacyNotice": "Ang dokumento ay para lamang beripikahin ang pagkakakilanlan at edad. Hindi ipapakita o ibabahagi.",
+    "selectDocument": "Uri ng Dokumento",
+    "uploadFile": "I-drag ang dokumento dito o i-click upang pumili",
+    "submit": "Isumite para Beripikasyon",
+    "formatsHint": "Format: JPG, PNG, WEBP, PDF (max 10MB)",
+    "uploadingMsg": "Ina-upload ang dokumento...",
+    "alertFileType": "Mag-upload ng larawan (JPG, PNG, WEBP) o PDF",
+    "alertFileSize": "Masyadong malaki ang file. Max 10MB",
+    "alertMissing": "Piliin ang uri ng dokumento at mag-upload ng file",
+    "alertUploadError": "Error sa pag-upload. Subukan ulit.",
+    "processedOk": "✓ Naproseso ang dokumento. Pangalan: {{name}}",
+    "receivedManual": "Natanggap ang dokumento. Hindi mabasa ang pangalan, manual na susuriin.",
+    "uploadErrorMsg": "Error sa pag-upload. Subukan ulit.",
+    "deletedOk": "✓ Matagumpay na tinanggal ang dokumento"
   }
 }

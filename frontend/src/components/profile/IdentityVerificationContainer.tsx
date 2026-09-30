@@ -1,12 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Snackbar, Alert, Grid, TextField, InputAdornment, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
-import { Control, UseFormSetValue, UseFormWatch, Controller } from 'react-hook-form';
-import DocumentManager from './DocumentManager';
-import IdentityVerificationDialog from './IdentityVerificationDialog';
-import { useIdentityVerification } from '@/hooks/useIdentityVerification';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import EditIcon from '@mui/icons-material/Edit';
-import WarningIcon from '@mui/icons-material/Warning';
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "next-i18next";
+import {
+  Snackbar,
+  Alert,
+  Grid,
+  TextField,
+  InputAdornment,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
+import {
+  Control,
+  UseFormSetValue,
+  UseFormWatch,
+  Controller,
+} from "react-hook-form";
+import DocumentManager from "./DocumentManager";
+import IdentityVerificationDialog from "./IdentityVerificationDialog";
+import { useIdentityVerification } from "@/hooks/useIdentityVerification";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import EditIcon from "@mui/icons-material/Edit";
+import WarningIcon from "@mui/icons-material/Warning";
 
 interface IdentityVerificationContainerProps {
   control: Control<any>;
@@ -14,23 +33,26 @@ interface IdentityVerificationContainerProps {
   watch: UseFormWatch<any>;
   verified: boolean;
   setVerified: (verified: boolean) => void;
-  verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
+  verificationStatus?: "none" | "pending" | "verified" | "rejected";
   documentUrl?: string;
   documentType?: string;
   rejectionReason?: string;
 }
 
-const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps> = ({
+const IdentityVerificationContainer: React.FC<
+  IdentityVerificationContainerProps
+> = ({
   control,
   setValue,
   watch,
   verified,
   setVerified,
-  verificationStatus = 'none',
+  verificationStatus = "none",
   documentUrl,
   documentType,
   rejectionReason,
 }) => {
+  const { t } = useTranslation("common");
   const {
     isUploading,
     isDialogOpen,
@@ -45,11 +67,11 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
     onSuccess: (extractedData) => {
       // Update form fields with extracted data
       if (extractedData?.name) {
-        setValue('real_name', extractedData.name);
+        setValue("real_name", extractedData.name);
       }
 
       if (extractedData?.birth_date) {
-        setValue('birth_date', extractedData.birth_date);
+        setValue("birth_date", extractedData.birth_date);
       }
 
       // Reload page to refresh verification status
@@ -72,7 +94,8 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
 
   // Determine if fields should be locked
   // Only lock if pending OR verified AND not unlocked
-  const fieldsLocked = (verificationStatus === 'pending' || verified) && !isUnlocked;
+  const fieldsLocked =
+    (verificationStatus === "pending" || verified) && !isUnlocked;
 
   const handleUnlockClick = () => {
     // If already unlocked (shouldn't be clickable if disabled is false, making this redundant but safe)
@@ -107,9 +130,9 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
             render={({ field }) => (
               <TextField
                 {...field}
-                value={field.value || ''}
+                value={field.value || ""}
                 fullWidth
-                label="Nombre Real"
+                label={t("profile.identityDoc.realNameLabel", "Nombre Real")}
                 disabled={fieldsLocked}
                 onClick={fieldsLocked ? handleUnlockClick : undefined}
                 InputProps={{
@@ -117,12 +140,16 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
                   endAdornment: (
                     <InputAdornment position="end">
                       {verified ? (
-                        <VerifiedUserIcon sx={{ color: 'success.main' }} />
+                        <VerifiedUserIcon sx={{ color: "success.main" }} />
                       ) : fieldsLocked ? (
                         <Box
                           component="span"
                           onClick={handleUnlockClick}
-                          sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                          sx={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
                         >
                           <EditIcon color="action" />
                         </Box>
@@ -132,13 +159,24 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
                 }}
                 helperText={
                   verified
-                    ? "Identidad verificada. Toca para editar (perderás la verificación)."
+                    ? t(
+                        "profile.identityDoc.verifiedHint",
+                        "Identidad verificada. Toca para editar (perderás la verificación).",
+                      )
                     : fieldsLocked
-                      ? "Campo bloqueado - Documento en revisión"
-                      : "Ingresa tu nombre completo como aparece en tu documento"
+                      ? t(
+                          "profile.identityDoc.lockedHint",
+                          "Campo bloqueado - Documento en revisión",
+                        )
+                      : t(
+                          "profile.identityDoc.realNameHelper",
+                          "Ingresa tu nombre completo como aparece en tu documento",
+                        )
                 }
                 sx={{
-                  '& .MuiInputBase-input': { cursor: fieldsLocked ? 'pointer' : 'text' }
+                  "& .MuiInputBase-input": {
+                    cursor: fieldsLocked ? "pointer" : "text",
+                  },
                 }}
               />
             )}
@@ -151,10 +189,13 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
             render={({ field }) => {
               // Ensure the value is in YYYY-MM-DD format for the date input
               const formatDateForInput = (dateValue: any) => {
-                if (!dateValue) return '';
+                if (!dateValue) return "";
 
                 // If it's already a string in YYYY-MM-DD format, return it
-                if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+                if (
+                  typeof dateValue === "string" &&
+                  /^\d{4}-\d{2}-\d{2}$/.test(dateValue)
+                ) {
                   return dateValue;
                 }
 
@@ -163,15 +204,15 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
                   const date = new Date(dateValue);
                   if (!isNaN(date.getTime())) {
                     const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const day = String(date.getDate()).padStart(2, "0");
                     return `${year}-${month}-${day}`;
                   }
                 } catch (e) {
-                  console.error('Error formatting date:', e);
+                  console.error("Error formatting date:", e);
                 }
 
-                return '';
+                return "";
               };
 
               return (
@@ -179,7 +220,10 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
                   {...field}
                   value={formatDateForInput(field.value)}
                   fullWidth
-                  label="Fecha de Nacimiento"
+                  label={t(
+                    "profile.identityDoc.birthDateLabel",
+                    "Fecha de Nacimiento",
+                  )}
                   type="date"
                   disabled={fieldsLocked}
                   onClick={fieldsLocked ? handleUnlockClick : undefined}
@@ -190,25 +234,40 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
                         <Box
                           component="span"
                           onClick={handleUnlockClick}
-                          sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                          sx={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
                         >
                           <EditIcon color="action" />
                         </Box>
                       </InputAdornment>
-                    ) : null
+                    ) : null,
                   }}
                   InputLabelProps={{
                     shrink: true,
                   }}
                   helperText={
                     verified
-                      ? "Identidad verificada. Toca para editar (perderás la verificación)."
+                      ? t(
+                          "profile.identityDoc.verifiedHint",
+                          "Identidad verificada. Toca para editar (perderás la verificación).",
+                        )
                       : fieldsLocked
-                        ? "Campo bloqueado - Documento en revisión"
-                        : "Selecciona tu fecha de nacimiento"
+                        ? t(
+                            "profile.identityDoc.lockedHint",
+                            "Campo bloqueado - Documento en revisión",
+                          )
+                        : t(
+                            "profile.identityDoc.birthDateHelper",
+                            "Selecciona tu fecha de nacimiento",
+                          )
                   }
                   sx={{
-                    '& .MuiInputBase-input': { cursor: fieldsLocked ? 'pointer' : 'text' }
+                    "& .MuiInputBase-input": {
+                      cursor: fieldsLocked ? "pointer" : "text",
+                    },
                   }}
                 />
               );
@@ -222,24 +281,48 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
         open={unlockDialogOpen}
         onClose={() => setUnlockDialogOpen(false)}
       >
-        <DialogTitle sx={{ color: 'warning.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+        <DialogTitle
+          sx={{
+            color: "warning.main",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           <WarningIcon />
-          ¿Editar información sensible?
+          {t(
+            "profile.identityDoc.unlockTitle",
+            "¿Editar información sensible?",
+          )}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Tu perfil está verificado o en revisión. Si editas tu <strong>Nombre Real</strong> o <strong>Fecha de Nacimiento</strong>,
-            perderás tu estado de verificación y tendrás que solicitarlo nuevamente.
-            <br /><br />
-            ¿Estás seguro de que quieres continuar?
+            {t(
+              "profile.identityDoc.unlockBody1",
+              "Tu perfil está verificado o en revisión. Si editas tu nombre real o fecha de nacimiento, perderás tu estado de verificación y tendrás que solicitarlo nuevamente.",
+            )}
+            <br />
+            <br />
+            {t(
+              "profile.identityDoc.unlockBody2",
+              "¿Estás seguro de que quieres continuar?",
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setUnlockDialogOpen(false)} color="inherit">
-            Cancelar
+            {t("common.cancel", "Cancelar")}
           </Button>
-          <Button onClick={confirmUnlock} color="warning" variant="contained" autoFocus>
-            Sí, editar y perder verificación
+          <Button
+            onClick={confirmUnlock}
+            color="warning"
+            variant="contained"
+            autoFocus
+          >
+            {t(
+              "profile.identityDoc.confirmUnlock",
+              "Sí, editar y perder verificación",
+            )}
           </Button>
         </DialogActions>
       </Dialog>
@@ -256,12 +339,18 @@ const IdentityVerificationContainer: React.FC<IdentityVerificationContainerProps
         open={showMessage}
         autoHideDuration={6000}
         onClose={closeMessage}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={closeMessage}
-          severity={message.includes('✓') ? 'success' : message.includes('Error') ? 'error' : 'info'}
-          sx={{ width: '100%' }}
+          severity={
+            message.includes("✓")
+              ? "success"
+              : message.includes("Error")
+                ? "error"
+                : "info"
+          }
+          sx={{ width: "100%" }}
         >
           {message}
         </Alert>

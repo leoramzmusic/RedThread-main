@@ -393,7 +393,46 @@
         "ko": "Objeto X"
       }
     },
-    "mediaGallery": "Galería Multimedia"
+    "mediaGallery": "Galería Multimedia",
+    "identityDoc": {
+      "realNameLabel": "Nombre Real",
+      "verifiedHint": "Identidad verificada. Toca para editar (perderás la verificación).",
+      "lockedHint": "Campo bloqueado - Documento en revisión",
+      "realNameHelper": "Ingresa tu nombre completo como aparece en tu documento",
+      "birthDateLabel": "Fecha de Nacimiento",
+      "birthDateHelper": "Selecciona tu fecha de nacimiento",
+      "unlockTitle": "¿Editar información sensible?",
+      "unlockBody1": "Tu perfil está verificado o en revisión. Si editas tu nombre real o fecha de nacimiento, perderás tu estado de verificación y tendrás que solicitarlo nuevamente.",
+      "unlockBody2": "¿Estás seguro de que quieres continuar?",
+      "confirmUnlock": "Sí, editar y perder verificación"
+    },
+    "docManager": {
+      "title": "Documento de Identidad",
+      "infoTooltip": "Para verificar tu identidad, necesitas subir una foto clara de tu documento oficial (INE, pasaporte, licencia de conducir). \n  \nAsegúrate de que:\n• La foto sea nítida y legible\n• Se vea tu nombre completo\n• Se vea tu fecha de nacimiento\n• El documento esté vigente\n\nTu información será revisada por nuestro equipo y se mantendrá segura.",
+      "statusPending": "Verificación Pendiente",
+      "statusVerified": "Verificado",
+      "statusRejected": "Rechazado",
+      "statusNone": "Sin Documento",
+      "rejectedTitle": "Documento Rechazado",
+      "rejectedReason": "Razón: {{reason}}",
+      "rejectedHint": "Puedes subir un nuevo documento para solicitar verificación nuevamente.",
+      "pendingMsg": "Tu documento está siendo revisado. Recibirás una notificación cuando se complete la verificación.",
+      "verifiedMsg": "Tu identidad ha sido verificada. Tus datos están protegidos y bloqueados.",
+      "docTypeLabel": "Tipo de documento:",
+      "notSpecified": "No especificado",
+      "uploadTitle": "Subir Documento de Identidad",
+      "uploadHint": "Haz clic aquí para seleccionar tu documento oficial",
+      "replaceDoc": "Reemplazar Documento",
+      "deleteDoc": "Eliminar Documento",
+      "uploadNewTitle": "Subir Nuevo Documento",
+      "uploadNewHint": "Tu documento anterior fue rechazado. Sube un nuevo documento para verificar tu identidad.",
+      "confirmDeleteTitle": "Confirmar Eliminación",
+      "confirmDeleteMsg": "¿Estás seguro de que deseas eliminar tu documento oficial?",
+      "deleteConsequences": "Al eliminar el documento:",
+      "deleteC1": "Los campos de nombre real y fecha de nacimiento se desbloquearán",
+      "deleteC2": "Podrás editar tu información nuevamente",
+      "deleteC3": "Deberás subir un nuevo documento para verificar tu identidad"
+    }
   },
   "settings_title": "Configuración",
   "settings_appearance_title": "Apariencia",
@@ -1243,5 +1282,22 @@
       "selectedPrefix": "Seleccionado:",
       "send": "Enviar"
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Verificación de Identidad",
+    "privacyNotice": "Tu documento se usa únicamente para verificar tu identidad y edad. No se mostrará públicamente ni se compartirá con terceros.",
+    "selectDocument": "Tipo de Documento",
+    "uploadFile": "Arrastra tu documento aquí o haz clic para seleccionar",
+    "submit": "Enviar para Verificación",
+    "formatsHint": "Formatos: JPG, PNG, WEBP, PDF (máx. 10MB)",
+    "uploadingMsg": "Subiendo documento...",
+    "alertFileType": "Por favor sube una imagen (JPG, PNG, WEBP) o PDF",
+    "alertFileSize": "El archivo es demasiado grande. Máximo 10MB",
+    "alertMissing": "Por favor selecciona el tipo de documento y sube un archivo",
+    "alertUploadError": "Error al subir el documento. Por favor intenta de nuevo.",
+    "processedOk": "✓ Documento procesado. Nombre extraído: {{name}}",
+    "receivedManual": "Documento recibido. No se pudo leer el nombre automáticamente, será revisado manualmente.",
+    "uploadErrorMsg": "Error al subir el documento. Por favor intenta de nuevo.",
+    "deletedOk": "✓ Documento eliminado exitosamente"
   }
 }

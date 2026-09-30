@@ -336,6 +336,45 @@
         "phone_label": "Phone",
         "phone_helper": "You can use this number to log into your account"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Real Name",
+      "verifiedHint": "Verified identity. Tap to edit (you will lose verification).",
+      "lockedHint": "Field locked - Document under review",
+      "realNameHelper": "Enter your full name as it appears on your document",
+      "birthDateLabel": "Birthdate",
+      "birthDateHelper": "Select your birthdate",
+      "unlockTitle": "Edit sensitive info?",
+      "unlockBody1": "Your profile is verified or under review. If you edit your real name or birthdate, you will lose verification and must request it again.",
+      "unlockBody2": "Are you sure you want to continue?",
+      "confirmUnlock": "Yes, edit and lose verification"
+    },
+    "docManager": {
+      "title": "Identity Document",
+      "infoTooltip": "To verify your identity, you need to upload a clear photo of your official document (ID, passport, driver license). \n  \nMake sure that:\n• The photo is sharp and legible\n• Your full name is visible\n• Your birthdate is visible\n• The document is valid\n\nYour information will be reviewed by our team and kept safe.",
+      "statusPending": "Pending Verification",
+      "statusVerified": "Verified",
+      "statusRejected": "Rejected",
+      "statusNone": "No Document",
+      "rejectedTitle": "Document Rejected",
+      "rejectedReason": "Reason: {{reason}}",
+      "rejectedHint": "You can upload a new document to request verification again.",
+      "pendingMsg": "Your document is being reviewed. You will be notified when verification completes.",
+      "verifiedMsg": "Your identity has been verified. Your data is protected and locked.",
+      "docTypeLabel": "Document type:",
+      "notSpecified": "Not specified",
+      "uploadTitle": "Upload Identity Document",
+      "uploadHint": "Click here to select your official document",
+      "replaceDoc": "Replace Document",
+      "deleteDoc": "Delete Document",
+      "uploadNewTitle": "Upload New Document",
+      "uploadNewHint": "Your previous document was rejected. Upload a new document to verify your identity.",
+      "confirmDeleteTitle": "Confirm Deletion",
+      "confirmDeleteMsg": "Are you sure you want to delete your official document?",
+      "deleteConsequences": "By deleting the document:",
+      "deleteC1": "Real name and birthdate fields will unlock",
+      "deleteC2": "You can edit your info again",
+      "deleteC3": "You must upload a new document to verify your identity"
     }
   },
   "settings_title": "Settings",
@@ -1172,5 +1211,22 @@
       "selectedPrefix": "Selected:",
       "send": "Send"
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Identity Verification",
+    "privacyNotice": "Your document is only used to verify your identity and age. It will not be shown publicly or shared.",
+    "selectDocument": "Document Type",
+    "uploadFile": "Drag your document here or click to select",
+    "submit": "Submit for Verification",
+    "formatsHint": "Formats: JPG, PNG, WEBP, PDF (max 10MB)",
+    "uploadingMsg": "Uploading document...",
+    "alertFileType": "Please upload an image (JPG, PNG, WEBP) or PDF",
+    "alertFileSize": "File too large. Maximum 10MB",
+    "alertMissing": "Please select the document type and upload a file",
+    "alertUploadError": "Error uploading document. Please try again.",
+    "processedOk": "✓ Document processed. Extracted name: {{name}}",
+    "receivedManual": "Document received. Name could not be read automatically, it will be reviewed manually.",
+    "uploadErrorMsg": "Error uploading document. Please try again.",
+    "deletedOk": "✓ Document deleted successfully"
   }
 }

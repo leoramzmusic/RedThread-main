@@ -491,6 +491,45 @@
         "phone_label": "ስልክ",
         "phone_helper": "ይህን ቁጥር ለመግባት መጠቀም ትችላለህ"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "እውነተኛ ስም",
+      "verifiedHint": "ማንነት ተ confirmerድ። ለማርትዕ ነካ (ማረጋገጫውን ታጣለህ)።",
+      "lockedHint": "መስክ ተቆልፏል - ሰነድ በግምገማ ላይ",
+      "realNameHelper": "ሙሉ ስምህን ሰነድ ላይ እንዳለ አስገባ",
+      "birthDateLabel": "የትውልድ ቀን",
+      "birthDateHelper": "የትውልድ ቀንህን ምረጥ",
+      "unlockTitle": "ስሱ መረጃ ማርትዕ?",
+      "unlockBody1": "መገለጫህ ተ confirmer ወይም በግምገማ ላይ ነው። እውነተኛ ስምህን ወይም የትውልድ ቀንህን ብትቀይር ማረጋገጫውን ታጣለህ እና እንደገና መጠየቅ ይኖርብሃል።",
+      "unlockBody2": "እርግጠኛ ነህ ልትቀጥል ትወዳለህ?",
+      "confirmUnlock": "አዎ፣ አርም እና ማረጋገጫውን አጣ"
+    },
+    "docManager": {
+      "title": "የማንነት ሰነድ",
+      "infoTooltip": "ማንነትህን ለማረጋገጥ የይፋዊ ሰነድህን ግልጽ ፎቶ ስቀል።\n  \nእርግጠኛ ሁን:\n• ፎቶው ግልጽ እና የሚነበብ ነው\n• ሙሉ ስምህ ይታያል\n• የትውልድ ቀንህ ይታያል\n• ሰነዱ የሚሰራ ነው\n\nመረጃህ በቡድናችን ይገመገማል እና ደህንነቱ የተጠበቀ ነው።",
+      "statusPending": "ማረጋገጫ በመጠባበቅ ላይ",
+      "statusVerified": "ተ confirmerድ",
+      "statusRejected": "ውድቅ ተደርጓል",
+      "statusNone": "ሰነድ የለም",
+      "rejectedTitle": "ሰነድ ውድቅ ተደርጓል",
+      "rejectedReason": "ምክንያት: {{reason}}",
+      "rejectedHint": "እንደገና ለማረጋገጥ አዲስ ሰነድ መስቀል ትችላለህ።",
+      "pendingMsg": "ሰነድህ በግምገማ ላይ ነው። ሲጠናቀቅ ማሳወቂያ ይደርስሃል።",
+      "verifiedMsg": "ማንነትህ ተ confirmerድ። መረጃህ የተጠበቀ እና የተቆለፈ ነው።",
+      "docTypeLabel": "የሰነድ አይነት:",
+      "notSpecified": "አልተገለጸም",
+      "uploadTitle": "የማንነት ሰነድ ስቀል",
+      "uploadHint": "ይህን resczek ለማለት እዚህ ጠቅ አድርግ",
+      "replaceDoc": "ሰነድ ተካ",
+      "deleteDoc": "ሰነድ ሰርዝ",
+      "uploadNewTitle": "አዲስ ሰነድ ስቀል",
+      "uploadNewHint": "ያለፈው ሰነድህ ውድቅ ተደርጓል። ማንነትህን ለማረጋገጥ አዲስ ሰነድ ስቀል።",
+      "confirmDeleteTitle": "መሰረዝ አረጋግጥ",
+      "confirmDeleteMsg": "ይፋዊ ሰነድህን መሰረዝ ትወዳለህ?",
+      "deleteConsequences": "ሰነድ ሲሰረዝ:",
+      "deleteC1": "የእውነተኛ ስም እና የትውልድ ቀን መስኮች ይከፈታሉ",
+      "deleteC2": "መረጃህን እንደገና ማርትዕ ትችላለህ",
+      "deleteC3": "ማንነትህን ለማረጋገጥ አዲስ ሰነድ መስቀል አለብህ"
     }
   },
   "card": {
@@ -909,5 +948,22 @@
       "generic": "የስቀል ስህተት። ገደቦችን እና ዓይነትን አረጋግጥ።",
       "maxVideos": "ገደቡ ደርሷል፦ {{count}} ቪዲዮዎች ብቻ ይፈቀዳሉ።"
     }
+  },
+  "identityVerification": {
+    "title": "🔐 የማንነት ማረጋገጫ",
+    "privacyNotice": "ሰነድህ ለማንነት እና ለዕድሜ ማረጋገጫ ብቻ ጥቅም ላይ ይውላል። በይፋ አይታይም አይጋራም።",
+    "selectDocument": "የሰነድ አይነት",
+    "uploadFile": "ሰነድህን እዚህ ጎትት ወይም ለመምረጥ ጠቅ አድርግ",
+    "submit": "ለማረጋገጫ ላክ",
+    "formatsHint": "ቅርጸቶች: JPG, PNG, WEBP, PDF (ከፍተኛ 10MB)",
+    "uploadingMsg": "ሰነድ በመስቀል ላይ...",
+    "alertFileType": "ምስል (JPG, PNG, WEBP) ወይም PDF ስቀል",
+    "alertFileSize": "ፋይሉ በጣም ትልቅ ነው። ከፍተኛ 10MB",
+    "alertMissing": "የሰነድ አይነት ምረጥ እና ፋይል ስቀል",
+    "alertUploadError": "የስቀል ስህተት። እንደገና ሞክር።",
+    "processedOk": "✓ ሰነድ ተሰርቷል። የተገኘ ስም: {{name}}",
+    "receivedManual": "ሰነድ ደርሷል። ስም ሊነበብ አልቻለም, በእጅ ይገመገማል።",
+    "uploadErrorMsg": "የስቀል ስህተት። እንደገና ሞክር።",
+    "deletedOk": "✓ ሰነድ በተሳካ ሁኔታ ተሰርዟል"
   }
 }

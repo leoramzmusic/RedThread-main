@@ -532,6 +532,45 @@
         "ok": "Hobby OK",
         "ko": "Objekt X"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Riktigt Namn",
+      "verifiedHint": "Identitet verifierad. Tryck för att redigera (du förlorar verifieringen).",
+      "lockedHint": "Fält låst - Dokument under granskning",
+      "realNameHelper": "Ange ditt fullständiga namn som på dokumentet",
+      "birthDateLabel": "Födelsedatum",
+      "birthDateHelper": "Välj ditt födelsedatum",
+      "unlockTitle": "Redigera känslig info?",
+      "unlockBody1": "Din profil är verifierad eller under granskning. Ändrar du namn eller födelsedatum förlorar du verifieringen och måste ansöka igen.",
+      "unlockBody2": "Är du säker på att fortsätta?",
+      "confirmUnlock": "Ja, redigera och förlora verifieringen"
+    },
+    "docManager": {
+      "title": "Identitetshandling",
+      "infoTooltip": "Ladda upp ett tydligt foto av din officiella handling för att verifiera din identitet. \n  \nSe till att:\n• Fotot är skarpt och läsbart\n• Ditt fullständiga namn syns\n• Ditt födelsedatum syns\n• Handlingen är giltig\n\nDina uppgifter granskas av vårt team och förvaras säkert.",
+      "statusPending": "Verifiering Väntar",
+      "statusVerified": "Verifierad",
+      "statusRejected": "Avvisad",
+      "statusNone": "Inget Dokument",
+      "rejectedTitle": "Dokument Avvisat",
+      "rejectedReason": "Orsak: {{reason}}",
+      "rejectedHint": "Du kan ladda upp ett nytt dokument och ansöka igen.",
+      "pendingMsg": "Ditt dokument granskas. Du får besked när det är klart.",
+      "verifiedMsg": "Din identitet har verifierats. Dina uppgifter är skyddade och låsta.",
+      "docTypeLabel": "Dokumenttyp:",
+      "notSpecified": "Ej angivet",
+      "uploadTitle": "Ladda upp Identitetshandling",
+      "uploadHint": "Klicka här för att välja ditt officiella dokument",
+      "replaceDoc": "Ersätt Dokument",
+      "deleteDoc": "Ta bort Dokument",
+      "uploadNewTitle": "Ladda upp Nytt Dokument",
+      "uploadNewHint": "Ditt förra dokument avvisades. Ladda upp ett nytt för att verifiera dig.",
+      "confirmDeleteTitle": "Bekräfta Borttagning",
+      "confirmDeleteMsg": "Är du säker på att du vill ta bort ditt officiella dokument?",
+      "deleteConsequences": "Vid borttagning av dokumentet:",
+      "deleteC1": "Fälten riktigt namn och födelsedatum låses upp",
+      "deleteC2": "Du kan redigera din info igen",
+      "deleteC3": "Du måste ladda upp ett nytt dokument för att verifieras"
     }
   },
   "card": {
@@ -950,5 +989,22 @@
       "generic": "Fel vid uppladdning. Kontrollera gränser och typ.",
       "maxVideos": "Gräns nådd: endast {{count}} videor tillåtna."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Identitetsverifiering",
+    "privacyNotice": "Ditt dokument används endast för att verifiera identitet och ålder. Aldrig offentligt eller delat.",
+    "selectDocument": "Dokumenttyp",
+    "uploadFile": "Dra ditt dokument hit eller klicka för att välja",
+    "submit": "Skicka för Verifiering",
+    "formatsHint": "Format: JPG, PNG, WEBP, PDF (max 10 MB)",
+    "uploadingMsg": "Laddar upp dokument...",
+    "alertFileType": "Ladda upp en bild (JPG, PNG, WEBP) eller PDF",
+    "alertFileSize": "Filen är för stor. Max 10 MB",
+    "alertMissing": "Välj dokumenttyp och ladda upp en fil",
+    "alertUploadError": "Fel vid uppladdning. Försök igen.",
+    "processedOk": "✓ Dokument behandlat. Extraherat namn: {{name}}",
+    "receivedManual": "Dokument mottaget. Namn oläsligt, manuell granskning följer.",
+    "uploadErrorMsg": "Fel vid uppladdning. Försök igen.",
+    "deletedOk": "✓ Dokument borttaget"
   }
 }

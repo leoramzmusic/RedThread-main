@@ -160,7 +160,48 @@
         "phone_label": "Téléphone",
         "phone_helper": "Tu peux utiliser ce numéro pour te connecter"
       }
-    }
+    },
+    "identityDoc": {
+      "realNameLabel": "Nom Réel",
+      "verifiedHint": "Identité vérifiée. Touche pour modifier (tu perdras la vérification).",
+      "lockedHint": "Champ verrouillé - Document en révision",
+      "realNameHelper": "Entre ton nom complet comme sur ton document",
+      "birthDateLabel": "Date de Naissance",
+      "birthDateHelper": "Sélectionne ta date de naissance",
+      "unlockTitle": "Modifier des infos sensibles ?",
+      "unlockBody1": "Ton profil est vérifié ou en révision. Si tu modifies nom réel ou date de naissance, tu perdras la vérification et devras la redemander.",
+      "unlockBody2": "Es-tu sûr de vouloir continuer ?",
+      "confirmUnlock": "Oui, modifier et perdre la vérification"
+    },
+    "docManager": {
+      "title": "Document d’Identité",
+      "infoTooltip": "Pour vérifier ton identité, téléverse une photo claire de ton document officiel. \n  \nAssure-toi que :\n• La photo est nette et lisible\n• Ton nom complet est visible\n• Ta date de naissance est visible\n• Le document est valide\n\nTes informations seront révisées par notre équipe et gardées en sécurité.",
+      "statusPending": "Vérification en Cours",
+      "statusVerified": "Vérifié",
+      "statusRejected": "Rejeté",
+      "statusNone": "Aucun Document",
+      "rejectedTitle": "Document Rejeté",
+      "rejectedReason": "Raison : {{reason}}",
+      "rejectedHint": "Tu peux téléverser un nouveau document pour redemander une vérification.",
+      "pendingMsg": "Ton document est en cours de révision. Tu seras notifié quand ce sera terminé.",
+      "verifiedMsg": "Ton identité a été vérifiée. Tes données sont protégées et verrouillées.",
+      "docTypeLabel": "Type de document :",
+      "notSpecified": "Non spécifié",
+      "uploadTitle": "Téléverser un Document d’Identité",
+      "uploadHint": "Clique ici pour sélectionner ton document officiel",
+      "replaceDoc": "Remplacer le Document",
+      "deleteDoc": "Supprimer le Document",
+      "uploadNewTitle": "Téléverser un Nouveau Document",
+      "uploadNewHint": "Ton document précédent a été rejeté. Téléverse un nouveau document pour vérifier ton identité.",
+      "confirmDeleteTitle": "Confirmer la Suppression",
+      "confirmDeleteMsg": "Es-tu sûr de vouloir supprimer ton document officiel ?",
+      "deleteConsequences": "En supprimant le document :",
+      "deleteC1": "Les champs nom réel et date de naissance se déverrouillent",
+      "deleteC2": "Tu pourras modifier tes infos à nouveau",
+      "deleteC3": "Tu devras téléverser un nouveau document pour vérifier ton identité"
+    },
+    "username": "Pseudo",
+    "usernameHelp": "Ton identifiant unique sur RETH (3-30 caractères)"
   },
   "settings_title": "Paramètres",
   "settings_appearance_title": "Apparence",
@@ -869,5 +910,22 @@
         }
       }
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Vérification d’Identité",
+    "privacyNotice": "Ton document sert uniquement à vérifier ton identité et ton âge. Jamais public ni partagé.",
+    "selectDocument": "Type de Document",
+    "uploadFile": "Glisse ton document ici ou clique pour sélectionner",
+    "submit": "Envoyer pour Vérification",
+    "formatsHint": "Formats : JPG, PNG, WEBP, PDF (max 10 Mo)",
+    "uploadingMsg": "Téléversement...",
+    "alertFileType": "Merci de téléverser une image (JPG, PNG, WEBP) ou un PDF",
+    "alertFileSize": "Fichier trop volumineux. Maximum 10 Mo",
+    "alertMissing": "Sélectionne le type de document et téléverse un fichier",
+    "alertUploadError": "Erreur de téléversement. Réessaie.",
+    "processedOk": "✓ Document traité. Nom extrait : {{name}}",
+    "receivedManual": "Document reçu. Nom illisible, révision manuelle prévue.",
+    "uploadErrorMsg": "Erreur de téléversement. Réessaie.",
+    "deletedOk": "✓ Document supprimé avec succès"
   }
 }

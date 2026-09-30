@@ -532,6 +532,45 @@
         "ok": "Hobby OK",
         "ko": "Objekt X"
       }
+    },
+    "identityDoc": {
+      "realNameLabel": "Echter Name",
+      "verifiedHint": "Identität verifiziert. Tippen zum Bearbeiten (Verifizierung geht verloren).",
+      "lockedHint": "Feld gesperrt - Dokument in Prüfung",
+      "realNameHelper": "Gib deinen vollständigen Namen wie im Dokument ein",
+      "birthDateLabel": "Geburtsdatum",
+      "birthDateHelper": "Wähle dein Geburtsdatum",
+      "unlockTitle": "Sensible Infos bearbeiten?",
+      "unlockBody1": "Dein Profil ist verifiziert oder in Prüfung. Bei Änderung von Name oder Geburtsdatum verlierst du die Verifizierung und musst sie neu beantragen.",
+      "unlockBody2": "Bist du sicher?",
+      "confirmUnlock": "Ja, bearbeiten und Verifizierung verlieren"
+    },
+    "docManager": {
+      "title": "Identitätsdokument",
+      "infoTooltip": "Um deine Identität zu verifizieren, lade ein klares Foto deines offiziellen Dokuments hoch. \n  \nStelle sicher, dass:\n• Das Foto scharf und lesbar ist\n• Dein vollständiger Name sichtbar ist\n• Dein Geburtsdatum sichtbar ist\n• Das Dokument gültig ist\n\nDeine Daten werden von unserem Team geprüft und sicher verwahrt.",
+      "statusPending": "Verifizierung Ausstehend",
+      "statusVerified": "Verifiziert",
+      "statusRejected": "Abgelehnt",
+      "statusNone": "Kein Dokument",
+      "rejectedTitle": "Dokument Abgelehnt",
+      "rejectedReason": "Grund: {{reason}}",
+      "rejectedHint": "Du kannst ein neues Dokument hochladen und erneut beantragen.",
+      "pendingMsg": "Dein Dokument wird geprüft. Du wirst benachrichtigt, sobald es fertig ist.",
+      "verifiedMsg": "Deine Identität wurde verifiziert. Deine Daten sind geschützt und gesperrt.",
+      "docTypeLabel": "Dokumenttyp:",
+      "notSpecified": "Nicht angegeben",
+      "uploadTitle": "Identitätsdokument Hochladen",
+      "uploadHint": "Klicke hier, um dein offizielles Dokument zu wählen",
+      "replaceDoc": "Dokument Ersetzen",
+      "deleteDoc": "Dokument Löschen",
+      "uploadNewTitle": "Neues Dokument Hochladen",
+      "uploadNewHint": "Dein voriges Dokument wurde abgelehnt. Lade ein neues hoch, um dich zu verifizieren.",
+      "confirmDeleteTitle": "Löschen Bestätigen",
+      "confirmDeleteMsg": "Bist du sicher, dass du dein offizielles Dokument löschen willst?",
+      "deleteConsequences": "Beim Löschen des Dokuments:",
+      "deleteC1": "Echter-Name- und Geburtsdatum-Felder werden entsperrt",
+      "deleteC2": "Du kannst deine Infos erneut bearbeiten",
+      "deleteC3": "Du musst ein neues Dokument zur Verifizierung hochladen"
     }
   },
   "card": {
@@ -950,5 +989,22 @@
       "generic": "Fehler beim Hochladen. Prüfe Limits und Typ.",
       "maxVideos": "Limit erreicht: nur {{count}} Videos erlaubt."
     }
+  },
+  "identityVerification": {
+    "title": "🔐 Identitätsverifizierung",
+    "privacyNotice": "Dein Dokument dient nur zur Verifizierung von Identität und Alter. Nie öffentlich oder geteilt.",
+    "selectDocument": "Dokumenttyp",
+    "uploadFile": "Ziehe dein Dokument hierher oder klicke zur Auswahl",
+    "submit": "Zur Verifizierung Senden",
+    "formatsHint": "Formate: JPG, PNG, WEBP, PDF (max. 10 MB)",
+    "uploadingMsg": "Dokument wird hochgeladen...",
+    "alertFileType": "Bitte lade ein Bild (JPG, PNG, WEBP) oder PDF hoch",
+    "alertFileSize": "Datei zu groß. Maximum 10 MB",
+    "alertMissing": "Bitte wähle Dokumenttyp und lade eine Datei hoch",
+    "alertUploadError": "Fehler beim Hochladen. Bitte erneut versuchen.",
+    "processedOk": "✓ Dokument verarbeitet. Extrahierter Name: {{name}}",
+    "receivedManual": "Dokument erhalten. Name nicht lesbar, manuelle Prüfung folgt.",
+    "uploadErrorMsg": "Fehler beim Hochladen. Bitte erneut versuchen.",
+    "deletedOk": "✓ Dokument erfolgreich gelöscht"
   }
 }

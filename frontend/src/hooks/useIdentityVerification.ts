@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { useTranslation } from "next-i18next";
 
 interface ExtractedData {
   name?: string;
@@ -11,38 +12,58 @@ interface UseIdentityVerificationProps {
   onDelete?: () => void;
 }
 
-export const useIdentityVerification = ({ onSuccess, onError, onDelete }: UseIdentityVerificationProps = {}) => {
+export const useIdentityVerification = ({
+  onSuccess,
+  onError,
+  onDelete,
+}: UseIdentityVerificationProps = {}) => {
+  const { t } = useTranslation("common");
   const [isUploading, setIsUploading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
 
   const handleSubmit = async (documentType: string, file: File) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append('document_type', documentType);
-      formData.append('file', file);
+      formData.append("document_type", documentType);
+      formData.append("file", file);
 
       // Use apiClient which automatically handles authentication
-      const { default: apiClient } = await import('@/services/api');
-      console.log('Sending request to /profiles/upload-identity...');
-      const response = await apiClient.post('/profiles/upload-identity', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const { default: apiClient } = await import("@/services/api");
+      console.log("Sending request to /profiles/upload-identity...");
+      const response = await apiClient.post(
+        "/profiles/upload-identity",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
-      console.log('Response received:', response.data);
+      console.log("Response received:", response.data);
       const { extracted_data } = response.data;
-      
+
       // Update message based on success
       if (extracted_data?.name) {
-        setMessage(`✓ Documento procesado. Nombre extraído: ${extracted_data.name}`);
+        setMessage(
+          t(
+            "identityVerification.processedOk",
+            "✓ Documento procesado. Nombre extraído: {{name}}",
+            { name: extracted_data.name },
+          ),
+        );
       } else {
-        setMessage('Documento recibido. No se pudo leer el nombre automáticamente, será revisado manualmente.');
+        setMessage(
+          t(
+            "identityVerification.receivedManual",
+            "Documento recibido. No se pudo leer el nombre automáticamente, será revisado manualmente.",
+          ),
+        );
       }
-      
+
       setShowMessage(true);
       setIsDialogOpen(false);
 
@@ -53,14 +74,19 @@ export const useIdentityVerification = ({ onSuccess, onError, onDelete }: UseIde
 
       return extracted_data;
     } catch (error) {
-      console.error('Error uploading identity:', error);
-      setMessage('Error al subir el documento. Por favor intenta de nuevo.');
+      console.error("Error uploading identity:", error);
+      setMessage(
+        t(
+          "identityVerification.uploadErrorMsg",
+          "Error al subir el documento. Por favor intenta de nuevo.",
+        ),
+      );
       setShowMessage(true);
-      
+
       if (onError) {
         onError(error as Error);
       }
-      
+
       throw error;
     } finally {
       setIsUploading(false);
@@ -68,40 +94,46 @@ export const useIdentityVerification = ({ onSuccess, onError, onDelete }: UseIde
   };
 
   const handleDelete = async () => {
-    console.log('[DELETE] Starting document deletion...');
+    console.log("[DELETE] Starting document deletion...");
     try {
-      const { default: apiClient } = await import('@/services/api');
-      console.log('[DELETE] Calling DELETE /profiles/identity-document');
-      await apiClient.delete('/profiles/identity-document');
-      
-      console.log('[DELETE] Document deleted successfully');
-      setMessage('✓ Documento eliminado exitosamente');
+      const { default: apiClient } = await import("@/services/api");
+      console.log("[DELETE] Calling DELETE /profiles/identity-document");
+      await apiClient.delete("/profiles/identity-document");
+
+      console.log("[DELETE] Document deleted successfully");
+      setMessage(
+        t(
+          "identityVerification.deletedOk",
+          "✓ Documento eliminado exitosamente",
+        ),
+      );
       setShowMessage(true);
-      
+
       // Call delete callback
       if (onDelete) {
-        console.log('[DELETE] Calling onDelete callback (will reload page)');
+        console.log("[DELETE] Calling onDelete callback (will reload page)");
         onDelete();
       }
     } catch (error: any) {
-      console.error('[DELETE] Error deleting document:', error);
-      
+      console.error("[DELETE] Error deleting document:", error);
+
       // If 404, document already deleted - treat as success
       if (error.response?.status === 404) {
-        console.log('[DELETE] Document not found (404), treating as success');
-        setMessage('✓ Documento eliminado exitosamente');
+        console.log("[DELETE] Document not found (404), treating as success");
+        setMessage("✓ Documento eliminado exitosamente");
         setShowMessage(true);
-        
+
         if (onDelete) {
-          console.log('[DELETE] Calling onDelete callback after 404');
+          console.log("[DELETE] Calling onDelete callback after 404");
           onDelete();
         }
       } else {
-        const errorMsg = error.response?.data?.detail || 'Error al eliminar el documento';
-        console.error('[DELETE] Error message:', errorMsg);
+        const errorMsg =
+          error.response?.data?.detail || "Error al eliminar el documento";
+        console.error("[DELETE] Error message:", errorMsg);
         setMessage(errorMsg);
         setShowMessage(true);
-        
+
         if (onError) {
           onError(error as Error);
         }
