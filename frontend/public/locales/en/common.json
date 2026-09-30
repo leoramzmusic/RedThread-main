@@ -995,6 +995,82 @@
           "desc": "Attraction to intelligence and inner world."
         }
       }
+    },
+    "interests": {
+      "title": "Interests",
+      "header": "Interests ({{count}} selected)",
+      "searchPlaceholder": "Search interests...",
+      "noResults": "No interests found.",
+      "noneSelected": "No interests selected",
+      "categories": {
+        "outdoor_adventure": {
+          "name": "Outdoor & adventure"
+        },
+        "wellness_lifestyle": {
+          "name": "Wellness & lifestyle"
+        },
+        "food_drink": {
+          "name": "Food & drink"
+        },
+        "fan_communities": {
+          "name": "Fan communities"
+        },
+        "creativity": {
+          "name": "Creativity"
+        },
+        "sports_fitness": {
+          "name": "Sports & fitness"
+        },
+        "music": {
+          "name": "Music"
+        },
+        "staying_in": {
+          "name": "Staying in"
+        },
+        "social_media_content": {
+          "name": "Social media"
+        },
+        "going_out": {
+          "name": "Going out"
+        },
+        "tv_movies": {
+          "name": "TV & movies"
+        },
+        "values_causes": {
+          "name": "Values & causes"
+        },
+        "videogames": {
+          "name": "Video games"
+        }
+      }
+    },
+    "civil": {
+      "title": "Marital Status & Partner",
+      "statusLabel": "Marital status"
+    },
+    "partner": {
+      "requestSent": "Request sent successfully",
+      "sendError": "Error sending request",
+      "confirmUnlink": "Are you sure you want to unlink from your partner?",
+      "confirmCancel": "Are you sure you want to cancel the sent request?",
+      "linkedTitle": "Link Confirmed",
+      "partnerFallback": "Your partner",
+      "unlink": "Unlink",
+      "pendingTitle": "Pending partner request",
+      "pendingBody": "Someone wants to link their profile with you.",
+      "accept": "Accept",
+      "reject": "Decline",
+      "sentTitle": "Request sent",
+      "sentBody": "Waiting for confirmation...",
+      "cancel": "Cancel",
+      "link": "Link Partner",
+      "linkTitle": "Link Partner",
+      "linkBody": "Search for your partner by username or display name.",
+      "searchLabel": "Search user",
+      "searchPlaceholder": "Type the name or username...",
+      "noResults": "No users found.",
+      "selectedPrefix": "Selected:",
+      "send": "Send"
     }
   }
 }

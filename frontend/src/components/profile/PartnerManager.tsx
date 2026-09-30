@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "next-i18next";
 import {
   Box,
   Typography,
@@ -10,31 +11,38 @@ import {
   Alert,
   CircularProgress,
   Avatar,
-  debounce
-} from '@mui/material';
+  debounce,
+} from "@mui/material";
 import {
   Favorite as FavoriteIcon,
   PersonAdd as PersonAddIcon,
   LinkOff as LinkOffIcon,
   Check as CheckIcon,
   Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
-import apiClient from '../../services/api';
+  Search as SearchIcon,
+} from "@mui/icons-material";
+import apiClient from "../../services/api";
 
 interface PartnerManagerProps {
   profile: any;
   onUpdate: () => void;
 }
 
-export default function PartnerManager({ profile, onUpdate }: PartnerManagerProps) {
+export default function PartnerManager({
+  profile,
+  onUpdate,
+}: PartnerManagerProps) {
+  const { t } = useTranslation("common");
   const [openSearch, setOpenSearch] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // Search state
   const [searchOptions, setSearchOptions] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [searching, setSearching] = useState(false);
 
@@ -47,20 +55,22 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
           return;
         }
         try {
-          const response = await apiClient.get('/users/search', { params: { q: query } });
+          const response = await apiClient.get("/users/search", {
+            params: { q: query },
+          });
           callback(response.data);
         } catch (error) {
-          console.error('Error searching users:', error);
+          console.error("Error searching users:", error);
           callback([]);
         }
       }, 400),
-    []
+    [],
   );
 
   useEffect(() => {
     let active = true;
 
-    if (searchQuery === '') {
+    if (searchQuery === "") {
       setSearchOptions([]);
       return undefined;
     }
@@ -84,19 +94,29 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
     setMessage(null);
     try {
       // Sending user_id instead of email. Requires backend change!
-      await apiClient.post('/partners/request', { target_user_id: selectedUser.id });
-      setMessage({ text: 'Solicitud enviada correctamente', type: 'success' });
+      await apiClient.post("/partners/request", {
+        target_user_id: selectedUser.id,
+      });
+      setMessage({
+        text: t(
+          "profileSections.partner.requestSent",
+          "Solicitud enviada correctamente",
+        ),
+        type: "success",
+      });
       setTimeout(() => {
         setOpenSearch(false);
         setSelectedUser(null);
-        setSearchQuery('');
+        setSearchQuery("");
         setMessage(null);
         onUpdate();
       }, 1500);
     } catch (err: any) {
       setMessage({
-        text: err.response?.data?.detail || 'Error al enviar solicitud',
-        type: 'error'
+        text:
+          err.response?.data?.detail ||
+          t("profileSections.partner.sendError", "Error al enviar solicitud"),
+        type: "error",
       });
     } finally {
       setLoading(false);
@@ -105,7 +125,7 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
 
   const handleAccept = async () => {
     try {
-      await apiClient.post('/partners/accept');
+      await apiClient.post("/partners/accept");
       onUpdate();
     } catch (err) {
       console.error(err);
@@ -114,7 +134,7 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
 
   const handleReject = async () => {
     try {
-      await apiClient.post('/partners/reject');
+      await apiClient.post("/partners/reject");
       onUpdate();
     } catch (err) {
       console.error(err);
@@ -122,9 +142,17 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
   };
 
   const handleUnlink = async () => {
-    if (!confirm('¿Estás seguro de que quieres desvincularte de tu pareja?')) return;
+    if (
+      !confirm(
+        t(
+          "profileSections.partner.confirmUnlink",
+          "¿Estás seguro de que quieres desvincularte de tu pareja?",
+        ),
+      )
+    )
+      return;
     try {
-      await apiClient.delete('/partners/unlink');
+      await apiClient.delete("/partners/unlink");
       onUpdate();
     } catch (err) {
       console.error(err);
@@ -132,9 +160,17 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
   };
 
   const handleCancelRequest = async () => {
-    if (!confirm('¿Estás seguro de que quieres cancelar la solicitud enviada?')) return;
+    if (
+      !confirm(
+        t(
+          "profileSections.partner.confirmCancel",
+          "¿Estás seguro de que quieres cancelar la solicitud enviada?",
+        ),
+      )
+    )
+      return;
     try {
-      await apiClient.post('/partners/cancel');
+      await apiClient.post("/partners/cancel");
       onUpdate();
     } catch (err) {
       console.error(err);
@@ -144,25 +180,44 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
   // 1. Linked State
   if (profile.partner_id) {
     return (
-      <Paper elevation={0} sx={{
-        p: 2.5,
-        mt: 2,
-        background: 'linear-gradient(135deg, #FFD700 0%, #FDB931 100%)',
-        color: '#424242',
-        borderRadius: 3,
-        boxShadow: '0 4px 15px rgba(253, 185, 49, 0.3)'
-      }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2.5,
+          mt: 2,
+          background: "linear-gradient(135deg, #FFD700 0%, #FDB931 100%)",
+          color: "#424242",
+          borderRadius: 3,
+          boxShadow: "0 4px 15px rgba(253, 185, 49, 0.3)",
+        }}
+      >
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center" gap={2}>
-            <Box sx={{ p: 1, bgcolor: 'rgba(255,255,255,0.3)', borderRadius: '50%' }}>
-              <LinkOffIcon sx={{ color: '#424242' }} /> {/* Using LinkIcon conceptually, but keeping the requested flow */}
+            <Box
+              sx={{
+                p: 1,
+                bgcolor: "rgba(255,255,255,0.3)",
+                borderRadius: "50%",
+              }}
+            >
+              <LinkOffIcon sx={{ color: "#424242" }} />{" "}
+              {/* Using LinkIcon conceptually, but keeping the requested flow */}
             </Box>
             <Box>
-              <Typography variant="subtitle2" sx={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '0.7rem', opacity: 0.8 }}>
-                Vínculo Confirmado
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  fontSize: "0.7rem",
+                  opacity: 0.8,
+                }}
+              >
+                {t("profileSections.partner.linkedTitle", "Vínculo Confirmado")}
               </Typography>
               <Typography variant="h6" fontWeight={700}>
-                {profile.partner_name || 'Tu pareja'}
+                {profile.partner_name ||
+                  t("profileSections.partner.partnerFallback", "Tu pareja")}
               </Typography>
             </Box>
           </Box>
@@ -170,13 +225,16 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
             size="small"
             onClick={handleUnlink}
             sx={{
-              color: '#424242',
-              borderColor: 'rgba(0,0,0,0.2)',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)', borderColor: 'rgba(0,0,0,0.3)' }
+              color: "#424242",
+              borderColor: "rgba(0,0,0,0.2)",
+              "&:hover": {
+                bgcolor: "rgba(0,0,0,0.05)",
+                borderColor: "rgba(0,0,0,0.3)",
+              },
             }}
             variant="outlined"
           >
-            Desvincular
+            {t("profileSections.partner.unlink", "Desvincular")}
           </Button>
         </Box>
       </Paper>
@@ -186,12 +244,26 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
   // 2. Pending Request Received
   if (profile.partner_request_uid) {
     return (
-      <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper', mt: 2, border: '1px solid #ff9800' }}>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 2,
+          bgcolor: "background.paper",
+          mt: 2,
+          border: "1px solid #ff9800",
+        }}
+      >
         <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-          Solicitud de pareja pendiente
+          {t(
+            "profileSections.partner.pendingTitle",
+            "Solicitud de pareja pendiente",
+          )}
         </Typography>
         <Typography variant="body2" paragraph>
-          Alguien quiere vincular su perfil contigo.
+          {t(
+            "profileSections.partner.pendingBody",
+            "Alguien quiere vincular su perfil contigo.",
+          )}
         </Typography>
         <Box display="flex" gap={1}>
           <Button
@@ -201,7 +273,7 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
             startIcon={<CheckIcon />}
             onClick={handleAccept}
           >
-            Aceptar
+            {t("profileSections.partner.accept", "Aceptar")}
           </Button>
           <Button
             variant="outlined"
@@ -210,7 +282,7 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
             startIcon={<CloseIcon />}
             onClick={handleReject}
           >
-            Rechazar
+            {t("profileSections.partner.reject", "Rechazar")}
           </Button>
         </Box>
       </Paper>
@@ -220,18 +292,35 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
   // 3. Pending Request Sent (NEW)
   if (profile.sent_partner_request_to_uid) {
     return (
-      <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50', mt: 2, border: '1px dashed', borderColor: 'grey.400', borderRadius: 3 }}>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 2,
+          bgcolor: "grey.50",
+          mt: 2,
+          border: "1px dashed",
+          borderColor: "grey.400",
+          borderRadius: 3,
+        }}
+      >
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center" gap={2}>
-            <Box sx={{ position: 'relative', display: 'flex' }}>
-              <CircularProgress size={24} sx={{ color: 'text.secondary' }} />
+            <Box sx={{ position: "relative", display: "flex" }}>
+              <CircularProgress size={24} sx={{ color: "text.secondary" }} />
             </Box>
             <Box>
-              <Typography variant="subtitle2" fontWeight={700} color="text.secondary">
-                Solicitud enviada
+              <Typography
+                variant="subtitle2"
+                fontWeight={700}
+                color="text.secondary"
+              >
+                {t("profileSections.partner.sentTitle", "Solicitud enviada")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Esperando confirmación...
+                {t(
+                  "profileSections.partner.sentBody",
+                  "Esperando confirmación...",
+                )}
               </Typography>
             </Box>
           </Box>
@@ -240,9 +329,9 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
             color="inherit"
             size="small"
             onClick={handleCancelRequest}
-            sx={{ color: 'text.secondary' }}
+            sx={{ color: "text.secondary" }}
           >
-            Cancelar
+            {t("profileSections.partner.cancel", "Cancelar")}
           </Button>
         </Box>
       </Paper>
@@ -258,39 +347,51 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
         onClick={() => setOpenSearch(!openSearch)}
         fullWidth
         disabled={openSearch}
-        sx={{ height: '56px' }}
+        sx={{ height: "56px" }}
       >
-        Vincular Pareja
+        {t("profileSections.partner.link", "Vincular Pareja")}
       </Button>
 
       {openSearch && (
         <Paper
           elevation={4}
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             zIndex: 10,
             p: 3,
-            borderRadius: 2
+            borderRadius: 2,
           }}
         >
-          <Typography variant="h6" gutterBottom>Vincular Pareja</Typography>
+          <Typography variant="h6" gutterBottom>
+            {t("profileSections.partner.linkTitle", "Vincular Pareja")}
+          </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            Busca a tu pareja por nombre de usuario o nombre visible.
+            {t(
+              "profileSections.partner.linkBody",
+              "Busca a tu pareja por nombre de usuario o nombre visible.",
+            )}
           </Typography>
 
           <TextField
             fullWidth
-            label="Buscar usuario"
-            placeholder="Escribe el nombre o usuario..."
+            label={t("profileSections.partner.searchLabel", "Buscar usuario")}
+            placeholder={t(
+              "profileSections.partner.searchPlaceholder",
+              "Escribe el nombre o usuario...",
+            )}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
               endAdornment: (
                 <>
-                  {searching ? <CircularProgress color="inherit" size={20} /> : <SearchIcon color="action" />}
+                  {searching ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : (
+                    <SearchIcon color="action" />
+                  )}
                 </>
               ),
             }}
@@ -299,14 +400,16 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
 
           {/* Results List */}
           {searchOptions.length > 0 && (
-            <Box sx={{
-              maxHeight: 200,
-              overflowY: 'auto',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1,
-              mb: 2
-            }}>
+            <Box
+              sx={{
+                maxHeight: 200,
+                overflowY: "auto",
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 1,
+                mb: 2,
+              }}
+            >
               {searchOptions.map((user) => (
                 <Box
                   key={user.id}
@@ -317,19 +420,28 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
                   }}
                   sx={{
                     p: 1.5,
-                    cursor: 'pointer',
-                    bgcolor: selectedUser?.id === user.id ? 'action.selected' : 'transparent',
-                    '&:hover': { bgcolor: 'action.hover' },
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                    '&:last-child': { borderBottom: 'none' }
+                    cursor: "pointer",
+                    bgcolor:
+                      selectedUser?.id === user.id
+                        ? "action.selected"
+                        : "transparent",
+                    "&:hover": { bgcolor: "action.hover" },
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    "&:last-child": { borderBottom: "none" },
                   }}
                 >
                   <Box display="flex" alignItems="center" gap={1}>
-                    <Avatar sx={{ width: 32, height: 32 }}>{user.display_name.charAt(0).toUpperCase()}</Avatar>
+                    <Avatar sx={{ width: 32, height: 32 }}>
+                      {user.display_name.charAt(0).toUpperCase()}
+                    </Avatar>
                     <Box>
-                      <Typography variant="body2" fontWeight={600}>{user.display_name}</Typography>
-                      <Typography variant="caption" color="text.secondary">@{user.nickname}</Typography>
+                      <Typography variant="body2" fontWeight={600}>
+                        {user.display_name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        @{user.nickname}
+                      </Typography>
                     </Box>
                   </Box>
                 </Box>
@@ -338,16 +450,32 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
           )}
 
           {/* Explicit No Results Message (only if searched and no results) */}
-          {searchQuery.length > 2 && !searching && searchOptions.length === 0 && !selectedUser && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontStyle: 'italic', textAlign: 'center' }}>
-              No se encontraron usuarios.
-            </Typography>
-          )}
+          {searchQuery.length > 2 &&
+            !searching &&
+            searchOptions.length === 0 &&
+            !selectedUser && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 2, fontStyle: "italic", textAlign: "center" }}
+              >
+                {t(
+                  "profileSections.partner.noResults",
+                  "No se encontraron usuarios.",
+                )}
+              </Typography>
+            )}
 
           {/* Selected User Indicator (if list is hidden but user is selected) */}
           {selectedUser && searchOptions.length === 0 && (
-            <Alert severity="success" sx={{ mb: 2 }} icon={<CheckIcon fontSize="inherit" />}>
-              Seleccionado: <strong>{selectedUser.display_name}</strong> (@{selectedUser.nickname})
+            <Alert
+              severity="success"
+              sx={{ mb: 2 }}
+              icon={<CheckIcon fontSize="inherit" />}
+            >
+              {t("profileSections.partner.selectedPrefix", "Seleccionado:")}{" "}
+              <strong>{selectedUser.display_name}</strong> (@
+              {selectedUser.nickname})
             </Alert>
           )}
 
@@ -358,13 +486,19 @@ export default function PartnerManager({ profile, onUpdate }: PartnerManagerProp
           )}
 
           <Box display="flex" justifyContent="flex-end" gap={1}>
-            <Button onClick={() => setOpenSearch(false)}>Cancelar</Button>
+            <Button onClick={() => setOpenSearch(false)}>
+              {t("profileSections.partner.cancel", "Cancelar")}
+            </Button>
             <Button
               onClick={handleSendRequest}
               variant="contained"
               disabled={loading || !selectedUser}
             >
-              {loading ? <CircularProgress size={24} /> : 'Enviar'}
+              {loading ? (
+                <CircularProgress size={24} />
+              ) : (
+                t("profileSections.partner.send", "Enviar")
+              )}
             </Button>
           </Box>
         </Paper>

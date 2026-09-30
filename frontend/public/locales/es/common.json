@@ -1072,6 +1072,82 @@
           "desc": "Atracción por la inteligencia y el mundo interno."
         }
       }
+    },
+    "interests": {
+      "title": "Intereses",
+      "header": "Intereses ({{count}} seleccionados)",
+      "searchPlaceholder": "Buscar intereses...",
+      "noResults": "No se encontraron intereses.",
+      "noneSelected": "No hay intereses seleccionados",
+      "categories": {
+        "outdoor_adventure": {
+          "name": "Aire libre y aventura"
+        },
+        "wellness_lifestyle": {
+          "name": "Bienestar y estilo de vida"
+        },
+        "food_drink": {
+          "name": "Comer y Beber"
+        },
+        "fan_communities": {
+          "name": "Comunidades de fans"
+        },
+        "creativity": {
+          "name": "Creatividad"
+        },
+        "sports_fitness": {
+          "name": "Deportes y fitness"
+        },
+        "music": {
+          "name": "Música"
+        },
+        "staying_in": {
+          "name": "Quedarme en casa"
+        },
+        "social_media_content": {
+          "name": "Redes sociales"
+        },
+        "going_out": {
+          "name": "Salir"
+        },
+        "tv_movies": {
+          "name": "Series y películas"
+        },
+        "values_causes": {
+          "name": "Valores y causas"
+        },
+        "videogames": {
+          "name": "Videojuegos"
+        }
+      }
+    },
+    "civil": {
+      "title": "Estado Civil y Pareja",
+      "statusLabel": "Estado Civil"
+    },
+    "partner": {
+      "requestSent": "Solicitud enviada correctamente",
+      "sendError": "Error al enviar solicitud",
+      "confirmUnlink": "¿Estás seguro de que quieres desvincularte de tu pareja?",
+      "confirmCancel": "¿Estás seguro de que quieres cancelar la solicitud enviada?",
+      "linkedTitle": "Vínculo Confirmado",
+      "partnerFallback": "Tu pareja",
+      "unlink": "Desvincular",
+      "pendingTitle": "Solicitud de pareja pendiente",
+      "pendingBody": "Alguien quiere vincular su perfil contigo.",
+      "accept": "Aceptar",
+      "reject": "Rechazar",
+      "sentTitle": "Solicitud enviada",
+      "sentBody": "Esperando confirmación...",
+      "cancel": "Cancelar",
+      "link": "Vincular Pareja",
+      "linkTitle": "Vincular Pareja",
+      "linkBody": "Busca a tu pareja por nombre de usuario o nombre visible.",
+      "searchLabel": "Buscar usuario",
+      "searchPlaceholder": "Escribe el nombre o usuario...",
+      "noResults": "No se encontraron usuarios.",
+      "selectedPrefix": "Seleccionado:",
+      "send": "Enviar"
     }
   }
 }
