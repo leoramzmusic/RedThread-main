@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "Foto",
+    "photos": {
+      "title": "Foto",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Hidupkan untuk memaparkan foto paling popular secara automatik",
+      "smartDesc": "Memilih foto terbaik secara automatik berdasarkan interaksi",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "Minat",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "Tambah maklumat kesihatan",
       "energyLevel": "Adakah anda orang pagi atau malam?",
       "learningPreferences": "Bagaimana anda suka belajar?"
+    },
+    "media": {
+      "limitHint": "Anda boleh memuat naik sehingga 9 foto dan 3 video.",
+      "visualTips": "Petua visual",
+      "myPhotos": "Foto saya ({{count}}/9)",
+      "myVideos": "Video saya ({{count}}/3)",
+      "add": "Tambah",
+      "previewAlt": "Pratonton"
+    },
+    "photoTips": {
+      "title": "Petua untuk foto anda",
+      "prev": "Sebelumnya",
+      "next": "Seterusnya",
+      "gotIt": "Faham",
+      "slide1": {
+        "title": "Gunakan foto yang menunjukkan wajah anda",
+        "desc": "Profil dengan foto wajah biasanya mendapat lebih Likes.",
+        "ok": "Wajah OK",
+        "ko": "Belakang X"
+      },
+      "slide2": {
+        "title": "Selamat tinggal filter",
+        "desc": "Elakkan filter berat. Gunakan foto yang jelas dan terkini.",
+        "ok": "Semula jadi OK",
+        "ko": "Filter X"
+      },
+      "slide3": {
+        "title": "Tunjukkan minat anda",
+        "desc": "Tambah foto yang mencerminkan hobi dan minat anda.",
+        "ok": "Hobi OK",
+        "ko": "Objek X"
+      }
     }
   },
   "card": {

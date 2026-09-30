@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "ፎቶዎች",
+    "photos": {
+      "title": "ፎቶዎች",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "በጣም ተወዳጅ ፎቶህን በራስ-ሰር ለማሳየት አብራ",
+      "smartDesc": "በመስተጋብር መሠረት ምርጥ ፎቶን በራስ-ሰር ይመርጣል",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "ፍላጎቶች",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "የጤና መረጃ ጨምር",
       "energyLevel": "የጠዋት ሰው ነህ ወይስ የሌሊት?",
       "learningPreferences": "እንዴት መማር ትመርጣለህ?"
+    },
+    "media": {
+      "limitHint": "እስከ 9 ፎቶዎች እና 3 ቪዲዮዎች መስቀል ትችላለህ።",
+      "visualTips": "የእይታ ምክሮች",
+      "myPhotos": "ፎቶዎቼ ({{count}}/9)",
+      "myVideos": "ቪዲዮዎቼ ({{count}}/3)",
+      "add": "ጨምር",
+      "previewAlt": "ቅድመ እይታ"
+    },
+    "photoTips": {
+      "title": "ለፎቶዎችህ ምክሮች",
+      "prev": "ቀዳሚ",
+      "next": "ቀጣይ",
+      "gotIt": "ገብቶኛል",
+      "slide1": {
+        "title": "ፊትህን የሚያሳዩ ፎቶዎችን ተጠቀም",
+        "desc": "የፊት ፎቶ ያላቸው መገለጫዎች ብዙ Likes ያገኛሉ።",
+        "ok": "ፊት እሺ",
+        "ko": "ጀርባ X"
+      },
+      "slide2": {
+        "title": "ደህና ሁን ማጣሪያዎች",
+        "desc": "ከባድ ማጣሪያዎችን አስወግድ። ግልጽ ወቅታዊ ፎቶዎችን ተጠቀም።",
+        "ok": "ተፈጥሯዊ እሺ",
+        "ko": "ማጣሪያ X"
+      },
+      "slide3": {
+        "title": "ፍላጎትህን አሳይ",
+        "desc": "ትርፍ ጊዜ እና ፍላጎቶችህን የሚያንጸባርቁ ፎቶዎችን ጨምር።",
+        "ok": "ትርፍ ጊዜ እሺ",
+        "ko": "ዕቃ X"
+      }
     }
   },
   "card": {

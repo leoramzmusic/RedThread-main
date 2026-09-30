@@ -171,7 +171,13 @@
     "activityPattern": "نمط النشاط",
     "mood": "المزاج",
     "locationSharing": "مشاركة الموقع",
-    "photos": "الصور",
+    "photos": {
+      "title": "الصور",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "فعّل لعرض صورتك الأكثر شعبية تلقائيًا",
+      "smartDesc": "يختار تلقائيًا أفضل صورة حسب التفاعل",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "رفع",
     "interests": "الاهتمامات",
     "hobbies": "الهوايات",
@@ -482,6 +488,38 @@
       "health": "أضف معلومات صحية",
       "energyLevel": "هل أنت صباحي أم ليلي؟",
       "learningPreferences": "كيف تفضل أن تتعلم؟"
+    },
+    "media": {
+      "limitHint": "يمكنك رفع حتى 9 صور و3 فيديوهات.",
+      "visualTips": "نصائح بصرية",
+      "myPhotos": "صوري ({{count}}/9)",
+      "myVideos": "فيديوهاتي ({{count}}/3)",
+      "add": "إضافة",
+      "previewAlt": "معاينة"
+    },
+    "photoTips": {
+      "title": "نصائح لصورك",
+      "prev": "السابق",
+      "next": "التالي",
+      "gotIt": "فهمت",
+      "slide1": {
+        "title": "استخدم صورًا تُظهر وجهك",
+        "desc": "الملفات ذات صور الوجه تحصل عادة على إعجابات أكثر.",
+        "ok": "وجه OK",
+        "ko": "ظهر X"
+      },
+      "slide2": {
+        "title": "وداعًا للفلاتر",
+        "desc": "تجنب الفلاتر المبالغ فيها. استخدم صورًا واضحة وحديثة.",
+        "ok": "طبيعي OK",
+        "ko": "فلتر X"
+      },
+      "slide3": {
+        "title": "أظهر شغفك",
+        "desc": "أضف صورًا تعكس هواياتك واهتماماتك.",
+        "ok": "هواية OK",
+        "ko": "شيء X"
+      }
     }
   },
   "card": {

@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "Mga larawan",
+    "photos": {
+      "title": "Mga litrato",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "I-on upang awtomatikong ipakita ang pinakasikat mong litrato",
+      "smartDesc": "Awtomatikong pinipili ang pinakamahusay na litrato batay sa interaksyon",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "Mga interes",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "Magdagdag ng impormasyon sa kalusugan",
       "energyLevel": "Ikaw ba ay morning person o night person?",
       "learningPreferences": "Paano mo gustong matuto?"
+    },
+    "media": {
+      "limitHint": "Maaari kang mag-upload ng hanggang 9 na litrato at 3 video.",
+      "visualTips": "Visual tips",
+      "myPhotos": "Mga litrato ko ({{count}}/9)",
+      "myVideos": "Mga video ko ({{count}}/3)",
+      "add": "Idagdag",
+      "previewAlt": "Preview"
+    },
+    "photoTips": {
+      "title": "Mga tip para sa litrato mo",
+      "prev": "Nakaraan",
+      "next": "Susunod",
+      "gotIt": "Nakuha",
+      "slide1": {
+        "title": "Gumamit ng litratong kita ang mukha mo",
+        "desc": "Ang mga profile na may mukha ay mas maraming Likes.",
+        "ok": "Mukha OK",
+        "ko": "Likod X"
+      },
+      "slide2": {
+        "title": "Paalam sa filter",
+        "desc": "Iwasan ang mabibigat na filter. Gumamit ng malinaw na bagong litrato.",
+        "ok": "Natural OK",
+        "ko": "Filter X"
+      },
+      "slide3": {
+        "title": "Ipakita ang hilig mo",
+        "desc": "Magdagdag ng litratong sumasalamin sa hobbies at interes mo.",
+        "ok": "Hobby OK",
+        "ko": "Bagay X"
+      }
     }
   },
   "card": {

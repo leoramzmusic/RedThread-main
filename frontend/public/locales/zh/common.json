@@ -172,7 +172,13 @@
     "activityPattern": "活动模式",
     "mood": "心情",
     "locationSharing": "位置共享",
-    "photos": "照片",
+    "photos": {
+      "title": "照片",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "开启以自动展示你最受欢迎的照片",
+      "smartDesc": "根据互动自动选择最佳照片",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "上传",
     "interests": "兴趣",
     "hobbies": "爱好",
@@ -483,6 +489,38 @@
       "health": "添加健康信息",
       "energyLevel": "你是早起型还是夜猫子？",
       "learningPreferences": "你更喜欢如何学习？"
+    },
+    "media": {
+      "limitHint": "最多可上传 9 张照片和 3 个视频。",
+      "visualTips": "视觉小贴士",
+      "myPhotos": "我的照片 ({{count}}/9)",
+      "myVideos": "我的视频 ({{count}}/3)",
+      "add": "添加",
+      "previewAlt": "预览"
+    },
+    "photoTips": {
+      "title": "照片小贴士",
+      "prev": "上一个",
+      "next": "下一个",
+      "gotIt": "知道了",
+      "slide1": {
+        "title": "使用露出脸部的照片",
+        "desc": "有脸部照片的资料通常获得更多赞。",
+        "ok": "脸部 OK",
+        "ko": "背影 X"
+      },
+      "slide2": {
+        "title": "告别滤镜",
+        "desc": "避免过度滤镜。使用清晰近期的照片。",
+        "ok": "自然 OK",
+        "ko": "滤镜 X"
+      },
+      "slide3": {
+        "title": "展示你的热情",
+        "desc": "添加反映你的爱好和兴趣的照片。",
+        "ok": "爱好 OK",
+        "ko": "物品 X"
+      }
     }
   },
   "card": {

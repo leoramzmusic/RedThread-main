@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "Hotuna",
+    "photos": {
+      "title": "Hotuna",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Kunna don nuna hotonka mafi shahara ta atomatik",
+      "smartDesc": "Yana zaɓar mafi kyawun hoto ta atomatik gwargwadon mu’amala",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "Sha'awa",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "Ƙara bayani kan lafiya",
       "energyLevel": "Mutumin safe ne kai ko na dare?",
       "learningPreferences": "Ta yaya ka fi son koyo?"
+    },
+    "media": {
+      "limitHint": "Zaka iya ɗora hotuna 9 da bidiyo 3.",
+      "visualTips": "Shawarwarin gani",
+      "myPhotos": "Hotunana ({{count}}/9)",
+      "myVideos": "Bidiyona ({{count}}/3)",
+      "add": "Ƙara",
+      "previewAlt": "Duba da farko"
+    },
+    "photoTips": {
+      "title": "Shawarwari don hotunanka",
+      "prev": "Na baya",
+      "next": "Na gaba",
+      "gotIt": "Na gane",
+      "slide1": {
+        "title": "Yi amfani da hotunan da ke nuna fuskarka",
+        "desc": "Bayanai masu hotunan fuska sun fi samun Likes.",
+        "ok": "Fuska OK",
+        "ko": "Baya X"
+      },
+      "slide2": {
+        "title": "Ban kwana da filtoci",
+        "desc": "Ka guji filtoci masu yawa. Yi amfani da hotuna bayyanannu na kwanan nan.",
+        "ok": "Na halitta OK",
+        "ko": "Filta X"
+      },
+      "slide3": {
+        "title": "Nuna sha’awarka",
+        "desc": "Ƙara hotunan da ke nuna abubuwan sha’awa da bukatunka.",
+        "ok": "Sha’awa OK",
+        "ko": "Abu X"
+      }
     }
   },
   "card": {

@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "Whakaahua",
+    "photos": {
+      "title": "Whakaahua",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Whakakāia kia whakaatu aunoa i tō whakaahua rongonui",
+      "smartDesc": "Ka kōwhiri aunoa i te whakaahua pai i runga i te taunekeneke",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "Ngā pānga",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "Tāpirihia he mōhiohio hauora",
       "energyLevel": "He tangata ata koe, he tangata pō rānei?",
       "learningPreferences": "Pēhea koe e pai ai ki te ako?"
+    },
+    "media": {
+      "limitHint": "Ka taea e koe te tukuake kia 9 ngā whakaahua me ngā ataata 3.",
+      "visualTips": "Ngā tīwhiri ataata",
+      "myPhotos": "Aku whakaahua ({{count}}/9)",
+      "myVideos": "Aku ataata ({{count}}/3)",
+      "add": "Tāpiri",
+      "previewAlt": "Arokite"
+    },
+    "photoTips": {
+      "title": "Ngā tīwhiri mō ō whakaahua",
+      "prev": "O mua",
+      "next": "Panuku",
+      "gotIt": "Kua mārama",
+      "slide1": {
+        "title": "Whakamahia ngā whakaahua e whakaatu ana i tō kanohi",
+        "desc": "He nui ake ngā Like ki ngā kōtaha whai whakaahua kanohi.",
+        "ok": "Kanohi OK",
+        "ko": "Tuara X"
+      },
+      "slide2": {
+        "title": "Poroporoaki ki ngā tātari",
+        "desc": "Aukatia ngā tātari taumaha. Whakamahia ngā whakaahua mārama o nāianei.",
+        "ok": "Māori OK",
+        "ko": "Tātari X"
+      },
+      "slide3": {
+        "title": "Whakaaturia ō hiahia",
+        "desc": "Tāpirihia ngā whakaahua e whakaata ana i ō whakangahau me ngā ngākau nuitanga.",
+        "ok": "Hākinakina OK",
+        "ko": "Ahanoa X"
+      }
     }
   },
   "card": {

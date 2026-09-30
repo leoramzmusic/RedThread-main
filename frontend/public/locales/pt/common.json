@@ -14,7 +14,13 @@
     "activityPattern": "Padrão de Atividade",
     "mood": "Humor",
     "locationSharing": "Compartilhar localização",
-    "photos": "Fotos",
+    "photos": {
+      "title": "Fotos",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Ativa para mostrar automaticamente a tua foto mais popular",
+      "smartDesc": "Seleciona automaticamente a melhor foto por interação",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Enviar",
     "interests": "Interesses",
     "hobbies": "Hobbies",
@@ -104,6 +110,38 @@
       "health": "Adiciona informação de saúde",
       "energyLevel": "És matutino ou noturno?",
       "learningPreferences": "Como preferes aprender?"
+    },
+    "media": {
+      "limitHint": "Podes carregar até 9 fotos e 3 vídeos.",
+      "visualTips": "Dicas visuais",
+      "myPhotos": "As minhas fotos ({{count}}/9)",
+      "myVideos": "Os meus vídeos ({{count}}/3)",
+      "add": "Adicionar",
+      "previewAlt": "Pré-visualização"
+    },
+    "photoTips": {
+      "title": "Dicas para as tuas fotos",
+      "prev": "Anterior",
+      "next": "Seguinte",
+      "gotIt": "Entendido",
+      "slide1": {
+        "title": "Usa fotos que mostrem o teu rosto",
+        "desc": "Perfis com fotos de rosto costumam receber mais Likes.",
+        "ok": "Rosto OK",
+        "ko": "Costas X"
+      },
+      "slide2": {
+        "title": "Adeus filtros",
+        "desc": "Evita filtros exagerados. Usa fotos nítidas e recentes.",
+        "ok": "Natural OK",
+        "ko": "Filtro X"
+      },
+      "slide3": {
+        "title": "Mostra as tuas paixões",
+        "desc": "Adiciona fotos que reflitam os teus hobbies e interesses.",
+        "ok": "Hobby OK",
+        "ko": "Objeto X"
+      }
     }
   },
   "settings_title": "Configurações",

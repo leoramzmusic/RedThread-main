@@ -171,7 +171,13 @@
     "activityPattern": "활동 패턴",
     "mood": "기분",
     "locationSharing": "위치 공유",
-    "photos": "사진",
+    "photos": {
+      "title": "사진",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "가장 인기 있는 사진을 자동으로 표시하려면 켜기",
+      "smartDesc": "상호작용에 따라 최적의 사진을 자동 선택",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "업로드",
     "interests": "관심사",
     "hobbies": "취미",
@@ -482,6 +488,38 @@
       "health": "건강 정보 추가",
       "energyLevel": "아침형인가요, 저녁형인가요?",
       "learningPreferences": "어떻게 배우는 것을 선호하나요?"
+    },
+    "media": {
+      "limitHint": "사진 최대 9장, 동영상 최대 3개까지 업로드할 수 있습니다.",
+      "visualTips": "비주얼 팁",
+      "myPhotos": "내 사진 ({{count}}/9)",
+      "myVideos": "내 동영상 ({{count}}/3)",
+      "add": "추가",
+      "previewAlt": "미리보기"
+    },
+    "photoTips": {
+      "title": "사진 팁",
+      "prev": "이전",
+      "next": "다음",
+      "gotIt": "알겠음",
+      "slide1": {
+        "title": "얼굴이 보이는 사진 사용",
+        "desc": "얼굴 사진이 있는 프로필이 좋아요를 더 많이 받습니다.",
+        "ok": "얼굴 OK",
+        "ko": "등 X"
+      },
+      "slide2": {
+        "title": "필터와 작별",
+        "desc": "과한 필터는 피하고 선명하고 최근 사진을 사용하세요.",
+        "ok": "내추럴 OK",
+        "ko": "필터 X"
+      },
+      "slide3": {
+        "title": "열정을 보여주세요",
+        "desc": "취미와 관심사를 반영한 사진을 추가하세요.",
+        "ok": "취미 OK",
+        "ko": "물건 X"
+      }
     }
   },
   "card": {

@@ -172,7 +172,13 @@
     "activityPattern": "Activiteitspatroon",
     "mood": "Stemming",
     "locationSharing": "Locatie delen",
-    "photos": "Foto's",
+    "photos": {
+      "title": "Foto's",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Schakel in om automatisch je populairste foto te tonen",
+      "smartDesc": "Selecteert automatisch de beste foto op basis van interactie",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Uploaden",
     "interests": "Interesses",
     "hobbies": "Hobby's",
@@ -483,6 +489,38 @@
       "health": "Voeg gezondheidsinfo toe",
       "energyLevel": "Ben je een ochtend- of avondmens?",
       "learningPreferences": "Hoe leer je het liefst?"
+    },
+    "media": {
+      "limitHint": "Je kunt maximaal 9 foto’s en 3 video’s uploaden.",
+      "visualTips": "Visuele tips",
+      "myPhotos": "Mijn foto’s ({{count}}/9)",
+      "myVideos": "Mijn video’s ({{count}}/3)",
+      "add": "Toevoegen",
+      "previewAlt": "Voorbeeld"
+    },
+    "photoTips": {
+      "title": "Tips voor je foto’s",
+      "prev": "Vorige",
+      "next": "Volgende",
+      "gotIt": "Begrepen",
+      "slide1": {
+        "title": "Gebruik foto’s waarop je gezicht te zien is",
+        "desc": "Profielen met gezichtsfoto’s krijgen meestal meer Likes.",
+        "ok": "Gezicht OK",
+        "ko": "Rug X"
+      },
+      "slide2": {
+        "title": "Doei filters",
+        "desc": "Vermijd zware filters. Gebruik scherpe, recente foto’s.",
+        "ok": "Natuurlijk OK",
+        "ko": "Filter X"
+      },
+      "slide3": {
+        "title": "Toon je passies",
+        "desc": "Voeg foto’s toe die je hobby’s en interesses weerspiegelen.",
+        "ok": "Hobby OK",
+        "ko": "Object X"
+      }
     }
   },
   "card": {

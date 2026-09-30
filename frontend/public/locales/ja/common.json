@@ -171,7 +171,13 @@
     "activityPattern": "活動パターン",
     "mood": "気分",
     "locationSharing": "位置情報の共有",
-    "photos": "写真",
+    "photos": {
+      "title": "写真",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "最も人気の写真を自動表示するにはオンにする",
+      "smartDesc": "反応に基づいて最適な写真を自動選択",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "アップロード",
     "interests": "興味",
     "hobbies": "趣味",
@@ -482,6 +488,38 @@
       "health": "健康情報を追加",
       "energyLevel": "朝型？夜型？",
       "learningPreferences": "どう学ぶのが好き？"
+    },
+    "media": {
+      "limitHint": "写真は最大9枚、動画は最大3本アップロードできます。",
+      "visualTips": "ビジュアルのコツ",
+      "myPhotos": "自分の写真 ({{count}}/9)",
+      "myVideos": "自分の動画 ({{count}}/3)",
+      "add": "追加",
+      "previewAlt": "プレビュー"
+    },
+    "photoTips": {
+      "title": "写真のコツ",
+      "prev": "前へ",
+      "next": "次へ",
+      "gotIt": "わかった",
+      "slide1": {
+        "title": "顔が見える写真を使う",
+        "desc": "顔写真のあるプロフィールはLikeをもらいやすいです。",
+        "ok": "顔 OK",
+        "ko": "背中 X"
+      },
+      "slide2": {
+        "title": "フィルターとはさようなら",
+        "desc": "強いフィルターは避け、鮮明で最近の写真を使う。",
+        "ok": "ナチュラル OK",
+        "ko": "フィルター X"
+      },
+      "slide3": {
+        "title": "情熱を見せる",
+        "desc": "趣味や興味を反映した写真を追加する。",
+        "ok": "趣味 OK",
+        "ko": "モノ X"
+      }
     }
   },
   "card": {

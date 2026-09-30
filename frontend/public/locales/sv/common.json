@@ -172,7 +172,13 @@
     "activityPattern": "Aktivitetsmönster",
     "mood": "Humör",
     "locationSharing": "Platsdelning",
-    "photos": "Foton",
+    "photos": {
+      "title": "Foton",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Aktivera för att automatiskt visa ditt populäraste foto",
+      "smartDesc": "Väljer automatiskt bästa fotot baserat på interaktion",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Ladda upp",
     "interests": "Intressen",
     "hobbies": "Hobbies",
@@ -483,6 +489,38 @@
       "health": "Lägg till hälsoinfo",
       "energyLevel": "Är du morgon- eller kvällsmänniska?",
       "learningPreferences": "Hur lär du dig helst?"
+    },
+    "media": {
+      "limitHint": "Du kan ladda upp upp till 9 foton och 3 videor.",
+      "visualTips": "Visuella tips",
+      "myPhotos": "Mina foton ({{count}}/9)",
+      "myVideos": "Mina videor ({{count}}/3)",
+      "add": "Lägg till",
+      "previewAlt": "Förhandsvisning"
+    },
+    "photoTips": {
+      "title": "Tips för dina foton",
+      "prev": "Föregående",
+      "next": "Nästa",
+      "gotIt": "Fattat",
+      "slide1": {
+        "title": "Använd foton som visar ditt ansikte",
+        "desc": "Profiler med ansiktsfoton får oftast fler Likes.",
+        "ok": "Ansikte OK",
+        "ko": "Rygg X"
+      },
+      "slide2": {
+        "title": "Hej då filter",
+        "desc": "Undvik starka filter. Använd skarpa, aktuella foton.",
+        "ok": "Naturlig OK",
+        "ko": "Filter X"
+      },
+      "slide3": {
+        "title": "Visa dina passioner",
+        "desc": "Lägg till foton som speglar hobbyer och intressen.",
+        "ok": "Hobby OK",
+        "ko": "Objekt X"
+      }
     }
   },
   "card": {

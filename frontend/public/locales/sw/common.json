@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "Picha",
+    "photos": {
+      "title": "Picha",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Washa ili kuonyesha kiotomatiki picha yako maarufu",
+      "smartDesc": "Huchagua kiotomatiki picha bora kulingana na mwingiliano",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "Maslahi",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "Ongeza taarifa za afya",
       "energyLevel": "Wewe ni wa asubuhi au wa usiku?",
       "learningPreferences": "Unapendelea kujifunza vipi?"
+    },
+    "media": {
+      "limitHint": "Unaweza kupakia hadi picha 9 na video 3.",
+      "visualTips": "Vidokezo vya kuona",
+      "myPhotos": "Picha zangu ({{count}}/9)",
+      "myVideos": "Video zangu ({{count}}/3)",
+      "add": "Ongeza",
+      "previewAlt": "Hakikisho"
+    },
+    "photoTips": {
+      "title": "Vidokezo vya picha zako",
+      "prev": "Iliyotangulia",
+      "next": "Inayofuata",
+      "gotIt": "Nimeelewa",
+      "slide1": {
+        "title": "Tumia picha zinazoonyesha uso wako",
+        "desc": "Wasifu wenye picha za uso hupata Likes zaidi.",
+        "ok": "Uso OK",
+        "ko": "Mgongo X"
+      },
+      "slide2": {
+        "title": "Kwaheri vichungi",
+        "desc": "Epuka vichungi vizito. Tumia picha kali na za hivi karibuni.",
+        "ok": "Asili OK",
+        "ko": "Kichungi X"
+      },
+      "slide3": {
+        "title": "Onyesha mapenzi yako",
+        "desc": "Ongeza picha zinazoakisi hobby na mambo unayopenda.",
+        "ok": "Hobby OK",
+        "ko": "Kitu X"
+      }
     }
   },
   "card": {

@@ -171,7 +171,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "ফটো",
+    "photos": {
+      "title": "ছবি",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "আপনার সবচেয়ে জনপ্রিয় ছবি স্বয়ংক্রিয়ভাবে দেখাতে চালু করুন",
+      "smartDesc": "ইন্টারঅ্যাকশন অনুযায়ী সেরা ছবি স্বয়ংক্রিয়ভাবে বেছে নেয়",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "আগ্রহ",
     "hobbies": "Hobbies",
@@ -436,6 +442,38 @@
       "health": "স্বাস্থ্য তথ্য যোগ করুন",
       "energyLevel": "আপনি কি সকালের মানুষ না রাতের?",
       "learningPreferences": "আপনি কীভাবে শিখতে পছন্দ করেন?"
+    },
+    "media": {
+      "limitHint": "9টি ছবি ও 3টি ভিডিও পর্যন্ত আপলোড করতে পারেন।",
+      "visualTips": "ভিজ্যুয়াল টিপস",
+      "myPhotos": "আমার ছবি ({{count}}/9)",
+      "myVideos": "আমার ভিডিও ({{count}}/3)",
+      "add": "যোগ করুন",
+      "previewAlt": "প্রিভিউ"
+    },
+    "photoTips": {
+      "title": "আপনার ছবির জন্য টিপস",
+      "prev": "আগের",
+      "next": "পরের",
+      "gotIt": "বুঝেছি",
+      "slide1": {
+        "title": "মুখ দেখা যায় এমন ছবি ব্যবহার করুন",
+        "desc": "মুখের ছবিসহ প্রোফাইল বেশি লাইক পায়।",
+        "ok": "মুখ OK",
+        "ko": "পিঠ X"
+      },
+      "slide2": {
+        "title": "ফিল্টারকে বিদায়",
+        "desc": "ভারী ফিল্টার এড়িয়ে চলুন। স্পষ্ট সাম্প্রতিক ছবি ব্যবহার করুন।",
+        "ok": "প্রাকৃতিক OK",
+        "ko": "ফিল্টার X"
+      },
+      "slide3": {
+        "title": "আপনার আবেগ দেখান",
+        "desc": "শখ ও আগ্রহ প্রতিফলিত করে এমন ছবি যোগ করুন।",
+        "ok": "শখ OK",
+        "ko": "বস্তু X"
+      }
     }
   },
   "card": {

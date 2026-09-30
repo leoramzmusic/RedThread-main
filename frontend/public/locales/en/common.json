@@ -16,7 +16,13 @@
     "activityPattern": "Activity Pattern",
     "mood": "Mood",
     "locationSharing": "Location sharing",
-    "photos": "Photos",
+    "photos": {
+      "title": "Photos",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Enable to automatically show your most popular photo",
+      "smartDesc": "Automatically selects the best photo based on interaction",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Upload",
     "interests": "Interests",
     "hobbies": "Hobbies",
@@ -280,6 +286,38 @@
       "health": "Add health information",
       "energyLevel": "Are you a morning or night person?",
       "learningPreferences": "How do you prefer to learn?"
+    },
+    "media": {
+      "limitHint": "You can upload up to 9 photos and 3 videos.",
+      "visualTips": "Visual tips",
+      "myPhotos": "My photos ({{count}}/9)",
+      "myVideos": "My videos ({{count}}/3)",
+      "add": "Add",
+      "previewAlt": "Preview"
+    },
+    "photoTips": {
+      "title": "Tips for your photos",
+      "prev": "Previous",
+      "next": "Next",
+      "gotIt": "Got it",
+      "slide1": {
+        "title": "Use photos that show your face",
+        "desc": "Profiles with face photos usually get more Likes.",
+        "ok": "Face OK",
+        "ko": "Back X"
+      },
+      "slide2": {
+        "title": "Bye bye filters",
+        "desc": "Avoid heavy filters. Use sharp, recent photos.",
+        "ok": "Natural OK",
+        "ko": "Filter X"
+      },
+      "slide3": {
+        "title": "Show your passions",
+        "desc": "Add photos that reflect your hobbies and interests.",
+        "ok": "Hobby OK",
+        "ko": "Object X"
+      }
     }
   },
   "settings_title": "Settings",

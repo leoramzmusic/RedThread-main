@@ -172,7 +172,13 @@
     "activityPattern": "Aktivitätsmuster",
     "mood": "Stimmung",
     "locationSharing": "Standortfreigabe",
-    "photos": "Fotos",
+    "photos": {
+      "title": "Fotos",
+      "smartTitle": "Smart Photos",
+      "smartTooltip": "Aktiviere, um automatisch dein beliebtestes Foto zu zeigen",
+      "smartDesc": "Wählt automatisch das beste Foto nach Interaktion",
+      "smartToggle": "Smart Photos Toggle"
+    },
     "uploadPhoto": "Hochladen",
     "interests": "Interessen",
     "hobbies": "Hobbys",
@@ -483,6 +489,38 @@
       "health": "Füge Gesundheitsinfos hinzu",
       "energyLevel": "Bist du Morgen- oder Nachtmensch?",
       "learningPreferences": "Wie lernst du am liebsten?"
+    },
+    "media": {
+      "limitHint": "Du kannst bis zu 9 Fotos und 3 Videos hochladen.",
+      "visualTips": "Visuelle Tipps",
+      "myPhotos": "Meine Fotos ({{count}}/9)",
+      "myVideos": "Meine Videos ({{count}}/3)",
+      "add": "Hinzufügen",
+      "previewAlt": "Vorschau"
+    },
+    "photoTips": {
+      "title": "Tipps für deine Fotos",
+      "prev": "Zurück",
+      "next": "Weiter",
+      "gotIt": "Verstanden",
+      "slide1": {
+        "title": "Nutze Fotos, die dein Gesicht zeigen",
+        "desc": "Profile mit Gesichtsfotos erhalten meist mehr Likes.",
+        "ok": "Gesicht OK",
+        "ko": "Rücken X"
+      },
+      "slide2": {
+        "title": "Tschüss Filter",
+        "desc": "Vermeide übertriebene Filter. Nutze scharfe, aktuelle Fotos.",
+        "ok": "Natürlich OK",
+        "ko": "Filter X"
+      },
+      "slide3": {
+        "title": "Zeig deine Leidenschaften",
+        "desc": "Füge Fotos hinzu, die deine Hobbys und Interessen widerspiegeln.",
+        "ok": "Hobby OK",
+        "ko": "Objekt X"
+      }
     }
   },
   "card": {
