@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "Cikakken Bayani",
+    "incomplete": "Bayani Bai Cika Ba",
+    "completionHint0": "Cika bayananka na asali don farawa.",
+    "completionHint30": "Madalla! Ƙara bayanai don ficewa.",
+    "completionHint70": "Kusan a shirye! Bayananka yana da kyau.",
+    "completionHint100": "Madalla! Bayananka yana mataki mafi girma 🌟"
   },
   "card": {
     "potentialConnection": "Yiwuwar Haɗi • Hotuna a Ɓoye",

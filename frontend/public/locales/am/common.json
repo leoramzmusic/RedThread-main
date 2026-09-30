@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "ሙሉ መገለጫ",
+    "incomplete": "ያልተሟላ መገለጫ",
+    "completionHint0": "ለመጀመር መሠረታዊ መረጃህን ሙላ።",
+    "completionHint30": "በጣም ጥሩ! ጎልተህ ለመውጣት ተጨማሪ ዝርዝሮችን ጨምር።",
+    "completionHint70": "ጨርሰሃል ማለት ነው! መገለጫህ በጣም ጥሩ ይመስላል።",
+    "completionHint100": "በጣም ጥሩ! መገለጫህ ከፍተኛ ደረጃ ላይ ነው 🌟"
   },
   "card": {
     "potentialConnection": "እምቅ ግንኙነት • ፎቶዎች ተደብቀዋል",

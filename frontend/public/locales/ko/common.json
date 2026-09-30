@@ -443,7 +443,13 @@
       "smoking": "흡연",
       "exercise": "운동",
       "interests": "관심사"
-    }
+    },
+    "complete": "완성 프로필",
+    "incomplete": "미완성 프로필",
+    "completionHint0": "시작하려면 기본 정보를 완성하세요.",
+    "completionHint30": "잘하고 있어요! 돋보이려면 세부 정보를 추가하세요.",
+    "completionHint70": "거의 다 됐어요! 프로필이 멋져요.",
+    "completionHint100": "훌륭해요! 프로필이 최고 레벨이에요 🌟"
   },
   "card": {
     "potentialConnection": "잠재적 인연 • 사진 숨김",

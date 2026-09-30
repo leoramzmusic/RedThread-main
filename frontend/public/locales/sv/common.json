@@ -444,7 +444,13 @@
       "smoking": "Rökning",
       "exercise": "Träning",
       "interests": "Intressen"
-    }
+    },
+    "complete": "Komplett profil",
+    "incomplete": "Ofullständig profil",
+    "completionHint0": "Fyll i din grundinfo för att börja.",
+    "completionHint30": "Bra jobbat! Lägg till detaljer för att sticka ut.",
+    "completionHint70": "Nästan klar! Din profil ser jättebra ut.",
+    "completionHint100": "Utmärkt! Din profil är maxad 🌟"
   },
   "card": {
     "potentialConnection": "Möjlig anslutning • Dolda foton",

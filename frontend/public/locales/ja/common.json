@@ -443,7 +443,13 @@
       "smoking": "タバコ",
       "exercise": "運動",
       "interests": "興味・関心"
-    }
+    },
+    "complete": "完成プロフィール",
+    "incomplete": "未完成プロフィール",
+    "completionHint0": "まずは基本情報を入力しましょう。",
+    "completionHint30": "いい調子！目立つために詳細を追加しましょう。",
+    "completionHint70": "あと少し！プロフィールは素晴らしいです。",
+    "completionHint100": "最高！プロフィールは最大レベルです 🌟"
   },
   "card": {
     "potentialConnection": "可能性のある繋がり • 写真非表示",

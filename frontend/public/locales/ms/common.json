@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "Profil Lengkap",
+    "incomplete": "Profil Tidak Lengkap",
+    "completionHint0": "Lengkapkan maklumat asas untuk bermula.",
+    "completionHint30": "Bagus! Tambah butiran untuk menyerlah.",
+    "completionHint70": "Hampir siap! Profil anda hebat.",
+    "completionHint100": "Cemerlang! Profil anda di tahap maksimum 🌟"
   },
   "card": {
     "potentialConnection": "Sambungan Berpotensi • Foto Tersembunyi",

@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "Kōtaha Katoa",
+    "incomplete": "Kōtaha Kāore i Oti",
+    "completionHint0": "Whakakīa ō mōhiohio taketake hei tīmatanga.",
+    "completionHint30": "Ka pai! Tāpirihia ētahi atu kōrero kia tu rangatira.",
+    "completionHint70": "Kua tata! He mīharo tō kōtaha.",
+    "completionHint100": "Tino pai! Kei te taumata teitei tō kōtaha 🌟"
   },
   "card": {
     "potentialConnection": "Hononga Ka Taea • Kua Huna ngā Whakaahua",

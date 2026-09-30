@@ -444,7 +444,13 @@
       "smoking": "吸烟",
       "exercise": "运动",
       "interests": "兴趣"
-    }
+    },
+    "complete": "完整资料",
+    "incomplete": "资料未完成",
+    "completionHint0": "完善基本信息以开始。",
+    "completionHint30": "做得不错！添加更多细节以脱颖而出。",
+    "completionHint70": "快完成了！你的资料看起来很棒。",
+    "completionHint100": "太棒了！你的资料已达最高等级 🌟"
   },
   "card": {
     "potentialConnection": "潜在缘分 • 照片已隐藏",

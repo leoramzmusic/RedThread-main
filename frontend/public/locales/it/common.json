@@ -444,7 +444,13 @@
       "smoking": "Fumare",
       "exercise": "Esercizio",
       "interests": "Interessi"
-    }
+    },
+    "complete": "Profilo completo",
+    "incomplete": "Profilo incompleto",
+    "completionHint0": "Completa le tue info di base per iniziare.",
+    "completionHint30": "Ben fatto! Aggiungi dettagli per distinguerti.",
+    "completionHint70": "Quasi pronto! Il tuo profilo è fantastico.",
+    "completionHint100": "Eccellente! Il tuo profilo è al massimo 🌟"
   },
   "card": {
     "potentialConnection": "Connessione potenziale • Foto nascoste",

@@ -241,7 +241,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "Complete Profile",
+    "incomplete": "Incomplete Profile",
+    "completionHint0": "Complete your basic info to get started.",
+    "completionHint30": "Good going! Add more details to stand out.",
+    "completionHint70": "Almost there! Your profile looks great.",
+    "completionHint100": "Excellent! Your profile is maxed out 🌟"
   },
   "settings_title": "Settings",
   "settings_appearance_title": "Appearance",

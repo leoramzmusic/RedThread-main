@@ -65,7 +65,13 @@
       "smoking": "Fumar",
       "exercise": "Exercício",
       "interests": "Interesses"
-    }
+    },
+    "complete": "Perfil completo",
+    "incomplete": "Perfil incompleto",
+    "completionHint0": "Completa as tuas informações básicas para começar.",
+    "completionHint30": "Bom caminho! Adiciona mais detalhes para te destacares.",
+    "completionHint70": "Quase lá! O teu perfil está ótimo.",
+    "completionHint100": "Excelente! O teu perfil está no máximo 🌟"
   },
   "settings_title": "Configurações",
   "settings_appearance_title": "Aparência",

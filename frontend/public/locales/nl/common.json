@@ -444,7 +444,13 @@
       "smoking": "Roken",
       "exercise": "Sport",
       "interests": "Interesses"
-    }
+    },
+    "complete": "Volledig profiel",
+    "incomplete": "Onvolledig profiel",
+    "completionHint0": "Vul je basisinfo aan om te beginnen.",
+    "completionHint30": "Goed bezig! Voeg details toe om op te vallen.",
+    "completionHint70": "Bijna klaar! Je profiel ziet er geweldig uit.",
+    "completionHint100": "Uitstekend! Je profiel staat op maximaal 🌟"
   },
   "card": {
     "potentialConnection": "Mogelijke connectie • Foto's verborgen",

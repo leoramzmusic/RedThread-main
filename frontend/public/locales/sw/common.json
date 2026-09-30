@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "Wasifu Kamili",
+    "incomplete": "Wasifu Ambao Haujazilika",
+    "completionHint0": "Jaza taarifa zako za msingi kuanza.",
+    "completionHint30": "Vizuri! Ongeza maelezo ili ujitokeze.",
+    "completionHint70": "Karibu tayari! Wasifu wako unaonekana vizuri.",
+    "completionHint100": "Bora! Wasifu wako uko kiwango cha juu 🌟"
   },
   "card": {
     "potentialConnection": "Muunganisho Unaowezekana • Picha Zimefichwa",

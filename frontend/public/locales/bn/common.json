@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "সম্পূর্ণ প্রোফাইল",
+    "incomplete": "অসম্পূর্ণ প্রোফাইল",
+    "completionHint0": "শুরু করতে আপনার মৌলিক তথ্য পূরণ করুন।",
+    "completionHint30": "ভালো এগোচ্ছেন! আলাদা হতে আরও বিশদ যোগ করুন।",
+    "completionHint70": "প্রায় প্রস্তুত! আপনার প্রোফাইল দারুণ দেখাচ্ছে।",
+    "completionHint100": "চমৎকার! আপনার প্রোফাইল সর্বোচ্চ স্তরে 🌟"
   },
   "card": {
     "potentialConnection": "সম্ভাব্য সংযোগ • ছবি লুকানো",

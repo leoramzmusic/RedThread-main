@@ -443,7 +443,13 @@
       "smoking": "تدخين",
       "exercise": "تمارين",
       "interests": "اهتمامات"
-    }
+    },
+    "complete": "الملف الكامل",
+    "incomplete": "الملف غير الكامل",
+    "completionHint0": "أكمل معلوماتك الأساسية للبدء.",
+    "completionHint30": "أحسنت! أضف مزيدًا من التفاصيل لتتميز.",
+    "completionHint70": "أوشكت على الانتهاء! ملفك يبدو رائعًا.",
+    "completionHint100": "ممتاز! ملفك في أعلى مستوى 🌟"
   },
   "card": {
     "potentialConnection": "اتصال محتمل • الصور مخفية",

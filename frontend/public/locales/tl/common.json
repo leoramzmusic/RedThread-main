@@ -397,7 +397,13 @@
       "smoking": "Smoking",
       "exercise": "Exercise",
       "interests": "Interests"
-    }
+    },
+    "complete": "Kumpletong Profile",
+    "incomplete": "Hindi Kumpletong Profile",
+    "completionHint0": "Kumpletuhin ang pangunahing impormasyon upang magsimula.",
+    "completionHint30": "Ayos! Magdagdag ng detalye upang tumayo.",
+    "completionHint70": "Malapit na! Kahanga-hanga ang profile mo.",
+    "completionHint100": "Mahusay! Nasa pinakamataas na antas ang profile mo 🌟"
   },
   "card": {
     "potentialConnection": "Posibleng Koneksyon • Nakatago ang mga Larawan",
