@@ -251,6 +251,7 @@ export const calculateCompletionPercentage = (score: number): number => {
 };
 
 export interface Suggestion {
+  messageKey: string;
   message: string;
   sectionId: string;
   weight: number;
@@ -264,11 +265,12 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
   const add = (
     condition: boolean,
     weight: number,
+    messageKey: string,
     message: string,
     sectionId: string,
   ) => {
     if (!condition) {
-      suggestions.push({ weight, message, sectionId });
+      suggestions.push({ weight, messageKey, message, sectionId });
     }
   };
 
@@ -276,38 +278,50 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
   add(
     profile.sexual_orientation,
     15,
+    "sexualOrientation",
     "Define tu orientación sexual",
     "section-identity",
   );
   add(
     hasValue(profile.relationship_goals),
     12,
+    "relationshipGoals",
     "Define qué tipo de relación buscas",
     "section-goals",
   );
   add(
     profile.nickname || profile.display_name,
     10,
+    "nickname",
     "Agrega un nickname",
     "section-basic",
   );
-  add(profile.age, 10, "Ingresa tu edad", "section-basic");
-  add(hasValue(profile.gender), 10, "Selecciona tu género", "section-basic");
+  add(profile.age, 10, "age", "Ingresa tu edad", "section-basic");
+  add(
+    hasValue(profile.gender),
+    10,
+    "gender",
+    "Selecciona tu género",
+    "section-basic",
+  );
   add(
     profile.bio,
     8,
+    "bio",
     "Escribe algo interesante en 'Sobre mí'",
     "section-aboutme",
   );
   add(
     profile.photos && profile.photos.length > 0,
     7,
+    "photos",
     "Sube al menos una foto para que te conozcan",
     "section-photos",
   );
   add(
     hasValue(profile.interests) || hasValue(profile.lifestyle_interests),
     6,
+    "interests",
     "Selecciona al menos un interés o estilo de vida",
     "section-interests",
   );
@@ -316,39 +330,68 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
   add(
     profile.relationship_status,
     2,
+    "relationshipStatus",
     "¿Cuál es tu estado civil?",
     "section-status",
   );
   add(
     profile.relationship_type,
     2,
+    "relationshipType",
     "¿Qué tipo de relación prefieres?",
     "section-relationship-type",
   );
-  add(profile.height_cm, 2, "¿Cuánto mides?", "section-height");
+  add(profile.height_cm, 2, "height", "¿Cuánto mides?", "section-height");
   add(
     hasValue(profile.zodiac) || profile.zodiac_relevant === false,
     2,
+    "zodiac",
     "Agrega tu signo zodiacal",
     "section-zodiac",
   );
   add(
     profile.education_level,
     2,
+    "educationLevel",
     "Completa tu nivel educativo",
     "section-education",
   );
-  add(profile.occupation, 2, "Añade tu profesión", "section-professional");
-  add(profile.city, 2, "Indica dónde vives", "section-location");
-  add(profile.education_center, 2, "¿Dónde estudiaste?", "section-education");
-  add(profile.work_company, 2, "Indica dónde trabajas", "section-professional");
+  add(
+    profile.occupation,
+    2,
+    "occupation",
+    "Añade tu profesión",
+    "section-professional",
+  );
+  add(profile.city, 2, "city", "Indica dónde vives", "section-location");
+  add(
+    profile.education_center,
+    2,
+    "educationCenter",
+    "¿Dónde estudiaste?",
+    "section-education",
+  );
+  add(
+    profile.work_company,
+    2,
+    "workCompany",
+    "Indica dónde trabajas",
+    "section-professional",
+  );
   add(
     hasValue(profile.languages),
     1,
+    "languages",
     "¿Qué idiomas hablas?",
     "section-languages",
   );
-  add(profile.pronouns, 1, "Agrega tus pronombres", "section-pronouns");
+  add(
+    profile.pronouns,
+    1,
+    "pronouns",
+    "Agrega tus pronombres",
+    "section-pronouns",
+  );
 
   // Music (skipped for Spotify Free — profile counts as complete)
   if (!isSpotifyFree(profile)) {
@@ -357,6 +400,7 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
         (profile.mi_himno.connected ||
           profile.mi_himno.favorite_artists?.length > 0),
       2,
+      "musicConnect",
       "Conecta tu música o agrega artistas favoritos",
       "section-music",
     );
@@ -364,6 +408,7 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
   add(
     hasValue(profile.music_genres) && profile.music_genres.length > 0,
     1,
+    "musicGenres",
     "¿Qué géneros musicales te gustan?",
     "section-music-genres",
   );
@@ -372,54 +417,63 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
   add(
     hasValue(profile.social_style),
     1,
+    "socialStyle",
     "¿Cómo te defines socialmente?",
     "section-personality",
   );
   add(
     hasValue(profile.neurodiversity),
     1,
+    "neurodiversity",
     "Agrega información sobre neurodiversidad",
     "section-cognitive",
   );
   add(
     hasValue(profile.processing_style),
     1,
+    "processingStyle",
     "¿Cuál es tu estilo de procesamiento?",
     "section-personality",
   );
   add(
     hasValue(profile.risk_tolerance),
     1,
+    "riskTolerance",
     "¿Cuál es tu tolerancia al riesgo?",
     "section-personality",
   );
   add(
     hasValue(profile.decision_making),
     1,
+    "decisionMaking",
     "¿Cómo tomas decisiones?",
     "section-personality",
   );
   add(
     hasValue(profile.disabilities),
     1,
+    "disabilities",
     "Agrega información sobre discapacidad",
     "section-wellness",
   );
   add(
     hasValue(profile.health_conditions) || hasValue(profile.health_status),
     1,
+    "health",
     "Agrega información de salud",
     "section-wellness",
   );
   add(
     hasValue(profile.energy_level),
     1,
+    "energyLevel",
     "¿Eres matutino o nocturno?",
     "section-wellness",
   );
   add(
     hasValue(profile.learning_preferences),
     1,
+    "learningPreferences",
     "¿Cómo prefieres aprender?",
     "section-cognitive",
   );

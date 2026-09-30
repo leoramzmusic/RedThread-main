@@ -132,7 +132,10 @@ export default function ProfileCompletionWidget({
           <Box display="flex" alignItems="center" gap={1} mb={1}>
             <AutoFixHigh fontSize="small" color="primary" />
             <Typography variant="subtitle2" fontWeight={600} color="primary">
-              Sugerencias para completar tu perfil:
+              {t(
+                "profile.suggestionsTitle",
+                "Sugerencias para completar tu perfil:",
+              )}
             </Typography>
           </Box>
           <Box component="ul" sx={{ m: 0, pl: 0, listStyle: "none" }}>
@@ -179,7 +182,7 @@ export default function ProfileCompletionWidget({
                         ),
                       }}
                     >
-                      {s.message}
+                      {t(`profile.suggestions.${s.messageKey}`, s.message)}
                     </Typography>
                   </ButtonBase>
                 </li>

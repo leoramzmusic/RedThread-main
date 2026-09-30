@@ -53,7 +53,7 @@ export default function DiscoveryRefinementCard({
   onSave,
   onSkip,
 }: DiscoveryRefinementCardProps) {
-  const { t } = useTranslation("discover");
+  const { t } = useTranslation(["discover", "common"]);
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
 
@@ -209,7 +209,10 @@ export default function DiscoveryRefinementCard({
             fontWeight={600}
             sx={{ mb: 1, textAlign: "center" }}
           >
-            {suggestion.message}
+            {t(
+              `profile.suggestions.${suggestion.messageKey}`,
+              suggestion.message,
+            )}
           </Typography>
 
           <Box
