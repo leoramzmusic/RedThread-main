@@ -240,6 +240,15 @@ def test_reorder_unknown_key_returns_400(client, admin_token):
     assert res.status_code == 400
 
 
+def test_reorder_duplicate_keys_returns_400(client, admin_token):
+    res = client.put(
+        "/portal-redthread/profile-modules/reorden",
+        json={"keys": ["section-music", "section-music"]},
+        headers=admin_token,
+    )
+    assert res.status_code == 400
+
+
 def test_public_returns_only_visible_ordered(client):
     res = client.get("/api/profile-modules/")
     assert res.status_code == 200

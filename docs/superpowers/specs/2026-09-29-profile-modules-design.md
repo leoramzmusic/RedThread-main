@@ -46,7 +46,7 @@ Campos: `key` único (`fotos`, `identidad`, `ubicacion`, `sobre_mi`,
 
 ### 4.2 API
 
-- `GET /api/admin/profile-modules` — catálogo completo (requiere
+- `GET /portal-redthread/profile-modules` — catálogo completo (requiere
   `view_profile_modules`).
 - `POST` — crear (requiere `manage_profile_modules`).
 - `PATCH /{key}` — editar nombre/descripción/icono (requiere
@@ -57,7 +57,8 @@ Campos: `key` único (`fotos`, `identidad`, `ubicacion`, `sobre_mi`,
   `manage_visibility_modules`).
 - `DELETE /{key}` — solo `origen=integracion` (requiere
   `manage_profile_modules`).
-- `GET /api/profile-modules` — público, solo `visible=true` ordenados.
+- `GET /api/profile-modules` — autenticado (usuario logueado, no anónimo),
+  solo `visible=true` ordenados.
 - Regla de integridad: no se puede ocultar ni eliminar el último módulo
   `core` obligatorio (fotos/identidad). Cada mutación registra `AdminAction`.
 

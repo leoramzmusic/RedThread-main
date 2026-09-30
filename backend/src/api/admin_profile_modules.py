@@ -159,6 +159,10 @@ async def reorder_modules(
     ),
 ):
     """Persist module order from an ordered list of keys"""
+    if len(set(body.keys)) != len(body.keys):
+        raise HTTPException(
+            status_code=400, detail="Claves duplicadas en el orden"
+        )
     modules = []
     for key in body.keys:
         module = await _get_by_key(key)

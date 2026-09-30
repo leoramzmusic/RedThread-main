@@ -1,10 +1,10 @@
-from beanie import Document
+from beanie import Document, Indexed
 from pydantic import Field
 from datetime import datetime
 
 
 class ProfileModule(Document):
-    key: str  # e.g. "section-music" — contract with frontend registry.ts
+    key: Indexed(str, unique=True)  # e.g. "section-music" — contract with frontend registry.ts
     nombre: str
     descripcion: str = ""
     icono: str = "tune"
