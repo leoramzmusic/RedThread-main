@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
+import type { ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import {
@@ -45,6 +46,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import apiClient from '../../services/api';
+import { PROFILE_SECTION_REGISTRY } from './sections/registry';
+import type { ProfileSectionKey } from './sections/registry';
 import { getPromptsForLanguage } from '../../constants/funPrompts';
 
 // Section Components
@@ -118,6 +121,44 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       reset(profile);
     }
   }, [profile, reset]);
+
+  // Admin-driven section order from GET /api/profile-modules.
+  // `null` means "backend unreachable/empty" → render the hardcoded
+  // fallback order below, exactly as before.
+  const [moduleOrder, setModuleOrder] = useState<ProfileSectionKey[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiClient
+      .get('/api/profile-modules')
+      .then((res) => {
+        if (cancelled) return;
+        const data = res?.data;
+        if (!Array.isArray(data) || data.length === 0) return;
+        const keys: ProfileSectionKey[] = [];
+        for (const mod of data) {
+          const k: unknown = mod?.key;
+          if (typeof k !== 'string' || !Object.hasOwn(PROFILE_SECTION_REGISTRY, k)) {
+            console.warn(`[ProfileEdit] Skipping unknown profile module key: ${String(k)}`);
+            continue;
+          }
+          const key = k as ProfileSectionKey;
+          if (!keys.includes(key)) keys.push(key);
+        }
+        for (const registryKey of Object.keys(PROFILE_SECTION_REGISTRY) as ProfileSectionKey[]) {
+          if (!keys.includes(registryKey)) {
+            console.warn(`[ProfileEdit] Profile module missing from backend response: ${registryKey}`);
+          }
+        }
+        if (keys.length > 0) setModuleOrder(keys);
+      })
+      .catch(() => {
+        if (!cancelled) setModuleOrder(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Section-specific states
   const [expanded, setExpanded] = useState<string | false>(false);
@@ -554,6 +595,208 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     }
   };
 
+  // Section blocks keyed by registry key. Each block's JSX and props are
+  // identical to the hardcoded layout; only the order is module-driven
+  // when the backend provides one. 'section-control' is not admin-driven
+  // and always renders.
+  const sectionBlocks: Record<string, ReactNode> = {
+    'section-photos': (
+      <Grid item xs={12} id="section-photos" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <PhotosSection
+          profile={profile}
+          smartPhotos={smartPhotos}
+          setSmartPhotos={setSmartPhotos}
+        />
+      </Grid>
+    ),
+    'section-basic': (
+      <Grid item xs={12} id="section-basic" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <BasicInfoSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          profile={profile}
+          verified={verified}
+          setVerified={setVerified}
+          phone={phone}
+          setPhone={setPhone}
+          countryCode={countryCode}
+          setCountryCode={setCountryCode}
+          phoneVerified={phoneVerified}
+          isVerifyingPhone={isVerifyingPhone}
+          setNicknameDialogOpen={setNicknameDialogOpen}
+          handleVerifyPhone={handleVerifyPhone}
+          handleChangePhoneRequest={handleChangePhoneRequest}
+        />
+      </Grid>
+    ),
+    'section-location': (
+      <Grid item xs={12} id="section-location" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <LocationSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          citySearch={citySearch}
+          setCitySearch={setCitySearch}
+          userPlan="vip" // TODO: Connect to real user plan
+        />
+      </Grid>
+    ),
+    'section-aboutme': (
+      <Grid item xs={12} id="section-aboutme" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <AboutMeSection
+          control={control}
+          setInfoDrawerOpen={setInfoDrawerOpen}
+          prompts={prompts}
+          setPrompts={setPrompts}
+          setPromptSelectorOpen={setPromptSelectorOpen}
+          sensors={sensors}
+          handleDragEnd={handleDragEnd}
+          handleUpdatePrompt={handleUpdatePrompt}
+          handleRemovePrompt={handleRemovePrompt}
+        />
+      </Grid>
+    ),
+    'section-goals': (
+      <Grid item xs={12} id="section-goals" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <RelationshipGoalsSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          setGoalsInfoOpen={setGoalsInfoOpen}
+        />
+      </Grid>
+    ),
+    'section-interests': (
+      <Grid item xs={12} id="section-interests" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <InterestsSection
+          lifestyleInterests={lifestyleInterests}
+          setLifestyleInterests={setLifestyleInterests}
+        />
+      </Grid>
+    ),
+    'section-pronouns': (
+      <Grid item xs={12} id="section-pronouns" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <PronounsSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          options={options}
+          setPronounsInfoOpen={setPronounsInfoOpen}
+        />
+      </Grid>
+    ),
+    'section-additional': (
+      <Grid item xs={12} id="section-additional" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <AdditionalDataSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          options={options}
+        />
+      </Grid>
+    ),
+    'section-professional': (
+      <Grid item xs={12} id="section-professional" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <ProfessionalAcademicSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          options={options}
+        />
+      </Grid>
+    ),
+    'section-music': (
+      <Grid item xs={12} id="section-music" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <MusicSection control={control} watch={watch} setValue={setValue} />
+      </Grid>
+    ),
+    'section-identity': (
+      <Grid item xs={12} id="section-identity" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <IdentitySection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          options={options}
+        />
+      </Grid>
+    ),
+    'section-personality': (
+      <Grid item xs={12} id="section-personality" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <PersonalitySection control={control} setValue={setValue} />
+      </Grid>
+    ),
+    'section-cognitive': (
+      <Grid item xs={12} id="section-cognitive" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <CognitiveSection control={control} setValue={setValue} />
+      </Grid>
+    ),
+    'section-wellness': (
+      <Grid item xs={12} id="section-wellness" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <WellnessSection control={control} setValue={setValue} />
+      </Grid>
+    ),
+    'section-control': (
+      <ProfileControlSection
+        control={control}
+        setValue={setValue}
+        watch={watch}
+      />
+    ),
+    'section-status': (
+      <Grid item xs={12} id="section-status" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <CivilStatusSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          options={options}
+          relationshipStatus={relationshipStatus}
+          profile={profile}
+          onSave={onSave}
+        />
+      </Grid>
+    ),
+    'section-languages': (
+      <Grid item xs={12} id="section-languages" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+        <LanguagesSection
+          control={control}
+          setValue={setValue}
+          watch={watch}
+          options={options}
+          t={t as any}
+        />
+      </Grid>
+    ),
+  };
+
+  // Hardcoded fallback order — the layout exactly as written before;
+  // used whenever the modules endpoint is unreachable or empty.
+  const FALLBACK_SECTION_ORDER: string[] = [
+    'section-photos',
+    'section-basic',
+    'section-location',
+    'section-aboutme',
+    'section-goals',
+    'section-interests',
+    'section-pronouns',
+    'section-additional',
+    'section-professional',
+    'section-music',
+    'section-identity',
+    'section-personality',
+    'section-cognitive',
+    'section-wellness',
+    'section-control',
+    'section-status',
+    'section-languages',
+  ];
+
+  // Keys to render: admin modules order (+ always-on control section) on
+  // success, hardcoded fallback otherwise.
+  const visibleSectionKeys: string[] = moduleOrder
+    ? [...moduleOrder, 'section-control']
+    : FALLBACK_SECTION_ORDER;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
       {/* Header */}
@@ -669,145 +912,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           onSuggestionClick={handleSuggestionClick}
         />
       </Box>
-      {/* Sections Grid */}
+      {/* Sections Grid — order comes from GET /api/profile-modules
+          (admin modules); without backend response this renders the
+          hardcoded fallback order, exactly as before. */}
       <Grid container spacing={3}>
-        <Grid item xs={12} id="section-photos" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <PhotosSection
-            profile={profile}
-            smartPhotos={smartPhotos}
-            setSmartPhotos={setSmartPhotos}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-basic" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <BasicInfoSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            profile={profile}
-            verified={verified}
-            setVerified={setVerified}
-            phone={phone}
-            setPhone={setPhone}
-            countryCode={countryCode}
-            setCountryCode={setCountryCode}
-            phoneVerified={phoneVerified}
-            isVerifyingPhone={isVerifyingPhone}
-            setNicknameDialogOpen={setNicknameDialogOpen}
-            handleVerifyPhone={handleVerifyPhone}
-            handleChangePhoneRequest={handleChangePhoneRequest}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-location" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <LocationSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            citySearch={citySearch}
-            setCitySearch={setCitySearch}
-            userPlan="vip" // TODO: Connect to real user plan
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-aboutme" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <AboutMeSection
-            control={control}
-            setInfoDrawerOpen={setInfoDrawerOpen}
-            prompts={prompts}
-            setPrompts={setPrompts}
-            setPromptSelectorOpen={setPromptSelectorOpen}
-            sensors={sensors}
-            handleDragEnd={handleDragEnd}
-            handleUpdatePrompt={handleUpdatePrompt}
-            handleRemovePrompt={handleRemovePrompt}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-goals" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <RelationshipGoalsSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            setGoalsInfoOpen={setGoalsInfoOpen}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-interests" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <InterestsSection
-            lifestyleInterests={lifestyleInterests}
-            setLifestyleInterests={setLifestyleInterests}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-pronouns" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <PronounsSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            options={options}
-            setPronounsInfoOpen={setPronounsInfoOpen}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-additional" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <AdditionalDataSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            options={options}
-          />
-        </Grid>
-
-
-
-
-
-        <Grid item xs={12} id="section-professional" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <ProfessionalAcademicSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            options={options}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-music" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <MusicSection control={control} watch={watch} setValue={setValue} />
-        </Grid>
-
-        <Grid item xs={12} id="section-identity" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <IdentitySection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            options={options}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-personality" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <PersonalitySection control={control} setValue={setValue} />
-        </Grid>
-
-        <Grid item xs={12} id="section-cognitive" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <CognitiveSection control={control} setValue={setValue} />
-        </Grid>
-
-        <Grid item xs={12} id="section-wellness" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <WellnessSection control={control} setValue={setValue} />
-        </Grid>
-
-
-
-
-
-
-
-        <ProfileControlSection
-          control={control}
-          setValue={setValue}
-          watch={watch}
-        />
+        {visibleSectionKeys.map((key) => (
+          <Fragment key={key}>{sectionBlocks[key] ?? null}</Fragment>
+        ))}
 
         {/*
         <Accordion
@@ -827,28 +938,6 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           </AccordionDetails>
         </Accordion>
         */}
-
-        <Grid item xs={12} id="section-status" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <CivilStatusSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            options={options}
-            relationshipStatus={relationshipStatus}
-            profile={profile}
-            onSave={onSave}
-          />
-        </Grid>
-
-        <Grid item xs={12} id="section-languages" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-          <LanguagesSection
-            control={control}
-            setValue={setValue}
-            watch={watch}
-            options={options}
-            t={t as any}
-          />
-        </Grid>
       </Grid>
 
       {/* Snackbar */}

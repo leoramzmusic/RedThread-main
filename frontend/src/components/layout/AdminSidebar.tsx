@@ -253,6 +253,14 @@ export default function AdminSidebar({
       ],
     },
     {
+      id: 'perfiles',
+      label: 'Módulos Perfiles',
+      icon: <UserIcon className="rt-pulse" />,
+      children: [
+        { id: 'perfiles-modulos', label: 'Módulos', icon: <PreferencesIcon />, path: '/portal-redthread/perfiles/modulos' },
+      ],
+    },
+    {
       id: 'finanzas',
       label: 'Finanzas',
       icon: <MoneyIcon className="rt-gem" />,

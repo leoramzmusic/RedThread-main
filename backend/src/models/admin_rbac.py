@@ -98,6 +98,11 @@ class Permission(str, Enum):
     APPROVE_POLICIES = "approve_policies"  # New
     AUDIT_ROLES = "audit_roles"  # New
 
+    # Profile Modules
+    VIEW_PROFILE_MODULES = "view_profile_modules"
+    MANAGE_VISIBILITY_MODULES = "manage_visibility_modules"
+    MANAGE_PROFILE_MODULES = "manage_profile_modules"
+
 
 # Role-Permission Matrix
 ROLE_PERMISSIONS = {
@@ -111,6 +116,8 @@ ROLE_PERMISSIONS = {
         Permission.ASSIGN_REPORTS,
         Permission.MODERATE_CONTENT,
         Permission.VIEW_METRICS,
+        Permission.VIEW_PROFILE_MODULES,
+        Permission.MANAGE_VISIBILITY_MODULES,
     ],
     AdminRole.SUPPORT: [
         Permission.VIEW_USERS,
@@ -118,6 +125,7 @@ ROLE_PERMISSIONS = {
         Permission.HANDLE_TICKETS,
         Permission.CLOSE_TICKETS,
         Permission.VIEW_REPORTS,
+        Permission.VIEW_PROFILE_MODULES,
     ],
     AdminRole.ANALYST: [
         Permission.VIEW_METRICS,
@@ -127,6 +135,7 @@ ROLE_PERMISSIONS = {
         Permission.VIEW_EVENTS,
         Permission.VIEW_FINANCES,
         Permission.VIEW_CAMPAIGNS,
+        Permission.VIEW_PROFILE_MODULES,
     ],
     AdminRole.MARKETING: [
         Permission.VIEW_CAMPAIGNS,
