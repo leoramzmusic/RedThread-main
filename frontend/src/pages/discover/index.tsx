@@ -264,6 +264,30 @@ export default function Discover() {
     [myProfile],
   );
 
+  const PROFILE_NUDGE_KEY = "discover-profile-nudge-last";
+  const [showProfileNudge, setShowProfileNudge] = useState(false);
+
+  // Profile-completeness nudge: floating toast, once a day, auto-dismiss 7s
+  useEffect(() => {
+    if (!myProfile || profileCompletion >= 100 || showProfileNudge) return;
+    let lastShown: string | null = null;
+    try {
+      lastShown = localStorage.getItem(PROFILE_NUDGE_KEY);
+    } catch {
+      lastShown = null;
+    }
+    const today = new Date().toDateString();
+    if (lastShown === today) return;
+    setShowProfileNudge(true);
+    try {
+      localStorage.setItem(PROFILE_NUDGE_KEY, today);
+    } catch {
+      // private mode — nudge still shows, just without cooldown
+    }
+    const timer = setTimeout(() => setShowProfileNudge(false), 7000);
+    return () => clearTimeout(timer);
+  }, [myProfile, profileCompletion, showProfileNudge]);
+
   // More Mode State
   const [selectedMoreCategory, setSelectedMoreCategory] = useState<any>(null); // Store entire category object
 
@@ -1203,45 +1227,66 @@ export default function Discover() {
             return null;
           })()}
 
-          {/* Completeness alert moved below for mobile or kept above for desktop if needed, 
-                but here we follow user request to avoid opaquing cards in vertical mode */}
-          {myProfile && profileCompletion < 60 && (
-            <Alert
-              severity="warning"
+          {/* Profile-completeness nudge (floating toast, once a day, auto-dismiss) */}
+          {showProfileNudge && (
+            <Box
               sx={{
-                mb: 4,
-                width: "fit-content",
-                maxWidth: "90%",
-                mx: "auto",
-                borderRadius: "20px",
-                bgcolor: isLight
-                  ? "rgba(255, 152, 0, 0.08)"
-                  : "rgba(255, 152, 0, 0.05)",
-                color: isLight ? "#e65100" : "#ffa726",
-                border: "1px solid",
-                borderColor: isLight
-                  ? "rgba(255, 152, 0, 0.3)"
-                  : "rgba(255, 152, 0, 0.2)",
-                px: 3,
-                display: { xs: "none", md: "flex" }, // Hide on mobile (will appear below)
-                alignItems: "center",
-                "& .MuiAlert-message": {
-                  width: "100%",
-                  textAlign: "center",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                },
-                "& .MuiAlert-icon": {
-                  mr: 1,
-                  opacity: 0.9,
-                },
+                position: "fixed",
+                bottom: { xs: 16, sm: 24 },
+                right: { xs: "auto", sm: 24 },
+                left: { xs: "50%", sm: "auto" },
+                transform: { xs: "translateX(-50%)", sm: "none" },
+                zIndex: 2000,
+                width: { xs: "calc(100% - 32px)", sm: "auto" },
+                maxWidth: 360,
+                pointerEvents: "none",
               }}
             >
-              {t(
-                "lowCompletenessAlert",
-                "Entre más detalles agregues a tu perfil, mejores coincidencias recibirás",
-              )}
-            </Alert>
+              <Fade in={showProfileNudge} timeout={250}>
+                <Alert
+                  severity="warning"
+                  onClose={() => setShowProfileNudge(false)}
+                  sx={{
+                    pointerEvents: "auto",
+                    py: 0.6,
+                    px: 1.6,
+                    maxWidth: 360,
+                    borderRadius: "12px",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                    alignItems: "center",
+                    boxShadow:
+                      "0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)",
+                    bgcolor: isLight
+                      ? "rgba(255, 152, 0, 0.12)"
+                      : "rgba(255, 152, 0, 0.1)",
+                    color: isLight ? "#e65100" : "#ffa726",
+                    border: "1px solid",
+                    borderColor: isLight
+                      ? "rgba(255, 152, 0, 0.3)"
+                      : "rgba(255, 152, 0, 0.2)",
+                    "& .MuiAlert-icon": { mr: 1, opacity: 0.9 },
+                    "& .MuiAlert-action": {
+                      ml: 1,
+                      mr: -0.5,
+                      pt: 0,
+                      alignItems: "center",
+                    },
+                    "& .MuiAlert-message": {
+                      width: "100%",
+                      textAlign: "center",
+                      py: 0.5,
+                      pr: 0.5,
+                    },
+                  }}
+                >
+                  {t(
+                    "lowCompletenessAlert",
+                    "Entre más detalles agregues a tu perfil, mejores coincidencias recibirás",
+                  )}
+                </Alert>
+              </Fade>
+            </Box>
           )}
 
           {error && (
@@ -1615,47 +1660,6 @@ export default function Discover() {
               onExpandSearch={handleExpandSearch}
               t={t}
             />
-          )}
-
-          {/* Completeness alert for mobile - MOVED BELOW CARDS */}
-          {myProfile && profileCompletion < 60 && (
-            <Alert
-              severity="warning"
-              sx={{
-                mt: 3,
-                mb: 2,
-                width: "fit-content",
-                maxWidth: "90%",
-                mx: "auto",
-                borderRadius: "20px",
-                bgcolor: isLight
-                  ? "rgba(255, 152, 0, 0.08)"
-                  : "rgba(255, 152, 0, 0.05)",
-                color: isLight ? "#e65100" : "#ffa726",
-                border: "1px solid",
-                borderColor: isLight
-                  ? "rgba(255, 152, 0, 0.3)"
-                  : "rgba(255, 152, 0, 0.2)",
-                px: 3,
-                display: { xs: "flex", md: "none" }, // Only show on mobile here
-                alignItems: "center",
-                "& .MuiAlert-message": {
-                  width: "100%",
-                  textAlign: "center",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                },
-                "& .MuiAlert-icon": {
-                  mr: 1,
-                  opacity: 0.9,
-                },
-              }}
-            >
-              {t(
-                "lowCompletenessAlert",
-                "Entre más detalles agregues a tu perfil, mejores coincidencias recibirás",
-              )}
-            </Alert>
           )}
 
           {/* Mobile Action Toggles (Below Cards) — extra-options */}
