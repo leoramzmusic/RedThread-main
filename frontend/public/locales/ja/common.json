@@ -922,5 +922,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "保存",
+    "saving": "保存中...",
+    "skip": "スキップ",
+    "accept": "承諾",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "success": "成功",
+    "confirmDeleteTitle": "この項目を削除しますか？",
+    "confirmDeleteMessage": "この操作は元に戻せません。",
+    "errorUploadTitle": "ファイルのアップロードエラー",
+    "uploadError": {
+      "generic": "ファイルのアップロードエラー。制限と形式を確認してください。",
+      "maxVideos": "上限に達しました：動画は{{count}}本までです。"
+    }
   }
 }

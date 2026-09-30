@@ -923,5 +923,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "Salva",
+    "saving": "Salvataggio...",
+    "skip": "Salta",
+    "accept": "Accetta",
+    "delete": "Elimina",
+    "cancel": "Annulla",
+    "success": "Successo",
+    "confirmDeleteTitle": "Eliminare questo elemento?",
+    "confirmDeleteMessage": "Questa azione non può essere annullata.",
+    "errorUploadTitle": "Errore di caricamento",
+    "uploadError": {
+      "generic": "Errore di caricamento. Controlla limiti e tipo.",
+      "maxVideos": "Limite raggiunto: solo {{count}} video consentiti."
+    }
   }
 }

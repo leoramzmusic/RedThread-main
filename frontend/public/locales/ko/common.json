@@ -922,5 +922,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "저장",
+    "saving": "저장 중...",
+    "skip": "건너뛰기",
+    "accept": "수락",
+    "delete": "삭제",
+    "cancel": "취소",
+    "success": "성공",
+    "confirmDeleteTitle": "이 항목을 삭제할까요?",
+    "confirmDeleteMessage": "이 작업은 되돌릴 수 없습니다.",
+    "errorUploadTitle": "파일 업로드 오류",
+    "uploadError": {
+      "generic": "파일 업로드 오류. 제한과 형식을 확인하세요.",
+      "maxVideos": "한도 도달: 동영상은 {{count}}개까지 허용됩니다."
+    }
   }
 }

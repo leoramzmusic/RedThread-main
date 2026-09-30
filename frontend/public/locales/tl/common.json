@@ -474,7 +474,8 @@
         "ok": "Hobby OK",
         "ko": "Bagay X"
       }
-    }
+    },
+    "mediaGallery": "Media Gallery"
   },
   "card": {
     "potentialConnection": "Posibleng Koneksyon • Nakatago ang mga Larawan",
@@ -875,6 +876,22 @@
           "desc": "Pagkahumaling sa talino at panloob na mundo."
         }
       }
+    }
+  },
+  "common": {
+    "save": "I-save",
+    "saving": "Sine-save...",
+    "skip": "Laktawan",
+    "accept": "Tanggapin",
+    "delete": "Tanggalin",
+    "cancel": "Kanselahin",
+    "success": "Tagumpay",
+    "confirmDeleteTitle": "Tanggalin ang item na ito?",
+    "confirmDeleteMessage": "Hindi na mababawi ang pagkilos na ito.",
+    "errorUploadTitle": "Error sa pag-upload",
+    "uploadError": {
+      "generic": "Error sa pag-upload. Suriin ang limit at uri.",
+      "maxVideos": "Naabot ang limit: {{count}} video lang ang pinapayagan."
     }
   }
 }

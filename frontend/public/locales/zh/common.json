@@ -923,5 +923,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "保存",
+    "saving": "保存中...",
+    "skip": "跳过",
+    "accept": "接受",
+    "delete": "删除",
+    "cancel": "取消",
+    "success": "成功",
+    "confirmDeleteTitle": "删除此项目？",
+    "confirmDeleteMessage": "此操作无法撤销。",
+    "errorUploadTitle": "文件上传出错",
+    "uploadError": {
+      "generic": "文件上传出错。请检查限制和类型。",
+      "maxVideos": "已达上限：仅允许 {{count}} 个视频。"
+    }
   }
 }

@@ -922,5 +922,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ...",
+    "skip": "تخطي",
+    "accept": "قبول",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "success": "نجاح",
+    "confirmDeleteTitle": "حذف هذا العنصر؟",
+    "confirmDeleteMessage": "لا يمكن التراجع عن هذا الإجراء.",
+    "errorUploadTitle": "خطأ في رفع الملف",
+    "uploadError": {
+      "generic": "خطأ في الرفع. تحقق من الحدود والنوع.",
+      "maxVideos": "تم بلوغ الحد: {{count}} فيديوهات مسموحة فقط."
+    }
   }
 }

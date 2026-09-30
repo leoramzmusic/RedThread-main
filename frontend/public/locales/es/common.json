@@ -381,7 +381,8 @@
         "ok": "Hobby OK",
         "ko": "Objeto X"
       }
-    }
+    },
+    "mediaGallery": "Galería Multimedia"
   },
   "settings_title": "Configuración",
   "settings_appearance_title": "Apariencia",
@@ -488,7 +489,10 @@
     "uploadError": {
       "maxVideos": "Límite alcanzado: solo se permiten {{count}} videos.",
       "generic": "Error al subir el archivo. Verifica los límites y el tipo."
-    }
+    },
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "skip": "Saltar"
   },
   "communityRules": {
     "title": "🌐 Reglas de la Comunidad de ReTh",

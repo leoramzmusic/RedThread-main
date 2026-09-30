@@ -142,7 +142,9 @@
         "ok": "Hobby OK",
         "ko": "Objet X"
       }
-    }
+    },
+    "mediaGallery": "Galerie Multimédia",
+    "preview": "Aperçu"
   },
   "settings_title": "Paramètres",
   "settings_appearance_title": "Apparence",
@@ -236,7 +238,19 @@
     "success": "Succès",
     "cancel": "Annuler",
     "confirm": "Confirmer",
-    "understood": "Compris"
+    "understood": "Compris",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "skip": "Passer",
+    "accept": "Accepter",
+    "delete": "Supprimer",
+    "confirmDeleteTitle": "Supprimer cet élément ?",
+    "confirmDeleteMessage": "Cette action est irréversible.",
+    "errorUploadTitle": "Erreur lors de l'envoi du fichier",
+    "uploadError": {
+      "generic": "Erreur lors de l'envoi. Vérifie les limites et le type.",
+      "maxVideos": "Limite atteinte : seulement {{count}} vidéos autorisées."
+    }
   },
   "communityRules": {
     "title": "🌐 Règles de la Communauté ReTh",

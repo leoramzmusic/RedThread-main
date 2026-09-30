@@ -474,7 +474,8 @@
         "ok": "Hobi OK",
         "ko": "Objek X"
       }
-    }
+    },
+    "mediaGallery": "Galeri Media"
   },
   "card": {
     "potentialConnection": "Sambungan Berpotensi • Foto Tersembunyi",
@@ -875,6 +876,22 @@
           "desc": "Tarikan kepada kecerdasan dan dunia dalaman."
         }
       }
+    }
+  },
+  "common": {
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "skip": "Langkau",
+    "accept": "Terima",
+    "delete": "Padam",
+    "cancel": "Batal",
+    "success": "Berjaya",
+    "confirmDeleteTitle": "Padam item ini?",
+    "confirmDeleteMessage": "Tindakan ini tidak boleh dibuat asal.",
+    "errorUploadTitle": "Ralat muat naik fail",
+    "uploadError": {
+      "generic": "Ralat muat naik. Semak had dan jenis.",
+      "maxVideos": "Had dicapai: hanya {{count}} video dibenarkan."
     }
   }
 }

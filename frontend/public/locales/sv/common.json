@@ -923,5 +923,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "Spara",
+    "saving": "Sparar...",
+    "skip": "Hoppa över",
+    "accept": "Acceptera",
+    "delete": "Ta bort",
+    "cancel": "Avbryt",
+    "success": "Klart",
+    "confirmDeleteTitle": "Ta bort detta objekt?",
+    "confirmDeleteMessage": "Denna åtgärd kan inte ångras.",
+    "errorUploadTitle": "Fel vid uppladdning",
+    "uploadError": {
+      "generic": "Fel vid uppladdning. Kontrollera gränser och typ.",
+      "maxVideos": "Gräns nådd: endast {{count}} videor tillåtna."
+    }
   }
 }

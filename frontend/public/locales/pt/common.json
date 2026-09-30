@@ -142,7 +142,9 @@
         "ok": "Hobby OK",
         "ko": "Objeto X"
       }
-    }
+    },
+    "mediaGallery": "Galeria Multimédia",
+    "preview": "Pré-visualização"
   },
   "settings_title": "Configurações",
   "settings_appearance_title": "Aparência",
@@ -236,7 +238,19 @@
     "success": "Sucesso",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
-    "understood": "Entendido"
+    "understood": "Entendido",
+    "save": "Guardar",
+    "saving": "A guardar...",
+    "skip": "Saltar",
+    "accept": "Aceitar",
+    "delete": "Eliminar",
+    "confirmDeleteTitle": "Eliminar este item?",
+    "confirmDeleteMessage": "Esta ação não pode ser desfeita.",
+    "errorUploadTitle": "Erro ao carregar ficheiro",
+    "uploadError": {
+      "generic": "Erro ao carregar o ficheiro. Verifica os limites e o tipo.",
+      "maxVideos": "Limite atingido: só {{count}} vídeos permitidos."
+    }
   },
   "communityRules": {
     "title": "🌐 Regras da Comunidade ReTh",

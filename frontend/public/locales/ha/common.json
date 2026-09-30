@@ -474,7 +474,8 @@
         "ok": "Sha’awa OK",
         "ko": "Abu X"
       }
-    }
+    },
+    "mediaGallery": "Taskar Kafofin Watsa Labarai"
   },
   "card": {
     "potentialConnection": "Yiwuwar Haɗi • Hotuna a Ɓoye",
@@ -875,6 +876,22 @@
           "desc": "Jan hankali ga hankali da duniyar ciki."
         }
       }
+    }
+  },
+  "common": {
+    "save": "Ajiye",
+    "saving": "Ana ajiyewa...",
+    "skip": "Tsallake",
+    "accept": "Karɓa",
+    "delete": "Share",
+    "cancel": "Soke",
+    "success": "Nasara",
+    "confirmDeleteTitle": "Share wannan abun?",
+    "confirmDeleteMessage": "Ba za a iya soke wannan aikin ba.",
+    "errorUploadTitle": "Kuskuren ɗora fayil",
+    "uploadError": {
+      "generic": "Kuskuren ɗorawa. Duba iyaka da nau’i.",
+      "maxVideos": "An cika iyaka: bidiyo {{count}} kacal aka yarda."
     }
   }
 }

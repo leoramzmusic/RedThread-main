@@ -922,5 +922,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "सहेजें",
+    "saving": "सहेजा जा रहा...",
+    "skip": "छोड़ें",
+    "accept": "स्वीकार करें",
+    "delete": "हटाएं",
+    "cancel": "रद्द करें",
+    "success": "सफल",
+    "confirmDeleteTitle": "यह आइटम हटाएं?",
+    "confirmDeleteMessage": "यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "errorUploadTitle": "फ़ाइल अपलोड त्रुटि",
+    "uploadError": {
+      "generic": "अपलोड त्रुटि। सीमाएं और प्रकार जांचें।",
+      "maxVideos": "सीमा पूर्ण: केवल {{count}} वीडियो अनुमत।"
+    }
   }
 }

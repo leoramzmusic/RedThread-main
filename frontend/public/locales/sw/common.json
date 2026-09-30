@@ -474,7 +474,8 @@
         "ok": "Hobby OK",
         "ko": "Kitu X"
       }
-    }
+    },
+    "mediaGallery": "Ghala ya Midia"
   },
   "card": {
     "potentialConnection": "Muunganisho Unaowezekana • Picha Zimefichwa",
@@ -875,6 +876,22 @@
           "desc": "Mvuto kwa akili na ulimwengu wa ndani."
         }
       }
+    }
+  },
+  "common": {
+    "save": "Hifadhi",
+    "saving": "Inahifadhi...",
+    "skip": "Ruka",
+    "accept": "Kubali",
+    "delete": "Futa",
+    "cancel": "Ghairi",
+    "success": "Mafanikio",
+    "confirmDeleteTitle": "Kufuta kipengee hiki?",
+    "confirmDeleteMessage": "Kitendo hiki hakiwezi kutenduliwa.",
+    "errorUploadTitle": "Hitilafu ya kupakia faili",
+    "uploadError": {
+      "generic": "Hitilafu ya kupakia. Angalia vikomo na aina.",
+      "maxVideos": "Kikomo kimefikiwa: video {{count}} pekee zinazoruhusiwa."
     }
   }
 }

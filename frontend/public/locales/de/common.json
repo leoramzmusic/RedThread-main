@@ -923,5 +923,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "Speichern",
+    "saving": "Speichern...",
+    "skip": "Überspringen",
+    "accept": "Akzeptieren",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "success": "Erfolg",
+    "confirmDeleteTitle": "Dieses Element löschen?",
+    "confirmDeleteMessage": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "errorUploadTitle": "Fehler beim Hochladen",
+    "uploadError": {
+      "generic": "Fehler beim Hochladen. Prüfe Limits und Typ.",
+      "maxVideos": "Limit erreicht: nur {{count}} Videos erlaubt."
+    }
   }
 }

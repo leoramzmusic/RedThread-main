@@ -474,7 +474,8 @@
         "ok": "Hākinakina OK",
         "ko": "Ahanoa X"
       }
-    }
+    },
+    "mediaGallery": "Taiwhanga Pāpāho"
   },
   "card": {
     "potentialConnection": "Hononga Ka Taea • Kua Huna ngā Whakaahua",
@@ -875,6 +876,22 @@
           "desc": "Whakapoapoa ki te māramatanga me te ao o roto."
         }
       }
+    }
+  },
+  "common": {
+    "save": "Tiaki",
+    "saving": "E tiaki ana...",
+    "skip": "Peke",
+    "accept": "Whakaae",
+    "delete": "Muku",
+    "cancel": "Whakakore",
+    "success": "Angitu",
+    "confirmDeleteTitle": "Mukua tēnei mea?",
+    "confirmDeleteMessage": "E kore e taea te whakahoki te mahi nei.",
+    "errorUploadTitle": "Hapa tukuake kōnae",
+    "uploadError": {
+      "generic": "Hapa tukuake. Tirohia ngā tepenga me te momo.",
+      "maxVideos": "Kua eke te tepenga: e {{count}} ngā ataata e whakaaetia ana."
     }
   }
 }

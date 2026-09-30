@@ -474,7 +474,8 @@
         "ok": "ትርፍ ጊዜ እሺ",
         "ko": "ዕቃ X"
       }
-    }
+    },
+    "mediaGallery": "የሚዲያ ማዕከል"
   },
   "card": {
     "potentialConnection": "እምቅ ግንኙነት • ፎቶዎች ተደብቀዋል",
@@ -875,6 +876,22 @@
           "desc": "ወደ አእምሮ እና ውስጣዊ ዓለም ስሜት።"
         }
       }
+    }
+  },
+  "common": {
+    "save": "አስቀምጥ",
+    "saving": "በማስቀመጥ ላይ...",
+    "skip": "ዝለል",
+    "accept": "ተቀበል",
+    "delete": "ሰርዝ",
+    "cancel": "አቋምጥ",
+    "success": "ተሳክቷል",
+    "confirmDeleteTitle": "ይህን ንጥል ነገር ሰርዝ?",
+    "confirmDeleteMessage": "ይህ እርምጃ ወደ ኋላ ሊመለስ አይችልም።",
+    "errorUploadTitle": "የፋይል ስቀል ስህተት",
+    "uploadError": {
+      "generic": "የስቀል ስህተት። ገደቦችን እና ዓይነትን አረጋግጥ።",
+      "maxVideos": "ገደቡ ደርሷል፦ {{count}} ቪዲዮዎች ብቻ ይፈቀዳሉ።"
     }
   }
 }

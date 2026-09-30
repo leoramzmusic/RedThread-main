@@ -923,5 +923,21 @@
         }
       }
     }
+  },
+  "common": {
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "skip": "Overslaan",
+    "accept": "Accepteren",
+    "delete": "Verwijderen",
+    "cancel": "Annuleren",
+    "success": "Gelukt",
+    "confirmDeleteTitle": "Dit item verwijderen?",
+    "confirmDeleteMessage": "Deze actie kan niet ongedaan worden gemaakt.",
+    "errorUploadTitle": "Fout bij uploaden",
+    "uploadError": {
+      "generic": "Fout bij uploaden. Controleer limieten en type.",
+      "maxVideos": "Limiet bereikt: slechts {{count}} video’s toegestaan."
+    }
   }
 }
