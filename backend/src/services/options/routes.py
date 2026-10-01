@@ -63,3 +63,28 @@ async def get_all_options(lang: str = "es"):
         )
 
     return result
+
+
+@router.get("/section/{category}")
+async def get_section_texts(category: str, lang: str = "es"):
+    """
+    Get all active texts for a section category as a flat key-value object.
+    Returns: {"key1": "translated value 1", "key2": "translated value 2", ...}
+    """
+    options = (
+        await SystemOption.find(
+            SystemOption.category == category, SystemOption.is_active == True
+        )
+        .sort(+SystemOption.order)
+        .to_list()
+    )
+
+    if not options:
+        return {}
+
+    label_field = get_label_field(lang)
+
+    return {
+        opt.value: getattr(opt, label_field, opt.label)
+        for opt in options
+    }

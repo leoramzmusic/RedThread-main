@@ -30,7 +30,7 @@ export default function ModifyProfilePage() {
   const [options, setOptions] = useState<any>({});
   const [sectionTextsLoaded, setSectionTextsLoaded] = useState(false);
 
-  // Load section-specific translations (e.g., languages_section) from DB for all 21 languages
+  // Load section-specific translations from DB for all 21 languages
   useEffect(() => {
     if (!i18n || sectionTextsLoaded) return;
     let cancelled = false;
@@ -41,23 +41,34 @@ export default function ModifyProfilePage() {
           "[i18n] Loading section texts for language:",
           i18n.language,
         );
-        const res = await apiClient.get("/options/section/languages_section", {
-          params: { lang: i18n.language },
-        });
+        // Load both languages_section and relationship_status_section
+        const [langRes, relRes] = await Promise.all([
+          apiClient.get("/options/section/languages_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/relationship_status_section", {
+            params: { lang: i18n.language },
+          }),
+        ]);
         if (cancelled) return;
 
-        console.log("[i18n] Section texts response:", res.data);
-        console.log("[i18n] Response keys:", Object.keys(res.data || {}));
+        console.log("[i18n] Languages section response:", langRes.data);
+        console.log(
+          "[i18n] Relationship status section response:",
+          relRes.data,
+        );
 
         // Merge into i18n resource store with proper nested structure
-        const resources = res.data;
-        if (resources && Object.keys(resources).length > 0) {
-          // Wrap flat keys under profile.languages namespace
-          const nestedResources = {
-            profile: {
-              languages: resources,
-            },
-          };
+        const nestedResources = {
+          profile: {
+            languages: langRes.data,
+            relationship: relRes.data,
+          },
+        };
+        if (
+          Object.keys(langRes.data || {}).length > 0 ||
+          Object.keys(relRes.data || {}).length > 0
+        ) {
           i18n.addResourceBundle(
             i18n.language,
             "common",
