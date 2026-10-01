@@ -67,7 +67,9 @@ export default function CivilStatusSection({
               variant="h6"
               sx={{ color: isDiscovery ? "white" : "inherit" }}
             >
-              {t("profile.relationship.title", "Estado Civil y Pareja")}
+              {t("profile.relationship.title", {
+                defaultValue: "Estado Civil y Pareja",
+              })}
             </Typography>
           </Box>
         </AccordionSummary>
@@ -80,27 +82,26 @@ export default function CivilStatusSection({
                 render={({ field }) => (
                   <FormControl fullWidth>
                     <InputLabel>
-                      {t("profile.relationship.statusLabel", "Estado Civil")}
+                      {t("profile.relationship.statusLabel", {
+                        defaultValue: "Estado Civil",
+                      })}
                     </InputLabel>
                     <Select
                       {...field}
-                      label={t(
-                        "profile.relationship.statusLabel",
-                        "Estado Civil",
-                      )}
+                      label={t("profile.relationship.statusLabel", {
+                        defaultValue: "Estado Civil",
+                      })}
                     >
                       <MenuItem value="">
-                        {t(
-                          "profile.relationship.selectPlaceholder",
-                          "Selecciona...",
-                        )}
+                        {t("profile.relationship.selectPlaceholder", {
+                          defaultValue: "Selecciona...",
+                        })}
                       </MenuItem>
                       {options.relationship_status?.map((opt: any) => (
                         <MenuItem key={opt.value} value={opt.value}>
-                          {t(
-                            `profile.relationship.status.${opt.value}`,
-                            opt.label,
-                          )}
+                          {t(`profile.relationship.status.${opt.value}`, {
+                            defaultValue: opt.label,
+                          })}
                         </MenuItem>
                       ))}
                     </Select>
