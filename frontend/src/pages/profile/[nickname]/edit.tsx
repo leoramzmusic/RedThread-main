@@ -41,12 +41,13 @@ export default function ModifyProfilePage() {
           "[i18n] Loading section texts for language:",
           i18n.language,
         );
-        const res = await apiClient.get("/options/languages_section", {
+        const res = await apiClient.get("/options/section/languages_section", {
           params: { lang: i18n.language },
         });
         if (cancelled) return;
 
         console.log("[i18n] Section texts response:", res.data);
+        console.log("[i18n] Response keys:", Object.keys(res.data || {}));
 
         // Merge into i18n resource store with proper nested structure
         const resources = res.data;
@@ -65,6 +66,15 @@ export default function ModifyProfilePage() {
             true,
           );
           console.log("[i18n] Added resource bundle for:", i18n.language);
+          console.log(
+            "[i18n] Available resources:",
+            i18n.getResourceBundle(i18n.language, "common"),
+          );
+        } else {
+          console.warn(
+            "[i18n] No resources returned for language:",
+            i18n.language,
+          );
         }
         setSectionTextsLoaded(true);
       } catch (err) {
@@ -77,10 +87,11 @@ export default function ModifyProfilePage() {
     return () => {
       cancelled = true;
     };
-  }, [i18n, i18n.language]);
+  }, [i18n, i18n.language, sectionTextsLoaded]);
 
   // Reset sectionTextsLoaded when language changes so effect re-runs
   useEffect(() => {
+    console.log("[i18n] Language changed, resetting sectionTextsLoaded");
     setSectionTextsLoaded(false);
   }, [i18n.language]);
 
