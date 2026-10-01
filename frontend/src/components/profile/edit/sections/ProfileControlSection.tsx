@@ -44,7 +44,9 @@ export default function ProfileControlSection({
           <Box display="flex" alignItems="center" gap={1}>
             <Settings color="action" />
             <Typography variant="h6">
-              {t("profile.control.title", "Control de perfil")}
+              {t("profile.control.title", {
+                defaultValue: "Control de perfil",
+              })}
             </Typography>
           </Box>
         </AccordionSummary>
@@ -53,16 +55,15 @@ export default function ProfileControlSection({
             {/* Emotional Transparency & Narrative Control Info */}
             <Box sx={{ p: 2, bgcolor: "action.hover", borderRadius: 2 }}>
               <Typography variant="subtitle2" gutterBottom fontWeight="bold">
-                {t(
-                  "profile.control.privacyTitle",
-                  "Tu privacidad, tu narrativa",
-                )}
+                {t("profile.control.subtitle", {
+                  defaultValue: "Tu privacidad, tu narrativa",
+                })}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {t(
-                  "profile.control.privacyDesc",
-                  "Tú decides qué mostrar. CARE respeta tus decisiones y ajusta la forma en que te presenta a los demás. Si ocultas información, CARE interpretará esto como una preferencia por la privacidad y modulará la conexión.",
-                )}
+                {t("profile.control.description", {
+                  defaultValue:
+                    "Tú decides qué mostrar. CARE respeta tus decisiones y ajusta la forma en que te presenta a los demás. Si ocultas información, CARE interpretará esto como una preferencia por la privacidad y modulará la conexión.",
+                })}
               </Typography>
             </Box>
 
@@ -98,8 +99,12 @@ export default function ProfileControlSection({
                         gap={1}
                       >
                         {field.value
-                          ? t("profile.control.ageOn", "🎂 Edad visible")
-                          : t("profile.control.ageOff", "🎭 Edad oculta")}
+                          ? t("profile.control.age.label", {
+                              defaultValue: "Edad visible",
+                            })
+                          : t("profile.control.age.label", {
+                              defaultValue: "Edad oculta",
+                            })}
                       </Typography>
                       <Typography
                         variant="caption"
@@ -107,14 +112,14 @@ export default function ProfileControlSection({
                         sx={{ display: "block", mt: 0.5 }}
                       >
                         {field.value
-                          ? t(
-                              "profile.control.ageOnDesc",
-                              "Un tono ajustado a tu etapa de vida.",
-                            )
-                          : t(
-                              "profile.control.ageOffDesc",
-                              "Foco en la afinidad mental, sin prejuicios de edad.",
-                            )}
+                          ? t("profile.control.age.description", {
+                              defaultValue:
+                                "Un tono ajustado a tu etapa de vida.",
+                            })
+                          : t("profile.control.age.description", {
+                              defaultValue:
+                                "Foco en la afinidad mental, sin prejuicios de edad.",
+                            })}
                       </Typography>
                     </Box>
                     <Switch
@@ -137,7 +142,9 @@ export default function ProfileControlSection({
                       variant="caption"
                       sx={{ fontStyle: "italic", color: "text.secondary" }}
                     >
-                      {t("profile.control.careSays", "CARE dice:")}
+                      {t("profile.control.careSays", {
+                        defaultValue: "CARE dice:",
+                      })}
                     </Typography>
                     <Typography
                       variant="caption"
@@ -145,14 +152,13 @@ export default function ProfileControlSection({
                       color="primary"
                     >
                       {field.value
-                        ? t(
-                            "profile.control.ageOnCare",
-                            "Se mostrará tu edad real.",
-                          )
-                        : t(
-                            "profile.control.ageOffCare",
-                            "Se usará el símbolo 🎭 para indicar misterio.",
-                          )}
+                        ? t("profile.control.age.careOn", {
+                            defaultValue: "Se mostrará tu edad real.",
+                          })
+                        : t("profile.control.age.careOff", {
+                            defaultValue:
+                              "Se usará el símbolo 🎭 para indicar misterio.",
+                          })}
                     </Typography>
                   </Box>
                 </Box>
@@ -191,8 +197,12 @@ export default function ProfileControlSection({
                         gap={1}
                       >
                         {field.value
-                          ? t("profile.control.distOn", "📏 Distancia visible")
-                          : t("profile.control.distOff", "🌐 Distancia oculta")}
+                          ? t("profile.control.distance.label", {
+                              defaultValue: "Distancia visible",
+                            })
+                          : t("profile.control.distance.label", {
+                              defaultValue: "Distancia oculta",
+                            })}
                       </Typography>
                       <Typography
                         variant="caption"
@@ -200,14 +210,13 @@ export default function ProfileControlSection({
                         sx={{ display: "block", mt: 0.5 }}
                       >
                         {field.value
-                          ? t(
-                              "profile.control.distOnDesc",
-                              "Facilita encuentros cercanos.",
-                            )
-                          : t(
-                              "profile.control.distOffDesc",
-                              "Prioriza la conexión emocional sobre la física.",
-                            )}
+                          ? t("profile.control.distance.description", {
+                              defaultValue: "Facilita encuentros cercanos.",
+                            })
+                          : t("profile.control.distance.description", {
+                              defaultValue:
+                                "Prioriza la conexión emocional sobre la física.",
+                            })}
                       </Typography>
                     </Box>
                     <Switch
@@ -230,7 +239,9 @@ export default function ProfileControlSection({
                       variant="caption"
                       sx={{ fontStyle: "italic", color: "text.secondary" }}
                     >
-                      {t("profile.control.careSuggests", "CARE sugiere:")}
+                      {t("profile.control.careSuggests", {
+                        defaultValue: "CARE sugiere:",
+                      })}
                     </Typography>
                     <Typography
                       variant="caption"
@@ -238,14 +249,14 @@ export default function ProfileControlSection({
                       color="primary"
                     >
                       {field.value
-                        ? t(
-                            "profile.control.distOnCare",
-                            "“¿Te gustaría iniciar una conversación cercana?”",
-                          )
-                        : t(
-                            "profile.control.distOffCare",
-                            "“La distancia no importa cuando hay afinidad.”",
-                          )}
+                        ? t("profile.control.distance.careOn", {
+                            defaultValue:
+                              "“¿Te gustaría iniciar una conversación cercana?”",
+                          })
+                        : t("profile.control.distance.careOff", {
+                            defaultValue:
+                              "“La distancia no importa cuando hay afinidad.”",
+                          })}
                     </Typography>
                   </Box>
                 </Box>
