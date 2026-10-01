@@ -485,7 +485,8 @@
     },
     "save": "Save",
     "saving": "Saving...",
-    "skip": "Skip"
+    "skip": "Skip",
+    "selectPlaceholder": "Select..."
   },
   "communityRules": {
     "title": "🌐 ReTh Community Rules",

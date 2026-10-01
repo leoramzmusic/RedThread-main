@@ -34,6 +34,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller, useWatch } from "react-hook-form";
+import { useTranslation } from "next-i18next";
 import { useAppTheme } from "../../../../context/ThemeContext";
 import { BaseSectionProps } from "../types";
 import SpotifySearchModal from "../SpotifySearchModal"; // Adjust path if needed
@@ -150,6 +151,7 @@ export default function MusicSection({
   // Search Modal State
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchType, setSearchType] = useState<"track" | "artist">("track");
+  const { t } = useTranslation("common");
   const containerRef = useRef<HTMLDivElement>(null);
   const { mode } = useAppTheme();
 
@@ -327,7 +329,9 @@ export default function MusicSection({
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
           <Box display="flex" alignItems="center" gap={1}>
             <MusicNote color="action" />
-            <Typography variant="h6">Mi Himno</Typography>
+            <Typography variant="h6">
+              {t("profile.music.title", "Mi Himno")}
+            </Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
@@ -353,13 +357,21 @@ export default function MusicSection({
             <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500 }}>
               {isConnected ? (
                 <>
-                  Has conectado <strong>Spotify</strong>. Tu mundo musical está
-                  listo para mostrarse en tu perfil.
+                  {t("profile.music.connectedPre", "Has conectado ")}
+                  <strong>Spotify</strong>
+                  {t(
+                    "profile.music.connectedPost",
+                    ". Tu mundo musical está listo para mostrarse en tu perfil.",
+                  )}
                 </>
               ) : (
                 <>
-                  Conecta con <strong>Spotify</strong> para mostrar tu mundo
-                  musical.
+                  {t("profile.music.connectPre", "Conecta con ")}
+                  <strong>Spotify</strong>
+                  {t(
+                    "profile.music.connectPost",
+                    " para mostrar tu mundo musical.",
+                  )}
                 </>
               )}
             </Typography>
@@ -370,16 +382,18 @@ export default function MusicSection({
             <Grid item xs={12}>
               {isConnected && freeSpotifyAccount && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
-                  Estás usando la cuenta gratuita de Spotify. Algunas funciones
-                  (como reproducir canciones) pueden estar limitadas, pero esto
-                  no afecta tu experiencia dentro de RETH.
+                  {t(
+                    "profile.music.freeAccount",
+                    "Estás usando la cuenta gratuita de Spotify. Algunas funciones (como reproducir canciones) pueden estar limitadas, pero esto no afecta tu experiencia dentro de RETH.",
+                  )}
                 </Alert>
               )}
               {!isConnected && (
                 <Alert severity="info" sx={{ mb: 2 }}>
-                  Al conectar tu cuenta de Spotify, algunas funciones
-                  (reproducir canciones, crear listas) dependerán de tu
-                  suscripción. Esto no afecta tu experiencia dentro de RETH.
+                  {t(
+                    "profile.music.connectInfo",
+                    "Al conectar tu cuenta de Spotify, algunas funciones (reproducir canciones, crear listas) dependerán de tu suscripción. Esto no afecta tu experiencia dentro de RETH.",
+                  )}
                 </Alert>
               )}
               {authError && (
@@ -403,7 +417,9 @@ export default function MusicSection({
                   color: "#fff",
                 }}
               >
-                {isConnected ? "Desconectar Spotify" : "Conectar Spotify"}
+                {isConnected
+                  ? t("profile.music.disconnect", "Desconectar Spotify")
+                  : t("profile.music.connect", "Conectar Spotify")}
               </Button>
             </Grid>
 
@@ -423,7 +439,7 @@ export default function MusicSection({
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Box display="flex" alignItems="center" gap={1}>
                     <Typography variant="h6" sx={{ fontSize: "1rem" }}>
-                      Géneros Musicales
+                      {t("profile.music.genresTitle", "Géneros Musicales")}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       ({(watch("music_genres") || []).length}/25)
@@ -457,9 +473,10 @@ export default function MusicSection({
                         "& .MuiAlert-message": { fontSize: "0.85rem" },
                       }}
                     >
-                      Las funciones de "Añadir" están bloqueadas por tu cuenta
-                      gratuita de Spotify. Esto depende de tu suscripción a
-                      Spotify, no de RETH.
+                      {t(
+                        "profile.music.addBlocked",
+                        'Las funciones de "Añadir" están bloqueadas por tu cuenta gratuita de Spotify. Esto depende de tu suscripción a Spotify, no de RETH.',
+                      )}
                     </Alert>
                   </Grid>
                 )}
@@ -472,8 +489,14 @@ export default function MusicSection({
                     mb={2}
                   >
                     <Typography variant="h6">
-                      Artistas Favoritos (
-                      {getList(watch("mi_himno.favorite_artists")).length}/16)
+                      {t(
+                        "profile.music.artistsTitle",
+                        "Artistas Favoritos ({{count}}/16)",
+                        {
+                          count: getList(watch("mi_himno.favorite_artists"))
+                            .length,
+                        },
+                      )}
                     </Typography>
                     {getList(watch("mi_himno.favorite_artists")).length <
                       16 && (
@@ -487,7 +510,7 @@ export default function MusicSection({
                         disabled={freeSpotifyAccount}
                         sx={{ color: "text.primary" }}
                       >
-                        Añadir
+                        {t("profile.music.add", "Añadir")}
                       </Button>
                     )}
                   </Box>
@@ -534,7 +557,10 @@ export default function MusicSection({
                                   width: "100%",
                                 }}
                               >
-                                No hay artistas seleccionados
+                                {t(
+                                  "profile.music.noArtists",
+                                  "No hay artistas seleccionados",
+                                )}
                               </Typography>
                             )}
                           </>
@@ -554,7 +580,11 @@ export default function MusicSection({
                     mt={2}
                   >
                     <Typography variant="h6">
-                      Canciones Destacadas ({featuredSongs.length}/5)
+                      {t(
+                        "profile.music.songsTitle",
+                        "Canciones Destacadas ({{count}}/5)",
+                        { count: featuredSongs.length },
+                      )}
                     </Typography>
                     {
                       <Button
@@ -569,7 +599,7 @@ export default function MusicSection({
                         }
                         sx={{ color: "text.primary" }}
                       >
-                        Añadir
+                        {t("profile.music.add", "Añadir")}
                       </Button>
                     }
                   </Box>
@@ -607,7 +637,10 @@ export default function MusicSection({
                                 color="gray"
                                 sx={{ fontStyle: "italic" }}
                               >
-                                No hay canciones seleccionadas
+                                {t(
+                                  "profile.music.noSongs",
+                                  "No hay canciones seleccionadas",
+                                )}
                               </Typography>
                             )}
                           </>
@@ -686,6 +719,7 @@ function VisualSongCard({
   readOnly?: boolean;
   mode?: string;
 }) {
+  const { t } = useTranslation("common");
   // Extract Spotify track ID from URL or use direct ID
   const getSpotifyTrackId = (track: any): string | null => {
     // Validation regex for Spotify ID (base62, typically 22 chars)
@@ -755,10 +789,12 @@ function VisualSongCard({
               noWrap
               sx={{ color: "text.primary", fontWeight: "bold" }}
             >
-              {track.name || "Canción desconocida"}
+              {track.name ||
+                t("profile.music.unknownSong", "Canción desconocida")}
             </Typography>
             <Typography variant="body2" noWrap sx={{ color: "text.secondary" }}>
-              {track.artist || "Artista desconocido"}
+              {track.artist ||
+                t("profile.music.unknownArtist", "Artista desconocido")}
             </Typography>
             <Typography
               variant="caption"
@@ -769,7 +805,7 @@ function VisualSongCard({
                 mt: 0.5,
               }}
             >
-              Vista previa no disponible
+              {t("profile.music.noPreview", "Vista previa no disponible")}
             </Typography>
           </Box>
         </Box>
@@ -792,7 +828,7 @@ function VisualSongCard({
               },
             }}
           >
-            Eliminar
+            {t("profile.music.deleteTrack", "Eliminar")}
           </Button>
         </Box>
       )}

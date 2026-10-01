@@ -37,17 +37,6 @@ export default function CivilStatusSection({
   isDiscovery = false,
 }: CivilStatusSectionProps) {
   const { t } = useTranslation("common");
-
-  // Debug: log options and relationship_status
-  console.log("[CivilStatusSection] options:", options);
-  console.log(
-    "[CivilStatusSection] relationship_status:",
-    options?.relationship_status,
-  );
-  console.log(
-    "[CivilStatusSection] relationshipStatus prop:",
-    relationshipStatus,
-  );
   return (
     <Grid item xs={12}>
       <Accordion
@@ -100,6 +89,9 @@ export default function CivilStatusSection({
                         "Estado Civil",
                       )}
                     >
+                      <MenuItem value="">
+                        {t("common.selectPlaceholder", "Selecciona...")}
+                      </MenuItem>
                       {options.relationship_status?.map((opt: any) => (
                         <MenuItem key={opt.value} value={opt.value}>
                           {opt.label}

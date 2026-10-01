@@ -542,7 +542,8 @@
     },
     "save": "Guardar",
     "saving": "Guardando...",
-    "skip": "Saltar"
+    "skip": "Saltar",
+    "selectPlaceholder": "Selecciona..."
   },
   "communityRules": {
     "title": "🌐 Reglas de la Comunidad de ReTh",
