@@ -28,6 +28,50 @@ export default function ModifyProfilePage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [options, setOptions] = useState<any>({});
+  const [sectionTextsLoaded, setSectionTextsLoaded] = useState(false);
+
+  // Load section-specific translations (e.g., languages_section) from DB for all 21 languages
+  useEffect(() => {
+    if (!i18n || sectionTextsLoaded) return;
+    let cancelled = false;
+
+    const loadSectionTexts = async () => {
+      try {
+        const res = await apiClient.get("/options/languages_section", {
+          params: { lang: i18n.language },
+        });
+        if (cancelled) return;
+
+        // Merge into i18n resource store with proper nested structure
+        const resources = res.data;
+        if (resources && Object.keys(resources).length > 0) {
+          // Wrap flat keys under profile.languages namespace
+          const nestedResources = {
+            profile: {
+              languages: resources,
+            },
+          };
+          i18n.addResourceBundle(
+            i18n.language,
+            "common",
+            nestedResources,
+            true,
+            true,
+          );
+        }
+        setSectionTextsLoaded(true);
+      } catch (err) {
+        console.warn("Failed to load section texts:", err);
+        setSectionTextsLoaded(true);
+      }
+    };
+
+    loadSectionTexts();
+    return () => {
+      cancelled = true;
+    };
+  }, [i18n, i18n.language, sectionTextsLoaded]);
+
   const [notification, setNotification] = useState({
     open: false,
     message: "",
