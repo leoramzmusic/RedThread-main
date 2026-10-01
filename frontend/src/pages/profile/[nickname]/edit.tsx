@@ -42,7 +42,7 @@ export default function ModifyProfilePage() {
           i18n.language,
         );
         // Load all section translations
-        const [langRes, relRes, controlRes] = await Promise.all([
+        const [langRes, relRes, controlRes, healthRes] = await Promise.all([
           apiClient.get("/options/section/languages_section", {
             params: { lang: i18n.language },
           }),
@@ -50,6 +50,9 @@ export default function ModifyProfilePage() {
             params: { lang: i18n.language },
           }),
           apiClient.get("/options/section/profile_control_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_health_section", {
             params: { lang: i18n.language },
           }),
         ]);
@@ -64,6 +67,7 @@ export default function ModifyProfilePage() {
           "[i18n] Profile control section response:",
           controlRes.data,
         );
+        console.log("[i18n] Profile health section response:", healthRes.data);
 
         // Merge into i18n resource store with proper nested structure
         const nestedResources = {
@@ -71,12 +75,14 @@ export default function ModifyProfilePage() {
             languages: langRes.data,
             relationship: relRes.data,
             control: controlRes.data,
+            health: healthRes.data,
           },
         };
         if (
           Object.keys(langRes.data || {}).length > 0 ||
           Object.keys(relRes.data || {}).length > 0 ||
-          Object.keys(controlRes.data || {}).length > 0
+          Object.keys(controlRes.data || {}).length > 0 ||
+          Object.keys(healthRes.data || {}).length > 0
         ) {
           i18n.addResourceBundle(
             i18n.language,

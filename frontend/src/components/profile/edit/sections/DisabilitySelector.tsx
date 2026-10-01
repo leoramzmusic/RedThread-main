@@ -180,13 +180,20 @@ export default function DisabilitySelector({
                   }
                   label={
                     <Typography variant="caption" color="text.secondary">
-                      {t("profile.wellness.disability_show")}
+                      {t("profile.health.disability.show_public", {
+                        defaultValue: "Mostrar en perfil público",
+                      })}
                     </Typography>
                   }
                 />
               )}
             />
-            <Tooltip title={t("profile.wellness.health_privacy_note")}>
+            <Tooltip
+              title={t("profile.health.disability.info", {
+                defaultValue:
+                  "Puedes compartir esta información si lo deseas. Nos ayuda a adaptar tu experiencia, pero nunca se mostrará sin tu consentimiento.",
+              })}
+            >
               <IconButton size="small">
                 <HelpOutline fontSize="small" sx={{ color: "#03a9f4" }} />
               </IconButton>
@@ -208,13 +215,17 @@ export default function DisabilitySelector({
               if (!extendedOptions.find((opt) => opt.value === "none")) {
                 extendedOptions.push({
                   value: "none",
-                  label: t("profile.wellness.disability_none"),
+                  label: t("profile.health.disability.none", {
+                    defaultValue: "Ninguna",
+                  }),
                 });
               }
               if (!extendedOptions.find((opt) => opt.value === "other")) {
                 extendedOptions.push({
                   value: "other",
-                  label: t("profile.wellness.disability_other"),
+                  label: t("profile.health.disability.other", {
+                    defaultValue: "Otra",
+                  }),
                 });
               }
 
@@ -327,7 +338,9 @@ export default function DisabilitySelector({
                           opacity: !customCondition.trim() ? 0.5 : 1,
                         }}
                       >
-                        {t("profile.wellness.add")}
+                        {t("profile.health.conditions.add", {
+                          defaultValue: "Agregar",
+                        })}
                       </ButtonBase>
                     </Box>
                   </Collapse>
@@ -335,7 +348,9 @@ export default function DisabilitySelector({
                   {/* Quick Chip for "Ninguna" */}
                   <Box display="flex" gap={1} mb={2}>
                     <Chip
-                      label={t("profile.wellness.disability_none")}
+                      label={t("profile.health.disability.none", {
+                        defaultValue: "Ninguna",
+                      })}
                       onClick={() => {
                         if (isNoneSelected) {
                           disField.onChange([]);
@@ -459,14 +474,22 @@ export default function DisabilitySelector({
                                         }}
                                       >
                                         {t(
-                                          "profile.wellness.disability_diagnosed",
+                                          "profile.health.disability.diagnosed",
+                                          {
+                                            defaultValue:
+                                              "Diagnosticado por un profesional",
+                                          },
                                         )}
                                       </Typography>
                                     }
                                   />
                                   <Tooltip
                                     title={t(
-                                      "profile.wellness.disability_diagnosed_help",
+                                      "profile.health.disability.diagnosed_help",
+                                      {
+                                        defaultValue:
+                                          "Marca si cuentas con un diagnóstico formal.",
+                                      },
                                     )}
                                   >
                                     <InfoOutlined
