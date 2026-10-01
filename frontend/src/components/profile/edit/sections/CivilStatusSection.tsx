@@ -37,6 +37,17 @@ export default function CivilStatusSection({
   isDiscovery = false,
 }: CivilStatusSectionProps) {
   const { t } = useTranslation("common");
+
+  // Debug: log options and relationship_status
+  console.log("[CivilStatusSection] options:", options);
+  console.log(
+    "[CivilStatusSection] relationship_status:",
+    options?.relationship_status,
+  );
+  console.log(
+    "[CivilStatusSection] relationshipStatus prop:",
+    relationshipStatus,
+  );
   return (
     <Grid item xs={12}>
       <Accordion
