@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "subtitle": "Encuentra tus conexiones significativas",
+    "description": "Inspirado en la leyenda del hilo rojo, conéctate con personas que comparten tus intereses, pasiones y valores. Ya sea que busques amistad, romance, socios de proyecto o compañeros de juego - tu hilo te espera.",
+    "ctaPrimary": "Comenzar",
+    "ctaSecondary": "Iniciar Sesión"
+  },
+  "features": {
+    "howItWorks": "Cómo Funciona",
+    "smartMatching": {
+      "title": "Emparejamiento Inteligente",
+      "description": "Nuestro algoritmo de afinidad impulsado por IA te empareja con personas compatibles basándose en intereses, música, personalidad y más."
+    },
+    "realTimeChat": {
+      "title": "Chat en Tiempo Real",
+      "description": "Conéctate instantáneamente con tus coincidencias a través de mensajería en tiempo real, notas de voz y compartir multimedia."
+    },
+    "proximityRadar": {
+      "title": "Radar de Proximidad",
+      "description": "Descubre personas cercanas que comparten tus intereses. Perfecto para encontrar amigos y conexiones locales."
+    },
+    "multipleIntentions": {
+      "title": "Múltiples Intenciones",
+      "description": "¿Buscas amistad, romance, socios de proyecto o compañeros de juego? Encuentra conexiones para cualquier propósito."
+    }
+  },
+  "footer": "© 2026 RETH. Hecho con ❤️ para conexiones significativas.",
+  "footerTagline": "Conexiones significativas inspiradas en la leyenda del hilo rojo."
+}

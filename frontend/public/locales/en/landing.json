@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "subtitle": "Find your meaningful connections",
+    "description": "Inspired by the legend of the red thread, connect with people who share your interests, passions, and values. Whether you're looking for friendship, romance, project partners, or gaming buddies - your thread awaits.",
+    "ctaPrimary": "Get Started",
+    "ctaSecondary": "Sign In"
+  },
+  "features": {
+    "howItWorks": "How It Works",
+    "smartMatching": {
+      "title": "Smart Matching",
+      "description": "Our AI-powered affinity algorithm matches you with compatible people based on interests, music, personality, and more."
+    },
+    "realTimeChat": {
+      "title": "Real-Time Chat",
+      "description": "Connect instantly with your matches through real-time messaging, voice notes, and media sharing."
+    },
+    "proximityRadar": {
+      "title": "Proximity Radar",
+      "description": "Discover people nearby who share your interests. Perfect for finding local friends and connections."
+    },
+    "multipleIntentions": {
+      "title": "Multiple Intentions",
+      "description": "Looking for friendship, romance, project partners, or gaming buddies? Find connections for any purpose."
+    }
+  },
+  "footer": "© 2026 RETH. Made with ❤️ for meaningful connections.",
+  "footerTagline": "Meaningful connections inspired by the legend of the red thread."
+}
