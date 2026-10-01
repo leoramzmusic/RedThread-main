@@ -132,7 +132,7 @@ export default function LanguagesSection({
                         </Box>
                       )}
                     >
-                      {options.language?.map((opt: any) => (
+                      {options.languages?.map((opt: any) => (
                         <MenuItem key={opt.value} value={opt.value}>
                           {opt.label}
                         </MenuItem>

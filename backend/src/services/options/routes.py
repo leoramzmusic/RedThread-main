@@ -3,6 +3,17 @@ from src.models.system_options import SystemOption
 
 router = APIRouter()
 
+# All 21 supported language codes
+SUPPORTED_LANGS = [
+    "es", "en", "pt", "fr", "de", "it", "ru", "sv", "nl",
+    "zh", "hi", "bn", "ja", "ko", "ar", "sw", "ha", "am",
+    "tl", "ms", "mi"
+]
+
+def get_label_field(lang: str) -> str:
+    """Get the label field name for the given language code."""
+    return f"label_{lang}" if lang in SUPPORTED_LANGS else "label_es"
+
 
 @router.get("/{category}")
 async def get_options(category: str, lang: str = "es"):
@@ -21,8 +32,7 @@ async def get_options(category: str, lang: str = "es"):
     if not options:
         return []
 
-    # Select label based on language
-    label_field = f"label_{lang}" if lang in ["es", "en", "pt", "fr"] else "label_es"
+    label_field = get_label_field(lang)
 
     return [
         {"value": opt.value, "label": getattr(opt, label_field, opt.label)}
@@ -42,7 +52,7 @@ async def get_all_options(lang: str = "es"):
         .to_list()
     )
 
-    label_field = f"label_{lang}" if lang in ["es", "en", "pt", "fr"] else "label_es"
+    label_field = get_label_field(lang)
 
     result = {}
     for opt in options:
