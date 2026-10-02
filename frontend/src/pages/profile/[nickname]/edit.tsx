@@ -42,20 +42,24 @@ export default function ModifyProfilePage() {
           i18n.language,
         );
         // Load all section translations
-        const [langRes, relRes, controlRes, healthRes] = await Promise.all([
-          apiClient.get("/options/section/languages_section", {
-            params: { lang: i18n.language },
-          }),
-          apiClient.get("/options/section/relationship_status_section", {
-            params: { lang: i18n.language },
-          }),
-          apiClient.get("/options/section/profile_control_section", {
-            params: { lang: i18n.language },
-          }),
-          apiClient.get("/options/section/profile_health_section", {
-            params: { lang: i18n.language },
-          }),
-        ]);
+        const [langRes, relRes, controlRes, healthRes, personalityRes] =
+          await Promise.all([
+            apiClient.get("/options/section/languages_section", {
+              params: { lang: i18n.language },
+            }),
+            apiClient.get("/options/section/relationship_status_section", {
+              params: { lang: i18n.language },
+            }),
+            apiClient.get("/options/section/profile_control_section", {
+              params: { lang: i18n.language },
+            }),
+            apiClient.get("/options/section/profile_health_section", {
+              params: { lang: i18n.language },
+            }),
+            apiClient.get("/options/section/profile_personality_section", {
+              params: { lang: i18n.language },
+            }),
+          ]);
         if (cancelled) return;
 
         console.log("[i18n] Languages section response:", langRes.data);
@@ -68,6 +72,10 @@ export default function ModifyProfilePage() {
           controlRes.data,
         );
         console.log("[i18n] Profile health section response:", healthRes.data);
+        console.log(
+          "[i18n] Profile personality section response:",
+          personalityRes.data,
+        );
 
         // Merge into i18n resource store with proper nested structure
         const nestedResources = {
@@ -76,13 +84,15 @@ export default function ModifyProfilePage() {
             relationship: relRes.data,
             control: controlRes.data,
             health: healthRes.data,
+            personality: personalityRes.data,
           },
         };
         if (
           Object.keys(langRes.data || {}).length > 0 ||
           Object.keys(relRes.data || {}).length > 0 ||
           Object.keys(controlRes.data || {}).length > 0 ||
-          Object.keys(healthRes.data || {}).length > 0
+          Object.keys(healthRes.data || {}).length > 0 ||
+          Object.keys(personalityRes.data || {}).length > 0
         ) {
           i18n.addResourceBundle(
             i18n.language,
