@@ -42,24 +42,33 @@ export default function ModifyProfilePage() {
           i18n.language,
         );
         // Load all section translations
-        const [langRes, relRes, controlRes, healthRes, personalityRes] =
-          await Promise.all([
-            apiClient.get("/options/section/languages_section", {
-              params: { lang: i18n.language },
-            }),
-            apiClient.get("/options/section/relationship_status_section", {
-              params: { lang: i18n.language },
-            }),
-            apiClient.get("/options/section/profile_control_section", {
-              params: { lang: i18n.language },
-            }),
-            apiClient.get("/options/section/profile_health_section", {
-              params: { lang: i18n.language },
-            }),
-            apiClient.get("/options/section/profile_personality_section", {
-              params: { lang: i18n.language },
-            }),
-          ]);
+        const [
+          langRes,
+          relRes,
+          controlRes,
+          healthRes,
+          personalityRes,
+          musicRes,
+        ] = await Promise.all([
+          apiClient.get("/options/section/languages_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/relationship_status_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_control_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_health_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_personality_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_music_section", {
+            params: { lang: i18n.language },
+          }),
+        ]);
         if (cancelled) return;
 
         console.log("[i18n] Languages section response:", langRes.data);
@@ -76,6 +85,7 @@ export default function ModifyProfilePage() {
           "[i18n] Profile personality section response:",
           personalityRes.data,
         );
+        console.log("[i18n] Profile music section response:", musicRes.data);
 
         // Merge into i18n resource store with proper nested structure
         const nestedResources = {
@@ -85,6 +95,7 @@ export default function ModifyProfilePage() {
             control: controlRes.data,
             health: healthRes.data,
             personality: personalityRes.data,
+            music: musicRes.data,
           },
         };
         if (
@@ -92,7 +103,8 @@ export default function ModifyProfilePage() {
           Object.keys(relRes.data || {}).length > 0 ||
           Object.keys(controlRes.data || {}).length > 0 ||
           Object.keys(healthRes.data || {}).length > 0 ||
-          Object.keys(personalityRes.data || {}).length > 0
+          Object.keys(personalityRes.data || {}).length > 0 ||
+          Object.keys(musicRes.data || {}).length > 0
         ) {
           i18n.addResourceBundle(
             i18n.language,

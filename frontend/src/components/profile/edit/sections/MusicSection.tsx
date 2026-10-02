@@ -224,14 +224,22 @@ export default function MusicSection({
         window.location.href = response.data.url;
       } else {
         console.error("No auth URL received");
-        setAuthError("No se recibió la URL de autorización de Spotify.");
+        setAuthError(
+          t(
+            "profile.music.authErrorUrl",
+            "No se recibió la URL de autorización de Spotify.",
+          ),
+        );
         setIsConnecting(false);
       }
     } catch (error: any) {
       console.error("Error getting auth URL:", error);
       setAuthError(
         error?.response?.data?.detail ||
-          "No se pudo conectar con Spotify. Inténtalo de nuevo.",
+          t(
+            "profile.music.authErrorGeneric",
+            "No se pudo conectar con Spotify. Inténtalo de nuevo.",
+          ),
       );
       setIsConnecting(false);
     }
@@ -277,7 +285,7 @@ export default function MusicSection({
     const trackData = {
       id: track.id,
       name: track.name,
-      artist: track.artists?.[0]?.name || "Unknown",
+      artist: track.artists?.[0]?.name || null,
       image: track.album?.images?.[0]?.url || null,
       preview_url: track.preview_url,
       spotify_url: track.external_urls?.spotify,
@@ -355,25 +363,15 @@ export default function MusicSection({
             }}
           >
             <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500 }}>
-              {isConnected ? (
-                <>
-                  {t("profile.music.connectedPre", "Has conectado ")}
-                  <strong>Spotify</strong>
-                  {t(
-                    "profile.music.connectedPost",
-                    ". Tu mundo musical está listo para mostrarse en tu perfil.",
+              {isConnected
+                ? t(
+                    "profile.music.connectedIntro",
+                    "Has conectado Spotify. Tu mundo musical está listo para mostrarse en tu perfil.",
+                  )
+                : t(
+                    "profile.music.connectIntro",
+                    "Conecta tu cuenta de Spotify para mostrar tu mundo musical.",
                   )}
-                </>
-              ) : (
-                <>
-                  {t("profile.music.connectPre", "Conecta con ")}
-                  <strong>Spotify</strong>
-                  {t(
-                    "profile.music.connectPost",
-                    " para mostrar tu mundo musical.",
-                  )}
-                </>
-              )}
             </Typography>
           </Box>
 
