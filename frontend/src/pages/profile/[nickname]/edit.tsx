@@ -131,7 +131,7 @@ export default function ModifyProfilePage() {
             "common",
             nestedResources,
             true,
-            true,
+            false,
           );
           console.log("[i18n] Added resource bundle for:", i18n.language);
           console.log(
