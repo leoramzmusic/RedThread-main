@@ -56,7 +56,7 @@ export default function HeightSelector({
   const { t } = useTranslation("common");
   // Display-only: preference values stay stable; labels render translated.
   const hPref = (value: string, fallback: string) =>
-    t(`profile.height.pref.${value}`, fallback);
+    t(`profile.additional.height.pref.${value}`, fallback);
   const [isCollapsed, setIsCollapsed] = useState(
     isDiscovery ? false : defaultCollapsed,
   );
@@ -131,7 +131,7 @@ export default function HeightSelector({
               variant="subtitle2"
               sx={{ fontWeight: 700, fontSize: "1rem" }}
             >
-              {t("profile.height.title", "Tu Estatura")}
+              {t("profile.additional.height.title", "Tu Estatura")}
             </Typography>
           </Box>
           <Box
@@ -174,10 +174,13 @@ export default function HeightSelector({
                 <TextField
                   {...field}
                   fullWidth
-                  label={t("profile.height.label", "Tu Altura")}
+                  label={t("profile.additional.height.label", "Tu Altura")}
                   type="number"
                   autoComplete="off"
-                  placeholder={t("profile.height.placeholder", "Ej: 170")}
+                  placeholder={t(
+                    "profile.additional.height.placeholder",
+                    "Ej: 170",
+                  )}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -199,7 +202,7 @@ export default function HeightSelector({
                     field.value
                       ? formatHeight(field.value)
                       : t(
-                          "profile.height.helper",
+                          "profile.additional.height.helper",
                           "Tu altura se mostrará en tu perfil si lo deseas.",
                         )
                   }
@@ -280,7 +283,7 @@ export default function HeightSelector({
                           }}
                         >
                           {t(
-                            "profile.height.relevantLabel",
+                            "profile.additional.height.relevantLabel",
                             "¿Quieres que la estatura influya en tu compatibilidad?",
                           )}
                         </Typography>
@@ -288,7 +291,7 @@ export default function HeightSelector({
                     />
                     <Tooltip
                       title={t(
-                        "profile.height.relevantTooltip",
+                        "profile.additional.height.relevantTooltip",
                         "Los rangos se adaptan a tu país. Puedes elegir lo que te atrae sin preocuparte por etiquetas.",
                       )}
                       arrow
@@ -323,7 +326,7 @@ export default function HeightSelector({
                       }}
                     >
                       {t(
-                        "profile.height.prefsTitle",
+                        "profile.additional.height.prefsTitle",
                         "¿Qué estaturas te atraen?",
                       )}
                     </Typography>
@@ -454,7 +457,7 @@ export default function HeightSelector({
                                             )}
                                             : {heightRangeLabels[pref]}{" "}
                                             {t(
-                                              "profile.height.inRegion",
+                                              "profile.additional.height.inRegion",
                                               "en tu región.",
                                             )}
                                           </Typography>
@@ -500,7 +503,7 @@ export default function HeightSelector({
                           sx={{ color: "text.disabled", fontWeight: 700 }}
                         >
                           {t(
-                            "profile.height.disabled",
+                            "profile.additional.height.disabled",
                             "Preferencia desactivada",
                           )}
                         </Typography>
@@ -533,11 +536,11 @@ export default function HeightSelector({
                     >
                       {isRelevant
                         ? t(
-                            "profile.height.quoteOn",
+                            "profile.additional.height.quoteOn",
                             "“La estatura es solo un dato. Tu esencia es lo que buscamos.”",
                           )
                         : t(
-                            "profile.height.quoteOff",
+                            "profile.additional.height.quoteOff",
                             "“La estatura no influirá en tu compatibilidad.”",
                           )}
                     </Typography>

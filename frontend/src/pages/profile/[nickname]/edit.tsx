@@ -50,6 +50,7 @@ export default function ModifyProfilePage() {
           personalityRes,
           musicRes,
           professionalRes,
+          additionalRes,
         ] = await Promise.all([
           apiClient.get("/options/section/languages_section", {
             params: { lang: i18n.language },
@@ -70,6 +71,9 @@ export default function ModifyProfilePage() {
             params: { lang: i18n.language },
           }),
           apiClient.get("/options/section/profile_professional_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_additional_section", {
             params: { lang: i18n.language },
           }),
         ]);
@@ -94,6 +98,10 @@ export default function ModifyProfilePage() {
           "[i18n] Profile professional section response:",
           professionalRes.data,
         );
+        console.log(
+          "[i18n] Profile additional section response:",
+          additionalRes.data,
+        );
 
         // Merge into i18n resource store with proper nested structure
         const nestedResources = {
@@ -105,6 +113,7 @@ export default function ModifyProfilePage() {
             personality: personalityRes.data,
             music: musicRes.data,
             professional: professionalRes.data,
+            additional: additionalRes.data,
           },
         };
         if (
@@ -114,7 +123,8 @@ export default function ModifyProfilePage() {
           Object.keys(healthRes.data || {}).length > 0 ||
           Object.keys(personalityRes.data || {}).length > 0 ||
           Object.keys(musicRes.data || {}).length > 0 ||
-          Object.keys(professionalRes.data || {}).length > 0
+          Object.keys(professionalRes.data || {}).length > 0 ||
+          Object.keys(additionalRes.data || {}).length > 0
         ) {
           i18n.addResourceBundle(
             i18n.language,

@@ -60,9 +60,9 @@ export default function RelationshipTypeSelector({
   const { t } = useTranslation("common");
   // Display-only: option values stay stable; labels/descriptions render translated.
   const rtLabel = (value: string, fallback: string) =>
-    t(`profile.relType.opt.${value}.label`, fallback);
+    t(`profile.additional.relationship.opt.${value}.label`, fallback);
   const rtDesc = (value: string, fallback: string) =>
-    t(`profile.relType.opt.${value}.desc`, fallback);
+    t(`profile.additional.relationship.opt.${value}.desc`, fallback);
   const [isCollapsed, setIsCollapsed] = useState(!isDiscovery); // Open by default in discovery
   const relationshipColor = "#E91E63";
 
@@ -105,7 +105,7 @@ export default function RelationshipTypeSelector({
               variant="subtitle2"
               sx={{ fontWeight: 700, fontSize: "1rem" }}
             >
-              {t("profile.relType.title", "Tipo de relación")}
+              {t("profile.additional.relationship.title", "Tipo de relación")}
             </Typography>
           </Box>
           <Box
@@ -146,7 +146,7 @@ export default function RelationshipTypeSelector({
             sx={{ mb: 2 }}
           >
             {t(
-              "profile.relType.question",
+              "profile.additional.relationship.question",
               "¿Cómo te vinculas emocional y sexualmente?",
             )}
           </Typography>
@@ -171,11 +171,22 @@ export default function RelationshipTypeSelector({
             >
               💡{" "}
               <strong>
-                {t("profile.relType.tipType", "Tu tipo de relación")}
+                {t(
+                  "profile.additional.relationship.tipType",
+                  "Tu tipo de relación",
+                )}
               </strong>{" "}
-              {t("profile.relType.tipTypeMid", "define cómo te vinculas.")}{" "}
-              <strong>{t("profile.relType.tipGoal", "Tu objetivo")}</strong>{" "}
-              {t("profile.relType.tipGoalMid", "define qué buscas ahora.")}
+              {t(
+                "profile.additional.relationship.tipTypeMid",
+                "define cómo te vinculas.",
+              )}{" "}
+              <strong>
+                {t("profile.additional.relationship.tipGoal", "Tu objetivo")}
+              </strong>{" "}
+              {t(
+                "profile.additional.relationship.tipGoalMid",
+                "define qué buscas ahora.",
+              )}
             </Typography>
           </Box>
 
@@ -201,7 +212,10 @@ export default function RelationshipTypeSelector({
                       display: "block",
                     }}
                   >
-                    {t("profile.relType.groupExclusive", "Exclusividad")}
+                    {t(
+                      "profile.additional.relationship.groupExclusive",
+                      "Exclusividad",
+                    )}
                   </Typography>
                   <Grid container spacing={2}>
                     {exclusiveOptions.map((option, index) => {
@@ -304,7 +318,10 @@ export default function RelationshipTypeSelector({
                       display: "block",
                     }}
                   >
-                    {t("profile.relType.groupOpen", "Apertura y Flexibilidad")}
+                    {t(
+                      "profile.additional.relationship.groupOpen",
+                      "Apertura y Flexibilidad",
+                    )}
                   </Typography>
                   <Grid container spacing={2}>
                     {openOptions.map((option, index) => {

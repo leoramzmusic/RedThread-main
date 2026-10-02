@@ -57,7 +57,7 @@ export default function ZodiacSelector({
   const theme = useTheme();
   const { t } = useTranslation("common");
   const signLabel = (value: string, fallback: string) =>
-    t(`profile.zodiac.sign.${value}`, fallback);
+    t(`profile.additional.zodiac.sign.${value}`, fallback);
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const zodiacColor = "#673AB7";
 
@@ -92,7 +92,7 @@ export default function ZodiacSelector({
               variant="subtitle2"
               sx={{ fontWeight: 700, fontSize: "1rem" }}
             >
-              {t("profile.zodiac.title", "Signo Zodiacal")}
+              {t("profile.additional.zodiac.title", "Signo Zodiacal")}
             </Typography>
           </Box>
           <Box
@@ -142,7 +142,7 @@ export default function ZodiacSelector({
                     }}
                   >
                     {t(
-                      "profile.zodiac.question",
+                      "profile.additional.zodiac.question",
                       "¿Quieres que influya en tu compatibilidad?",
                     )}
                   </Typography>
@@ -284,7 +284,7 @@ export default function ZodiacSelector({
                               sx={{ color: "text.disabled", fontWeight: 600 }}
                             >
                               {t(
-                                "profile.zodiac.disabled",
+                                "profile.additional.zodiac.disabled",
                                 "Selección desactivada",
                               )}
                             </Typography>
@@ -308,7 +308,7 @@ export default function ZodiacSelector({
                   >
                     <Tooltip
                       title={t(
-                        "profile.zodiac.optOutTooltip",
+                        "profile.additional.zodiac.optOutTooltip",
                         "No todos creen en la astrología. Tú decides si tu signo debe influir en tus conexiones.",
                       )}
                       placement="top"
@@ -336,7 +336,7 @@ export default function ZodiacSelector({
                             }}
                           >
                             {t(
-                              "profile.zodiac.optOut",
+                              "profile.additional.zodiac.optOut",
                               "No me interesa responder",
                             )}
                             <InfoOutlined
@@ -365,11 +365,11 @@ export default function ZodiacSelector({
                       >
                         {isRelevant
                           ? t(
-                              "profile.zodiac.visible",
+                              "profile.additional.zodiac.visible",
                               "✅ Tu signo está visible. Influye en tus matches.",
                             )
                           : t(
-                              "profile.zodiac.hidden",
+                              "profile.additional.zodiac.hidden",
                               "🚫 Tu signo está oculto. No influye en la compatibilidad.",
                             )}
                       </Typography>
@@ -386,8 +386,10 @@ export default function ZodiacSelector({
                           fontWeight: 500,
                         }}
                       >
-                        “Tu compatibilidad será guiada por lo que realmente te
-                        importa.”
+                        {t(
+                          "profile.additional.zodiac.compatQuote",
+                          "“Tu compatibilidad será guiada por lo que realmente te importa.”",
+                        )}
                       </Typography>
                     )}
                   </Box>
