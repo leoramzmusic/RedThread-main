@@ -1,21 +1,36 @@
-import { Grid, Paper, Typography, TextField, Box, IconButton, Button, Stack, InputBase, alpha, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { Controller } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
-import { Info as InfoIcon, Add as AddIcon, Close as CloseIcon, DragIndicator as DragIndicatorIcon, EditNote, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
-  DndContext,
-  closestCenter,
-  DragEndEvent
-} from '@dnd-kit/core';
+  Grid,
+  Paper,
+  Typography,
+  TextField,
+  Box,
+  IconButton,
+  Button,
+  Stack,
+  InputBase,
+  alpha,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import { Controller } from "react-hook-form";
+import { useTranslation } from "next-i18next";
+import {
+  Info as InfoIcon,
+  Add as AddIcon,
+  Close as CloseIcon,
+  DragIndicator as DragIndicatorIcon,
+  EditNote,
+  ExpandMore as ExpandMoreIcon,
+} from "@mui/icons-material";
+import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
-  useSortable
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { PromptItem } from '../types';
-
-
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { PromptItem } from "../types";
 
 interface SortablePromptItemProps {
   prompt: PromptItem;
@@ -24,14 +39,19 @@ interface SortablePromptItemProps {
   onUpdate: (index: number, answer: string) => void;
 }
 
-function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromptItemProps) {
+function SortablePromptItem({
+  prompt,
+  index,
+  onRemove,
+  onUpdate,
+}: SortablePromptItemProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
   } = useSortable({ id: prompt.question });
 
   const style = {
@@ -47,14 +67,14 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
       style={style}
       sx={{
         p: 2,
-        border: '1px solid',
-        borderColor: isDragging ? 'primary.main' : 'divider',
+        border: "1px solid",
+        borderColor: isDragging ? "primary.main" : "divider",
         borderRadius: 1,
-        position: 'relative',
-        bgcolor: 'background.paper',
-        '&:hover': {
-          borderColor: 'text.primary'
-        }
+        position: "relative",
+        bgcolor: "background.paper",
+        "&:hover": {
+          borderColor: "text.primary",
+        },
       }}
     >
       {/* Drag Handle (Left) */}
@@ -62,14 +82,14 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
         {...attributes}
         {...listeners}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           left: 8,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          cursor: 'grab',
-          color: 'text.disabled',
-          '&:hover': { color: 'text.primary' },
-          zIndex: 2
+          top: "50%",
+          transform: "translateY(-50%)",
+          cursor: "grab",
+          color: "text.disabled",
+          "&:hover": { color: "text.primary" },
+          zIndex: 2,
         }}
       >
         <DragIndicatorIcon />
@@ -80,12 +100,12 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
         size="small"
         onClick={() => onRemove(index)}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           top: 8,
           right: 8,
-          color: 'text.secondary',
-          '&:hover': { color: 'error.main' },
-          zIndex: 2
+          color: "text.secondary",
+          "&:hover": { color: "error.main" },
+          zIndex: 2,
         }}
       >
         <CloseIcon fontSize="small" />
@@ -98,12 +118,12 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
           <Typography
             component="span"
             sx={{
-              fontSize: '60px',
-              fontFamily: 'Georgia, serif',
-              color: 'error.main',
+              fontSize: "60px",
+              fontFamily: "Georgia, serif",
+              color: "error.main",
               lineHeight: 0.3,
               opacity: 0.8,
-              transform: 'translateY(20px)'
+              transform: "translateY(20px)",
             }}
           >
             "
@@ -114,8 +134,8 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
             color="text.primary"
             sx={{
               pt: 1,
-              fontWeight: 'bold',
-              fontStyle: 'italic'
+              fontWeight: "bold",
+              fontStyle: "italic",
             }}
           >
             {prompt.question}
@@ -131,22 +151,24 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
           value={prompt.answer}
           onChange={(e) => onUpdate(index, e.target.value)}
           sx={{
-            fontSize: '0.9rem',
-            fontStyle: 'italic',
-            color: 'text.secondary',
-            pb: 2
+            fontSize: "0.9rem",
+            fontStyle: "italic",
+            color: "text.secondary",
+            pb: 2,
           }}
         />
 
         {/* Character Counter */}
         <Typography
           variant="caption"
-          color={(prompt.answer?.length || 0) > 500 ? "error" : "text.secondary"}
+          color={
+            (prompt.answer?.length || 0) > 500 ? "error" : "text.secondary"
+          }
           sx={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 8,
             right: 14,
-            pointerEvents: 'none'
+            pointerEvents: "none",
           }}
         >
           {500 - (prompt.answer?.length || 0)}
@@ -177,34 +199,40 @@ export default function AboutMeSection({
   sensors,
   handleDragEnd,
   handleUpdatePrompt,
-  handleRemovePrompt
+  handleRemovePrompt,
 }: AboutMeSectionProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <Grid item xs={12}>
       <Accordion
         defaultExpanded
         sx={{
-          position: 'relative',
-          border: (theme) => '1px solid ' + theme.palette.divider,
+          position: "relative",
+          border: (theme) => "1px solid " + theme.palette.divider,
           boxShadow: 1,
-          backgroundImage: 'none',
-          borderRadius: '12px !important',
-          '&:before': { display: 'none' }
+          backgroundImage: "none",
+          borderRadius: "12px !important",
+          "&:before": { display: "none" },
         }}
       >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          sx={{ px: 3, py: 1 }}
-        >
-          <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" pr={2}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
+            pr={2}
+          >
             <Box display="flex" alignItems="center" gap={1}>
               <EditNote color="action" />
-              <Typography variant="h6">{t('profile.aboutMe', 'Sobre mí')}</Typography>
+              <Typography variant="h6">
+                {t("profile.aboutMe", "Sobre mí")}
+              </Typography>
             </Box>
             <IconButton
               size="small"
+              component="span"
               onClick={(e) => {
                 e.stopPropagation();
                 setInfoDrawerOpen(true);
@@ -219,7 +247,12 @@ export default function AboutMeSection({
           <Controller
             name="bio"
             control={control}
-            rules={{ maxLength: { value: 500, message: t('profile.max_chars_500', 'Máximo 500 caracteres') } }}
+            rules={{
+              maxLength: {
+                value: 500,
+                message: t("profile.max_chars_500", "Máximo 500 caracteres"),
+              },
+            }}
             render={({ field, fieldState: { error } }) => (
               <Box mb={3}>
                 <Box position="relative">
@@ -228,23 +261,28 @@ export default function AboutMeSection({
                     fullWidth
                     multiline
                     rows={4}
-                    placeholder={t('profile.bio_placeholder', 'Esta es tu voz sin imagen. Haz que tu descripción sea tu primer gesto de conexión.')}
+                    placeholder={t(
+                      "profile.bio_placeholder",
+                      "Esta es tu voz sin imagen. Haz que tu descripción sea tu primer gesto de conexión.",
+                    )}
                     error={!!error}
                     helperText={error?.message}
                     sx={{
-                      '& .MuiOutlinedInput-root': {
-                        paddingBottom: '20px'
-                      }
+                      "& .MuiOutlinedInput-root": {
+                        paddingBottom: "20px",
+                      },
                     }}
                   />
                   <Typography
                     variant="caption"
-                    color={field.value?.length > 500 ? "error" : "text.secondary"}
+                    color={
+                      field.value?.length > 500 ? "error" : "text.secondary"
+                    }
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       bottom: 8,
                       right: 14,
-                      pointerEvents: 'none'
+                      pointerEvents: "none",
                     }}
                   >
                     {500 - (field.value?.length || 0)}
@@ -257,10 +295,13 @@ export default function AboutMeSection({
           {/* Prompts Section */}
           <Box>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-              {t('profile.prompts_title', 'Pregúntame sobre...')}
+              {t("profile.prompts_title", "Pregúntame sobre...")}
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
-              {t('profile.prompts_subtitle', 'Escoge hasta 5 de las siguientes frases para que te conozcan un poco mejor')}
+              {t(
+                "profile.prompts_subtitle",
+                "Escoge hasta 5 de las siguientes frases para que te conozcan un poco mejor",
+              )}
             </Typography>
 
             <Stack spacing={2}>
@@ -270,7 +311,7 @@ export default function AboutMeSection({
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={prompts.map(p => p.question)}
+                  items={prompts.map((p) => p.question)}
                   strategy={verticalListSortingStrategy}
                 >
                   {prompts.map((prompt, index) => (
@@ -295,17 +336,20 @@ export default function AboutMeSection({
                   alignItems="center"
                   justifyContent="center"
                   sx={{
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      borderColor: 'text.primary',
-                      bgcolor: 'action.hover'
-                    }
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    "&:hover": {
+                      borderColor: "text.primary",
+                      bgcolor: "action.hover",
+                    },
                   }}
                   onClick={() => setPromptSelectorOpen(true)}
                 >
-                  <Button startIcon={<AddIcon />} sx={{ color: 'text.secondary' }}>
-                    {t('profile.add_prompt', 'Agregar frase')}
+                  <Button
+                    startIcon={<AddIcon />}
+                    sx={{ color: "text.secondary" }}
+                  >
+                    {t("profile.add_prompt", "Agregar frase")}
                   </Button>
                 </Box>
               )}

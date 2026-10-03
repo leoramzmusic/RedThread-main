@@ -104,42 +104,69 @@ export default function LanguagesSection({
               <Controller
                 name="languages"
                 control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth>
-                    <InputLabel>
-                      {t("profile.languages.spokenLabel", "Idiomas que hablo")}
-                    </InputLabel>
-                    <Select
-                      {...field}
-                      multiple
-                      label={t(
-                        "profile.languages.spokenLabel",
-                        "Idiomas que hablo",
-                      )}
-                      renderValue={(selected: any) => (
-                        <Box
-                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                        >
-                          {(selected as string[]).map((value) => (
-                            <Chip
-                              key={value}
-                              label={value}
-                              size="small"
-                              icon={<PublicIcon fontSize="small" />}
-                              sx={{ pl: 0.5 }}
-                            />
-                          ))}
-                        </Box>
-                      )}
-                    >
-                      {options.languages?.map((opt: any) => (
-                        <MenuItem key={opt.value} value={opt.value}>
-                          {opt.label}
+                render={({ field }) => {
+                  const langOpts: any[] =
+                    options.languages ?? options.language ?? [];
+                  const allValues = langOpts.map((o: any) => o.value);
+                  const allSelected =
+                    allValues.length > 0 &&
+                    allValues.every((v: string) =>
+                      (field.value as string[] | undefined)?.includes(v),
+                    );
+                  const handleLangChange = (event: any) => {
+                    const value = event.target.value as string[];
+                    if (value.includes("all")) {
+                      field.onChange(allSelected ? [] : allValues);
+                    } else {
+                      field.onChange(value.filter((v: string) => v !== "all"));
+                    }
+                  };
+                  return (
+                    <FormControl fullWidth>
+                      <InputLabel>
+                        {t(
+                          "profile.languages.spokenLabel",
+                          "Idiomas que hablo",
+                        )}
+                      </InputLabel>
+                      <Select
+                        {...field}
+                        multiple
+                        label={t(
+                          "profile.languages.spokenLabel",
+                          "Idiomas que hablo",
+                        )}
+                        onChange={handleLangChange}
+                        renderValue={(selected: any) => (
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                          >
+                            {(selected as string[]).map((value) => (
+                              <Chip
+                                key={value}
+                                label={value}
+                                size="small"
+                                icon={<PublicIcon fontSize="small" />}
+                                sx={{ pl: 0.5 }}
+                              />
+                            ))}
+                          </Box>
+                        )}
+                      >
+                        <MenuItem value="all">
+                          <em>
+                            {t("profile.languages.all", "Todos los idiomas")}
+                          </em>
                         </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
+                        {langOpts.map((opt: any) => (
+                          <MenuItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  );
+                }}
               />
             </Grid>
 

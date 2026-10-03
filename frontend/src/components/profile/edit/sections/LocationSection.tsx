@@ -1069,7 +1069,7 @@ export default function LocationSection({
                     color={isDiscovery ? "inherit" : "primary"}
                     sx={{ color: isDiscovery ? "gold" : "inherit" }}
                   />{" "}
-                  Radio de exploración
+                  {t("profile.location.radiusLabel", "Radio de exploración")}
                 </Typography>
                 <Chip
                   label={`${radius} km`}
@@ -1091,27 +1091,53 @@ export default function LocationSection({
                 render={({ field }) => {
                   const val = field.value || 50;
 
-                  // Emotional Tone Logic (labels below are display-only via tone())
+                  // Emotional Tone Logic (labels resolve translated via tone())
                   let toneKey = "close";
-                  let toneLabel = "";
-                  let toneDescription = "";
+                  let toneLabel = t(
+                    "profile.location.tone.close.label",
+                    "Cercanos",
+                  );
+                  let toneDescription = t(
+                    "profile.location.tone.close.desc",
+                    "Tono íntimo, encuentros presenciales.",
+                  );
                   if (val <= 10) {
                     toneKey = "close";
-                    toneLabel = "Cercanos";
-                    toneDescription = "Tono íntimo, encuentros presenciales.";
+                    toneLabel = t(
+                      "profile.location.tone.close.label",
+                      "Cercanos",
+                    );
+                    toneDescription = t(
+                      "profile.location.tone.close.desc",
+                      "Tono íntimo, encuentros presenciales.",
+                    );
                   } else if (val <= 40) {
                     toneKey = "local";
-                    toneLabel = "Local";
-                    toneDescription = "Tono cotidiano, encuentros espontáneos.";
+                    toneLabel = t("profile.location.tone.local.label", "Local");
+                    toneDescription = t(
+                      "profile.location.tone.local.desc",
+                      "Tono cotidiano, encuentros espontáneos.",
+                    );
                   } else if (val <= 70) {
                     toneKey = "regional";
-                    toneLabel = "Regional";
-                    toneDescription =
-                      "Tono exploratorio, sugerencias culturales.";
+                    toneLabel = t(
+                      "profile.location.tone.regional.label",
+                      "Regional",
+                    );
+                    toneDescription = t(
+                      "profile.location.tone.regional.desc",
+                      "Tono exploratorio, sugerencias culturales.",
+                    );
                   } else {
                     toneKey = "adventure";
-                    toneLabel = "Aventura";
-                    toneDescription = "Tono curioso, progresión lenta.";
+                    toneLabel = t(
+                      "profile.location.tone.adventure.label",
+                      "Aventura",
+                    );
+                    toneDescription = t(
+                      "profile.location.tone.adventure.desc",
+                      "Tono curioso, progresión lenta.",
+                    );
                   }
 
                   // Achievement status calculation

@@ -50,6 +50,9 @@ TEXTS = [
     # badge4
     ("badge4", 9,
      "Políglota", "Polyglot", "Poliglota", "Polyglotte", "Polyglott", "Poliglotta", "Полиглот", "Flerspråkig", "Meertalig", "多语者", "बहुभाषी", "বহুভাষী", "ポリグロット", "다국어 구사자", "متعدد اللغات", "Mwingi lugha", "Mai yawan harsuna", "ብዙ ቋንቋ ያውቃል", "Polyglot", "Polyglot", "Maha reo"),
+    # all
+    ("all", 10,
+     "Todos los idiomas", "All languages", "Todos os idiomas", "Toutes les langues", "Alle Sprachen", "Tutte le lingue", "Все языки", "Alla språk", "Alle talen", "所有语言", "सभी भाषाएँ", "সমস্ত ভাষা", "すべての言語", "모든 언어", "جميع اللغات", "Lugha zote", "Duk harsuna", "ሁሉም ቋንቋዎች", "Lahat ng wika", "Semua bahasa", "Ngā reo katoa"),
 ]
 
 

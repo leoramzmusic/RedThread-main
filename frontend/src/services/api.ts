@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError } from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 interface CreateClientOptions {
   authPrefix?: string;
@@ -10,20 +10,27 @@ interface CreateClientOptions {
   redirectFrom?: string;
 }
 
-export function createApiClient(options: CreateClientOptions = {}): AxiosInstance {
+export function createApiClient(
+  options: CreateClientOptions = {},
+): AxiosInstance {
   const {
-    authPrefix = '/auth',
-    refreshPath = '/auth/refresh',
-    logoutRedirect = '/auth?expired=1',
-    authEndpoints = ['/auth/refresh', '/auth/logout', '/auth/login', '/auth/me'],
+    authPrefix = "/auth",
+    refreshPath = "/auth/refresh",
+    logoutRedirect = "/auth?expired=1",
+    authEndpoints = [
+      "/auth/refresh",
+      "/auth/logout",
+      "/auth/login",
+      "/auth/me",
+    ],
     redirectFrom,
   } = options;
 
   const client: AxiosInstance = axios.create({
     baseURL: API_URL,
     withCredentials: true,
-    headers: { 'Content-Type': 'application/json' },
-    timeout: 8000,
+    headers: { "Content-Type": "application/json" },
+    timeout: 25000,
   });
 
   let isRefreshing = false;
@@ -45,6 +52,12 @@ export function createApiClient(options: CreateClientOptions = {}): AxiosInstanc
     async (error: AxiosError) => {
       const originalRequest: any = error.config;
 
+      // Single retry for timeouts (slow GeoJSON / cold backend); skip if already retried
+      if (error.code === "ECONNABORTED" && !originalRequest._timeoutRetried) {
+        originalRequest._timeoutRetried = true;
+        return client(originalRequest);
+      }
+
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (authEndpoints.some((ep) => originalRequest.url?.includes(ep))) {
           return Promise.reject(error);
@@ -62,24 +75,30 @@ export function createApiClient(options: CreateClientOptions = {}): AxiosInstanc
         isRefreshing = true;
 
         try {
-          await axios.post(`${API_URL}${refreshPath}`, {}, { withCredentials: true });
+          await axios.post(
+            `${API_URL}${refreshPath}`,
+            {},
+            { withCredentials: true },
+          );
           processQueue(null);
           return client(originalRequest);
         } catch (refreshError) {
           processQueue(refreshError);
 
-          if (typeof window !== 'undefined') {
+          if (typeof window !== "undefined") {
             const currentPath = window.location.pathname;
             const isAuthPage = currentPath.startsWith(authPrefix);
-            const inRedirectScope = !redirectFrom || currentPath.startsWith(redirectFrom);
+            const inRedirectScope =
+              !redirectFrom || currentPath.startsWith(redirectFrom);
             if (!isAuthPage && inRedirectScope) {
               window.location.href = logoutRedirect;
             }
           }
 
-          const finalError = (refreshError && typeof refreshError === 'object')
-            ? { ...refreshError, _silent: true }
-            : { error: refreshError, _silent: true };
+          const finalError =
+            refreshError && typeof refreshError === "object"
+              ? { ...refreshError, _silent: true }
+              : { error: refreshError, _silent: true };
 
           return Promise.reject(finalError);
         } finally {
@@ -88,28 +107,28 @@ export function createApiClient(options: CreateClientOptions = {}): AxiosInstanc
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 
   return client;
 }
 
 // User API client
-console.log('API Client initialized with URL:', API_URL);
+console.log("API Client initialized with URL:", API_URL);
 const apiClient = createApiClient();
 export default apiClient;
 
 // Admin API client
 export const adminApiClient = createApiClient({
-  authPrefix: '/portal-redthread/auth',
-  refreshPath: '/portal-redthread/auth/refresh',
-  logoutRedirect: '/portal-redthread/auth/login',
-  redirectFrom: '/portal-redthread',
+  authPrefix: "/portal-redthread/auth",
+  refreshPath: "/portal-redthread/auth/refresh",
+  logoutRedirect: "/portal-redthread/auth/login",
+  redirectFrom: "/portal-redthread",
   authEndpoints: [
-    '/portal-redthread/auth/refresh',
-    '/portal-redthread/auth/logout',
-    '/portal-redthread/auth/login',
-    '/portal-redthread/auth/register',
-    '/portal-redthread/auth/me',
+    "/portal-redthread/auth/refresh",
+    "/portal-redthread/auth/logout",
+    "/portal-redthread/auth/login",
+    "/portal-redthread/auth/register",
+    "/portal-redthread/auth/me",
   ],
 });

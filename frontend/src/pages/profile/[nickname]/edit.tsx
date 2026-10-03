@@ -51,6 +51,13 @@ export default function ModifyProfilePage() {
           musicRes,
           professionalRes,
           additionalRes,
+          partnerRes,
+          cognitiveRes,
+          pronounsRes,
+          interestsRes,
+          goalsRes,
+          aboutRes,
+          locationRes,
         ] = await Promise.all([
           apiClient.get("/options/section/languages_section", {
             params: { lang: i18n.language },
@@ -74,6 +81,27 @@ export default function ModifyProfilePage() {
             params: { lang: i18n.language },
           }),
           apiClient.get("/options/section/profile_additional_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_partner_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_cognitive_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_pronouns_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_interests_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_goals_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_about_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_location_section", {
             params: { lang: i18n.language },
           }),
         ]);
@@ -102,45 +130,132 @@ export default function ModifyProfilePage() {
           "[i18n] Profile additional section response:",
           additionalRes.data,
         );
+        console.log(
+          "[i18n] API additionalRes height.title:",
+          additionalRes.data?.["height.title"],
+        );
+
+        // Normalize flat dotted keys (e.g. "height.title") to nested objects ({ height: { title } })
+        const nestDotted = (obj: Record<string, unknown>) => {
+          const out: Record<string, unknown> = {};
+          for (const [flat, val] of Object.entries(obj || {})) {
+            const parts = String(flat).split(".");
+            let cur: Record<string, unknown> = out as Record<string, unknown>;
+            for (let i = 0; i < parts.length; i++) {
+              const p = parts[i];
+              if (i === parts.length - 1) {
+                cur[p] = val;
+              } else {
+                cur[p] = cur[p] && typeof cur[p] === "object" ? cur[p] : {};
+                cur = cur[p] as Record<string, unknown>;
+              }
+            }
+          }
+          return out;
+        };
 
         // Merge into i18n resource store with proper nested structure
-        const nestedResources = {
-          profile: {
-            languages: langRes.data,
-            relationship: relRes.data,
-            control: controlRes.data,
-            health: healthRes.data,
-            personality: personalityRes.data,
-            music: musicRes.data,
-            professional: professionalRes.data,
-            additional: additionalRes.data,
+        // Note: goals + about keys (fields.goals, aboutMe, safety.title, etc.)
+        // merge flat under profile.* alongside the section subtrees.
+        const apiProfileResources = {
+          location: nestDotted(locationRes.data),
+          languages: nestDotted(langRes.data),
+          relationship: nestDotted(relRes.data),
+          control: nestDotted(controlRes.data),
+          health: nestDotted(healthRes.data),
+          personality: nestDotted(personalityRes.data),
+          music: nestDotted(musicRes.data),
+          professional: nestDotted(professionalRes.data),
+          additional: nestDotted(additionalRes.data),
+          cognitive: nestDotted(cognitiveRes.data),
+          pronouns: nestDotted(pronounsRes.data),
+          ...nestDotted(goalsRes.data),
+          ...nestDotted(aboutRes.data),
+        };
+        console.log(
+          "[i18n] nestDotted additional height.title:",
+          (apiProfileResources.additional as any)?.height?.title,
+        );
+
+        // Get existing bundle and deep-merge profile section so static keys (auth, dashboard, menu_*, etc.) are preserved
+        const existingBundle =
+          i18n.getResourceBundle(i18n.language, "common") || {};
+        const mergedBundle = JSON.parse(JSON.stringify(existingBundle)); // deep clone
+        mergedBundle.profile = {
+          ...(mergedBundle.profile || {}),
+          ...apiProfileResources,
+        };
+        // Partner keys live under profileSections.partner.* (used by PartnerManager)
+        const nestedPartner = nestDotted(partnerRes.data);
+        // Interests keys live under profileSections.interests.* (used by LifestyleInterests)
+        const nestedInterests = nestDotted(interestsRes.data);
+        mergedBundle.profileSections = {
+          ...(mergedBundle.profileSections || {}),
+          partner: {
+            ...((mergedBundle.profileSections || {}).partner || {}),
+            ...nestedPartner,
+          },
+          interests: {
+            ...((mergedBundle.profileSections || {}).interests || {}),
+            ...nestedInterests,
           },
         };
-        if (
-          Object.keys(langRes.data || {}).length > 0 ||
-          Object.keys(relRes.data || {}).length > 0 ||
-          Object.keys(controlRes.data || {}).length > 0 ||
-          Object.keys(healthRes.data || {}).length > 0 ||
-          Object.keys(personalityRes.data || {}).length > 0 ||
-          Object.keys(musicRes.data || {}).length > 0 ||
-          Object.keys(professionalRes.data || {}).length > 0 ||
-          Object.keys(additionalRes.data || {}).length > 0
-        ) {
+
+        const hasAnyProfileData =
+          Object.values(apiProfileResources).some(
+            (v) => v && Object.keys(v).length > 0,
+          ) ||
+          (partnerRes.data && Object.keys(partnerRes.data).length > 0);
+        if (hasAnyProfileData) {
           i18n.addResourceBundle(
             i18n.language,
             "common",
-            nestedResources,
+            mergedBundle,
             true,
-            false,
+            true,
           );
-          console.log("[i18n] Added resource bundle for:", i18n.language);
           console.log(
-            "[i18n] Available resources:",
-            i18n.getResourceBundle(i18n.language, "common"),
+            "[i18n] Merged profile resources into common for:",
+            i18n.language,
+          );
+          console.log(
+            "[i18n] after addResourceBundle height.title:",
+            (i18n.store as any)?.data?.[i18n.language]?.common?.profile
+              ?.additional?.height?.title,
+          );
+          const bundle = i18n.getResourceBundle(i18n.language, "common");
+          const profileKeys = bundle?.profile
+            ? Object.keys(bundle.profile).sort()
+            : [];
+          console.log("[i18n] profile.* keys after merge:", profileKeys);
+          // Force full reload so all useTranslation hooks pick up the new bundle
+          await i18n.reloadResources(i18n.language, "common");
+          console.log(
+            "[i18n] after reload hasResourceBundle:",
+            i18n.hasResourceBundle(i18n.language, "common"),
+          );
+          console.log(
+            "[i18n] after reload store keys:",
+            Object.keys(i18n.store?.data?.[i18n.language]?.common || {}),
+          );
+          console.log(
+            "[i18n] after reload profile.additional.height.title:",
+            i18n.getResourceBundle(i18n.language, "common")?.profile?.additional
+              ?.height?.title,
+          );
+          console.log(
+            "[i18n] language vs resolved:",
+            i18n.language,
+            "vs",
+            (i18n as any).resolvedLanguage,
+          );
+          console.log(
+            "[i18n] t() resolves to:",
+            i18n.t("profile.additional.height.title", { lng: i18n.language }),
           );
         } else {
           console.warn(
-            "[i18n] No resources returned for language:",
+            "[i18n] No profile resources returned for language:",
             i18n.language,
           );
         }
@@ -159,9 +274,15 @@ export default function ModifyProfilePage() {
 
   // Reset sectionTextsLoaded when language changes so effect re-runs
   useEffect(() => {
-    console.log("[i18n] Language changed, resetting sectionTextsLoaded");
-    setSectionTextsLoaded(false);
-  }, [i18n.language]);
+    const handler = () => {
+      console.log(
+        "[i18n] Language changed via event, resetting sectionTextsLoaded",
+      );
+      setSectionTextsLoaded(false);
+    };
+    i18n.on("languageChanged", handler);
+    return () => i18n.off("languageChanged", handler);
+  }, [i18n]);
 
   const [notification, setNotification] = useState({
     open: false,
@@ -279,6 +400,21 @@ export default function ModifyProfilePage() {
   };
 
   if (loading) {
+    return (
+      <Layout>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
+          <CircularProgress />
+        </Box>
+      </Layout>
+    );
+  }
+
+  if (!sectionTextsLoaded) {
     return (
       <Layout>
         <Box

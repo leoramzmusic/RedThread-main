@@ -82,6 +82,7 @@ export default function PronounsSection({
             >
               <IconButton
                 size="small"
+                component="span"
                 onClick={(e) => {
                   e.stopPropagation();
                   setPronounsInfoOpen(true);
