@@ -25,9 +25,12 @@ export function resolveInitialLang(
 export function readStoredLang(): string | null {
   if (typeof window === 'undefined') return null;
   try {
+    // preferred_language first: every in-app selector writes it, so it holds
+    // the freshest explicit choice. reth-lang is the older landing-only key
+    // and may be stale when writers disagree.
     return (
-      normalizeLang(window.localStorage.getItem(LANDING_LANG_STORAGE_KEY)) ||
-      normalizeLang(window.localStorage.getItem(PROFILE_LANG_STORAGE_KEY))
+      normalizeLang(window.localStorage.getItem(PROFILE_LANG_STORAGE_KEY)) ||
+      normalizeLang(window.localStorage.getItem(LANDING_LANG_STORAGE_KEY))
     );
   } catch {
     return null;

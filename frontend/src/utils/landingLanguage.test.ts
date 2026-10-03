@@ -54,16 +54,16 @@ describe('readStoredLang / persistLangLocal', () => {
     expect(readStoredLang()).toBe('ja');
   });
 
-  it('prefers reth-lang over preferred_language on read', () => {
+  it('prefers preferred_language over reth-lang on read', () => {
     window.localStorage.setItem(LANDING_LANG_STORAGE_KEY, 'fr');
     window.localStorage.setItem(PROFILE_LANG_STORAGE_KEY, 'de');
-    expect(readStoredLang()).toBe('fr');
+    expect(readStoredLang()).toBe('de');
   });
 
-  it('reads preferred_language when reth-lang is absent or invalid', () => {
-    window.localStorage.setItem(PROFILE_LANG_STORAGE_KEY, 'it');
+  it('reads reth-lang when preferred_language is absent or invalid', () => {
+    window.localStorage.setItem(LANDING_LANG_STORAGE_KEY, 'it');
     expect(readStoredLang()).toBe('it');
-    window.localStorage.setItem(LANDING_LANG_STORAGE_KEY, 'xx');
+    window.localStorage.setItem(PROFILE_LANG_STORAGE_KEY, 'xx');
     expect(readStoredLang()).toBe('it');
   });
 

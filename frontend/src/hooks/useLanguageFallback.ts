@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import apiClient, { adminApiClient } from '../services/api';
 import { getEnabledLanguages } from '../services/languageService';
+import { persistLangLocal } from '../utils/landingLanguage';
 
 export function useLanguageFallback(isAdmin = false) {
   const router = useRouter();
@@ -19,8 +20,7 @@ export function useLanguageFallback(isAdmin = false) {
           try {
             await client.patch(path, { preferred_language: 'en' });
           } catch {}
-          localStorage.setItem('preferred_language', 'en');
-          document.cookie = `NEXT_LOCALE=en; path=/; max-age=31536000; SameSite=Lax`;
+          persistLangLocal('en');
           const pathWithoutLocale = (router.asPath || '/').replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
           window.location.href = `/en${pathWithoutLocale}`;
         }

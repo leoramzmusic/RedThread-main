@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { GLASS_ICON_BTN_SX } from './glassIconStyles';
 import { getEnabledLanguages } from '../../services/languageService';
 import apiClient from '../../services/api';
+import { persistLangLocal } from '../../utils/landingLanguage';
 import { useSnackbar } from 'notistack';
 
 const LANGUAGES = [
@@ -37,10 +38,6 @@ const globeSpin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-function setLocaleCookie(code: string) {
-    document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; SameSite=Lax`;
-}
-
 function redirectToLocale(code: string, pathWithoutLocale: string) {
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload required so the NEXT_LOCALE cookie and i18n middleware re-resolve the locale
     window.location.href = `/${code}${pathWithoutLocale}`;
@@ -69,8 +66,7 @@ export default function LanguageSelector({ showContinuityHint, onLanguageChange 
     const handleLanguageChange = async (code: string) => {
         const enabled = await getEnabledLanguages();
         if (!enabled.includes(code)) return;
-        localStorage.setItem('preferred_language', code);
-        setLocaleCookie(code);
+        persistLangLocal(code);
         try {
             if (onLanguageChange) {
                 await onLanguageChange(code);

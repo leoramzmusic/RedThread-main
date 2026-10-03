@@ -45,6 +45,7 @@ import NavLink from './NavLink';
 import MorphToggleIcon from '../motion/MorphToggleIcon';
 import { isIconStyleId, IconStyleId } from '../motion/iconStyles';
 import { supportedLanguages } from '../../config/languages';
+import { persistLangLocal } from '../../utils/landingLanguage';
 
 const NotificationPanel = lazy(() => import('../notifications/NotificationPanel'));
 const Footer = lazy(() => import('./Footer'));
@@ -210,7 +211,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleLanguageSelect = async (newLang: string) => {
     handleCloseLangMenu();
-    localStorage.setItem('preferred_language', newLang);
+    persistLangLocal(newLang);
     try {
       await apiClient.patch('/auth/me', { preferred_language: newLang });
     } catch (e: any) {
@@ -220,7 +221,7 @@ export default function Layout({ children }: LayoutProps) {
       }
       if (e?.response?.status !== 401) console.warn('Could not save preferred language:', e);
     }
-    document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000; SameSite=Lax`;
+    persistLangLocal(newLang);
     const currentPath = router.asPath;
     const currentLocale = router.locale || 'es';
     const defaultLocale = router.defaultLocale || 'es';

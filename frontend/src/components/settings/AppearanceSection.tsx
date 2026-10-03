@@ -21,6 +21,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { alpha, useTheme } from '@mui/material/styles';
 import { useAppTheme } from '../../context/ThemeContext';
+import { persistLangLocal } from '../../utils/landingLanguage';
 
 interface AppearanceSectionProps {
     settings: any;
@@ -144,8 +145,8 @@ export default function AppearanceSection({
             // Save settings first with the explicit new language to avoid race conditions
             await onSave(updatedSettings);
 
-            // Set cookie for next-i18next to remember locale
-            document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`;
+            // Persist to both local keys + cookie for next-i18next to remember locale
+            persistLangLocal(newLang);
 
             // Trigger router to change locale
             // Using window.location.href to force a full reload and ensure translations are re-fetched
