@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { setCredentials, updateUserAvatar, setInitialized } from '../../store/slices/authSlice';
 import apiClient from '../../services/api';
+import { normalizeLang, persistLangLocal, readStoredLang } from '../../utils/landingLanguage';
 import { useAppTheme } from '../../context/ThemeContext';
 import { RootState } from '../../store/store';
 import { Box } from '@mui/material';
@@ -77,7 +78,18 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                 font_size: settingsResponse.data.font_size,
               });
 
-              if (settingsResponse.data.preferred_language) {
+              const dbPrefLang = normalizeLang(settingsResponse.data.preferred_language);
+              if (dbPrefLang) {
+                // Explicit local choice (e.g. just picked on landing) wins over the
+                // stored profile language; sync it back to the profile in background.
+                const localLang = readStoredLang();
+                const winner = localLang && localLang !== dbPrefLang ? localLang : dbPrefLang;
+                if (localLang && localLang !== dbPrefLang) {
+                  persistLangLocal(localLang);
+                  apiClient.patch('/auth/me', { preferred_language: localLang }).catch((e) =>
+                    console.warn('AuthInitializer: could not sync language to profile', e),
+                  );
+                }
                 const currentLocale = router.locale || router.defaultLocale || 'es';
                 const defaultLocale = router.defaultLocale || 'en';
                 const configuredLocales = (router.locales as string[] | undefined) ?? [];
@@ -88,16 +100,16 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
                 const pathWithoutLocale = window.location.pathname.replace(prefixRe, '') || '/';
 
                 const targetPrefix =
-                  settingsResponse.data.preferred_language === defaultLocale
+                  winner === defaultLocale
                     ? ''
-                    : `/${settingsResponse.data.preferred_language}`;
+                    : `/${winner}`;
                 const targetPath = `${targetPrefix}${pathWithoutLocale}${window.location.search}${window.location.hash}`;
 
                 if (
-                  settingsResponse.data.preferred_language !== currentLocale ||
+                  winner !== currentLocale ||
                   targetPath !== window.location.pathname + window.location.search + window.location.hash
                 ) {
-                  document.cookie = `NEXT_LOCALE=${settingsResponse.data.preferred_language}; path=/; max-age=31536000; SameSite=Lax`;
+                  document.cookie = `NEXT_LOCALE=${winner}; path=/; max-age=31536000; SameSite=Lax`;
                   window.location.href = targetPath;
                   return;
                 }

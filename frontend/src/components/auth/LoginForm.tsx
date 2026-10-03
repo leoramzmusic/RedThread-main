@@ -74,22 +74,32 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}
             // Fetch user details & prefs - cookies are sent automatically
             const userResponse = await apiClient.get('/auth/me');
 
-            // Language sync: DB vs local (continuity) — writes reth-lang + preferred_language + NEXT_LOCALE cookie
+            // Language sync: explicit local choice wins over DB; DB is patched to match.
+            // Writes reth-lang + preferred_language + NEXT_LOCALE cookie.
             try {
               const dbLang = normalizeLang(userResponse.data.preferred_language) || 'en';
               const localLang = normalizeLang(typeof window !== 'undefined' ? localStorage.getItem(PROFILE_LANG_STORAGE_KEY) : null);
-              if (dbLang !== router.locale) {
+              const needsSync = dbLang !== router.locale || (!!localLang && localLang !== router.locale);
+              if (needsSync) {
                 const pathWithoutLocale = (router.asPath || '/').replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
-                const localWins = !!localLang && localLang !== dbLang && localLang !== 'en';
+                const localWins = !!localLang && localLang !== dbLang;
                 const targetLang = localWins ? (localLang as string) : dbLang;
                 persistLangLocal(targetLang);
                 if (localWins) {
-                  await apiClient.patch('/auth/me', { preferred_language: targetLang });
+                  try {
+                    await apiClient.patch('/auth/me', { preferred_language: targetLang });
+                  } catch (patchErr) {
+                    console.warn('LoginForm: could not sync language to profile', patchErr);
+                  }
                 }
-                window.location.href = `/${targetLang}${pathWithoutLocale}`;
-                return;
+                if (targetLang !== router.locale) {
+                  window.location.href = `/${targetLang}${pathWithoutLocale}`;
+                  return;
+                }
               }
-            } catch {}
+            } catch (err) {
+              console.warn('LoginForm: language sync failed', err);
+            }
 
             // Load preferences from DB (this will now also save to localStorage)
             try {
