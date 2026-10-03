@@ -1195,13 +1195,14 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         <Box
           className="floating-actions"
           sx={{
-            right: { xs: 16, sm: `${offsetRight}px` },
+            right: { xs: '1rem', md: `${offsetRight}px` },
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
+            flexDirection: { xs: 'column', md: 'row' },
             alignItems: 'center',
-            gap: '12px',
+            justifyContent: 'center',
+            gap: { xs: 2, md: 3 },
             position: 'fixed',
-            bottom: '24px',
+            bottom: { xs: '2rem', md: '3rem' },
             zIndex: 1000,
           }}
         >
@@ -1217,7 +1218,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
               color: 'error.contrastText',
               boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
               '&:hover': { bgcolor: 'error.dark' },
-              order: { xs: 3, sm: 1 },
+              order: { xs: 3, md: 1 },
             }}
           >
             <CloseIcon />
@@ -1234,7 +1235,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
               color: 'white',
               boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
               '&:hover': { bgcolor: 'grey.700' },
-              order: { xs: 1, sm: 2 },
+              order: { xs: 1, md: 2 },
             }}
           >
             <VisibilityIcon />
@@ -1246,13 +1247,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             color="primary"
             disabled={saving}
             sx={{
-              width: { xs: 56, sm: 64 },
-              height: { xs: 56, sm: 64 },
+              width: { xs: 56, md: 64 },
+              height: { xs: 56, md: 64 },
               bgcolor: 'primary.main',
               color: 'primary.contrastText',
               boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
               '&:hover': { bgcolor: 'primary.dark' },
-              order: { xs: 2, sm: 3 },
+              order: { xs: 2, md: 3 },
             }}
           >
             {saving ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
