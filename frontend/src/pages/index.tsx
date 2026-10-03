@@ -116,8 +116,18 @@ export default function Home() {
       const persisted = persistLangLocal(lang);
       if (persisted && isAuthenticated) {
         apiClient
-          .patch("/auth/me", { preferred_language: persisted })
+          .patch('/auth/me', { preferred_language: persisted })
           .catch(() => {});
+      }
+      // Switch the route locale too: localeDetection is off, so the locale
+      // comes only from the URL prefix. Without this, router.push("/auth/login")
+      // keeps the old locale and SSR pages render in the wrong language.
+      // Full reload so cookie + route + SSR translations all agree.
+      if (persisted && persisted !== router.locale) {
+        const pathWithoutLocale =
+          (router.asPath || '/').replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+        window.location.href = `/${persisted}${pathWithoutLocale}`;
+        return;
       }
     }
     setTransitionEnabled(false);
