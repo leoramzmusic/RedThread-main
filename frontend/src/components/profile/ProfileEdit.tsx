@@ -1192,53 +1192,72 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Dialog>
 
       {showSticky && (
-        <div
+        <Box
           className="floating-actions"
-          style={{
-            right: `${offsetRight}px`,
+          sx={{
+            right: { xs: 16, sm: `${offsetRight}px` },
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center',
             gap: '12px',
             position: 'fixed',
             bottom: '24px',
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
-          <button
-            className="btn-preview"
-            onClick={handlePreview}
-            aria-label={t('profile.preview', 'Vista Previa')}
-            style={{
-              backgroundColor: '#757575',
-              borderRadius: '50%',
-              width: '56px',
-              height: '56px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'white'
-            }}
-          >
-            <VisibilityIcon />
-          </button>
-          <button
-            className="btn-save"
-            onClick={handleSubmit(onSubmit)}
-            aria-label={t('common.save', 'Guardar')}
-          >
-            {saving ? <CircularProgress size={24} color="inherit" /> : '💾'}
-          </button>
-          <button
+          <IconButton
             className="btn-cancel"
             onClick={onBack}
             aria-label={t('common.cancel', 'Cancelar')}
+            color="error"
+            sx={{
+              width: 56,
+              height: 56,
+              bgcolor: 'error.main',
+              color: 'error.contrastText',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              '&:hover': { bgcolor: 'error.dark' },
+              order: { xs: 3, sm: 1 },
+            }}
           >
-            ✖
-          </button>
-        </div>
+            <CloseIcon />
+          </IconButton>
+          <IconButton
+            className="btn-preview"
+            onClick={handlePreview}
+            aria-label={t('profile.preview', 'Vista Previa')}
+            color="inherit"
+            sx={{
+              width: 56,
+              height: 56,
+              bgcolor: 'grey.600',
+              color: 'white',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              '&:hover': { bgcolor: 'grey.700' },
+              order: { xs: 1, sm: 2 },
+            }}
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            className="btn-save"
+            onClick={handleSubmit(onSubmit)}
+            aria-label={t('common.save', 'Guardar')}
+            color="primary"
+            disabled={saving}
+            sx={{
+              width: { xs: 56, sm: 64 },
+              height: { xs: 56, sm: 64 },
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+              '&:hover': { bgcolor: 'primary.dark' },
+              order: { xs: 2, sm: 3 },
+            }}
+          >
+            {saving ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
+          </IconButton>
+        </Box>
       )}
 
       {/* Info Drawers */}
