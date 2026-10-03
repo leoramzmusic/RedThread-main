@@ -11,6 +11,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "next-i18next";
@@ -18,6 +20,7 @@ import {
   Edit as EditIcon,
   VerifiedUser as VerifiedUserIcon,
   Info,
+  InfoOutlined,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import IdentityVerificationContainer from "../../IdentityVerificationContainer";
@@ -40,6 +43,7 @@ interface EditBasicInfoProps {
   setNicknameDialogOpen: (open: boolean) => void;
   handleVerifyPhone: () => void;
   handleChangePhoneRequest: () => void;
+  setIdentityInfoOpen?: (open: boolean) => void;
 }
 
 export default function EditBasicInfo({
@@ -58,6 +62,7 @@ export default function EditBasicInfo({
   setNicknameDialogOpen,
   handleVerifyPhone,
   handleChangePhoneRequest,
+  setIdentityInfoOpen = () => {},
 }: EditBasicInfoProps) {
   const { t } = useTranslation("common");
 
@@ -75,11 +80,33 @@ export default function EditBasicInfo({
         }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
-          <Box display="flex" alignItems="center" gap={1}>
-            <Info color="action" />
-            <Typography variant="h6">
-              {t("profile.sections.identity.title", "Identidad")}
-            </Typography>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
+            pr={2}
+          >
+            <Box display="flex" alignItems="center" gap={1}>
+              <Info color="action" />
+              <Typography variant="h6">
+                {t("profile.sections.identity.title", "Identidad")}
+              </Typography>
+            </Box>
+            <Tooltip
+              title={t("profile.identity.infoModal.title", "¿Por qué pedimos tu identidad?")}
+            >
+              <IconButton
+                size="small"
+                component="span"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIdentityInfoOpen(true);
+                }}
+              >
+                <InfoOutlined fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>

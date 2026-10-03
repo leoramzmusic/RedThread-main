@@ -10,6 +10,8 @@ interface InfoDrawersProps {
   setPronounsInfoOpen: (open: boolean) => void;
   locationInfoOpen: boolean;
   setLocationInfoOpen: (open: boolean) => void;
+  identityInfoOpen: boolean;
+  setIdentityInfoOpen: (open: boolean) => void;
   isDragging: boolean;
   dragOffsetY: number;
   handleDragStart: (e: React.MouseEvent | React.TouchEvent) => void;
@@ -24,6 +26,8 @@ export default function InfoDrawers({
   setPronounsInfoOpen,
   locationInfoOpen,
   setLocationInfoOpen,
+  identityInfoOpen,
+  setIdentityInfoOpen,
   isDragging,
   dragOffsetY,
   handleDragStart,
@@ -555,6 +559,113 @@ export default function InfoDrawers({
                     }}
                   >
                     {t("profile.location.infoModal.button", "Entendido")}
+                  </Button>
+                </Box>
+              </Paper>
+            </Container>
+          </Box>
+        </Box>
+      )}
+
+      {/* Identity Info Drawer */}
+      {identityInfoOpen && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1300,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+            pointerEvents: "none",
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "md",
+              display: "flex",
+              justifyContent: "center",
+              pl: { md: "260px", xs: 0 },
+              boxSizing: "border-box",
+            }}
+          >
+            <Container maxWidth="md" sx={{ p: "0 !important", pointerEvents: "auto" }}>
+              <Paper
+                elevation={24}
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  bgcolor: "background.paper",
+                  color: "text.primary",
+                  borderRadius: "16px 16px 0 0",
+                  p: 0,
+                  pb: 4,
+                  backgroundImage: "none",
+                  borderTop: 1,
+                  borderColor: "divider",
+                  transform: "translateY(" + (isDragging ? dragOffsetY : 0) + "px)",
+                  transition: isDragging ? "none" : "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
+                  overflow: "hidden",
+                  cursor: isDragging ? "grabbing" : "auto",
+                  animation: "slideUp 0.3s ease-out",
+                  "@keyframes slideUp": {
+                    from: { transform: "translateY(100%)" },
+                    to: { transform: "translateY(0)" },
+                  },
+                }}
+              >
+                <Box
+                  onMouseDown={handleDragStart}
+                  onTouchStart={handleDragStart}
+                  sx={{
+                    width: "100%",
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "grab",
+                    touchAction: "none",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 36,
+                      height: 4,
+                      bgcolor: "action.disabled",
+                      borderRadius: 2,
+                    }}
+                  />
+                </Box>
+
+                <Box px={3} pb={2} textAlign="center">
+                  <Typography variant="subtitle1" fontWeight={700} sx={{ color: "text.primary", mb: 2 }}>
+                    {t("profile.identity.infoModal.title", "¿Por qué pedimos tu identidad?")}
+                  </Typography>
+
+                  <Box display="flex" gap={1} justifyContent="center" mb={2}>
+                    <Typography variant="body2" sx={{ color: "text.secondary", maxWidth: 400, mx: "auto" }}>
+                      {t("profile.identity.infoModal.text", "Tu identidad nos ayuda a verificar tu perfil y mantener la seguridad de la comunidad. Nunca compartiremos tus datos sin tu consentimiento.")}
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIdentityInfoOpen(false)}
+                    sx={{
+                      maxWidth: 300,
+                      fontWeight: "bold",
+                      textTransform: "none",
+                      borderRadius: 2,
+                      py: 1.2,
+                    }}
+                  >
+                    {t("profile.identity.infoModal.button", "Entendido")}
                   </Button>
                 </Box>
               </Paper>

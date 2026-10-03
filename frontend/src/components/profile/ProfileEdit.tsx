@@ -104,6 +104,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [goalsInfoOpen, setGoalsInfoOpen] = useState(false);
   const [pronounsInfoOpen, setPronounsInfoOpen] = useState(false);
   const [locationInfoOpen, setLocationInfoOpen] = useState(false);
+  const [identityInfoOpen, setIdentityInfoOpen] = useState(false);
 
   // Drawer drag logic
   const [dragOffsetY, setDragOffsetY] = useState(0);
@@ -628,6 +629,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           setNicknameDialogOpen={setNicknameDialogOpen}
           handleVerifyPhone={handleVerifyPhone}
           handleChangePhoneRequest={handleChangePhoneRequest}
+          setIdentityInfoOpen={setIdentityInfoOpen}
         />
       </Grid>
     ),
@@ -1127,6 +1129,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         setPronounsInfoOpen={setPronounsInfoOpen}
         locationInfoOpen={locationInfoOpen}
         setLocationInfoOpen={setLocationInfoOpen}
+        identityInfoOpen={identityInfoOpen}
+        setIdentityInfoOpen={setIdentityInfoOpen}
         isDragging={isDragging}
         dragOffsetY={dragOffsetY}
         handleDragStart={handleDragStart}
