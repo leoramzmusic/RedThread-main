@@ -1195,14 +1195,14 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         <Box
           className="floating-actions"
           sx={{
-            right: { xs: '1rem', md: `${offsetRight}px` },
+            right: { xs: '0.75rem', md: `${offsetRight}px` },
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: { xs: 2, md: 3 },
+            gap: { xs: 1, md: 1.5 },
             position: 'fixed',
-            bottom: { xs: '2rem', md: '3rem' },
+            bottom: { xs: '1rem', md: '3rem' },
             zIndex: 1000,
           }}
         >
@@ -1212,13 +1212,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             aria-label={t('common.cancel', 'Cancelar')}
             color="error"
             sx={{
-              width: 56,
-              height: 56,
+              width: { xs: 48, md: 56 },
+              height: { xs: 48, md: 56 },
               bgcolor: 'error.main',
               color: 'error.contrastText',
               boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
               '&:hover': { bgcolor: 'error.dark' },
-              order: { xs: 3, md: 1 },
+              order: 3,
             }}
           >
             <CloseIcon />
@@ -1229,13 +1229,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             aria-label={t('profile.preview', 'Vista Previa')}
             color="inherit"
             sx={{
-              width: 56,
-              height: 56,
+              width: { xs: 48, md: 56 },
+              height: { xs: 48, md: 56 },
               bgcolor: 'grey.600',
               color: 'white',
               boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
               '&:hover': { bgcolor: 'grey.700' },
-              order: { xs: 1, md: 2 },
+              order: 1,
             }}
           >
             <VisibilityIcon />
@@ -1247,13 +1247,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             color="primary"
             disabled={saving}
             sx={{
-              width: { xs: 56, md: 64 },
-              height: { xs: 56, md: 64 },
+              width: { xs: 48, md: 64 },
+              height: { xs: 48, md: 64 },
               bgcolor: 'primary.main',
               color: 'primary.contrastText',
               boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
               '&:hover': { bgcolor: 'primary.dark' },
-              order: { xs: 2, md: 3 },
+              order: 2,
             }}
           >
             {saving ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
