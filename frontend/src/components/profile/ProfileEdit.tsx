@@ -9,6 +9,7 @@ import {
   Close as CloseIcon,
   GroupAdd as GroupAddIcon,
   ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
   Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import {
@@ -223,6 +224,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [verificationCodeDialogOpen, setVerificationCodeDialogOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [showSticky, setShowSticky] = useState(false);
+  const [showActions, setShowActions] = useState(true);
   const [offsetRight, setOffsetRight] = useState(24);
   const [unsavedPreviewDialogOpen, setUnsavedPreviewDialogOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -1207,6 +1209,25 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           }}
         >
           <IconButton
+            className="btn-toggle-actions"
+            onClick={() => setShowActions((v) => !v)}
+            aria-label={t('common.toggleActions', 'Mostrar / ocultar acciones')}
+            color="inherit"
+            sx={{
+              width: { xs: 40, md: 44 },
+              height: { xs: 40, md: 44 },
+              bgcolor: 'grey.700',
+              color: 'white',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              '&:hover': { bgcolor: 'grey.800' },
+              order: 0,
+            }}
+          >
+            {showActions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+          {showActions && (
+          <>
+          <IconButton
             className="btn-cancel"
             onClick={onBack}
             aria-label={t('common.cancel', 'Cancelar')}
@@ -1258,6 +1279,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           >
             {saving ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
           </IconButton>
+          </>
+          )}
         </Box>
       )}
 
