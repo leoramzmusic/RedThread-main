@@ -59,6 +59,7 @@ export default function ModifyProfilePage() {
           aboutRes,
           locationRes,
           identityRes,
+          promptsRes,
         ] = await Promise.all([
           apiClient.get("/options/section/languages_section", {
             params: { lang: i18n.language },
@@ -106,6 +107,9 @@ export default function ModifyProfilePage() {
             params: { lang: i18n.language },
           }),
           apiClient.get("/options/section/profile_identity_section", {
+            params: { lang: i18n.language },
+          }),
+          apiClient.get("/options/section/profile_prompts_section", {
             params: { lang: i18n.language },
           }),
         ]);
@@ -176,6 +180,7 @@ export default function ModifyProfilePage() {
             ...nestDotted(goalsRes.data),
             ...nestDotted(aboutRes.data),
             ...nestDotted(identityRes.data),
+            prompts: nestDotted(promptsRes.data),
           };
         console.log(
           "[i18n] nestDotted additional height.title:",

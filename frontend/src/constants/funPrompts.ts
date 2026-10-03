@@ -58,7 +58,34 @@ export const FUN_PROMPTS: FunPrompt[] = [
   { es: "Mi comida que nunca rechazo es…", en: "My food I never refuse is…", fr: "Mon plat que je ne refuse jamais est…", pt: "Minha comida que nunca recuso é…" },
 ];
 
+// Stable slugs in FUN_PROMPTS order; display text resolves via
+// profile.prompts.{slug} from the backend (Spanish fallback = FUN_PROMPTS es).
+export const PROMPT_SLUGS: string[] = [
+  'want_someone', 'curious_thing', 'fav_playlist', 'best_trip', 'fav_food',
+  'always_laugh', 'last_book', 'fav_series', 'fav_sport', 'happiest_place',
+  'hidden_talent', 'best_advice_got', 'fav_drink', 'lang_to_learn', 'funniest_memory',
+  'best_concert', 'fav_movie', 'hobby_never_quit', 'collect', 'zodiac',
+  'top_emoji', 'comfort_food', 'best_gift', 'fav_season', 'place_to_visit',
+  'song_never_tired', 'best_weekend', 'fav_videogame', 'animal_identify', 'ideal_breakfast',
+  'best_language', 'fav_app', 'best_childhood', 'fav_dessert', 'sport_to_try',
+  'movie_recommend', 'place_to_live', 'best_dish_cook', 'best_day', 'cheers_up_song',
+  'habit_never_change', 'series_rewatch', 'disconnect_place', 'drink_always', 'advice_to_give',
+  'romantic_memory', 'hobby_to_learn', 'dance_song', 'inspiring_place', 'food_never_refuse',
+];
+
+// Category per slug for grouped picker UI.
+export const PROMPT_CATEGORIES: Record<string, 'musica' | 'viajes' | 'comida' | 'recuerdos' | 'hobbies'> = {
+  fav_playlist: 'musica', song_never_tired: 'musica', cheers_up_song: 'musica', dance_song: 'musica',
+  best_trip: 'viajes', place_to_visit: 'viajes', place_to_live: 'viajes', inspiring_place: 'viajes', disconnect_place: 'viajes',
+  fav_food: 'comida', fav_drink: 'comida', comfort_food: 'comida', ideal_breakfast: 'comida', fav_dessert: 'comida', best_dish_cook: 'comida', food_never_refuse: 'comida', drink_always: 'comida',
+  funniest_memory: 'recuerdos', best_concert: 'recuerdos', best_day: 'recuerdos', best_childhood: 'recuerdos', romantic_memory: 'recuerdos', best_gift: 'recuerdos', best_advice_got: 'recuerdos', advice_to_give: 'recuerdos',
+};
+
+export const promptCategoryOf = (slug: string): 'musica' | 'viajes' | 'comida' | 'recuerdos' | 'hobbies' =>
+  PROMPT_CATEGORIES[slug] ?? 'hobbies';
+
 // Helper function to get prompts in the current language
+// (legacy 4-language local list; prefer backend profile.prompts.* keys).
 export const getPromptsForLanguage = (locale: string): string[] => {
   const lang = locale.split('-')[0] as 'es' | 'en' | 'fr' | 'pt';
   return FUN_PROMPTS.map(prompt => prompt[lang] || prompt.en);

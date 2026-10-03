@@ -33,6 +33,7 @@ import {
   Snackbar,
   Alert,
   Stack,
+  Chip,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -48,7 +49,7 @@ import { useTranslation } from 'next-i18next';
 import apiClient from '../../services/api';
 import { PROFILE_SECTION_REGISTRY } from './sections/registry';
 import type { ProfileSectionKey } from './sections/registry';
-import { getPromptsForLanguage } from '../../constants/funPrompts';
+import { getPromptsForLanguage, PROMPT_SLUGS, promptCategoryOf } from '../../constants/funPrompts';
 
 // Section Components
 import PhotosSection from './edit/sections/PhotosSection';
@@ -175,6 +176,17 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [smartPhotos, setSmartPhotos] = useState(!!profile?.smart_photos_enabled);
   const [prompts, setPrompts] = useState<PromptItem[]>(profile?.prompts || []);
   const [promptSelectorOpen, setPromptSelectorOpen] = useState(false);
+  const [promptSearch, setPromptSearch] = useState('');
+  const [promptCat, setPromptCat] = useState<string>('all');
+  const [stagedPrompts, setStagedPrompts] = useState<string[]>([]);
+  // Reset picker staging whenever the dialog opens (sections open it directly).
+  useEffect(() => {
+    if (promptSelectorOpen) {
+      setStagedPrompts([]);
+      setPromptSearch('');
+      setPromptCat('all');
+    }
+  }, [promptSelectorOpen]);
   const [citySearch, setCitySearch] = useState(profile?.city || '');
 
   // Verification states
@@ -344,7 +356,20 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   };
 
   const handleAddPrompt = (promptText: string) => {
-    setPrompts((prev) => [...prev, { question: promptText, answer: '' }]);
+    setPrompts((prev) => {
+      if (prev.length >= 5 || prev.some((p) => p.question === promptText)) return prev;
+      return [...prev, { question: promptText, answer: '' }];
+    });
+    setPromptSelectorOpen(false);
+  };
+  const handleSaveStagedPrompts = () => {
+    setPrompts((prev) => {
+      const room = Math.max(0, 5 - prev.length);
+      const fresh = stagedPrompts
+        .filter((q) => !prev.some((p) => p.question === q))
+        .slice(0, room);
+      return [...prev, ...fresh.map((question) => ({ question, answer: '' }))];
+    });
     setPromptSelectorOpen(false);
   };
 
@@ -565,11 +590,32 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     }
   };
 
-  // Get available prompts for selector
-  const allPrompts = getPromptsForLanguage(i18n.language || 'es');
-  const availablePrompts = allPrompts.filter(
-    (p) => !prompts.some((selected) => selected.question === p)
+  // Prompt picker data: stable slugs, display text via i18n bundle (backend),
+  // Spanish source list as fallback. Stored values stay as display text (no migration).
+  const esPrompts = getPromptsForLanguage('es');
+  const promptText = (slug: string, idx: number) =>
+    t(`profile.prompts.${slug}`, esPrompts[idx] ?? slug);
+  const selectedQuestions = prompts.map((p) => p.question);
+  const promptCandidates = PROMPT_SLUGS.map((slug, idx) => ({
+    slug,
+    text: promptText(slug, idx),
+  })).filter(
+    ({ text }) => !selectedQuestions.includes(text)
   );
+  const promptVisible = promptCandidates.filter(({ slug, text }) => {
+    const matchCat = promptCat === 'all' || promptCategoryOf(slug) === promptCat;
+    const matchSearch =
+      !promptSearch.trim() ||
+      text.toLowerCase().includes(promptSearch.trim().toLowerCase());
+    return matchCat && matchSearch;
+  });
+  const toggleStagedPrompt = (text: string) => {
+    setStagedPrompts((prev) => {
+      if (prev.includes(text)) return prev.filter((p) => p !== text);
+      if (prompts.length + prev.length >= 5) return prev;
+      return [...prev, text];
+    });
+  };
 
   // Suggestion navigation
   // sectionId is a logical section key (also used by DiscoveryRefinementCard);
@@ -1033,40 +1079,90 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Dialog>
 
       {/* Prompt Selector Dialog */}
-      <Dialog open={promptSelectorOpen} onClose={() => setPromptSelectorOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={promptSelectorOpen}
+        onClose={() => setPromptSelectorOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        scroll="paper"
+        PaperProps={{ sx: { m: { xs: 1, sm: 2 }, maxHeight: '70vh' } }}
+      >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Button
+          <IconButton
             onClick={() => setPromptSelectorOpen(false)}
             size="small"
             color="error"
-            startIcon={<CloseIcon />}
-          />
-          Selecciona una frase divertida
+            aria-label={t('profile.prompts.ui.cancel', 'Cancelar')}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ flex: 1 }}>
+            {t('profile.prompts.ui.title', 'Selecciona una frase divertida')}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {t('profile.prompts.ui.counter', '{{n}}/5 seleccionadas', { n: prompts.length + stagedPrompts.length })}
+          </Typography>
         </DialogTitle>
-        <DialogContent>
-          <Stack spacing={1} sx={{ mt: 1 }}>
-            {availablePrompts.map((prompt, index) => (
-              <Button
-                key={index}
-                variant="contained"
-                onClick={() => handleAddPrompt(prompt)}
-                sx={{
-                  justifyContent: 'flex-start',
-                  textAlign: 'left',
-                  boxShadow: 'none',
-                  bgcolor: 'action.hover', // Solid light background
-                  color: 'text.primary',
-                  '&:hover': {
-                    bgcolor: 'action.selected',
-                    boxShadow: 'none'
-                  }
-                }}
-              >
-                {prompt}
-              </Button>
+        <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <TextField
+            fullWidth
+            size="small"
+            value={promptSearch}
+            onChange={(e) => setPromptSearch(e.target.value)}
+            placeholder={t('profile.prompts.ui.search', 'Buscar frases...')}
+          />
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            {(['all', 'musica', 'viajes', 'comida', 'recuerdos', 'hobbies'] as const).map((cat) => (
+              <Chip
+                key={cat}
+                label={cat === 'all' ? t('profile.prompts.ui.all', 'Todas') : t(`profile.prompts.cat.${cat}`, cat)}
+                clickable
+                color={promptCat === cat ? 'primary' : 'default'}
+                variant={promptCat === cat ? 'filled' : 'outlined'}
+                onClick={() => setPromptCat(cat)}
+                size="small"
+              />
             ))}
           </Stack>
+          <Stack spacing={1} sx={{ mt: 0.5, overflowY: 'auto' }}>
+            {promptVisible.length === 0 && (
+              <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 2 }}>
+                {t('profile.prompts.ui.noresults', 'Sin resultados para tu búsqueda.')}
+              </Typography>
+            )}
+            {promptVisible.map(({ slug, text }) => {
+              const staged = stagedPrompts.includes(text);
+              return (
+                <Button
+                  key={slug}
+                  variant={staged ? 'contained' : 'outlined'}
+                  color={staged ? 'primary' : 'inherit'}
+                  onClick={() => toggleStagedPrompt(text)}
+                  sx={{
+                    justifyContent: 'flex-start',
+                    textAlign: 'left',
+                    boxShadow: 'none',
+                    '&:hover': { boxShadow: 'none' },
+                  }}
+                >
+                  {staged ? '✓ ' : ''}{text}
+                </Button>
+              );
+            })}
+          </Stack>
         </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={() => setPromptSelectorOpen(false)} color="inherit">
+            {t('profile.prompts.ui.cancel', 'Cancelar')}
+          </Button>
+          <Button
+            onClick={handleSaveStagedPrompts}
+            variant="contained"
+            disabled={stagedPrompts.length === 0}
+          >
+            {t('profile.prompts.ui.save', 'Guardar')}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {showSticky && (
