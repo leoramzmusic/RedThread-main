@@ -1094,6 +1094,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             borderRadius: '12px',
             display: 'flex',
             flexDirection: 'column',
+            position: 'relative',
+            // Clear the sidebar on desktop, clear the navbar on mobile.
+            left: { xs: 0, sm: 0, md: '5%', lg: '8%' },
+            mt: { xs: '12vh', sm: 2 },
           },
         }}
       >
