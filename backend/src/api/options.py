@@ -10,6 +10,7 @@ SUPPORTED_LANGS = [
     "tl", "ms", "mi"
 ]
 
+
 def get_label_field(lang: str) -> str:
     """Get the label field name for the given language code."""
     return f"label_{lang}" if lang in SUPPORTED_LANGS else "label_es"
