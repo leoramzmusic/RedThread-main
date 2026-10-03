@@ -38,6 +38,7 @@ import {
   Home,
   Flight,
   Terrain,
+  InfoOutlined,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
@@ -178,6 +179,7 @@ interface LocationSectionProps extends BaseSectionProps {
   citySearch: string;
   setCitySearch: (value: string) => void;
   userPlan?: "free" | "premium" | "vip";
+  setLocationInfoOpen?: (open: boolean) => void;
 }
 
 const LockedOverlay = ({
@@ -258,6 +260,7 @@ export default function LocationSection({
   setCitySearch,
   userPlan = "free",
   isDiscovery = false,
+  setLocationInfoOpen = () => {},
 }: LocationSectionProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation("common");
@@ -770,11 +773,33 @@ export default function LocationSection({
             expandIcon={<ExpandMoreIcon />}
             sx={{ px: 3, py: 1 }}
           >
-            <Box display="flex" alignItems="center" gap={1}>
-              <LocationOn color="action" />
-              <Typography variant="h6">
-                {t("profile.location.title", "Ubicación y Alcance")}
-              </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+              pr={2}
+            >
+              <Box display="flex" alignItems="center" gap={1}>
+                <LocationOn color="action" />
+                <Typography variant="h6">
+                  {t("profile.location.title", "Ubicación y Alcance")}
+                </Typography>
+              </Box>
+              <Tooltip
+                title={t("profile.location.infoModal.title", "¿Por qué pedimos tu ubicación?")}
+              >
+                <IconButton
+                  size="small"
+                  component="span"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLocationInfoOpen(true);
+                  }}
+                >
+                  <InfoOutlined fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Box>
           </AccordionSummary>
         )}

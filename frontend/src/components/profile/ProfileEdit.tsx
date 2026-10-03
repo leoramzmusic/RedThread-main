@@ -103,6 +103,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [infoDrawerOpen, setInfoDrawerOpen] = useState(false);
   const [goalsInfoOpen, setGoalsInfoOpen] = useState(false);
   const [pronounsInfoOpen, setPronounsInfoOpen] = useState(false);
+  const [locationInfoOpen, setLocationInfoOpen] = useState(false);
 
   // Drawer drag logic
   const [dragOffsetY, setDragOffsetY] = useState(0);
@@ -639,6 +640,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           citySearch={citySearch}
           setCitySearch={setCitySearch}
           userPlan="vip" // TODO: Connect to real user plan
+          setLocationInfoOpen={setLocationInfoOpen}
         />
       </Grid>
     ),
@@ -1123,6 +1125,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         setGoalsInfoOpen={setGoalsInfoOpen}
         pronounsInfoOpen={pronounsInfoOpen}
         setPronounsInfoOpen={setPronounsInfoOpen}
+        locationInfoOpen={locationInfoOpen}
+        setLocationInfoOpen={setLocationInfoOpen}
         isDragging={isDragging}
         dragOffsetY={dragOffsetY}
         handleDragStart={handleDragStart}
