@@ -1082,10 +1082,20 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       <Dialog
         open={promptSelectorOpen}
         onClose={() => setPromptSelectorOpen(false)}
-        maxWidth="sm"
+        maxWidth="md"
         fullWidth
         scroll="paper"
-        PaperProps={{ sx: { m: { xs: 1, sm: 2 }, maxHeight: '70vh' } }}
+        PaperProps={{
+          sx: {
+            m: { xs: 1, sm: 2 },
+            mx: 'auto',
+            width: { xs: '95%', sm: '80%', md: '70%' },
+            maxHeight: '70vh',
+            borderRadius: '12px',
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton
@@ -1103,7 +1113,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             {t('profile.prompts.ui.counter', '{{n}}/5 seleccionadas', { n: prompts.length + stagedPrompts.length })}
           </Typography>
         </DialogTitle>
-        <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <DialogContent
+          dividers
+          sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, overflowY: 'visible' }}
+        >
           <TextField
             fullWidth
             size="small"
@@ -1124,7 +1137,16 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
               />
             ))}
           </Stack>
-          <Stack spacing={1} sx={{ mt: 0.5, overflowY: 'auto' }}>
+          <Stack
+            spacing={1}
+            sx={{
+              mt: 0.5,
+              overflowY: 'auto',
+              maxHeight: '38vh',
+              pr: 0.5,
+              pb: 1,
+            }}
+          >
             {promptVisible.length === 0 && (
               <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 2 }}>
                 {t('profile.prompts.ui.noresults', 'Sin resultados para tu búsqueda.')}
