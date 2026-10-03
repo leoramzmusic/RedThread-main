@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Paper, type SxProps, type Theme } from '@mui/material';
 import KawaiiCat from './KawaiiCat';
+import { useYukiEnabled } from '../../context/YukiConfigContext';
 
 type BadgeType = 'achievement' | 'streak' | 'levelup' | 'milestone';
 
@@ -34,6 +35,7 @@ export default function YukiBadge({
 }: YukiBadgeProps) {
   const [show, setShow] = useState(visible);
   const [isExiting, setIsExiting] = useState(false);
+  const yukiEnabled = useYukiEnabled();
   const config = BADGE_CONFIG[type];
 
   useEffect(() => {
@@ -53,6 +55,8 @@ export default function YukiBadge({
     return () => clearTimeout(timer);
   }, [show, autoHide, autoHideMs, onDismiss]);
 
+  // Interruptor maestro apagado: sin badges de la mascota.
+  if (!yukiEnabled) return null;
   if (!show) return null;
 
   return (

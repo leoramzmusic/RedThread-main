@@ -5,6 +5,8 @@ import { type YukiConfig } from '../services/yukiAdminService';
 interface YukiConfigContextType {
   config: YukiConfig | null;
   loading: boolean;
+  /** Interruptor maestro: false oculta TODA la mascota (FAB, loader, onboarding, badges, gatos). Fail-closed. */
+  enabled: boolean;
   refresh: () => Promise<void>;
 }
 
@@ -24,7 +26,9 @@ const defaultConfig: YukiConfig = {
   enable_notifications: true,
   enable_error_pages: true,
   enable_easter_eggs: false,
-  enabled: true,
+  // Fail-closed: la mascota queda oculta hasta que el backend confirme enabled=true.
+  // Así el interruptor maestro del portal siempre se respeta (y ante fallos de red).
+  enabled: false,
   allowed_screens: [],
   blocked_screens: [],
   updated_by: null,
@@ -35,11 +39,17 @@ const defaultConfig: YukiConfig = {
 const YukiConfigContext = createContext<YukiConfigContextType>({
   config: defaultConfig,
   loading: false,
+  enabled: false,
   refresh: async () => {},
 });
 
 export function useYukiConfig() {
   return useContext(YukiConfigContext);
+}
+
+/** Atajo al interruptor maestro de Yuki. `false` = ocultar todo lo referente a la mascota. */
+export function useYukiEnabled() {
+  return useContext(YukiConfigContext).enabled;
 }
 
 export function YukiConfigProvider({ children }: { children: ReactNode }) {
@@ -62,8 +72,10 @@ export function YukiConfigProvider({ children }: { children: ReactNode }) {
     fetchConfig();
   }, []);
 
+  const enabled = config?.enabled === true;
+
   return (
-    <YukiConfigContext.Provider value={{ config, loading, refresh: fetchConfig }}>
+    <YukiConfigContext.Provider value={{ config, loading, enabled, refresh: fetchConfig }}>
       {children}
     </YukiConfigContext.Provider>
   );

@@ -692,28 +692,19 @@ a:hover {
   background-color: #2563EB !important;
 }
 
-/* Smart Floating Icons */
+/* Smart Floating Icons — el layout (posición, dirección, tamaños) lo own el sx del
+   componente (ProfileEdit). Aquí solo animación y centrado interno. */
 .floating-actions {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  z-index: 100;
   animation: fadeIn 0.3s ease-out;
 }
 
 .floating-actions .btn-save,
 .floating-actions .btn-cancel {
-  width: 56px;
-  height: 56px;
   border-radius: 50%;
   font-size: 28px;
   font-weight: bold;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   background-color: #000000;
   color: #ffffff;
   display: flex;
@@ -739,17 +730,6 @@ a:hover {
 .floating-actions .btn-cancel:hover {
   transform: scale(1.05);
   background-color: #d9363e !important;
-}
-
-@media (max-width: 480px) {
-  .floating-actions {
-    top: auto;
-    bottom: 24px;
-    right: 24px !important;
-    /* Override inline style on mobile? User didn't specify, but usually desirable */
-    flex-direction: row;
-    transform: none;
-  }
 }
 
 .btn-cancel:active,

@@ -59,13 +59,11 @@ const CAT_PAW_SVG = (
 export default memo(function MascotFAB() {
   const theme = useTheme();
   const router = useRouter();
-  const { config } = useYukiConfig();
+  const { enabled } = useYukiConfig();
   const isDark = theme.palette.mode === 'dark';
   const [isOpen, setIsOpen] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
   const [isWiggling, setIsWiggling] = useState(false);
-
-  if (!config?.enabled) return null;
 
   const basePath = router?.pathname
     ? '/' + (router.pathname.split('/')[1] || '')
@@ -120,6 +118,10 @@ export default memo(function MascotFAB() {
       cycleTip();
     }
   }, [cycleTip]);
+
+  // Interruptor maestro: oculta el botón flotante y todo el FAB.
+  // Va DESPUÉS de todos los hooks para no romper el orden de hooks.
+  if (!enabled) return null;
 
   return (
     <Box

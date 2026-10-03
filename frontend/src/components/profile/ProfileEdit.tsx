@@ -851,31 +851,76 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box display="flex" alignItems="center" gap={2}>
+      {/* Header: fila única (atrás + título a la izq. / acciones a la der.) */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+        sx={{
+          bgcolor: { xs: 'background.paper', md: 'transparent' },
+          boxShadow: { xs: 1, md: 0 },
+          borderRadius: { xs: 2, md: 0 },
+          p: { xs: 1, md: 0 },
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
           <IconButton
             onClick={onBack}
-            sx={{ color: '#ff4d4f', cursor: 'pointer' }}
+            aria-label={t('common.back', 'Atrás')}
+            sx={{
+              color: '#ff4d4f',
+              cursor: 'pointer',
+              width: { xs: 40, md: 40 },
+              height: { xs: 40, md: 40 },
+              flexShrink: 0,
+            }}
           >
             <ArrowBackIcon sx={{ fontSize: 24 }} />
           </IconButton>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            sx={{
+              fontSize: { xs: '0.85rem', md: '2.125rem' },
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
             {t('profile.edit', 'Editar Perfil')}
           </Typography>
         </Box>
-        <Box className="top-actions-container">
+        {/* Acciones a la derecha en la misma fila */}
+        <Box
+          className="top-actions-container"
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+            flexShrink: 0,
+          }}
+        >
           <Button
             className="btn-cancel"
             onClick={onBack}
+            aria-label={t('common.cancel', 'Cancelar')}
             startIcon={<CloseIcon />}
             variant="outlined"
             color="inherit"
             sx={{
-              mr: 1,
+              mr: { xs: 0, md: 1 },
+              minWidth: { xs: 40, md: 'auto' },
+              width: { xs: 40, md: 'auto' },
+              height: { xs: 40, md: 'auto' },
+              p: { xs: 0, md: '6px 16px' },
+              borderRadius: { xs: '50%', md: '8px' },
               textTransform: 'none',
               borderColor: 'text.secondary',
               color: 'text.secondary',
+              '& .MuiButton-startIcon': { m: { xs: 0, md: '0 8px 0 -4px' } },
               '&:hover': {
                 borderColor: 'error.main',
                 color: 'error.main',
@@ -883,43 +928,63 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
               }
             }}
           >
-            {t('common.cancel', 'Cancelar')}
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+              {t('common.cancel', 'Cancelar')}
+            </Box>
           </Button>
 
           <Button
             type="submit"
             className="btn-save"
+            aria-label={t('common.save', 'Guardar')}
             startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
             disabled={saving}
             variant="contained"
             color="success" // Using success for green
             sx={{
-              mr: 1,
+              mr: { xs: 0, md: 1 },
+              minWidth: { xs: 40, md: 'auto' },
+              width: { xs: 40, md: 'auto' },
+              height: { xs: 40, md: 'auto' },
+              p: { xs: 0, md: '6px 16px' },
+              borderRadius: { xs: '50%', md: '8px' },
               textTransform: 'none',
               boxShadow: 'none',
               fontWeight: 600,
               bgcolor: '#4CAF50', // Explicit green
+              '& .MuiButton-startIcon': { m: { xs: 0, md: '0 8px 0 -4px' } },
               '&:hover': { bgcolor: '#43A047' }
             }}
           >
-            {t('common.save', 'Guardar')}
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+              {t('common.save', 'Guardar')}
+            </Box>
           </Button>
 
           <Button
             className="btn-preview"
             onClick={handlePreview}
+            aria-label={t('profile.preview', 'Vista Previa')}
             startIcon={<VisibilityIcon />}
             variant="contained"
             sx={{
+              minWidth: { xs: 40, md: 'auto' },
+              width: { xs: 40, md: 'auto' },
+              height: { xs: 40, md: 'auto' },
+              p: { xs: 0, md: '6px 16px' },
+              borderRadius: { xs: '50%', md: '8px' },
               textTransform: 'none',
               fontWeight: 600,
               boxShadow: 'none',
               bgcolor: 'grey.600',
               color: 'white',
+              '& .MuiButton-startIcon': { m: { xs: 0, md: '0 8px 0 -4px' } },
               '&:hover': { bgcolor: 'grey.700' }
             }}
           >
-            {t('profile.preview', 'Vista Previa')}
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+              {t('profile.preview', 'Vista Previa')}
+            </Box>
           </Button>
         </Box>
       </Box>
@@ -1197,69 +1262,72 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         <Box
           className="floating-actions"
           sx={{
-            right: { xs: '0.75rem', md: `${offsetRight}px` },
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: { xs: 1, md: 1.5 },
+            gap: { xs: 2, lg: 3 },
             position: 'fixed',
-            bottom: { xs: '1rem', md: '3rem' },
+            // Teléfonos 4rem; tablets (sm, con barra del navegador abajo) más arriba
+            // para que el botón de vista previa quede visible; desktop 3rem
+            bottom: { xs: '4rem', sm: '8rem', lg: '3rem' },
+            // Móvil compacto: respeta el área segura (notch); en tablet más separado
+            // del filo para que no se vean pegados al borde
+            right: { xs: 'max(0.75rem, env(safe-area-inset-right))', sm: '1.5rem', lg: `${offsetRight}px` },
+            left: 'auto',
+            top: 'auto',
+            transform: 'none',
+            m: 0,
+            p: 0,
             zIndex: 1000,
           }}
         >
+          {/* Toggle: solo controla la visibilidad, sin contenido extra */}
           <IconButton
             className="btn-toggle-actions"
             onClick={() => setShowActions((v) => !v)}
             aria-label={t('common.toggleActions', 'Mostrar / ocultar acciones')}
             color="inherit"
             sx={{
-              width: { xs: 40, md: 44 },
-              height: { xs: 40, md: 44 },
+              width: { xs: 48, lg: 56 },
+              height: { xs: 48, lg: 56 },
+              borderRadius: '50%',
               bgcolor: 'grey.700',
               color: 'white',
               boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
               '&:hover': { bgcolor: 'grey.800' },
-              order: 0,
             }}
           >
             {showActions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </IconButton>
           {showActions && (
-          <>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', lg: 'row' },
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: { xs: 2, lg: 3 },
+              m: 0,
+              p: 0,
+            }}
+          >
           <IconButton
             className="btn-cancel"
             onClick={onBack}
             aria-label={t('common.cancel', 'Cancelar')}
             color="error"
             sx={{
-              width: { xs: 48, md: 56 },
-              height: { xs: 48, md: 56 },
+              width: { xs: 48, lg: 56 },
+              height: { xs: 48, lg: 56 },
+              borderRadius: '50%',
               bgcolor: 'error.main',
               color: 'error.contrastText',
               boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
               '&:hover': { bgcolor: 'error.dark' },
-              order: 3,
             }}
           >
-            <CloseIcon />
-          </IconButton>
-          <IconButton
-            className="btn-preview"
-            onClick={handlePreview}
-            aria-label={t('profile.preview', 'Vista Previa')}
-            color="inherit"
-            sx={{
-              width: { xs: 48, md: 56 },
-              height: { xs: 48, md: 56 },
-              bgcolor: 'grey.600',
-              color: 'white',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              '&:hover': { bgcolor: 'grey.700' },
-              order: 1,
-            }}
-          >
-            <VisibilityIcon />
+            <CloseIcon sx={{ fontSize: 24 }} />
           </IconButton>
           <IconButton
             className="btn-save"
@@ -1268,18 +1336,35 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             color="primary"
             disabled={saving}
             sx={{
-              width: { xs: 48, md: 64 },
-              height: { xs: 48, md: 64 },
+              width: { xs: 48, lg: 64 },
+              height: { xs: 48, lg: 64 },
+              borderRadius: '50%',
               bgcolor: 'primary.main',
               color: 'primary.contrastText',
               boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
               '&:hover': { bgcolor: 'primary.dark' },
-              order: 2,
             }}
           >
-            {saving ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
+            {saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon sx={{ fontSize: 24 }} />}
           </IconButton>
-          </>
+          <IconButton
+            className="btn-preview"
+            onClick={handlePreview}
+            aria-label={t('profile.preview', 'Vista Previa')}
+            color="inherit"
+            sx={{
+              width: { xs: 48, lg: 56 },
+              height: { xs: 48, lg: 56 },
+              borderRadius: '50%',
+              bgcolor: 'grey.600',
+              color: 'white',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              '&:hover': { bgcolor: 'grey.700' },
+            }}
+          >
+            <VisibilityIcon sx={{ fontSize: 24 }} />
+          </IconButton>
+          </Box>
           )}
         </Box>
       )}

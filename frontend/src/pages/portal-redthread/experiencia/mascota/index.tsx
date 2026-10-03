@@ -10,6 +10,7 @@ import {
     FormControlLabel,
     Alert,
     CircularProgress,
+    Snackbar,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
@@ -22,26 +23,74 @@ import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import yukiAdminService, { YukiConfig } from '../../../../services/yukiAdminService';
+import { adminApiClient } from '../../../../services/api';
 
 export default function MascotaDashboard() {
     const router = useRouter();
     const [config, setConfig] = useState<YukiConfig | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [snack, setSnack] = useState<{ msg: string; sev: 'success' | 'error' } | null>(null);
+    // null = verificando; true/false = tiene o no permiso edit_config (solo Super Admin por defecto)
+    const [canEdit, setCanEdit] = useState<boolean | null>(null);
 
     useEffect(() => {
-        yukiAdminService.getConfig().then((c) => {
-            setConfig(c);
-            setLoading(false);
-        });
+        let cancelled = false;
+        Promise.all([
+            yukiAdminService.getConfig(),
+            adminApiClient.get('/portal-redthread/auth/me').catch(() => null),
+        ])
+            .then(([c, me]) => {
+                if (cancelled) return;
+                setConfig(c);
+                const perms: string[] = (me?.data?.permissions as string[]) ?? [];
+                setCanEdit(perms.includes('edit_config'));
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setSnack({ msg: 'No se pudo cargar la configuración de Yuki.', sev: 'error' });
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const toggleEnabled = async () => {
-        if (!config) return;
+        if (!config || saving) return;
+        if (canEdit === false) {
+            setSnack({
+                msg: 'Tu rol no tiene el permiso edit_config (solo Super Admin). Pide a un Super Admin que te lo asigne o que apague a Yuki.',
+                sev: 'error',
+            });
+            return;
+        }
+        const next = !config.enabled;
         setSaving(true);
         try {
-            const updated = await yukiAdminService.updateConfig({ enabled: !config.enabled });
+            const updated = await yukiAdminService.updateConfig({ enabled: next });
             setConfig(updated);
+            setSnack({
+                msg: next
+                    ? 'Yuki activado: visible en la app.'
+                    : 'Yuki desactivado: botón, loader, onboarding y mascota ocultos en la app.',
+                sev: 'success',
+            });
+        } catch (e: any) {
+            const status = e?.response?.status;
+            const detail = e?.response?.data?.detail;
+            setSnack({
+                msg:
+                    status === 403
+                        ? `Sin permiso para guardar (403): ${detail ?? 'se requiere edit_config'}.`
+                        : status === 401
+                          ? 'Sesión de portal vencida (401). Cierra sesión y vuelve a entrar al portal.'
+                          : `No se pudo guardar el cambio${detail ? `: ${detail}` : '. Intenta de nuevo.'}`,
+                sev: 'error',
+            });
         } finally {
             setSaving(false);
         }
@@ -107,24 +156,86 @@ export default function MascotaDashboard() {
                         {loading ? (
                             <CircularProgress />
                         ) : (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, alignItems: 'center' }}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={config?.enabled ?? true}
-                                            onChange={toggleEnabled}
-                                            disabled={saving}
-                                            color="success"
-                                        />
-                                    }
-                                    label={config?.enabled ? 'Yuki activo' : 'Yuki desactivado'}
-                                />
-                                {config?.enabled && (
-                                    <Alert severity="success" sx={{ py: 0 }}>
-                                        Visible en la app
-                                    </Alert>
-                                )}
-                            </Box>
+                            <Card
+                                variant="outlined"
+                                sx={{
+                                    mt: 1,
+                                    textAlign: 'left',
+                                    borderWidth: 2,
+                                    borderColor: config?.enabled ? 'success.main' : 'warning.main',
+                                }}
+                            >
+                                <CardContent
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 2,
+                                        flexWrap: 'wrap',
+                                    }}
+                                >
+                                    <PetsIcon
+                                        sx={{
+                                            fontSize: 48,
+                                            color: config?.enabled ? 'success.main' : 'text.disabled',
+                                        }}
+                                    />
+                                    <Box sx={{ flexGrow: 1, minWidth: 220 }}>
+                                        <Typography variant="h6" fontWeight={700}>
+                                            Interruptor maestro — Yuki{' '}
+                                            {config?.enabled ? 'ACTIVO' : 'APAGADO'}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Apagado oculta TODO lo de la mascota en la app: botón
+                                            flotante, loader, onboarding, badges y gatos
+                                            decorativos. Úsalo mientras se corrigen las fallas.
+                                        </Typography>
+                                        <Box sx={{ mt: 1 }}>
+                                            {config?.enabled ? (
+                                                <Alert severity="success" sx={{ py: 0 }}>
+                                                    Visible en la app
+                                                </Alert>
+                                            ) : (
+                                                <Alert severity="warning" sx={{ py: 0 }}>
+                                                    Oculto en toda la app
+                                                </Alert>
+                                            )}
+                                        </Box>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            sx={{ display: 'block', mt: 1 }}
+                                        >
+                                            Aplica en nuevas cargas. Si tienes la app abierta en otra
+                                            pestaña, recárgala.
+                                        </Typography>
+                                        {canEdit === false && (
+                                            <Alert severity="info" sx={{ mt: 1 }}>
+                                                Tu rol no tiene el permiso{' '}
+                                                <strong>edit_config</strong> (solo Super Admin por
+                                                defecto). El interruptor está bloqueado.
+                                            </Alert>
+                                        )}
+                                    </Box>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={config?.enabled ?? false}
+                                                onChange={toggleEnabled}
+                                                disabled={saving || canEdit === false}
+                                                color="success"
+                                                size="medium"
+                                            />
+                                        }
+                                        label={
+                                            saving
+                                                ? 'Guardando…'
+                                                : config?.enabled
+                                                  ? 'Yuki activo'
+                                                  : 'Yuki desactivado'
+                                        }
+                                    />
+                                </CardContent>
+                            </Card>
                         )}
                     </Box>
 
@@ -138,6 +249,7 @@ export default function MascotaDashboard() {
                                         flexDirection: 'column',
                                         transition: 'all 0.3s',
                                         cursor: 'pointer',
+                                        opacity: config?.enabled ? 1 : 0.6,
                                         '&:hover': {
                                             transform: 'translateY(-8px)',
                                             boxShadow: 6,
@@ -179,6 +291,16 @@ export default function MascotaDashboard() {
                     </Grid>
                 </Box>
             </Container>
+            <Snackbar
+                open={!!snack}
+                autoHideDuration={4000}
+                onClose={() => setSnack(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert severity={snack?.sev ?? 'success'} onClose={() => setSnack(null)}>
+                    {snack?.msg}
+                </Alert>
+            </Snackbar>
         </AdminLayout>
     );
 }

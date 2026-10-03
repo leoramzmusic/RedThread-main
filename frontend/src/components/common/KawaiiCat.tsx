@@ -11,6 +11,11 @@ interface KawaiiCatProps {
   state?: MascotState;
   showYarn?: boolean;
   interactive?: boolean;
+  /**
+   * Muestra el gato aunque el interruptor maestro esté apagado.
+   * Usar SOLO en previews del portal admin / páginas dev.
+   */
+  forceShow?: boolean;
   'aria-label'?: string;
   sx?: SxProps<Theme>;
 }
@@ -23,10 +28,11 @@ const KawaiiCat = memo(function KawaiiCat({
   state = 'idle',
   showYarn = false,
   interactive = true,
+  forceShow = false,
   'aria-label': ariaLabel = 'Yuki the cat mascot',
   sx,
 }: KawaiiCatProps) {
-  const { config } = useYukiConfig();
+  const { config, enabled } = useYukiConfig();
   const yarnColor = moduleColor || config?.yarn_color || '#E63946';
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -103,6 +109,10 @@ const KawaiiCat = memo(function KawaiiCat({
       handleBoop();
     }
   }, [interactive, handleBoop]);
+
+  // Interruptor maestro: oculta todo lo referente a la mascota.
+  // Va DESPUÉS de todos los hooks para no romper el orden de hooks.
+  if (!forceShow && !enabled) return null;
 
   const eyeRy = state === 'sleeping' ? 0.5 : isBlinking ? 0.5 : 4.5;
   const isSleeping = state === 'sleeping';

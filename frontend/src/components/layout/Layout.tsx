@@ -285,6 +285,9 @@ export default function Layout({ children }: LayoutProps) {
             position="fixed"
             elevation={0}
             sx={{
+              // Móvil: sticky arriba (z-1200) para que no se encime con el contenido.
+              position: { xs: 'sticky', md: 'fixed' },
+              top: 0,
               bgcolor: glassBg,
               backdropFilter: 'blur(14px)',
               WebkitBackdropFilter: 'blur(14px)',
@@ -299,7 +302,7 @@ export default function Layout({ children }: LayoutProps) {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
               }),
-              zIndex: 1500, // Stay above everything including drawers
+              zIndex: { xs: 1200, md: 1500 }, // Móvil: 1200 sin tapar menús; desktop: sobre drawers
               '@media (prefers-reduced-motion: no-preference)': {
                 '@keyframes rtAvatarRing': {
                   '0%, 100%': { boxShadow: `0 0 0 2px ${avatarGlowColor(0.35)}` },
@@ -328,10 +331,14 @@ export default function Layout({ children }: LayoutProps) {
                 </Box>
               </Box>
 
-              {/* MIDDLE: Navigation Links - Adjusted to not overlap absolute element */}
+              {/* MIDDLE: Navigation Links - solo pantallas amplias (lg+); en móvil y
+                  tablets van en el drawer lateral (temporal en <md, permanente en md+) */}
               <Box sx={{
-                display: router.pathname === '/discover' ? { xs: 'none', md: 'flex' } : 'flex',
-                gap: { xs: 1.5, sm: 2, md: 3 },
+                display: { xs: 'none', lg: 'flex' },
+                '@media (max-height: 500px)': { display: 'none' },
+                position: 'relative',
+                zIndex: 1300,
+                gap: { xs: 1, sm: 2, md: 3 },
                 overflowX: 'auto',
                 flexGrow: 1,
                 mx: { xs: 1, sm: 2 },
@@ -368,16 +375,24 @@ export default function Layout({ children }: LayoutProps) {
                   ))}
               </Box>
 
-              {/* RIGHT: User Actions - Positoned Absolutely on Mobile for stability */}
+              {/* RIGHT: User Actions - Agrupados a la derecha, sin encimarse en móvil */}
               <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: { xs: 0, sm: 1 },
+                justifyContent: 'flex-end',
+                gap: { xs: '0.5rem', sm: '1rem' },
                 position: { xs: 'absolute', md: 'static' },
                 right: { xs: 8, md: 'auto' },
                 top: { xs: '50%', md: 'auto' },
                 transform: { xs: 'translateY(-50%)', md: 'none' },
                 flexShrink: 0,
+                // Fondo propio en móvil: los links con scroll ya no se ven por debajo
+                bgcolor: { xs: glassBg, md: 'transparent' },
+                backdropFilter: { xs: 'blur(14px)', md: 'none' },
+                WebkitBackdropFilter: { xs: 'blur(14px)', md: 'none' },
+                borderRadius: { xs: 3, md: 0 },
+                pl: { xs: 1, md: 0 },
+                zIndex: 1400,
               }}>
                 {/* Theme Toggle - Desktop Only */}
                 {showIcon('theme') && (
@@ -406,6 +421,17 @@ export default function Layout({ children }: LayoutProps) {
                 {showIcon('notifications') && (
                   <Suspense fallback={null}>
                     <Tooltip title={t('nav.notifications', 'Notificaciones')}>
+                      <Box
+                        sx={{
+                          width: { xs: 40, lg: 48 },
+                          height: { xs: 40, lg: 48 },
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
                       <QuickActionIcon
                         styleId={styleOf('notifications')}
                         motion="bell"
@@ -416,6 +442,7 @@ export default function Layout({ children }: LayoutProps) {
                       >
                         <NotificationsIcon className="rt-bell-icon" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
                       </QuickActionIcon>
+                      </Box>
                     </Tooltip>
                   </Suspense>
                 )}
@@ -424,6 +451,17 @@ export default function Layout({ children }: LayoutProps) {
                 {showIcon('settings') && (
                   <Suspense fallback={null}>
                     <Tooltip title={t('nav.settings', 'Configuración')}>
+                      <Box
+                        sx={{
+                          width: { xs: 40, lg: 48 },
+                          height: { xs: 40, lg: 48 },
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
                       <QuickActionIcon
                         styleId={styleOf('settings')}
                         motion="gear"
@@ -432,6 +470,7 @@ export default function Layout({ children }: LayoutProps) {
                       >
                         <SettingsIcon className="rt-settings-spin" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
                       </QuickActionIcon>
+                      </Box>
                     </Tooltip>
                   </Suspense>
                 )}
@@ -440,9 +479,21 @@ export default function Layout({ children }: LayoutProps) {
                 {showIcon('language') && (
                   <Suspense fallback={null}>
                     <Tooltip title={t('nav.language', 'Idioma')}>
+                      <Box
+                        sx={{
+                          width: { xs: 40, lg: 48 },
+                          height: { xs: 40, lg: 48 },
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
                       <QuickActionIcon styleId={styleOf('language')} motion="globe" onClick={handleOpenLangMenu}>
                         <TranslateIcon className="rt-globe" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
                       </QuickActionIcon>
+                      </Box>
                     </Tooltip>
                   </Suspense>
                 )}
@@ -477,7 +528,18 @@ export default function Layout({ children }: LayoutProps) {
 
                 {/* User Avatar */}
                 <Tooltip title={t('nav.profile', 'Perfil')}>
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0.5 }}>
+                  <IconButton
+                    onClick={handleOpenUserMenu}
+                    sx={{
+                      width: { xs: 40, lg: 48 },
+                      height: { xs: 40, lg: 48 },
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
                     <Box
                       className="rt-avatar"
                       sx={{
@@ -578,10 +640,11 @@ export default function Layout({ children }: LayoutProps) {
           </AppBar>
         )}
 
-        {/* Spacer for Fixed AppBar */}
+        {/* Spacer solo en desktop (en móvil el AppBar es sticky y no lo necesita) */}
         {isAuthenticated && (
           <Toolbar
             sx={{
+              display: { xs: 'none', md: 'flex' },
               minHeight: { xs: '60px !important', sm: '72px !important' }
             }}
           />

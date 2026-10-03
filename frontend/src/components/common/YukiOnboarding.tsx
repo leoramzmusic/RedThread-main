@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Button, Paper, Fade, IconButton, useTheme, alpha } from '@mui/material';
 import { Close as CloseIcon, ArrowForward as NextIcon, ArrowBack as PrevIcon } from '@mui/icons-material';
 import KawaiiCat from './KawaiiCat';
+import { useYukiEnabled } from '../../context/YukiConfigContext';
 
 interface OnboardingStep {
   title: string;
@@ -25,6 +26,7 @@ export default function YukiOnboarding({
   onSkip,
 }: YukiOnboardingProps) {
   const theme = useTheme();
+  const yukiEnabled = useYukiEnabled();
   const isDark = theme.palette.mode === 'dark';
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -59,6 +61,8 @@ export default function YukiOnboarding({
     onSkip?.();
   }, [storageKey, onSkip]);
 
+  // Interruptor maestro apagado: sin tutorial de la mascota.
+  if (!yukiEnabled) return null;
   if (!isVisible || steps.length === 0) return null;
 
   const step = steps[currentStep];

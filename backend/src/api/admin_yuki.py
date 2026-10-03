@@ -114,11 +114,13 @@ async def update_yuki_config(
     if not config:
         config = YukiConfig()
 
-    update_data = update.dict(exclude_unset=True)
+    update_data = update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(config, field, value)
     config.updated_at = datetime.utcnow()
-    config.updated_by = employee.user_id
+    # Employee no tiene campo user_id (sí id / employee_id); usar str(id)
+    # como hacen el resto de endpoints admin.
+    config.updated_by = str(employee.id)
     await config.save()
 
     return {"message": "Config updated", "config": _config_to_dict(config)}

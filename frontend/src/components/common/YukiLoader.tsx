@@ -1,5 +1,6 @@
-import { Box, Typography, type SxProps, type Theme } from '@mui/material';
+import { Box, CircularProgress, Typography, type SxProps, type Theme } from '@mui/material';
 import YukiLottie from './YukiLottie';
+import { useYukiEnabled } from '../../context/YukiConfigContext';
 
 interface YukiLoaderProps {
   message?: string;
@@ -14,6 +15,48 @@ export default function YukiLoader({
   fullscreen = false,
   sx,
 }: YukiLoaderProps) {
+  const yukiEnabled = useYukiEnabled();
+
+  // Interruptor maestro apagado: loader neutro sin mascota para no romper
+  // las pantallas que dependen de un estado de carga (login, home, etc.).
+  if (!yukiEnabled) {
+    return (
+      <Box
+        role="status"
+        aria-label={message}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          py: 4,
+          ...(fullscreen
+            ? {
+                position: 'fixed',
+                inset: 0,
+                zIndex: 1400,
+                bgcolor: 'rgba(0,0,0,0.3)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }
+            : {}),
+          ...sx,
+        }}
+      >
+        <CircularProgress size={Math.min(size, 64)} />
+        {message && (
+          <Typography
+            variant="body2"
+            sx={{ color: 'rgba(255,255,255,0.85)', fontWeight: 500, letterSpacing: '0.3px' }}
+          >
+            {message}
+          </Typography>
+        )}
+      </Box>
+    );
+  }
+
   return (
     <Box
       role="status"
