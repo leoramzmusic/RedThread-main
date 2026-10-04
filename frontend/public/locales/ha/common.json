@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Koma"
+  },
   "auth": {
     "welcome": "Barka da dawowa!",
     "join": "Shiga ReTh",

@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "뒤로"
+  },
   "auth": {
     "welcome": "다시 오신 것을 환영합니다!",
     "join": "ReTh 가입하기",

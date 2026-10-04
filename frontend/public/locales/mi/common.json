@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Hoki atu"
+  },
   "auth": {
     "welcome": "Nau mai anō!",
     "join": "Uru mai ki ReTh",

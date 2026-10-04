@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Tillbaka"
+  },
   "auth": {
     "welcome": "Välkommen tillbaka!",
     "join": "Gå med i ReTh",

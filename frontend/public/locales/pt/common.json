@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Voltar"
+  },
   "profile": {
     "title": "Perfil",
     "edit": "Editar Perfil",

@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Indietro"
+  },
   "auth": {
     "welcome": "Bentornato!",
     "join": "Unisciti a ReTh",

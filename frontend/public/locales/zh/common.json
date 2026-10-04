@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "返回"
+  },
   "auth": {
     "welcome": "欢迎回来！",
     "join": "加入 ReTh",

@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Zurück"
+  },
   "auth": {
     "welcome": "Willkommen zurück!",
     "join": "Tritt ReTh bei",

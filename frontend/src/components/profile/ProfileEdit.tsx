@@ -38,6 +38,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Tooltip,
 } from '@mui/material';
 import {
   Dialog,
@@ -865,31 +866,114 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         }}
       >
         <Box display="flex" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
-          <IconButton
-            onClick={onBack}
-            aria-label={t('common.back', 'Atrás')}
-            sx={{
-              color: '#ff4d4f',
-              cursor: 'pointer',
-              width: { xs: 40, md: 40 },
-              height: { xs: 40, md: 40 },
-              flexShrink: 0,
-            }}
-          >
-            <ArrowBackIcon sx={{ fontSize: 24 }} />
-          </IconButton>
-          <Typography
-            variant="h4"
-            fontWeight={700}
-            sx={{
-              fontSize: { xs: '0.85rem', md: '2.125rem' },
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {t('profile.edit', 'Editar Perfil')}
-          </Typography>
+          <Tooltip title={t('actions.goBack', 'Regresar')}>
+            <Button
+              onClick={onBack}
+              aria-label={t('actions.goBack', 'Regresar')}
+              sx={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                height: { xs: 48, md: 56 },
+                pl: 0,
+                pr: 2,
+                borderRadius: 3,
+                overflow: 'hidden',
+                bgcolor: 'background.paper',
+                color: 'text.primary',
+                boxShadow: 1,
+                textTransform: 'none',
+                flexShrink: 0,
+                transition: 'box-shadow 0.2s ease, transform 0.1s ease',
+                '&:hover': { boxShadow: 6 },
+                '&:active': { transform: 'scale(0.95)' },
+                '&:focus-visible': {
+                  outline: '2px solid',
+                  outlineColor: 'primary.main',
+                  outlineOffset: 2,
+                },
+                // Círculo de fondo: se expande con scaleX (GPU, sin saltos de layout).
+                // Factor 7 cubre la etiqueta más larga; el sobrante se recorta.
+                // Cover a tamaño completo con clip-path circular: el clip no
+                // afecta layout ni deforma (adiós pétalo y cápsula incompleta).
+                // En reposo solo se ve el círculo; en hover el círculo crece
+                // hasta cubrir exacto el rounded-xl del botón.
+                '& .goback-cover': {
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: 3,
+                  bgcolor: 'primary.main',
+                  clipPath: {
+                    xs: 'circle(24px at 24px 50%)',
+                    md: 'circle(28px at 28px 50%)',
+                  },
+                  transition:
+                    'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+                },
+                '&:hover .goback-cover': {
+                  clipPath: {
+                    xs: 'circle(150% at 24px 50%)',
+                    md: 'circle(150% at 28px 50%)',
+                  },
+                },
+                // Flecha en reposo (dentro del círculo) y flecha centrada (aparece
+                // en hover): crossfade para que nunca se vea estirada
+                '& .goback-arrow-rest, & .goback-arrow-center': {
+                  position: 'absolute',
+                  top: 0,
+                  height: '100%',
+                  display: 'grid',
+                  placeItems: 'center',
+                  // Misma curva; retardo mínimo para crosffade natural
+                  transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                },
+                '& .goback-arrow-rest': {
+                  left: 0,
+                  width: { xs: 48, md: 56 },
+                  opacity: 1,
+                },
+                '&:hover .goback-arrow-rest': { opacity: 0 },
+                '& .goback-arrow-center': {
+                  inset: 0,
+                  opacity: 0,
+                  transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                },
+                '&:hover .goback-arrow-center': { opacity: 1 },
+                '& .goback-label': {
+                  ml: { xs: '48px', md: '56px' },
+                  zIndex: 1,
+                  fontWeight: 600,
+                  fontSize: { xs: '0.85rem', md: '1rem' },
+                  whiteSpace: 'nowrap',
+                  opacity: 1,
+                  transform: 'translateX(0)',
+                  // Sale más rápido que el cover para no encimarse con la flecha
+                  transition:
+                    'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                },
+                // En hover el texto se va hacia atrás y la flecha queda centrada
+                '&:hover .goback-label': {
+                  opacity: 0,
+                  transform: 'translateX(-20px)',
+                },
+                '@media (prefers-reduced-motion: reduce)': {
+                  '& .goback-cover, & .goback-label, & .goback-arrow-rest, & .goback-arrow-center':
+                    { transition: 'none' },
+                },
+              }}
+            >
+              <Box className="goback-cover" />
+              <Box className="goback-arrow-rest">
+                <ArrowBackIcon sx={{ color: 'primary.contrastText' }} />
+              </Box>
+              <Box className="goback-arrow-center" sx={{ zIndex: 2 }}>
+                <ArrowBackIcon sx={{ color: 'primary.contrastText' }} />
+              </Box>
+              <Typography component="span" className="goback-label">
+                {t('actions.goBack', 'Regresar')}
+              </Typography>
+            </Button>
+          </Tooltip>
         </Box>
         {/* Acciones a la derecha en la misma fila */}
         <Box

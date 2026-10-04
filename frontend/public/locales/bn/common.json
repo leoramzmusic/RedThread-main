@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "ফিরে যান"
+  },
   "auth": {
     "welcome": "আবার স্বাগতম!",
     "join": "ReTh-এ যোগ দিন",

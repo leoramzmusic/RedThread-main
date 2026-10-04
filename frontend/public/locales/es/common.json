@@ -679,6 +679,7 @@
     "logout": "Cerrar Sesión"
   },
   "actions": {
+    "goBack": "Regresar",
     "back_to_edit": "Volver a edición",
     "close_preview": "Cerrar vista previa",
     "unsaved_changes_title": "Cambios sin guardar",

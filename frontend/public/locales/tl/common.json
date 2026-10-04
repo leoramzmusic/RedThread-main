@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Bumalik"
+  },
   "auth": {
     "welcome": "Maligayang pagbabalik!",
     "join": "Sumali sa ReTh",

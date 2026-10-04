@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Rudi"
+  },
   "auth": {
     "welcome": "Karibu tena!",
     "join": "Jiunge na ReTh",

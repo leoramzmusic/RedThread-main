@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "ተመለስ"
+  },
   "auth": {
     "welcome": "እንኳን ደህና መጡ!",
     "join": "ወደ ReTh ይቀላቀሉ",

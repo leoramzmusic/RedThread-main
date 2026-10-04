@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Kembali"
+  },
   "auth": {
     "welcome": "Selamat kembali!",
     "join": "Sertai ReTh",

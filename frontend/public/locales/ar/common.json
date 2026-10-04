@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "رجوع"
+  },
   "auth": {
     "welcome": "مرحبًا بعودتك!",
     "join": "انضم إلى ReTh",

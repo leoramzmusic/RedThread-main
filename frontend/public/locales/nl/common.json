@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "Terug"
+  },
   "auth": {
     "welcome": "Welkom terug!",
     "join": "Word lid van ReTh",

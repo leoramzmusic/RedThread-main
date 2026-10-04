@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "goBack": "戻る"
+  },
   "auth": {
     "welcome": "おかえりなさい！",
     "join": "ReThに参加",
