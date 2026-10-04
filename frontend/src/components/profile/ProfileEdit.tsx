@@ -39,6 +39,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Tooltip,
+  Portal,
 } from '@mui/material';
 import {
   Dialog,
@@ -48,6 +49,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { useTranslation } from 'next-i18next';
+import { alpha } from '@mui/material/styles';
 import apiClient from '../../services/api';
 import { PROFILE_SECTION_REGISTRY } from './sections/registry';
 import type { ProfileSectionKey } from './sections/registry';
@@ -224,8 +226,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [changePhoneDialogOpen, setChangePhoneDialogOpen] = useState(false);
   const [verificationCodeDialogOpen, setVerificationCodeDialogOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
-  const [showSticky, setShowSticky] = useState(false);
   const [showActions, setShowActions] = useState(true);
+  // Flotantes solo al scrollear (cuando los botones del header ya no se ven)
+  const [showSticky, setShowSticky] = useState(false);
+  // Solo desktop: alinea los flotantes al borde del contenedor (no al viewport)
   const [offsetRight, setOffsetRight] = useState(24);
   const [unsavedPreviewDialogOpen, setUnsavedPreviewDialogOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -240,37 +244,30 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     }
   };
 
-  // Scroll detection and positioning
+  // Los flotantes aparecen solo cuando el top del form sale del viewport
   useEffect(() => {
-    const handleScrollAndResize = () => {
-      // Position check
+    const handleScroll = () => {
       const container = document.querySelector('.main-container') || formRef.current;
       if (container) {
         const rect = container.getBoundingClientRect();
-
-        // Visibility check: appears if container top is scrolled out of view (negative top)
         setShowSticky(rect.top < 0);
-
-        // Calculate distance from viewport right to container right
-        const rightEdge = window.innerWidth - rect.right;
-
-        // Offset -96px to place it further right (adjusted 40px more than 56px per user request)
-        setOffsetRight(rightEdge - 96);
+        // Desktop: distancia del borde derecho del viewport al contenedor
+        setOffsetRight(window.innerWidth - rect.right - 96);
       }
     };
 
-    window.addEventListener('scroll', handleScrollAndResize, { passive: true });
-    window.addEventListener('resize', handleScrollAndResize, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    document.addEventListener('touchmove', handleScroll, { passive: true });
 
-    // Initial check
-    handleScrollAndResize();
+    handleScroll();
 
     return () => {
-      window.removeEventListener('scroll', handleScrollAndResize);
-      window.removeEventListener('resize', handleScrollAndResize);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      document.removeEventListener('touchmove', handleScroll);
     };
   }, []);
-
 
   // Watch relationship status for conditional rendering
   const relationshipStatus = watch('relationship_status');
@@ -988,59 +985,191 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           }}
         >
           <Button
-            className="btn-cancel"
+            className="btn-cancel-anim"
             onClick={onBack}
             aria-label={t('common.cancel', 'Cancelar')}
-            startIcon={<CloseIcon />}
-            variant="outlined"
-            color="inherit"
+            title={t('common.cancel', 'Cancelar')}
+            variant="contained"
+            disableElevation
             sx={{
+              position: 'relative',
+              overflow: 'hidden',
               mr: { xs: 0, md: 1 },
               minWidth: { xs: 40, md: 'auto' },
               width: { xs: 40, md: 'auto' },
-              height: { xs: 40, md: 'auto' },
+              height: { xs: 40, md: 48 },
               p: { xs: 0, md: '6px 16px' },
-              borderRadius: { xs: '50%', md: '8px' },
+              borderRadius: 3,
               textTransform: 'none',
-              borderColor: 'text.secondary',
-              color: 'text.secondary',
-              '& .MuiButton-startIcon': { m: { xs: 0, md: '0 8px 0 -4px' } },
+              fontWeight: 600,
+              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.12),
+              color: 'error.dark',
+              transition: 'box-shadow 0.2s ease, transform 0.1s ease',
               '&:hover': {
-                borderColor: 'error.main',
-                color: 'error.main',
-                bgcolor: 'error.lighter'
-              }
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                transform: 'scale(1.03)',
+              },
+              '&:active': { transform: 'scale(0.95)', transitionDuration: '0.1s' },
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: 2,
+              },
+              '& .cov': {
+                position: 'absolute',
+                inset: 0,
+                borderRadius: 3,
+                bgcolor: 'error.main',
+                clipPath: {
+                  xs: 'circle(16px at 20px 50%)',
+                  md: 'circle(16px at 24px 50%)',
+                },
+                transition: 'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+              },
+              '&:hover .cov': {
+                clipPath: {
+                  xs: 'circle(150% at 20px 50%)',
+                  md: 'circle(150% at 24px 50%)',
+                },
+              },
+              '& .ic-rest, & .ic-center': {
+                position: 'absolute',
+                top: 0,
+                height: '100%',
+                display: 'grid',
+                placeItems: 'center',
+                transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+              },
+              '& .ic-rest': {
+                left: 0,
+                width: { xs: 40, md: 48 },
+                opacity: 1,
+              },
+              '&:hover .ic-rest': { opacity: 0 },
+              '& .ic-center': { inset: 0, opacity: 0 },
+              '&:hover .ic-center': { opacity: 1 },
+              '& .lbl': {
+                ml: { xs: 0, md: '48px' },
+                display: { xs: 'none', md: 'inline' },
+                whiteSpace: 'nowrap',
+                opacity: 1,
+                transform: 'translateX(0)',
+                transition:
+                  'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+              },
+              '&:hover .lbl': { opacity: 0, transform: 'translateX(-20px)' },
+              '@media (prefers-reduced-motion: reduce)': {
+                '& .cov, & .lbl, & .ic-rest, & .ic-center': { transition: 'none' },
+              },
             }}
           >
-            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+            <Box className="cov" />
+            <Box className="ic-rest">
+              <CloseIcon sx={{ color: '#fff', fontSize: 20 }} />
+            </Box>
+            <Box className="ic-center" sx={{ zIndex: 2 }}>
+              <CloseIcon sx={{ color: '#fff', fontSize: 20 }} />
+            </Box>
+            <Box component="span" className="lbl">
               {t('common.cancel', 'Cancelar')}
             </Box>
           </Button>
 
           <Button
             type="submit"
-            className="btn-save"
+            className="btn-save-anim"
             aria-label={t('common.save', 'Guardar')}
-            startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+            title={t('common.save', 'Guardar')}
             disabled={saving}
             variant="contained"
-            color="success" // Using success for green
+            color="primary"
             sx={{
+              position: 'relative',
+              overflow: 'hidden',
               mr: { xs: 0, md: 1 },
               minWidth: { xs: 40, md: 'auto' },
               width: { xs: 40, md: 'auto' },
-              height: { xs: 40, md: 'auto' },
+              height: { xs: 40, md: 48 },
               p: { xs: 0, md: '6px 16px' },
-              borderRadius: { xs: '50%', md: '8px' },
+              borderRadius: 3,
               textTransform: 'none',
-              boxShadow: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
               fontWeight: 600,
-              bgcolor: '#4CAF50', // Explicit green
-              '& .MuiButton-startIcon': { m: { xs: 0, md: '0 8px 0 -4px' } },
-              '&:hover': { bgcolor: '#43A047' }
+              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              bgcolor: (theme) => alpha(theme.palette.info.main, 0.12),
+              color: 'info.dark',
+              transition: 'box-shadow 0.2s ease, transform 0.1s ease',
+              '&:hover': {
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                transform: 'scale(1.03)',
+              },
+              '&:active': { transform: 'scale(0.95)', transitionDuration: '0.1s' },
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: 2,
+              },
+              '& .cov': {
+                position: 'absolute',
+                inset: 0,
+                borderRadius: 3,
+                bgcolor: 'info.main',
+                clipPath: {
+                  xs: 'circle(16px at 20px 50%)',
+                  md: 'circle(16px at 24px 50%)',
+                },
+                transition: 'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+              },
+              '&:hover .cov': {
+                clipPath: {
+                  xs: 'circle(150% at 20px 50%)',
+                  md: 'circle(150% at 24px 50%)',
+                },
+              },
+              '& .ic-rest, & .ic-center': {
+                position: 'absolute',
+                top: 0,
+                height: '100%',
+                display: 'grid',
+                placeItems: 'center',
+                transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+              },
+              '& .ic-rest': {
+                left: 0,
+                width: { xs: 40, md: 48 },
+                opacity: 1,
+              },
+              '&:hover .ic-rest': { opacity: 0 },
+              '& .ic-center': { inset: 0, opacity: 0 },
+              '&:hover .ic-center': { opacity: 1 },
+              '& .lbl': {
+                ml: { xs: 0, md: '48px' },
+                display: { xs: 'none', md: 'inline' },
+                whiteSpace: 'nowrap',
+                opacity: 1,
+                transform: 'translateX(0)',
+                transition:
+                  'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+              },
+              '&:hover .lbl': { opacity: 0, transform: 'translateX(-20px)' },
+              '@media (prefers-reduced-motion: reduce)': {
+                '& .cov, & .lbl, & .ic-rest, & .ic-center': { transition: 'none' },
+              },
             }}
           >
-            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+            <Box className="cov" />
+            <Box className="ic-rest">
+              {saving ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <SaveIcon sx={{ color: '#fff', fontSize: 20 }} />
+              )}
+            </Box>
+            <Box className="ic-center" sx={{ zIndex: 2 }}>
+              <SaveIcon sx={{ color: '#fff', fontSize: 20 }} />
+            </Box>
+            <Box component="span" className="lbl">
               {t('common.save', 'Guardar')}
             </Box>
           </Button>
@@ -1049,24 +1178,89 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             className="btn-preview"
             onClick={handlePreview}
             aria-label={t('profile.preview', 'Vista Previa')}
-            startIcon={<VisibilityIcon />}
-            variant="contained"
+            title={t('profile.preview', 'Vista Previa')}
+            variant="outlined"
+            color="inherit"
             sx={{
+              position: 'relative',
+              overflow: 'hidden',
               minWidth: { xs: 40, md: 'auto' },
               width: { xs: 40, md: 'auto' },
-              height: { xs: 40, md: 'auto' },
+              height: { xs: 40, md: 48 },
               p: { xs: 0, md: '6px 16px' },
-              borderRadius: { xs: '50%', md: '8px' },
+              borderRadius: 3,
               textTransform: 'none',
               fontWeight: 600,
-              boxShadow: 'none',
-              bgcolor: 'grey.600',
-              color: 'white',
-              '& .MuiButton-startIcon': { m: { xs: 0, md: '0 8px 0 -4px' } },
-              '&:hover': { bgcolor: 'grey.700' }
+              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              color: 'text.secondary',
+              borderColor: 'divider',
+              transition: 'box-shadow 0.2s ease, transform 0.1s ease',
+              '&:hover': {
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                transform: 'scale(1.03)',
+              },
+              '&:active': { transform: 'scale(0.95)', transitionDuration: '0.1s' },
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: 2,
+              },
+              '& .cov': {
+                position: 'absolute',
+                inset: 0,
+                borderRadius: 3,
+                bgcolor: 'grey.600',
+                clipPath: {
+                  xs: 'circle(16px at 20px 50%)',
+                  md: 'circle(16px at 24px 50%)',
+                },
+                transition: 'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+              },
+              '&:hover .cov': {
+                clipPath: {
+                  xs: 'circle(150% at 20px 50%)',
+                  md: 'circle(150% at 24px 50%)',
+                },
+              },
+              '& .ic-rest, & .ic-center': {
+                position: 'absolute',
+                top: 0,
+                height: '100%',
+                display: 'grid',
+                placeItems: 'center',
+                transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+              },
+              '& .ic-rest': {
+                left: 0,
+                width: { xs: 40, md: 48 },
+                opacity: 1,
+              },
+              '&:hover .ic-rest': { opacity: 0 },
+              '& .ic-center': { inset: 0, opacity: 0 },
+              '&:hover .ic-center': { opacity: 1 },
+              '& .lbl': {
+                ml: { xs: 0, md: '48px' },
+                display: { xs: 'none', md: 'inline' },
+                whiteSpace: 'nowrap',
+                opacity: 1,
+                transform: 'translateX(0)',
+                transition:
+                  'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+              },
+              '&:hover .lbl': { opacity: 0, transform: 'translateX(-20px)' },
+              '@media (prefers-reduced-motion: reduce)': {
+                '& .cov, & .lbl, & .ic-rest, & .ic-center': { transition: 'none' },
+              },
             }}
           >
-            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+            <Box className="cov" />
+            <Box className="ic-rest">
+              <VisibilityIcon sx={{ color: '#fff', fontSize: 20 }} />
+            </Box>
+            <Box className="ic-center" sx={{ zIndex: 2 }}>
+              <VisibilityIcon sx={{ color: '#fff', fontSize: 20 }} />
+            </Box>
+            <Box component="span" className="lbl">
               {t('profile.preview', 'Vista Previa')}
             </Box>
           </Button>
@@ -1343,114 +1537,123 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Dialog>
 
       {showSticky && (
-        <Box
-          className="floating-actions"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: { xs: 2, lg: 3 },
-            position: 'fixed',
-            // Teléfonos 4rem; tablets (sm, con barra del navegador abajo) más arriba
-            // para que el botón de vista previa quede visible; desktop 3rem
-            bottom: { xs: '4rem', sm: '8rem', lg: '3rem' },
-            // Móvil compacto: respeta el área segura (notch); en tablet más separado
-            // del filo para que no se vean pegados al borde
-            right: { xs: 'max(0.75rem, env(safe-area-inset-right))', sm: '1.5rem', lg: `${offsetRight}px` },
-            left: 'auto',
-            top: 'auto',
-            transform: 'none',
-            m: 0,
-            p: 0,
-            zIndex: 1000,
-          }}
-        >
-          {/* Toggle: solo controla la visibilidad, sin contenido extra */}
-          <IconButton
-            className="btn-toggle-actions"
-            onClick={() => setShowActions((v) => !v)}
-            aria-label={t('common.toggleActions', 'Mostrar / ocultar acciones')}
-            color="inherit"
-            sx={{
-              width: { xs: 48, lg: 56 },
-              height: { xs: 48, lg: 56 },
-              borderRadius: '50%',
-              bgcolor: 'grey.700',
-              color: 'white',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              '&:hover': { bgcolor: 'grey.800' },
-            }}
-          >
-            {showActions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </IconButton>
-          {showActions && (
+        <Portal container={() => document.body}>
           <Box
+            className="floating-actions"
             sx={{
               display: 'flex',
-              flexDirection: { xs: 'column', lg: 'row' },
+              // Columna vertical en todos los viewports (móvil intacto);
+              // fijo para que el scroll y la rotación no lo pierdan
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: { xs: 2, lg: 3 },
+              gap: { xs: 2, md: 3 },
+              position: 'fixed',
+              // 4rem móvil / 2rem desktop (valores que ya funcionaban);
+              // solo tablets (táctil + ancha + alta) más arriba por la barra
+              // del navegador; móviles en horizontal conservan 2rem
+              bottom: { xs: '4rem', md: '2rem' },
+            '@media (pointer: coarse) and (min-width: 600px) and (min-height: 600px)': {
+              // Solo tablets: sube la columna para que vista previa no se corte
+              bottom: '8rem',
+            },
+              // Móvil pegados al filo para no tapar las tarjetas; desktop junto
+              // al contenedor (posición anterior), calculado por JS
+              right: { xs: 'max(0.5rem, env(safe-area-inset-right))', md: '1rem', lg: `${offsetRight}px` },
+              left: 'auto',
+              top: 'auto',
+              transform: 'none',
               m: 0,
               p: 0,
+              zIndex: 1000,
             }}
           >
-          <IconButton
-            className="btn-cancel"
-            onClick={onBack}
-            aria-label={t('common.cancel', 'Cancelar')}
-            color="error"
-            sx={{
-              width: { xs: 48, lg: 56 },
-              height: { xs: 48, lg: 56 },
-              borderRadius: '50%',
-              bgcolor: 'error.main',
-              color: 'error.contrastText',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              '&:hover': { bgcolor: 'error.dark' },
-            }}
-          >
-            <CloseIcon sx={{ fontSize: 24 }} />
-          </IconButton>
-          <IconButton
-            className="btn-save"
-            onClick={handleSubmit(onSubmit)}
-            aria-label={t('common.save', 'Guardar')}
-            color="primary"
-            disabled={saving}
-            sx={{
-              width: { xs: 48, lg: 64 },
-              height: { xs: 48, lg: 64 },
-              borderRadius: '50%',
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
-              '&:hover': { bgcolor: 'primary.dark' },
-            }}
-          >
-            {saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon sx={{ fontSize: 24 }} />}
-          </IconButton>
-          <IconButton
-            className="btn-preview"
-            onClick={handlePreview}
-            aria-label={t('profile.preview', 'Vista Previa')}
-            color="inherit"
-            sx={{
-              width: { xs: 48, lg: 56 },
-              height: { xs: 48, lg: 56 },
-              borderRadius: '50%',
-              bgcolor: 'grey.600',
-              color: 'white',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-              '&:hover': { bgcolor: 'grey.700' },
-            }}
-          >
-            <VisibilityIcon sx={{ fontSize: 24 }} />
-          </IconButton>
+            {/* Toggle: solo controla la visibilidad, sin contenido extra */}
+            <IconButton
+              className="btn-toggle-actions"
+              onClick={() => setShowActions((v) => !v)}
+              aria-label={t('common.toggleActions', 'Mostrar / ocultar acciones')}
+              color="inherit"
+              sx={{
+                width: { xs: 48, md: 56 },
+                height: { xs: 48, md: 56 },
+                borderRadius: '50%',
+                bgcolor: 'grey.700',
+                color: 'white',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                '&:hover': { bgcolor: 'grey.800' },
+              }}
+            >
+              {showActions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+            {showActions && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: { xs: 2, md: 3 },
+                  m: 0,
+                  p: 0,
+                }}
+              >
+                <IconButton
+                  className="btn-cancel"
+                  onClick={onBack}
+                  aria-label={t('common.cancel', 'Cancelar')}
+                  color="error"
+                  sx={{
+                    width: { xs: 48, md: 56 },
+                    height: { xs: 48, md: 56 },
+                    borderRadius: '50%',
+                    bgcolor: 'error.main',
+                    color: 'error.contrastText',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                    '&:hover': { bgcolor: 'error.dark' },
+                  }}
+                >
+                  <CloseIcon sx={{ fontSize: 24 }} />
+                </IconButton>
+                <IconButton
+                  className="btn-save"
+                  onClick={handleSubmit(onSubmit)}
+                  aria-label={t('common.save', 'Guardar')}
+                  color="primary"
+                  disabled={saving}
+                  sx={{
+                    width: { xs: 48, md: 56 },
+                    height: { xs: 48, md: 56 },
+                    borderRadius: '50%',
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+                    '&:hover': { bgcolor: 'primary.dark' },
+                  }}
+                >
+                  {saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon sx={{ fontSize: 24 }} />}
+                </IconButton>
+                <IconButton
+                  className="btn-preview"
+                  onClick={handlePreview}
+                  aria-label={t('profile.preview', 'Vista Previa')}
+                  color="inherit"
+                  sx={{
+                    width: { xs: 48, md: 56 },
+                    height: { xs: 48, md: 56 },
+                    borderRadius: '50%',
+                    bgcolor: 'grey.600',
+                    color: 'white',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                    '&:hover': { bgcolor: 'grey.700' },
+                  }}
+                >
+                  <VisibilityIcon sx={{ fontSize: 24 }} />
+                </IconButton>
+              </Box>
+            )}
           </Box>
-          )}
-        </Box>
+        </Portal>
       )}
 
       {/* Info Drawers */}
