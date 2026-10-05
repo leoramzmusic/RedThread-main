@@ -3,19 +3,49 @@ import { useTranslation } from "next-i18next";
 import { Box, Button, Typography, useTheme, alpha } from "@mui/material";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import BottomSheet from "../shared/BottomSheet";
+import type { ProfileTipData } from "../../hooks/useProfileTip";
 
 interface VisualTipsSheetProps {
   open: boolean;
   onClose: () => void;
+  tip?: ProfileTipData | null;
 }
 
-const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({ open, onClose }) => {
+interface TipSlide {
+  title: string;
+  desc: string;
+  ok: { src: string; label: string };
+  ko: { src: string; label: string };
+}
+
+function resolveTipSlide(slide: any): TipSlide {
+  const translations = slide?.translations ?? {};
+  const tr = translations["es"] ?? Object.values(translations)[0] ?? {};
+  return {
+    title: (tr as any)?.title ?? "",
+    desc: (tr as any)?.description ?? "",
+    ok: {
+      src: slide?.ok_image_url ?? "",
+      label: (tr as any)?.ok_label ?? "OK",
+    },
+    ko: {
+      src: slide?.ko_image_url ?? "",
+      label: (tr as any)?.ko_label ?? "X",
+    },
+  };
+}
+
+const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
+  open,
+  onClose,
+  tip,
+}) => {
   const theme = useTheme();
   const { t } = useTranslation("common");
   const [index, setIndex] = useState(0);
   const startX = useRef(0);
 
-  const slides = [
+  const hardcodedSlides: TipSlide[] = [
     {
       title: t(
         "profile.photoTips.slide1.title",
@@ -66,6 +96,18 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({ open, onClose }) => {
     },
   ];
 
+  // DB-first: use tip slides when present, else hardcoded fallback.
+  const slides: TipSlide[] =
+    tip?.slides && tip.slides.length > 0
+      ? (tip.slides as any[]).map(resolveTipSlide)
+      : hardcodedSlides;
+
+  const sheetTitle =
+    tip?.translation?.title ?? t("profile.photoTips.title", "Tips para tus fotos");
+  const gotItText =
+    tip?.translation?.trigger_button_text ??
+    t("profile.photoTips.gotIt", "Entendido");
+
   const goTo = (i: number) =>
     setIndex(Math.max(0, Math.min(slides.length - 1, i)));
   const prev = () => goTo(index - 1);
@@ -106,7 +148,7 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({ open, onClose }) => {
       <Box display="flex" alignItems="center" gap={1} mb={2}>
         <LightbulbIcon color="action" />
         <Typography variant="h6" fontWeight="bold">
-          {t("profile.photoTips.title", "Tips para tus fotos")}
+          {sheetTitle}
         </Typography>
       </Box>
 
@@ -317,7 +359,7 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({ open, onClose }) => {
           },
         }}
       >
-        {t("profile.photoTips.gotIt", "Entendido")}
+        {gotItText}
       </Button>
     </BottomSheet>
   );

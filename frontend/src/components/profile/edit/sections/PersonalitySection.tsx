@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import OptionSelector from "./OptionSelector";
 import SocialStyleTest from "../SocialStyleTest";
+import { useProfileTip } from "../../../../hooks/useProfileTip";
 
 interface PersonalitySectionProps {
   control: Control<any>;
@@ -35,6 +36,8 @@ export default function PersonalitySection({
 }: PersonalitySectionProps) {
   const { t } = useTranslation("common");
   const [testOpen, setTestOpen] = useState(false);
+  // DB-first stepper tip; quiz logic unchanged, hardcoded strings are fallback.
+  const { tip: socialStyleTip } = useProfileTip("social_style_test");
 
   return (
     <Grid item xs={12}>
@@ -84,9 +87,10 @@ export default function PersonalitySection({
                   onClick={() => setTestOpen(true)}
                   sx={{ textTransform: "none", fontSize: "0.75rem" }}
                 >
-                  {t("profile.personality.social.test_button", {
-                    defaultValue: "¿No sabes cuál eres?",
-                  })}
+                  {socialStyleTip?.translation?.trigger_button_text ??
+                    t("profile.personality.social.test_button", {
+                      defaultValue: "¿No sabes cuál eres?",
+                    })}
                 </Button>
               </Box>
               <OptionSelector
@@ -291,6 +295,15 @@ export default function PersonalitySection({
             </Grid>
           </Grid>
 
+          {socialStyleTip?.translation?.title && (
+            <Typography
+              variant="subtitle2"
+              fontWeight={700}
+              sx={{ mt: 1, mb: 1 }}
+            >
+              {socialStyleTip.translation.title}
+            </Typography>
+          )}
           <SocialStyleTest
             open={testOpen}
             onClose={() => setTestOpen(false)}

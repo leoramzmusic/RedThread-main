@@ -24,14 +24,17 @@ import VideoCallIcon from "@mui/icons-material/VideoCall";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import StarIcon from "@mui/icons-material/Star";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MediaItem, MediaType } from "../../types/media";
 import apiClient from "../../services/api";
 import { useTranslation } from "next-i18next";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 import VisualTipsSheet from "./VisualTipsSheet";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import { useProfileTip } from "../../hooks/useProfileTip";
 import { updateUserAvatar } from "../../store/slices/authSlice";
 import {
   DndContext,
@@ -58,6 +61,7 @@ const DEFAULT_THEME_HOVER = "#FF5252";
 
 interface MediaManagerProps {
   userId: string;
+  smartPhotosEnabled?: boolean;
 }
 
 // Sortable Media Item Component
@@ -68,6 +72,7 @@ function SortableMediaItem({
   isMainPhoto,
   onView,
   width,
+  smartPhotosEnabled,
 }: {
   item: MediaItem;
   index: number;
@@ -75,6 +80,7 @@ function SortableMediaItem({
   isMainPhoto?: boolean;
   onView?: (item: MediaItem) => void;
   width?: number;
+  smartPhotosEnabled?: boolean;
 }) {
   const {
     attributes,
@@ -172,7 +178,23 @@ function SortableMediaItem({
         </Box>
 
         {/* Main Photo Indicator */}
-        {isMainPhoto && (
+        {isMainPhoto && smartPhotosEnabled ? (
+          <Chip
+            icon={<AutoAwesomeIcon sx={{ fontSize: "0.7rem !important" }} />}
+            label="Smart"
+            size="small"
+            color="warning"
+            sx={{
+              position: "absolute",
+              top: 4,
+              left: 4,
+              height: 20,
+              fontSize: "0.65rem",
+              fontWeight: 700,
+              "& .MuiChip-icon": { color: "white", mr: 0.5 },
+            }}
+          />
+        ) : isMainPhoto && !smartPhotosEnabled ? (
           <Chip
             icon={<StarIcon sx={{ fontSize: "1rem !important" }} />}
             label="Perfil"
@@ -187,7 +209,7 @@ function SortableMediaItem({
               "& .MuiChip-icon": { color: "white" },
             }}
           />
-        )}
+        ) : null}
 
         <IconButton
           size="small"
@@ -211,7 +233,7 @@ function SortableMediaItem({
   );
 }
 
-const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
+const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled = false }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -220,6 +242,8 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [mediaToDelete, setMediaToDelete] = useState<string | null>(null);
   const [showTips, setShowTips] = useState(false);
+  // DB-first visual tips; VisualTipsSheet falls back to hardcoded slides when null.
+  const { tip: visualTip } = useProfileTip("photos_visual");
 
   // Preview Modal State
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
@@ -505,6 +529,7 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
                       onDelete={handleDeleteClick}
                       onView={setPreviewItem}
                       isMainPhoto={index === 0}
+                      smartPhotosEnabled={smartPhotosEnabled}
                     />
                   ))}
                 </SortableContext>
@@ -700,7 +725,11 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId }) => {
         ) : null}
       </DragOverlay>
 
-      <VisualTipsSheet open={showTips} onClose={() => setShowTips(false)} />
+      <VisualTipsSheet
+        open={showTips}
+        onClose={() => setShowTips(false)}
+        tip={visualTip}
+      />
 
       {/* Media Preview Modal */}
       <Dialog
