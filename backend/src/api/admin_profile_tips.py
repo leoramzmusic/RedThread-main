@@ -1,6 +1,8 @@
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException
+import uuid
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from src.models.profile_tip import ProfileTip, TipTranslation, Slide
 from src.models.admin_rbac import Permission
@@ -71,6 +73,37 @@ async def delete_tip(tip_key: str, admin: Employee = Depends(require_employee_pe
         raise HTTPException(status_code=404, detail="Tip no encontrado")
     await tip.delete()
     return {"status": "success"}
+
+TIPS_UPLOAD_DIR = Path("static/tips")
+TIPS_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+ALLOWED_TIP_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/jpg", "image/gif"}
+MAX_TIP_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
+
+
+@router.post("/{tip_key}/images")
+async def upload_tip_image(
+    tip_key: str,
+    file: UploadFile = File(...),
+    admin: Employee = Depends(require_employee_permission(Permission.EDIT_PROFILE_TIPS)),
+):
+    tip = await _get_by_key(tip_key)
+    if not tip:
+        raise HTTPException(status_code=404, detail="Tip no encontrado")
+    if file.content_type not in ALLOWED_TIP_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail="Tipo de archivo inválido. Permitidos: JPEG, PNG, WebP, GIF")
+    contents = await file.read()
+    if len(contents) > MAX_TIP_IMAGE_SIZE:
+        raise HTTPException(status_code=400, detail="Archivo demasiado grande. Máximo 10MB")
+    ext = (file.filename or "jpg").split(".")[-1].lower()
+    if ext not in {"jpg", "jpeg", "png", "webp", "gif"}:
+        ext = "jpg"
+    filename = f"{uuid.uuid4()}.{ext}"
+    file_path = TIPS_UPLOAD_DIR / filename
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    url = f"/static/tips/{filename}"
+    await log_employee_action(employee_id=str(admin.id), action_type="upload_profile_tip_image", description=f"Uploaded image for tip {tip_key}", target_type="profile_tip", target_id=str(tip.id))
+    return {"url": url}
 
 @public_router.get("/{tip_key}")
 async def get_public_tip(tip_key: str, current_user: User = Depends(get_current_user)):

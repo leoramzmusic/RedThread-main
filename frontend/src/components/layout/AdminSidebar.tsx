@@ -53,6 +53,7 @@ import {
   Gavel as GavelIcon,
   ContactSupport as ContactSupportIcon,
 } from '@mui/icons-material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export const DRAWER_WIDTH = 260;
 export const DRAWER_WIDTH_COLLAPSED = 70;
@@ -258,6 +259,7 @@ export default function AdminSidebar({
       icon: <UserIcon className="rt-pulse" />,
       children: [
         { id: 'perfiles-modulos', label: 'Módulos', icon: <PreferencesIcon />, path: '/portal-redthread/perfiles/modulos' },
+        { id: 'perfiles-tips', label: 'Tips', icon: <HelpOutlineIcon />, path: '/portal-redthread/perfiles/tips' },
       ],
     },
     {

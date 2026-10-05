@@ -1,0 +1,317 @@
+import React, { useState } from 'react';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    Divider,
+    FormControl,
+    FormControlLabel,
+    Grid,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Switch,
+    Tab,
+    Tabs,
+    TextField,
+    Typography,
+} from '@mui/material';
+import {
+    Add as AddIcon,
+    Delete as DeleteIcon,
+    ExpandMore as ExpandMoreIcon,
+    ArrowUpward as UpIcon,
+    ArrowDownward as DownIcon,
+} from '@mui/icons-material';
+import { tipsApi, type AdminTip, type AdminTipSlide, type AdminTipTranslation } from '../../services/adminApi';
+
+export const ALL_TIP_LANGS = [
+    'es', 'en', 'fr', 'de', 'it', 'pt', 'nl', 'sv', 'ru', 'zh',
+    'ja', 'ko', 'hi', 'bn', 'ar', 'sw', 'ha', 'tl', 'ms', 'mi', 'am',
+];
+const MAIN_LANGS = ['es', 'en'];
+const EXTRA_LANGS = ALL_TIP_LANGS.filter((l) => !MAIN_LANGS.includes(l));
+
+const EMPTY_TR: AdminTipTranslation = {
+    title: '',
+    description: '',
+    trigger_button_text: '',
+    ok_label: '',
+    ko_label: '',
+};
+const TR_FIELDS: Array<{ key: keyof AdminTipTranslation; label: string; multiline?: boolean }> = [
+    { key: 'title', label: 'Título' },
+    { key: 'description', label: 'Descripción', multiline: true },
+    { key: 'trigger_button_text', label: 'Texto del botón' },
+    { key: 'ok_label', label: 'Etiqueta OK' },
+    { key: 'ko_label', label: 'Etiqueta KO' },
+];
+
+interface TipFormProps {
+    value: Partial<AdminTip>;
+    onChange: (next: Partial<AdminTip>) => void;
+    persistedTipKey: string | null;
+    readOnly?: boolean;
+    onSnack: (msg: string, severity: 'success' | 'error') => void;
+}
+
+export default function TipForm({ value, onChange, persistedTipKey, readOnly, onSnack }: TipFormProps) {
+    const [tab, setTab] = useState(0);
+    const [uploading, setUploading] = useState<string | null>(null);
+
+    const set = (patch: Partial<AdminTip>) => onChange({ ...value, ...patch });
+
+    const setTr = (lang: string, field: keyof AdminTipTranslation, text: string) => {
+        const translations = { ...(value.translations ?? {}) };
+        translations[lang] = { ...(translations[lang] ?? { ...EMPTY_TR }), [field]: text };
+        set({ translations });
+    };
+
+    const setSlide = (index: number, patch: Partial<AdminTipSlide>) => {
+        const slides = [...(value.slides ?? [])];
+        slides[index] = { ...slides[index], ...patch };
+        set({ slides: slides.map((s, i) => ({ ...s, order: i })) });
+    };
+
+    const addSlide = () => {
+        const slides = [...(value.slides ?? []), { order: (value.slides ?? []).length, translations: { es: { ...EMPTY_TR } }, ok_image_url: '', ko_image_url: '' }];
+        set({ slides });
+    };
+
+    const removeSlide = (index: number) => {
+        set({ slides: (value.slides ?? []).filter((_, i) => i !== index).map((s, i) => ({ ...s, order: i })) });
+    };
+
+    const moveSlide = (index: number, dir: -1 | 1) => {
+        const slides = [...(value.slides ?? [])];
+        const j = index + dir;
+        if (j < 0 || j >= slides.length) return;
+        [slides[index], slides[j]] = [slides[j], slides[index]];
+        set({ slides: slides.map((s, i) => ({ ...s, order: i })) });
+    };
+
+    const handleUpload = async (index: number, field: 'ok_image_url' | 'ko_image_url', file: File | undefined) => {
+        if (!file) return;
+        if (!persistedTipKey) {
+            onSnack('Guarda el tip primero para poder subir imágenes', 'error');
+            return;
+        }
+        const key = `${index}-${field}`;
+        setUploading(key);
+        try {
+            const { url } = await tipsApi.uploadImage(persistedTipKey, file);
+            setSlide(index, { [field]: url });
+            onSnack('Imagen subida', 'success');
+        } catch {
+            onSnack('Error al subir la imagen', 'error');
+        } finally {
+            setUploading(null);
+        }
+    };
+
+    const renderLangGrid = (lang: string) => {
+        const tr = value.translations?.[lang] ?? EMPTY_TR;
+        return (
+            <Grid container spacing={2} key={lang} sx={{ mb: 2 }}>
+                <Grid item xs={12}>
+                    <Typography variant="subtitle2" fontWeight={700} sx={{ textTransform: 'uppercase' }}>
+                        {lang}
+                    </Typography>
+                </Grid>
+                {TR_FIELDS.map((f) => (
+                    <Grid item xs={12} sm={f.multiline ? 12 : 6} key={f.key}>
+                        <TextField
+                            label={`${f.label} (${lang})`}
+                            value={(tr[f.key] as string) ?? ''}
+                            onChange={(e) => setTr(lang, f.key, e.target.value)}
+                            disabled={readOnly}
+                            multiline={f.multiline}
+                            rows={f.multiline ? 2 : 1}
+                            fullWidth
+                            size="small"
+                        />
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    };
+
+    return (
+        <Box>
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
+                <Tab label="General" />
+                <Tab label="Traducciones" />
+                <Tab label={`Slides (${(value.slides ?? []).length})`} />
+            </Tabs>
+
+            {tab === 0 && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="tip_key"
+                            value={value.tip_key ?? ''}
+                            onChange={(e) => set({ tip_key: e.target.value })}
+                            disabled={readOnly || !!persistedTipKey}
+                            helperText={persistedTipKey ? 'La clave no se puede cambiar' : 'Identificador único'}
+                            fullWidth
+                            size="small"
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel>Tipo</InputLabel>
+                            <Select
+                                value={value.type ?? 'drawer'}
+                                label="Tipo"
+                                disabled={readOnly}
+                                onChange={(e) => set({ type: e.target.value as AdminTip['type'] })}
+                            >
+                                <MenuItem value="carousel">carousel</MenuItem>
+                                <MenuItem value="drawer">drawer</MenuItem>
+                                <MenuItem value="stepper">stepper</MenuItem>
+                                <MenuItem value="dialog">dialog</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="section_key"
+                            value={value.section_key ?? ''}
+                            onChange={(e) => set({ section_key: e.target.value })}
+                            disabled={readOnly}
+                            fullWidth
+                            size="small"
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Orden"
+                            type="number"
+                            value={value.order ?? 0}
+                            onChange={(e) => set({ order: Number(e.target.value) })}
+                            disabled={readOnly}
+                            fullWidth
+                            size="small"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={value.is_active ?? true}
+                                    onChange={(e) => set({ is_active: e.target.checked })}
+                                    disabled={readOnly}
+                                />
+                            }
+                            label="Activo"
+                        />
+                    </Grid>
+                </Grid>
+            )}
+
+            {tab === 1 && (
+                <Box>
+                    {MAIN_LANGS.map(renderLangGrid)}
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography variant="subtitle2">
+                                Otros idiomas ({EXTRA_LANGS.length})
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>{EXTRA_LANGS.map(renderLangGrid)}</AccordionDetails>
+                    </Accordion>
+                </Box>
+            )}
+
+            {tab === 2 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {(value.slides ?? []).map((slide, i) => (
+                        <Box key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, p: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                <Typography variant="subtitle2" fontWeight={700} sx={{ flex: 1 }}>
+                                    Slide {i + 1}
+                                </Typography>
+                                <IconButton size="small" disabled={readOnly || i === 0} onClick={() => moveSlide(i, -1)} aria-label="subir slide">
+                                    <UpIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton size="small" disabled={readOnly || i === (value.slides ?? []).length - 1} onClick={() => moveSlide(i, 1)} aria-label="bajar slide">
+                                    <DownIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton size="small" disabled={readOnly} onClick={() => removeSlide(i)} aria-label="eliminar slide">
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
+                            </Box>
+                            <Grid container spacing={2}>
+                                {(['es', 'en'] as const).map((lang) => (
+                                    <React.Fragment key={lang}>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label={`Título (${lang})`}
+                                                value={slide.translations?.[lang]?.title ?? ''}
+                                                onChange={(e) => {
+                                                    const translations = { ...(slide.translations ?? {}) };
+                                                    translations[lang] = { ...(translations[lang] ?? { ...EMPTY_TR }), title: e.target.value };
+                                                    setSlide(i, { translations });
+                                                }}
+                                                disabled={readOnly}
+                                                fullWidth
+                                                size="small"
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label={`Descripción (${lang})`}
+                                                value={slide.translations?.[lang]?.description ?? ''}
+                                                onChange={(e) => {
+                                                    const translations = { ...(slide.translations ?? {}) };
+                                                    translations[lang] = { ...(translations[lang] ?? { ...EMPTY_TR }), description: e.target.value };
+                                                    setSlide(i, { translations });
+                                                }}
+                                                disabled={readOnly}
+                                                fullWidth
+                                                size="small"
+                                            />
+                                        </Grid>
+                                    </React.Fragment>
+                                ))}
+                                {(['ok_image_url', 'ko_image_url'] as const).map((field) => (
+                                    <Grid item xs={12} sm={6} key={field}>
+                                        <TextField
+                                            label={field === 'ok_image_url' ? 'Imagen OK (URL)' : 'Imagen KO (URL)'}
+                                            value={(slide[field] as string) ?? ''}
+                                            onChange={(e) => setSlide(i, { [field]: e.target.value })}
+                                            disabled={readOnly}
+                                            fullWidth
+                                            size="small"
+                                        />
+                                        <Button
+                                            component="label"
+                                            size="small"
+                                            sx={{ mt: 1 }}
+                                            disabled={readOnly || uploading !== null}
+                                        >
+                                            {uploading === `${i}-${field}` ? 'Subiendo…' : 'Subir imagen'}
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                hidden
+                                                onChange={(e) => void handleUpload(i, field, e.target.files?.[0])}
+                                            />
+                                        </Button>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
+                    ))}
+                    <Divider />
+                    <Button variant="outlined" startIcon={<AddIcon />} onClick={addSlide} disabled={readOnly}>
+                        Añadir slide
+                    </Button>
+                </Box>
+            )}
+        </Box>
+    );
+}
