@@ -35,6 +35,8 @@ export const ALL_TIP_LANGS = [
 const MAIN_LANGS = ['es', 'en'];
 const EXTRA_LANGS = ALL_TIP_LANGS.filter((l) => !MAIN_LANGS.includes(l));
 
+const MAX_SLIDES = 6;
+
 const EMPTY_TR: AdminTipTranslation = {
     title: '',
     description: '',
@@ -77,8 +79,12 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
     };
 
     const addSlide = () => {
-        const slides = [...(value.slides ?? []), { order: (value.slides ?? []).length, translations: { es: { ...EMPTY_TR } }, ok_image_url: '', ko_image_url: '' }];
-        set({ slides });
+        const slides = value.slides ?? [];
+        if (slides.length >= MAX_SLIDES) {
+            onSnack(`Máximo ${MAX_SLIDES} slides por tip`, 'error');
+            return;
+        }
+        set({ slides: [...slides, { order: slides.length, translations: { es: { ...EMPTY_TR } }, ok_image_url: '', ko_image_url: '' }] });
     };
 
     const removeSlide = (index: number) => {
@@ -335,8 +341,8 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                         </Box>
                     ))}
                     <Divider />
-                    <Button variant="outlined" startIcon={<AddIcon />} onClick={addSlide} disabled={readOnly}>
-                        Añadir slide
+                    <Button variant="outlined" startIcon={<AddIcon />} onClick={addSlide} disabled={readOnly || (value.slides ?? []).length >= MAX_SLIDES}>
+                        Añadir slide ({(value.slides ?? []).length}/{MAX_SLIDES})
                     </Button>
                 </Box>
             )}
