@@ -1,0 +1,376 @@
+import React, { useRef, useState } from "react";
+import { useTranslation } from "next-i18next";
+import { Box, Button, Typography, useTheme, alpha } from "@mui/material";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import BottomSheet from "../../shared/BottomSheet";
+import type { ProfileTipData } from "../../../hooks/useProfileTip";
+
+interface CarouselTipProps {
+  tip?: ProfileTipData | null;
+  onClose: () => void;
+  open?: boolean;
+  fallback?: React.ReactNode;
+}
+
+interface CarouselSlide {
+  title: string;
+  desc: string;
+  ok: { src: string; label: string };
+  ko: { src: string; label: string };
+}
+
+function resolveSlideTranslation(slide: any): {
+  title: string;
+  description: string;
+  ok_label: string;
+  ko_label: string;
+} {
+  const translations = slide?.translations ?? {};
+  const tr = translations["es"] ?? Object.values(translations)[0] ?? {};
+  return {
+    title: (tr as any)?.title ?? "",
+    description: (tr as any)?.description ?? "",
+    ok_label: (tr as any)?.ok_label ?? "OK",
+    ko_label: (tr as any)?.ko_label ?? "X",
+  };
+}
+
+const CarouselTip: React.FC<CarouselTipProps> = ({
+  tip,
+  onClose,
+  open = true,
+}) => {
+  const theme = useTheme();
+  const { t } = useTranslation("common");
+  const [index, setIndex] = useState(0);
+  const startX = useRef(0);
+
+  const hardcodedSlides: CarouselSlide[] = [
+    {
+      title: t(
+        "profile.photoTips.slide1.title",
+        "Usa fotos que muestren tu rostro",
+      ),
+      desc: t(
+        "profile.photoTips.slide1.desc",
+        "Los perfiles con fotos de cara suelen recibir más Likes.",
+      ),
+      ok: {
+        src: "/tips/rostro-ok.jpg",
+        label: t("profile.photoTips.slide1.ok", "Cara OK"),
+      },
+      ko: {
+        src: "/tips/espalda-ko.jpg",
+        label: t("profile.photoTips.slide1.ko", "Espalda X"),
+      },
+    },
+    {
+      title: t("profile.photoTips.slide2.title", "Bye bye a los filtros"),
+      desc: t(
+        "profile.photoTips.slide2.desc",
+        "Evita filtros exagerados. Usa fotos nítidas y recientes.",
+      ),
+      ok: {
+        src: "/tips/natural-ok.jpg",
+        label: t("profile.photoTips.slide2.ok", "Natural OK"),
+      },
+      ko: {
+        src: "/tips/filtro-ko.jpg",
+        label: t("profile.photoTips.slide2.ko", "Filtro X"),
+      },
+    },
+    {
+      title: t("profile.photoTips.slide3.title", "Muestra tus pasiones"),
+      desc: t(
+        "profile.photoTips.slide3.desc",
+        "Añade fotos que reflejen tus hobbies e intereses.",
+      ),
+      ok: {
+        src: "/tips/hobby-ok.jpg",
+        label: t("profile.photoTips.slide3.ok", "Hobby OK"),
+      },
+      ko: {
+        src: "/tips/objeto-ko.jpg",
+        label: t("profile.photoTips.slide3.ko", "Objeto X"),
+      },
+    },
+  ];
+
+  const slideList: CarouselSlide[] =
+    tip?.slides && tip.slides.length > 0
+      ? (tip.slides as any[]).map((s) => {
+          const tr = resolveSlideTranslation(s);
+          return {
+            title: tr.title,
+            desc: tr.description,
+            ok: { src: s.ok_image_url ?? "", label: tr.ok_label },
+            ko: { src: s.ko_image_url ?? "", label: tr.ko_label },
+          };
+        })
+      : hardcodedSlides;
+
+  const goTo = (i: number) =>
+    setIndex(Math.max(0, Math.min(slideList.length - 1, i)));
+  const prev = () => goTo(index - 1);
+  const next = () => goTo(index + 1);
+
+  const onPointerDown = (e: React.TouchEvent | React.MouseEvent) => {
+    startX.current = "touches" in e ? e.touches[0].clientX : e.clientX;
+  };
+
+  const onPointerUp = (e: React.TouchEvent | React.MouseEvent) => {
+    const endX =
+      "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
+    const deltaX = endX - startX.current;
+
+    // Horizontal swipe navigation
+    if (deltaX > 50) prev();
+    else if (deltaX < -50) next();
+  };
+
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>,
+    isOk: boolean,
+  ) => {
+    // Fallback to a colored placeholder if image fails
+    const target = e.currentTarget;
+    target.style.display = "none"; // Hide broken image
+    target.parentElement!.style.backgroundColor = isOk
+      ? alpha(theme.palette.success.main, 0.1)
+      : alpha(theme.palette.error.main, 0.1);
+  };
+
+  const sheetTitle =
+    tip?.translation?.title ??
+    t("profile.photoTips.title", "Tips para tus fotos");
+  const gotItText =
+    tip?.translation?.trigger_button_text ??
+    t("profile.photoTips.gotIt", "Entendido");
+
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      sx={{ transform: "translateX(120px)" }}
+    >
+      <Box display="flex" alignItems="center" gap={1} mb={2}>
+        <LightbulbIcon color="action" />
+        <Typography variant="h6" fontWeight="bold">
+          {sheetTitle}
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          overflow: "hidden",
+          width: "100%",
+          touchAction: "none", // Allow parent handling of vertical drag
+          cursor: "grab",
+          "&:active": { cursor: "grabbing" },
+        }}
+        onMouseDown={onPointerDown}
+        onMouseUp={onPointerUp}
+        onTouchStart={onPointerDown}
+        onTouchEnd={onPointerUp}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            transition: "transform 250ms ease-out",
+            transform: `translateX(-${index * 100}%)`,
+          }}
+        >
+          {slideList.map((s, i) => (
+            <Box
+              key={i}
+              sx={{
+                flex: "0 0 100%",
+                px: 0.5,
+                boxSizing: "border-box",
+              }}
+            >
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                {s.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" mb={2}>
+                {s.desc}
+              </Typography>
+
+              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mb={1}>
+                {/* OK Example */}
+                <Box>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      aspectRatio: "1/1",
+                      bgcolor: "action.hover",
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      mb: 1,
+                      position: "relative",
+                      border: "2px solid #ffffff",
+                    }}
+                  >
+                    <img
+                      src={s.ok.src}
+                      alt={s.ok.label}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      onError={(e) => handleImageError(e, true)}
+                    />
+                  </Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      fontWeight: 600,
+                      color: "success.main",
+                    }}
+                  >
+                    ✓ {s.ok.label}
+                  </Typography>
+                </Box>
+
+                {/* KO Example */}
+                <Box>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      aspectRatio: "1/1",
+                      bgcolor: "action.hover",
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      mb: 1,
+                      position: "relative",
+                      border: "2px solid #ffffff",
+                    }}
+                  >
+                    <img
+                      src={s.ko.src}
+                      alt={s.ko.label}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      onError={(e) => handleImageError(e, false)}
+                    />
+                  </Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      fontWeight: 600,
+                      color: "error.main",
+                    }}
+                  >
+                    ✗ {s.ko.label}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      {/* Controls */}
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mt={3}
+        mb={2}
+      >
+        <Button
+          onClick={prev}
+          disabled={index === 0}
+          variant="outlined"
+          size="small"
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            minWidth: "auto",
+            px: 2,
+            color: "text.primary",
+            borderColor: "divider",
+            "&:hover": {
+              borderColor: "text.primary",
+              bgcolor: "action.hover",
+            },
+          }}
+        >
+          {t("profile.photoTips.prev", "Anterior")}
+        </Button>
+
+        <Box display="flex" gap={1}>
+          {slideList.map((_, i) => (
+            <Box
+              key={i}
+              onClick={() => goTo(i)}
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                bgcolor: i === index ? "#ff4d4f" : "action.disabled",
+                cursor: "pointer",
+                transition: "background-color 0.2s",
+              }}
+            />
+          ))}
+        </Box>
+
+        <Button
+          onClick={next}
+          disabled={index === slideList.length - 1}
+          variant="outlined"
+          size="small"
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            minWidth: "auto",
+            px: 2,
+            color: "text.primary",
+            borderColor: "divider",
+            "&:hover": {
+              borderColor: "text.primary",
+              bgcolor: "action.hover",
+            },
+          }}
+        >
+          {t("profile.photoTips.next", "Siguiente")}
+        </Button>
+      </Box>
+
+      <Button
+        fullWidth
+        variant="contained"
+        onClick={onClose}
+        sx={{
+          bgcolor: "#ff4d4f",
+          color: "white",
+          borderRadius: 2,
+          py: 1.2,
+          textTransform: "none",
+          fontSize: "1rem",
+          fontWeight: 600,
+          boxShadow: "none",
+          "&:hover": {
+            bgcolor: "#d9363e",
+            boxShadow: "none",
+          },
+        }}
+      >
+        {gotItText}
+      </Button>
+    </BottomSheet>
+  );
+};
+
+export default CarouselTip;
