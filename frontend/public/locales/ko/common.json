@@ -158,6 +158,7 @@
     "terms": "서비스 약관"
   },
   "profile": {
+    "achievementUnlocked": "🎉 업적 달성! 프로필 완성.",
     "title": "프로필",
     "edit": "프로필 편집",
     "save": "변경사항 저장",

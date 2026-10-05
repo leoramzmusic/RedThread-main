@@ -19,13 +19,15 @@ MODULES = [
     {"orden": 6, "key": "section-pronouns", "nombre": "Pronombres", "origen": "core"},
     {"orden": 7, "key": "section-additional", "nombre": "Datos adicionales", "origen": "core"},
     {"orden": 8, "key": "section-professional", "nombre": "Profesional", "origen": "core"},
-    {"orden": 9, "key": "section-music", "nombre": "Música", "origen": "integracion"},
+    {"orden": 9, "key": "section-music", "nombre": "Mi Himno", "origen": "core"},
     {"orden": 10, "key": "section-identity", "nombre": "Identidad", "origen": "core"},
     {"orden": 11, "key": "section-personality", "nombre": "Personalidad", "origen": "core"},
     {"orden": 12, "key": "section-cognitive", "nombre": "Cognitivo", "origen": "core"},
     {"orden": 13, "key": "section-wellness", "nombre": "Bienestar", "origen": "core"},
     {"orden": 14, "key": "section-status", "nombre": "Estado civil", "origen": "core"},
     {"orden": 15, "key": "section-languages", "nombre": "Idiomas", "origen": "core"},
+    {"orden": 16, "key": "section-music-spotify", "nombre": "Spotify", "origen": "integracion"},
+    {"orden": 17, "key": "section-music-genres", "nombre": "Géneros musicales", "origen": "core"},
 ]
 
 

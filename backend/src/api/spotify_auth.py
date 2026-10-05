@@ -9,6 +9,16 @@ from src.models.user import User
 
 router = APIRouter()
 
+
+async def _spotify_creds():
+    """
+    Credenciales efectivas: config del portal (BD) o variables de entorno.
+    Import lazy para evitar ciclos.
+    """
+    from src.api.admin_integrations import resolve_integration_creds
+
+    return await resolve_integration_creds("spotify")
+
 # --- Spotify Configuration ---
 SPOTIFY_CLIENT_ID = settings.SPOTIFY_CLIENT_ID
 SPOTIFY_CLIENT_SECRET = settings.SPOTIFY_CLIENT_SECRET
@@ -25,7 +35,8 @@ oauth_states = {}
 @router.get("/auth-url")
 async def get_auth_url(current_user: User = Depends(get_current_user)):
     """Get Spotify OAuth URL - requires authentication"""
-    if not SPOTIFY_CLIENT_ID:
+    client_id, _, redirect_uri, scopes = await _spotify_creds()
+    if not client_id:
         raise HTTPException(
             status_code=500, detail="Missing server configuration: SPOTIFY_CLIENT_ID"
         )
@@ -40,11 +51,11 @@ async def get_auth_url(current_user: User = Depends(get_current_user)):
         "redirect_to": "/",  # Default to home, frontend will send actual URL
     }
 
-    scope = "user-read-private user-read-email"
+    scope = " ".join(scopes)
     params = {
-        "client_id": SPOTIFY_CLIENT_ID,
+        "client_id": client_id,
         "response_type": "code",
-        "redirect_uri": SPOTIFY_REDIRECT_URI,
+        "redirect_uri": redirect_uri,
         "scope": scope,
         "state": state,
         "show_dialog": "true",
@@ -58,7 +69,8 @@ async def get_auth_url_with_redirect(
     request: dict, current_user: User = Depends(get_current_user)
 ):
     """Get Spotify OAuth URL with custom redirect - requires authentication"""
-    if not SPOTIFY_CLIENT_ID:
+    client_id, _, redirect_uri, scopes = await _spotify_creds()
+    if not client_id:
         raise HTTPException(
             status_code=500, detail="Missing server configuration: SPOTIFY_CLIENT_ID"
         )
@@ -71,11 +83,11 @@ async def get_auth_url_with_redirect(
     redirect_to = request.get("redirect_to", "/")
     oauth_states[state] = {"user_id": str(current_user.id), "redirect_to": redirect_to}
 
-    scope = "user-read-private user-read-email"
+    scope = " ".join(scopes)
     params = {
-        "client_id": SPOTIFY_CLIENT_ID,
+        "client_id": client_id,
         "response_type": "code",
-        "redirect_uri": SPOTIFY_REDIRECT_URI,
+        "redirect_uri": redirect_uri,
         "scope": scope,
         "state": state,
         "show_dialog": "true",
@@ -99,6 +111,7 @@ async def handle_spotify_callback(code: str, state: str):
         user_data.get("redirect_to", "/") if isinstance(user_data, dict) else "/"
     )
 
+    client_id, client_secret, redirect_uri, _ = await _spotify_creds()
     async with httpx.AsyncClient() as client:
         try:
             # Exchange code for tokens
@@ -107,9 +120,9 @@ async def handle_spotify_callback(code: str, state: str):
                 data={
                     "grant_type": "authorization_code",
                     "code": code,
-                    "redirect_uri": SPOTIFY_REDIRECT_URI,
-                    "client_id": SPOTIFY_CLIENT_ID,
-                    "client_secret": SPOTIFY_CLIENT_SECRET,
+                    "redirect_uri": redirect_uri,
+                    "client_id": client_id,
+                    "client_secret": client_secret,
                 },
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
             )
@@ -208,29 +221,31 @@ async def disconnect(current_user: User = Depends(get_current_user)):
 
 
 # --- Client Credentials Flow (Search without user login) ---
-_client_token_cache = {"token": None, "expires_at": None}
+_client_token_cache = {"token": None, "expires_at": None, "client_id": None}
 
 
 async def _get_client_token():
     """Get or refresh Spotify Client Credentials Token"""
     now = datetime.utcnow()
+    client_id, client_secret, _, _ = await _spotify_creds()
 
-    # Return cached token if valid
+    # Return cached token if valid and credentials unchanged
     if (
         _client_token_cache["token"]
         and _client_token_cache["expires_at"]
         and _client_token_cache["expires_at"] > now
+        and _client_token_cache.get("client_id") == client_id
     ):
         return _client_token_cache["token"]
 
-    if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
+    if not client_id or not client_secret:
         print("Missing Spotify Client ID or Secret")
         return None
 
     # Get new token
     async with httpx.AsyncClient() as client:
         try:
-            auth_str = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
+            auth_str = f"{client_id}:{client_secret}"
             import base64
 
             b64_auth = base64.b64encode(auth_str.encode()).decode()
@@ -251,6 +266,7 @@ async def _get_client_token():
             expires_in = data.get("expires_in", 3600)
 
             _client_token_cache["token"] = token
+            _client_token_cache["client_id"] = client_id
             _client_token_cache["expires_at"] = now + timedelta(
                 seconds=expires_in - 60
             )  # Buffer

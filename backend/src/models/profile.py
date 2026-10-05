@@ -376,6 +376,7 @@ class Profile(Document):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     profile_completion: int = 0  # 0-100%
     completion_steps: int = 0  # Number of completion steps completed (0-5)
+    profile_completed_achievement: bool = False  # Gamified badge shown once at 100%
 
     class Settings:
         name = "profiles"

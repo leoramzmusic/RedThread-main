@@ -10,9 +10,10 @@ from fastapi import (
 )
 import json
 from pydantic import BaseModel, EmailStr, field_validator
-from typing import List, Optional
+from typing import AbstractSet, List, Optional, Set
 from datetime import datetime
 from src.models.user import User
+from src.models.profile_module import MODULE_SCORE_FIELDS, ProfileModule
 from src.models.profile import (
     Profile,
     MiHimno,
@@ -296,6 +297,9 @@ class UpdateProfileRequest(BaseModel):
     personal_soundtrack: Optional[List[dict]] = None
     personal_soundtrack_text: Optional[str] = None
 
+    # Gamification
+    profile_completed_achievement: Optional[bool] = None
+
     @field_validator("distance_preference_km", "search_radius_km")
     @classmethod
     def validate_search_radius(cls, v):
@@ -546,8 +550,13 @@ async def update_my_profile(
 
     profile.updated_at = datetime.utcnow()
 
-    # Calculate profile completion
-    profile.profile_completion = calculate_profile_completion(profile, current_user)
+    # Calculate profile completion (solo secciones activas del portal)
+    profile.profile_completion = calculate_profile_completion(
+        profile,
+        current_user,
+        await ProfileModule.hidden_keys(),
+        await _music_fallback_active(),
+    )
 
     # Update hidden height classification (Height Flow)
     country = None
@@ -1266,8 +1275,13 @@ async def upload_photo(
 
     profile.photos.append(photo_url)
 
-    # Update completion
-    profile.profile_completion = calculate_profile_completion(profile, current_user)
+    # Update completion (solo secciones activas del portal)
+    profile.profile_completion = calculate_profile_completion(
+        profile,
+        current_user,
+        await ProfileModule.hidden_keys(),
+        await _music_fallback_active(),
+    )
 
     profile.updated_at = datetime.utcnow()
     await profile.save()
@@ -1642,10 +1656,29 @@ async def extract_identity_data(file_path: str, document_type: str) -> dict:
         return {"name": None, "birth_date": None}
 
 
-def calculate_profile_completion(profile: Profile, user: Optional[User] = None) -> int:
+async def _music_fallback_active() -> bool:
+    """True si la integración Spotify permite contar música sin conectar."""
+    try:
+        from src.models.integration_config import IntegrationConfig
+
+        cfg = await IntegrationConfig.get_provider("spotify")
+        return bool(cfg and cfg.fallback_complete)
+    except Exception:
+        return False
+
+
+def calculate_profile_completion(
+    profile: Profile,
+    user: Optional[User] = None,
+    hidden_sections: Optional[AbstractSet[str]] = None,
+    music_fallback: bool = False,
+) -> int:
     """
     Calculate profile completion percentage based on weights.
-    Matches frontend logic in profileScoring.ts
+    Matches frontend logic in profileScoring.ts.
+    Sections in `hidden_sections` (módulos desactivados) no cuentan
+    ni en el puntaje ni en el máximo: el 100% se calcula solo con activas.
+    Con `music_fallback`, mi_himno cuenta aunque no haya conexión.
     """
     weights = {
         "nickname": 2,
@@ -1664,6 +1697,7 @@ def calculate_profile_completion(profile: Profile, user: Optional[User] = None) 
         "occupation": 2,
         "work_company": 2,
         "mi_himno": 1,
+        "music_genres": 2,
         "sexual_orientation": 3,
         "relationship_status": 2,
         "languages": 1,
@@ -1679,7 +1713,20 @@ def calculate_profile_completion(profile: Profile, user: Optional[User] = None) 
         "health_conditions": 1,
     }
 
-    max_score = sum(weights.values())
+    # Expande padres a hijos (ej. ocultar section-music oculta spotify+genres)
+    expanded: Set[str] = set(hidden_sections or ())
+    for mod_key in list(expanded):
+        prefix = mod_key + "-"
+        for candidate in MODULE_SCORE_FIELDS:
+            if candidate.startswith(prefix):
+                expanded.add(candidate)
+    hidden_fields: Set[str] = set()
+    for mod_key in expanded:
+        hidden_fields.update(MODULE_SCORE_FIELDS.get(mod_key, []))
+
+    max_score = sum(w for f, w in weights.items() if f not in hidden_fields)
+    if max_score <= 0:
+        return 100
     score = 0
 
     def has_value(val):
@@ -1691,40 +1738,53 @@ def calculate_profile_completion(profile: Profile, user: Optional[User] = None) 
             return False
         return True
 
+    def active(field: str) -> bool:
+        return field not in hidden_fields
+
     # Check fields
-    if (user and user.display_name) or has_value(profile.nickname):
+    if active("nickname") and (
+        (user and user.display_name) or has_value(profile.nickname)
+    ):
         score += weights["nickname"]
-    if has_value(profile.age):
+    if active("age") and has_value(profile.age):
         score += weights["age"]
-    if has_value(profile.gender):
+    if active("gender") and has_value(profile.gender):
         score += weights["gender"]
-    if has_value(profile.city) or (profile.location and profile.location.city):
+    if active("city") and (
+        has_value(profile.city) or (profile.location and profile.location.city)
+    ):
         score += weights["city"]
-    if has_value(profile.bio):
+    if active("bio") and has_value(profile.bio):
         score += weights["bio"]
-    if has_value(profile.relationship_goals):
+    if active("relationship_goals") and has_value(profile.relationship_goals):
         score += weights["relationship_goals"]
-    if has_value(profile.interests) or has_value(profile.lifestyle_interests):
+    if active("interests") and (
+        has_value(profile.interests) or has_value(profile.lifestyle_interests)
+    ):
         score += weights["interests"]
-    if has_value(profile.pronouns):
+    if active("pronouns") and has_value(profile.pronouns):
         score += weights["pronouns"]
-    if has_value(profile.height_cm):
+    if active("height_cm") and has_value(profile.height_cm):
         score += weights["height_cm"]
-    if has_value(profile.zodiac) or profile.zodiac_relevant is False:
+    if active("zodiac") and (
+        has_value(profile.zodiac) or profile.zodiac_relevant is False
+    ):
         score += weights["zodiac"]
-    if has_value(profile.relationship_type):
+    if active("relationship_type") and has_value(profile.relationship_type):
         score += weights["relationship_type"]
-    if has_value(profile.education_center):
+    if active("education_center") and has_value(profile.education_center):
         score += weights["education_center"]
-    if has_value(profile.education_level):
+    if active("education_level") and has_value(profile.education_level):
         score += weights["education_level"]
-    if has_value(profile.occupation):
+    if active("occupation") and has_value(profile.occupation):
         score += weights["occupation"]
-    if has_value(profile.work_company):
+    if active("work_company") and has_value(profile.work_company):
         score += weights["work_company"]
 
-    # Music
-    if profile.mi_himno:
+    # Music (fallback de integración: cuenta sin conectar para no bloquear)
+    if active("mi_himno") and music_fallback:
+        score += weights["mi_himno"]
+    elif active("mi_himno") and profile.mi_himno:
         has_music = False
         if isinstance(profile.mi_himno, dict):
             has_music = (
@@ -1739,33 +1799,38 @@ def calculate_profile_completion(profile: Profile, user: Optional[User] = None) 
         if has_music:
             score += weights["mi_himno"]
 
-    if has_value(profile.sexual_orientation):
+    if active("music_genres") and has_value(profile.music_genres):
+        score += weights["music_genres"]
+
+    if active("sexual_orientation") and has_value(profile.sexual_orientation):
         score += weights["sexual_orientation"]
-    if has_value(profile.relationship_status):
+    if active("relationship_status") and has_value(profile.relationship_status):
         score += weights["relationship_status"]
-    if has_value(profile.languages):
+    if active("languages") and has_value(profile.languages):
         score += weights["languages"]
-    if has_value(profile.photos):
+    if active("photos") and has_value(profile.photos):
         score += weights["photos"]
 
     # Personality & Characteristics
-    if has_value(profile.social_style):
+    if active("social_style") and has_value(profile.social_style):
         score += weights["social_style"]
-    if has_value(profile.processing_style):
+    if active("processing_style") and has_value(profile.processing_style):
         score += weights["processing_style"]
-    if has_value(profile.risk_tolerance):
+    if active("risk_tolerance") and has_value(profile.risk_tolerance):
         score += weights["risk_tolerance"]
-    if has_value(profile.decision_making):
+    if active("decision_making") and has_value(profile.decision_making):
         score += weights["decision_making"]
-    if has_value(profile.neurodiversity):
+    if active("neurodiversity") and has_value(profile.neurodiversity):
         score += weights["neurodiversity"]
-    if has_value(profile.learning_preferences):
+    if active("learning_preferences") and has_value(profile.learning_preferences):
         score += weights["learning_preferences"]
-    if has_value(profile.energy_level):
+    if active("energy_level") and has_value(profile.energy_level):
         score += weights["energy_level"]
-    if has_value(profile.disabilities):
+    if active("disabilities") and has_value(profile.disabilities):
         score += weights["disabilities"]
-    if has_value(profile.health_conditions) or has_value(profile.health_status):
+    if active("health_conditions") and (
+        has_value(profile.health_conditions) or has_value(profile.health_status)
+    ):
         score += weights["health_conditions"]
 
     return int((score / max_score) * 100)

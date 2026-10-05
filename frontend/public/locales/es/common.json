@@ -335,6 +335,7 @@
     },
     "complete": "Perfil completo",
     "incomplete": "Perfil incompleto",
+    "achievementUnlocked": "🎉 ¡Logro desbloqueado! Perfil completo.",
     "completionHint0": "Completa tu información básica para empezar.",
     "completionHint30": "¡Vas bien! Agrega más detalles para destacar.",
     "completionHint70": "¡Casi listo! Tu perfil se ve genial.",

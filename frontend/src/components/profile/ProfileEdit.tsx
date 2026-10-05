@@ -137,7 +137,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   useEffect(() => {
     let cancelled = false;
     apiClient
-      .get('/api/profile-modules')
+      // Slash final obligatorio: el backend tiene redirect_slashes=False
+      .get('/api/profile-modules/')
       .then((res) => {
         if (cancelled) return;
         const data = res?.data;
@@ -643,6 +644,38 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     }
   };
 
+  // Secciones ocultas en el portal (incluye sub-módulos como los de música):
+  // no cuentan para el % de completitud ni se renderizan sus bloques.
+  // null = backend sin respuesta → se cuenta todo (comportamiento anterior).
+  const [hiddenModules, setHiddenModules] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiClient
+      .get('/api/profile-modules/hidden')
+      .then((res) => {
+        if (cancelled) return;
+        const list = res?.data?.hidden;
+        setHiddenModules(Array.isArray(list) ? list.filter((k) => typeof k === 'string') : []);
+      })
+      .catch(() => {
+        if (!cancelled) setHiddenModules(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const hiddenSectionKeys: string[] | null =
+    hiddenModules ??
+    (moduleOrder
+      ? (Object.keys(PROFILE_SECTION_REGISTRY) as string[]).filter(
+          (k) => !moduleOrder.includes(k as ProfileSectionKey),
+        )
+      : null);
+  const showSpotifyBlock = !hiddenSectionKeys?.includes('section-music-spotify');
+  const showGenresBlock = !hiddenSectionKeys?.includes('section-music-genres');
+
   // Section blocks keyed by registry key. Each block's JSX and props are
   // identical to the hardcoded layout; only the order is module-driven
   // when the backend provides one. 'section-control' is not admin-driven
@@ -758,7 +791,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     ),
     'section-music': (
       <Grid item xs={12} id="section-music" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
-        <MusicSection control={control} watch={watch} setValue={setValue} />
+        <MusicSection
+          control={control}
+          watch={watch}
+          setValue={setValue}
+          showSpotify={showSpotifyBlock}
+          showGenres={showGenresBlock}
+        />
       </Grid>
     ),
     'section-identity': (
@@ -846,6 +885,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const visibleSectionKeys: string[] = moduleOrder
     ? [...moduleOrder, 'section-control']
     : FALLBACK_SECTION_ORDER;
+
+  // Se definen junto a sectionBlocks, más abajo.
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
@@ -1305,6 +1346,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         <ProfileCompletionWidget
           control={control}
           onSuggestionClick={handleSuggestionClick}
+          hiddenSections={hiddenSectionKeys}
         />
       </Box>
       {/* Sections Grid — order comes from GET /api/profile-modules

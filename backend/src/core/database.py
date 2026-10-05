@@ -35,6 +35,8 @@ from src.models.appearance_history import AppearanceHistory
 from src.models.photo_metric import PhotoMetric
 from src.models.profile_visit import ProfileVisit
 from src.models.yuki_config import YukiConfig, YukiSkin, YukiAppearanceRule
+from src.models.profile_module import ProfileModule
+from src.models.integration_config import IntegrationConfig
 
 
 async def init_db():
@@ -87,15 +89,23 @@ async def init_db():
             YukiConfig,
             YukiSkin,
             YukiAppearanceRule,
+            ProfileModule,
+            IntegrationConfig,
         ],
     )
 
     print(f"✅ Connected to MongoDB: {settings.MONGODB_DB_NAME}")
 
     # Seed automático de datos del sistema (idempotente)
-    from src.core.seed import seed_system_data
+    from src.core.seed import (
+        seed_system_data,
+        ensure_profile_modules_seeded,
+        ensure_integration_defaults,
+    )
 
     await seed_system_data()
+    await ensure_profile_modules_seeded()
+    await ensure_integration_defaults()
 
 
 async def close_db():

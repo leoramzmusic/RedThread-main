@@ -158,6 +158,7 @@
     "terms": "利用規約"
   },
   "profile": {
+    "achievementUnlocked": "🎉 実績解除！プロフィール完成。",
     "title": "プロフィール",
     "edit": "プロフィールを編集",
     "save": "変更を保存",

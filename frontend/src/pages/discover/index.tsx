@@ -61,6 +61,7 @@ import {
 } from "../../utils/profileScoring";
 import AsyncLocationSelector from "../../components/common/AsyncLocationSelector";
 import { RADIUS_MARKS, RADIUS_MIN, RADIUS_MAX } from "../../utils/radius";
+import { MODULE_SCORE_FIELDS, SUGGESTION_SECTION_TO_MODULE } from "../../utils/profileScoring";
 
 const LocationMap = dynamic(
   () => import("../../components/common/LocationMap"),
@@ -160,6 +161,28 @@ export default function Discover() {
   const [shownProfileIds, setShownProfileIds] = useState<Set<string>>(
     new Set(),
   ); // Track all shown profiles
+
+  // Hidden modules from admin panel (affects suggestions & completion)
+  const [hiddenModules, setHiddenModules] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiClient
+      .get("/api/profile-modules/hidden")
+      .then((res) => {
+        if (cancelled) return;
+        const list = res?.data?.hidden;
+        setHiddenModules(
+          Array.isArray(list) ? list.filter((k) => typeof k === "string") : [],
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setHiddenModules(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Filters state
   const [showFilters, setShowFilters] = useState(false);
@@ -439,7 +462,10 @@ export default function Discover() {
           calculateProfileScore(myProfile),
         );
         if (completion < 100) {
-          const suggestions = getProfileSuggestions(myProfile);
+          const suggestions = getProfileSuggestions(
+            myProfile,
+            hiddenModules,
+          );
           if (suggestions.length > 0) {
             const refinementItem = {
               user_id: `refinement-empty-${Date.now()}`,
@@ -761,7 +787,10 @@ export default function Discover() {
 
     if (likesSinceLastCard >= threshold) {
       import("../../utils/profileScoring").then(({ getProfileSuggestions }) => {
-        const suggestions = getProfileSuggestions(myProfile);
+        const suggestions = getProfileSuggestions(
+          myProfile,
+          hiddenModules,
+        );
         // Filter out recently shown sections to ensure variety
         const filteredSuggestions = suggestions.filter(
           (s) => !recentlyShownSections.includes(s.sectionId),

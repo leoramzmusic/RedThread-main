@@ -159,6 +159,7 @@
     "terms": "Nutzungsbedingungen"
   },
   "profile": {
+    "achievementUnlocked": "🎉 Erfolg freigeschaltet! Vollständiges Profil.",
     "title": "Profil",
     "edit": "Profil bearbeiten",
     "save": "Änderungen speichern",

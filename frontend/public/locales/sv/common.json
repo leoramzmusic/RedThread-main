@@ -159,6 +159,7 @@
     "terms": "Användarvillkor"
   },
   "profile": {
+    "achievementUnlocked": "🎉 Prestation upplåst! Komplett profil.",
     "title": "Profil",
     "edit": "Redigera profil",
     "save": "Spara ändringar",

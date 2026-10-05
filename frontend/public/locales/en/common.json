@@ -3,6 +3,7 @@
     "goBack": "Go Back"
   },
   "profile": {
+    "achievementUnlocked": "🎉 Achievement unlocked! Complete profile.",
     "title": "Profile",
     "edit": "Edit Profile",
     "save": "Save Changes",

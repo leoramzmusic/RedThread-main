@@ -366,6 +366,7 @@ class UserProfileResponseDTO(BaseModel):
 
     # Additional
     profile_completion: Optional[int] = None
+    profile_completed_achievement: bool = False
 
     @classmethod
     def from_user_and_profile(cls, user, profile, mask_data: bool = True):
@@ -540,6 +541,9 @@ class UserProfileResponseDTO(BaseModel):
                 else None
             ),
             profile_completion=profile.profile_completion if profile else None,
+            profile_completed_achievement=(
+                profile.profile_completed_achievement if profile else False
+            ),
             smart_photos_enabled=profile.smart_photos_enabled if profile else False,
             smart_photos_last_evaluated=(
                 profile.smart_photos_last_evaluated if profile else None

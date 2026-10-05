@@ -14,6 +14,7 @@ from src.core.config import settings
 from src.models.admin_rbac import Permission
 from src.models.role import Role
 from src.models.department import Department
+from src.models.profile_module import ProfileModule
 
 
 # ─── Catálogo de Departamentos ────────────────────────────────────────────────
@@ -594,6 +595,148 @@ async def seed_system_data(env: Optional[str] = None, force: bool = False) -> di
         )
 
     return await _perform_seed(target_env)
+
+
+PROFILE_MODULES_SEED = [
+    {"orden": 0, "key": "section-photos", "nombre": "Fotos", "origen": "core"},
+    {"orden": 1, "key": "section-basic", "nombre": "Identidad", "origen": "core"},
+    {
+        "orden": 2,
+        "key": "section-location",
+        "nombre": "Ubicación",
+        "origen": "core",
+    },
+    {"orden": 3, "key": "section-aboutme", "nombre": "Sobre mí", "origen": "core"},
+    {"orden": 4, "key": "section-goals", "nombre": "Objetivos", "origen": "core"},
+    {
+        "orden": 5,
+        "key": "section-interests",
+        "nombre": "Intereses",
+        "origen": "core",
+    },
+    {
+        "orden": 6,
+        "key": "section-pronouns",
+        "nombre": "Pronombres",
+        "origen": "core",
+    },
+    {
+        "orden": 7,
+        "key": "section-additional",
+        "nombre": "Datos adicionales",
+        "origen": "core",
+    },
+    {
+        "orden": 8,
+        "key": "section-professional",
+        "nombre": "Profesional",
+        "origen": "core",
+    },
+    {
+        "orden": 9,
+        "key": "section-music",
+        "nombre": "Mi Himno",
+        "origen": "core",
+    },
+    {
+        "orden": 10,
+        "key": "section-identity",
+        "nombre": "Identidad",
+        "origen": "core",
+    },
+    {
+        "orden": 11,
+        "key": "section-personality",
+        "nombre": "Personalidad",
+        "origen": "core",
+    },
+    {
+        "orden": 12,
+        "key": "section-cognitive",
+        "nombre": "Cognitivo",
+        "origen": "core",
+    },
+    {
+        "orden": 13,
+        "key": "section-wellness",
+        "nombre": "Bienestar",
+        "origen": "core",
+    },
+    {
+        "orden": 14,
+        "key": "section-status",
+        "nombre": "Estado civil",
+        "origen": "core",
+    },
+    {
+        "orden": 15,
+        "key": "section-languages",
+        "nombre": "Idiomas",
+        "origen": "core",
+    },
+    {
+        "orden": 16,
+        "key": "section-music-spotify",
+        "nombre": "Spotify",
+        "origen": "integracion",
+    },
+    {
+        "orden": 17,
+        "key": "section-music-genres",
+        "nombre": "Géneros musicales",
+        "origen": "core",
+    },
+]
+
+
+async def ensure_integration_defaults() -> int:
+    """
+    Crea la fila de integración Spotify si falta (sin credenciales: usa env).
+    Con fallback_complete=True el perfil nunca queda bloqueado por Spotify.
+    Idempotente.
+    """
+    from src.models.integration_config import IntegrationConfig
+
+    existing = await IntegrationConfig.get_provider("spotify")
+    if existing:
+        return 0
+    await IntegrationConfig(
+        provider="spotify",
+        display_name="Spotify",
+        enabled=True,
+        fallback_complete=True,
+        status="pending",
+    ).insert()
+    print("[seed] ✅ Integración Spotify creada (pendiente de credenciales)")
+    return 1
+
+
+async def ensure_profile_modules_seeded() -> int:
+    """
+    Crea los módulos de perfil faltantes (idempotente: nunca toca los
+    existentes). Se ejecuta en cada arranque para que la pantalla del portal
+    y el cálculo de progreso nunca queden vacíos en BDs nuevas o viejas.
+    """
+    created = 0
+    for m_data in PROFILE_MODULES_SEED:
+        existing = await ProfileModule.find_one(ProfileModule.key == m_data["key"])
+        if existing:
+            # Migración ligera: el contenedor pasó de "Música/integracion" a
+            # "Mi Himno/core" (los hijos llevan la integración ahora)
+            if (
+                m_data["key"] == "section-music"
+                and existing.nombre == "Música"
+                and existing.origen == "integracion"
+            ):
+                existing.nombre = "Mi Himno"
+                existing.origen = "core"
+                await existing.save()
+            continue
+        await ProfileModule(visible=True, **m_data).insert()
+        created += 1
+    if created:
+        print(f"[seed] ✅ Módulos de perfil creados: {created}")
+    return created
 
 
 if __name__ == "__main__":

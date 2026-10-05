@@ -159,6 +159,7 @@
     "terms": "Termini di Servizio"
   },
   "profile": {
+    "achievementUnlocked": "🎉 Obiettivo sbloccato! Profilo completo.",
     "title": "Profilo",
     "edit": "Modifica profilo",
     "save": "Salva modifiche",

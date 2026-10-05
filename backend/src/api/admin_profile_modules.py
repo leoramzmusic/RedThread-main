@@ -120,7 +120,7 @@ async def update_visibilidad(
         require_employee_permission(Permission.MANAGE_VISIBILITY_MODULES)
     ),
 ):
-    """Toggle visibility; at least one core visible module must remain"""
+    """Toggle visibility; at least one core visible module must remain; trigger profile recalculation"""
     module = await _get_by_key(key)
     if not module:
         raise HTTPException(status_code=404, detail="Módulo no encontrado")
@@ -148,7 +148,41 @@ async def update_visibilidad(
         target_id=str(module.id),
     )
 
+    # Trigger profile completion recalculation for all profiles
+    # This ensures the completion percentage reflects the new hidden modules immediately
+    from src.api.profiles import calculate_profile_completion
+    from src.models.profile import Profile
+
+    try:
+        hidden_modules = await ProfileModule.find({"visible": False}).to_list()
+        hidden_keys = [m.key for m in hidden_modules]
+
+        # Recalculate completion for all profiles
+        profiles = await Profile.find_all().to_list()
+        for profile in profiles:
+            new_completion = calculate_profile_completion(
+                profile,
+                hidden_sections=hidden_keys,
+                music_fallback=get_spotify_fallback_status(),
+            )
+            if profile.profile_completion != new_completion:
+                profile.profile_completion = new_completion
+                await profile.save()
+    except Exception as e:
+        # Log error but don't fail the visibility toggle
+        print(f"Profile recalculation error: {e}")
+
     return module
+
+
+def get_spotify_fallback_status() -> bool:
+    """Check if Spotify fallback_complete is enabled in config"""
+    try:
+        from src.models.integration_config import IntegrationConfig
+        cfg = IntegrationConfig.find_one()
+        return bool(cfg and cfg.fallback_complete) if cfg else False
+    except Exception:
+        return False
 
 
 @router.put("/reorden")
@@ -222,3 +256,10 @@ async def list_public_modules(current_user: User = Depends(get_current_user)):
     """List visible profile modules ordered by `orden` (authenticated users)"""
     modules = await ProfileModule.find({"visible": True}).to_list()
     return sorted(modules, key=lambda m: m.orden)
+
+
+@public_router.get("/hidden")
+async def list_hidden_modules(current_user: User = Depends(get_current_user)):
+    """Keys ocultas (incluye sub-módulos): scoring y visibilidad granular."""
+    modules = await ProfileModule.find({"visible": False}).to_list()
+    return {"hidden": [m.key for m in modules]}

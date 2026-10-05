@@ -159,6 +159,7 @@
     "terms": "Servicevoorwaarden"
   },
   "profile": {
+    "achievementUnlocked": "🎉 Prestatie ontgrendeld! Volledig profiel.",
     "title": "Profiel",
     "edit": "Profiel bewerken",
     "save": "Wijzigingen opslaan",

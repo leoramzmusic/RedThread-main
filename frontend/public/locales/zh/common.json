@@ -159,6 +159,7 @@
     "terms": "服务条款"
   },
   "profile": {
+    "achievementUnlocked": "🎉 成就解锁！个人资料已完整。",
     "title": "个人资料",
     "edit": "编辑资料",
     "save": "保存更改",

@@ -3,6 +3,7 @@
     "goBack": "Voltar"
   },
   "profile": {
+    "achievementUnlocked": "🎉 Conquista desbloqueada! Perfil completo.",
     "title": "Perfil",
     "edit": "Editar Perfil",
     "save": "Salvar Alterações",

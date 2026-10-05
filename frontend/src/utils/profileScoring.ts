@@ -1,3 +1,88 @@
+// Módulo (key `section-*`, contrato con backend registry) → campos de score.
+// Mantener en sync con backend/src/models/profile_module.py (MODULE_SCORE_FIELDS).
+// Las secciones desactivadas en el portal no cuentan ni en puntaje ni en máximo.
+// INVARIANTE: ocultar jamás borra datos del usuario — esto solo filtra el
+// cálculo; el guardado reenvía los valores intactos (sin unregister) y el
+// backend actualiza únicamente campos enviados (exclude_unset).
+export const MODULE_SCORE_FIELDS: Record<string, string[]> = {
+  "section-photos": ["photos"],
+  "section-basic": ["nickname", "age", "gender"],
+  "section-location": ["city"],
+  "section-aboutme": ["bio"],
+  "section-goals": ["relationship_goals"],
+  "section-interests": ["interests"],
+  "section-pronouns": ["pronouns"],
+  "section-additional": ["height_cm", "zodiac", "relationship_type"],
+  "section-professional": [
+    "education_center",
+    "education_level",
+    "occupation",
+    "work_company",
+  ],
+  // Contenedor (sin campos propios; ocultar arrastra a los hijos)
+  "section-music": [],
+  "section-music-spotify": ["mi_himno"],
+  "section-music-genres": ["music_genres"],
+  "section-identity": ["sexual_orientation"],
+  "section-personality": [
+    "social_style",
+    "processing_style",
+    "risk_tolerance",
+    "decision_making",
+  ],
+  "section-cognitive": ["neurodiversity", "learning_preferences"],
+  "section-wellness": ["disabilities", "health_conditions", "energy_level"],
+  "section-status": ["relationship_status"],
+  "section-languages": ["languages"],
+};
+
+// Sugerencias (sectionId de ancla en el form) → módulo que las gobierna.
+export const SUGGESTION_SECTION_TO_MODULE: Record<string, string> = {
+  "section-music": "section-music-spotify",
+  "section-music-genres": "section-music-genres",
+  "section-relationship-type": "section-additional",
+  "section-height": "section-additional",
+  "section-zodiac": "section-additional",
+  "section-education": "section-professional",
+  "section-professional": "section-professional",
+};
+
+// Puntos que aporta un módulo al total (para mostrar impacto en el admin).
+export const getModulePoints = (moduleKey: string): number => {
+  const fields = MODULE_SCORE_FIELDS[moduleKey] ?? [];
+  return fields.reduce(
+    (sum, f) => sum + (PROFILE_WEIGHTS[f as keyof typeof PROFILE_WEIGHTS] ?? 0),
+    0,
+  );
+};
+
+const normalizeHidden = (
+  hidden?: Set<string> | string[] | null,
+): Set<string> => {
+  const base: Set<string> =
+    !hidden
+      ? new Set()
+      : hidden instanceof Set
+        ? new Set(hidden)
+        : new Set(hidden);
+  // Expande padres a hijos (ocultar section-music oculta spotify+genres)
+  for (const modKey of [...base]) {
+    const prefix = modKey + "-";
+    for (const candidate of Object.keys(MODULE_SCORE_FIELDS)) {
+      if (candidate.startsWith(prefix)) base.add(candidate);
+    }
+  }
+  return base;
+};
+
+const hiddenFieldsOf = (hidden: Set<string>): Set<string> => {
+  const fields = new Set<string>();
+  hidden.forEach((mod) => {
+    (MODULE_SCORE_FIELDS[mod] ?? []).forEach((f) => fields.add(f));
+  });
+  return fields;
+};
+
 // Weight definitions for profile fields
 export const PROFILE_WEIGHTS = {
   // Information Basic
@@ -34,6 +119,7 @@ export const PROFILE_WEIGHTS = {
 
   // Music
   mi_himno: 1,
+  music_genres: 2,
 
   // Identity
   sexual_orientation: 3,
@@ -68,11 +154,18 @@ export const isSpotifyFree = (profile: any): boolean => {
     profile?.spotify_account_type === "free"
   );
 };
-// Calculate total possible score dynamically
+// Calculate total possible score dynamically (solo secciones activas)
 export const MAX_PROFILE_SCORE = Object.values(PROFILE_WEIGHTS).reduce(
   (sum, weight) => sum + weight,
   0,
 );
+
+export const getMaxScore = (hiddenSections?: Set<string> | string[] | null): number => {
+  const hidden = hiddenFieldsOf(normalizeHidden(hiddenSections));
+  return Object.entries(PROFILE_WEIGHTS)
+    .filter(([field]) => !hidden.has(field))
+    .reduce((sum, [, weight]) => sum + weight, 0);
+};
 
 // Helper to check if field has meaningful value
 const hasValue = (value: any): boolean => {
@@ -82,13 +175,19 @@ const hasValue = (value: any): boolean => {
   return value !== null && value !== undefined && value !== "";
 };
 
-export const calculateProfileScore = (profile: any): number => {
+export const calculateProfileScore = (
+  profile: any,
+  hiddenSections?: Set<string> | string[] | null,
+  musicFallback: boolean = false,
+): number => {
   if (!profile) return 0;
 
+  const hiddenFields = hiddenFieldsOf(normalizeHidden(hiddenSections));
   let score = 0;
   const missingFields: string[] = [];
 
   const check = (field: string, condition: boolean, weight: number) => {
+    if (hiddenFields.has(field)) return;
     if (condition) {
       score += weight;
     } else {
@@ -163,14 +262,24 @@ export const calculateProfileScore = (profile: any): number => {
     PROFILE_WEIGHTS.work_company,
   );
 
-  // Music (Spotify Free counts as complete — no full data available)
+  // Music (Spotify Free o fallback de integración cuentan como completo:
+  // la integración rota nunca bloquea el 100%)
+  if (!hiddenFields.has("mi_himno") && musicFallback) {
+    score += PROFILE_WEIGHTS.mi_himno;
+  } else {
+    check(
+      "mi_himno",
+      isSpotifyFree(profile) ||
+        (hasValue(profile.mi_himno) &&
+          (profile.mi_himno.connected ||
+            profile.mi_himno.favorite_artists?.length > 0)),
+      PROFILE_WEIGHTS.mi_himno,
+    );
+  }
   check(
-    "mi_himno",
-    isSpotifyFree(profile) ||
-      (hasValue(profile.mi_himno) &&
-        (profile.mi_himno.connected ||
-          profile.mi_himno.favorite_artists?.length > 0)),
-    PROFILE_WEIGHTS.mi_himno,
+    "music_genres",
+    hasValue(profile.music_genres),
+    PROFILE_WEIGHTS.music_genres,
   );
 
   // Identity
@@ -246,8 +355,12 @@ export const calculateProfileScore = (profile: any): number => {
   return score;
 };
 
-export const calculateCompletionPercentage = (score: number): number => {
-  return Math.min(Math.round((score / MAX_PROFILE_SCORE) * 100), 100);
+export const calculateCompletionPercentage = (
+  score: number,
+  max: number = MAX_PROFILE_SCORE,
+): number => {
+  if (max <= 0) return 100;
+  return Math.min(Math.round((score / max) * 100), 100);
 };
 
 export interface Suggestion {
@@ -257,9 +370,14 @@ export interface Suggestion {
   weight: number;
 }
 
-export const getProfileSuggestions = (profile: any): Suggestion[] => {
+export const getProfileSuggestions = (
+  profile: any,
+  hiddenSections?: Set<string> | string[] | null,
+  musicFallback: boolean = false,
+): Suggestion[] => {
   if (!profile) return [];
 
+  const hidden = normalizeHidden(hiddenSections);
   const suggestions: Suggestion[] = [];
 
   const add = (
@@ -478,8 +596,17 @@ export const getProfileSuggestions = (profile: any): Suggestion[] => {
     "section-cognitive",
   );
 
+  // Excluye sugerencias de módulos desactivados en el portal.
+  // Con fallback de integración tampoco se sugiere conectar música.
+  const visibleSuggestions = suggestions.filter((s) => {
+    const mod = SUGGESTION_SECTION_TO_MODULE[s.sectionId] ?? s.sectionId;
+    if (hidden.has(mod)) return false;
+    if (musicFallback && s.messageKey === "musicConnect") return false;
+    return true;
+  });
+
   // Sort by weight (descending)
-  const sortedSuggestions = suggestions.sort((a, b) => b.weight - a.weight);
+  const sortedSuggestions = visibleSuggestions.sort((a, b) => b.weight - a.weight);
 
   // Filter to keep only one suggestion per sectionId
   const seenSections = new Set<string>();

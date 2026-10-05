@@ -127,7 +127,9 @@ export default function MusicSection({
   control,
   watch,
   setValue,
-}: BaseSectionProps) {
+  showSpotify = true,
+  showGenres = true,
+}: BaseSectionProps & { showSpotify?: boolean; showGenres?: boolean }) {
   // robustly watch the entire mi_himno object
   const miHimno = useWatch({
     control,
@@ -309,6 +311,10 @@ export default function MusicSection({
   // So YES, we store IDs, and the component fetches.
   // I need a sub-component to render the ID as a visual card.
 
+  // Sub-módulos del admin: si ambos están apagados no hay nada que mostrar
+  // (el padre section-music ya filtra el render, esto cubre el borde).
+  if (!showSpotify && !showGenres) return null;
+
   return (
     <Grid item xs={12}>
       <SpotifySearchModal
@@ -343,7 +349,8 @@ export default function MusicSection({
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-          {/* Banner (same as before) */}
+          {/* Banner (sub-módulo Spotify) */}
+          {showSpotify && (
           <Box
             sx={{
               background: currentServiceData?.gradient || undefined,
@@ -374,9 +381,11 @@ export default function MusicSection({
                   )}
             </Typography>
           </Box>
+          )}
 
           <Grid container spacing={3}>
-            {/* Service Selector (Simplified for brevity, assuming only Spotify for this demo) */}
+            {/* Conexión Spotify (sub-módulo Spotify) */}
+            {showSpotify && (
             <Grid item xs={12}>
               {isConnected && freeSpotifyAccount && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
@@ -420,8 +429,10 @@ export default function MusicSection({
                   : t("profile.music.connect", "Conectar Spotify")}
               </Button>
             </Grid>
+            )}
 
-            {/* Music Genres Section */}
+            {/* Géneros musicales (sub-módulo independiente) */}
+            {showGenres && (
             <Grid item xs={12}>
               <Accordion
                 defaultExpanded={false}
@@ -456,10 +467,13 @@ export default function MusicSection({
                 </AccordionDetails>
               </Accordion>
             </Grid>
+            )}
 
-            {(isConnected ||
-              getList(watch("mi_himno.favorite_artists")).length > 0 ||
-              featuredSongs.length > 0) && (
+            {/* Artistas y canciones (sub-módulo Spotify) */}
+            {showSpotify &&
+              (isConnected ||
+                getList(watch("mi_himno.favorite_artists")).length > 0 ||
+                featuredSongs.length > 0) && (
               <>
                 {freeSpotifyAccount && (
                   <Grid item xs={12}>

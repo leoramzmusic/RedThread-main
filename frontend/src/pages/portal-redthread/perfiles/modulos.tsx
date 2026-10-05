@@ -11,8 +11,13 @@ import {
     DialogContent,
     DialogTitle,
     Divider,
+    FormControl,
+    FormControlLabel,
     IconButton,
+    InputLabel,
+    MenuItem,
     Paper,
+    Select,
     Snackbar,
     Switch,
     TextField,
@@ -21,10 +26,26 @@ import {
 } from '@mui/material';
 import {
     Add as AddIcon,
-    Delete as DeleteIcon,
     DragIndicator as DragIndicatorIcon,
     Edit as EditIcon,
     Tune as TuneIcon,
+    Sync as SyncIcon,
+    Settings as SettingsIcon,
+    Save as SaveIcon,
+    PlayArrow as PlayArrowIcon,
+    Close as CloseIcon,
+    Check as CheckIcon,
+    Lock as LockIcon,
+    PhotoCamera as PhotoIcon,
+    Person as PersonIcon,
+    MusicNote as MusicIcon,
+    LocationOn as LocationIcon,
+    Favorite as HeartIcon,
+    Star as StarIcon,
+    Palette as PaletteIcon,
+    Translate as LanguageIcon,
+    Work as WorkIcon,
+    School as SchoolIcon,
 } from '@mui/icons-material';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -32,6 +53,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useTranslation } from 'next-i18next';
 import AdminLayout from '../../../components/layout/AdminLayout';
 import adminApiClient from '../../../services/adminApi';
+import { getModulePoints } from '../../../utils/profileScoring';
 
 interface ProfileModule {
     key: string;
@@ -59,6 +81,70 @@ interface ModuleForm {
 const BASE = '/portal-redthread/profile-modules';
 const EMPTY_FORM: ModuleForm = { key: '', nombre: '', descripcion: '', icono: '' };
 
+// Sub-módulo → provider de integración (extensible: apple_music, youtube…)
+const INTEGRATION_BY_MODULE: Record<string, string> = {
+    'section-music-spotify': 'spotify',
+};
+
+// Hijos de un módulo contenedor (ej. section-music → spotify + genres)
+const childModulesOf = (all: ProfileModule[], parentKey: string): ProfileModule[] =>
+    all.filter((m) => m.key !== parentKey && m.key.startsWith(`${parentKey}-`));
+
+const isChildModule = (all: ProfileModule[], key: string): boolean => {
+    const parent = key.split('-').slice(0, -1).join('-');
+    return all.some((m) => m.key === parent);
+};
+const INTEGRATIONS_BASE = '/portal-redthread/integraciones';
+
+interface IntegrationStatus {
+    provider: string;
+    display_name: string;
+    client_id?: string | null;
+    has_client_id: boolean;
+    has_secret: boolean;
+    redirect_uri: string | null;
+    scopes: string[];
+    enabled: boolean;
+    fallback_complete: boolean;
+    status: 'pending' | 'ok' | 'blocked_premium_required' | 'error';
+    status_detail: string | null;
+}
+
+interface IntegrationForm {
+    client_id: string;
+    client_secret: string;
+    redirect_uri: string;
+    scopes: string;
+    enabled: boolean;
+    fallback_complete: boolean;
+}
+
+// Valores por defecto (mismo seed del backend). Se usan para rellenar la BD
+// desde el admin cuando la colección está vacía, sin depender del arranque.
+const DEFAULT_MODULES: Array<{
+    key: string;
+    nombre: string;
+    origen: 'core' | 'integracion';
+    orden: number;
+}> = [
+        { orden: 0, key: 'section-photos', nombre: 'Fotos', origen: 'core' },
+        { orden: 1, key: 'section-basic', nombre: 'Identidad', origen: 'core' },
+        { orden: 2, key: 'section-location', nombre: 'Ubicación', origen: 'core' },
+        { orden: 3, key: 'section-aboutme', nombre: 'Sobre mí', origen: 'core' },
+        { orden: 4, key: 'section-goals', nombre: 'Objetivos', origen: 'core' },
+        { orden: 5, key: 'section-interests', nombre: 'Intereses', origen: 'core' },
+        { orden: 6, key: 'section-pronouns', nombre: 'Pronombres', origen: 'core' },
+        { orden: 7, key: 'section-additional', nombre: 'Datos adicionales', origen: 'core' },
+        { orden: 8, key: 'section-professional', nombre: 'Profesional', origen: 'core' },
+        { orden: 9, key: 'section-music', nombre: 'Música', origen: 'integracion' },
+        { orden: 10, key: 'section-identity', nombre: 'Identidad', origen: 'core' },
+        { orden: 11, key: 'section-personality', nombre: 'Personalidad', origen: 'core' },
+        { orden: 12, key: 'section-cognitive', nombre: 'Cognitivo', origen: 'core' },
+        { orden: 13, key: 'section-wellness', nombre: 'Bienestar', origen: 'core' },
+        { orden: 14, key: 'section-status', nombre: 'Estado civil', origen: 'core' },
+        { orden: 15, key: 'section-languages', nombre: 'Idiomas', origen: 'core' },
+    ];
+
 function isForbidden(err: unknown): boolean {
     if (typeof err === 'object' && err !== null && 'response' in err) {
         const response = (err as { response?: { status?: number } }).response;
@@ -70,6 +156,9 @@ function isForbidden(err: unknown): boolean {
 export default function ModulosPerfilesPage() {
     const { t } = useTranslation('common');
     const [modules, setModules] = useState<ProfileModule[]>([]);
+    // Snapshot persistido: los toggles/reorden solo tocan el borrador local
+    // y se aplican al backend con el botón Guardar.
+    const [savedModules, setSavedModules] = useState<ProfileModule[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [readOnly, setReadOnly] = useState(false);
@@ -77,19 +166,54 @@ export default function ModulosPerfilesPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingKey, setEditingKey] = useState<string | null>(null);
     const [form, setForm] = useState<ModuleForm>(EMPTY_FORM);
-    const [deleteTarget, setDeleteTarget] = useState<ProfileModule | null>(null);
+    // Integraciones (origen === 'integracion'): estado + diálogo de config
+    const [integrations, setIntegrations] = useState<Record<string, IntegrationStatus>>({});
+    const [configProvider, setConfigProvider] = useState<string | null>(null);
+    // Si el admin escribe en el campo, se envía; si no, se muestra enmascarado
+    const [secretTouched, setSecretTouched] = useState(false);
+    const storedHasSecret = configProvider
+        ? Boolean(integrations[configProvider]?.has_secret)
+        : false;
+    const [configForm, setConfigForm] = useState<IntegrationForm>({
+        client_id: '',
+        client_secret: '',
+        redirect_uri: '',
+        scopes: '',
+        enabled: true,
+        fallback_complete: true,
+    });
+    const [testing, setTesting] = useState<string | null>(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     );
 
+    const loadIntegrations = async () => {
+        try {
+            const res = await adminApiClient.get(`${INTEGRATIONS_BASE}/`);
+            const list = Array.isArray(res.data) ? (res.data as IntegrationStatus[]) : [];
+            const map: Record<string, IntegrationStatus> = {};
+            list.forEach((i) => {
+                map[i.provider] = i;
+            });
+            setIntegrations(map);
+        } catch {
+            // Sin permiso o backend viejo: se oculta el UI de integración
+            setIntegrations({});
+        }
+    };
+
     const load = async () => {
         setLoading(true);
         try {
-            const res = await adminApiClient.get(BASE);
+            // Slash final obligatorio: el backend tiene redirect_slashes=False
+            const res = await adminApiClient.get(`${BASE}/`);
             const list = Array.isArray(res.data) ? (res.data as ProfileModule[]) : [];
-            setModules([...list].sort((a, b) => a.orden - b.orden));
+            const sorted = [...list].sort((a, b) => a.orden - b.orden);
+            setModules(sorted);
+            setSavedModules(sorted.map((m) => ({ ...m })));
+            await loadIntegrations();
         } catch (err) {
             if (isForbidden(err)) {
                 setReadOnly(true);
@@ -99,6 +223,112 @@ export default function ModulosPerfilesPage() {
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleTestIntegration = async (
+        provider: string,
+        dryRun?: { client_id?: string; client_secret?: string },
+    ) => {
+        if (readOnly) return;
+        setTesting(provider);
+        try {
+            // Dry-run: prueba los valores del formulario SIN guardar.
+            // Sin body: prueba lo guardado en BD (nunca la sesión del admin).
+            const body: Record<string, string> = {};
+            if (dryRun?.client_id?.trim()) body.client_id = dryRun.client_id.trim();
+            if (dryRun?.client_secret) body.client_secret = dryRun.client_secret;
+            const res = await adminApiClient.post(
+                `${INTEGRATIONS_BASE}/${provider}/test`,
+                body,
+            );
+            const ok = Boolean(res?.data?.ok);
+            const detail = res?.data?.message ? `: ${res.data.message}` : '';
+            const blocked = res?.data?.status === 'blocked_premium_required';
+            setSnack({
+                msg: ok
+                    ? t('profileModules.testOk', 'Conexión válida: la integración responde.')
+                    : blocked
+                        ? t(
+                            'profileModules.testBlocked',
+                            'Bloqueada: Spotify requiere Premium para Web API.',
+                        )
+                        : `${t('profileModules.testFailBase', 'Falló la prueba')}${detail}`,
+                severity: ok ? 'success' : 'error',
+            });
+            await loadIntegrations();
+        } catch (err) {
+            if (isForbidden(err)) handleForbidden();
+            else setSnack({ msg: t('profileModules.saveError', 'Error al guardar los cambios'), severity: 'error' });
+        } finally {
+            setTesting(null);
+        }
+    };
+
+    const openIntegrationConfig = async (provider: string) => {
+        setSecretTouched(false);
+        // Pre-rellena SIEMPRE desde BD (GET admin); el secret nunca viaja,
+        // se deja vacío (vacío = conservar). Nada sale de la sesión local.
+        const fallback = integrations[provider];
+        setConfigForm({
+            client_id: '',
+            client_secret: '',
+            redirect_uri: fallback?.redirect_uri ?? '',
+            scopes: (fallback?.scopes ?? []).join(', '),
+            enabled: fallback?.enabled ?? true,
+            fallback_complete: fallback?.fallback_complete ?? true,
+        });
+        setConfigProvider(provider);
+        try {
+            const res = await adminApiClient.get(`${INTEGRATIONS_BASE}/${provider}`);
+            const cfg = res?.data as IntegrationStatus | undefined;
+            if (cfg) {
+                if (cfg.provider) {
+                    setIntegrations((cur) => ({ ...cur, [cfg.provider]: cfg }));
+                }
+                setConfigForm({
+                    client_id: (cfg as any).client_id ?? '',
+                    client_secret: '',
+                    redirect_uri: (cfg as any).redirect_uri ?? '',
+                    scopes: ((cfg as any).scopes ?? []).join(', '),
+                    enabled: (cfg as any).enabled ?? true,
+                    fallback_complete: (cfg as any).fallback_complete ?? true,
+                });
+            }
+        } catch {
+            // Si falla el GET, se conserva lo conocido; el PUT hará upsert
+        }
+    };
+
+    const handleSaveIntegrationConfig = async () => {
+        if (!configProvider || readOnly) return;
+        setSaving(true);
+        try {
+            const payload: Record<string, unknown> = {
+                redirect_uri: configForm.redirect_uri.trim() || null,
+                scopes: configForm.scopes
+                    .split(',')
+                    .map((s) => s.trim())
+                    .filter(Boolean),
+                enabled: configForm.enabled,
+                fallback_complete: configForm.fallback_complete,
+            };
+            if (configForm.client_id.trim()) payload.client_id = configForm.client_id.trim();
+            if (configForm.client_secret) payload.client_secret = configForm.client_secret;
+            await adminApiClient.put(`${INTEGRATIONS_BASE}/${configProvider}`, payload);
+            setSnack({ msg: t('profileModules.integrationSaved', 'Configuración guardada correctamente'), severity: 'success' });
+            setSecretTouched(false);
+            setConfigProvider(null);
+            await loadIntegrations();
+        } catch (err) {
+            if (isForbidden(err)) {
+                setConfigProvider(null);
+                handleForbidden();
+            } else {
+                setSnack({ msg: t('profileModules.saveError', 'Error al guardar los cambios'), severity: 'error' });
+            }
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -112,43 +342,71 @@ export default function ModulosPerfilesPage() {
         setSnack({ msg: t('profileModules.readOnly', 'Sin permiso de gestión — modo lectura'), severity: 'error' });
     };
 
-    const handleToggle = async (mod: ProfileModule, visible: boolean) => {
+    // Borrador local: el toggle solo marca, Guardar lo aplica en el backend.
+    const handleToggle = (mod: ProfileModule, visible: boolean) => {
         if (readOnly) return;
-        const prev = modules;
         setModules((cur) => cur.map((m) => (m.key === mod.key ? { ...m, visible } : m)));
-        try {
-            await adminApiClient.patch(`${BASE}/${mod.key}/visibilidad`, { visible });
-            setSnack({
-                msg: visible
-                    ? t('profileModules.visibleOn', 'Módulo visible')
-                    : t('profileModules.visibleOff', 'Módulo oculto'),
-                severity: 'success',
-            });
-        } catch (err) {
-            setModules(prev);
-            if (isForbidden(err)) handleForbidden();
-            else setSnack({ msg: t('profileModules.saveError', 'Error al guardar los cambios'), severity: 'error' });
-        }
     };
 
-    const handleDragEnd = async (event: DragEndEvent) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         if (readOnly) return;
         const { active, over } = event;
         if (!over || active.id === over.id) return;
         const oldIndex = modules.findIndex((m) => m.key === active.id);
         const newIndex = modules.findIndex((m) => m.key === over.id);
         if (oldIndex < 0 || newIndex < 0) return;
-        const next = arrayMove(modules, oldIndex, newIndex);
-        const prev = modules;
-        setModules(next);
+        setModules(arrayMove(modules, oldIndex, newIndex));
+    };
+
+    // ¿Hay cambios sin guardar? (visibilidad u orden)
+    const dirty =
+        modules.length !== savedModules.length ||
+        modules.some((m, i) => {
+            const s = savedModules[i];
+            return !s || s.key !== m.key || s.visible !== m.visible;
+        });
+
+    const resetDraft = () => {
+        setModules(savedModules.map((m) => ({ ...m })));
+    };
+
+    const handleSaveAll = async () => {
+        if (readOnly || !dirty || saving) return;
         setSaving(true);
         try {
-            await adminApiClient.put(`${BASE}/reorden`, { keys: next.map((m) => m.key) });
-            setSnack({ msg: t('profileModules.orderSaved', 'Orden guardado'), severity: 'success' });
+            // 1. Visibilidades cambiadas
+            const prevVisible = new Map(savedModules.map((m) => [m.key, m.visible]));
+            for (const m of modules) {
+                if (prevVisible.has(m.key) && prevVisible.get(m.key) !== m.visible) {
+                    await adminApiClient.patch(`${BASE}/${m.key}/visibilidad`, {
+                        visible: m.visible,
+                    });
+                }
+            }
+            // 2. Orden si cambió la secuencia de keys
+            const prevOrder = savedModules.map((m) => m.key).join(',');
+            const nextOrder = modules.map((m) => m.key).join(',');
+            if (prevOrder !== nextOrder) {
+                await adminApiClient.put(`${BASE}/reorden`, {
+                    keys: modules.map((m) => m.key),
+                });
+            }
+            setSavedModules(modules.map((m) => ({ ...m })));
+            setSnack({
+                msg: t('profileModules.allSaved', 'Cambios guardados y aplicados'),
+                severity: 'success',
+            });
         } catch (err) {
-            setModules(prev);
             if (isForbidden(err)) handleForbidden();
-            else setSnack({ msg: t('profileModules.saveError', 'Error al guardar los cambios'), severity: 'error' });
+            else
+                setSnack({
+                    msg: t(
+                        'profileModules.saveErrorDetail',
+                        'No se pudieron aplicar los cambios (revisa permisos o que quede un core visible).',
+                    ),
+                    severity: 'error',
+                });
+            await load();
         } finally {
             setSaving(false);
         }
@@ -204,21 +462,37 @@ export default function ModulosPerfilesPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteTarget || readOnly) return;
+    const handleSeedDefaults = async () => {
+        if (readOnly) return;
         setSaving(true);
+        let created = 0;
         try {
-            await adminApiClient.delete(`${BASE}/${deleteTarget.key}`);
-            setSnack({ msg: t('profileModules.deleted', 'Módulo eliminado'), severity: 'success' });
-            setDeleteTarget(null);
-            await load();
-        } catch (err) {
-            if (isForbidden(err)) {
-                setDeleteTarget(null);
-                handleForbidden();
-            } else {
-                setSnack({ msg: t('profileModules.deleteError', 'Error al eliminar el módulo'), severity: 'error' });
+            for (const m of DEFAULT_MODULES) {
+                try {
+                    await adminApiClient.post(`${BASE}/`, {
+                        key: m.key,
+                        nombre: m.nombre,
+                        descripcion: '',
+                        icono: 'tune',
+                        orden: m.orden,
+                    });
+                    created += 1;
+                } catch (err) {
+                    if (isForbidden(err)) {
+                        handleForbidden();
+                        return;
+                    }
+                    // 400 = ya existe (seed parcial previo): se sigue con el resto
+                }
             }
+            setSnack({
+                msg: `${t('profileModules.seededBase', 'Se cargaron')} ${created} ${t(
+                    'profileModules.seededBase2',
+                    'módulos por defecto',
+                )}`,
+                severity: 'success',
+            });
+            await load();
         } finally {
             setSaving(false);
         }
@@ -260,7 +534,15 @@ export default function ModulosPerfilesPage() {
                             </Typography>
                         </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                        {dirty && !readOnly && (
+                            <Chip
+                                size="small"
+                                label={t('profileModules.unsaved', 'Cambios sin guardar')}
+                                color="warning"
+                                variant="outlined"
+                            />
+                        )}
                         {saving && (
                             <Chip
                                 size="small"
@@ -269,6 +551,20 @@ export default function ModulosPerfilesPage() {
                                 variant="outlined"
                             />
                         )}
+                        {dirty && !readOnly && (
+                            <Button onClick={resetDraft} disabled={saving}>
+                                {t('profileModules.discard', 'Descartar')}
+                            </Button>
+                        )}
+                        <Button
+                            variant="contained"
+                            color="success"
+                            startIcon={<SaveIcon />}
+                            onClick={() => void handleSaveAll()}
+                            disabled={!dirty || saving || readOnly}
+                        >
+                            {t('profileModules.saveAll', 'Guardar')}
+                        </Button>
                         <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate} disabled={readOnly}>
                             {t('profileModules.new', 'Nuevo módulo')}
                         </Button>
@@ -284,7 +580,7 @@ export default function ModulosPerfilesPage() {
                 <Paper sx={{ p: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography variant="subtitle2">
-                            {t('profileModules.count', 'Módulos ({{n}})', { n: modules.length })}
+                            {t('profileModules.countLabel', 'Módulos')} ({modules.length})
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
                             {t('profileModules.dragHint', 'Arrastra para reordenar')}
@@ -293,24 +589,65 @@ export default function ModulosPerfilesPage() {
                     <Divider sx={{ mb: 2 }} />
                     {modules.length === 0 ? (
                         <Box sx={{ textAlign: 'center', py: 6, px: 2 }}>
+                            <TuneIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
                             <Typography color="text.secondary" gutterBottom>
                                 {t('profileModules.empty', 'No hay módulos configurados')}
                             </Typography>
+                            <Typography variant="body2" color="text.secondary" paragraph>
+                                {t(
+                                    'profileModules.emptyHint',
+                                    'Carga las 16 secciones base del perfil con un clic.',
+                                )}
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => void handleSeedDefaults()}
+                                disabled={saving || readOnly}
+                            >
+                                {t('profileModules.seedDefaults', 'Cargar valores por defecto')}
+                            </Button>
                         </Box>
                     ) : (
                         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => void handleDragEnd(e)}>
                             <SortableContext items={modules.map((m) => m.key)} strategy={verticalListSortingStrategy}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                    {modules.map((mod) => (
-                                        <SortableModuleRow
-                                            key={mod.key}
-                                            mod={mod}
-                                            disabled={readOnly}
-                                            onToggle={(visible) => void handleToggle(mod, visible)}
-                                            onEdit={() => openEdit(mod)}
-                                            onDelete={() => setDeleteTarget(mod)}
-                                        />
-                                    ))}
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                    {modules.map((mod) => {
+                                        const provider = INTEGRATION_BY_MODULE[mod.key];
+                                        const children = childModulesOf(modules, mod.key);
+                                        const totalPts =
+                                            getModulePoints(mod.key) +
+                                            children.reduce((s, c) => s + getModulePoints(c.key), 0);
+                                        const integration = provider
+                                            ? (integrations[provider] ?? {
+                                                provider,
+                                                display_name: provider,
+                                                has_client_id: false,
+                                                has_secret: false,
+                                                redirect_uri: null,
+                                                scopes: [],
+                                                enabled: true,
+                                                fallback_complete: true,
+                                                status: 'pending' as const,
+                                                status_detail: null,
+                                            })
+                                            : undefined;
+                                        return (
+                                            <SortableModuleRow
+                                                key={mod.key}
+                                                mod={mod}
+                                                disabled={readOnly}
+                                                points={totalPts}
+                                                indented={isChildModule(modules, mod.key)}
+                                                onToggle={(visible) => void handleToggle(mod, visible)}
+                                                onEdit={() => openEdit(mod)}
+                                                integration={integration}
+                                                testing={provider ? testing === provider : false}
+                                                onTest={provider ? () => void handleTestIntegration(provider) : undefined}
+                                                onConfig={provider ? () => void openIntegrationConfig(provider) : undefined}
+                                            />
+                                        );
+                                    })}
                                 </Box>
                             </SortableContext>
                         </DndContext>
@@ -367,19 +704,249 @@ export default function ModulosPerfilesPage() {
                     </DialogActions>
                 </Dialog>
 
-                <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
-                    <DialogTitle>{t('profileModules.deleteTitle', 'Eliminar módulo')}</DialogTitle>
-                    <DialogContent>
-                        <Typography variant="body2" color="text.secondary">
-                            {t('profileModules.deleteConfirm', '¿Seguro que deseas eliminar este módulo? Esta acción no se puede deshacer.')}
-                        </Typography>
+                <Dialog open={!!configProvider} onClose={() => setConfigProvider(null)} maxWidth="sm" fullWidth>
+                    <DialogTitle>
+                        {t('profileModules.integrationTitle', 'Integración')}:{' '}
+                        {configProvider
+                            ? (integrations[configProvider]?.display_name ?? configProvider)
+                            : ''}
+                    </DialogTitle>
+                    <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
+                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                                {t('profileModules.cardCredentials', 'Credenciales')}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <TextField
+                                    label={t('profileModules.fieldClientId', 'Client ID (Spotify Developer)')}
+                                    value={configForm.client_id}
+                                    onChange={(e) => setConfigForm((f) => ({ ...f, client_id: e.target.value }))}
+                                    disabled={readOnly}
+                                    autoComplete="off"
+                                    fullWidth
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: 2,
+                                            bgcolor: 'grey.900',
+                                            color: 'grey.100',
+                                        },
+                                        '& .MuiInputLabel-root': { fontWeight: 600, fontSize: '0.85rem' },
+                                    }}
+                                />
+                                <TextField
+                                    label={t('profileModules.fieldClientSecret', 'Client Secret (vacío = conservar)')}
+                                    value={
+                                        secretTouched || !storedHasSecret
+                                            ? configForm.client_secret
+                                            : '••••••••••••'
+                                    }
+                                    onChange={(e) => {
+                                        setSecretTouched(true);
+                                        setConfigForm((f) => ({ ...f, client_secret: e.target.value }));
+                                    }}
+                                    onFocus={(e) => {
+                                        // Al enfocar un valor enmascarado se limpia para escribir el nuevo
+                                        if (!secretTouched && storedHasSecret) {
+                                            setSecretTouched(true);
+                                            setConfigForm((f) => ({ ...f, client_secret: '' }));
+                                            requestAnimationFrame(() => e.target.select());
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        // Si sale vacío, vuelve a la vista enmascarada
+                                        if (!e.target.value && storedHasSecret) {
+                                            setSecretTouched(false);
+                                        }
+                                    }}
+                                    disabled={readOnly}
+                                    type="password"
+                                    autoComplete="new-password"
+                                    helperText={
+                                        storedHasSecret && !secretTouched
+                                            ? t(
+                                                'profileModules.secretStored',
+                                                'Hay un secret guardado (oculto por seguridad).',
+                                            )
+                                            : undefined
+                                    }
+                                    fullWidth
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: 2,
+                                            bgcolor: 'grey.900',
+                                            color: 'grey.100',
+                                        },
+                                        '& .MuiInputLabel-root': { fontWeight: 600, fontSize: '0.85rem' },
+                                    }}
+                                />
+                                <TextField
+                                    label={t('profileModules.fieldRedirectUri', 'Redirect URI')}
+                                    value={configForm.redirect_uri}
+                                    onChange={(e) => setConfigForm((f) => ({ ...f, redirect_uri: e.target.value }))}
+                                    disabled={readOnly}
+                                    autoComplete="off"
+                                    placeholder="http://127.0.0.1:8000/callback"
+                                    fullWidth
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: 2,
+                                            bgcolor: 'grey.900',
+                                            color: 'grey.100',
+                                        },
+                                        '& .MuiInputLabel-root': { fontWeight: 600, fontSize: '0.85rem' },
+                                    }}
+                                />
+                            </Box>
+                        </Paper>
+                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                                {t('profileModules.cardScopes', 'Scopes')}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <TextField
+                                label={t('profileModules.fieldScopes', 'Scopes (separados por coma)')}
+                                value={configForm.scopes}
+                                onChange={(e) => setConfigForm((f) => ({ ...f, scopes: e.target.value }))}
+                                disabled={readOnly}
+                                autoComplete="off"
+                                placeholder="user-read-private, user-read-email"
+                                fullWidth
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: 2,
+                                        bgcolor: 'grey.900',
+                                        color: 'grey.100',
+                                    },
+                                    '& .MuiInputLabel-root': { fontWeight: 600, fontSize: '0.85rem' },
+                                }}
+                            />
+                        </Paper>
+                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                                {t('profileModules.cardOptions', 'Opciones')}
+                            </Typography>
+                            <Divider sx={{ mb: 1 }} />
+                            <Tooltip
+                                title={t(
+                                    'profileModules.enabledHint',
+                                    'Si está activo, la integración se usará en perfiles.',
+                                )}
+                                arrow
+                                placement="right"
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            color="success"
+                                            checked={configForm.enabled}
+                                            onChange={(e) => setConfigForm((f) => ({ ...f, enabled: e.target.checked }))}
+                                            disabled={readOnly}
+                                        />
+                                    }
+                                    label={t('profileModules.fieldEnabled', 'Integración activa')}
+                                    sx={{ '& .MuiFormControlLabel-label': { fontWeight: 600, fontSize: '0.85rem' } }}
+                                />
+                            </Tooltip>
+                            <Tooltip
+                                title={t(
+                                    'profileModules.fallbackHint',
+                                    'Si está activo, la sección cuenta como completa aunque el usuario no conecte.',
+                                )}
+                                arrow
+                                placement="right"
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            color="success"
+                                            checked={configForm.fallback_complete}
+                                            onChange={(e) => setConfigForm((f) => ({ ...f, fallback_complete: e.target.checked }))}
+                                            disabled={readOnly}
+                                        />
+                                    }
+                                    label={t(
+                                        'profileModules.fieldFallback',
+                                        'Contar como completo aunque no conecte (evita perfiles bloqueados)',
+                                    )}
+                                    sx={{ '& .MuiFormControlLabel-label': { fontWeight: 600, fontSize: '0.85rem' } }}
+                                />
+                            </Tooltip>
+                        </Paper>
+                        {configProvider && (
+                            <Alert severity="info">
+                                {t(
+                                    'profileModules.configHint',
+                                    'Guarda y luego usa Probar conexión para validar contra Spotify.',
+                                )}
+                            </Alert>
+                        )}
+                        <Alert severity="info" icon={false}>
+                            <Typography variant="body2">
+                                {t(
+                                    'profileModules.freeNote',
+                                    'Usuarios con cuenta Free podrán conectar para coincidencias musicales, pero no usar funciones de reproducción.',
+                                )}
+                            </Typography>
+                        </Alert>
                     </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setDeleteTarget(null)} disabled={saving}>
+                    <DialogActions sx={{ gap: 1, px: 3, pb: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            startIcon={<CloseIcon />}
+                            onClick={() => setConfigProvider(null)}
+                            disabled={saving}
+                            sx={{ flex: 1, fontWeight: 600, borderRadius: 2, textTransform: 'none' }}
+                        >
                             {t('profileModules.cancel', 'Cancelar')}
                         </Button>
-                        <Button variant="contained" color="error" onClick={() => void handleDelete()} disabled={saving}>
-                            {t('profileModules.delete', 'Eliminar')}
+                        {configProvider && (
+                            <Button
+                                variant="contained"
+                                startIcon={
+                                    testing === configProvider ? (
+                                        <CircularProgress size={18} color="inherit" />
+                                    ) : (
+                                        <PlayArrowIcon />
+                                    )
+                                }
+                                onClick={() =>
+                                    void handleTestIntegration(configProvider, {
+                                        client_id: configForm.client_id,
+                                        client_secret: configForm.client_secret,
+                                    })
+                                }
+                                disabled={saving || testing !== null || readOnly}
+                                sx={{
+                                    flex: 1,
+                                    fontWeight: 600,
+                                    borderRadius: 2,
+                                    textTransform: 'none',
+                                    bgcolor: '#65D46E',
+                                    color: '#fff',
+                                    '&:hover': { bgcolor: '#4FB957' },
+                                }}
+                            >
+                                {t('profileModules.testConn', 'Probar conexión')}
+                            </Button>
+                        )}
+                        <Button
+                            variant="contained"
+                            startIcon={<SaveIcon />}
+                            onClick={() => void handleSaveIntegrationConfig()}
+                            disabled={saving || readOnly}
+                            sx={{
+                                flex: 1,
+                                fontWeight: 600,
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                bgcolor: '#4090F7',
+                                color: '#fff',
+                                '&:hover': { bgcolor: '#2F7DE0' },
+                            }}
+                        >
+                            {t('profileModules.save', 'Guardar')}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -404,27 +971,82 @@ interface SortableModuleRowProps {
     disabled: boolean;
     onToggle: (visible: boolean) => void;
     onEdit: () => void;
-    onDelete: () => void;
+    integration?: IntegrationStatus | null;
+    testing?: boolean;
+    onTest?: () => void;
+    onConfig?: () => void;
 }
 
-function SortableModuleRow({ mod, disabled, onToggle, onEdit, onDelete }: SortableModuleRowProps) {
+function integrationChip(integration: IntegrationStatus | null | undefined, t: (k: string, f: string) => string) {
+    if (!integration) return null;
+    if (!integration.enabled) {
+        return <Chip size="small" label={t('profileModules.intDisabled', 'Integración apagada')} sx={{ fontSize: '0.7rem', height: 22 }} />;
+    }
+    if (integration.status === 'ok') {
+        return <Chip size="small" label={t('profileModules.intOk', 'Integración activa')} color="success" sx={{ fontSize: '0.7rem', height: 22, fontWeight: 700 }} />;
+    }
+    if (integration.status === 'blocked_premium_required') {
+        return (
+            <Tooltip
+                title={t(
+                    'profileModules.intBlockedTip',
+                    'Tu aplicación está bloqueada por Spotify. Requiere cuenta Premium para acceder al Web API.',
+                )}
+                arrow
+            >
+                <Chip
+                    size="small"
+                    icon={<LockIcon sx={{ fontSize: 14 }} />}
+                    label={t('profileModules.intBlocked', 'Bloqueada (requiere Premium)')}
+                    color="error"
+                    sx={{ fontSize: '0.7rem', height: 22, fontWeight: 700 }}
+                />
+            </Tooltip>
+        );
+    }
+    if (integration.status === 'error') {
+        return <Chip size="small" label={t('profileModules.intError', 'Error de credenciales o redirect URI')} color="default" sx={{ fontSize: '0.7rem', height: 22, fontWeight: 700 }} />;
+    }
+    return <Chip size="small" label={t('profileModules.intPending', 'Integración pendiente')} color="warning" sx={{ fontSize: '0.7rem', height: 22 }} />;
+}
+
+function SortableModuleRow({ mod, disabled, onToggle, onEdit, integration, testing, onTest, onConfig, points: pointsProp, indented }: SortableModuleRowProps & { points?: number; indented?: boolean }) {
     const { t } = useTranslation('common');
+    const pts = pointsProp ?? getModulePoints(mod.key);
+    const points = pts;
+    const ptsSuffix = pts > 0 ? (mod.visible ? ` (−${pts} pts)` : ` (+${pts} pts)`) : '';
+    const impactTip =
+        (mod.visible
+            ? `${t('profileModules.hideAction', 'Ocultar')} ${mod.nombre}: ${t(
+                'profileModules.noCountProgress',
+                'ya no contará para el progreso',
+            )}`
+            : `${t('profileModules.showAction', 'Mostrar')} ${mod.nombre}: ${t(
+                'profileModules.countsProgress',
+                'volverá a contar para el progreso',
+            )}`) + ptsSuffix;
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: mod.key, disabled });
     const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
     return (
-        <Box ref={setNodeRef} style={style}>
+        <Box ref={setNodeRef} style={style} sx={indented ? { ml: { xs: 2, sm: 4 } } : undefined}>
             <Paper
-                elevation={isDragging ? 3 : 1}
+                elevation={isDragging ? 4 : 1}
                 sx={{
-                    p: 1,
-                    px: 1.5,
+                    p: 2,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1.5,
+                    borderRadius: 3,
+                    border: '1px solid',
+                    borderColor: 'divider',
                     borderLeft: mod.visible ? '4px solid #4CAF50' : '4px solid #9E9E9E',
-                    transition: 'background-color 0.2s ease',
-                    '&:hover': { bgcolor: 'action.hover' },
+                    transition: 'background-color 0.2s ease-out, box-shadow 0.2s ease-out, transform 0.2s ease-out',
+                    '&:hover': {
+                        bgcolor: 'action.hover',
+                        boxShadow: 3,
+                        transform: 'translateY(-1px)',
+                    },
                     flexWrap: { xs: 'wrap', sm: 'nowrap' },
                 }}
             >
@@ -460,21 +1082,76 @@ function SortableModuleRow({ mod, disabled, onToggle, onEdit, onDelete }: Sortab
                         {mod.requiere_premium && (
                             <Chip size="small" label="Premium" color="warning" sx={{ fontSize: '0.7rem', height: 22 }} />
                         )}
+                        {integrationChip(integration, t as (k: string, f: string) => string)}
+                        <Chip
+                            size="small"
+                            label={
+                                mod.visible
+                                    ? t('profileModules.statusOn', 'Activo')
+                                    : t('profileModules.statusOff', 'Oculto')
+                            }
+                            color={mod.visible ? 'success' : 'default'}
+                            sx={{ fontSize: '0.7rem', height: 22, fontWeight: 700 }}
+                        />
+                        {points > 0 && (
+                            <Tooltip
+                                title={t(
+                                    'profileModules.pointsHint',
+                                    'Puntos que aporta esta sección al progreso del perfil',
+                                )}
+                                arrow
+                            >
+                                <Chip
+                                    size="small"
+                                    label={`${points} pts`}
+                                    sx={{
+                                        fontSize: '0.7rem',
+                                        height: 22,
+                                        fontWeight: 800,
+                                        bgcolor: 'primary.main',
+                                        color: 'primary.contrastText',
+                                    }}
+                                />
+                            </Tooltip>
+                        )}
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
-                    <Tooltip title={mod.visible ? t('profileModules.visible', 'Visible') : t('profileModules.hidden', 'Oculto')}>
-                        <Switch size="small" checked={mod.visible} onChange={(e) => onToggle(e.target.checked)} disabled={disabled} />
+                    <Tooltip title={impactTip} arrow>
+                        <Switch
+                            size="small"
+                            checked={mod.visible}
+                            onChange={(e) => onToggle(e.target.checked)}
+                            disabled={disabled}
+                            sx={{
+                                '& .MuiSwitch-switchBase, & .MuiSwitch-thumb, & .MuiSwitch-track': {
+                                    transition: 'all 0.2s ease-out',
+                                },
+                            }}
+                        />
                     </Tooltip>
                     <Tooltip title={t('profileModules.edit', 'Editar')}>
                         <IconButton size="small" onClick={onEdit} disabled={disabled}>
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
-                    {mod.origen === 'integracion' && (
-                        <Tooltip title={t('profileModules.delete', 'Eliminar')}>
-                            <IconButton size="small" onClick={onDelete} color="error" disabled={disabled}>
-                                <DeleteIcon />
+                    {integration && onTest && (
+                        <Tooltip
+                            title={t(
+                                'profileModules.testConnTip',
+                                'Valida las credenciales contra Spotify (depende del tipo de cuenta).',
+                            )}
+                            arrow
+                        >
+                            <IconButton size="small" onClick={onTest} disabled={disabled || testing}>
+                                <PlayArrowIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {integration && onConfig && (
+                        <Tooltip title={t('profileModules.configure', 'Configurar integración')}>
+                            <IconButton size="small" onClick={onConfig} disabled={disabled}>
+                                <SettingsIcon />
                             </IconButton>
                         </Tooltip>
                     )}

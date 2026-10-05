@@ -5,8 +5,9 @@ from src.models.profile import Profile
 from src.models.match import Match, MatchStatus, InteractionType
 from src.models.message import Message
 from src.models.profile_visit import ProfileVisit
+from src.models.profile_module import ProfileModule
 from src.api.auth import get_current_user
-from src.api.profiles import calculate_profile_completion
+from src.api.profiles import _music_fallback_active, calculate_profile_completion
 from src.services.redis_service import redis_service
 
 
@@ -73,7 +74,12 @@ async def get_dashboard_stats(
         return {
             "matches_count": len(pending_matches),
             "unread_messages": len(unread_messages),
-            "profile_completion": calculate_profile_completion(profile, current_user),
+            "profile_completion": calculate_profile_completion(
+                profile,
+                current_user,
+                await ProfileModule.hidden_keys(),
+                await _music_fallback_active(),
+            ),
             "profile_visits": len(profile_visits),
         }
 
