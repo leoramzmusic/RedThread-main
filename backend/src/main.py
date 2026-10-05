@@ -159,6 +159,7 @@ from src.api import (
     admin_algorithms,  # New
     admin_appearance,  # New: Appearance Module
     admin_profile_modules,  # New: Profile Modules
+    admin_profile_tips,  # New: Profile Tips
     admin_integrations,  # New: Integrations (Spotify & co.)
     admin_credentials,  # New: Credentials Assets
     admin_yuki,  # New: Yuki Mascot Config
@@ -301,6 +302,16 @@ app.include_router(
     admin_profile_modules.public_router,
     prefix="/api/profile-modules",
     tags=["Profile Modules"],
+)  # New
+app.include_router(
+    admin_profile_tips.router,
+    prefix="/portal-redthread/profile-tips",
+    tags=["Admin - Profile Tips"],
+)  # New
+app.include_router(
+    admin_profile_tips.public_router,
+    prefix="/api/profile-tips",
+    tags=["Profile Tips"],
 )  # New
 app.include_router(
     admin_integrations.router,
