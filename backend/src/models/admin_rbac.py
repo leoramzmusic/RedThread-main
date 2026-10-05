@@ -102,6 +102,9 @@ class Permission(str, Enum):
     VIEW_PROFILE_MODULES = "view_profile_modules"
     MANAGE_VISIBILITY_MODULES = "manage_visibility_modules"
     MANAGE_PROFILE_MODULES = "manage_profile_modules"
+    VIEW_PROFILE_TIPS = "view_profile_tips"
+    MANAGE_PROFILE_TIPS = "manage_profile_tips"
+    EDIT_PROFILE_TIPS = "edit_profile_tips"
 
 
 # Role-Permission Matrix
