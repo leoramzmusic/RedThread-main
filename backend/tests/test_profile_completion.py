@@ -36,6 +36,7 @@ class FakeProfile:
         self.occupation = None
         self.work_company = None
         self.mi_himno = None
+        self.music_genres = []  # Added for test compatibility
         self.sexual_orientation = None
         self.relationship_status = None
         self.languages = []
