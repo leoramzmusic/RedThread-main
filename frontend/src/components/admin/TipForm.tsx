@@ -279,6 +279,23 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                 ))}
                                 {(['ok_image_url', 'ko_image_url'] as const).map((field) => (
                                     <Grid item xs={12} sm={6} key={field}>
+                                        {(slide[field] as string) ? (
+                                            <Box
+                                                component="img"
+                                                src={(slide[field] as string) ?? ''}
+                                                alt={field === 'ok_image_url' ? 'Vista previa OK' : 'Vista previa KO'}
+                                                sx={{
+                                                    width: '100%',
+                                                    aspectRatio: '1/1',
+                                                    objectFit: 'cover',
+                                                    borderRadius: 2,
+                                                    mb: 1,
+                                                    border: '2px solid',
+                                                    borderColor: field === 'ok_image_url' ? 'success.main' : 'error.main',
+                                                    bgcolor: 'action.hover',
+                                                }}
+                                            />
+                                        ) : null}
                                         <TextField
                                             label={field === 'ok_image_url' ? 'Imagen OK (URL)' : 'Imagen KO (URL)'}
                                             value={(slide[field] as string) ?? ''}
@@ -301,6 +318,17 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                                 onChange={(e) => void handleUpload(i, field, e.target.files?.[0])}
                                             />
                                         </Button>
+                                        {(slide[field] as string) ? (
+                                            <Button
+                                                size="small"
+                                                color="error"
+                                                sx={{ mt: 1, ml: 1 }}
+                                                disabled={readOnly || uploading !== null}
+                                                onClick={() => setSlide(i, { [field]: '' })}
+                                            >
+                                                Quitar
+                                            </Button>
+                                        ) : null}
                                     </Grid>
                                 ))}
                             </Grid>
