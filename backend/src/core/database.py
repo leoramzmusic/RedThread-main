@@ -36,6 +36,7 @@ from src.models.photo_metric import PhotoMetric
 from src.models.profile_visit import ProfileVisit
 from src.models.yuki_config import YukiConfig, YukiSkin, YukiAppearanceRule
 from src.models.profile_module import ProfileModule
+from src.models.profile_tip import ProfileTip
 from src.models.integration_config import IntegrationConfig
 
 
@@ -90,6 +91,7 @@ async def init_db():
             YukiSkin,
             YukiAppearanceRule,
             ProfileModule,
+            ProfileTip,
             IntegrationConfig,
         ],
     )
