@@ -117,7 +117,17 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                 return;
             }
             setSlide(index, { [field]: url });
-            onSnack('Imagen subida', 'success');
+            // Auto-persist slides so closing the dialog never loses uploads.
+            try {
+                const current = [...(value.slides ?? [])];
+                current[index] = { ...current[index], [field]: url };
+                await tipsApi.update(persistedTipKey, {
+                    slides: current.map((s, i) => ({ ...s, order: i })),
+                });
+                onSnack('Imagen guardada', 'success');
+            } catch {
+                onSnack('Imagen subida pero no guardada: pulsa Guardar', 'error');
+            }
         } catch {
             onSnack('Error al subir la imagen', 'error');
         } finally {

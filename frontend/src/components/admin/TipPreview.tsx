@@ -71,8 +71,16 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
             const slides = [...(tip.slides ?? [])];
             const key = pendingSlot.field === 'ok' ? 'ok_image_url' : 'ko_image_url';
             slides[pendingSlot.index] = { ...slides[pendingSlot.index], [key]: url };
-            onChange({ ...tip, slides: slides.map((s, i) => ({ ...s, order: i })) });
-            onSnack('Imagen subida (pulsa Guardar para aplicar)', 'success');
+            const ordered = slides.map((s, i) => ({ ...s, order: i }));
+            onChange({ ...tip, slides: ordered });
+            // Auto-persist slides so closing the dialog never loses uploads.
+            // Other text edits still require Guardar.
+            try {
+                await tipsApi.update(persistedTipKey, { slides: ordered });
+                onSnack('Imagen guardada', 'success');
+            } catch {
+                onSnack('Imagen subida pero no guardada: pulsa Guardar', 'error');
+            }
         } catch {
             onSnack('Error al subir la imagen', 'error');
         } finally {
