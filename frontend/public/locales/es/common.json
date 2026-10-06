@@ -455,6 +455,17 @@
       "deleteC1": "Los campos de nombre real y fecha de nacimiento se desbloquearán",
       "deleteC2": "Podrás editar tu información nuevamente",
       "deleteC3": "Deberás subir un nuevo documento para verificar tu identidad"
+    },
+    "birthdate": {
+      "label": "Fecha de nacimiento",
+      "helper": "La usamos para verificar tu edad. Nunca se muestra sin tu permiso.",
+      "preview": "{{date}} · {{age}} años",
+      "dateFormat": "D [de] MMMM [de] YYYY",
+      "invalid": "Fecha inválida.",
+      "future": "La fecha no puede ser futura.",
+      "tooOld": "Fecha fuera de rango.",
+      "underage": "Debes tener al menos 18 años.",
+      "openCalendar": "Abrir calendario"
     }
   },
   "settings_title": "Configuración",
@@ -1309,7 +1320,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Verificación de Identidad",
+    "title": "Verificación de Identidad",
     "privacyNotice": "Tu documento se usa únicamente para verificar tu identidad y edad. No se mostrará públicamente ni se compartirá con terceros.",
     "selectDocument": "Tipo de Documento",
     "uploadFile": "Arrastra tu documento aquí o haz clic para seleccionar",

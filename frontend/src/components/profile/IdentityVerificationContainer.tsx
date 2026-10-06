@@ -74,6 +74,8 @@ function BirthDatePickerInput({
   const [calOpen, setCalOpen] = React.useState(false);
   const current = field.value ? dayjs(field.value) : null;
   const valid = !error && current !== null && current.isValid();
+  // Dayjs locale aligned with the UI language (es data imported; en built-in).
+  const dayjsLocale = dateLocale === "es" ? "es" : "en";
 
   const openCalendar = () => {
     if (!fieldsLocked) setCalOpen(true);
@@ -82,7 +84,7 @@ function BirthDatePickerInput({
   return (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
-      adapterLocale={dateLocale === "es" ? "es" : "en"}
+      adapterLocale={dayjsLocale}
     >
       <DatePicker
         value={current}
@@ -123,8 +125,13 @@ function BirthDatePickerInput({
                   : valid
                     ? t("profile.birthdate.preview", "{{date}} · {{age}} años", {
                         date: (current as any)
-                          .locale(dateLocale === "es" ? "es" : "en")
-                          .format("D [de] MMMM [de] YYYY"),
+                          .locale(dayjsLocale)
+                          .format(
+                            t(
+                              "profile.birthdate.dateFormat",
+                              "D [de] MMMM [de] YYYY",
+                            ),
+                          ),
                         age: dayjs().diff(current, "year"),
                       })
                     : t(

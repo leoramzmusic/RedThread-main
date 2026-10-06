@@ -401,6 +401,17 @@
       "deleteC1": "Real name and birthdate fields will unlock",
       "deleteC2": "You can edit your info again",
       "deleteC3": "You must upload a new document to verify your identity"
+    },
+    "birthdate": {
+      "label": "Date of birth",
+      "helper": "We use it to verify your age. Never shown without your permission.",
+      "preview": "{{date}} · {{age}} years old",
+      "dateFormat": "MMMM D, YYYY",
+      "invalid": "Invalid date.",
+      "future": "Date cannot be in the future.",
+      "tooOld": "Date out of range.",
+      "underage": "You must be at least 18 years old.",
+      "openCalendar": "Open calendar"
     }
   },
   "settings_title": "Settings",
@@ -1240,7 +1251,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Identity Verification",
+    "title": "Identity Verification",
     "privacyNotice": "Your document is only used to verify your identity and age. It will not be shown publicly or shared.",
     "selectDocument": "Document Type",
     "uploadFile": "Drag your document here or click to select",
