@@ -141,11 +141,7 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
   };
 
   return (
-    <BottomSheet
-      open={open}
-      onClose={onClose}
-      sx={{ transform: "translateX(120px)" }}
-    >
+    <BottomSheet open={open} onClose={onClose}>
       <Box display="flex" alignItems="center" gap={1} mb={2}>
         <LightbulbIcon color="action" />
         <Typography variant="h6" fontWeight="bold">
