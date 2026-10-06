@@ -21,6 +21,7 @@ import { useTranslation } from "next-i18next";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import { useUI } from "../../context/UIContext";
 
 interface IdentityVerificationDialogProps {
   open: boolean;
@@ -74,6 +75,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { t } = useTranslation("common");
+  const { drawerWidth } = useUI();
   const isDark = theme.palette.mode === "dark";
 
   const [documentType, setDocumentType] = useState("");
@@ -204,6 +206,13 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
       maxWidth="sm"
       fullWidth
       aria-labelledby="identity-verification-title"
+      sx={{
+        // Center on the content area (which sits right of the sidebar on md+),
+        // not on the raw viewport.
+        "& .MuiDialog-container": {
+          pl: { xs: 0, md: `${drawerWidth}px` },
+        },
+      }}
       PaperProps={{
         sx: {
           borderRadius: "12px",
