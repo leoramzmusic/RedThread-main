@@ -26,11 +26,6 @@ import {
 import IdentityVerificationContainer from "../../IdentityVerificationContainer";
 import { COUNTRY_CODES } from "../../../../constants/countryCodes";
 import { UsernameEditor } from "../../UsernameEditor";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import "dayjs/locale/es";
 
 interface EditBasicInfoProps {
   control: any;
@@ -69,41 +64,7 @@ export default function EditBasicInfo({
   handleChangePhoneRequest,
   setIdentityInfoOpen = () => {},
 }: EditBasicInfoProps) {
-  const { t, i18n } = useTranslation("common");
-  const dateLocale = (i18n.language || "es").split("-")[0];
-
-  const calendarPaperSx = {
-    backgroundColor: (theme: any) =>
-      theme.palette.mode === "dark" ? "#232428" : theme.palette.background.paper,
-    backgroundImage: "none",
-    borderRadius: 3,
-    color: (theme: any) =>
-      theme.palette.mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
-    boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-  };
-
-  const validateBirthDate = (value: string | null | undefined) => {
-    if (!value) return true;
-    const d = dayjs(value);
-    if (!d.isValid())
-      return t("profile.birthdate.invalid", "Fecha inválida.");
-    if (d.isAfter(dayjs(), "day"))
-      return t(
-        "profile.birthdate.future",
-        "La fecha no puede ser futura.",
-      );
-    if (d.isBefore(dayjs("1900-01-01"), "day"))
-      return t(
-        "profile.birthdate.tooOld",
-        "Fecha fuera de rango.",
-      );
-    if (dayjs().diff(d, "year") < 18)
-      return t(
-        "profile.birthdate.underage",
-        "Debes tener al menos 18 años.",
-      );
-    return true;
-  };
+  const { t } = useTranslation("common");
 
   return (
     <Grid item xs={12}>
@@ -213,76 +174,6 @@ export default function EditBasicInfo({
                 onUsernameChange={(newUsername) =>
                   setValue("nickname", newUsername)
                 }
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Controller
-                name="birth_date"
-                control={control}
-                rules={{ validate: validateBirthDate }}
-                render={({ field, fieldState: { error } }) => {
-                  const current = field.value
-                    ? dayjs(field.value)
-                    : null;
-                  const valid =
-                    !error && current !== null && current.isValid();
-                  return (
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                      adapterLocale={dateLocale === "es" ? "es" : "en"}
-                    >
-                      <DatePicker
-                        value={current}
-                        onChange={(d) =>
-                          field.onChange(
-                            d && (d as any).isValid?.()
-                              ? (d as any).format("YYYY-MM-DD")
-                              : null,
-                          )
-                        }
-                        format="DD/MM/YYYY"
-                        disableFuture
-                        minDate={dayjs("1900-01-01") as any}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            label: t(
-                              "profile.birthdate.label",
-                              "Fecha de nacimiento",
-                            ),
-                            placeholder: "DD/MM/AAAA",
-                            error: !!error,
-                            helperText:
-                              error?.message ||
-                              (valid
-                                ? t(
-                                    "profile.birthdate.preview",
-                                    "{{date}} · {{age}} años",
-                                    {
-                                      date: (current as any)
-                                        .locale(dateLocale === "es" ? "es" : "en")
-                                        .format("D [de] MMMM [de] YYYY"),
-                                      age: dayjs().diff(current, "year"),
-                                    },
-                                  )
-                                : t(
-                                    "profile.birthdate.helper",
-                                    "La usamos para verificar tu edad. Nunca se muestra sin tu permiso.",
-                                  )),
-                          } as any,
-                          desktopPaper: { sx: calendarPaperSx },
-                          mobilePaper: { sx: calendarPaperSx },
-                          popper: {
-                            sx: {
-                              "& .MuiPaper-root": calendarPaperSx,
-                            },
-                          },
-                        }}
-                      />
-                    </LocalizationProvider>
-                  );
-                }}
               />
             </Grid>
 

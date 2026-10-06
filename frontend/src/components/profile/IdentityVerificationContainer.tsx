@@ -26,6 +26,11 @@ import { useIdentityVerification } from "@/hooks/useIdentityVerification";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import EditIcon from "@mui/icons-material/Edit";
 import WarningIcon from "@mui/icons-material/Warning";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
 
 interface IdentityVerificationContainerProps {
   control: Control<any>;
@@ -52,7 +57,8 @@ const IdentityVerificationContainer: React.FC<
   documentType,
   rejectionReason,
 }) => {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const dateLocale = (i18n.language || "es").split("-")[0];
   const {
     isUploading,
     isDialogOpen,
@@ -106,6 +112,30 @@ const IdentityVerificationContainer: React.FC<
   const confirmUnlock = () => {
     setIsUnlocked(true);
     setUnlockDialogOpen(false);
+  };
+
+  const calendarPaperSx = {
+    backgroundColor: (theme: any) =>
+      theme.palette.mode === "dark" ? "#232428" : theme.palette.background.paper,
+    backgroundImage: "none",
+    borderRadius: 3,
+    color: (theme: any) =>
+      theme.palette.mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
+    boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+  };
+
+  const validateBirthDate = (value: string | null | undefined) => {
+    if (!value) return true;
+    const d = dayjs(value);
+    if (!d.isValid())
+      return t("profile.birthdate.invalid", "Fecha inválida.");
+    if (d.isAfter(dayjs(), "day"))
+      return t("profile.birthdate.future", "La fecha no puede ser futura.");
+    if (d.isBefore(dayjs("1900-01-01"), "day"))
+      return t("profile.birthdate.tooOld", "Fecha fuera de rango.");
+    if (dayjs().diff(d, "year") < 18)
+      return t("profile.birthdate.underage", "Debes tener al menos 18 años.");
+    return true;
   };
 
   return (
@@ -186,90 +216,100 @@ const IdentityVerificationContainer: React.FC<
           <Controller
             name="birth_date"
             control={control}
-            render={({ field }) => {
-              // Ensure the value is in YYYY-MM-DD format for the date input
-              const formatDateForInput = (dateValue: any) => {
-                if (!dateValue) return "";
-
-                // If it's already a string in YYYY-MM-DD format, return it
-                if (
-                  typeof dateValue === "string" &&
-                  /^\d{4}-\d{2}-\d{2}$/.test(dateValue)
-                ) {
-                  return dateValue;
-                }
-
-                // Try to parse and format the date
-                try {
-                  const date = new Date(dateValue);
-                  if (!isNaN(date.getTime())) {
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, "0");
-                    const day = String(date.getDate()).padStart(2, "0");
-                    return `${year}-${month}-${day}`;
-                  }
-                } catch (e) {
-                  console.error("Error formatting date:", e);
-                }
-
-                return "";
-              };
-
+            rules={{ validate: validateBirthDate }}
+            render={({ field, fieldState: { error } }) => {
+              const current = field.value ? dayjs(field.value) : null;
+              const valid =
+                !error && current !== null && current.isValid();
               return (
-                <TextField
-                  {...field}
-                  value={formatDateForInput(field.value)}
-                  fullWidth
-                  label={t(
-                    "profile.identityDoc.birthDateLabel",
-                    "Fecha de Nacimiento",
-                  )}
-                  type="date"
-                  disabled={fieldsLocked}
-                  onClick={fieldsLocked ? handleUnlockClick : undefined}
-                  InputProps={{
-                    readOnly: fieldsLocked,
-                    endAdornment: fieldsLocked ? (
-                      <InputAdornment position="end">
-                        <Box
-                          component="span"
-                          onClick={handleUnlockClick}
-                          sx={{
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <EditIcon color="action" />
-                        </Box>
-                      </InputAdornment>
-                    ) : null,
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  helperText={
-                    verified
-                      ? t(
-                          "profile.identityDoc.verifiedHint",
-                          "Identidad verificada. Toca para editar (perderás la verificación).",
-                        )
-                      : fieldsLocked
-                        ? t(
-                            "profile.identityDoc.lockedHint",
-                            "Campo bloqueado - Documento en revisión",
-                          )
-                        : t(
-                            "profile.identityDoc.birthDateHelper",
-                            "Selecciona tu fecha de nacimiento",
-                          )
-                  }
-                  sx={{
-                    "& .MuiInputBase-input": {
-                      cursor: fieldsLocked ? "pointer" : "text",
-                    },
-                  }}
-                />
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale={dateLocale === "es" ? "es" : "en"}
+                >
+                  <DatePicker
+                    value={current}
+                    disabled={fieldsLocked}
+                    onChange={(d) =>
+                      field.onChange(
+                        d && (d as any).isValid?.()
+                          ? (d as any).format("YYYY-MM-DD")
+                          : null,
+                      )
+                    }
+                    format="DD/MM/YYYY"
+                    disableFuture
+                    minDate={dayjs("1900-01-01") as any}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        label: t(
+                          "profile.identityDoc.birthDateLabel",
+                          "Fecha de Nacimiento",
+                        ),
+                        placeholder: "DD/MM/AAAA",
+                        error: !!error,
+                        helperText:
+                          error?.message ||
+                          (verified
+                            ? t(
+                                "profile.identityDoc.verifiedHint",
+                                "Identidad verificada. Toca para editar (perderás la verificación).",
+                              )
+                            : fieldsLocked
+                              ? t(
+                                  "profile.identityDoc.lockedHint",
+                                  "Campo bloqueado - Documento en revisión",
+                                )
+                              : valid
+                                ? t(
+                                    "profile.birthdate.preview",
+                                    "{{date}} · {{age}} años",
+                                    {
+                                      date: (current as any)
+                                        .locale(dateLocale === "es" ? "es" : "en")
+                                        .format("D [de] MMMM [de] YYYY"),
+                                      age: dayjs().diff(current, "year"),
+                                    },
+                                  )
+                                : t(
+                                    "profile.identityDoc.birthDateHelper",
+                                    "Selecciona tu fecha de nacimiento",
+                                  )),
+                        onClick: fieldsLocked ? handleUnlockClick : undefined,
+                        InputProps: {
+                          readOnly: fieldsLocked,
+                          endAdornment: fieldsLocked ? (
+                            <InputAdornment position="end">
+                              <Box
+                                component="span"
+                                onClick={handleUnlockClick}
+                                sx={{
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <EditIcon color="action" />
+                              </Box>
+                            </InputAdornment>
+                          ) : undefined,
+                        },
+                        sx: {
+                          "& .MuiInputBase-input": {
+                            cursor: fieldsLocked ? "pointer" : "text",
+                          },
+                        },
+                      } as any,
+                      desktopPaper: { sx: calendarPaperSx },
+                      mobilePaper: { sx: calendarPaperSx },
+                      popper: {
+                        sx: {
+                          "& .MuiPaper-root": calendarPaperSx,
+                        },
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
               );
             }}
           />
