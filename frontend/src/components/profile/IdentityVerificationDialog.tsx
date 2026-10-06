@@ -206,6 +206,15 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
       maxWidth="sm"
       fullWidth
       aria-labelledby="identity-verification-title"
+      slotProps={{
+        backdrop: {
+          sx: {
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            bgcolor: "rgba(0,0,0,0.55)",
+          },
+        },
+      }}
       sx={{
         // Center on the content area (which sits right of the sidebar on md+),
         // not on the raw viewport.
@@ -269,6 +278,9 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                 PaperProps: {
                   sx: {
                     maxHeight: "40vh",
+                    // Never wider than the dialog content: long labels wrap
+                    // instead of pushing the menu outside the modal.
+                    maxWidth: "calc(100% - 32px)",
                     bgcolor: isDark ? "#232428" : "background.paper",
                     color: isDark ? "#E0E0E0" : "text.primary",
                     backgroundImage: "none",
@@ -276,6 +288,15 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                     border: "1px solid",
                     borderColor: "divider",
                     boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+                    "& .MuiMenuItem-root": {
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                    },
+                    "&::-webkit-scrollbar": { width: 8 },
+                    "&::-webkit-scrollbar-thumb": {
+                      bgcolor: "action.disabled",
+                      borderRadius: 4,
+                    },
                   },
                 },
               }}
