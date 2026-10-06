@@ -227,6 +227,7 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                 {/* OK Example */}
                 <Box>
                   <Box
+                    key={`ok-${i}-${s.ok.src}`}
                     onClick={
                       editable
                         ? (e) => {
@@ -324,6 +325,7 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                 {/* KO Example */}
                 <Box>
                   <Box
+                    key={`ko-${i}-${s.ko.src}`}
                     onClick={
                       editable
                         ? (e) => {

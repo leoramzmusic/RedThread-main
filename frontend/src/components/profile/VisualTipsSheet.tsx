@@ -193,6 +193,7 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
                 {/* OK Example */}
                 <Box>
                   <Box
+                    key={`ok-${i}-${s.ok.src}`}
                     sx={{
                       width: "100%",
                       aspectRatio: "1/1",
@@ -232,6 +233,7 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
                 {/* KO Example */}
                 <Box>
                   <Box
+                    key={`ko-${i}-${s.ko.src}`}
                     sx={{
                       width: "100%",
                       aspectRatio: "1/1",
