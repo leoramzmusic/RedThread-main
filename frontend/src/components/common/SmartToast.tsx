@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   Snackbar,
   Box,
@@ -27,9 +27,12 @@ interface SmartToastProps {
   autoHideDuration?: number;
 }
 
-function SlideLeft(props: SlideProps) {
-  return <Slide {...props} direction="left" />;
-}
+const SlideLeft = forwardRef<unknown, SlideProps>(function SlideLeft(
+  props,
+  ref,
+) {
+  return <Slide {...props} direction="left" ref={ref} />;
+});
 
 const SEVERITY_STYLE: Record<
   SmartToastSeverity,
@@ -68,16 +71,18 @@ const DEFAULT_ICON: Record<SmartToastSeverity, React.ReactNode> = {
   error: <ErrorOutlineIcon sx={{ fontSize: 20 }} />,
 };
 
-function ToastCard({
-  severity,
-  title,
-  message,
-  icon,
-  onClose,
-}: Omit<SmartToastProps, "open" | "autoHideDuration"> & { onClose: () => void }) {
+type ToastCardProps = Omit<SmartToastProps, "open" | "autoHideDuration"> & {
+  onClose: () => void;
+};
+
+const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(function ToastCard(
+  { severity, title, message, icon, onClose },
+  ref,
+) {
   const style = SEVERITY_STYLE[severity ?? "info"];
   return (
     <Box
+      ref={ref}
       role="status"
       sx={{
         display: "flex",
@@ -140,7 +145,7 @@ function ToastCard({
       </IconButton>
     </Box>
   );
-}
+});
 
 /**
  * Contextual floating toast: top-right on mobile, bottom-right on desktop.
