@@ -52,6 +52,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    volumes:
+      # Live code (matches current runtime) + shared img assets (tips uploads)
+      - ./backend/src:/app/src
+      - ./img:/img
 
   frontend:
     build:
