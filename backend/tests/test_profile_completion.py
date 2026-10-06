@@ -75,6 +75,7 @@ def complete_profile():
     p.occupation = "diseñadora"
     p.work_company = "RETH"
     p.mi_himno = {"connected": True, "favorite_artists": ["Soda Stereo"]}
+    p.music_genres = ["rock", "pop"]
     p.sexual_orientation = "bisexual"
     p.relationship_status = "single"
     p.languages = ["es", "en"]
