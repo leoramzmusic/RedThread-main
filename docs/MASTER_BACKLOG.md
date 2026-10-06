@@ -132,6 +132,15 @@ RedThread is a social matching app (dating/friendship/gaming) built with Next.js
 | LG-007 | Performance degradation | Detect low-end devices, degrade glass to solid surfaces | hardwareConcurrency ≤ 2 → solid backgrounds; Lighthouse mobile ≥ 90 | LG-001 | 5 | S8 |
 | LG-008 | Brand assets finalization | SVG thread-knot component, favicon, consistent branding | Reusable SVG component; no old brand references; favicon updated | LG-004 | 3 | S4 |
 
+#### Accessibility Settings Panel (P1) — spec: `docs/ACCESSIBILITY.md` §6
+
+| ID | Title | Description | Acceptance Criteria | Dependencies | Effort | Sprint |
+|----|-------|-------------|---------------------|--------------|--------|--------|
+| A11Y-101 | High-contrast palettes | Wire `high_contrast_mode` + curated palettes (white-on-black, yellow-on-blue) via `data-contrast` + theme tokens | 3 palettes; AA contrast; glass degrades to solid; persists to UserSettings | LG-001 | 5 | TBD |
+| A11Y-102 | Text-size steps | Segmented Normal/Grande/Extra (100/112.5/125%) bound to `UserSettings.font_size` | No clipping at 125% on 375/768/1440px; preview card in section | LG-001 | 5 | TBD |
+| A11Y-103 | Narrator compatibility mode | Verbose alt/labels + aria-live announcements when `screen_reader_enabled` | Narrator/NVDA walkthrough discover→profile→edit with zero unlabeled controls | Phase-1 a11y pass | 8 | TBD |
+| A11Y-104 | Keyboard nav + focus | Roving focus, Esc-closes-everything, focus traps, `:focus-visible` ring | Full discover→match→chat flow mouseless when `keyboard_navigation` on | LG-001 | 5 | TBD |
+
 ---
 
 ### 2.2 Admin Portal

@@ -57,3 +57,59 @@
 
 - `LG-006` (axe audit), `MOB-021` (mobile screen reader), `TEST-009`
   (a11y tests), UX_UI backlog § accessibility checklist.
+
+## 6. Settings panel — Accessibility section (future)
+
+Location: `/settings?section=accessibility` (`AccessibilitySection.tsx`).
+Current state (2026-10-06): 4 toggles rendered and persisted
+(`high_contrast_mode`, `screen_reader_enabled`, `keyboard_navigation`,
+`reduced_motion`) but with **no effect wired**; `font_size`
+(`small|medium|large`) persisted in `UserSettings` with **no UI yet**.
+The panel below turns them from placebo into working preferences.
+Persistence already exists via the settings API — the work is wiring
+effects + the missing controls.
+
+### 6.1 High contrast (opt-in palettes, never global inversion)
+
+- Palettes: `default` · `white-on-black` · `yellow-on-blue`.
+  Curated token overrides (text, surfaces, borders, focus ring), not a
+  CSS `invert()` filter.
+- Applied as `data-contrast` attribute on `<html>` + MUI theme tokens;
+  persisted to `UserSettings.high_contrast_mode` (+ palette id).
+- Acceptance: WCAG AA contrast (≥ 4.5:1 text) on all three palettes;
+  glass blur reduced to solid surfaces under high contrast.
+
+### 6.2 Text size (Normal / Grande / Extra grande)
+
+- Steps map to root font scaling without breaking layout:
+  `medium` = 100%, `large` = 112.5%, `xlarge` = 125% (extend
+  `UserSettings.font_size` enum, currently `small|medium|large`).
+- UI: segmented selector in the Accessibility section (not a free slider,
+  to guarantee tested steps).
+- Acceptance: no clipped text / no broken grids at 125% on 375px, 768px,
+  1440px; `rem`-based sizing enforced in touched components.
+
+### 6.3 Narrator compatibility mode
+
+- When `screen_reader_enabled`: verbose `alt`/`aria-label` variants
+  (e.g. photo descriptions include context), `aria-live` announcements
+  for toasts/matches, reduced decorative live regions.
+- The ARIA groundwork from §2 stays always-on; this toggle only adds
+  the verbose layer.
+- Acceptance: Narrator/NVDA walkthrough of discover → profile → edit
+  with zero unlabeled controls.
+
+### 6.4 Full keyboard navigation + visible focus
+
+- When `keyboard_navigation`: roving focus in card stacks, `Esc` closes
+  every modal/sheet, documented shortcuts (discover arrows already exist
+  in `ProfileCard`), focus trap in dialogs.
+- Global `:focus-visible` ring (2px, high-contrast aware).
+- Acceptance: complete discover → match → chat flow without a mouse.
+
+### 6.5 Preview + persistence
+
+- Live preview card inside the section showing contrast + text size
+  applied to sample content before saving.
+- All four preferences persist to `UserSettings` (cross-session and
+  cross-device, like the rest of settings).
