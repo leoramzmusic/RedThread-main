@@ -317,7 +317,13 @@ export default function TipsPage() {
                             />
                         </Box>
                         <Box sx={{ width: { xs: '100%', md: 380 }, flexShrink: 0 }}>
-                            <TipPreview tip={form} />
+                            <TipPreview
+                                tip={form}
+                                onChange={setForm}
+                                persistedTipKey={editingKey}
+                                readOnly={readOnly}
+                                onSnack={(msg, severity) => setSnack({ msg, severity })}
+                            />
                         </Box>
                     </DialogContent>
                     <DialogActions>

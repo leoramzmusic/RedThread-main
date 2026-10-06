@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { useTranslation } from "next-i18next";
 import { Box, Button, Typography, useTheme, alpha } from "@mui/material";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import CloseIcon from "@mui/icons-material/Close";
 import BottomSheet from "../../shared/BottomSheet";
 import type { ProfileTipData } from "../../../hooks/useProfileTip";
 
@@ -10,6 +11,10 @@ interface CarouselTipProps {
   onClose: () => void;
   open?: boolean;
   fallback?: React.ReactNode;
+  /** Admin-only: makes OK/KO image boxes clickable for upload/replace/delete. */
+  editable?: boolean;
+  onSlotClick?: (slideIndex: number, field: "ok" | "ko") => void;
+  onSlotClear?: (slideIndex: number, field: "ok" | "ko") => void;
 }
 
 interface CarouselSlide {
@@ -39,6 +44,9 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
   tip,
   onClose,
   open = true,
+  editable = false,
+  onSlotClick,
+  onSlotClear,
 }) => {
   const theme = useTheme();
   const { t } = useTranslation("common");
@@ -200,6 +208,15 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                 {/* OK Example */}
                 <Box>
                   <Box
+                    onClick={
+                      editable
+                        ? (e) => {
+                            e.stopPropagation();
+                            onSlotClick?.(i, "ok");
+                          }
+                        : undefined
+                    }
+                    title={editable ? "Clic para subir / reemplazar imagen" : undefined}
                     sx={{
                       width: "100%",
                       aspectRatio: "1/1",
@@ -209,6 +226,10 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                       mb: 1,
                       position: "relative",
                       border: "2px solid #ffffff",
+                      cursor: editable ? "pointer" : undefined,
+                      "&:hover": editable
+                        ? { outline: "2px dashed", outlineColor: "success.main" }
+                        : undefined,
                     }}
                   >
                     <img
@@ -221,6 +242,35 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                       }}
                       onError={(e) => handleImageError(e, true)}
                     />
+                    {editable && s.ok.src ? (
+                      <Box
+                        component="span"
+                        role="button"
+                        aria-label="Quitar imagen OK"
+                        title="Quitar imagen"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSlotClear?.(i, "ok");
+                        }}
+                        sx={{
+                          position: "absolute",
+                          top: 6,
+                          right: 6,
+                          width: 26,
+                          height: 26,
+                          borderRadius: "50%",
+                          bgcolor: "rgba(0,0,0,0.65)",
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          "&:hover": { bgcolor: "error.main" },
+                        }}
+                      >
+                        <CloseIcon sx={{ fontSize: 16 }} />
+                      </Box>
+                    ) : null}
                   </Box>
                   <Typography
                     variant="caption"
@@ -239,6 +289,15 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                 {/* KO Example */}
                 <Box>
                   <Box
+                    onClick={
+                      editable
+                        ? (e) => {
+                            e.stopPropagation();
+                            onSlotClick?.(i, "ko");
+                          }
+                        : undefined
+                    }
+                    title={editable ? "Clic para subir / reemplazar imagen" : undefined}
                     sx={{
                       width: "100%",
                       aspectRatio: "1/1",
@@ -248,6 +307,10 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                       mb: 1,
                       position: "relative",
                       border: "2px solid #ffffff",
+                      cursor: editable ? "pointer" : undefined,
+                      "&:hover": editable
+                        ? { outline: "2px dashed", outlineColor: "error.main" }
+                        : undefined,
                     }}
                   >
                     <img
@@ -260,6 +323,35 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                       }}
                       onError={(e) => handleImageError(e, false)}
                     />
+                    {editable && s.ko.src ? (
+                      <Box
+                        component="span"
+                        role="button"
+                        aria-label="Quitar imagen KO"
+                        title="Quitar imagen"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSlotClear?.(i, "ko");
+                        }}
+                        sx={{
+                          position: "absolute",
+                          top: 6,
+                          right: 6,
+                          width: 26,
+                          height: 26,
+                          borderRadius: "50%",
+                          bgcolor: "rgba(0,0,0,0.65)",
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          "&:hover": { bgcolor: "error.main" },
+                        }}
+                      >
+                        <CloseIcon sx={{ fontSize: 16 }} />
+                      </Box>
+                    ) : null}
                   </Box>
                   <Typography
                     variant="caption"
