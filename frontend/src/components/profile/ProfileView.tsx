@@ -13,6 +13,7 @@ import ProfileMainView from './view/ProfileMainView';
 import ProfileMediaView from './view/ProfileMediaView';
 import ProfileIdentityView from './view/ProfileIdentityView';
 import ProfileRewardsView from './view/ProfileRewardsView';
+import { useSmartPhotosTracking } from '../../services/smartPhotos';
 
 interface ProfileViewProps {
   profile: any;
@@ -61,6 +62,12 @@ export default function ProfileView({ profile, onEdit, onProfileUpdate, readOnly
     fetchMedia();
   }, [profile?.user_id]);
 
+  // Smart Photos tracking for profile page
+  const { handlePhotoClick, handleMatch } = useSmartPhotosTracking(
+    profile?.user_id || '',
+    mediaItems
+  );
+
   const getImageUrl = (url?: string) => {
     if (!url) return undefined;
     if (url.startsWith('http')) return url;
@@ -92,6 +99,9 @@ export default function ProfileView({ profile, onEdit, onProfileUpdate, readOnly
         mainProfilePhoto={mainProfilePhoto}
         onEdit={onEdit}
         readOnly={readOnly}
+        onPhotoClick={handlePhotoClick}
+        smartPhotosEnabled={profile?.smart_photos_enabled}
+        mediaItems={mediaItems}
       />
 
       <ProfileTabs activeTab={activeTab} onChange={handleTabChange} />
@@ -104,6 +114,8 @@ export default function ProfileView({ profile, onEdit, onProfileUpdate, readOnly
             profile={profile}
             mediaItems={mediaItems}
             mainProfilePhoto={mainProfilePhoto}
+            onPhotoClick={handlePhotoClick}
+            smartPhotosEnabled={profile?.smart_photos_enabled}
           />
         )}
 

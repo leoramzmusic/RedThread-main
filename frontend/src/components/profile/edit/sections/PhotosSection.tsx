@@ -10,6 +10,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -18,7 +20,9 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next";
+import { useState } from "react";
 import MediaManager from "../../MediaManager";
+import { smartPhotosTracker } from "../../../../services/smartPhotos";
 
 interface PhotosSectionProps {
   profile: any;
@@ -32,6 +36,21 @@ export default function PhotosSection({
   setSmartPhotos,
 }: PhotosSectionProps) {
   const { t } = useTranslation("common");
+  const [smartPhotosSnackbar, setSmartPhotosSnackbar] = useState(false);
+
+  const handleSmartPhotosChange = async (enabled: boolean) => {
+    setSmartPhotos(enabled);
+    if (enabled) {
+      setSmartPhotosSnackbar(true);
+      // Trigger immediate evaluation when user enables Smart Photos
+      try {
+        await smartPhotosTracker.evaluateSmartPhotos();
+      } catch (err) {
+        console.error("Failed to evaluate Smart Photos on enable:", err);
+      }
+    }
+  };
+
   return (
     <Grid item xs={12}>
       <Accordion
@@ -41,20 +60,22 @@ export default function PhotosSection({
           border: (theme) => "1px solid " + theme.palette.divider,
           boxShadow: 1,
           backgroundImage: "none",
-          borderRadius: "12px !important",
+          borderRadius: "16px",
           "&:before": { display: "none" },
         }}
       >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}
+        >
           <Box display="flex" alignItems="center" gap={1}>
             <PhotoLibrary color="action" />
-            <Typography variant="h6">
+            <Typography variant="h6" fontWeight="600">
               {t("profile.photos.title", "Fotos")}
             </Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
-          <MediaManager userId={profile.user_id} />
+          <MediaManager userId={profile.user_id} smartPhotosEnabled={smartPhotos} />
 
           <Box
             display="flex"
@@ -90,7 +111,7 @@ export default function PhotosSection({
             </Box>
             <Switch
               checked={smartPhotos}
-              onChange={(e) => setSmartPhotos(e.target.checked)}
+              onChange={(e) => handleSmartPhotosChange(e.target.checked)}
               inputProps={{
                 "aria-label": t(
                   "profile.photos.smartToggle",
@@ -101,6 +122,25 @@ export default function PhotosSection({
           </Box>
         </AccordionDetails>
       </Accordion>
+
+      <Snackbar
+        open={smartPhotosSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setSmartPhotosSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="success"
+          onClose={() => setSmartPhotosSnackbar(false)}
+          sx={{ width: "100%", mb: 2 }}
+          variant="filled"
+        >
+          {t(
+            "profile.photos.smartEnabled",
+            "Smart Photos activado: tu mejor foto se seleccionará automáticamente según interacciones",
+          )}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }

@@ -69,7 +69,8 @@
       "smartTitle": "Smart Photos",
       "smartTooltip": "Activa para mostrar automáticamente tu foto más popular",
       "smartDesc": "Selecciona automáticamente la mejor foto según interacción",
-      "smartToggle": "Smart Photos Toggle"
+      "smartToggle": "Smart Photos Toggle",
+      "smartEnabled": "Smart Photos activado: tu mejor foto se seleccionará automáticamente según interacciones"
     },
     "uploadPhoto": "Subir",
     "interests": "Intereses",

@@ -12,7 +12,8 @@ import {
     ListItemIcon,
     ListItemText,
     Container,
-    useTheme
+    useTheme,
+    Chip
 } from '@mui/material';
 import {
     Edit as EditIcon,
@@ -21,6 +22,7 @@ import {
     Image as ImageIcon,
     Close as CloseIcon,
     Verified as VerifiedIcon,
+    AutoAwesome as AutoAwesomeIcon,
 } from '@mui/icons-material';
 
 
@@ -31,9 +33,12 @@ interface ProfileHeaderProps {
     mainProfilePhoto?: string;
     onEdit?: () => void;
     readOnly?: boolean;
+    onPhotoClick?: (mediaId: string) => void;
+    smartPhotosEnabled?: boolean;
+    mediaItems?: any[];
 }
 
-export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readOnly }: ProfileHeaderProps) {
+export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readOnly, onPhotoClick, smartPhotosEnabled, mediaItems }: ProfileHeaderProps) {
     const { t } = useTranslation('common');
     const theme = useTheme();
     const [cameraMenuAnchor, setCameraMenuAnchor] = useState<null | HTMLElement>(null);
@@ -181,6 +186,26 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                             >
                                 <CameraIcon fontSize="small" />
                             </IconButton>
+                        )}
+
+                        {/* Smart Photos Badge */}
+                        {smartPhotosEnabled && mediaItems && mediaItems.length > 0 && (
+                            <Chip
+                                icon={<AutoAwesomeIcon sx={{ fontSize: 10 }} />}
+                                label="Smart"
+                                size="small"
+                                color="warning"
+                                variant="filled"
+                                sx={{
+                                    position: 'absolute',
+                                    top: 4,
+                                    left: 4,
+                                    height: 20,
+                                    fontSize: '0.65rem',
+                                    fontWeight: 700,
+                                    '& .MuiChip-icon': { color: 'white', mr: 0.5 },
+                                }}
+                            />
                         )}
                     </Box>
 

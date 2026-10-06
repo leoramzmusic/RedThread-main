@@ -7,9 +7,11 @@ interface ProfileMediaViewProps {
     profile: any;
     mediaItems: MediaItem[];
     mainProfilePhoto?: string;
+    onPhotoClick?: (mediaId: string) => void;
+    smartPhotosEnabled?: boolean;
 }
 
-export default function ProfileMediaView({ profile, mediaItems, mainProfilePhoto }: ProfileMediaViewProps) {
+export default function ProfileMediaView({ profile, mediaItems, mainProfilePhoto, onPhotoClick, smartPhotosEnabled }: ProfileMediaViewProps) {
     return (
         <Grid container spacing={4} sx={{ px: { xs: 2, md: 4 }, py: 3 }}>
             <Grid item xs={12} md={8} lg={6} sx={{ mx: 'auto' }}>
@@ -17,6 +19,8 @@ export default function ProfileMediaView({ profile, mediaItems, mainProfilePhoto
                     profile={profile}
                     mediaItems={mediaItems}
                     mainProfilePhoto={mainProfilePhoto}
+                    onPhotoClick={onPhotoClick}
+                    smartPhotosEnabled={smartPhotosEnabled}
                 />
                 <ProfileMusic />
             </Grid>

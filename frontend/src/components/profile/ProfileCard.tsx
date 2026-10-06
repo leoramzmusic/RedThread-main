@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import {
   Card,
@@ -23,6 +23,7 @@ import ProfileDetailsModal from "./ProfileDetailsModal";
 import PresenceIndicator from "./PresenceIndicator";
 import { InteractionMode } from "../discovery/InteractionSettingsDialog";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useSmartPhotosTracking } from "../../services/smartPhotos";
 
 export interface Profile {
   user_id: string;
@@ -197,6 +198,12 @@ export default function ProfileCard({
     };
     if (profile.user_id && !effectiveIsBlind) fetchMedia();
   }, [profile.user_id, effectiveIsBlind]);
+
+  // Smart Photos tracking
+  const { handlePhotoClick, handleMatch } = useSmartPhotosTracking(
+    profile.user_id,
+    mediaItems
+  );
 
   // Taps Logic (State for counting taps)
   const [tapCount, setTapCount] = useState(0);
@@ -412,21 +419,37 @@ export default function ProfileCard({
         }}
       >
         {/* Photo Layer */}
-        <CardMedia
-          component="img"
-          image={
-            photos[activePhotoIndex] ||
-            "https://via.placeholder.com/400x600?text=No+Photo"
+        <Box
+          data-media-id={
+            mediaItems[activePhotoIndex]?._id ||
+            profile.photos?.[activePhotoIndex] ||
+            `photo-${activePhotoIndex}`
           }
-          sx={{
-            height: "100%",
-            width: "100%",
-            objectFit: "cover",
-            pointerEvents: "none",
-            filter: "brightness(1)", // More vivid
-            flexShrink: 0,
+          onClick={() => {
+            const mediaId =
+              mediaItems[activePhotoIndex]?._id ||
+              profile.photos?.[activePhotoIndex] ||
+              `photo-${activePhotoIndex}`;
+            handlePhotoClick(mediaId);
           }}
-        />
+          sx={{ height: "100%", width: "100%" }}
+        >
+          <CardMedia
+            component="img"
+            image={
+              photos[activePhotoIndex] ||
+              "https://via.placeholder.com/400x600?text=No+Photo"
+            }
+            sx={{
+              height: "100%",
+              width: "100%",
+              objectFit: "cover",
+              pointerEvents: "none",
+              filter: "brightness(1)", // More vivid
+              flexShrink: 0,
+            }}
+          />
+        </Box>
 
         {/* Narrative Overlay Gradient */}
         <Box

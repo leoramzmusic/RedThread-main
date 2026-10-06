@@ -1,13 +1,16 @@
-import { Paper, Typography, Avatar, Box } from '@mui/material';
+import { Paper, Typography, Avatar, Box, Chip } from '@mui/material';
 import { MediaItem, MediaType } from '../../../types/media';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 interface ProfileGalleryProps {
     profile: any;
     mediaItems: MediaItem[];
     mainProfilePhoto?: string;
+    onPhotoClick?: (mediaId: string) => void;
+    smartPhotosEnabled?: boolean;
 }
 
-export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto }: ProfileGalleryProps) {
+export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto, onPhotoClick, smartPhotosEnabled }: ProfileGalleryProps) {
     const getImageUrl = (url?: string) => {
         if (!url) return undefined;
         if (url.startsWith('http')) return url;
@@ -42,14 +45,17 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto }
             >
                 {displayItems.length > 0 ? (
                     mediaItems.length > 0 ? (
-                        mediaItems.map((item: MediaItem) => (
+                        mediaItems.map((item: MediaItem, index: number) => (
                             <Box
                                 key={item._id}
+                                data-media-id={item._id}
+                                onClick={() => onPhotoClick?.(item._id)}
                                 sx={{
                                     aspectRatio: '1',
                                     position: 'relative',
                                     overflow: 'hidden',
-                                    borderRadius: 2
+                                    borderRadius: 2,
+                                    cursor: 'pointer'
                                 }}
                             >
                                 {item.type === MediaType.PHOTO ? (
@@ -59,7 +65,6 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto }
                                         sx={{
                                             width: '100%',
                                             height: '100%',
-                                            cursor: 'pointer',
                                             transition: 'transform 0.3s ease',
                                             '&:hover': {
                                                 transform: 'scale(1.05)',
@@ -74,10 +79,29 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto }
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        cursor: 'pointer'
                                     }}>
                                         <Typography color="white">Video</Typography>
                                     </Box>
+                                )}
+
+                                {/* Smart Photos Badge on first photo */}
+                                {smartPhotosEnabled && index === 0 && (
+                                    <Chip
+                                        icon={<AutoAwesomeIcon sx={{ fontSize: 10 }} />}
+                                        label="Smart"
+                                        size="small"
+                                        color="warning"
+                                        variant="filled"
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 4,
+                                            left: 4,
+                                            height: 20,
+                                            fontSize: '0.65rem',
+                                            fontWeight: 700,
+                                            '& .MuiChip-icon': { color: 'white', mr: 0.5 },
+                                        }}
+                                    />
                                 )}
                             </Box>
                         ))
@@ -85,11 +109,14 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto }
                         displayItems.map((photo: string, index: number) => (
                             <Box
                                 key={index}
+                                data-media-id={`photo-${index}`}
+                                onClick={() => onPhotoClick?.(`photo-${index}`)}
                                 sx={{
                                     aspectRatio: '1',
                                     position: 'relative',
                                     overflow: 'hidden',
-                                    borderRadius: 2
+                                    borderRadius: 2,
+                                    cursor: 'pointer'
                                 }}
                             >
                                 <Avatar
@@ -98,13 +125,32 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto }
                                     sx={{
                                         width: '100%',
                                         height: '100%',
-                                        cursor: 'pointer',
                                         transition: 'transform 0.3s ease',
                                         '&:hover': {
                                             transform: 'scale(1.05)',
                                         }
                                     }}
                                 />
+
+                                {/* Smart Photos Badge on first photo */}
+                                {smartPhotosEnabled && index === 0 && (
+                                    <Chip
+                                        icon={<AutoAwesomeIcon sx={{ fontSize: 10 }} />}
+                                        label="Smart"
+                                        size="small"
+                                        color="warning"
+                                        variant="filled"
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 4,
+                                            left: 4,
+                                            height: 20,
+                                            fontSize: '0.65rem',
+                                            fontWeight: 700,
+                                            '& .MuiChip-icon': { color: 'white', mr: 0.5 },
+                                        }}
+                                    />
+                                )}
                             </Box>
                         ))
                     )
