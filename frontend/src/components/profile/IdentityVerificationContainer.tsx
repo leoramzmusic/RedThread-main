@@ -26,6 +26,8 @@ import { useIdentityVerification } from "@/hooks/useIdentityVerification";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import EditIcon from "@mui/icons-material/Edit";
 import WarningIcon from "@mui/icons-material/Warning";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import IconButton from "@mui/material/IconButton";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -42,6 +44,146 @@ interface IdentityVerificationContainerProps {
   documentUrl?: string;
   documentType?: string;
   rejectionReason?: string;
+}
+
+interface BirthDatePickerInputProps {
+  field: any;
+  error?: { message?: string };
+  verified: boolean;
+  fieldsLocked: boolean;
+  dateLocale: string;
+  t: (...args: any[]) => any;
+  calendarPaperSx: any;
+  onUnlock: () => void;
+}
+
+/**
+ * Birth-date picker with explicitly controlled open state plus a visible
+ * calendar toggle, so the popup always opens on tap/click/keyboard.
+ */
+function BirthDatePickerInput({
+  field,
+  error,
+  verified,
+  fieldsLocked,
+  dateLocale,
+  t,
+  calendarPaperSx,
+  onUnlock,
+}: BirthDatePickerInputProps) {
+  const [calOpen, setCalOpen] = React.useState(false);
+  const current = field.value ? dayjs(field.value) : null;
+  const valid = !error && current !== null && current.isValid();
+
+  const openCalendar = () => {
+    if (!fieldsLocked) setCalOpen(true);
+  };
+
+  return (
+    <LocalizationProvider
+      dateAdapter={AdapterDayjs}
+      adapterLocale={dateLocale === "es" ? "es" : "en"}
+    >
+      <DatePicker
+        value={current}
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        disabled={fieldsLocked}
+        onChange={(d) =>
+          field.onChange(
+            d && (d as any).isValid?.()
+              ? (d as any).format("YYYY-MM-DD")
+              : null,
+          )
+        }
+        format="DD/MM/YYYY"
+        disableFuture
+        minDate={dayjs("1900-01-01") as any}
+        slotProps={{
+          textField: {
+            fullWidth: true,
+            label: t(
+              "profile.identityDoc.birthDateLabel",
+              "Fecha de Nacimiento",
+            ),
+            placeholder: "DD/MM/AAAA",
+            error: !!error,
+            helperText:
+              error?.message ||
+              (verified
+                ? t(
+                    "profile.identityDoc.verifiedHint",
+                    "Identidad verificada. Toca para editar (perderás la verificación).",
+                  )
+                : fieldsLocked
+                  ? t(
+                      "profile.identityDoc.lockedHint",
+                      "Campo bloqueado - Documento en revisión",
+                    )
+                  : valid
+                    ? t("profile.birthdate.preview", "{{date}} · {{age}} años", {
+                        date: (current as any)
+                          .locale(dateLocale === "es" ? "es" : "en")
+                          .format("D [de] MMMM [de] YYYY"),
+                        age: dayjs().diff(current, "year"),
+                      })
+                    : t(
+                        "profile.identityDoc.birthDateHelper",
+                        "Selecciona tu fecha de nacimiento",
+                      )),
+            onClick: fieldsLocked ? onUnlock : openCalendar,
+            InputProps: {
+              readOnly: fieldsLocked,
+              endAdornment: fieldsLocked ? (
+                <InputAdornment position="end">
+                  <Box
+                    component="span"
+                    onClick={onUnlock}
+                    sx={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <EditIcon color="action" />
+                  </Box>
+                </InputAdornment>
+              ) : (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    edge="end"
+                    aria-label={t(
+                      "profile.birthdate.openCalendar",
+                      "Abrir calendario",
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openCalendar();
+                    }}
+                  >
+                    <CalendarMonthIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+            sx: {
+              "& .MuiInputBase-input": {
+                cursor: fieldsLocked ? "pointer" : "text",
+              },
+            },
+          } as any,
+          desktopPaper: { sx: calendarPaperSx },
+          mobilePaper: { sx: calendarPaperSx },
+          popper: {
+            sx: {
+              "& .MuiPaper-root": calendarPaperSx,
+            },
+          },
+        }}
+      />
+    </LocalizationProvider>
+  );
 }
 
 const IdentityVerificationContainer: React.FC<
@@ -217,101 +359,18 @@ const IdentityVerificationContainer: React.FC<
             name="birth_date"
             control={control}
             rules={{ validate: validateBirthDate }}
-            render={({ field, fieldState: { error } }) => {
-              const current = field.value ? dayjs(field.value) : null;
-              const valid =
-                !error && current !== null && current.isValid();
-              return (
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  adapterLocale={dateLocale === "es" ? "es" : "en"}
-                >
-                  <DatePicker
-                    value={current}
-                    disabled={fieldsLocked}
-                    onChange={(d) =>
-                      field.onChange(
-                        d && (d as any).isValid?.()
-                          ? (d as any).format("YYYY-MM-DD")
-                          : null,
-                      )
-                    }
-                    format="DD/MM/YYYY"
-                    disableFuture
-                    minDate={dayjs("1900-01-01") as any}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        label: t(
-                          "profile.identityDoc.birthDateLabel",
-                          "Fecha de Nacimiento",
-                        ),
-                        placeholder: "DD/MM/AAAA",
-                        error: !!error,
-                        helperText:
-                          error?.message ||
-                          (verified
-                            ? t(
-                                "profile.identityDoc.verifiedHint",
-                                "Identidad verificada. Toca para editar (perderás la verificación).",
-                              )
-                            : fieldsLocked
-                              ? t(
-                                  "profile.identityDoc.lockedHint",
-                                  "Campo bloqueado - Documento en revisión",
-                                )
-                              : valid
-                                ? t(
-                                    "profile.birthdate.preview",
-                                    "{{date}} · {{age}} años",
-                                    {
-                                      date: (current as any)
-                                        .locale(dateLocale === "es" ? "es" : "en")
-                                        .format("D [de] MMMM [de] YYYY"),
-                                      age: dayjs().diff(current, "year"),
-                                    },
-                                  )
-                                : t(
-                                    "profile.identityDoc.birthDateHelper",
-                                    "Selecciona tu fecha de nacimiento",
-                                  )),
-                        onClick: fieldsLocked ? handleUnlockClick : undefined,
-                        InputProps: {
-                          readOnly: fieldsLocked,
-                          endAdornment: fieldsLocked ? (
-                            <InputAdornment position="end">
-                              <Box
-                                component="span"
-                                onClick={handleUnlockClick}
-                                sx={{
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <EditIcon color="action" />
-                              </Box>
-                            </InputAdornment>
-                          ) : undefined,
-                        },
-                        sx: {
-                          "& .MuiInputBase-input": {
-                            cursor: fieldsLocked ? "pointer" : "text",
-                          },
-                        },
-                      } as any,
-                      desktopPaper: { sx: calendarPaperSx },
-                      mobilePaper: { sx: calendarPaperSx },
-                      popper: {
-                        sx: {
-                          "& .MuiPaper-root": calendarPaperSx,
-                        },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-              );
-            }}
+            render={({ field, fieldState: { error } }) => (
+              <BirthDatePickerInput
+                field={field}
+                error={error}
+                verified={verified}
+                fieldsLocked={fieldsLocked}
+                dateLocale={dateLocale}
+                t={t}
+                calendarPaperSx={calendarPaperSx}
+                onUnlock={handleUnlockClick}
+              />
+            )}
           />
         </Grid>
       </Grid>
