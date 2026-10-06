@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import TipRenderer from '../profile/TipRenderer';
+import ImageCropDialog from './ImageCropDialog';
 import { tipsApi, type AdminTip } from '../../services/adminApi';
 
 interface TipPreviewProps {
@@ -17,6 +18,8 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
     const [open, setOpen] = useState(false);
     const [pendingSlot, setPendingSlot] = useState<{ index: number; field: 'ok' | 'ko' } | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [cropSrc, setCropSrc] = useState<string | null>(null);
+    const [cropOpen, setCropOpen] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const draft = {
@@ -39,9 +42,23 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
     };
 
     const handleFile = async (file: File | undefined) => {
-        if (!file || !pendingSlot || !persistedTipKey) return;
+        if (!file) return;
+        if (!persistedTipKey) {
+            onSnack('Guarda el tip primero para poder subir imágenes', 'error');
+            return;
+        }
+        // Open crop editor first; upload happens on apply.
+        if (cropSrc) URL.revokeObjectURL(cropSrc);
+        setCropSrc(URL.createObjectURL(file));
+        setCropOpen(true);
+    };
+
+    const handleCropApply = async (blob: Blob) => {
+        if (!pendingSlot || !persistedTipKey) return;
+        setCropOpen(false);
         setUploading(true);
         try {
+            const file = new File([blob], 'tip-crop.jpg', { type: 'image/jpeg' });
             const { url } = await tipsApi.uploadImage(persistedTipKey, file);
             const slides = [...(tip.slides ?? [])];
             const key = pendingSlot.field === 'ok' ? 'ok_image_url' : 'ko_image_url';
@@ -54,6 +71,20 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
             setUploading(false);
             setPendingSlot(null);
             if (fileRef.current) fileRef.current.value = '';
+            if (cropSrc) {
+                URL.revokeObjectURL(cropSrc);
+                setCropSrc(null);
+            }
+        }
+    };
+
+    const handleCropClose = () => {
+        setCropOpen(false);
+        setPendingSlot(null);
+        if (fileRef.current) fileRef.current.value = '';
+        if (cropSrc) {
+            URL.revokeObjectURL(cropSrc);
+            setCropSrc(null);
         }
     };
 
@@ -90,6 +121,12 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
                 accept="image/*"
                 hidden
                 onChange={(e) => void handleFile(e.target.files?.[0])}
+            />
+            <ImageCropDialog
+                open={cropOpen}
+                imageSrc={cropSrc}
+                onClose={handleCropClose}
+                onApply={(blob) => void handleCropApply(blob)}
             />
             {/* Phone frame */}
             <Box

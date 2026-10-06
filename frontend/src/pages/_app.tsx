@@ -7,6 +7,7 @@ import AdminRouteGuard from '../components/auth/AdminRouteGuard';
 import { appWithTranslation } from 'next-i18next';
 import '../styles/globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-easy-crop/react-easy-crop.css';
 import { AppThemeProvider } from '../context/ThemeContext';
 import { UIProvider } from '../context/UIContext';
 import { NavbarProvider } from '../context/NavbarContext';

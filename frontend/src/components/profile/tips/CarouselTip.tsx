@@ -4,6 +4,7 @@ import { Box, Button, Typography, useTheme, alpha } from "@mui/material";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import CloseIcon from "@mui/icons-material/Close";
 import BottomSheet from "../../shared/BottomSheet";
+import { getMediaUrl } from "../../../utils/media";
 import type { ProfileTipData } from "../../../hooks/useProfileTip";
 
 interface CarouselTipProps {
@@ -111,8 +112,8 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
           return {
             title: tr.title,
             desc: tr.description,
-            ok: { src: s.ok_image_url ?? "", label: tr.ok_label },
-            ko: { src: s.ko_image_url ?? "", label: tr.ko_label },
+            ok: { src: getMediaUrl(s.ok_image_url ?? ""), label: tr.ok_label },
+            ko: { src: getMediaUrl(s.ko_image_url ?? ""), label: tr.ko_label },
           };
         })
       : hardcodedSlides;

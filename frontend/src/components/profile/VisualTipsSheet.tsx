@@ -3,6 +3,7 @@ import { useTranslation } from "next-i18next";
 import { Box, Button, Typography, useTheme, alpha } from "@mui/material";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import BottomSheet from "../shared/BottomSheet";
+import { getMediaUrl } from "../../utils/media";
 import type { ProfileTipData } from "../../hooks/useProfileTip";
 
 interface VisualTipsSheetProps {
@@ -25,11 +26,11 @@ function resolveTipSlide(slide: any): TipSlide {
     title: (tr as any)?.title ?? "",
     desc: (tr as any)?.description ?? "",
     ok: {
-      src: slide?.ok_image_url ?? "",
+      src: getMediaUrl(slide?.ok_image_url ?? ""),
       label: (tr as any)?.ok_label ?? "OK",
     },
     ko: {
-      src: slide?.ko_image_url ?? "",
+      src: getMediaUrl(slide?.ko_image_url ?? ""),
       label: (tr as any)?.ko_label ?? "X",
     },
   };

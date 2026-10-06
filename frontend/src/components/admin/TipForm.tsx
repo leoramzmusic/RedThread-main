@@ -27,6 +27,7 @@ import {
     ArrowDownward as DownIcon,
 } from '@mui/icons-material';
 import { tipsApi, type AdminTip, type AdminTipSlide, type AdminTipTranslation } from '../../services/adminApi';
+import { getMediaUrl } from '../../utils/media';
 
 export const ALL_TIP_LANGS = [
     'es', 'en', 'fr', 'de', 'it', 'pt', 'nl', 'sv', 'ru', 'zh',
@@ -288,7 +289,7 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                         {(slide[field] as string) ? (
                                             <Box
                                                 component="img"
-                                                src={(slide[field] as string) ?? ''}
+                                                src={getMediaUrl((slide[field] as string) ?? '')}
                                                 alt={field === 'ok_image_url' ? 'Vista previa OK' : 'Vista previa KO'}
                                                 sx={{
                                                     width: '100%',
