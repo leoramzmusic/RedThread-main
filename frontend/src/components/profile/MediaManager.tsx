@@ -286,6 +286,44 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
     }
   }, [userId]);
 
+  const formatErrorDetail = (detail: unknown, fallback: string): string => {
+    if (!detail) return fallback;
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      // FastAPI 422 bodies: [{loc, msg, ...}]
+      const msgs = detail
+        .map((d) =>
+          d && typeof d === "object" && "msg" in d ? String((d as any).msg) : null,
+        )
+        .filter(Boolean) as string[];
+      const locs = detail
+        .map((d) =>
+          d && typeof d === "object" && Array.isArray((d as any).loc)
+            ? (d as any).loc.join(".")
+            : null,
+        )
+        .filter(Boolean) as string[];
+      const where = locs.length > 0 ? ` (${locs.join(", ")})` : "";
+      if (msgs.length > 0) return `${msgs.join("; ")}${where}`;
+      try {
+        return JSON.stringify(detail);
+      } catch {
+        return fallback;
+      }
+    }
+    if (typeof detail === "object") {
+      const d = detail as any;
+      if (typeof d.message === "string") return d.message;
+      if (typeof d.msg === "string") return d.msg;
+      try {
+        return JSON.stringify(detail);
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  };
+
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
     type: MediaType,
@@ -303,13 +341,14 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
       fetchMedia();
     } catch (error: any) {
       console.error("Error uploading media:", error);
-      let msg = t(
+      const genericMsg = t(
         "common.uploadError.generic",
         "Error al subir el archivo. Verifica los límites y el tipo.",
       );
 
       const detail = error.response?.data?.detail;
-      if (detail) {
+      let msg = genericMsg;
+      if (typeof detail === "string") {
         if (detail.includes("Maximum") && detail.includes("video")) {
           msg = t("common.uploadError.maxVideos", { count: 3 });
         } else {
@@ -319,6 +358,9 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
           // Actually, the user asked specifically for the video limit translation.
           msg = detail;
         }
+      } else if (detail) {
+        // 422 validation bodies, objects, etc: always render as safe string
+        msg = formatErrorDetail(detail, genericMsg);
       }
 
       setErrorMessage(msg);

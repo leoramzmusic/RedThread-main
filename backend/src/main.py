@@ -340,6 +340,17 @@ app.include_router(
 )  # CARE Engine
 
 
+# Log request-validation (422) bodies to the console for faster diagnosis
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+
+@app.exception_handler(RequestValidationError)
+async def log_validation_errors(request, exc: RequestValidationError):
+    print(f"[422] {request.method} {request.url.path} -> {exc.errors()}")
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
+
+
 # Mount static files
 from fastapi.staticfiles import StaticFiles
 import os
