@@ -5,6 +5,7 @@ import {
   Typography,
   IconButton,
   Slide,
+  useMediaQuery,
   type SnackbarOrigin,
 } from "@mui/material";
 import type { SlideProps } from "@mui/material";
@@ -148,7 +149,9 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(function ToastCard(
 });
 
 /**
- * Contextual floating toast: top-right on mobile, bottom-right on desktop.
+ * Contextual floating toast.
+ * Portrait (phones, vertical tablets) → top-right, like a mobile push.
+ * Landscape (horizontal tablets, desktop) → bottom-right, like desktop.
  * Slide-in animation, auto-dismiss with manual close.
  */
 export default function SmartToast({
@@ -160,47 +163,30 @@ export default function SmartToast({
   icon,
   autoHideDuration = 6000,
 }: SmartToastProps) {
-  const placements: Array<{
-    origin: SnackbarOrigin;
-    display: { xs: string; sm: string };
-  }> = [
-    {
-      origin: { vertical: "top", horizontal: "right" },
-      display: { xs: "flex", sm: "none" },
-    },
-    {
-      origin: { vertical: "bottom", horizontal: "right" },
-      display: { xs: "none", sm: "flex" },
-    },
-  ];
+  const isPortrait = useMediaQuery("(orientation: portrait)");
+  const anchorOrigin: SnackbarOrigin = isPortrait
+    ? { vertical: "top", horizontal: "right" }
+    : { vertical: "bottom", horizontal: "right" };
 
   return (
-    <>
-      {placements.map((p, idx) => (
-        <Snackbar
-          key={idx}
-          open={open}
-          autoHideDuration={autoHideDuration}
-          onClose={(_, reason) => {
-            if (reason !== "clickaway") onClose();
-          }}
-          anchorOrigin={p.origin}
-          TransitionComponent={SlideLeft}
-          transitionDuration={300}
-          sx={{
-            display: p.display,
-            ...(p.origin.vertical === "top" ? { mt: 8 } : { mb: 2 }),
-          }}
-        >
-          <ToastCard
-            severity={severity}
-            title={title}
-            message={message}
-            icon={icon}
-            onClose={onClose}
-          />
-        </Snackbar>
-      ))}
-    </>
+    <Snackbar
+      open={open}
+      autoHideDuration={autoHideDuration}
+      onClose={(_, reason) => {
+        if (reason !== "clickaway") onClose();
+      }}
+      anchorOrigin={anchorOrigin}
+      TransitionComponent={SlideLeft}
+      transitionDuration={300}
+      sx={isPortrait ? { mt: 8 } : { mb: 2 }}
+    >
+      <ToastCard
+        severity={severity}
+        title={title}
+        message={message}
+        icon={icon}
+        onClose={onClose}
+      />
+    </Snackbar>
   );
 }
