@@ -55,6 +55,15 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
   const [failedSlots, setFailedSlots] = useState<Set<string>>(new Set());
   const startX = useRef(0);
 
+  // Clear stale load errors whenever the slides change (e.g. re-upload after a failure).
+  const slidesKey = JSON.stringify(
+    (tip?.slides ?? []).map((s: any) => [s?.ok_image_url ?? "", s?.ko_image_url ?? ""]),
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    setFailedSlots(new Set());
+  }, [slidesKey]);
+
   const markFailed = (key: string) =>
     setFailedSlots((prev) => {
       if (prev.has(key)) return prev;
