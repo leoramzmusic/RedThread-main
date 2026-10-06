@@ -74,8 +74,9 @@ async def delete_tip(tip_key: str, admin: Employee = Depends(require_employee_pe
     await tip.delete()
     return {"status": "success"}
 
-TIPS_UPLOAD_DIR = Path("static/tips")
+TIPS_UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent.parent / "img" / "assets" / "tips"
 TIPS_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+TIPS_PUBLIC_PREFIX = "/img/assets/tips"
 ALLOWED_TIP_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/jpg", "image/gif"}
 MAX_TIP_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
 
@@ -101,7 +102,7 @@ async def upload_tip_image(
     file_path = TIPS_UPLOAD_DIR / filename
     with open(file_path, "wb") as f:
         f.write(contents)
-    url = f"/static/tips/{filename}"
+    url = f"{TIPS_PUBLIC_PREFIX}/{filename}"
     await log_employee_action(employee_id=str(admin.id), action_type="upload_profile_tip_image", description=f"Uploaded image for tip {tip_key}", target_type="profile_tip", target_id=str(tip.id))
     return {"url": url}
 

@@ -349,6 +349,13 @@ os.makedirs("static/uploads", exist_ok=True)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Tips images live in repo-root img/assets/tips (absolute path, CWD-independent)
+from pathlib import Path as _Path
+
+_IMG_DIR = _Path(__file__).resolve().parent.parent.parent / "img"
+_IMG_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/img", StaticFiles(directory=str(_IMG_DIR)), name="img")
+
 
 if __name__ == "__main__":
     import uvicorn

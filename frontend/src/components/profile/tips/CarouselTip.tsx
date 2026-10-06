@@ -52,7 +52,16 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
   const theme = useTheme();
   const { t } = useTranslation("common");
   const [index, setIndex] = useState(0);
+  const [failedSlots, setFailedSlots] = useState<Set<string>>(new Set());
   const startX = useRef(0);
+
+  const markFailed = (key: string) =>
+    setFailedSlots((prev) => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      return next;
+    });
 
   const hardcodedSlides: CarouselSlide[] = [
     {
@@ -241,7 +250,10 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                         height: "100%",
                         objectFit: "cover",
                       }}
-                      onError={(e) => handleImageError(e, true)}
+                      onError={(e) => {
+                        handleImageError(e, true);
+                        if (editable) markFailed(`${i}-ok`);
+                      }}
                     />
                     {editable && s.ok.src ? (
                       <Box
@@ -285,6 +297,19 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                   >
                     ✓ {s.ok.label}
                   </Typography>
+                  {editable ? (
+                    <Typography
+                      variant="caption"
+                      color={failedSlots.has(`${i}-ok`) ? "error.main" : "text.secondary"}
+                      sx={{ display: "block", wordBreak: "break-all", mt: 0.5 }}
+                    >
+                      {s.ok.src
+                        ? failedSlots.has(`${i}-ok`)
+                          ? `No se pudo cargar: ${s.ok.src} — vuelve a subir la imagen`
+                          : s.ok.src
+                        : "Sin imagen — clic en el recuadro para subir"}
+                    </Typography>
+                  ) : null}
                 </Box>
 
                 {/* KO Example */}
@@ -322,7 +347,10 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                         height: "100%",
                         objectFit: "cover",
                       }}
-                      onError={(e) => handleImageError(e, false)}
+                      onError={(e) => {
+                        handleImageError(e, false);
+                        if (editable) markFailed(`${i}-ko`);
+                      }}
                     />
                     {editable && s.ko.src ? (
                       <Box
@@ -366,6 +394,19 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
                   >
                     ✗ {s.ko.label}
                   </Typography>
+                  {editable ? (
+                    <Typography
+                      variant="caption"
+                      color={failedSlots.has(`${i}-ko`) ? "error.main" : "text.secondary"}
+                      sx={{ display: "block", wordBreak: "break-all", mt: 0.5 }}
+                    >
+                      {s.ko.src
+                        ? failedSlots.has(`${i}-ko`)
+                          ? `No se pudo cargar: ${s.ko.src} — vuelve a subir la imagen`
+                          : s.ko.src
+                        : "Sin imagen — clic en el recuadro para subir"}
+                    </Typography>
+                  ) : null}
                 </Box>
               </Box>
             </Box>
