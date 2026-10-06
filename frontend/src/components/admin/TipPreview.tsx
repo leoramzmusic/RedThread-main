@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import TipRenderer from '../profile/TipRenderer';
 import ImageCropDialog from './ImageCropDialog';
+import { getMediaUrl } from '../../utils/media';
 import { tipsApi, type AdminTip } from '../../services/adminApi';
 
 interface TipPreviewProps {
@@ -60,6 +61,13 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
         try {
             const file = new File([blob], 'tip-crop.jpg', { type: 'image/jpeg' });
             const { url } = await tipsApi.uploadImage(persistedTipKey, file);
+            // Verify the file is actually served before accepting the URL.
+            const absoluteUrl = url.startsWith('http') ? url : getMediaUrl(url);
+            const check = await fetch(absoluteUrl, { method: 'HEAD' }).catch(() => null);
+            if (!check || !check.ok) {
+                onSnack('Subida incompleta: el archivo no quedó accesible en el servidor', 'error');
+                return;
+            }
             const slides = [...(tip.slides ?? [])];
             const key = pendingSlot.field === 'ok' ? 'ok_image_url' : 'ko_image_url';
             slides[pendingSlot.index] = { ...slides[pendingSlot.index], [key]: url };

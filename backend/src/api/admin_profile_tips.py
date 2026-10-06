@@ -103,6 +103,7 @@ async def upload_tip_image(
     with open(file_path, "wb") as f:
         f.write(contents)
     url = f"{TIPS_PUBLIC_PREFIX}/{filename}"
+    print(f"[tips] saved upload -> {file_path} url={url}")
     await log_employee_action(employee_id=str(admin.id), action_type="upload_profile_tip_image", description=f"Uploaded image for tip {tip_key}", target_type="profile_tip", target_id=str(tip.id))
     return {"url": url}
 

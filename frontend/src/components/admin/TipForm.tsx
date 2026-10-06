@@ -110,6 +110,12 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
         setUploading(key);
         try {
             const { url } = await tipsApi.uploadImage(persistedTipKey, file);
+            const absoluteUrl = url.startsWith('http') ? url : getMediaUrl(url);
+            const check = await fetch(absoluteUrl, { method: 'HEAD' }).catch(() => null);
+            if (!check || !check.ok) {
+                onSnack('Subida incompleta: el archivo no quedó accesible en el servidor', 'error');
+                return;
+            }
             setSlide(index, { [field]: url });
             onSnack('Imagen subida', 'success');
         } catch {
