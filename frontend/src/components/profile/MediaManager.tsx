@@ -337,7 +337,11 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
 
     setLoading(true);
     try {
-      await apiClient.post("/media/upload", formData);
+      // The apiClient defaults to application/json (which would serialize the
+      // FormData): force multipart so the browser sets the boundary.
+      await apiClient.post("/media/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       fetchMedia();
     } catch (error: any) {
       console.error("Error uploading media:", error);
