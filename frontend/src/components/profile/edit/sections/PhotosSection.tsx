@@ -10,16 +10,16 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Snackbar,
   Alert,
 } from "@mui/material";
-import apiClient from "../../../../services/api";
 import {
   Edit as EditIcon,
   PhotoLibrary,
   AutoAwesome,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
+import SmartToast from "../../../common/SmartToast";
+import apiClient from "../../../../services/api";
 import { useTranslation } from "next-i18next";
 import { useEffect, useRef, useState } from "react";
 import MediaManager from "../../MediaManager";
@@ -191,43 +191,32 @@ export default function PhotosSection({
         </AccordionDetails>
       </Accordion>
 
-      <Snackbar
+      <SmartToast
         open={smartPhotosSnackbar}
-        autoHideDuration={6000}
         onClose={() => setSmartPhotosSnackbar(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity="success"
-          onClose={() => setSmartPhotosSnackbar(false)}
-          sx={{ width: "100%", mb: 2 }}
-          variant="filled"
-        >
-          {t(
-            "profile.photos.smartEnabled",
-            "Smart Photos activado: tu mejor foto se seleccionará automáticamente según interacciones",
-          )}
-        </Alert>
-      </Snackbar>
+        severity="success"
+        icon={<AutoAwesome sx={{ fontSize: 20 }} />}
+        title={t("profile.photos.smartEnabledTitle", "Smart Photos activado")}
+        message={t(
+          "profile.photos.smartEnabledMsg",
+          "Tu mejor foto se seleccionará automáticamente según interacciones",
+        )}
+      />
 
-      <Snackbar
+      <SmartToast
         open={smartChosenSnackbar}
-        autoHideDuration={6000}
         onClose={() => setSmartChosenSnackbar(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity="info"
-          onClose={() => setSmartChosenSnackbar(false)}
-          sx={{ width: "100%", mb: 2 }}
-          variant="filled"
-        >
-          {t(
-            "profile.photos.smartChosen",
-            "Smart Photos eligió esta como tu mejor foto según interacción",
-          )}
-        </Alert>
-      </Snackbar>
+        severity="info"
+        icon={<AutoAwesome sx={{ fontSize: 20 }} />}
+        title={t(
+          "profile.photos.smartChosenTitle",
+          "Smart Photos eligió tu mejor foto",
+        )}
+        message={t(
+          "profile.photos.smartChosenMsg",
+          "Seleccionada automáticamente según interacción",
+        )}
+      />
     </Grid>
   );
 }

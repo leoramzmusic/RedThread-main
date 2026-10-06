@@ -26,8 +26,10 @@
       "smartTooltip": "Enable to automatically show your most popular photo",
       "smartDesc": "Automatically selects the best photo based on interaction",
       "smartToggle": "Smart Photos Toggle",
-      "smartEnabled": "Smart Photos enabled: your best photo will be automatically selected based on interactions",
-      "smartChosen": "Smart Photos picked this as your best photo based on interactions",
+      "smartEnabledTitle": "Smart Photos enabled",
+      "smartEnabledMsg": "Your best photo will be automatically selected based on interactions",
+      "smartChosenTitle": "Smart Photos picked your best photo",
+      "smartChosenMsg": "Automatically selected based on interactions",
       "manualLock": "You ordered your photos manually: Smart Photos is paused and will respect your order.",
       "resumeSmart": "Resume Smart"
     },
