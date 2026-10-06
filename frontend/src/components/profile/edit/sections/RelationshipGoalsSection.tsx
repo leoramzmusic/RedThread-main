@@ -98,7 +98,7 @@ export default function RelationshipGoalsSection({
                     setGoalsInfoOpen(true);
                   }}
                 >
-                  <InfoIcon fontSize="small" color="action" />
+                  <InfoIcon fontSize="small" color="info" />
                 </IconButton>
               </Tooltip>
             </Box>

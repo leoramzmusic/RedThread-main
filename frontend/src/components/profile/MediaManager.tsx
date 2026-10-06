@@ -25,7 +25,7 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import StarIcon from "@mui/icons-material/Star";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import InfoIcon from "@mui/icons-material/Info";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MediaItem, MediaType } from "../../types/media";
 import apiClient from "../../services/api";
@@ -505,8 +505,8 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
             "Puedes subir hasta 9 fotos y 3 videos.",
           )}
         >
-          <InfoOutlinedIcon
-            sx={{ fontSize: 20, color: "text.secondary", cursor: "pointer" }}
+          <InfoIcon
+            sx={{ fontSize: 20, color: "info.main", cursor: "pointer" }}
           />
         </Tooltip>
       </Box>

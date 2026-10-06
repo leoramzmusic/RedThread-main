@@ -88,7 +88,7 @@ export default function PronounsSection({
                   setPronounsInfoOpen(true);
                 }}
               >
-                <InfoIcon fontSize="small" />
+                <InfoIcon fontSize="small" color="info" />
               </IconButton>
             </Tooltip>
           </Box>

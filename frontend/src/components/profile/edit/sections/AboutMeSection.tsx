@@ -238,7 +238,7 @@ export default function AboutMeSection({
                 setInfoDrawerOpen(true);
               }}
             >
-              <InfoIcon fontSize="small" color="action" />
+              <InfoIcon fontSize="small" color="info" />
             </IconButton>
           </Box>
         </AccordionSummary>

@@ -20,7 +20,6 @@ import {
   Edit as EditIcon,
   VerifiedUser as VerifiedUserIcon,
   Info,
-  InfoOutlined,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import IdentityVerificationContainer from "../../IdentityVerificationContainer";
@@ -104,7 +103,7 @@ export default function EditBasicInfo({
                   setIdentityInfoOpen(true);
                 }}
               >
-                <InfoOutlined fontSize="small" />
+                <Info fontSize="small" color="info" />
               </IconButton>
             </Tooltip>
           </Box>

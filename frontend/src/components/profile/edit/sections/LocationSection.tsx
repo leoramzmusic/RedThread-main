@@ -38,7 +38,7 @@ import {
   Home,
   Flight,
   Terrain,
-  InfoOutlined,
+  Info,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
@@ -797,7 +797,7 @@ export default function LocationSection({
                     setLocationInfoOpen(true);
                   }}
                 >
-                  <InfoOutlined fontSize="small" />
+                  <Info fontSize="small" color="info" />
                 </IconButton>
               </Tooltip>
             </Box>
