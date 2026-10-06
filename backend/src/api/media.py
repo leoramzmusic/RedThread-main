@@ -8,7 +8,7 @@ from fastapi import (
     Body,
 )
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import uuid
 import shutil
 import os
@@ -206,7 +206,8 @@ async def reorder_media(
 
 
 class PhotoMetricRequest(BaseModel):
-    media_id: str
+    media_id: str  # MediaItem._id or exact media URL
+    target_user_id: Optional[str] = None  # Photo owner hint (resolved from media when possible)
     views: int = 0
     clicks: int = 0
     matches: int = 0
@@ -214,18 +215,46 @@ class PhotoMetricRequest(BaseModel):
     conversions: int = 0
 
 
+async def _resolve_media_owner(
+    media_id: str, target_user_id: Optional[str]
+) -> tuple:
+    """Returns (MediaItem | None, owner_user_id | None)."""
+    item = None
+    try:
+        item = await MediaItem.get(media_id)
+    except Exception:
+        item = None
+    if item is None:
+        item = await MediaItem.find_one(MediaItem.url == media_id)
+    owner_id = str(item.user_id) if item is not None else target_user_id
+    return item, owner_id
+
+
 @router.post("/metrics/track")
 async def track_photo_metrics(
     data: PhotoMetricRequest, current_user: User = Depends(get_current_user)
 ):
-    """Update metrics for a specific photo"""
+    """Update metrics for a specific photo, attributed to the photo owner."""
+    from datetime import datetime
+
+    from src.services.smart_photos import SmartPhotosService
+
+    item, owner_id = await _resolve_media_owner(data.media_id, data.target_user_id)
+
+    if not owner_id:
+        return {"tracked": False, "reason": "unknown_owner"}
+    if owner_id == str(current_user.id):
+        # Self views must not inflate your own score
+        return {"tracked": False, "reason": "self_view"}
+
+    media_key = str(item.id) if item is not None else data.media_id
     metric = await PhotoMetric.find_one(
-        PhotoMetric.user_id == str(current_user.id),
-        PhotoMetric.media_id == data.media_id,
+        PhotoMetric.user_id == owner_id,
+        PhotoMetric.media_id == media_key,
     )
 
     if not metric:
-        metric = PhotoMetric(user_id=str(current_user.id), media_id=data.media_id)
+        metric = PhotoMetric(user_id=owner_id, media_id=media_key)
 
     metric.views += data.views
     metric.clicks += data.clicks
@@ -234,7 +263,20 @@ async def track_photo_metrics(
     metric.conversions += data.conversions
 
     await metric.save()
-    return {"message": "Metrics tracked"}
+
+    # Auto-evaluate the owner's Smart Photos (at most once per hour)
+    auto_evaluated = False
+    try:
+        profile = await Profile.find_one(Profile.user_id == owner_id)
+        if profile is not None and profile.smart_photos_enabled:
+            last = profile.smart_photos_last_evaluated
+            if last is None or (datetime.utcnow() - last).total_seconds() >= 3600:
+                result = await SmartPhotosService.evaluate_user_photos(owner_id)
+                auto_evaluated = bool(result.get("changed"))
+    except Exception as e:
+        print(f"Smart Photos auto-evaluate error: {e}")
+
+    return {"tracked": True, "auto_evaluated": auto_evaluated}
 
 
 @router.post("/smart-photos/evaluate")
@@ -242,5 +284,9 @@ async def evaluate_smart_photos(current_user: User = Depends(get_current_user)):
     """Manually trigger Smart Photos evaluation for current user"""
     from src.services.smart_photos import SmartPhotosService
 
-    await SmartPhotosService.evaluate_user_photos(str(current_user.id))
-    return {"message": "Smart Photos evaluated and reordered if necessary"}
+    result = await SmartPhotosService.evaluate_user_photos(str(current_user.id))
+    return {
+        "message": "Smart Photos evaluated and reordered if necessary",
+        "changed": result.get("changed", False),
+        "primary_media_id": result.get("primary_media_id"),
+    }

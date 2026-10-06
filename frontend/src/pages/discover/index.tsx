@@ -127,6 +127,7 @@ import InteractionSettingsDialog, {
 import StackLayout from "../../components/discovery/layouts/StackLayout";
 import DiscoverToolbar from "../../components/discovery/DiscoverToolbar";
 import boostService, { BoostStatus } from "../../services/boostService";
+import { smartPhotosTracker } from "../../services/smartPhotos";
 import DiscoveryModeSelector, {
   DiscoveryMode,
 } from "../../components/discovery/DiscoveryModeSelector";
@@ -140,6 +141,7 @@ export default function Discover() {
   const { enqueueSnackbar } = useSnackbar();
   const containerRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user: currentUser } = useSelector((state: RootState) => state.auth);
   const isCompactLandscape = useMediaQuery(
     "(orientation: landscape) and (max-height: 500px)",
   );
@@ -620,6 +622,14 @@ export default function Discover() {
         setMatchAnimation(true);
         // Show match modal or notification
         setTimeout(() => setMatchAnimation(false), 3000);
+        // Smart Photos: attribute the match to the displayed (first) photo
+        if (currentUser?.user_id) {
+          smartPhotosTracker.setCurrentUser(currentUser.user_id);
+          smartPhotosTracker.trackMatch(
+            targetProfile.photos?.[0] ?? targetProfile.user_id,
+            targetProfile.user_id,
+          );
+        }
       }
     } catch (err) {
       console.error("Swipe failed", err);

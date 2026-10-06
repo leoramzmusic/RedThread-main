@@ -34,13 +34,14 @@ class SmartPhotosService:
         return score
 
     @staticmethod
-    async def evaluate_user_photos(user_id: str):
+    async def evaluate_user_photos(user_id: str) -> dict:
         """
         Evaluates and reorders photos for a user based on their performance.
+        Returns {"changed": bool, "primary_media_id": str | None}.
         """
         profile = await Profile.find_one(Profile.user_id == user_id)
         if not profile or not profile.smart_photos_enabled:
-            return
+            return {"changed": False, "primary_media_id": None}
 
         # Get all photo media items
         photos = await MediaItem.find(
@@ -48,7 +49,10 @@ class SmartPhotosService:
         ).to_list()
 
         if len(photos) < 2:
-            return
+            return {
+                "changed": False,
+                "primary_media_id": str(photos[0].id) if photos else None,
+            }
 
         # Get metrics for all photos
         metrics = await PhotoMetric.find(PhotoMetric.user_id == user_id).to_list()
@@ -78,6 +82,9 @@ class SmartPhotosService:
 
             await sync_profile_photos(user_id)
 
-            profile.smart_photos_last_evaluated = datetime.utcnow()
-            await profile.save()
             print(f"✅ Smart Photos reordered for user {user_id}")
+
+        profile.smart_photos_last_evaluated = datetime.utcnow()
+        await profile.save()
+
+        return {"changed": changed, "primary_media_id": str(ranked_photos[0][0].id)}

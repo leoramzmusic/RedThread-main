@@ -2,11 +2,17 @@ import apiClient from "./api";
 
 interface PhotoMetricPayload {
   media_id: string;
+  target_user_id?: string;
   views?: number;
   clicks?: number;
   matches?: number;
   view_time?: number;
   conversions?: number;
+}
+
+export interface SmartPhotosEvaluateResult {
+  changed: boolean;
+  primary_media_id?: string | null;
 }
 
 class SmartPhotosTracker {
@@ -16,20 +22,9 @@ class SmartPhotosTracker {
   private viewStartTimes: Map<string, number> = new Map();
   private viewedMedia: Set<string> = new Set();
   private currentUserId: string | null = null;
-  
-  // Auto-evaluation tracking
-  private evaluationTimer: NodeJS.Timeout | null = null;
-  private readonly EVALUATION_INTERVAL = 60000; // 1 minute
-  private viewCounts: Map<string, number> = new Map();
-  private matchCounts: Map<string, number> = new Map();
 
   setCurrentUser(userId: string | null) {
     this.currentUserId = userId;
-    if (userId) {
-      this.startPeriodicEvaluation();
-    } else {
-      this.stopPeriodicEvaluation();
-    }
   }
 
   /**
@@ -42,16 +37,7 @@ class SmartPhotosTracker {
     this.viewedMedia.add(mediaId);
     this.viewStartTimes.set(mediaId, Date.now());
 
-    this.queueMetric(mediaId, { views: 1 });
-    
-    // Track local view count for auto-evaluation trigger
-    const currentViews = (this.viewCounts.get(mediaId) || 0) + 1;
-    this.viewCounts.set(mediaId, currentViews);
-    
-    // Trigger evaluation every 10 views on any photo
-    if (currentViews % 10 === 0) {
-      this.maybeTriggerEvaluation();
-    }
+    this.queueMetric(mediaId, targetUserId, { views: 1 });
   }
 
   /**
@@ -60,7 +46,7 @@ class SmartPhotosTracker {
   trackClick(mediaId: string, targetUserId: string) {
     if (!this.currentUserId || this.currentUserId === targetUserId) return;
 
-    this.queueMetric(mediaId, { clicks: 1 });
+    this.queueMetric(mediaId, targetUserId, { clicks: 1 });
   }
 
   /**
@@ -74,7 +60,7 @@ class SmartPhotosTracker {
 
     const viewTime = (Date.now() - startTime) / 1000; // seconds
     if (viewTime > 0.5) { // Only track meaningful views (>500ms)
-      this.queueMetric(mediaId, { view_time: viewTime });
+      this.queueMetric(mediaId, targetUserId, { view_time: viewTime });
     }
 
     this.viewStartTimes.delete(mediaId);
@@ -86,62 +72,20 @@ class SmartPhotosTracker {
   trackMatch(mediaId: string, targetUserId: string) {
     if (!this.currentUserId || this.currentUserId === targetUserId) return;
 
-    this.queueMetric(mediaId, { matches: 1 });
-    
-    // Track local match count for auto-evaluation trigger
-    const currentMatches = (this.matchCounts.get(mediaId) || 0) + 1;
-    this.matchCounts.set(mediaId, currentMatches);
-    
-    // Trigger evaluation on every match (high signal)
-    this.maybeTriggerEvaluation();
-  }
-
-  /**
-   * Check if we should trigger evaluation and do so
-   */
-  private maybeTriggerEvaluation() {
-    // Only trigger if user has smart photos enabled (we'll check on backend)
-    // Debounce: only trigger once per 30 seconds
-    if (this.evaluationTimer) return;
-    
-    this.evaluationTimer = setTimeout(() => {
-      this.evaluationTimer = null;
-      this.evaluateSmartPhotos();
-    }, 30000);
-  }
-
-  /**
-   * Start periodic evaluation check
-   */
-  private startPeriodicEvaluation() {
-    if (this.evaluationTimer) return;
-    
-    this.evaluationTimer = setInterval(() => {
-      // Only evaluate if we have meaningful data
-      const totalViews = Array.from(this.viewCounts.values()).reduce((a, b) => a + b, 0);
-      if (totalViews >= 5) { // At least 5 total views across all photos
-        this.evaluateSmartPhotos();
-      }
-    }, this.EVALUATION_INTERVAL);
-  }
-
-  /**
-   * Stop periodic evaluation
-   */
-  private stopPeriodicEvaluation() {
-    if (this.evaluationTimer) {
-      clearInterval(this.evaluationTimer);
-      this.evaluationTimer = null;
-    }
+    this.queueMetric(mediaId, targetUserId, { matches: 1 });
+    // Matches are high-signal: flush immediately so the owner's next
+    // evaluation sees them. The backend auto-evaluates on track.
+    void this.flush();
   }
 
   /**
    * Queue metric for batched sending
    */
-  private queueMetric(mediaId: string, metric: Partial<PhotoMetricPayload>) {
+  private queueMetric(mediaId: string, targetUserId: string, metric: Partial<PhotoMetricPayload>) {
     const existing = this.pendingMetrics.get(mediaId) || { media_id: mediaId };
     this.pendingMetrics.set(mediaId, {
       ...existing,
+      target_user_id: targetUserId,
       ...metric,
       views: (existing.views || 0) + (metric.views || 0),
       clicks: (existing.clicks || 0) + (metric.clicks || 0),
@@ -201,26 +145,25 @@ class SmartPhotosTracker {
   /**
    * Reset tracker for new session/profile
    */
-  reset(targetUserId?: string) {
-    if (targetUserId) {
-      // Clear only metrics for a specific target user
-      // Since we don't track targetUserId in pendingMetrics, we clear all
-      // This is fine as we typically only view one profile at a time
-    }
+  reset() {
     this.viewedMedia.clear();
     this.viewStartTimes.clear();
-    this.viewCounts.clear();
-    this.matchCounts.clear();
   }
 
   /**
-   * Trigger Smart Photos evaluation for current user
+   * Trigger Smart Photos evaluation for current user.
+   * Returns whether the primary photo changed.
    */
-  async evaluateSmartPhotos() {
+  async evaluateSmartPhotos(): Promise<SmartPhotosEvaluateResult> {
     try {
-      await apiClient.post("/media/smart-photos/evaluate");
+      const res = await apiClient.post("/media/smart-photos/evaluate");
+      return {
+        changed: Boolean(res.data?.changed),
+        primary_media_id: res.data?.primary_media_id ?? null,
+      };
     } catch (err) {
       console.error("Failed to evaluate Smart Photos:", err);
+      return { changed: false, primary_media_id: null };
     }
   }
 }

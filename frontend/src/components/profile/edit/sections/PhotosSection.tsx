@@ -20,7 +20,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MediaManager from "../../MediaManager";
 import { smartPhotosTracker } from "../../../../services/smartPhotos";
 
@@ -37,16 +37,32 @@ export default function PhotosSection({
 }: PhotosSectionProps) {
   const { t } = useTranslation("common");
   const [smartPhotosSnackbar, setSmartPhotosSnackbar] = useState(false);
+  const [smartChosenSnackbar, setSmartChosenSnackbar] = useState(false);
+  const [galleryRefreshKey, setGalleryRefreshKey] = useState(0);
+  const evaluatedOnMount = useRef(false);
+
+  // When opening the section with Smart Photos on, re-evaluate once:
+  // if the ranking changed, celebrate it and refresh the gallery.
+  useEffect(() => {
+    if (!smartPhotos || !profile?.user_id || evaluatedOnMount.current) return;
+    evaluatedOnMount.current = true;
+    smartPhotosTracker.evaluateSmartPhotos().then((result) => {
+      if (result.changed) {
+        setSmartChosenSnackbar(true);
+        setGalleryRefreshKey((k) => k + 1);
+      }
+    });
+  }, [smartPhotos, profile?.user_id]);
 
   const handleSmartPhotosChange = async (enabled: boolean) => {
     setSmartPhotos(enabled);
     if (enabled) {
       setSmartPhotosSnackbar(true);
       // Trigger immediate evaluation when user enables Smart Photos
-      try {
-        await smartPhotosTracker.evaluateSmartPhotos();
-      } catch (err) {
-        console.error("Failed to evaluate Smart Photos on enable:", err);
+      const result = await smartPhotosTracker.evaluateSmartPhotos();
+      if (result.changed) {
+        setSmartChosenSnackbar(true);
+        setGalleryRefreshKey((k) => k + 1);
       }
     }
   };
@@ -75,7 +91,11 @@ export default function PhotosSection({
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
-          <MediaManager userId={profile.user_id} smartPhotosEnabled={smartPhotos} />
+          <MediaManager
+            key={galleryRefreshKey}
+            userId={profile.user_id}
+            smartPhotosEnabled={smartPhotos}
+          />
 
           <Box
             display="flex"
@@ -138,6 +158,25 @@ export default function PhotosSection({
           {t(
             "profile.photos.smartEnabled",
             "Smart Photos activado: tu mejor foto se seleccionará automáticamente según interacciones",
+          )}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={smartChosenSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setSmartChosenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="info"
+          onClose={() => setSmartChosenSnackbar(false)}
+          sx={{ width: "100%", mb: 2 }}
+          variant="filled"
+        >
+          {t(
+            "profile.photos.smartChosen",
+            "Smart Photos eligió esta como tu mejor foto según interacción",
           )}
         </Alert>
       </Snackbar>
