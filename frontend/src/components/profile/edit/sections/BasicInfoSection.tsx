@@ -273,6 +273,11 @@ export default function EditBasicInfo({
                           } as any,
                           desktopPaper: { sx: calendarPaperSx },
                           mobilePaper: { sx: calendarPaperSx },
+                          popper: {
+                            sx: {
+                              "& .MuiPaper-root": calendarPaperSx,
+                            },
+                          },
                         }}
                       />
                     </LocalizationProvider>
