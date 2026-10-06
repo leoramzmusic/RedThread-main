@@ -13,6 +13,7 @@ import {
   AccordionDetails,
   IconButton,
   Tooltip,
+  Divider,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "next-i18next";
@@ -74,7 +75,7 @@ export default function EditBasicInfo({
           border: (theme) => "1px solid " + theme.palette.divider,
           boxShadow: 1,
           backgroundImage: "none",
-          borderRadius: "12px !important",
+          borderRadius: "16px",
           "&:before": { display: "none" },
         }}
       >
@@ -88,7 +89,7 @@ export default function EditBasicInfo({
           >
             <Box display="flex" alignItems="center" gap={1}>
               <Info color="action" />
-              <Typography variant="h6">
+              <Typography variant="h6" fontWeight="600">
                 {t("profile.sections.identity.title", "Identidad")}
               </Typography>
             </Box>
@@ -108,7 +109,7 @@ export default function EditBasicInfo({
             </Tooltip>
           </Box>
         </AccordionSummary>
-        <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+        <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <IdentityVerificationContainer
@@ -124,6 +125,11 @@ export default function EditBasicInfo({
                 documentType={profile.identity_document_type}
                 rejectionReason={profile.identity_rejection_reason}
               />
+            </Grid>
+
+            {/* Separador: documento | datos personales */}
+            <Grid item xs={12}>
+              <Divider />
             </Grid>
 
             <Grid item xs={12}>
@@ -188,6 +194,11 @@ export default function EditBasicInfo({
                   />
                 )}
               />
+            </Grid>
+
+            {/* Separador: datos personales | contacto */}
+            <Grid item xs={12}>
+              <Divider />
             </Grid>
 
             <Grid item xs={12}>

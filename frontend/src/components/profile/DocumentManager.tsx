@@ -274,7 +274,7 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
           onClick={onUpload}
           sx={{
             border: "2px dashed",
-            borderColor: "error.main",
+            borderColor: "primary.main",
             borderRadius: 2,
             p: 4,
             display: "flex",
@@ -286,13 +286,13 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
             bgcolor: "background.paper",
             "&:hover": {
               bgcolor: "action.hover",
-              borderColor: "error.dark",
+              borderColor: "primary.dark",
             },
           }}
         >
-          <CloudUploadIcon sx={{ fontSize: 48, color: "error.main", mb: 2 }} />
-          <Typography variant="h6" color="error.main" gutterBottom>
-            {t("profile.docManager.uploadNewTitle", "Subir Nuevo Documento")}
+          <CloudUploadIcon sx={{ fontSize: 48, color: "primary.main", mb: 2 }} />
+          <Typography variant="h6" color="primary.main" gutterBottom>
+            {t("profile.docManager.uploadNewTitle", "Subir documento oficial")}
           </Typography>
           <Typography variant="body2" color="text.secondary" textAlign="center">
             {t(

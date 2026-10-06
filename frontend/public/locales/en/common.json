@@ -393,7 +393,7 @@
       "uploadHint": "Click here to select your official document",
       "replaceDoc": "Replace Document",
       "deleteDoc": "Delete Document",
-      "uploadNewTitle": "Upload New Document",
+      "uploadNewTitle": "Upload official document",
       "uploadNewHint": "Your previous document was rejected. Upload a new document to verify your identity.",
       "confirmDeleteTitle": "Confirm Deletion",
       "confirmDeleteMsg": "Are you sure you want to delete your official document?",
