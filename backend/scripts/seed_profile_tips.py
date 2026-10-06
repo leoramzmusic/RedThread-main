@@ -7,6 +7,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from src.models.profile_tip import ProfileTip, TipTranslation, Slide
 
+import sys as _sys
+import os as _os
+
+_sys.path.insert(0, _os.path.dirname(__file__))
+from profile_tips_i18n import (  # noqa: E402
+    PHOTOS_VISUAL_SLIDES_I18N,
+    PHOTOS_VISUAL_TITLES,
+)
+
 SEEDS = [
     {"tip_key": "photos_visual", "type": "carousel", "section_key": "section-photos", "order": 0, "translations": {"es": {"title": "Tips para tus fotos", "description": "", "trigger_button_text": "Tips visuales"}}},
     {"tip_key": "safety", "type": "drawer", "section_key": "section-aboutme", "order": 1, "translations": {"es": {"title": "Consejos de Seguridad", "description": "Por tu seguridad, no incluyas nombres de usuario de redes sociales ni información de contacto directa en tu biografía.", "trigger_button_text": "Entendido"}}},
@@ -31,40 +40,21 @@ async def main():
         await tip.insert()
         print(f"created {s['tip_key']}")
 
-    # Default slides for photos_visual (text only; admin uploads the 6 images).
+    # Default slides for photos_visual (21-language text; admin uploads the 6 images).
     # Idempotent: only fills when the tip exists and has no slides.
     await ensure_photos_visual_slides()
 
 
-PHOTOS_VISUAL_SLIDES = [
-    {
-        "order": 0,
-        "ok_image_url": "",
-        "ko_image_url": "",
-        "translations": {
-            "es": {"title": "Usa fotos que muestren tu rostro", "description": "Los perfiles con fotos de cara suelen recibir más Likes.", "trigger_button_text": "", "ok_label": "Cara OK", "ko_label": "Espalda X"},
-            "en": {"title": "Use photos that show your face", "description": "Profiles with face photos usually get more Likes.", "trigger_button_text": "", "ok_label": "Face OK", "ko_label": "Back X"},
-        },
-    },
-    {
-        "order": 1,
-        "ok_image_url": "",
-        "ko_image_url": "",
-        "translations": {
-            "es": {"title": "Bye bye a los filtros", "description": "Evita filtros exagerados. Usa fotos nítidas y recientes.", "trigger_button_text": "", "ok_label": "Natural OK", "ko_label": "Filtro X"},
-            "en": {"title": "Bye bye filters", "description": "Avoid heavy filters. Use sharp, recent photos.", "trigger_button_text": "", "ok_label": "Natural OK", "ko_label": "Filter X"},
-        },
-    },
-    {
-        "order": 2,
-        "ok_image_url": "",
-        "ko_image_url": "",
-        "translations": {
-            "es": {"title": "Muestra tus pasiones", "description": "Añade fotos que reflejen tus hobbies e intereses.", "trigger_button_text": "", "ok_label": "Hobby OK", "ko_label": "Objeto X"},
-            "en": {"title": "Show your passions", "description": "Add photos that reflect your hobbies and interests.", "trigger_button_text": "", "ok_label": "Hobby OK", "ko_label": "Object X"},
-        },
-    },
-]
+def _slide_models():
+    return [
+        Slide(
+            order=s["order"],
+            ok_image_url="",
+            ko_image_url="",
+            translations={k: TipTranslation(**v) for k, v in s["translations"].items()},
+        )
+        for s in PHOTOS_VISUAL_SLIDES_I18N
+    ]
 
 
 async def ensure_photos_visual_slides():
@@ -75,15 +65,20 @@ async def ensure_photos_visual_slides():
     if tip.slides:
         print(f"photos_visual already has {len(tip.slides)} slides, skipping")
         return
-    tip.slides = [
-        Slide(
-            order=s["order"],
-            ok_image_url=s["ok_image_url"],
-            ko_image_url=s["ko_image_url"],
-            translations={k: TipTranslation(**v) for k, v in s["translations"].items()},
-        )
-        for s in PHOTOS_VISUAL_SLIDES
-    ]
+    # Full 21-language titles at tip level too
+    translations = dict(tip.translations or {})
+    for lang, title in PHOTOS_VISUAL_TITLES.items():
+        current = translations.get(lang)
+        if current is not None and not isinstance(current, dict):
+            try:
+                current = current.model_dump()
+            except Exception:
+                current = {}
+        current = dict(current or {})
+        current.setdefault("title", title)
+        translations[lang] = TipTranslation(**current)
+    tip.translations = translations
+    tip.slides = _slide_models()
     await tip.save()
     print(f"photos_visual slides seeded ({len(tip.slides)})")
 

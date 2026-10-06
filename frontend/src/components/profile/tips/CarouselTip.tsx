@@ -25,14 +25,20 @@ interface CarouselSlide {
   ko: { src: string; label: string };
 }
 
-function resolveSlideTranslation(slide: any): {
+function resolveSlideTranslation(slide: any, lang?: string): {
   title: string;
   description: string;
   ok_label: string;
   ko_label: string;
 } {
   const translations = slide?.translations ?? {};
-  const tr = translations["es"] ?? Object.values(translations)[0] ?? {};
+  const base = lang?.split("-")[0] ?? "es";
+  const tr =
+    translations[base] ??
+    translations["en"] ??
+    translations["es"] ??
+    Object.values(translations)[0] ??
+    {};
   return {
     title: (tr as any)?.title ?? "",
     description: (tr as any)?.description ?? "",
@@ -50,7 +56,8 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
   onSlotClear,
 }) => {
   const theme = useTheme();
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const lang = i18n.language?.split("-")[0] ?? "es";
   const [index, setIndex] = useState(0);
   const [failedSlots, setFailedSlots] = useState<Set<string>>(new Set());
   const startX = useRef(0);
@@ -126,7 +133,7 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
   const slideList: CarouselSlide[] =
     tip?.slides && tip.slides.length > 0
       ? (tip.slides as any[]).map((s) => {
-          const tr = resolveSlideTranslation(s);
+          const tr = resolveSlideTranslation(s, lang);
           return {
             title: tr.title,
             desc: tr.description,

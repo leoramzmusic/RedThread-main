@@ -19,9 +19,15 @@ interface TipSlide {
   ko: { src: string; label: string };
 }
 
-function resolveTipSlide(slide: any): TipSlide {
+function resolveTipSlide(slide: any, lang?: string): TipSlide {
   const translations = slide?.translations ?? {};
-  const tr = translations["es"] ?? Object.values(translations)[0] ?? {};
+  const base = lang?.split("-")[0] ?? "es";
+  const tr =
+    translations[base] ??
+    translations["en"] ??
+    translations["es"] ??
+    Object.values(translations)[0] ??
+    {};
   return {
     title: (tr as any)?.title ?? "",
     desc: (tr as any)?.description ?? "",
@@ -42,7 +48,8 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
   tip,
 }) => {
   const theme = useTheme();
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const lang = i18n.language?.split("-")[0] ?? "es";
   const [index, setIndex] = useState(0);
   const startX = useRef(0);
 
@@ -100,7 +107,7 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
   // DB-first: use tip slides when present, else hardcoded fallback.
   const slides: TipSlide[] =
     tip?.slides && tip.slides.length > 0
-      ? (tip.slides as any[]).map(resolveTipSlide)
+      ? (tip.slides as any[]).map((s) => resolveTipSlide(s, lang))
       : hardcodedSlides;
 
   const sheetTitle =

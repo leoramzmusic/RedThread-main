@@ -38,6 +38,27 @@ const EXTRA_LANGS = ALL_TIP_LANGS.filter((l) => !MAIN_LANGS.includes(l));
 
 const MAX_SLIDES = 6;
 
+const SLIDE_TR_FIELDS: Array<{ key: 'title' | 'description' | 'ok_label' | 'ko_label'; label: string }> = [
+    { key: 'title', label: 'Título' },
+    { key: 'description', label: 'Descripción' },
+    { key: 'ok_label', label: 'Etiqueta OK' },
+    { key: 'ko_label', label: 'Etiqueta KO' },
+];
+
+const setSlideTr = (
+    slides: AdminTipSlide[] | undefined,
+    index: number,
+    lang: string,
+    field: 'title' | 'description' | 'ok_label' | 'ko_label',
+    text: string,
+): AdminTipSlide[] => {
+    const next = [...(slides ?? [])];
+    const translations = { ...(next[index]?.translations ?? {}) };
+    translations[lang] = { ...EMPTY_TR, ...(translations[lang] ?? {}), [field]: text };
+    next[index] = { ...next[index], translations };
+    return next.map((s, i) => ({ ...s, order: i }));
+};
+
 const EMPTY_TR: AdminTipTranslation = {
     title: '',
     description: '',
@@ -268,38 +289,55 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                 </IconButton>
                             </Box>
                             <Grid container spacing={2}>
-                                {(['es', 'en'] as const).map((lang) => (
+                                {MAIN_LANGS.map((lang) => (
                                     <React.Fragment key={lang}>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                label={`Título (${lang})`}
-                                                value={slide.translations?.[lang]?.title ?? ''}
-                                                onChange={(e) => {
-                                                    const translations = { ...(slide.translations ?? {}) };
-                                                    translations[lang] = { ...(translations[lang] ?? { ...EMPTY_TR }), title: e.target.value };
-                                                    setSlide(i, { translations });
-                                                }}
-                                                disabled={readOnly}
-                                                fullWidth
-                                                size="small"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                label={`Descripción (${lang})`}
-                                                value={slide.translations?.[lang]?.description ?? ''}
-                                                onChange={(e) => {
-                                                    const translations = { ...(slide.translations ?? {}) };
-                                                    translations[lang] = { ...(translations[lang] ?? { ...EMPTY_TR }), description: e.target.value };
-                                                    setSlide(i, { translations });
-                                                }}
-                                                disabled={readOnly}
-                                                fullWidth
-                                                size="small"
-                                            />
-                                        </Grid>
+                                        {SLIDE_TR_FIELDS.map((f) => (
+                                            <Grid item xs={12} sm={6} key={`${lang}-${f.key}`}>
+                                                <TextField
+                                                    label={`${f.label} (${lang})`}
+                                                    value={(slide.translations?.[lang] as any)?.[f.key] ?? ''}
+                                                    onChange={(e) => {
+                                                        set({ slides: setSlideTr(value.slides, i, lang, f.key, e.target.value) });
+                                                    }}
+                                                    disabled={readOnly}
+                                                    fullWidth
+                                                    size="small"
+                                                />
+                                            </Grid>
+                                        ))}
                                     </React.Fragment>
                                 ))}
+                                <Grid item xs={12}>
+                                    <Accordion>
+                                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                            <Typography variant="caption">
+                                                Otros idiomas ({EXTRA_LANGS.length})
+                                            </Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Grid container spacing={2}>
+                                                {EXTRA_LANGS.map((lang) => (
+                                                    <React.Fragment key={lang}>
+                                                        {SLIDE_TR_FIELDS.map((f) => (
+                                                            <Grid item xs={12} sm={6} key={`${lang}-${f.key}`}>
+                                                                <TextField
+                                                                    label={`${f.label} (${lang})`}
+                                                                    value={(slide.translations?.[lang] as any)?.[f.key] ?? ''}
+                                                                    onChange={(e) => {
+                                                                        set({ slides: setSlideTr(value.slides, i, lang, f.key, e.target.value) });
+                                                                    }}
+                                                                    disabled={readOnly}
+                                                                    fullWidth
+                                                                    size="small"
+                                                                />
+                                                            </Grid>
+                                                        ))}
+                                                    </React.Fragment>
+                                                ))}
+                                            </Grid>
+                                        </AccordionDetails>
+                                    </Accordion>
+                                </Grid>
                                 {(['ok_image_url', 'ko_image_url'] as const).map((field) => (
                                     <Grid item xs={12} sm={6} key={field}>
                                         {(slide[field] as string) ? (
