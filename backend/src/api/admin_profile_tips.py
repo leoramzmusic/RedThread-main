@@ -1,10 +1,10 @@
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel
-from src.models.profile_tip import ProfileTip, TipTranslation, Slide
+from src.models.profile_tip import ProfileTip
 from src.models.admin_rbac import Permission
 from src.core.middleware.employee_rbac import require_employee_permission, log_employee_action
 from src.models.employee import Employee
@@ -13,6 +13,7 @@ from src.models.user import User
 
 router = APIRouter(tags=["Admin - Profile Tips"])
 public_router = APIRouter(tags=["Profile Tips"])
+
 
 class TipUpsert(BaseModel):
     tip_key: Optional[str] = None
@@ -23,13 +24,16 @@ class TipUpsert(BaseModel):
     is_active: Optional[bool] = None
     order: Optional[int] = None
 
+
 async def _get_by_key(tip_key: str) -> Optional[ProfileTip]:
     return await ProfileTip.find_one({"tip_key": tip_key})
+
 
 @router.get("/")
 async def list_tips(admin: Employee = Depends(require_employee_permission(Permission.VIEW_PROFILE_TIPS))):
     tips = await ProfileTip.find_all().to_list()
     return sorted(tips, key=lambda t: t.order)
+
 
 @router.post("/", status_code=201)
 async def create_tip(body: TipUpsert, admin: Employee = Depends(require_employee_permission(Permission.MANAGE_PROFILE_TIPS))):
@@ -42,6 +46,7 @@ async def create_tip(body: TipUpsert, admin: Employee = Depends(require_employee
     await log_employee_action(employee_id=str(admin.id), action_type="create_profile_tip", description=f"Created tip {tip.tip_key}", target_type="profile_tip", target_id=str(tip.id))
     return tip
 
+
 @router.put("/reorder")
 async def reorder_tips(body: dict, admin: Employee = Depends(require_employee_permission(Permission.MANAGE_PROFILE_TIPS))):
     keys = body.get("keys", [])
@@ -52,6 +57,7 @@ async def reorder_tips(body: dict, admin: Employee = Depends(require_employee_pe
             tip.updated_at = datetime.utcnow()
             await tip.save()
     return {"status": "success"}
+
 
 @router.patch("/{tip_key}")
 async def update_tip(tip_key: str, body: TipUpsert, admin: Employee = Depends(require_employee_permission(Permission.EDIT_PROFILE_TIPS))):
@@ -66,6 +72,7 @@ async def update_tip(tip_key: str, body: TipUpsert, admin: Employee = Depends(re
     await tip.save()
     return tip
 
+
 @router.delete("/{tip_key}")
 async def delete_tip(tip_key: str, admin: Employee = Depends(require_employee_permission(Permission.MANAGE_PROFILE_TIPS))):
     tip = await _get_by_key(tip_key)
@@ -73,6 +80,7 @@ async def delete_tip(tip_key: str, admin: Employee = Depends(require_employee_pe
         raise HTTPException(status_code=404, detail="Tip no encontrado")
     await tip.delete()
     return {"status": "success"}
+
 
 TIPS_UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent.parent / "img" / "assets" / "tips"
 TIPS_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -106,6 +114,7 @@ async def upload_tip_image(
     print(f"[tips] saved upload -> {file_path} url={url}")
     await log_employee_action(employee_id=str(admin.id), action_type="upload_profile_tip_image", description=f"Uploaded image for tip {tip_key}", target_type="profile_tip", target_id=str(tip.id))
     return {"url": url}
+
 
 @public_router.get("/{tip_key}")
 async def get_public_tip(tip_key: str, current_user: User = Depends(get_current_user)):
