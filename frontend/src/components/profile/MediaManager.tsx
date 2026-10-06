@@ -90,6 +90,7 @@ function SortableMediaItem({
     transition,
     isDragging,
   } = useSortable({ id: item._id });
+  const { t } = useTranslation("common");
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -143,13 +144,18 @@ function SortableMediaItem({
           {item.type === MediaType.PHOTO && (
             <img
               src={item.url}
-              alt="User media"
+              alt={t("profile.media.photoAlt", "Foto {{n}} de tu galería", {
+                n: index + 1,
+              })}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           )}
           {item.type === MediaType.VIDEO && (
             <video
               src={item.url}
+              aria-label={t("profile.media.videoAlt", "Video {{n}} de tu galería", {
+                n: index + 1,
+              })}
               style={{
                 width: "100%",
                 height: "100%",
@@ -748,6 +754,7 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
       <DragOverlay>
         {activeItem ? (
           <Paper
+            aria-hidden="true"
             sx={{
               width: 100,
               height: 100,
@@ -758,6 +765,7 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
             {activeItem.type === MediaType.PHOTO && (
               <img
                 src={activeItem.url}
+                alt=""
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             )}

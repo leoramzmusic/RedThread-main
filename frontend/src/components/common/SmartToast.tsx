@@ -14,6 +14,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { useTranslation } from "next-i18next";
 
 export type SmartToastSeverity = "success" | "info" | "warning" | "error";
 
@@ -80,11 +81,13 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(function ToastCard(
   { severity, title, message, icon, onClose },
   ref,
 ) {
+  const { t } = useTranslation("common");
   const style = SEVERITY_STYLE[severity ?? "info"];
   return (
     <Box
       ref={ref}
       role="status"
+      aria-atomic="true"
       sx={{
         display: "flex",
         alignItems: "flex-start",
@@ -139,7 +142,7 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(function ToastCard(
       <IconButton
         size="small"
         onClick={onClose}
-        aria-label="Cerrar notificación"
+        aria-label={t("closeNotification", "Cerrar notificación")}
         sx={{ color: "text.secondary", mt: -0.5, mr: -0.5 }}
       >
         <CloseIcon fontSize="small" />

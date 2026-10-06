@@ -312,11 +312,21 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
           {t("profile.photoTips.prev", "Anterior")}
         </Button>
 
-        <Box display="flex" gap={1}>
+        <Box display="flex" gap={1} role="group" aria-label={t("profile.photoTips.slidesNav", "Diapositivas")}>
           {slides.map((_, i) => (
             <Box
               key={i}
+              role="button"
+              tabIndex={0}
+              aria-label={t("profile.photoTips.goToSlide", "Ir a la diapositiva {{n}}", { n: i + 1 })}
+              aria-current={i === index}
               onClick={() => goTo(i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  goTo(i);
+                }
+              }}
               sx={{
                 width: 8,
                 height: 8,

@@ -193,6 +193,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                             <Chip
                                 icon={<AutoAwesomeIcon sx={{ fontSize: 10 }} />}
                                 label="Smart"
+                                aria-label={t("profile.photos.smartBadgeLabel", "Elegida automáticamente por Smart Photos")}
                                 size="small"
                                 color="warning"
                                 variant="filled"

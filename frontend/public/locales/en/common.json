@@ -31,7 +31,8 @@
       "smartChosenTitle": "Smart Photos picked your best photo",
       "smartChosenMsg": "Automatically selected based on interactions",
       "manualLock": "You ordered your photos manually: Smart Photos is paused and will respect your order.",
-      "resumeSmart": "Resume Smart"
+      "resumeSmart": "Resume Smart",
+      "smartBadgeLabel": "Automatically picked by Smart Photos"
     },
     "uploadPhoto": "Upload",
     "interests": "Interests",
@@ -314,7 +315,9 @@
       "myPhotos": "My photos ({{count}}/9)",
       "myVideos": "My videos ({{count}}/3)",
       "add": "Add",
-      "previewAlt": "Preview"
+      "previewAlt": "Preview",
+      "photoAlt": "Photo {{n}} of your gallery",
+      "videoAlt": "Video {{n}} of your gallery"
     },
     "photoTips": {
       "title": "Tips for your photos",
@@ -338,7 +341,9 @@
         "desc": "Add photos that reflect your hobbies and interests.",
         "ok": "Hobby OK",
         "ko": "Object X"
-      }
+      },
+      "slidesNav": "Slides",
+      "goToSlide": "Go to slide {{n}}"
     },
     "mediaGallery": "Media Gallery",
     "preview": "Preview",
@@ -1250,5 +1255,8 @@
     "receivedManual": "Document received. Name could not be read automatically, it will be reviewed manually.",
     "uploadErrorMsg": "Error uploading document. Please try again.",
     "deletedOk": "✓ Document deleted successfully"
-  }
+  },
+  "closeNotification": "Dismiss notification",
+  "profilePhotoAlt": "Photo {{n}} of {{name}}",
+  "profileNoPhoto": "No photo"
 }

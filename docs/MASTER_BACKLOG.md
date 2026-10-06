@@ -890,6 +890,7 @@ RedThread is a social matching app (dating/friendship/gaming) built with Next.js
 - [ ] Lint/type-check clean (zero warnings)
 - [ ] No security regressions (Bandit/ESLint security pass)
 - [ ] Accessibility verified (axe core, contrast checks)
+- [ ] Screen-reader pass per `docs/ACCESSIBILITY.md` (keyboard operable, alt/labels, dialog + toast semantics)
 - [ ] Responsive on 375px, 768px, 1024px, 1440px
 - [ ] i18n keys added (ES + EN minimum)
 - [ ] Documentation updated (if applicable)

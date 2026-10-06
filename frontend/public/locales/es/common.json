@@ -75,7 +75,8 @@
       "smartChosenTitle": "Smart Photos eligió tu mejor foto",
       "smartChosenMsg": "Seleccionada automáticamente según interacción",
       "manualLock": "Ordenaste tus fotos manualmente: Smart Photos está en pausa y respetará tu orden.",
-      "resumeSmart": "Reanudar Smart"
+      "resumeSmart": "Reanudar Smart",
+      "smartBadgeLabel": "Elegida automáticamente por Smart Photos"
     },
     "uploadPhoto": "Subir",
     "interests": "Intereses",
@@ -385,7 +386,9 @@
       "myPhotos": "Mis fotos ({{count}}/9)",
       "myVideos": "Mis videos ({{count}}/3)",
       "add": "Agregar",
-      "previewAlt": "Vista previa"
+      "previewAlt": "Vista previa",
+      "photoAlt": "Foto {{n}} de tu galería",
+      "videoAlt": "Video {{n}} de tu galería"
     },
     "photoTips": {
       "title": "Tips para tus fotos",
@@ -409,7 +412,9 @@
         "desc": "Añade fotos que reflejen tus hobbies e intereses.",
         "ok": "Hobby OK",
         "ko": "Objeto X"
-      }
+      },
+      "slidesNav": "Diapositivas",
+      "goToSlide": "Ir a la diapositiva {{n}}"
     },
     "mediaGallery": "Galería Multimedia",
     "identityDoc": {
@@ -1319,5 +1324,8 @@
     "receivedManual": "Documento recibido. No se pudo leer el nombre automáticamente, será revisado manualmente.",
     "uploadErrorMsg": "Error al subir el documento. Por favor intenta de nuevo.",
     "deletedOk": "✓ Documento eliminado exitosamente"
-  }
+  },
+  "closeNotification": "Cerrar notificación",
+  "profilePhotoAlt": "Foto {{n}} de {{name}}",
+  "profileNoPhoto": "Sin foto"
 }

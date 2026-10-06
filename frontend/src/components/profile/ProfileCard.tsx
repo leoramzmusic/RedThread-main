@@ -440,6 +440,14 @@ export default function ProfileCard({
               photos[activePhotoIndex] ||
               "https://via.placeholder.com/400x600?text=No+Photo"
             }
+            alt={
+              photos[activePhotoIndex]
+                ? t("profilePhotoAlt", "Foto {{n}} de {{name}}", {
+                    n: activePhotoIndex + 1,
+                    name: profile.display_name || profile.nickname || "",
+                  })
+                : t("profileNoPhoto", "Sin foto")
+            }
             sx={{
               height: "100%",
               width: "100%",
