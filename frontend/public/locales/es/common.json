@@ -71,7 +71,9 @@
       "smartDesc": "Selecciona automáticamente la mejor foto según interacción",
       "smartToggle": "Smart Photos Toggle",
       "smartEnabled": "Smart Photos activado: tu mejor foto se seleccionará automáticamente según interacciones",
-      "smartChosen": "Smart Photos eligió esta como tu mejor foto según interacción"
+      "smartChosen": "Smart Photos eligió esta como tu mejor foto según interacción",
+      "manualLock": "Ordenaste tus fotos manualmente: Smart Photos está en pausa y respetará tu orden.",
+      "resumeSmart": "Reanudar Smart"
     },
     "uploadPhoto": "Subir",
     "interests": "Intereses",

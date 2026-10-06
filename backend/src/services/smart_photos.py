@@ -43,6 +43,12 @@ class SmartPhotosService:
         if not profile or not profile.smart_photos_enabled:
             return {"changed": False, "primary_media_id": None}
 
+        # Respect manual ordering: the user rearranged photos by hand,
+        # so automatic reordering stays paused until the lock expires.
+        lock_until = profile.smart_photos_manual_lock_until
+        if lock_until is not None and lock_until > datetime.utcnow():
+            return {"changed": False, "primary_media_id": None, "locked": True}
+
         # Get all photo media items
         photos = await MediaItem.find(
             MediaItem.user_id == user_id, MediaItem.type == MediaType.PHOTO

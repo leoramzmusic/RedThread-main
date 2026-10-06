@@ -334,6 +334,9 @@ class Profile(Document):
     # Smart Photos
     smart_photos_enabled: bool = False
     smart_photos_last_evaluated: Optional[datetime] = None
+    # Manual order lock: set when the user reorders photos by hand.
+    # While active, automatic evaluation will not reorder.
+    smart_photos_manual_lock_until: Optional[datetime] = None
 
     # Privacy
     profile_visible: bool = True

@@ -13,6 +13,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import apiClient from "../../../../services/api";
 import {
   Edit as EditIcon,
   PhotoLibrary,
@@ -39,7 +40,33 @@ export default function PhotosSection({
   const [smartPhotosSnackbar, setSmartPhotosSnackbar] = useState(false);
   const [smartChosenSnackbar, setSmartChosenSnackbar] = useState(false);
   const [galleryRefreshKey, setGalleryRefreshKey] = useState(0);
+  const [resumeDone, setResumeDone] = useState(false);
+  const [resuming, setResuming] = useState(false);
   const evaluatedOnMount = useRef(false);
+
+  // Manual-order lock set by the backend when the user reorders by hand.
+  const lockUntilRaw: string | null =
+    profile?.smart_photos_manual_lock_until ?? null;
+  const lockActive =
+    !resumeDone &&
+    !!lockUntilRaw &&
+    new Date(lockUntilRaw).getTime() > Date.now();
+
+  const handleResumeSmartPhotos = async () => {
+    setResuming(true);
+    try {
+      const res = await apiClient.post("/media/smart-photos/resume");
+      setResumeDone(true);
+      if (res.data?.changed) {
+        setSmartChosenSnackbar(true);
+        setGalleryRefreshKey((k) => k + 1);
+      }
+    } catch (err) {
+      console.error("Failed to resume Smart Photos:", err);
+    } finally {
+      setResuming(false);
+    }
+  };
 
   // When opening the section with Smart Photos on, re-evaluate once:
   // if the ranking changed, celebrate it and refresh the gallery.
@@ -96,6 +123,27 @@ export default function PhotosSection({
             userId={profile.user_id}
             smartPhotosEnabled={smartPhotos}
           />
+
+          {smartPhotos && lockActive ? (
+            <Alert
+              severity="info"
+              sx={{ mt: 1.5, borderRadius: "12px" }}
+              action={
+                <Button
+                  size="small"
+                  onClick={() => void handleResumeSmartPhotos()}
+                  disabled={resuming}
+                >
+                  {t("profile.photos.resumeSmart", "Reanudar Smart")}
+                </Button>
+              }
+            >
+              {t(
+                "profile.photos.manualLock",
+                "Ordenaste tus fotos manualmente: Smart Photos está en pausa y respetará tu orden.",
+              )}
+            </Alert>
+          ) : null}
 
           <Box
             display="flex"

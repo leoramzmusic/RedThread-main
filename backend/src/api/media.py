@@ -202,6 +202,23 @@ async def reorder_media(
 
     await sync_profile_photos(str(current_user.id))
 
+    # Manual reorder wins over automation: pause Smart Photos for 24h
+    # so the user's chosen order is respected.
+    from datetime import datetime, timedelta
+
+    try:
+        profile = await Profile.find_one(Profile.user_id == str(current_user.id))
+        if profile is not None and profile.smart_photos_enabled:
+            profile.smart_photos_manual_lock_until = datetime.utcnow() + timedelta(hours=24)
+            await profile.save()
+            return {
+                "message": "Order updated",
+                "smart_photos_paused": True,
+                "smart_photos_paused_until": profile.smart_photos_manual_lock_until.isoformat(),
+            }
+    except Exception as e:
+        print(f"Smart Photos manual-lock error: {e}")
+
     return {"message": "Order updated"}
 
 
@@ -287,6 +304,25 @@ async def evaluate_smart_photos(current_user: User = Depends(get_current_user)):
     result = await SmartPhotosService.evaluate_user_photos(str(current_user.id))
     return {
         "message": "Smart Photos evaluated and reordered if necessary",
+        "changed": result.get("changed", False),
+        "primary_media_id": result.get("primary_media_id"),
+        "locked": result.get("locked", False),
+    }
+
+
+@router.post("/smart-photos/resume")
+async def resume_smart_photos(current_user: User = Depends(get_current_user)):
+    """Clear the manual-order lock and run Smart Photos evaluation immediately"""
+    from src.services.smart_photos import SmartPhotosService
+
+    profile = await Profile.find_one(Profile.user_id == str(current_user.id))
+    if profile is not None:
+        profile.smart_photos_manual_lock_until = None
+        await profile.save()
+
+    result = await SmartPhotosService.evaluate_user_photos(str(current_user.id))
+    return {
+        "message": "Smart Photos resumed",
         "changed": result.get("changed", False),
         "primary_media_id": result.get("primary_media_id"),
     }
