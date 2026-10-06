@@ -1,4 +1,0 @@
-# Runtime uploads from Admin Tips (photos_visual, etc.) — never commit user content.
-# The directory itself stays tracked so the backend mount point always exists.
-*
-!.gitignore
