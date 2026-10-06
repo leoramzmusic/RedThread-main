@@ -62,18 +62,23 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ open, onClose, children, sx }
     return (
         <Portal>
             <Box
-                onClick={onClose}
-                sx={{
-                    position: 'fixed',
-                    inset: 0,
-                    bgcolor: 'rgba(0,0,0,0.35)',
-                    zIndex: 1300,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'flex-end',
-                    backdropFilter: 'blur(6px)',
-                }}
-            >
+                    onClick={(e) => {
+                        // Only backdrop taps close: taps inside stop below,
+                        // and this guard survives propagation quirks on touch.
+                        if (e.target === e.currentTarget) onClose();
+                    }}
+                    sx={{
+                        position: 'fixed',
+                        inset: 0,
+                        bgcolor: 'rgba(0,0,0,0.35)',
+                        // Above the app bottom nav (z 2000) so the sheet is never covered
+                        zIndex: 2100,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                        backdropFilter: 'blur(6px)',
+                    }}
+                >
                 <Box
                     onClick={(e) => e.stopPropagation()}
                     role="dialog"
@@ -90,7 +95,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ open, onClose, children, sx }
                         borderTopLeftRadius: 16,
                         borderTopRightRadius: 16,
                         p: 3,
-                        pb: 4,
+                        pb: 'calc(24px + env(safe-area-inset-bottom, 0px))',
                         boxShadow: theme.palette.mode === 'dark'
                             ? '0 -8px 24px rgba(0,0,0,0.5)'
                             : '0 -8px 24px rgba(0,0,0,0.25)',

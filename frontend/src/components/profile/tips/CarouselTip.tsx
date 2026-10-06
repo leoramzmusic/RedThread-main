@@ -170,9 +170,7 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
   const sheetTitle =
     tip?.translation?.title ??
     t("profile.photoTips.title", "Tips para tus fotos");
-  const gotItText =
-    tip?.translation?.trigger_button_text ??
-    t("profile.photoTips.gotIt", "Entendido");
+  const gotItText = t("profile.photoTips.gotIt", "Cerrar");
 
   return (
     <BottomSheet open={open} onClose={onClose}>
@@ -421,16 +419,23 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
         </Box>
       </Box>
 
-      {/* Controls */}
+      {/* Controls: isolated from sheet drag/swipe gestures so taps
+          on buttons can never dismiss the sheet on touch devices. */}
       <Box
         display="flex"
         alignItems="center"
         justifyContent="space-between"
         mt={3}
         mb={2}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
       >
         <Button
-          onClick={prev}
+          onClick={(e) => {
+            e.stopPropagation();
+            prev();
+          }}
           disabled={index === 0}
           variant="outlined"
           size="small"
@@ -468,7 +473,10 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
         </Box>
 
         <Button
-          onClick={next}
+          onClick={(e) => {
+            e.stopPropagation();
+            next();
+          }}
           disabled={index === slideList.length - 1}
           variant="outlined"
           size="small"
@@ -492,7 +500,10 @@ const CarouselTip: React.FC<CarouselTipProps> = ({
       <Button
         fullWidth
         variant="contained"
-        onClick={onClose}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
         sx={{
           bgcolor: "#ff4d4f",
           color: "white",
