@@ -66,8 +66,8 @@ export default function RelationshipGoalsSection({
             : (theme) => "1px solid " + theme.palette.divider,
           boxShadow: isDiscovery ? 0 : 1,
           backgroundImage: "none",
-          bgcolor: isDiscovery ? "transparent" : "inherit",
-          borderRadius: "12px !important",
+          ...(isDiscovery ? { bgcolor: "transparent" } : {}),
+          borderRadius: "16px",
           "&:before": { display: "none" },
         }}
       >
@@ -104,7 +104,7 @@ export default function RelationshipGoalsSection({
             </Box>
           </AccordionSummary>
         )}
-        <AccordionDetails sx={{ px: isDiscovery ? 1 : 3, pb: 3, pt: 0 }}>
+        <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: isDiscovery ? 3 : 2, pt: 0 }}>
           <Typography
             variant="body2"
             sx={{

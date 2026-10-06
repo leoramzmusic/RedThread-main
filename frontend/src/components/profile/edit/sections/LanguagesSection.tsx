@@ -63,7 +63,7 @@ export default function LanguagesSection({
           borderColor: "divider",
           boxShadow: 1,
           backgroundImage: "none",
-          borderRadius: "12px !important",
+          borderRadius: "16px",
           overflow: "hidden",
           "&:before": { display: "none" },
         }}
@@ -97,7 +97,7 @@ export default function LanguagesSection({
             )}
           </Box>
         </AccordionSummary>
-        <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+        <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={3}>
             {/* 1. Idiomas Hablados (Lo que ofreces) */}
             <Grid item xs={12}>

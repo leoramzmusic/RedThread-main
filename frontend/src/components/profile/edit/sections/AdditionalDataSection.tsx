@@ -43,7 +43,7 @@ export default function AdditionalDataSection({
           border: (theme) => "1px solid " + theme.palette.divider,
           boxShadow: 1,
           backgroundImage: "none",
-          borderRadius: "12px !important",
+          borderRadius: "16px",
           "&:before": { display: "none" },
         }}
       >
@@ -53,7 +53,7 @@ export default function AdditionalDataSection({
             {t("profile.additional.title", "Datos Adicionales")}
           </Box>
         </AccordionSummary>
-        <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+        <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <HeightSelector control={control} />

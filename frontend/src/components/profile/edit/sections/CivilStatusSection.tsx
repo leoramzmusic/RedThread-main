@@ -48,8 +48,8 @@ export default function CivilStatusSection({
             : (theme) => "1px solid " + theme.palette.divider,
           boxShadow: isDiscovery ? 0 : 1,
           backgroundImage: "none",
-          bgcolor: isDiscovery ? "transparent" : "inherit",
-          borderRadius: "12px !important",
+          ...(isDiscovery ? { bgcolor: "transparent" } : {}),
+          borderRadius: "16px",
           "&:before": { display: "none" },
         }}
       >
@@ -73,7 +73,7 @@ export default function CivilStatusSection({
             </Typography>
           </Box>
         </AccordionSummary>
-        <AccordionDetails sx={{ px: isDiscovery ? 1 : 3, pb: 2, pt: 0 }}>
+        <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Controller

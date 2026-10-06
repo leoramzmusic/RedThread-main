@@ -336,7 +336,7 @@ export default function MusicSection({
           border: (theme) => "1px solid " + theme.palette.divider,
           boxShadow: 1,
           backgroundImage: "none",
-          borderRadius: "12px !important",
+          borderRadius: "16px",
           "&:before": { display: "none" },
         }}
       >
@@ -348,7 +348,7 @@ export default function MusicSection({
             </Typography>
           </Box>
         </AccordionSummary>
-        <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+        <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           {/* Banner (sub-módulo Spotify) */}
           {showSpotify && (
           <Box
