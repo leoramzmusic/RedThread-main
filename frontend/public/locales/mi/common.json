@@ -545,6 +545,40 @@
       "underage": "Me 18 tau te pakeke, neke atu rānei.",
       "openCalendar": "Whakatuwheratia te maramataka",
       "age_other": "{{n}} tau"
+    },
+    "safety": {
+      "title": "Ngā tohutipu mō te haumaru",
+      "body": "⚠️ Mō tō haumaru, kaua e tuku ingoa kaiwhakamahi ipurangi rānei kōrero tōtika ki tō kōrero whakapapa.",
+      "linkPrefix": "Ako atu mō tā mātou ",
+      "linkText": "Ngā ture o te hapori",
+      "button": "E mārama ana"
+    },
+    "goals_info": {
+      "title": "Ka huri ngā āhua",
+      "body": "Ka pātai tonu mātou i ia wā, mēnā kua huri tō whakaaro. Mēnā ka pai ki a koe, whakahōutia ō kaupapa i tō kōrero whakapapa.",
+      "button": "E mārama ana"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "He aha te hiranga o ngā kupu whakarite?",
+        "text1": "Ka āhei ngā kaiwhakamahi ki te tuku hōhonu me ngā whakamaharatanga anō ki tō rātou kōrero whakapapa mā ngā kupu whakarite.",
+        "text2": "He tūāpapa nui ngā kupu whakarite mō te tangata, ā, e whakaatu ana i tā mātou e tikanga ana ki a rātou.",
+        "button": "E pai ana"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "He aha tā mātou e tono ai i tō wāhi?",
+        "text": "Ka āwhina tō wāhi ki te whakaatu i ngā tāngata e tata ana i a koe, ā, ka whakarite i te roa o ō hononga. Kāore mātou e tukua i tō wāhi tika rawa atu kore i tō whakaae.",
+        "button": "E mārama ana"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "He aha tā mātou e tono ai i tō tuakiri?",
+        "text": "Ka āwhina tō tuakiri ki te whakaaro i te pono o tō kōrero whakapapa, ā, ka tiaki i te haumaru o te hapori. Kāore mātou e tukua i tō raraunga kore i tō whakaae.",
+        "button": "E mārama ana"
+      }
     }
   },
   "card": {

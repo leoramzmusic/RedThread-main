@@ -413,6 +413,40 @@
       "openCalendar": "Open calendar",
       "age_one": "{{n}} year old",
       "age_other": "{{n}} years old"
+    },
+    "safety": {
+      "title": "Safety Tips",
+      "body": "⚠️ For your safety, don't include social media usernames or direct contact info in your bio.",
+      "linkPrefix": "Learn more about our ",
+      "linkText": "Community Rules",
+      "button": "Understood"
+    },
+    "goals_info": {
+      "title": "Emotions change",
+      "body": "We'll check in from time to time in case your opinion has changed. Or, if you prefer, update your goals on your profile.",
+      "button": "Understood"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Why do pronouns matter?",
+        "text1": "Pronouns let our users add more depth and detail to their profile.",
+        "text2": "Pronouns are an important part of a person and tell us how to refer to them correctly.",
+        "button": "OK"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Why do we ask for your location?",
+        "text": "Your location helps us show you people nearby and set the reach of your connections. We'll never share your exact location without your consent.",
+        "button": "Understood"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Why do we ask for your identity?",
+        "text": "Your identity helps us verify your profile and keep the community safe. We'll never share your data without your consent.",
+        "button": "Understood"
+      }
     }
   },
   "settings_title": "Settings",

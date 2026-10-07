@@ -587,6 +587,40 @@
       "openCalendar": "Kalender openen",
       "age_one": "{{n}} jaar",
       "age_other": "{{n}} jaar"
+    },
+    "safety": {
+      "title": "Veiligheidstips",
+      "body": "⚠️ Voor je veiligheid: deel geen social-media-namen of directe contactgegevens in je bio.",
+      "linkPrefix": "Lees meer over onze ",
+      "linkText": "Communityregels",
+      "button": "Begrepen"
+    },
+    "goals_info": {
+      "title": "Emoties veranderen",
+      "body": "We vragen je af en toe of je mening is veranderd. Of werk je doelen bij in je profiel als je dat liever doet.",
+      "button": "Begrepen"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Waarom zijn voornaamwoorden belangrijk?",
+        "text1": "Met voornaamwoorden kunnen gebruikers meer diepte en detail aan hun profiel geven.",
+        "text2": "Voornaamwoorden zijn een belangrijk onderdeel van een persoon en laten zien hoe we correct naar die persoon verwijzen.",
+        "button": "Akkoord"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Waarom vragen we je locatie?",
+        "text": "Je locatie helpt ons mensen in de buurt te tonen en het bereik van je verbindingen te bepalen. We delen je exacte locatie nooit zonder je toestemming.",
+        "button": "Begrepen"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Waarom vragen we je identiteit?",
+        "text": "Je identiteit helpt ons je profiel te verifiëren en de community veilig te houden. We delen je gegevens nooit zonder je toestemming.",
+        "button": "Begrepen"
+      }
     }
   },
   "card": {

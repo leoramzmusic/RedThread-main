@@ -546,6 +546,40 @@
       "openCalendar": "Buksan ang kalendaryo",
       "age_other": "{{n}} taong gulang",
       "age_one": "{{n}} taong gulang"
+    },
+    "safety": {
+      "title": "Mga tip sa kaligtasan",
+      "body": "⚠️ Para sa iyong kaligtasan, huwag maglagay ng mga username ng social media o direktang contact sa iyong bio.",
+      "linkPrefix": "Alamin pa ang aming ",
+      "linkText": "Mga alituntunin sa komunidad",
+      "button": "Naiintindihan ko"
+    },
+    "goals_info": {
+      "title": "Nagbabago ang mga emosyon",
+      "body": "Minsan tatanungin namin kung nabago ang iyong opinyon. O kung gusto mo, i-update ang iyong mga layunin sa profile mo.",
+      "button": "Naiintindihan ko"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Bakit mahalaga ang mga panghalip?",
+        "text1": "Ang mga panghalip ay nagbibigay-daan sa aming mga user na magdagdag ng mas malalim na detalye sa kanilang profile.",
+        "text2": "Ang mga panghalip ay mahalagang bahagi ng isang tao at nagpapaalam sa amin kung paano siya tawagan nang wasto.",
+        "button": "Sang-ayon"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Bakit namin hinihingi ang iyong lokasyon?",
+        "text": "Tumutulong ang iyong lokasyon na maipakita ang mga taong malapit at maitakda ang saklaw ng iyong mga koneksyon. Hindi namin kailanman ibabahagi ang iyong eksaktong lokasyon nang walang pahintulot mo.",
+        "button": "Naiintindihan ko"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Bakit namin hinihingi ang iyong pagkakakilanlan?",
+        "text": "Tumutulong ang iyong pagkakakilanlan na ma-verify ang iyong profile at mapanatiling ligtas ang komunidad. Hindi namin kailanman ibabahagi ang iyong data nang walang pahintulot mo.",
+        "button": "Naiintindihan ko"
+      }
     }
   },
   "card": {

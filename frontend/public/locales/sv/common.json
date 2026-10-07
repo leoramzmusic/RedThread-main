@@ -587,6 +587,40 @@
       "openCalendar": "Öppna kalendern",
       "age_one": "{{n}} år",
       "age_other": "{{n}} år"
+    },
+    "safety": {
+      "title": "Säkerhetstips",
+      "body": "⚠️ För din säkerhet: inkludera inte sociala mediers användarnamn eller direkt kontaktinformation i din biografi.",
+      "linkPrefix": "Läs mer om våra ",
+      "linkText": "Communityregler",
+      "button": "Jag förstår"
+    },
+    "goals_info": {
+      "title": "Känslor förändras",
+      "body": "Vi kommer att fråga dig ibland ifall din åsikt har ändrats. Eller uppdatera dina mål i din profil om du föredrar det.",
+      "button": "Jag förstår"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Varför är pronomen viktiga?",
+        "text1": "Pronomen låter våra användare ge sin profil mer djup och detaljer.",
+        "text2": "Pronomen är en viktig del av en person och säger hur vi ska hänvisa till personen på rätt sätt.",
+        "button": "Okej"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Varför frågar vi om din plats?",
+        "text": "Din plats hjälper oss att visa personer i närheten och bestämma räckvidden för dina kopplingar. Vi delar aldrig din exakta plats utan ditt samtycke.",
+        "button": "Jag förstår"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Varför frågar vi om din identitet?",
+        "text": "Din identitet hjälper oss att verifiera din profil och hålla communityn säker. Vi delar aldrig dina uppgifter utan ditt samtycke.",
+        "button": "Jag förstår"
+      }
     }
   },
   "card": {

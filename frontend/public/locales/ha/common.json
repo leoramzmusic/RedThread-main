@@ -546,6 +546,40 @@
       "openCalendar": "Buɗe kalenda",
       "age_one": "{{n}} shekara",
       "age_other": "{{n}} shekaru"
+    },
+    "safety": {
+      "title": "Shawarwari na Tsaro",
+      "body": "⚠️ Domin amincewarka, kada a shigar da sunayen masu amfani na kafofin sada zumunta ko bayanan tuntuɓa kai tsaye a cikin bayaninka.",
+      "linkPrefix": "Ƙari game da ",
+      "linkText": "Dokokin Al'umma",
+      "button": "Na fahimta"
+    },
+    "goals_info": {
+      "title": "Jin na canza",
+      "body": "Za mu tambaya daga zuwa ga idan ra'ayinka ya canza. Ko ka fi so, sabunta manufofinka a cikin bayananka.",
+      "button": "Na fahimta"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Me ya sa pronouns suke da muhimmanci?",
+        "text1": "Pronouns suna ba masu amfani damar ƙara zurfi da bayani a cikin bayanan su.",
+        "text2": "Pronouns rukuni ne na muhimmanci na mutum kuma suna bayyana yadda za a nuna shi daidai.",
+        "button": "To"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Me ya sa muke neman wurin naka?",
+        "text": "Wurin naka yana taimaka mana mu nuna mutane masu kusa da ka kuma tsayar da filin alaƙoƙinka. Ba za mu raba wurin naka daidai ba ba tare da yarda ba.",
+        "button": "Na fahimta"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Me ya sa muke neman identiti naka?",
+        "text": "Identiti naka yana taimaka mana tabbatar da bayanan ka kuma kiyaye al'umma cikin tsaro. Ba za mu raba bayananka ba tare da yarda ba.",
+        "button": "Na fahimta"
+      }
     }
   },
   "card": {

@@ -545,6 +545,40 @@
       "underage": "Anda mestilah berumur sekurang-kurangnya 18 tahun.",
       "openCalendar": "Buka kalendar",
       "age_other": "{{n}} tahun"
+    },
+    "safety": {
+      "title": "Tip keselamatan",
+      "body": "⚠️ Untuk keselamatan anda, jangan masukkan nama pengguna media sosial atau maklumat hubungan terus dalam bio anda.",
+      "linkPrefix": "Ketahui lebih lanjut tentang ",
+      "linkText": "Peraturan komuniti",
+      "button": "Faham"
+    },
+    "goals_info": {
+      "title": "Emosi berubah",
+      "body": "Kami akan bertanya dari semasa ke semasa jika pendapat anda telah berubah. Atau, jika anda mahu, kemas kini matlamat anda dalam profil.",
+      "button": "Faham"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Mengapa kata ganti nama penting?",
+        "text1": "Kata ganti nama membolehkan pengguna kami menambah kedalaman dan butiran pada profil mereka.",
+        "text2": "Kata ganti nama adalah sebahagian penting seseorang dan memberitahu kami bagaimana merujuk kepada mereka dengan betul.",
+        "button": "Setuju"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Mengapa kami meminta lokasi anda?",
+        "text": "Lokasi anda membantu kami menunjukkan orang berdekatan dan menentukan jangkauan hubungan anda. Kami tidak akan berkongsi lokasi tepat anda tanpa persetujuan anda.",
+        "button": "Faham"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Mengapa kami meminta pengenalan diri anda?",
+        "text": "Pengenalan diri anda membantu kami mengesahkan profil anda dan mengekalkan keselamatan komuniti. Kami tidak akan berkongsi data anda tanpa persetujuan anda.",
+        "button": "Faham"
+      }
     }
   },
   "card": {

@@ -217,6 +217,40 @@
       "openCalendar": "Ouvrir le calendrier",
       "age_one": "{{n}} an",
       "age_other": "{{n}} ans"
+    },
+    "safety": {
+      "title": "Conseils de sécurité",
+      "body": "⚠️ Pour ta sécurité, n'indique pas tes identifiants de réseaux sociaux ni tes coordonnées directes dans ta bio.",
+      "linkPrefix": "En savoir plus sur nos ",
+      "linkText": "Règles de la communauté",
+      "button": "J'ai compris"
+    },
+    "goals_info": {
+      "title": "Les émotions changent",
+      "body": "Nous te demanderons de temps en temps si ton avis a changé. Ou, si tu préfères, mets à jour tes objectifs sur ton profil.",
+      "button": "J'ai compris"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Pourquoi les pronoms sont-ils importants ?",
+        "text1": "Les pronoms permettent à nos utilisateurs d'ajouter plus de profondeur et de détail à leur profil.",
+        "text2": "Les pronoms font partie importante d'une personne et nous indiquent comment la désigner correctement.",
+        "button": "D'accord"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Pourquoi demandons-nous ta localisation ?",
+        "text": "Ta localisation nous aide à te montrer des personnes à proximité et à définir la portée de tes connexions. Nous ne partagerons jamais ta position exacte sans ton consentement.",
+        "button": "J'ai compris"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Pourquoi demandons-nous ton identité ?",
+        "text": "Ton identité nous aide à vérifier ton profil et à garder la communauté en sécurité. Nous ne partagerons jamais tes données sans ton consentement.",
+        "button": "J'ai compris"
+      }
     }
   },
   "settings_title": "Paramètres",

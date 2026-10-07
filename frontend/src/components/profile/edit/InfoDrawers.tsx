@@ -40,7 +40,12 @@ export default function InfoDrawers({
   handleDragStart,
   tips,
 }: InfoDrawersProps) {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  // Resolve each tip in the active UI language (the API's `translation` field
+  // follows the saved preferred_language, not the current UI locale). Missing
+  // fields fall back to t(), which is defined in all 21 locales.
+  const uiLang = (i18n.language || "es").split("-")[0];
+  const tr = (tip: ProfileTipData | null) => tip?.translations?.[uiLang] ?? null;
   // DB-first: fetch each drawer tip; an injected `tips` map takes precedence.
   // Any missing/inactive/failed tip resolves to null -> hardcoded fallback.
   const { tip: fetchedSafety } = useProfileTip("safety");
@@ -140,7 +145,7 @@ export default function InfoDrawers({
                     fontWeight={700}
                     sx={{ color: "text.primary", mb: 2 }}
                   >
-                    {safety?.translation?.title ??
+                    {tr(safety)?.title ||
                       t("profile.safety.title", "Consejos de Seguridad")}
                   </Typography>
 
@@ -153,7 +158,7 @@ export default function InfoDrawers({
                         mx: "auto",
                       }}
                     >
-                      {safety?.translation?.description ??
+                      {tr(safety)?.description ||
                         t(
                           "profile.safety.body",
                           "⚠️ Por tu seguridad, no incluyas nombres de usuario de redes sociales ni información de contacto directa en tu biografía.",
@@ -197,7 +202,7 @@ export default function InfoDrawers({
                       py: 1.2,
                     }}
                   >
-                    {safety?.translation?.trigger_button_text ??
+                    {tr(safety)?.trigger_button_text ||
                       t("profile.safety.button", "Entendido")}
                   </Button>
                 </Box>
@@ -292,7 +297,7 @@ export default function InfoDrawers({
                     fontWeight={700}
                     sx={{ color: "text.primary", mb: 2 }}
                   >
-                    {goals?.translation?.title ??
+                    {tr(goals)?.title ||
                       t("profile.goals_info.title", "Las emociones cambian")}
                   </Typography>
 
@@ -305,7 +310,7 @@ export default function InfoDrawers({
                         mx: "auto",
                       }}
                     >
-                      {goals?.translation?.description ??
+                      {tr(goals)?.description ||
                         t(
                           "profile.goals_info.body",
                           "Te preguntaremos de vez en cuando en caso de que tu opinión haya cambiado. O si prefieres, actualiza tus objetivos en tu perfil.",
@@ -326,7 +331,7 @@ export default function InfoDrawers({
                       display: "block",
                     }}
                   >
-                    {goals?.translation?.trigger_button_text ??
+                    {tr(goals)?.trigger_button_text ||
                       t("profile.goals_info.button", "Entendido")}
                   </Button>
                 </Box>
@@ -422,7 +427,7 @@ export default function InfoDrawers({
                     fontWeight={700}
                     sx={{ color: "text.primary", mb: 2 }}
                   >
-                    {pronouns?.translation?.title ??
+                    {tr(pronouns)?.title ||
                       t(
                         "profile.pronouns.infoModal.title",
                         "¿Por qué son importantes los pronombres?",
@@ -444,7 +449,7 @@ export default function InfoDrawers({
                         mx: "auto",
                       }}
                     >
-                      {pronouns?.translation?.description ??
+                      {tr(pronouns)?.description ||
                         t(
                           "profile.pronouns.infoModal.text1",
                           "Los pronombres permiten a nuestrxs usuarixs darle mas profundidad y detalle a su perfil.",
@@ -479,7 +484,7 @@ export default function InfoDrawers({
                       py: 1.2,
                     }}
                   >
-                    {pronouns?.translation?.trigger_button_text ??
+                    {tr(pronouns)?.trigger_button_text ||
                       t("profile.pronouns.infoModal.button", "De acuerdo")}
                   </Button>
                 </Box>
@@ -565,13 +570,13 @@ export default function InfoDrawers({
 
                 <Box px={3} pb={2} textAlign="center">
                   <Typography variant="subtitle1" fontWeight={700} sx={{ color: "text.primary", mb: 2 }}>
-                    {location?.translation?.title ??
+                    {tr(location)?.title ||
                       t("profile.location.infoModal.title", "¿Por qué pedimos tu ubicación?")}
                   </Typography>
 
                   <Box display="flex" gap={1} justifyContent="center" mb={2}>
                     <Typography variant="body2" sx={{ color: "text.secondary", maxWidth: 400, mx: "auto" }}>
-                      {location?.translation?.description ??
+                      {tr(location)?.description ||
                         t("profile.location.infoModal.text", "Tu ubicación nos ayuda a mostrarte personas cercanas y a definir el alcance de tus conexiones. Nunca compartiremos tu ubicación exacta sin tu consentimiento.")}
                     </Typography>
                   </Box>
@@ -589,7 +594,7 @@ export default function InfoDrawers({
                       py: 1.2,
                     }}
                   >
-                    {location?.translation?.trigger_button_text ??
+                    {tr(location)?.trigger_button_text ||
                       t("profile.location.infoModal.button", "Entendido")}
                   </Button>
                 </Box>
@@ -675,13 +680,13 @@ export default function InfoDrawers({
 
                 <Box px={3} pb={2} textAlign="center">
                   <Typography variant="subtitle1" fontWeight={700} sx={{ color: "text.primary", mb: 2 }}>
-                    {identity?.translation?.title ??
+                    {tr(identity)?.title ||
                       t("profile.identity.infoModal.title", "¿Por qué pedimos tu identidad?")}
                   </Typography>
 
                   <Box display="flex" gap={1} justifyContent="center" mb={2}>
                     <Typography variant="body2" sx={{ color: "text.secondary", maxWidth: 400, mx: "auto" }}>
-                      {identity?.translation?.description ??
+                      {tr(identity)?.description ||
                         t("profile.identity.infoModal.text", "Tu identidad nos ayuda a verificar tu perfil y mantener la seguridad de la comunidad. Nunca compartiremos tus datos sin tu consentimiento.")}
                     </Typography>
                   </Box>
@@ -699,7 +704,7 @@ export default function InfoDrawers({
                       py: 1.2,
                     }}
                   >
-                    {identity?.translation?.trigger_button_text ??
+                    {tr(identity)?.trigger_button_text ||
                       t("profile.identity.infoModal.button", "Entendido")}
                   </Button>
                 </Box>

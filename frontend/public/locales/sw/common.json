@@ -546,6 +546,40 @@
       "openCalendar": "Fungua kalenda",
       "age_one": "{{n}} mwaka",
       "age_other": "{{n}} miaka"
+    },
+    "safety": {
+      "title": "Vidokezo vya usalama",
+      "body": "⚠️ Kwa usalama yako, usijumuishe majina ya mtumiaji ya mitandao ya kijamii au mawasiliano moja kwa moja katika wasifu wako.",
+      "linkPrefix": "Gundua zaidi kuhusu ",
+      "linkText": "Sheria za jamii",
+      "button": "Nimeelewa"
+    },
+    "goals_info": {
+      "title": "Hisia hubadilika",
+      "body": "Tutakuuliza mara kwa mara ikiwa maoni yamebadilika. Au, kama unapendelea, husisha malengo yako kwenye wasifu wako.",
+      "button": "Nimeelewa"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Kwa nini pronouns ni muhimu?",
+        "text1": "Pronouns huwawezesha watu wetu kutoa kina na maelezo zaidi kwenye wasifu wao.",
+        "text2": "Pronouns ni sehemu muhimu ya mtu na hutujulisha jinsi sahihi ya kumtaja.",
+        "button": "Sawa"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Kwa nini tunaomba mahali ulipo?",
+        "text": "Mahali ulipo hutusaidia kuonyesha watu walio karibu na kupanua wigo wa muunganisho wako. Hatutashiriki mahali ulipo kamwe bila ridhaa yako.",
+        "button": "Nimeelewa"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Kwa nini tunaomba utambulisho wako?",
+        "text": "Utambulisho wako hutusaidia kuthibitisha wasifu wako na kudumisha usalama wa jamii. Hatutashiriki data yako kamwe bila ridhaa yako.",
+        "button": "Nimeelewa"
+      }
     }
   },
   "card": {

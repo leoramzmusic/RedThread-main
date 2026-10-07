@@ -217,6 +217,40 @@
       "openCalendar": "Abrir calendário",
       "age_one": "{{n}} ano",
       "age_other": "{{n}} anos"
+    },
+    "safety": {
+      "title": "Dicas de segurança",
+      "body": "⚠️ Para a sua segurança, não inclua nomes de usuário de redes sociais nem contatos diretos na sua bio.",
+      "linkPrefix": "Saiba mais sobre as nossas ",
+      "linkText": "Regras da comunidade",
+      "button": "Entendi"
+    },
+    "goals_info": {
+      "title": "As emoções mudam",
+      "body": "Perguntaremos de vez em quando caso a sua opinião tenha mudado. Ou, se preferir, atualize os seus objetivos no perfil.",
+      "button": "Entendi"
+    },
+    "pronouns": {
+      "infoModal": {
+        "title": "Por que os pronomes são importantes?",
+        "text1": "Os pronomes permitem que os nossos usuários deem mais profundidade e detalhe ao seu perfil.",
+        "text2": "Os pronomes são uma parte importante de uma pessoa e nos indicam como nos referir corretamente a ela.",
+        "button": "De acordo"
+      }
+    },
+    "location": {
+      "infoModal": {
+        "title": "Por que pedimos a sua localização?",
+        "text": "A sua localização nos ajuda a mostrar pessoas próximas e a definir o alcance das suas conexões. Nunca compartilharemos a sua localização exata sem o seu consentimento.",
+        "button": "Entendi"
+      }
+    },
+    "identity": {
+      "infoModal": {
+        "title": "Por que pedimos a sua identidade?",
+        "text": "A sua identidade nos ajuda a verificar o seu perfil e a manter a comunidade segura. Nunca compartilharemos os seus dados sem o seu consentimento.",
+        "button": "Entendi"
+      }
     }
   },
   "settings_title": "Configurações",
