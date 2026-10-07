@@ -22,6 +22,14 @@
     "signUp": "Lumikha ng account",
     "orJoinWith": "O SUMALI SA RETH GAMIT ANG",
     "orLoginWith": "O MAG-SIGN IN SA RETH GAMIT ANG",
+    "emailVerifyTitle": "I-verify ang iyong email address",
+    "emailVerifySubtitle": "Kumpirmahin ang iyong email address para ma-verify ang iyong account",
+    "emailVerifySuccess": "Matagumpay na na-verify ang iyong email address!",
+    "emailVerifyError": "Hindi ma-verify ang iyong email address. Pakisubukang muli.",
+    "emailVerifyInvalid": "Invalid o expired na ang link na ito sa pag-verify.",
+    "emailVerifyMissingToken": "Wala ang link sa pag-verify sa address.",
+    "emailVerifyGoToProfile": "Pumunta sa aking profile",
+    "emailVerifyResendHint": "Kung nag-expire ang link, humingi ng bago mula sa identity section ng iyong profile.",
     "social": {
       "loginWith": "Mag-sign in gamit ang {{provider}}",
       "registerWith": "Mag-sign up gamit ang {{provider}}"
@@ -493,7 +501,33 @@
         "country_label": "Bansa",
         "country_placeholder": "Maghanap ayon sa bansa o code...",
         "phone_label": "Telepono",
-        "phone_helper": "Maaari mong gamitin ang numerong ito sa pag-log in"
+        "phone_helper": "Maaari mong gamitin ang numerong ito sa pag-log in",
+        "verification": {
+          "verified": "Na-verify",
+          "verifiedTooltip": "Na-verify ang iyong impormasyon",
+          "verify": "I-verify",
+          "change": "Palitan",
+          "changePhoneTitle": "Palitan ang numero ng telepono?",
+          "changePhoneBody": "Kung papalitan mo ang numero, kailangan mong i-verify muli ang bagong numero.",
+          "changeConfirm": "Tanggapin",
+          "cancel": "Kanselahin",
+          "verifyPhoneTitle": "I-verify ang numero ng telepono",
+          "verifyEmailTitle": "I-verify ang email address",
+          "codeBody": "Ilagay ang 6-digit code na ipinadala namin sa {{target}}",
+          "codeLabel": "Code ng pag-verify",
+          "confirmCode": "I-verify",
+          "resend": "Ipadala muli ang code",
+          "resendIn": "Ipadala muli sa {{seconds}}s",
+          "linkHint": "Nagpadala rin kami ng link sa pag-verify sa {{target}}. Maaari mo itong gamitin bilang alternatibo.",
+          "otpSent": "Naipadala ang code sa {{target}}",
+          "phoneVerifiedSuccess": "Matagumpay na na-verify ang numero ng telepono",
+          "emailVerifiedSuccess": "Matagumpay na na-verify ang email address",
+          "invalidCode": "Invalid o expired na code",
+          "genericError": "May nangyaring mali. Pakisubukang muli.",
+          "resendCooldown": "Mangyaring maghintay ng ilang segundo bago ipadala muli ang code.",
+          "resendFailed": "Hindi maipadala muli ang code. Pakisubukang muli.",
+          "sendFailed": "Hindi maipadala ang code. Pakisubukang muli."
+        }
       }
     },
     "identityDoc": {

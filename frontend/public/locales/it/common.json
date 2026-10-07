@@ -22,6 +22,14 @@
     "signUp": "Crea account",
     "orJoinWith": "OPPURE UNISCITI A RETH CON",
     "orLoginWith": "OPPURE ACCEDI A RETH CON",
+    "emailVerifyTitle": "Verifica il tuo indirizzo e-mail",
+    "emailVerifySubtitle": "Conferma il tuo indirizzo e-mail per verificare il tuo account",
+    "emailVerifySuccess": "Il tuo indirizzo e-mail è stato verificato con successo!",
+    "emailVerifyError": "Impossibile verificare il tuo indirizzo e-mail. Riprova.",
+    "emailVerifyInvalid": "Questo link di verifica non è valido o è scaduto.",
+    "emailVerifyMissingToken": "Manca il link di verifica nell'indirizzo.",
+    "emailVerifyGoToProfile": "Vai al mio profilo",
+    "emailVerifyResendHint": "Se il link è scaduto, richiedine uno nuovo dalla sezione identità del tuo profilo.",
     "social": {
       "loginWith": "Accedi con {{provider}}",
       "registerWith": "Registrati con {{provider}}"
@@ -222,7 +230,33 @@
         "country_label": "Paese",
         "country_placeholder": "Cerca per paese o codice...",
         "phone_label": "Telefono",
-        "phone_helper": "Puoi usare questo numero per accedere"
+        "phone_helper": "Puoi usare questo numero per accedere",
+        "verification": {
+          "verified": "Verificato",
+          "verifiedTooltip": "Le tue informazioni sono state verificate",
+          "verify": "Verifica",
+          "change": "Cambia",
+          "changePhoneTitle": "Vuoi cambiare numero di telefono?",
+          "changePhoneBody": "Se cambi numero, dovrai verificare di nuovo il nuovo numero.",
+          "changeConfirm": "Accetta",
+          "cancel": "Annulla",
+          "verifyPhoneTitle": "Verifica il numero di telefono",
+          "verifyEmailTitle": "Verifica l'indirizzo e-mail",
+          "codeBody": "Inserisci il codice di 6 cifre che abbiamo inviato a {{target}}",
+          "codeLabel": "Codice di verifica",
+          "confirmCode": "Verifica",
+          "resend": "Reinvia il codice",
+          "resendIn": "Reinvia tra {{seconds}}s",
+          "linkHint": "Abbiamo inviato anche un link di verifica a {{target}}. Puoi usarlo come alternativa.",
+          "otpSent": "Codice inviato a {{target}}",
+          "phoneVerifiedSuccess": "Numero di telefono verificato con successo",
+          "emailVerifiedSuccess": "Indirizzo e-mail verificato con successo",
+          "invalidCode": "Codice non valido o scaduto",
+          "genericError": "Si è verificato un errore. Riprova.",
+          "resendCooldown": "Attendi qualche secondo prima di reinviare il codice.",
+          "resendFailed": "Impossibile reinviare il codice. Riprova.",
+          "sendFailed": "Impossibile inviare il codice. Riprova."
+        }
       },
       "relationship": {
         "title": "Relazione & Compatibilità"

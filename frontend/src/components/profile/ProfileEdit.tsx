@@ -54,6 +54,17 @@ import apiClient from '../../services/api';
 import { PROFILE_SECTION_REGISTRY } from './sections/registry';
 import type { ProfileSectionKey } from './sections/registry';
 import { getPromptsForLanguage, PROMPT_SLUGS, promptCategoryOf } from '../../constants/funPrompts';
+import { useSnackbar } from 'notistack';
+import VerificationCodeDialog from './edit/VerificationCodeDialog';
+import type { VerificationChannel } from './edit/VerificationCodeDialog';
+
+const maskEmail = (email?: string) => {
+  if (!email || !email.includes('@')) return email || '';
+  const [local, domain] = email.split('@');
+  const head = local.slice(0, 1);
+  const tail = local.slice(-1);
+  return (local.length > 2 ? head + '***' + tail : head + '***') + '@' + domain;
+};
 
 // Section Components
 import PhotosSection from './edit/sections/PhotosSection';
@@ -101,6 +112,7 @@ interface ProfileEditProps {
 export default function ProfileEdit({ profile, options, onSave, onBack }: ProfileEditProps) {
   const router = useRouter();
   const { t, i18n } = useTranslation('common');
+  const { enqueueSnackbar } = useSnackbar();
   const [saving, setSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -200,6 +212,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [countryCode, setCountryCode] = useState(profile?.country_code || '+52');
   const [phoneVerified, setPhoneVerified] = useState(!!profile?.phone_verified);
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(!!profile?.email_verified);
+  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
 
   // Sync citySearch when profile changes (e.g. after save)
   useEffect(() => {
@@ -214,6 +228,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       if (profile.phone !== undefined) setPhone(profile.phone || '');
       if (profile.country_code !== undefined) setCountryCode(profile.country_code || '+52');
       if (profile.phone_verified !== undefined) setPhoneVerified(!!profile.phone_verified);
+      if (profile.email_verified !== undefined) setEmailVerified(!!profile.email_verified);
       if (profile.smart_photos_enabled !== undefined) setSmartPhotos(!!profile.smart_photos_enabled);
     }
   }, [profile]);
@@ -225,8 +240,11 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [nicknameSuccess, setNicknameSuccess] = useState('');
   const [checkingNickname, setCheckingNickname] = useState(false);
   const [changePhoneDialogOpen, setChangePhoneDialogOpen] = useState(false);
-  const [verificationCodeDialogOpen, setVerificationCodeDialogOpen] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationDialog, setVerificationDialog] = useState<{
+    channel: VerificationChannel;
+    target: string;
+  } | null>(null);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
   const [showActions, setShowActions] = useState(true);
   // Flotantes solo al scrollear (cuando los botones del header ya no se ven)
   const [showSticky, setShowSticky] = useState(false);
@@ -400,30 +418,93 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     }
   };
 
-  // Phone verification handlers
+  // Verification handlers
+  const v = 'profile.sections.identity.verification.';
+  const verifyTarget = (channel: VerificationChannel) =>
+    channel === 'phone'
+      ? (profile?.phone ? countryCode + ' ' + profile.phone : (countryCode + ' ' + phone).trim())
+      : maskEmail(profile?.email);
+
   const handleVerifyPhone = async () => {
     setIsVerifyingPhone(true);
     try {
-      await apiClient.post('/profiles/verify-phone', {
-        country_code: countryCode,
-        phone: phone
-      });
-      setVerificationCodeDialogOpen(true);
-    } catch (err) {
-      console.error('Phone verification failed', err);
+      await apiClient.post('/profiles/verify-phone');
+      setVerificationError(null);
+      setVerificationDialog({ channel: 'phone', target: verifyTarget('phone') });
+    } catch (err: any) {
+      enqueueSnackbar(
+        err.response?.status === 429
+          ? t(v + 'resendCooldown')
+          : t(v + 'sendFailed'),
+        { variant: 'error' },
+      );
     } finally {
       setIsVerifyingPhone(false);
     }
   };
 
-  const confirmPhoneVerification = async () => {
+  const handleVerifyEmail = async () => {
+    setIsVerifyingEmail(true);
     try {
-      await apiClient.post('/profiles/confirm-phone', { code: verificationCode });
-      setPhoneVerified(true);
-      setVerificationCodeDialogOpen(false);
-      setVerificationCode('');
-    } catch (err) {
-      console.error('Code verification failed', err);
+      await apiClient.post('/profiles/verify-email');
+      setVerificationError(null);
+      setVerificationDialog({ channel: 'email', target: verifyTarget('email') });
+    } catch (err: any) {
+      enqueueSnackbar(
+        err.response?.status === 429
+          ? t(v + 'resendCooldown')
+          : t(v + 'sendFailed'),
+        { variant: 'error' },
+      );
+    } finally {
+      setIsVerifyingEmail(false);
+    }
+  };
+
+  const confirmVerification = async (code: string) => {
+    if (!verificationDialog) return;
+    try {
+      if (verificationDialog.channel === 'phone') {
+        await apiClient.post('/profiles/confirm-phone', { code });
+        setPhoneVerified(true);
+      } else {
+        await apiClient.post('/profiles/confirm-email', { code });
+        setEmailVerified(true);
+      }
+      enqueueSnackbar(
+        verificationDialog.channel === 'phone'
+          ? t(v + 'phoneVerifiedSuccess')
+          : t(v + 'emailVerifiedSuccess'),
+        { variant: 'success' },
+      );
+      setVerificationDialog(null);
+      setVerificationError(null);
+    } catch (err: any) {
+      setVerificationError(
+        err.response?.status === 400
+          ? t(v + 'invalidCode')
+          : t(v + 'genericError'),
+      );
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!verificationDialog) return;
+    try {
+      await apiClient.post('/profiles/resend-verification', {
+        channel: verificationDialog.channel,
+      });
+      setVerificationError(null);
+      enqueueSnackbar(t(v + 'otpSent', { target: verificationDialog.target }), {
+        variant: 'info',
+      });
+    } catch (err: any) {
+      setVerificationError(
+        err.response?.status === 429
+          ? t(v + 'resendCooldown')
+          : t(v + 'resendFailed'),
+      );
+      throw err;
     }
   };
 
@@ -705,8 +786,11 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           setCountryCode={setCountryCode}
           phoneVerified={phoneVerified}
           isVerifyingPhone={isVerifyingPhone}
+          emailVerified={emailVerified}
+          isVerifyingEmail={isVerifyingEmail}
           setNicknameDialogOpen={setNicknameDialogOpen}
           handleVerifyPhone={handleVerifyPhone}
+          handleVerifyEmail={handleVerifyEmail}
           handleChangePhoneRequest={handleChangePhoneRequest}
           setIdentityInfoOpen={setIdentityInfoOpen}
         />
@@ -1427,43 +1511,32 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
 
       {/* Change Phone Confirmation Dialog */}
       <Dialog open={changePhoneDialogOpen} onClose={() => setChangePhoneDialogOpen(false)}>
-        <DialogTitle>¿Cambiar número de teléfono?</DialogTitle>
+        <DialogTitle>{t('profile.sections.identity.verification.changePhoneTitle')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Si cambias tu número, tendrás que verificar el nuevo número nuevamente.
+            {t('profile.sections.identity.verification.changePhoneBody')}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setChangePhoneDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setChangePhoneDialogOpen(false)}>
+            {t('profile.sections.identity.verification.cancel')}
+          </Button>
           <Button onClick={confirmChangePhone} color="primary">
-            Aceptar
+            {t('profile.sections.identity.verification.changeConfirm')}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Verification Code Dialog */}
-      <Dialog open={verificationCodeDialogOpen} onClose={() => setVerificationCodeDialogOpen(false)}>
-        <DialogTitle>Verificar Teléfono</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
-            Ingresa el código de 6 dígitos que enviamos a {countryCode} {phone}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Código de verificación"
-            fullWidth
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setVerificationCodeDialogOpen(false)}>Cancelar</Button>
-          <Button onClick={confirmPhoneVerification} disabled={verificationCode.length < 4}>
-            Verificar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <VerificationCodeDialog
+        open={!!verificationDialog}
+        channel={verificationDialog?.channel || 'phone'}
+        target={verificationDialog?.target || ''}
+        error={verificationError}
+        onClose={() => setVerificationDialog(null)}
+        onConfirm={confirmVerification}
+        onResend={handleResendVerification}
+      />
 
       {/* Prompt Selector Dialog */}
       <Dialog

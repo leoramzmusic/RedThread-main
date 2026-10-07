@@ -22,6 +22,14 @@
     "signUp": "Skapa konto",
     "orJoinWith": "ELLER GÅ MED I RETH MED",
     "orLoginWith": "ELLER LOGGA IN PÅ RETH MED",
+    "emailVerifyTitle": "Verifiera din e-postadress",
+    "emailVerifySubtitle": "Bekräfta din e-postadress för att verifiera ditt konto",
+    "emailVerifySuccess": "Din e-postadress har verifierats!",
+    "emailVerifyError": "Vi kunde inte verifiera din e-postadress. Försök igen.",
+    "emailVerifyInvalid": "Denna verifieringslänk är ogiltig eller har löpt ut.",
+    "emailVerifyMissingToken": "Verifieringslänken saknas i adressen.",
+    "emailVerifyGoToProfile": "Gå till min profil",
+    "emailVerifyResendHint": "Om länken har löpt ut, begär en ny från identitetssektionen i din profil.",
     "social": {
       "loginWith": "Logga in med {{provider}}",
       "registerWith": "Registrera med {{provider}}"
@@ -222,7 +230,33 @@
         "country_label": "Land",
         "country_placeholder": "Sök på land eller kod...",
         "phone_label": "Telefon",
-        "phone_helper": "Du kan använda numret för att logga in"
+        "phone_helper": "Du kan använda numret för att logga in",
+        "verification": {
+          "verified": "Verifierad",
+          "verifiedTooltip": "Din information har verifierats",
+          "verify": "Verifiera",
+          "change": "Ändra",
+          "changePhoneTitle": "Ändra telefonnummer?",
+          "changePhoneBody": "Om du ändrar ditt nummer måste du verifiera det nya numret igen.",
+          "changeConfirm": "Acceptera",
+          "cancel": "Avbryt",
+          "verifyPhoneTitle": "Verifiera telefonnummer",
+          "verifyEmailTitle": "Verifiera e-postadress",
+          "codeBody": "Ange den 6-siffriga kod vi skickade till {{target}}",
+          "codeLabel": "Verifieringskod",
+          "confirmCode": "Verifiera",
+          "resend": "Skicka koden igen",
+          "resendIn": "Skicka igen om {{seconds}}s",
+          "linkHint": "Vi skickade även en verifieringslänk till {{target}}. Du kan använda den som alternativ.",
+          "otpSent": "Kod skickad till {{target}}",
+          "phoneVerifiedSuccess": "Telefonnumret har verifierats",
+          "emailVerifiedSuccess": "E-postadressen har verifierats",
+          "invalidCode": "Ogiltig eller utgången kod",
+          "genericError": "Något gick fel. Försök igen.",
+          "resendCooldown": "Vänta några sekunder innan du skickar koden igen.",
+          "resendFailed": "Det gick inte att skicka koden igen. Försök igen.",
+          "sendFailed": "Det gick inte att skicka koden. Försök igen."
+        }
       },
       "relationship": {
         "title": "Relation & Kompatibilitet"

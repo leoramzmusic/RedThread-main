@@ -206,6 +206,7 @@ class Profile(Document):
     phone: Optional[str] = None
     country_code: Optional[str] = None
     phone_verified: bool = False
+    email_verified: bool = False
 
     # Profile Media
     photos: List[str] = []  # URLs to uploaded photos (max 9)

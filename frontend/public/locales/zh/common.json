@@ -22,6 +22,14 @@
     "signUp": "创建账户",
     "orJoinWith": "或使用以下方式加入 RETH",
     "orLoginWith": "或使用以下方式登录 RETH",
+    "emailVerifyTitle": "验证您的电子邮箱",
+    "emailVerifySubtitle": "确认您的电子邮箱以验证您的账户",
+    "emailVerifySuccess": "您的电子邮箱已成功验证！",
+    "emailVerifyError": "无法验证您的电子邮箱，请重试。",
+    "emailVerifyInvalid": "此验证链接无效或已过期。",
+    "emailVerifyMissingToken": "地址中缺少验证链接。",
+    "emailVerifyGoToProfile": "前往我的个人资料",
+    "emailVerifyResendHint": "如果链接已过期，请从个人资料的“身份信息”部分重新获取。",
     "social": {
       "loginWith": "使用 {{provider}} 登录",
       "registerWith": "使用 {{provider}} 注册"
@@ -222,7 +230,33 @@
         "country_label": "国家",
         "country_placeholder": "按国家或代码搜索...",
         "phone_label": "电话",
-        "phone_helper": "你可以用此号码登录"
+        "phone_helper": "你可以用此号码登录",
+        "verification": {
+          "verified": "已验证",
+          "verifiedTooltip": "您的信息已验证",
+          "verify": "验证",
+          "change": "更改",
+          "changePhoneTitle": "更换电话号码？",
+          "changePhoneBody": "如果更改号码，您需要重新验证新号码。",
+          "changeConfirm": "接受",
+          "cancel": "取消",
+          "verifyPhoneTitle": "验证电话号码",
+          "verifyEmailTitle": "验证电子邮箱",
+          "codeBody": "输入我们发送到 {{target}} 的 6 位验证码",
+          "codeLabel": "验证码",
+          "confirmCode": "验证",
+          "resend": "重新发送验证码",
+          "resendIn": "{{seconds}} 秒后重新发送",
+          "linkHint": "我们还向 {{target}} 发送了验证链接。您可以将其作为备选方式。",
+          "otpSent": "验证码已发送到 {{target}}",
+          "phoneVerifiedSuccess": "电话号码验证成功",
+          "emailVerifiedSuccess": "电子邮箱验证成功",
+          "invalidCode": "验证码无效或已过期",
+          "genericError": "出现问题，请重试。",
+          "resendCooldown": "请稍等几秒再重新发送验证码。",
+          "resendFailed": "无法重新发送验证码，请重试。",
+          "sendFailed": "无法发送验证码，请重试。"
+        }
       },
       "relationship": {
         "title": "关系与兼容性"

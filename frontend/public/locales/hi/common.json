@@ -22,6 +22,14 @@
     "signUp": "खाता बनाएं",
     "orJoinWith": "या RETH में शामिल हों",
     "orLoginWith": "या RETH में साइन इन करें",
+    "emailVerifyTitle": "अपना ईमेल पता सत्यापित करें",
+    "emailVerifySubtitle": "अपना खाता सत्यापित करने के लिए अपना ईमेल पता पुष्टि करें",
+    "emailVerifySuccess": "आपका ईमेल पता सफलतापूर्वक सत्यापित हो गया!",
+    "emailVerifyError": "आपका ईमेल पता सत्यापित नहीं हो सका। कृपया पुनः प्रयास करें।",
+    "emailVerifyInvalid": "यह सत्यापन लिंक अमान्य या समाप्त हो चुका है।",
+    "emailVerifyMissingToken": "पते में सत्यापन लिंक मौजूद नहीं है।",
+    "emailVerifyGoToProfile": "मेरी प्रोफ़ाइल पर जाएँ",
+    "emailVerifyResendHint": "अगर लिंक समाप्त हो गया है, तो अपनी प्रोफ़ाइल के पहचान अनुभाग से नया लिंक मांगें।",
     "social": {
       "loginWith": "{{provider}} के साथ साइन इन करें",
       "registerWith": "{{provider}} के साथ साइन अप करें"
@@ -221,7 +229,33 @@
         "country_label": "देश",
         "country_placeholder": "देश या कोड से खोजें...",
         "phone_label": "फ़ोन",
-        "phone_helper": "आप इस नंबर से लॉग इन कर सकते हैं"
+        "phone_helper": "आप इस नंबर से लॉग इन कर सकते हैं",
+        "verification": {
+          "verified": "सत्यापित",
+          "verifiedTooltip": "आपकी जानकारी सत्यापित की गई है",
+          "verify": "सत्यापित करें",
+          "change": "बदलें",
+          "changePhoneTitle": "फ़ोन नंबर बदलें?",
+          "changePhoneBody": "अगर आप नंबर बदलते हैं, तो नए नंबर को फिर से सत्यापित करना होगा।",
+          "changeConfirm": "स्वीकार करें",
+          "cancel": "रद्द करें",
+          "verifyPhoneTitle": "फ़ोन नंबर सत्यापित करें",
+          "verifyEmailTitle": "ईमेल पता सत्यापित करें",
+          "codeBody": "{{target}} पर भेजा गया 6 अंकों का कोड दर्ज करें",
+          "codeLabel": "सत्यापन कोड",
+          "confirmCode": "सत्यापित करें",
+          "resend": "कोड फिर से भेजें",
+          "resendIn": "{{seconds}} सेकंड में फिर से भेजें",
+          "linkHint": "हमने {{target}} पर एक सत्यापन लिंक भी भेजा है। आप इसे वैकल्पिक रूप से उपयोग कर सकते हैं।",
+          "otpSent": "{{target}} पर कोड भेजा गया",
+          "phoneVerifiedSuccess": "फ़ोन नंबर सफलतापूर्वक सत्यापित हुआ",
+          "emailVerifiedSuccess": "ईमेल पता सफलतापूर्वक सत्यापित हुआ",
+          "invalidCode": "कोड अमान्य या समाप्त हो गया",
+          "genericError": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।",
+          "resendCooldown": "कोड दोबारा भेजने से पहले कुछ सेकंड प्रतीक्षा करें।",
+          "resendFailed": "कोड दोबारा नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
+          "sendFailed": "कोड नहीं भेजा जा सका। कृपया पुनः प्रयास करें।"
+        }
       },
       "relationship": {
         "title": "संबंध और अनुकूलता"

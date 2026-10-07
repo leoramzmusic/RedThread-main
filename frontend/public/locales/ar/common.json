@@ -22,6 +22,14 @@
     "signUp": "إنشاء حساب",
     "orJoinWith": "أو انضم إلى RETH باستخدام",
     "orLoginWith": "أو سجل الدخول إلى RETH باستخدام",
+    "emailVerifyTitle": "تحقق من بريدك الإلكتروني",
+    "emailVerifySubtitle": "أكّد بريدك الإلكتروني للتحقق من حسابك",
+    "emailVerifySuccess": "تم التحقق من بريدك الإلكتروني بنجاح!",
+    "emailVerifyError": "تعذر التحقق من بريدك الإلكتروني. حاول مرة أخرى.",
+    "emailVerifyInvalid": "رابط التحقق هذا غير صالح أو منتهي الصلاحية.",
+    "emailVerifyMissingToken": "رابط التحقق مفقود من العنوان.",
+    "emailVerifyGoToProfile": "الانتقال إلى ملفي الشخصي",
+    "emailVerifyResendHint": "إذا انتهت صلاحية الرابط، فاطلب رابطاً جديداً من قسم الهوية في ملفك الشخصي.",
     "social": {
       "loginWith": "تسجيل الدخول باستخدام {{provider}}",
       "registerWith": "التسجيل باستخدام {{provider}}"
@@ -221,7 +229,33 @@
         "country_label": "البلد",
         "country_placeholder": "ابحث بالبلد أو الرمز...",
         "phone_label": "الهاتف",
-        "phone_helper": "يمكنك استخدام هذا الرقم لتسجيل الدخول"
+        "phone_helper": "يمكنك استخدام هذا الرقم لتسجيل الدخول",
+        "verification": {
+          "verified": "تم التحقق",
+          "verifiedTooltip": "تم التحقق من معلوماتك",
+          "verify": "تحقق",
+          "change": "تغيير",
+          "changePhoneTitle": "تغيير رقم الهاتف؟",
+          "changePhoneBody": "إذا قمت بتغيير رقمك، ستحتاج إلى التحقق من الرقم الجديد مرة أخرى.",
+          "changeConfirm": "قبول",
+          "cancel": "إلغاء",
+          "verifyPhoneTitle": "تحقق من رقم الهاتف",
+          "verifyEmailTitle": "تحقق من البريد الإلكتروني",
+          "codeBody": "أدخل الرمز المكوّن من 6 أرقام الذي أرسلناه إلى {{target}}",
+          "codeLabel": "رمز التحقق",
+          "confirmCode": "تحقق",
+          "resend": "إعادة إرسال الرمز",
+          "resendIn": "إعادة الإرسال خلال {{seconds}}ث",
+          "linkHint": "أرسلنا أيضاً رابط تحقق إلى {{target}}. يمكنك استخدامه كبديل.",
+          "otpSent": "تم إرسال الرمز إلى {{target}}",
+          "phoneVerifiedSuccess": "تم التحقق من رقم الهاتف بنجاح",
+          "emailVerifiedSuccess": "تم التحقق من البريد الإلكتروني بنجاح",
+          "invalidCode": "الرمز غير صالح أو منتهي الصلاحية",
+          "genericError": "حدث خطأ ما. حاول مرة أخرى.",
+          "resendCooldown": "انتظر بضع ثوانٍ قبل إعادة إرسال الرمز.",
+          "resendFailed": "تعذرت إعادة إرسال الرمز. حاول مرة أخرى.",
+          "sendFailed": "تعذر إرسال الرمز. حاول مرة أخرى."
+        }
       },
       "relationship": {
         "title": "العلاقة والتوافق"

@@ -22,6 +22,14 @@
     "signUp": "Ƙirƙiri asusu",
     "orJoinWith": "KO SHIGA RETH DA",
     "orLoginWith": "KO SHIGA ZUWA RETH DA",
+    "emailVerifyTitle": "Tabbatar da adireshin imel ɗinka",
+    "emailVerifySubtitle": "Tabbatar da adireshin imel ɗinka domin tabbatar da asusunka",
+    "emailVerifySuccess": "An tabbatar da adireshin imel ɗinka cikin nasara!",
+    "emailVerifyError": "Ba mu iya tabbatar da adireshin imel ɗinka ba. Da fatan za a sake gwadawa.",
+    "emailVerifyInvalid": "Wannan hanyar tabbatarwa ba daidai ba ce ko kuma ta ƙare.",
+    "emailVerifyMissingToken": "Hanyar tabbatarwa ba ta nan a cikin adireshin.",
+    "emailVerifyGoToProfile": "Je zuwa bayanina",
+    "emailVerifyResendHint": "Idan hanyar ta ƙare, nemi sabuwa daga ɓangaren shaidar bayaninka.",
     "social": {
       "loginWith": "Shiga da {{provider}}",
       "registerWith": "Yi rajista da {{provider}}"
@@ -493,7 +501,33 @@
         "country_label": "Ƙasa",
         "country_placeholder": "Bincika da ƙasa ko lamba...",
         "phone_label": "Waya",
-        "phone_helper": "Zaka iya amfani da wannan lamba don shiga"
+        "phone_helper": "Zaka iya amfani da wannan lamba don shiga",
+        "verification": {
+          "verified": "An tabbatar",
+          "verifiedTooltip": "An tabbatar da bayananka",
+          "verify": "Tabbatar",
+          "change": "Canza",
+          "changePhoneTitle": "Canza lambar waya?",
+          "changePhoneBody": "Idan ka canza lambarka, za ka buƙaci sake tabbatar da sabuwar lambar.",
+          "changeConfirm": "Karɓa",
+          "cancel": "Soke",
+          "verifyPhoneTitle": "Tabbatar da lambar waya",
+          "verifyEmailTitle": "Tabbatar da adireshin imel",
+          "codeBody": "Shigar da lambar haruffa 6 da muka aika zuwa {{target}}",
+          "codeLabel": "Lambar tabbatarwa",
+          "confirmCode": "Tabbatar",
+          "resend": "Sake aika lambar",
+          "resendIn": "Sake aika cikin {{seconds}}s",
+          "linkHint": "Mun kuma aika hanyar tabbatarwa zuwa {{target}}. Kana iya amfani da ita azaman madadin.",
+          "otpSent": "An aika lambar zuwa {{target}}",
+          "phoneVerifiedSuccess": "An tabbatar da lambar waya cikin nasara",
+          "emailVerifiedSuccess": "An tabbatar da adireshin imel cikin nasara",
+          "invalidCode": "Lambar ba daidai ba ko ta ƙare",
+          "genericError": "Wani abu ya faru. Da fatan za a sake gwadawa.",
+          "resendCooldown": "Da fatan za a jira ƴan daƙiƙa kafin a sake aika lambar.",
+          "resendFailed": "An kasa sake aika lambar. Da fatan za a sake gwadawa.",
+          "sendFailed": "An kasa aika lambar. Da fatan za a sake gwadawa."
+        }
       }
     },
     "identityDoc": {

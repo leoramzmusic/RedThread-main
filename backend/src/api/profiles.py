@@ -10,7 +10,7 @@ from fastapi import (
 )
 import json
 from pydantic import BaseModel, EmailStr, field_validator
-from typing import AbstractSet, List, Optional, Set
+from typing import AbstractSet, List, Literal, Optional, Set
 from datetime import datetime
 from src.models.user import User
 from src.models.profile_module import MODULE_SCORE_FIELDS, ProfileModule
@@ -23,6 +23,17 @@ from src.api.auth import get_current_user
 from src.utils.height_context import classify_height, map_country_to_region
 from src.api.dtos.user_dtos import UserProfileResponseDTO
 from src.services.redis_service import redis_service
+from src.services.sms_service import send_sms
+from src.services.mail_service import send_verification_email
+from src.services.verification_service import (
+    EMAIL_TOKEN_TTL,
+    OTP_TTL,
+    check_otp,
+    clear_otp,
+    cooldown_active,
+    new_email_token,
+    new_otp,
+)
 
 
 router = APIRouter()
@@ -498,6 +509,8 @@ async def update_my_profile(
             current_user.updated_at = datetime.utcnow()
             await current_user.save()
             print(f"Synced email to User model: {new_email}")
+            # Any email change invalidates the previous verification
+            profile.email_verified = False
 
     # Sync phone and country_code to User model for identity and login
     if "phone" in update_data or "country_code" in update_data:
@@ -538,6 +551,8 @@ async def update_my_profile(
                 current_user.updated_at = datetime.utcnow()
                 await current_user.save()
                 print(f"Synced full phone to User model: {full_phone}")
+                # Any phone change invalidates the previous verification
+                profile.phone_verified = False
 
     # Recalculate age if birth_date is updated
     if profile.birth_date:
@@ -580,6 +595,128 @@ async def update_my_profile(
     return UserProfileResponseDTO.from_user_and_profile(
         current_user, profile, mask_data=False
     )
+
+
+# Contact verification (phone / email OTP)
+class ConfirmCodeRequest(BaseModel):
+    code: str
+
+
+class ResendVerificationRequest(BaseModel):
+    channel: Literal["phone", "email"]
+
+
+async def _send_phone_otp(user: User) -> None:
+    """Send a fresh phone OTP (or 400/429 if not possible)."""
+    if not user.phone:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No hay un número de teléfono guardado",
+        )
+    if cooldown_active(user.phone_otp_sent_at):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Espera un momento antes de solicitar otro código",
+        )
+
+    code = new_otp()
+    user.phone_otp = code
+    user.phone_otp_expires_at = datetime.utcnow() + OTP_TTL
+    user.phone_otp_attempts = 0
+    user.phone_otp_sent_at = datetime.utcnow()
+    await user.save()
+
+    send_sms(user.phone, code)
+
+
+async def _send_email_otp(user: User) -> None:
+    """Send a fresh email OTP plus a confirmation link (or 400/429)."""
+    if not user.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No hay un correo electrónico guardado",
+        )
+    if cooldown_active(user.email_otp_sent_at):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Espera un momento antes de solicitar otro código",
+        )
+
+    code = new_otp()
+    token, token_hash = new_email_token()
+    user.email_otp = code
+    user.email_otp_expires_at = datetime.utcnow() + OTP_TTL
+    user.email_otp_attempts = 0
+    user.email_otp_sent_at = datetime.utcnow()
+    user.email_token_hash = token_hash
+    user.email_token_expires_at = datetime.utcnow() + EMAIL_TOKEN_TTL
+    await user.save()
+
+    await send_verification_email(user.email, code, token)
+
+
+@router.post("/verify-phone")
+async def verify_phone_contact(current_user: User = Depends(get_current_user)):
+    """Send/resent a verification code to the saved phone number"""
+    await _send_phone_otp(current_user)
+    return {"message": "Código de verificación enviado"}
+
+
+async def _confirm_otp_and_set_verified(
+    user: User, channel: Literal["phone", "email"], request: ConfirmCodeRequest
+) -> Profile:
+    """Validate the OTP, mark the channel verified on the profile, clear the OTP."""
+    await check_otp(user, channel, request.code)
+
+    profile = await Profile.find_one(Profile.user_id == str(user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+        )
+
+    setattr(profile, f"{channel}_verified", True)
+    clear_otp(user, channel)
+    await user.save()
+    await profile.save()
+    return profile
+
+
+@router.post("/confirm-phone")
+async def confirm_phone_contact(
+    request: ConfirmCodeRequest, current_user: User = Depends(get_current_user)
+):
+    """Confirm the phone OTP and mark the profile phone as verified"""
+    await _confirm_otp_and_set_verified(current_user, "phone", request)
+    return {"message": "Teléfono verificado", "phone_verified": True}
+
+
+@router.post("/verify-email")
+async def verify_email_contact(current_user: User = Depends(get_current_user)):
+    """Send/resent a verification code + confirmation link to the saved email"""
+    await _send_email_otp(current_user)
+    return {"message": "Código de verificación enviado"}
+
+
+@router.post("/confirm-email")
+async def confirm_email_contact(
+    request: ConfirmCodeRequest, current_user: User = Depends(get_current_user)
+):
+    """Confirm the email OTP and mark the profile email as verified"""
+    await _confirm_otp_and_set_verified(current_user, "email", request)
+    return {"message": "Correo verificado", "email_verified": True}
+
+
+@router.post("/resend-verification")
+async def resend_verification(
+    request: ResendVerificationRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Reuse the sender for either channel"""
+    if request.channel == "phone":
+        await _send_phone_otp(current_user)
+    else:
+        await _send_email_otp(current_user)
+    return {"message": "Código reenviado"}
 
 
 @router.post("/location")

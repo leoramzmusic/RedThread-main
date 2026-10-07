@@ -411,7 +411,7 @@ class UserProfileResponseDTO(BaseModel):
             phone=profile.phone if profile and not mask_data else None,
             country_code=profile.country_code if profile and not mask_data else None,
             verified=user.verified,
-            email_verified=user.is_verified,
+            email_verified=profile.email_verified if profile else False,
             phone_verified=profile.phone_verified if profile else False,
             subscription_tier=(
                 str(user.subscription_tier.value) if user.subscription_tier else "free"

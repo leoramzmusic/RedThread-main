@@ -22,6 +22,14 @@
     "signUp": "Account aanmaken",
     "orJoinWith": "OF WORD LID VAN RETH MET",
     "orLoginWith": "OF LOG IN BIJ RETH MET",
+    "emailVerifyTitle": "Verifieer je e-mailadres",
+    "emailVerifySubtitle": "Bevestig je e-mailadres om je account te verifiëren",
+    "emailVerifySuccess": "Je e-mailadres is succesvol geverifieerd!",
+    "emailVerifyError": "We konden je e-mailadres niet verifiëren. Probeer het opnieuw.",
+    "emailVerifyInvalid": "Deze verificatielink is ongeldig of verlopen.",
+    "emailVerifyMissingToken": "De verificatielink ontbreekt in het adres.",
+    "emailVerifyGoToProfile": "Naar mijn profiel",
+    "emailVerifyResendHint": "Als de link is verlopen, vraag dan een nieuwe aan via het identiteitsgedeelte van je profiel.",
     "social": {
       "loginWith": "Inloggen met {{provider}}",
       "registerWith": "Registreren met {{provider}}"
@@ -222,7 +230,33 @@
         "country_label": "Land",
         "country_placeholder": "Zoeken op land of code...",
         "phone_label": "Telefoon",
-        "phone_helper": "Je kunt dit nummer gebruiken om in te loggen"
+        "phone_helper": "Je kunt dit nummer gebruiken om in te loggen",
+        "verification": {
+          "verified": "Geverifieerd",
+          "verifiedTooltip": "Uw gegevens zijn geverifieerd",
+          "verify": "Verifiëren",
+          "change": "Wijzigen",
+          "changePhoneTitle": "Telefoonnummer wijzigen?",
+          "changePhoneBody": "Als u uw nummer wijzigt, moet u het nieuwe nummer opnieuw verifiëren.",
+          "changeConfirm": "Accepteren",
+          "cancel": "Annuleren",
+          "verifyPhoneTitle": "Telefoonnummer verifiëren",
+          "verifyEmailTitle": "E-mailadres verifiëren",
+          "codeBody": "Voer de 6-cijferige code in die we naar {{target}} hebben gestuurd",
+          "codeLabel": "Verificatiecode",
+          "confirmCode": "Verifiëren",
+          "resend": "Code opnieuw verzenden",
+          "resendIn": "Opnieuw verzenden over {{seconds}}s",
+          "linkHint": "We hebben ook een verificatielink naar {{target}} gestuurd. U kunt die als alternatief gebruiken.",
+          "otpSent": "Code verzonden naar {{target}}",
+          "phoneVerifiedSuccess": "Telefoonnummer succesvol geverifieerd",
+          "emailVerifiedSuccess": "E-mailadres succesvol geverifieerd",
+          "invalidCode": "Ongeldige of verlopen code",
+          "genericError": "Er is iets misgegaan. Probeer het opnieuw.",
+          "resendCooldown": "Wacht een paar seconden voordat u de code opnieuw verzendt.",
+          "resendFailed": "De code kon niet opnieuw worden verzonden. Probeer het opnieuw.",
+          "sendFailed": "De code kon niet worden verzonden. Probeer het opnieuw."
+        }
       },
       "relationship": {
         "title": "Relatie & Compatibiliteit"

@@ -162,7 +162,33 @@
         "country_label": "País",
         "country_placeholder": "Pesquisar por país ou código...",
         "phone_label": "Telefone",
-        "phone_helper": "Podes usar este número para entrar na tua conta"
+        "phone_helper": "Podes usar este número para entrar na tua conta",
+        "verification": {
+          "verified": "Verificado",
+          "verifiedTooltip": "As suas informações foram verificadas",
+          "verify": "Verificar",
+          "change": "Alterar",
+          "changePhoneTitle": "Alterar o número de telefone?",
+          "changePhoneBody": "Se alterar o número, terá de verificar o novo número novamente.",
+          "changeConfirm": "Aceitar",
+          "cancel": "Cancelar",
+          "verifyPhoneTitle": "Verificar número de telefone",
+          "verifyEmailTitle": "Verificar endereço de e-mail",
+          "codeBody": "Introduza o código de 6 dígitos que enviámos para {{target}}",
+          "codeLabel": "Código de verificação",
+          "confirmCode": "Verificar",
+          "resend": "Reenviar código",
+          "resendIn": "Reenviar em {{seconds}}s",
+          "linkHint": "Também enviámos um link de verificação para {{target}}. Pode usá-lo como alternativa.",
+          "otpSent": "Código enviado para {{target}}",
+          "phoneVerifiedSuccess": "Número de telefone verificado com sucesso",
+          "emailVerifiedSuccess": "Endereço de e-mail verificado com sucesso",
+          "invalidCode": "Código inválido ou expirado",
+          "genericError": "Ocorreu um erro. Tente novamente.",
+          "resendCooldown": "Aguarde alguns segundos antes de reenviar o código.",
+          "resendFailed": "Não foi possível reenviar o código. Tente novamente.",
+          "sendFailed": "Não foi possível enviar o código. Tente novamente."
+        }
       }
     },
     "identityDoc": {
@@ -442,6 +468,14 @@
     "signUp": "Criar conta",
     "orJoinWith": "OU JUNTE-SE AO RETH COM",
     "orLoginWith": "OU FAÇA LOGIN NO RETH COM",
+    "emailVerifyTitle": "Verifique o seu endereço de e-mail",
+    "emailVerifySubtitle": "Confirme o seu endereço de e-mail para verificar a sua conta",
+    "emailVerifySuccess": "O seu endereço de e-mail foi verificado com sucesso!",
+    "emailVerifyError": "Não foi possível verificar o seu e-mail. Tente novamente.",
+    "emailVerifyInvalid": "Este link de verificação é inválido ou expirou.",
+    "emailVerifyMissingToken": "O link de verificação está em falta no endereço.",
+    "emailVerifyGoToProfile": "Ir para o meu perfil",
+    "emailVerifyResendHint": "Se o link expirou, solicite um novo na secção de identidade do seu perfil.",
     "social": {
       "loginWith": "Entrar com {{provider}}",
       "registerWith": "Cadastrar com {{provider}}"

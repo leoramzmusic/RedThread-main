@@ -22,6 +22,14 @@
     "signUp": "Konto erstellen",
     "orJoinWith": "ODER TRITT RETH BEI MIT",
     "orLoginWith": "ODER MELDE DICH BEI RETH AN MIT",
+    "emailVerifyTitle": "E-Mail-Adresse verifizieren",
+    "emailVerifySubtitle": "Bestätigen Sie Ihre E-Mail-Adresse, um Ihr Konto zu verifizieren",
+    "emailVerifySuccess": "Ihre E-Mail-Adresse wurde erfolgreich verifiziert!",
+    "emailVerifyError": "Ihre E-Mail-Adresse konnte nicht verifiziert werden. Bitte versuchen Sie es erneut.",
+    "emailVerifyInvalid": "Dieser Verifizierungslink ist ungültig oder abgelaufen.",
+    "emailVerifyMissingToken": "Der Verifizierungslink fehlt in der Adresse.",
+    "emailVerifyGoToProfile": "Zu meinem Profil",
+    "emailVerifyResendHint": "Wenn der Link abgelaufen ist, fordern Sie einen neuen über den Identitätsbereich Ihres Profils an.",
     "social": {
       "loginWith": "Anmelden mit {{provider}}",
       "registerWith": "Registrieren mit {{provider}}"
@@ -222,7 +230,33 @@
         "country_label": "Land",
         "country_placeholder": "Nach Land oder Code suchen...",
         "phone_label": "Telefon",
-        "phone_helper": "Du kannst diese Nummer zur Anmeldung nutzen"
+        "phone_helper": "Du kannst diese Nummer zur Anmeldung nutzen",
+        "verification": {
+          "verified": "Verifiziert",
+          "verifiedTooltip": "Ihre Informationen wurden verifiziert",
+          "verify": "Verifizieren",
+          "change": "Ändern",
+          "changePhoneTitle": "Telefonnummer ändern?",
+          "changePhoneBody": "Wenn Sie Ihre Nummer ändern, müssen Sie die neue Nummer erneut verifizieren.",
+          "changeConfirm": "Akzeptieren",
+          "cancel": "Abbrechen",
+          "verifyPhoneTitle": "Telefonnummer verifizieren",
+          "verifyEmailTitle": "E-Mail-Adresse verifizieren",
+          "codeBody": "Geben Sie den 6-stelligen Code ein, den wir an {{target}} gesendet haben",
+          "codeLabel": "Verifizierungscode",
+          "confirmCode": "Verifizieren",
+          "resend": "Code erneut senden",
+          "resendIn": "In {{seconds}}s erneut senden",
+          "linkHint": "Wir haben auch einen Verifizierungslink an {{target}} gesendet. Sie können ihn als Alternative verwenden.",
+          "otpSent": "Code an {{target}} gesendet",
+          "phoneVerifiedSuccess": "Telefonnummer erfolgreich verifiziert",
+          "emailVerifiedSuccess": "E-Mail-Adresse erfolgreich verifiziert",
+          "invalidCode": "Ungültiger oder abgelaufener Code",
+          "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+          "resendCooldown": "Bitte warten Sie einige Sekunden, bevor Sie den Code erneut senden.",
+          "resendFailed": "Der Code konnte nicht erneut gesendet werden. Bitte versuchen Sie es erneut.",
+          "sendFailed": "Der Code konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+        }
       },
       "relationship": {
         "title": "Beziehung & Kompatibilität"

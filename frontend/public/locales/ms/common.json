@@ -22,6 +22,14 @@
     "signUp": "Cipta akaun",
     "orJoinWith": "ATAU SERTAI RETH DENGAN",
     "orLoginWith": "ATAU LOG MASUK KE RETH DENGAN",
+    "emailVerifyTitle": "Sahkan alamat e-mel anda",
+    "emailVerifySubtitle": "Sahkan alamat e-mel anda untuk mengesahkan akaun anda",
+    "emailVerifySuccess": "Alamat e-mel anda berjaya disahkan!",
+    "emailVerifyError": "Kami tidak dapat mengesahkan alamat e-mel anda. Sila cuba lagi.",
+    "emailVerifyInvalid": "Pautan pengesahan ini tidak sah atau telah tamat tempoh.",
+    "emailVerifyMissingToken": "Pautan pengesahan tiada dalam alamat.",
+    "emailVerifyGoToProfile": "Pergi ke profil saya",
+    "emailVerifyResendHint": "Jika pautan telah tamat tempoh, minta yang baharu daripada bahagian identiti profil anda.",
     "social": {
       "loginWith": "Log masuk dengan {{provider}}",
       "registerWith": "Daftar dengan {{provider}}"
@@ -493,7 +501,33 @@
         "country_label": "Negara",
         "country_placeholder": "Cari mengikut negara atau kod...",
         "phone_label": "Telefon",
-        "phone_helper": "Anda boleh guna nombor ini untuk log masuk"
+        "phone_helper": "Anda boleh guna nombor ini untuk log masuk",
+        "verification": {
+          "verified": "Disahkan",
+          "verifiedTooltip": "Maklumat anda telah disahkan",
+          "verify": "Sahkan",
+          "change": "Tukar",
+          "changePhoneTitle": "Tukar nombor telefon?",
+          "changePhoneBody": "Jika anda menukar nombor, anda perlu mengesahkan nombor baharu sekali lagi.",
+          "changeConfirm": "Terima",
+          "cancel": "Batal",
+          "verifyPhoneTitle": "Sahkan nombor telefon",
+          "verifyEmailTitle": "Sahkan alamat e-mel",
+          "codeBody": "Masukkan kod 6 digit yang kami hantar ke {{target}}",
+          "codeLabel": "Kod pengesahan",
+          "confirmCode": "Sahkan",
+          "resend": "Hantar semula kod",
+          "resendIn": "Hantar semula dalam {{seconds}}s",
+          "linkHint": "Kami juga menghantar pautan pengesahan ke {{target}}. Anda boleh menggunakannya sebagai alternatif.",
+          "otpSent": "Kod dihantar ke {{target}}",
+          "phoneVerifiedSuccess": "Nombor telefon berjaya disahkan",
+          "emailVerifiedSuccess": "Alamat e-mel berjaya disahkan",
+          "invalidCode": "Kod tidak sah atau telah tamat tempoh",
+          "genericError": "Berlaku ralat. Sila cuba lagi.",
+          "resendCooldown": "Sila tunggu beberapa saat sebelum menghantar semula kod.",
+          "resendFailed": "Tidak dapat menghantar semula kod. Sila cuba lagi.",
+          "sendFailed": "Tidak dapat menghantar kod. Sila cuba lagi."
+        }
       }
     },
     "identityDoc": {

@@ -22,6 +22,14 @@
     "signUp": "アカウント作成",
     "orJoinWith": "または次の方法でReThに参加",
     "orLoginWith": "または次の方法でReThにサインイン",
+    "emailVerifyTitle": "メールアドレスを認証してください",
+    "emailVerifySubtitle": "アカウントを認証するためにメールアドレスを確認してください",
+    "emailVerifySuccess": "メールアドレスの認証に成功しました！",
+    "emailVerifyError": "メールアドレスを認証できませんでした。もう一度お試しください。",
+    "emailVerifyInvalid": "この認証リンクは無効または期限切れです。",
+    "emailVerifyMissingToken": "アドレスに認証リンクがありません。",
+    "emailVerifyGoToProfile": "プロフィールへ",
+    "emailVerifyResendHint": "リンクの期限が切れた場合は、プロフィールの本人情報セクションから新しいリンクをリクエストしてください。",
     "social": {
       "loginWith": "{{provider}}でサインイン",
       "registerWith": "{{provider}}でサインアップ"
@@ -221,7 +229,33 @@
         "country_label": "国",
         "country_placeholder": "国またはコードで検索...",
         "phone_label": "電話",
-        "phone_helper": "この番号でログインできます"
+        "phone_helper": "この番号でログインできます",
+        "verification": {
+          "verified": "認証済み",
+          "verifiedTooltip": "あなたの情報は認証済みです",
+          "verify": "認証する",
+          "change": "変更",
+          "changePhoneTitle": "電話番号を変更しますか？",
+          "changePhoneBody": "番号を変更した場合、新しい番号を再度認証する必要があります。",
+          "changeConfirm": "同意する",
+          "cancel": "キャンセル",
+          "verifyPhoneTitle": "電話番号を認証する",
+          "verifyEmailTitle": "メールアドレスを認証する",
+          "codeBody": "{{target}} に送信した6桁のコードを入力してください",
+          "codeLabel": "認証コード",
+          "confirmCode": "認証する",
+          "resend": "コードを再送信",
+          "resendIn": "{{seconds}}秒後に再送信",
+          "linkHint": "{{target}} には認証リンクも送信しました。こちらを代替として使用できます。",
+          "otpSent": "{{target}} にコードを送信しました",
+          "phoneVerifiedSuccess": "電話番号の認証に成功しました",
+          "emailVerifiedSuccess": "メールアドレスの認証に成功しました",
+          "invalidCode": "コードが無効または期限切れです",
+          "genericError": "エラーが発生しました。もう一度お試しください。",
+          "resendCooldown": "コードを再送信するまで数秒お待ちください。",
+          "resendFailed": "コードを再送信できませんでした。もう一度お試しください。",
+          "sendFailed": "コードを送信できませんでした。もう一度お試しください。"
+        }
       },
       "relationship": {
         "title": "関係と互換性"

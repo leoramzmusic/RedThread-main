@@ -44,6 +44,15 @@ class User(Document):
     phone_otp: Optional[str] = None
     phone_otp_expires_at: Optional[datetime] = None
     phone_otp_attempts: int = 0
+    phone_otp_sent_at: Optional[datetime] = None
+
+    # Email Verification (OTP + confirmation link)
+    email_otp: Optional[str] = None
+    email_otp_expires_at: Optional[datetime] = None
+    email_otp_attempts: int = 0
+    email_otp_sent_at: Optional[datetime] = None
+    email_token_hash: Optional[str] = None
+    email_token_expires_at: Optional[datetime] = None
 
     # Account Status
     is_active: bool = True

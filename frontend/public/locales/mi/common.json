@@ -22,6 +22,14 @@
     "signUp": "Waihanga pūkete",
     "orJoinWith": "URU MAI KI RETH MĀ",
     "orLoginWith": "TAKIURU KI RETH MĀ",
+    "emailVerifyTitle": "Whakaū i tō wāhitau īmēra",
+    "emailVerifySubtitle": "Whakaūhia tō wāhitau īmēra hei whakamana i tō pūkete",
+    "emailVerifySuccess": "Kua angitu te whakaū i tō wāhitau īmēra!",
+    "emailVerifyError": "Kāore i taea te whakaū i tō wāhitau īmēra. Tēnā whakamātau anō.",
+    "emailVerifyInvalid": "He hē, kua pau rānei te wā o tēnei hono whakaū.",
+    "emailVerifyMissingToken": "Kāore te hono whakaū i te wāhitau.",
+    "emailVerifyGoToProfile": "Haere ki taku kōtaha",
+    "emailVerifyResendHint": "Mēnā kua pau te wā o te hono, tonoa tētahi hou mai i te wāhanga tuakiri o tō kōtaha.",
     "social": {
       "loginWith": "Takiuru mā {{provider}}",
       "registerWith": "Rēhita mā {{provider}}"
@@ -493,7 +501,33 @@
         "country_label": "Whenua",
         "country_placeholder": "Rapua mā te whenua, waehere rānei...",
         "phone_label": "Waea",
-        "phone_helper": "Ka taea e koe te whakamahi i tēnei nama ki te takiuru"
+        "phone_helper": "Ka taea e koe te whakamahi i tēnei nama ki te takiuru",
+        "verification": {
+          "verified": "Kua whakaū",
+          "verifiedTooltip": "Kua whakaūhia ō mōhiohio",
+          "verify": "Whakaū",
+          "change": "Whakarerekē",
+          "changePhoneTitle": "Whakarerekē i te tau waea?",
+          "changePhoneBody": "Mēnā ka huri koe i tō tau, me whakaū anō koe i te tau hou.",
+          "changeConfirm": "Whakaae",
+          "cancel": "Whakakore",
+          "verifyPhoneTitle": "Whakaū i te tau waea",
+          "verifyEmailTitle": "Whakaū i te wāhitau īmēra",
+          "codeBody": "Tāuruhia te waehere 6-mati i tukuna atu ki {{target}}",
+          "codeLabel": "Waehere whakaū",
+          "confirmCode": "Whakaū",
+          "resend": "Tukua anō te waehere",
+          "resendIn": "Tukua anō i {{seconds}}hēkona",
+          "linkHint": "I tukuna hoki he hono whakaū ki {{target}}. Ka taea e koe te whakamahi hei huarahi kē.",
+          "otpSent": "Kua tukua te waehere ki {{target}}",
+          "phoneVerifiedSuccess": "Kua angitu te whakaū i te tau waea",
+          "emailVerifiedSuccess": "Kua angitu te whakaū i te wāhitau īmēra",
+          "invalidCode": "He hē, kua pau rānei te waehere",
+          "genericError": "I puta tētahi hē. Tēnā whakamātau anō.",
+          "resendCooldown": "Tēnā tatari ētahi hēkona i mua i te tuku anō i te waehere.",
+          "resendFailed": "Kāore i taea te tuku anō i te waehere. Tēnā whakamātau anō.",
+          "sendFailed": "Kāore i taea te tuku i te waehere. Tēnā whakamātau anō."
+        }
       }
     },
     "identityDoc": {

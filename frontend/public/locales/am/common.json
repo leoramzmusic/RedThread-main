@@ -22,6 +22,14 @@
     "signUp": "መለያ ፍጠር",
     "orJoinWith": "ወይም ከ RETH ጋር ይቀላቀሉ",
     "orLoginWith": "ወይም ወደ RETH ይግቡ",
+    "emailVerifyTitle": "የኢሜል አድራሻዎን ያረጋግጡ",
+    "emailVerifySubtitle": "መለያዎን ለማረጋገጥ የኢሜል አድራሻዎን ያረጋግጡ",
+    "emailVerifySuccess": "የኢሜል አድራሻዎ በተሳካ ሁኔታ ተረጋግጧል!",
+    "emailVerifyError": "የኢሜል አድራሻዎን ማረጋገጥ አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+    "emailVerifyInvalid": "ይህ የማረጋገጫ ማስፈንጠሪያ ልክ ያልሆነ ወይም ጊዜው ያለፈበት ነው።",
+    "emailVerifyMissingToken": "የማረጋገጫ ማስፈንጠሪያው ከአድራሻው ጠፍቷል።",
+    "emailVerifyGoToProfile": "ወደ መገለጫዬ ሂድ",
+    "emailVerifyResendHint": "ማስፈንጠሪያው ጊዜው ካለፈ ከመገለጫዎ የማንነት ክፍል አዲስ ማስፈንጠሪያ ይጠይቁ።",
     "social": {
       "loginWith": "በ{{provider}} ይግቡ",
       "registerWith": "በ{{provider}} ይመዝገቡ"
@@ -493,7 +501,33 @@
         "country_label": "ሀገር",
         "country_placeholder": "በሀገር ወይም በኮድ ፈልግ...",
         "phone_label": "ስልክ",
-        "phone_helper": "ይህን ቁጥር ለመግባት መጠቀም ትችላለህ"
+        "phone_helper": "ይህን ቁጥር ለመግባት መጠቀም ትችላለህ",
+        "verification": {
+          "verified": "ተረጋግጧል",
+          "verifiedTooltip": "መረጃዎ ተረጋግጧል",
+          "verify": "አረጋግጥ",
+          "change": "ቀይር",
+          "changePhoneTitle": "የስልክ ቁጥር መቀየር?",
+          "changePhoneBody": "ቁጥርዎን ከቀየሩ አዲሱን ቁጥር እንደገና ማረጋገጥ ይኖርብዎታል።",
+          "changeConfirm": "ተቀበል",
+          "cancel": "ተወው",
+          "verifyPhoneTitle": "የስልክ ቁጥር አረጋግጥ",
+          "verifyEmailTitle": "የኢሜል አድራሻ አረጋግጥ",
+          "codeBody": "ወደ {{target}} የላክነውን ባለ 6 አሃዝ ኮድ ያስገቡ",
+          "codeLabel": "የማረጋገጫ ኮድ",
+          "confirmCode": "አረጋግጥ",
+          "resend": "ኮዱን እንደገና ላክ",
+          "resendIn": "በ{{seconds}}ሰከንድ ውስጥ እንደገና ላክ",
+          "linkHint": "እንዲሁም የማረጋገጫ ማስፈንጠሪያ ወደ {{target}} ልከናል። እንደ አማራጭ ሊጠቀሙበት ይችላሉ።",
+          "otpSent": "ኮድ ወደ {{target}} ተልኳል",
+          "phoneVerifiedSuccess": "የስልክ ቁጥር በተሳካ ሁኔታ ተረጋግጧል",
+          "emailVerifiedSuccess": "የኢሜል አድራሻ በተሳካ ሁኔታ ተረጋግጧል",
+          "invalidCode": "ኮዱ ልክ ያልሆነ ወይም ጊዜው ያለፈበት ነው",
+          "genericError": "አንድ ነገር ተሳስቷል። እባክዎ እንደገና ይሞክሩ።",
+          "resendCooldown": "ኮዱን እንደገና ከመላክዎ በፊት ጥቂት ሰከንዶች ይጠብቁ።",
+          "resendFailed": "ኮዱን እንደገና መላክ አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+          "sendFailed": "ኮዱን መላክ አልተቻለም። እባክዎ እንደገና ይሞክሩ።"
+        }
       }
     },
     "identityDoc": {

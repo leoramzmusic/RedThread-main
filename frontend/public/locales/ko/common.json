@@ -22,6 +22,14 @@
     "signUp": "계정 만들기",
     "orJoinWith": "또는 다음으로 RETH에 가입",
     "orLoginWith": "또는 다음으로 RETH에 로그인",
+    "emailVerifyTitle": "이메일 주소를 인증하세요",
+    "emailVerifySubtitle": "계정 인증을 위해 이메일 주소를 확인하세요",
+    "emailVerifySuccess": "이메일 주소가 성공적으로 인증되었습니다!",
+    "emailVerifyError": "이메일 주소를 인증할 수 없습니다. 다시 시도하세요.",
+    "emailVerifyInvalid": "이 인증 링크는 잘못되었거나 만료되었습니다.",
+    "emailVerifyMissingToken": "주소에 인증 링크가 없습니다.",
+    "emailVerifyGoToProfile": "내 프로필로 이동",
+    "emailVerifyResendHint": "링크가 만료된 경우 프로필의 신원 섹션에서 새 링크를 요청하세요.",
     "social": {
       "loginWith": "{{provider}}(으)로 로그인",
       "registerWith": "{{provider}}(으)로 가입"
@@ -221,7 +229,33 @@
         "country_label": "국가",
         "country_placeholder": "국가 또는 코드로 검색...",
         "phone_label": "전화",
-        "phone_helper": "이 번호로 로그인할 수 있습니다"
+        "phone_helper": "이 번호로 로그인할 수 있습니다",
+        "verification": {
+          "verified": "인증됨",
+          "verifiedTooltip": "귀하의 정보가 인증되었습니다",
+          "verify": "인증하기",
+          "change": "변경",
+          "changePhoneTitle": "전화번호를 변경하시겠습니까?",
+          "changePhoneBody": "번호를 변경하면 새 번호를 다시 인증해야 합니다.",
+          "changeConfirm": "수락",
+          "cancel": "취소",
+          "verifyPhoneTitle": "전화번호 인증",
+          "verifyEmailTitle": "이메일 주소 인증",
+          "codeBody": "{{target}}로 보낸 6자리 코드를 입력하세요",
+          "codeLabel": "인증 코드",
+          "confirmCode": "인증",
+          "resend": "코드 다시 보내기",
+          "resendIn": "{{seconds}}초 후 다시 보내기",
+          "linkHint": "{{target}}로 인증 링크도 보냈습니다. 대안으로 사용할 수 있습니다.",
+          "otpSent": "{{target}}로 코드를 보냈습니다",
+          "phoneVerifiedSuccess": "전화번호 인증 성공",
+          "emailVerifiedSuccess": "이메일 주소 인증 성공",
+          "invalidCode": "코드가 잘못되었거나 만료되었습니다",
+          "genericError": "문제가 발생했습니다. 다시 시도하세요.",
+          "resendCooldown": "코드를 다시 보내기 전에 몇 초 기다려 주세요.",
+          "resendFailed": "코드를 다시 보낼 수 없습니다. 다시 시도하세요.",
+          "sendFailed": "코드를 보낼 수 없습니다. 다시 시도하세요."
+        }
       },
       "relationship": {
         "title": "관계 & 호환성"

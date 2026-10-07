@@ -120,3 +120,53 @@ class MailService:
 
 
 mail_service = MailService()
+
+
+async def send_verification_email(email_to: str, code: str, token: str):
+    """Send an email verification code plus a one-time confirmation link."""
+    verify_link = f"{settings.FRONTEND_URL}/verify-email?token={token}"
+
+    if settings.MAIL_CONSOLE_LOG:
+        logger.info(
+            f"EMAIL VERIFICATION for {email_to}: code={code} link={verify_link}"
+        )
+        print(f"\n[EMAIL MOCK] To: {email_to}\nCode: {code}\nLink: {verify_link}\n")
+        if settings.ENVIRONMENT == "local" or (
+            settings.SMTP_HOST == "localhost" and not settings.SMTP_USER
+        ):
+            return
+
+    message = MessageSchema(
+        subject="Verifica tu correo en RedThread",
+        recipients=[email_to],
+        body=f"""
+        <html>
+            <body>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                    <h2 style="color: #ff4d4f; text-align: center;">Verifica tu correo</h2>
+                    <p>Hola,</p>
+                    <p>Usa el siguiente código para verificar tu correo en <strong>RedThread</strong>:</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <span style="display: inline-block; font-size: 32px; letter-spacing: 10px; font-weight: bold; background: #f6f6f6; padding: 16px 24px; border-radius: 8px;">{code}</span>
+                    </div>
+                    <p>También puedes confirmar directamente con el botón:</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{verify_link}" style="background-color: #ff4d4f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Confirmar mi correo</a>
+                    </div>
+                    <p>Este código y enlace expiran en 10 minutos. Si no solicitaste esto, puedes ignorar este correo.</p>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                    <p style="font-size: 0.8em; color: #777;">Este es un mensaje automático para proteger tu cuenta. Por favor no respondas a este correo.</p>
+                </div>
+            </body>
+        </html>
+        """,
+        subtype=MessageType.html,
+    )
+
+    try:
+        await mail_service.fm.send_message(message)
+        logger.info(f"Verification email sent to {email_to}")
+    except Exception as e:
+        logger.error(f"Failed to send verification email to {email_to}: {str(e)}")
+        if not settings.MAIL_CONSOLE_LOG:
+            raise e

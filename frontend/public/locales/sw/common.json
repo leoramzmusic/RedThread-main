@@ -22,6 +22,14 @@
     "signUp": "Unda akaunti",
     "orJoinWith": "AU JIUNGE NA RETH KWA",
     "orLoginWith": "AU INGIA KWENYE RETH KWA",
+    "emailVerifyTitle": "Thibitisha anwani yako ya barua pepe",
+    "emailVerifySubtitle": "Thibitisha anwani yako ya barua pepe ili kuthibitisha akaunti yako",
+    "emailVerifySuccess": "Anwani yako ya barua pepe imethibitishwa kwa mafanikio!",
+    "emailVerifyError": "Hatukuweza kuthibitisha anwani yako ya barua pepe. Jaribu tena.",
+    "emailVerifyInvalid": "Kiungo hiki cha uthibitisho si sahihi au kimekwisha muda.",
+    "emailVerifyMissingToken": "Kiungo cha uthibitisho hakipo kwenye anwani.",
+    "emailVerifyGoToProfile": "Nenda kwenye wasifu wangu",
+    "emailVerifyResendHint": "Ikiwa kiungo kimekwisha muda, omba kipya kutoka sehemu ya utambulisho ya wasifu wako.",
     "social": {
       "loginWith": "Ingia kwa {{provider}}",
       "registerWith": "Jisajili kwa {{provider}}"
@@ -493,7 +501,33 @@
         "country_label": "Nchi",
         "country_placeholder": "Tafuta kwa nchi au msimbo...",
         "phone_label": "Simu",
-        "phone_helper": "Unaweza kutumia nambari hii kuingia"
+        "phone_helper": "Unaweza kutumia nambari hii kuingia",
+        "verification": {
+          "verified": "Imethibitishwa",
+          "verifiedTooltip": "Taarifa zako zimethibitishwa",
+          "verify": "Thibitisha",
+          "change": "Badilisha",
+          "changePhoneTitle": "Badilisha nambari ya simu?",
+          "changePhoneBody": "Ukibadilisha nambari yako, utahitaji kuthibitisha nambari mpya tena.",
+          "changeConfirm": "Kubali",
+          "cancel": "Ghairi",
+          "verifyPhoneTitle": "Thibitisha nambari ya simu",
+          "verifyEmailTitle": "Thibitisha anwani ya barua pepe",
+          "codeBody": "Weka msimbo wa tarakimu 6 tuliotuma kwa {{target}}",
+          "codeLabel": "Msimbo wa uthibitisho",
+          "confirmCode": "Thibitisha",
+          "resend": "Tuma msimbo tena",
+          "resendIn": "Tuma tena baada ya sekunde {{seconds}}",
+          "linkHint": "Pia tumetuma kiungo cha uthibitisho kwa {{target}}. Unaweza kukitumia kama njia mbadala.",
+          "otpSent": "Msimbo umetumwa kwa {{target}}",
+          "phoneVerifiedSuccess": "Nambari ya simu imethibitishwa kwa mafanikio",
+          "emailVerifiedSuccess": "Anwani ya barua pepe imethibitishwa kwa mafanikio",
+          "invalidCode": "Msimbo si sahihi au umekwisha muda",
+          "genericError": "Kuna tatizo limetokea. Jaribu tena.",
+          "resendCooldown": "Subiri sekunde chache kabla ya kutuma msimbo tena.",
+          "resendFailed": "Imeshindwa kutuma msimbo tena. Jaribu tena.",
+          "sendFailed": "Imeshindwa kutuma msimbo. Jaribu tena."
+        }
       }
     },
     "identityDoc": {

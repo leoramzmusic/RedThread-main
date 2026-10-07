@@ -162,7 +162,33 @@
         "country_label": "Pays",
         "country_placeholder": "Rechercher par pays ou code...",
         "phone_label": "Téléphone",
-        "phone_helper": "Tu peux utiliser ce numéro pour te connecter"
+        "phone_helper": "Tu peux utiliser ce numéro pour te connecter",
+        "verification": {
+          "verified": "Vérifié",
+          "verifiedTooltip": "Vos informations ont été vérifiées",
+          "verify": "Vérifier",
+          "change": "Modifier",
+          "changePhoneTitle": "Changer de numéro de téléphone ?",
+          "changePhoneBody": "Si vous changez de numéro, vous devrez vérifier le nouveau numéro à nouveau.",
+          "changeConfirm": "Accepter",
+          "cancel": "Annuler",
+          "verifyPhoneTitle": "Vérifier le numéro de téléphone",
+          "verifyEmailTitle": "Vérifier l'adresse e-mail",
+          "codeBody": "Saisissez le code à 6 chiffres que nous avons envoyé à {{target}}",
+          "codeLabel": "Code de vérification",
+          "confirmCode": "Vérifier",
+          "resend": "Renvoyer le code",
+          "resendIn": "Renvoyer dans {{seconds}}s",
+          "linkHint": "Nous avons également envoyé un lien de vérification à {{target}}. Vous pouvez l'utiliser comme alternative.",
+          "otpSent": "Code envoyé à {{target}}",
+          "phoneVerifiedSuccess": "Numéro de téléphone vérifié avec succès",
+          "emailVerifiedSuccess": "Adresse e-mail vérifiée avec succès",
+          "invalidCode": "Code invalide ou expiré",
+          "genericError": "Une erreur est survenue. Veuillez réessayer.",
+          "resendCooldown": "Veuillez attendre quelques secondes avant de renvoyer le code.",
+          "resendFailed": "Impossible de renvoyer le code. Veuillez réessayer.",
+          "sendFailed": "Impossible d'envoyer le code. Veuillez réessayer."
+        }
       }
     },
     "identityDoc": {
@@ -442,6 +468,14 @@
     "signUp": "Créer un compte",
     "orJoinWith": "OU REJOINDRE RETH AVEC",
     "orLoginWith": "OU SE CONNECTER À RETH AVEC",
+    "emailVerifyTitle": "Vérifiez votre adresse e-mail",
+    "emailVerifySubtitle": "Confirmez votre adresse e-mail pour vérifier votre compte",
+    "emailVerifySuccess": "Votre adresse e-mail a été vérifiée avec succès !",
+    "emailVerifyError": "Impossible de vérifier votre adresse e-mail. Veuillez réessayer.",
+    "emailVerifyInvalid": "Ce lien de vérification est invalide ou a expiré.",
+    "emailVerifyMissingToken": "Le lien de vérification est manquant dans l'adresse.",
+    "emailVerifyGoToProfile": "Aller à mon profil",
+    "emailVerifyResendHint": "Si le lien a expiré, demandez-en un nouveau depuis la section identité de votre profil.",
     "social": {
       "loginWith": "Se connecter avec {{provider}}",
       "registerWith": "S'inscrire avec {{provider}}"

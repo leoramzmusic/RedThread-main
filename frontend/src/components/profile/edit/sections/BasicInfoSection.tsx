@@ -14,6 +14,7 @@ import {
   IconButton,
   Tooltip,
   Divider,
+  Chip,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "next-i18next";
@@ -40,8 +41,11 @@ interface EditBasicInfoProps {
   setCountryCode: (code: string) => void;
   phoneVerified: boolean;
   isVerifyingPhone: boolean;
+  emailVerified: boolean;
+  isVerifyingEmail: boolean;
   setNicknameDialogOpen: (open: boolean) => void;
   handleVerifyPhone: () => void;
+  handleVerifyEmail: () => void;
   handleChangePhoneRequest: () => void;
   setIdentityInfoOpen?: (open: boolean) => void;
 }
@@ -59,12 +63,64 @@ export default function EditBasicInfo({
   setCountryCode,
   phoneVerified,
   isVerifyingPhone,
+  emailVerified,
+  isVerifyingEmail,
   setNicknameDialogOpen,
   handleVerifyPhone,
+  handleVerifyEmail,
   handleChangePhoneRequest,
   setIdentityInfoOpen = () => {},
 }: EditBasicInfoProps) {
   const { t } = useTranslation("common");
+
+  const renderVerifyControl = ({
+    verified,
+    verifying,
+    onVerify,
+    onChangeRequest,
+  }: {
+    verified: boolean;
+    verifying: boolean;
+    onVerify: () => void;
+    onChangeRequest?: () => void;
+  }) => {
+    if (verified) {
+      return (
+        <Box display="flex" alignItems="center" gap={0.5}>
+          <Tooltip title={t("profile.sections.identity.verification.verifiedTooltip")}>
+            <Chip
+              icon={<VerifiedUserIcon fontSize="small" />}
+              label={t("profile.sections.identity.verification.verified")}
+              color="success"
+              size="small"
+            />
+          </Tooltip>
+          {onChangeRequest && (
+            <Button size="small" onClick={onChangeRequest} sx={{ textTransform: "none" }}>
+              {t("profile.sections.identity.verification.change")}
+            </Button>
+          )}
+        </Box>
+      );
+    }
+    return (
+      <Button
+        size="small"
+        variant="outlined"
+        onClick={onVerify}
+        disabled={verifying}
+        sx={{
+          textTransform: "none",
+          whiteSpace: "nowrap",
+          minWidth: 110,
+          mt: 0.5,
+        }}
+      >
+        {verifying ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}
+        {t("profile.sections.identity.verification.verify")}
+      </Button>
+    );
+  };
 
   return (
     <Grid item xs={12}>
@@ -178,22 +234,29 @@ export default function EditBasicInfo({
             </Grid>
 
             <Grid item xs={12}>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <TextField size="small"
-                    {...field}
-                    fullWidth
-                    label={t("profile.email_label", "Email")}
-                    type="email"
-                    helperText={t(
-                      "profile.email_helper",
-                      "Tu correo electrónico",
-                    )}
-                  />
-                )}
-              />
+              <Box display="flex" gap={2} alignItems="flex-start">
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField size="small"
+                      {...field}
+                      fullWidth
+                      label={t("profile.email_label", "Email")}
+                      type="email"
+                      helperText={t(
+                        "profile.email_helper",
+                        "Tu correo electrónico",
+                      )}
+                    />
+                  )}
+                />
+                {renderVerifyControl({
+                  verified: emailVerified,
+                  verifying: isVerifyingEmail,
+                  onVerify: handleVerifyEmail,
+                })}
+              </Box>
             </Grid>
 
             {/* Separador: datos personales | contacto */}
@@ -202,7 +265,7 @@ export default function EditBasicInfo({
             </Grid>
 
             <Grid item xs={12}>
-              <Box display="flex" gap={2} alignItems="flex-start">
+              <Box display="flex" gap={2} alignItems="flex-start" flexWrap="wrap">
                 <Autocomplete size="small"
                   options={COUNTRY_CODES}
                   autoHighlight
@@ -260,11 +323,18 @@ export default function EditBasicInfo({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
+                  disabled={phoneVerified}
                   helperText={t(
                     "profile.phone_helper",
                     "Puedes usar este número para iniciar sesión en tu cuenta",
                   )}
                 />
+                {renderVerifyControl({
+                  verified: phoneVerified,
+                  verifying: isVerifyingPhone,
+                  onVerify: handleVerifyPhone,
+                  onChangeRequest: phoneVerified ? handleChangePhoneRequest : undefined,
+                })}
               </Box>
             </Grid>
           </Grid>

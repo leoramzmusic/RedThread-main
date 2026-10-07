@@ -40,6 +40,7 @@ export interface ProfileData {
   phone?: string;
   country_code?: string;
   phone_verified?: boolean;
+  email_verified?: boolean;
   verified?: boolean;
   identity_verification_status?: 'none' | 'pending' | 'approved' | 'rejected';
   identity_document_url?: string;

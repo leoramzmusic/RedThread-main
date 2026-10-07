@@ -982,6 +982,39 @@ async def reset_password(request: ResetPasswordRequest):
     return {"message": "Tu contraseña ha sido actualizada con éxito"}
 
 
+class VerifyEmailTokenRequest(BaseModel):
+    token: str
+
+
+@router.post("/verify-email-token")
+async def verify_email_token(request: VerifyEmailTokenRequest):
+    """Public: confirm email ownership via the link in the verification email"""
+    user = await User.find_one(User.email_token_hash == hash_token(request.token))
+    if (
+        not user
+        or not user.email_token_expires_at
+        or user.email_token_expires_at < datetime.utcnow()
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Enlace de verificación inválido o expirado",
+        )
+
+    profile = await Profile.find_one(Profile.user_id == str(user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+        )
+
+    profile.email_verified = True
+    user.email_token_hash = None
+    user.email_token_expires_at = None
+    await user.save()
+    await profile.save()
+
+    return {"message": "Correo verificado con éxito", "email_verified": True}
+
+
 @router.post("/change-password")
 async def change_password(
     request: ChangePasswordRequest, current_user: User = Depends(get_current_user)

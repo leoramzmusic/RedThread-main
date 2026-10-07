@@ -22,6 +22,14 @@
     "signUp": "অ্যাকাউন্ট তৈরি করুন",
     "orJoinWith": "অথবা RETH-এ যোগ দিন",
     "orLoginWith": "অথবা RETH-এ সাইন ইন করুন",
+    "emailVerifyTitle": "আপনার ইমেইল ঠিকানা যাচাই করুন",
+    "emailVerifySubtitle": "আপনার অ্যাকাউন্ট যাচাই করতে ইমেইল ঠিকানা নিশ্চিত করুন",
+    "emailVerifySuccess": "আপনার ইমেইল ঠিকানা সফলভাবে যাচাই হয়েছে!",
+    "emailVerifyError": "আপনার ইমেইল ঠিকানা যাচাই করা যায়নি। আবার চেষ্টা করুন।",
+    "emailVerifyInvalid": "এই যাচাইকরণ লিংকটি অবৈধ বা মেয়াদোত্তীর্ণ।",
+    "emailVerifyMissingToken": "ঠিকানায় যাচাইকরণ লিংক নেই।",
+    "emailVerifyGoToProfile": "আমার প্রোফাইলে যান",
+    "emailVerifyResendHint": "লিংকটির মেয়াদ শেষ হলে আপনার প্রোফাইলের পরিচয় বিভাগ থেকে নতুন লিংক অনুরোধ করুন।",
     "social": {
       "loginWith": "{{provider}} দিয়ে সাইন ইন করুন",
       "registerWith": "{{provider}} দিয়ে সাইন আপ করুন"
@@ -493,7 +501,33 @@
         "country_label": "দেশ",
         "country_placeholder": "দেশ বা কোড দিয়ে খুঁজুন...",
         "phone_label": "ফোন",
-        "phone_helper": "এই নম্বর দিয়ে লগ ইন করতে পারো"
+        "phone_helper": "এই নম্বর দিয়ে লগ ইন করতে পারো",
+        "verification": {
+          "verified": "যাচাইকৃত",
+          "verifiedTooltip": "আপনার তথ্য যাচাই করা হয়েছে",
+          "verify": "যাচাই করুন",
+          "change": "পরিবর্তন",
+          "changePhoneTitle": "ফোন নম্বর পরিবর্তন করবেন?",
+          "changePhoneBody": "নম্বর পরিবর্তন করলে নতুন নম্বরটি আবার যাচাই করতে হবে।",
+          "changeConfirm": "গ্রহণ করুন",
+          "cancel": "বাতিল",
+          "verifyPhoneTitle": "ফোন নম্বর যাচাই করুন",
+          "verifyEmailTitle": "ইমেইল ঠিকানা যাচাই করুন",
+          "codeBody": "{{target}}-এ পাঠানো ৬ সংখ্যার কোডটি লিখুন",
+          "codeLabel": "যাচাইকরণ কোড",
+          "confirmCode": "যাচাই করুন",
+          "resend": "কোড আবার পাঠান",
+          "resendIn": "{{seconds}} সেকেন্ডে আবার পাঠান",
+          "linkHint": "আমরা {{target}}-এ একটি যাচাইকরণ লিংকও পাঠিয়েছি। বিকল্প হিসেবে সেটি ব্যবহার করতে পারেন।",
+          "otpSent": "{{target}}-এ কোড পাঠানো হয়েছে",
+          "phoneVerifiedSuccess": "ফোন নম্বর সফলভাবে যাচাই হয়েছে",
+          "emailVerifiedSuccess": "ইমেইল ঠিকানা সফলভাবে যাচাই হয়েছে",
+          "invalidCode": "কোডটি অবৈধ বা মেয়াদোত্তীর্ণ",
+          "genericError": "কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।",
+          "resendCooldown": "কোড আবার পাঠানোর আগে কয়েক সেকেন্ড অপেক্ষা করুন।",
+          "resendFailed": "কোড আবার পাঠানো যায়নি। আবার চেষ্টা করুন।",
+          "sendFailed": "কোড পাঠানো যায়নি। আবার চেষ্টা করুন।"
+        }
       }
     },
     "identityDoc": {
