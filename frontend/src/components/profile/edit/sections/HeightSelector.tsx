@@ -171,7 +171,7 @@ export default function HeightSelector({
               name="height_cm"
               control={control}
               render={({ field }) => (
-                <TextField
+                <TextField size="small"
                   {...field}
                   fullWidth
                   label={t("profile.additional.height.label", "Tu Altura")}

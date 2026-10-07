@@ -101,7 +101,7 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
             </DialogTitle>
 
             <DialogContent sx={{ mt: 2, flex: 1, overflowY: 'auto' }}>
-                <TextField
+                <TextField size="small"
                     autoFocus
                     fullWidth
                     placeholder={type === 'track' ? "Escribe el nombre de la canción..." : "Escribe el nombre del artista..."}

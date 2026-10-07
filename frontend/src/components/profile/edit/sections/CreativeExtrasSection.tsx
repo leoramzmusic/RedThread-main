@@ -39,13 +39,13 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                     </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Controller
                                 name="superpower"
                                 control={control}
                                 render={({ field }) => (
-                                    <TextField
+                                    <TextField size="small"
                                         {...field}
                                         fullWidth
                                         label={t('profile.extras.superpower')}
@@ -72,7 +72,7 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                                 name="achilles_heel"
                                 control={control}
                                 render={({ field }) => (
-                                    <TextField
+                                    <TextField size="small"
                                         {...field}
                                         fullWidth
                                         label={t('profile.extras.achillesHeel')}
@@ -103,7 +103,7 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                                 name="personal_soundtrack_text" // Using a text field for simplicity in this iteration
                                 control={control}
                                 render={({ field }) => (
-                                    <TextField
+                                    <TextField size="small"
                                         {...field}
                                         fullWidth
                                         multiline

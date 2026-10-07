@@ -256,7 +256,7 @@ export default function AboutMeSection({
             render={({ field, fieldState: { error } }) => (
               <Box mb={3}>
                 <Box position="relative">
-                  <TextField
+                  <TextField size="small"
                     {...field}
                     fullWidth
                     multiline

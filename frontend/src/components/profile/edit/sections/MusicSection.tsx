@@ -383,7 +383,7 @@ export default function MusicSection({
           </Box>
           )}
 
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {/* Conexión Spotify (sub-módulo Spotify) */}
             {showSpotify && (
             <Grid item xs={12}>

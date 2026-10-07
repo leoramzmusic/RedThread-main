@@ -350,7 +350,7 @@ export default function IdentitySection({
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: isDiscovery ? 3 : 2, pt: 0 }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {/* Identidad Personal */}
             <Grid item xs={12}>
               <Typography
@@ -373,11 +373,11 @@ export default function IdentitySection({
                     name="gender"
                     control={control}
                     render={({ field }) => (
-                      <FormControl fullWidth>
+                      <FormControl size="small" fullWidth>
                         <InputLabel>
                           {t("profileSections.identity.genderLabel", "Género")}
                         </InputLabel>
-                        <Select
+                        <Select size="small"
                           {...field}
                           label={t(
                             "profileSections.identity.genderLabel",
@@ -441,14 +441,14 @@ export default function IdentitySection({
                     name="sexual_orientation"
                     control={control}
                     render={({ field }) => (
-                      <FormControl fullWidth>
+                      <FormControl size="small" fullWidth>
                         <InputLabel>
                           {t(
                             "profileSections.identity.orientationLabel",
                             "Orientación sexual",
                           )}
                         </InputLabel>
-                        <Select
+                        <Select size="small"
                           {...field}
                           label={t(
                             "profileSections.identity.orientationLabel",
@@ -524,14 +524,14 @@ export default function IdentitySection({
                   name="attraction_preferences"
                   control={control}
                   render={({ field }) => (
-                    <FormControl fullWidth>
+                    <FormControl size="small" fullWidth>
                       <InputLabel>
                         {t(
                           "profileSections.identity.attractionPlaceholder",
                           "Te atraen personas con género...",
                         )}
                       </InputLabel>
-                      <Select
+                      <Select size="small"
                         {...field}
                         multiple
                         value={field.value || []}
@@ -709,14 +709,14 @@ export default function IdentitySection({
                   name="orientation_preferences"
                   control={control}
                   render={({ field }) => (
-                    <FormControl fullWidth sx={{ mt: 3 }}>
+                    <FormControl size="small" fullWidth sx={{ mt: 3 }}>
                       <InputLabel>
                         {t(
                           "profileSections.identity.orientationPlaceholder",
                           "¿Qué orientaciones te atraen en otras personas?",
                         )}
                       </InputLabel>
-                      <Select
+                      <Select size="small"
                         {...field}
                         multiple
                         value={field.value || []}

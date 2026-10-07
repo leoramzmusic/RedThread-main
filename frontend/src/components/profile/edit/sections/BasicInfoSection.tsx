@@ -147,7 +147,7 @@ export default function EditBasicInfo({
                   },
                 }}
                 render={({ field, fieldState: { error } }) => (
-                  <TextField
+                  <TextField size="small"
                     {...field}
                     fullWidth
                     label={t("profile.nickname_label", "Apodo / Nickname")}
@@ -182,7 +182,7 @@ export default function EditBasicInfo({
                 name="email"
                 control={control}
                 render={({ field }) => (
-                  <TextField
+                  <TextField size="small"
                     {...field}
                     fullWidth
                     label={t("profile.email_label", "Email")}
@@ -203,7 +203,7 @@ export default function EditBasicInfo({
 
             <Grid item xs={12}>
               <Box display="flex" gap={2} alignItems="flex-start">
-                <Autocomplete
+                <Autocomplete size="small"
                   options={COUNTRY_CODES}
                   autoHighlight
                   getOptionLabel={(option) =>
@@ -241,6 +241,7 @@ export default function EditBasicInfo({
                   renderInput={(params) => (
                     <TextField
                       {...params}
+                      size="small"
                       label={t("profile.country_label", "País")}
                       placeholder={t(
                         "profile.country_placeholder",
@@ -253,7 +254,7 @@ export default function EditBasicInfo({
                     />
                   )}
                 />
-                <TextField
+                <TextField size="small"
                   fullWidth
                   label={t("profile.phone_label", "Teléfono")}
                   value={phone}

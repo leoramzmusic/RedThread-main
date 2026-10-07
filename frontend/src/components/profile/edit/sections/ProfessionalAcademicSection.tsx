@@ -85,7 +85,7 @@ export default function ProfessionalAcademicSection({
               "Tu historia profesional y académica es parte de tu camino. No define tu valor, pero puede conectar con quienes comparten experiencias similares.",
             )}
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={2}>
             {/* Bloque 1: Educación */}
             {renderEducation && (
               <Grid item xs={12}>
@@ -115,7 +115,7 @@ export default function ProfessionalAcademicSection({
                       name="education_center"
                       control={control}
                       render={({ field }) => (
-                        <TextField
+                        <TextField size="small"
                           {...field}
                           fullWidth
                           label={t(
@@ -200,7 +200,7 @@ export default function ProfessionalAcademicSection({
                       name="occupation"
                       control={control}
                       render={({ field }) => (
-                        <TextField
+                        <TextField size="small"
                           {...field}
                           fullWidth
                           label={t(
@@ -252,7 +252,7 @@ export default function ProfessionalAcademicSection({
                       name="work_company"
                       control={control}
                       render={({ field }) => (
-                        <TextField
+                        <TextField size="small"
                           {...field}
                           fullWidth
                           label={t(

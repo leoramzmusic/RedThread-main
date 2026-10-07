@@ -98,7 +98,7 @@ export default function LanguagesSection({
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {/* 1. Idiomas Hablados (Lo que ofreces) */}
             <Grid item xs={12}>
               <Controller
@@ -122,7 +122,7 @@ export default function LanguagesSection({
                     }
                   };
                   return (
-                    <FormControl fullWidth>
+                    <FormControl size="small" fullWidth>
                       <InputLabel>
                         {t(
                           "profile.languages.spokenLabel",

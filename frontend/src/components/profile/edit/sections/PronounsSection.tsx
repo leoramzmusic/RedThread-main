@@ -110,11 +110,11 @@ export default function PronounsSection({
                 name="pronouns"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth>
+                  <FormControl size="small" fullWidth>
                     <InputLabel>
                       {t("profile.pronouns.label", "Pronombres")}
                     </InputLabel>
-                    <Select
+                    <Select size="small"
                       {...field}
                       label={t("profile.pronouns.label", "Pronombres")}
                     >

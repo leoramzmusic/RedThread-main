@@ -804,7 +804,7 @@ export default function LocationSection({
           </AccordionSummary>
         )}
         <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: isDiscovery ? 3 : 2, pt: 0 }}>
-          <Grid container spacing={4}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
               <Box
                 sx={{
@@ -972,7 +972,7 @@ export default function LocationSection({
                 }}
               >
                 <Box position="relative">
-                  <TextField
+                  <TextField size="small"
                     fullWidth
                     value={citySearch}
                     onFocus={() => {

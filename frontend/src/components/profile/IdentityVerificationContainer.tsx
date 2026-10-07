@@ -144,6 +144,7 @@ function BirthDatePickerInput({
         slotProps={{
           textField: {
             fullWidth: true,
+            size: "small",
             label: t(
               "profile.identityDoc.birthDateLabel",
               "Fecha de Nacimiento",
@@ -350,7 +351,7 @@ const IdentityVerificationContainer: React.FC<
             name="real_name"
             control={control}
             render={({ field }) => (
-              <TextField
+              <TextField size="small"
                 {...field}
                 value={field.value || ""}
                 fullWidth

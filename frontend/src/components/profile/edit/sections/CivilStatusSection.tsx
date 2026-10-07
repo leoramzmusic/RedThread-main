@@ -80,13 +80,13 @@ export default function CivilStatusSection({
                 name="relationship_status"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth>
+                  <FormControl size="small" fullWidth>
                     <InputLabel>
                       {t("profile.relationship.statusLabel", {
                         defaultValue: "Estado Civil",
                       })}
                     </InputLabel>
-                    <Select
+                    <Select size="small"
                       {...field}
                       label={t("profile.relationship.statusLabel", {
                         defaultValue: "Estado Civil",
