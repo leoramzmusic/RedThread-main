@@ -33,6 +33,24 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import "dayjs/locale/fr";
+import "dayjs/locale/de";
+import "dayjs/locale/it";
+import "dayjs/locale/pt";
+import "dayjs/locale/nl";
+import "dayjs/locale/sv";
+import "dayjs/locale/ru";
+import "dayjs/locale/zh-cn";
+import "dayjs/locale/ja";
+import "dayjs/locale/ko";
+import "dayjs/locale/hi";
+import "dayjs/locale/bn";
+import "dayjs/locale/ar";
+import "dayjs/locale/sw";
+import "dayjs/locale/tl-ph";
+import "dayjs/locale/ms";
+import "dayjs/locale/mi";
+import "dayjs/locale/am";
 
 interface IdentityVerificationContainerProps {
   control: Control<any>;
@@ -57,6 +75,30 @@ interface BirthDatePickerInputProps {
   onUnlock: () => void;
 }
 
+// App language -> dayjs locale (ha has no dayjs locale, falls back to en)
+const DAYJS_LOCALE_MAP: Record<string, string> = {
+  es: "es",
+  en: "en",
+  fr: "fr",
+  de: "de",
+  it: "it",
+  pt: "pt",
+  nl: "nl",
+  sv: "sv",
+  ru: "ru",
+  zh: "zh-cn",
+  ja: "ja",
+  ko: "ko",
+  hi: "hi",
+  bn: "bn",
+  ar: "ar",
+  sw: "sw",
+  tl: "tl-ph",
+  ms: "ms",
+  mi: "mi",
+  am: "am",
+};
+
 /**
  * Birth-date picker with explicitly controlled open state plus a visible
  * calendar toggle, so the popup always opens on tap/click/keyboard.
@@ -72,10 +114,9 @@ function BirthDatePickerInput({
   onUnlock,
 }: BirthDatePickerInputProps) {
   const [calOpen, setCalOpen] = React.useState(false);
-  const current = field.value ? dayjs(field.value) : null;
+  const dayjsLocale = DAYJS_LOCALE_MAP[dateLocale] ?? "en";
+  const current = field.value ? dayjs(field.value).locale(dayjsLocale) : null;
   const valid = !error && current !== null && current.isValid();
-  // Dayjs locale aligned with the UI language (es data imported; en built-in).
-  const dayjsLocale = dateLocale === "es" ? "es" : "en";
 
   const openCalendar = () => {
     if (!fieldsLocked) setCalOpen(true);
@@ -85,8 +126,7 @@ function BirthDatePickerInput({
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
       adapterLocale={dayjsLocale}
-    >
-      <DatePicker
+    >      <DatePicker
         value={current}
         open={calOpen}
         onClose={() => setCalOpen(false)}
@@ -208,6 +248,7 @@ const IdentityVerificationContainer: React.FC<
 }) => {
   const { t, i18n } = useTranslation("common");
   const dateLocale = (i18n.language || "es").split("-")[0];
+  const dayjsLocale = DAYJS_LOCALE_MAP[dateLocale] ?? "en";
   const {
     isUploading,
     isDialogOpen,
