@@ -534,6 +534,17 @@
       "deleteC1": "Sehemu za jina halisi na tarehe ya kuzaliwa zitafunguliwa",
       "deleteC2": "Utaweza kuhariri taarifa zako tena",
       "deleteC3": "Lazima upakie hati mpya ili uthibitishe utambulisho"
+    },
+    "birthdate": {
+      "label": "Tarehe ya kuzaliwa",
+      "helper": "Tunaitumia kuthibitisha umri wako. Haionyeshwi bila ruhusa yako.",
+      "preview": "{{date}} · Miaka {{age}}",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "Tarehe si sahihi.",
+      "future": "Tarehe haiwezi kuwa ya usoni.",
+      "tooOld": "Tarehe nje ya kiwango.",
+      "underage": "Lazima uwe na umri wa angalau miaka 18.",
+      "openCalendar": "Fungua kalenda"
     }
   },
   "card": {
@@ -954,7 +965,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Uthibitisho wa Utambulisho",
+    "title": "Uthibitisho wa Utambulisho",
     "privacyNotice": "Hati yako inatumika kuthibitisha utambulisho na umri pekee. Haitachapishwa wala kushirikiwa.",
     "selectDocument": "Aina ya Hati",
     "uploadFile": "Buruta hati yako hapa au bonyeza kuchagua",

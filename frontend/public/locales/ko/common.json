@@ -574,6 +574,17 @@
       "deleteC1": "실명과 생년월일 필드가 잠금 해제됩니다",
       "deleteC2": "정보를 다시 편집할 수 있습니다",
       "deleteC3": "신원 인증을 위해 새 서류를 업로드해야 합니다"
+    },
+    "birthdate": {
+      "label": "생년월일",
+      "helper": "나이 확인용으로 사용되며, 허락 없이 표시되지 않습니다.",
+      "preview": "{{date}} · {{age}}세",
+      "dateFormat": "YYYY년 M월 D일",
+      "invalid": "유효하지 않은 날짜입니다.",
+      "future": "미래 날짜는 사용할 수 없습니다.",
+      "tooOld": "범위를 벗어난 날짜입니다.",
+      "underage": "18세 이상이어어야 합니다.",
+      "openCalendar": "달력 열기"
     }
   },
   "card": {
@@ -994,7 +1005,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 신원 인증",
+    "title": "신원 인증",
     "privacyNotice": "서류는 신원과 나이 확인에만 사용됩니다. 공개·공유되지 않습니다.",
     "selectDocument": "서류 종류",
     "uploadFile": "서류를 여기로 드래그하거나 클릭하여 선택",

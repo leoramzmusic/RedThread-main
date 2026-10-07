@@ -575,6 +575,17 @@
       "deleteC1": "I campi nome reale e data di nascita si sbloccano",
       "deleteC2": "Potrai modificare di nuovo le info",
       "deleteC3": "Dovrai caricare un nuovo documento per verificarti"
+    },
+    "birthdate": {
+      "label": "Data di nascita",
+      "helper": "La usiamo per verificare la tua età. Non viene mai mostrata senza il tuo permesso.",
+      "preview": "{{date}} · {{age}} anni",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "Data non valida.",
+      "future": "La data non può essere futura.",
+      "tooOld": "Data fuori intervallo.",
+      "underage": "Devi avere almeno 18 anni.",
+      "openCalendar": "Apri il calendario"
     }
   },
   "card": {
@@ -995,7 +1006,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Verifica Identità",
+    "title": "Verifica Identità",
     "privacyNotice": "Il tuo documento serve solo a verificare identità ed età. Mai pubblico né condiviso.",
     "selectDocument": "Tipo di Documento",
     "uploadFile": "Trascina qui il documento o clicca per selezionare",

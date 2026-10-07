@@ -534,6 +534,17 @@
       "deleteC1": "Filayen suna na gaskiya da ranar haihuwa za su buɗe",
       "deleteC2": "Zaka iya gyara bayananka kuma",
       "deleteC3": "Dole sai ka ɗora sabuwar takarda don tabbatar da asalinka"
+    },
+    "birthdate": {
+      "label": "Ranar haihuwa",
+      "helper": "Muna amfani da ita don tabbatar da shekarunka. Ba a nuna ta ba tare da izininka ba.",
+      "preview": "{{date}} · Shekaru {{age}}",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "Rana mara inganci.",
+      "future": "Rana ba za ta iya zama ta gaba ba.",
+      "tooOld": "Rana ta wuce iyaka.",
+      "underage": "Dole ne ka kasance aƙalla shekaru 18.",
+      "openCalendar": "Buɗe kalenda"
     }
   },
   "card": {
@@ -954,7 +965,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Tabbatar da Asali",
+    "title": "Tabbatar da Asali",
     "privacyNotice": "Takardarka don tabbatar da asali da shekaru kaɗai ake amfani da ita. Ba za a wallafa ko raba ba.",
     "selectDocument": "Nau’in Takarda",
     "uploadFile": "Ja takardarka nan ko danna don zaɓawa",

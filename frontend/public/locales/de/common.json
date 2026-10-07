@@ -575,6 +575,17 @@
       "deleteC1": "Echter-Name- und Geburtsdatum-Felder werden entsperrt",
       "deleteC2": "Du kannst deine Infos erneut bearbeiten",
       "deleteC3": "Du musst ein neues Dokument zur Verifizierung hochladen"
+    },
+    "birthdate": {
+      "label": "Geburtsdatum",
+      "helper": "Wir verwenden es zur Altersprüfung. Wird ohne deine Erlaubnis nie angezeigt.",
+      "preview": "{{date}} · {{age}} Jahre",
+      "dateFormat": "D. MMMM YYYY",
+      "invalid": "Ungültiges Datum.",
+      "future": "Das Datum darf nicht in der Zukunft liegen.",
+      "tooOld": "Datum außerhalb des Bereichs.",
+      "underage": "Du musst mindestens 18 Jahre alt sein.",
+      "openCalendar": "Kalender öffnen"
     }
   },
   "card": {
@@ -995,7 +1006,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Identitätsverifizierung",
+    "title": "Identitätsverifizierung",
     "privacyNotice": "Dein Dokument dient nur zur Verifizierung von Identität und Alter. Nie öffentlich oder geteilt.",
     "selectDocument": "Dokumenttyp",
     "uploadFile": "Ziehe dein Dokument hierher oder klicke zur Auswahl",

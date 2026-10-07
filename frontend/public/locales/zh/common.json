@@ -575,6 +575,17 @@
       "deleteC1": "真实姓名和出生日期字段将解锁",
       "deleteC2": "你可以重新编辑信息",
       "deleteC3": "你必须上传新证件以验证身份"
+    },
+    "birthdate": {
+      "label": "出生日期",
+      "helper": "我们用它来验证您的年龄。未经您的许可绝不显示。",
+      "preview": "{{date}} · {{age}}岁",
+      "dateFormat": "YYYY年M月D日",
+      "invalid": "日期无效。",
+      "future": "日期不能是未来日期。",
+      "tooOld": "日期超出范围。",
+      "underage": "您必须年满18岁。",
+      "openCalendar": "打开日历"
     }
   },
   "card": {
@@ -995,7 +1006,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 身份验证",
+    "title": "身份验证",
     "privacyNotice": "你的证件仅用于验证身份和年龄。不会公开或分享。",
     "selectDocument": "证件类型",
     "uploadFile": "将证件拖到此处或点击选择",

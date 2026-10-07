@@ -575,6 +575,17 @@
       "deleteC1": "Fälten riktigt namn och födelsedatum låses upp",
       "deleteC2": "Du kan redigera din info igen",
       "deleteC3": "Du måste ladda upp ett nytt dokument för att verifieras"
+    },
+    "birthdate": {
+      "label": "Födelsedatum",
+      "helper": "Vi använder det för att verifiera din ålder. Visas aldrig utan ditt tillstånd.",
+      "preview": "{{date}} · {{age}} år",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "Ogiltigt datum.",
+      "future": "Datumet får inte ligga i framtiden.",
+      "tooOld": "Datum utanför intervallet.",
+      "underage": "Du måste vara minst 18 år.",
+      "openCalendar": "Öppna kalendern"
     }
   },
   "card": {
@@ -995,7 +1006,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Identitetsverifiering",
+    "title": "Identitetsverifiering",
     "privacyNotice": "Ditt dokument används endast för att verifiera identitet och ålder. Aldrig offentligt eller delat.",
     "selectDocument": "Dokumenttyp",
     "uploadFile": "Dra ditt dokument hit eller klicka för att välja",

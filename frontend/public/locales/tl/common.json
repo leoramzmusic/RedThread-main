@@ -534,6 +534,17 @@
       "deleteC1": "Mabubuksan ang tunay na pangalan at kaarawan",
       "deleteC2": "Maaari mong i-edit ulit ang impormasyon",
       "deleteC3": "Kailangang mag-upload ng bagong dokumento upang beripikahin"
+    },
+    "birthdate": {
+      "label": "Petsa ng kapanganakan",
+      "helper": "Ginagamit namin ito upang beripikahin ang iyong edad. Hindi ipinapakita nang walang pahintulot mo.",
+      "preview": "{{date}} · {{age}} taong gulang",
+      "dateFormat": "MMMM D, YYYY",
+      "invalid": "Di-wastong petsa.",
+      "future": "Ang petsa ay hindi maaaring nasa hinaharap.",
+      "tooOld": "Petsa sa labas ng saklaw.",
+      "underage": "Dapat ay hindi bababa sa 18 taong gulang.",
+      "openCalendar": "Buksan ang kalendaryo"
     }
   },
   "card": {
@@ -954,7 +965,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Beripikasyon ng Pagkakakilanlan",
+    "title": "Beripikasyon ng Pagkakakilanlan",
     "privacyNotice": "Ang dokumento ay para lamang beripikahin ang pagkakakilanlan at edad. Hindi ipapakita o ibabahagi.",
     "selectDocument": "Uri ng Dokumento",
     "uploadFile": "I-drag ang dokumento dito o i-click upang pumili",

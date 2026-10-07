@@ -574,6 +574,17 @@
       "deleteC1": "本名と生年月日の項目がロック解除される",
       "deleteC2": "情報を再編集できる",
       "deleteC3": "本人確認のため新しい書類のアップロードが必要"
+    },
+    "birthdate": {
+      "label": "生年月日",
+      "helper": "年齢確認に使用します。許可なく表示されることはありません。",
+      "preview": "{{date}} · {{age}}歳",
+      "dateFormat": "YYYY年M月D日",
+      "invalid": "無効な日付です。",
+      "future": "未来の日付は指定できません。",
+      "tooOld": "範囲外の日付です。",
+      "underage": "18歳以上である必要があります。",
+      "openCalendar": "カレンダーを開く"
     }
   },
   "card": {
@@ -994,7 +1005,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 本人確認",
+    "title": "本人確認",
     "privacyNotice": "書類は本人確認と年齢確認にのみ使用します。公開・共有されません。",
     "selectDocument": "書類の種類",
     "uploadFile": "書類をここにドラッグまたはクリックで選択",

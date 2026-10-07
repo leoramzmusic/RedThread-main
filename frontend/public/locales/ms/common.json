@@ -534,6 +534,17 @@
       "deleteC1": "Ruangan nama sebenar dan tarikh lahir dibuka",
       "deleteC2": "Anda boleh edit maklumat semula",
       "deleteC3": "Anda mesti muat naik dokumen baru untuk pengesahan"
+    },
+    "birthdate": {
+      "label": "Tarikh lahir",
+      "helper": "Kami menggunakannya untuk mengesahkan umur anda. Tidak pernah dipaparkan tanpa kebenaran anda.",
+      "preview": "{{date}} · {{age}} tahun",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "Tarikh tidak sah.",
+      "future": "Tarikh tidak boleh pada masa hadapan.",
+      "tooOld": "Tarikh di luar julat.",
+      "underage": "Anda mestilah berumur sekurang-kurangnya 18 tahun.",
+      "openCalendar": "Buka kalendar"
     }
   },
   "card": {
@@ -954,7 +965,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Pengesahan Identiti",
+    "title": "Pengesahan Identiti",
     "privacyNotice": "Dokumen hanya untuk pengesahan identiti dan umur. Tidak dipapar atau dikongsi.",
     "selectDocument": "Jenis Dokumen",
     "uploadFile": "Seret dokumen ke sini atau klik untuk pilih",

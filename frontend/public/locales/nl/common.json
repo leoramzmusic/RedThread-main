@@ -575,6 +575,17 @@
       "deleteC1": "Echte-naam- en geboortedatumvelden ontgrendelen",
       "deleteC2": "Je kunt je info opnieuw bewerken",
       "deleteC3": "Je moet een nieuw document uploaden om te verifiëren"
+    },
+    "birthdate": {
+      "label": "Geboortedatum",
+      "helper": "We gebruiken het om je leeftijd te verifiëren. Nooit getoond zonder je toestemming.",
+      "preview": "{{date}} · {{age}} jaar",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "Ongeldige datum.",
+      "future": "De datum mag niet in de toekomst liggen.",
+      "tooOld": "Datum buiten bereik.",
+      "underage": "Je moet minimaal 18 jaar oud zijn.",
+      "openCalendar": "Kalender openen"
     }
   },
   "card": {

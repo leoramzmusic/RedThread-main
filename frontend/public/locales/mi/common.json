@@ -534,6 +534,17 @@
       "deleteC1": "Ka wetekina ngā pānga ingoa tūturu me rā whānau",
       "deleteC2": "Ka taea e koe te whakatika anō i ō mōhiohio",
       "deleteC3": "Me tukuake tuhinga hou hei manatoko i tō tuakiri"
+    },
+    "birthdate": {
+      "label": "Rā whānau",
+      "helper": "Ka whakamahia e mātou hei manatoko i tō pakeke. E kore e whakaaturia ki te kore koe e whakaae.",
+      "preview": "{{date}} · {{age}} tau",
+      "dateFormat": "D MMMM YYYY",
+      "invalid": "He rā hē.",
+      "future": "E kore e taea te rā kei te anamata.",
+      "tooOld": "Kei waho te rā i te awhe.",
+      "underage": "Me 18 tau te pakeke, neke atu rānei.",
+      "openCalendar": "Whakatuwheratia te maramataka"
     }
   },
   "card": {

@@ -205,7 +205,18 @@
       "deleteC3": "Terás de carregar um novo documento para verificar a tua identidade"
     },
     "username": "Nickname",
-    "usernameHelp": "O teu identificador único no RETH (3-30 caracteres)"
+    "usernameHelp": "O teu identificador único no RETH (3-30 caracteres)",
+    "birthdate": {
+      "label": "Data de nascimento",
+      "helper": "Usamos para verificar sua idade. Nunca exibida sem sua permissão.",
+      "preview": "{{date}} · {{age}} anos",
+      "dateFormat": "D [de] MMMM [de] YYYY",
+      "invalid": "Data inválida.",
+      "future": "A data não pode ser futura.",
+      "tooOld": "Data fora do intervalo.",
+      "underage": "Você deve ter pelo menos 18 anos.",
+      "openCalendar": "Abrir calendário"
+    }
   },
   "settings_title": "Configurações",
   "settings_appearance_title": "Aparência",
@@ -916,7 +927,7 @@
     }
   },
   "identityVerification": {
-    "title": "🔐 Verificação de Identidade",
+    "title": "Verificação de Identidade",
     "privacyNotice": "O teu documento serve apenas para verificar a tua identidade e idade. Nunca público nem partilhado.",
     "selectDocument": "Tipo de Documento",
     "uploadFile": "Arrasta o teu documento para aqui ou clica para selecionar",
