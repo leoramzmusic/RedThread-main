@@ -579,13 +579,14 @@
     "birthdate": {
       "label": "Geboortedatum",
       "helper": "We gebruiken het om je leeftijd te verifiëren. Nooit getoond zonder je toestemming.",
-      "preview": "{{date}} · {{age}} jaar",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Ongeldige datum.",
       "future": "De datum mag niet in de toekomst liggen.",
       "tooOld": "Datum buiten bereik.",
       "underage": "Je moet minimaal 18 jaar oud zijn.",
-      "openCalendar": "Kalender openen"
+      "openCalendar": "Kalender openen",
+      "age_one": "{{n}} jaar",
+      "age_other": "{{n}} jaar"
     }
   },
   "card": {

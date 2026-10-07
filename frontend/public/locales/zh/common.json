@@ -579,13 +579,13 @@
     "birthdate": {
       "label": "出生日期",
       "helper": "我们用它来验证您的年龄。未经您的许可绝不显示。",
-      "preview": "{{date}} · {{age}}岁",
-      "dateFormat": "YYYY年M月D日",
+      "preview": "{{date}} · {{age}}",
       "invalid": "日期无效。",
       "future": "日期不能是未来日期。",
       "tooOld": "日期超出范围。",
       "underage": "您必须年满18岁。",
-      "openCalendar": "打开日历"
+      "openCalendar": "打开日历",
+      "age_other": "{{n}}岁"
     }
   },
   "card": {

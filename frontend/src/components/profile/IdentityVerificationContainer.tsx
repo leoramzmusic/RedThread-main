@@ -163,16 +163,19 @@ function BirthDatePickerInput({
                       "Campo bloqueado - Documento en revisión",
                     )
                   : valid
-                    ? t("profile.birthdate.preview", "{{date}} · {{age}} años", {
-                        date: (current as any)
-                          .locale(dayjsLocale)
-                          .format(
-                            t(
-                              "profile.birthdate.dateFormat",
-                              "D [de] MMMM [de] YYYY",
-                            ),
-                          ),
-                        age: dayjs().diff(current, "year"),
+                    ? t("profile.birthdate.preview", "{{date}} · {{age}}", {
+                        date: new Intl.DateTimeFormat(dateLocale, {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        }).format(current.toDate()),
+                        age: (() => {
+                          const n = dayjs().diff(current, "year");
+                          return t("profile.birthdate.age", {
+                            count: n,
+                            n: new Intl.NumberFormat(dateLocale).format(n),
+                          });
+                        })(),
                       })
                     : t(
                         "profile.identityDoc.birthDateHelper",
@@ -248,7 +251,6 @@ const IdentityVerificationContainer: React.FC<
 }) => {
   const { t, i18n } = useTranslation("common");
   const dateLocale = (i18n.language || "es").split("-")[0];
-  const dayjsLocale = DAYJS_LOCALE_MAP[dateLocale] ?? "en";
   const {
     isUploading,
     isDialogOpen,

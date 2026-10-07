@@ -579,13 +579,14 @@
     "birthdate": {
       "label": "Geburtsdatum",
       "helper": "Wir verwenden es zur Altersprüfung. Wird ohne deine Erlaubnis nie angezeigt.",
-      "preview": "{{date}} · {{age}} Jahre",
-      "dateFormat": "D. MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Ungültiges Datum.",
       "future": "Das Datum darf nicht in der Zukunft liegen.",
       "tooOld": "Datum außerhalb des Bereichs.",
       "underage": "Du musst mindestens 18 Jahre alt sein.",
-      "openCalendar": "Kalender öffnen"
+      "openCalendar": "Kalender öffnen",
+      "age_one": "{{n}} Jahr alt",
+      "age_other": "{{n}} Jahre alt"
     }
   },
   "card": {

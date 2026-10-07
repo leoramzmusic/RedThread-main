@@ -538,13 +538,13 @@
     "birthdate": {
       "label": "Tarikh lahir",
       "helper": "Kami menggunakannya untuk mengesahkan umur anda. Tidak pernah dipaparkan tanpa kebenaran anda.",
-      "preview": "{{date}} · {{age}} tahun",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Tarikh tidak sah.",
       "future": "Tarikh tidak boleh pada masa hadapan.",
       "tooOld": "Tarikh di luar julat.",
       "underage": "Anda mestilah berumur sekurang-kurangnya 18 tahun.",
-      "openCalendar": "Buka kalendar"
+      "openCalendar": "Buka kalendar",
+      "age_other": "{{n}} tahun"
     }
   },
   "card": {

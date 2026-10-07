@@ -578,13 +578,13 @@
     "birthdate": {
       "label": "생년월일",
       "helper": "나이 확인용으로 사용되며, 허락 없이 표시되지 않습니다.",
-      "preview": "{{date}} · {{age}}세",
-      "dateFormat": "YYYY년 M월 D일",
+      "preview": "{{date}} · {{age}}",
       "invalid": "유효하지 않은 날짜입니다.",
       "future": "미래 날짜는 사용할 수 없습니다.",
       "tooOld": "범위를 벗어난 날짜입니다.",
       "underage": "18세 이상이어어야 합니다.",
-      "openCalendar": "달력 열기"
+      "openCalendar": "달력 열기",
+      "age_other": "{{n}}살"
     }
   },
   "card": {

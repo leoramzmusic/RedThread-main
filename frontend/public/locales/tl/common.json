@@ -538,13 +538,14 @@
     "birthdate": {
       "label": "Petsa ng kapanganakan",
       "helper": "Ginagamit namin ito upang beripikahin ang iyong edad. Hindi ipinapakita nang walang pahintulot mo.",
-      "preview": "{{date}} · {{age}} taong gulang",
-      "dateFormat": "MMMM D, YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Di-wastong petsa.",
       "future": "Ang petsa ay hindi maaaring nasa hinaharap.",
       "tooOld": "Petsa sa labas ng saklaw.",
       "underage": "Dapat ay hindi bababa sa 18 taong gulang.",
-      "openCalendar": "Buksan ang kalendaryo"
+      "openCalendar": "Buksan ang kalendaryo",
+      "age_other": "{{n}} taong gulang",
+      "age_one": "{{n}} taong gulang"
     }
   },
   "card": {

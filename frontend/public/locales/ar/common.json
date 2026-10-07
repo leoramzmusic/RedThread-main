@@ -578,13 +578,18 @@
     "birthdate": {
       "label": "تاريخ الميلاد",
       "helper": "نستخدمه للتحقق من عمرك. لا يُعرض أبدًا دون إذنك.",
-      "preview": "{{date}} · {{age}} سنة",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "تاريخ غير صالح.",
       "future": "لا يمكن أن يكون التاريخ في المستقبل.",
       "tooOld": "التاريخ خارج النطاق.",
       "underage": "يجب أن يكون عمرك 18 عامًا على الأقل.",
-      "openCalendar": "فتح التقويم"
+      "openCalendar": "فتح التقويم",
+      "age_zero": "{{n}} سنة",
+      "age_one": "{{n}} سنة",
+      "age_two": "{{n}} سنتان",
+      "age_few": "{{n}} سنوات",
+      "age_many": "{{n}} سنة",
+      "age_other": "{{n}} سنة"
     }
   },
   "card": {

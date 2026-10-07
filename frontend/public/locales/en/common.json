@@ -405,13 +405,14 @@
     "birthdate": {
       "label": "Date of birth",
       "helper": "We use it to verify your age. Never shown without your permission.",
-      "preview": "{{date}} · {{age}} years old",
-      "dateFormat": "MMMM D, YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Invalid date.",
       "future": "Date cannot be in the future.",
       "tooOld": "Date out of range.",
       "underage": "You must be at least 18 years old.",
-      "openCalendar": "Open calendar"
+      "openCalendar": "Open calendar",
+      "age_one": "{{n}} year old",
+      "age_other": "{{n}} years old"
     }
   },
   "settings_title": "Settings",

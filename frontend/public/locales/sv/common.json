@@ -579,13 +579,14 @@
     "birthdate": {
       "label": "Födelsedatum",
       "helper": "Vi använder det för att verifiera din ålder. Visas aldrig utan ditt tillstånd.",
-      "preview": "{{date}} · {{age}} år",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Ogiltigt datum.",
       "future": "Datumet får inte ligga i framtiden.",
       "tooOld": "Datum utanför intervallet.",
       "underage": "Du måste vara minst 18 år.",
-      "openCalendar": "Öppna kalendern"
+      "openCalendar": "Öppna kalendern",
+      "age_one": "{{n}} år",
+      "age_other": "{{n}} år"
     }
   },
   "card": {

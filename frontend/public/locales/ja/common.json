@@ -578,13 +578,13 @@
     "birthdate": {
       "label": "生年月日",
       "helper": "年齢確認に使用します。許可なく表示されることはありません。",
-      "preview": "{{date}} · {{age}}歳",
-      "dateFormat": "YYYY年M月D日",
+      "preview": "{{date}} · {{age}}",
       "invalid": "無効な日付です。",
       "future": "未来の日付は指定できません。",
       "tooOld": "範囲外の日付です。",
       "underage": "18歳以上である必要があります。",
-      "openCalendar": "カレンダーを開く"
+      "openCalendar": "カレンダーを開く",
+      "age_other": "{{n}}歳"
     }
   },
   "card": {

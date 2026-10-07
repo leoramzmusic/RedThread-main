@@ -538,13 +538,14 @@
     "birthdate": {
       "label": "የልደት ቀን",
       "helper": "ዕድሜዎን ለማረጋገጥ እንጠቀማለን። ያለፈቃድዎ በጭራሽ አይታይም።",
-      "preview": "{{date}} · {{age}} ዓመት",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "ልክ ያልሆነ ቀን።",
       "future": "ቀኑ የወደፊት መሆን አይችልም።",
       "tooOld": "ቀኑ ከክልል ውጪ ነው።",
       "underage": "ዕድሜዎ ቢያንስ 18 ዓመት መሆን አለበት።",
-      "openCalendar": "የቀን መቁጠሪያ ክፈት"
+      "openCalendar": "የቀን መቁጠሪያ ክፈት",
+      "age_one": "{{n}} ዓመት",
+      "age_other": "{{n}} ዓመት"
     }
   },
   "card": {

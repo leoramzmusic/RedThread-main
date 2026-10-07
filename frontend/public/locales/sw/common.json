@@ -538,13 +538,14 @@
     "birthdate": {
       "label": "Tarehe ya kuzaliwa",
       "helper": "Tunaitumia kuthibitisha umri wako. Haionyeshwi bila ruhusa yako.",
-      "preview": "{{date}} · Miaka {{age}}",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Tarehe si sahihi.",
       "future": "Tarehe haiwezi kuwa ya usoni.",
       "tooOld": "Tarehe nje ya kiwango.",
       "underage": "Lazima uwe na umri wa angalau miaka 18.",
-      "openCalendar": "Fungua kalenda"
+      "openCalendar": "Fungua kalenda",
+      "age_one": "{{n}} mwaka",
+      "age_other": "{{n}} miaka"
     }
   },
   "card": {

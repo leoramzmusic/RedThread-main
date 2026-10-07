@@ -538,13 +538,14 @@
     "birthdate": {
       "label": "Ranar haihuwa",
       "helper": "Muna amfani da ita don tabbatar da shekarunka. Ba a nuna ta ba tare da izininka ba.",
-      "preview": "{{date}} · Shekaru {{age}}",
-      "dateFormat": "D MMMM YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Rana mara inganci.",
       "future": "Rana ba za ta iya zama ta gaba ba.",
       "tooOld": "Rana ta wuce iyaka.",
       "underage": "Dole ne ka kasance aƙalla shekaru 18.",
-      "openCalendar": "Buɗe kalenda"
+      "openCalendar": "Buɗe kalenda",
+      "age_one": "{{n}} shekara",
+      "age_other": "{{n}} shekaru"
     }
   },
   "card": {

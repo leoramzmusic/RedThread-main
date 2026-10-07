@@ -209,13 +209,14 @@
     "birthdate": {
       "label": "Data de nascimento",
       "helper": "Usamos para verificar sua idade. Nunca exibida sem sua permissão.",
-      "preview": "{{date}} · {{age}} anos",
-      "dateFormat": "D [de] MMMM [de] YYYY",
+      "preview": "{{date}} · {{age}}",
       "invalid": "Data inválida.",
       "future": "A data não pode ser futura.",
       "tooOld": "Data fora do intervalo.",
       "underage": "Você deve ter pelo menos 18 anos.",
-      "openCalendar": "Abrir calendário"
+      "openCalendar": "Abrir calendário",
+      "age_one": "{{n}} ano",
+      "age_other": "{{n}} anos"
     }
   },
   "settings_title": "Configurações",
