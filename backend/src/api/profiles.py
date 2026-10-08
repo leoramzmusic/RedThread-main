@@ -65,6 +65,7 @@ def resolve_identity_selfie_path(selfie_key: Optional[str]) -> Optional[str]:
         return None
     return path
 
+
 # Global persistent cache and semaphore for GeoJSON results to avoid hitting Nominatim too hard
 import os
 
