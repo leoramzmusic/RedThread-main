@@ -49,7 +49,7 @@ async def test_employee_token():
     
     # Test permissions
     from src.models.admin_rbac import Permission
-    print(f"\n🔐 Testing permissions:")
+    print(f"\nTesting permissions:")
     print(f"   VIEW_USERS: {employee.has_permission(Permission.VIEW_USERS)}")
     print(f"   EDIT_USERS: {employee.has_permission(Permission.EDIT_USERS)}")
     print(f"   VIEW_METRICS: {employee.has_permission(Permission.VIEW_METRICS)}")
