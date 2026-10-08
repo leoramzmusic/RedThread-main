@@ -130,6 +130,7 @@ class User(Document):
         None  # Type of ID document (ine, dni, passport, etc.)
     )
     identity_document_url: Optional[str] = None  # Secure storage path
+    identity_selfie_url: Optional[str] = None  # Protected (non-public) selfie key
     identity_verification_status: str = "none"  # none, pending, approved, rejected
     identity_submitted_at: Optional[datetime] = None
     identity_rejection_reason: Optional[str] = None  # Reason for rejection

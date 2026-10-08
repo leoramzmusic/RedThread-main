@@ -358,6 +358,9 @@ import os
 # Ensure upload directory exists
 os.makedirs("static/uploads", exist_ok=True)
 
+# Identity selfies are stored outside /static (protected endpoints only)
+os.makedirs("data/identity_selfies", exist_ok=True)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Tips images live in repo-root img/assets/tips (absolute path, CWD-independent)

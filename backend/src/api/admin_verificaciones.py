@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import FileResponse
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from pydantic import BaseModel
@@ -13,6 +14,7 @@ from src.core.middleware.employee_rbac import (
 from src.models.notification import Notification
 
 from src.models.verification_log import VerificationLog
+from src.api.profiles import resolve_identity_selfie_path
 
 
 router = APIRouter()
@@ -56,6 +58,7 @@ async def pending_verifications(
                 ),
                 "document_type": user.identity_document_type,
                 "document_url": user.identity_document_url,
+                "has_selfie": bool(user.identity_selfie_url),
                 "current_real_name": user.real_name,
                 "birth_date": (
                     profile.birth_date.strftime("%Y-%m-%d")
@@ -327,3 +330,23 @@ async def reject_verification(
     await notification.insert()
 
     return {"message": "Verification rejected", "user_id": user_id}
+
+
+@router.get("/{user_id}/selfie")
+async def get_verification_selfie(
+    user_id: str,
+    employee: Employee = Depends(require_employee_permission(Permission.VIEW_USERS)),
+):
+    """
+    Serve a user's identity selfie for review. Protected: only employees with
+    VIEW_USERS can access; never exposed through the public /static mount.
+    """
+    user = await User.get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    file_path = resolve_identity_selfie_path(user.identity_selfie_url)
+    if not file_path:
+        raise HTTPException(status_code=404, detail="No selfie found")
+
+    return FileResponse(file_path)

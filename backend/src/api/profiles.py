@@ -8,6 +8,7 @@ from fastapi import (
     Form,
     Query,
 )
+from fastapi.responses import FileResponse
 import json
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import AbstractSet, List, Literal, Optional, Set
@@ -39,6 +40,30 @@ from src.services.verification_service import (
 router = APIRouter()
 
 ALLOWED_RADIUS_KM = {5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100}
+
+# Identity selfies are stored OUTSIDE the public /static mount.
+# Only authenticated endpoints (user own / admin RBAC) serve them.
+IDENTITY_SELFIE_DIR = "data/identity_selfies"
+IDENTITY_SELFIE_KEY_PREFIX = "identity_selfies/"
+
+
+def resolve_identity_selfie_path(selfie_key: Optional[str]) -> Optional[str]:
+    """
+    Resolve a stored selfie key to a safe filesystem path.
+    Returns None if the key is missing or unsafe (path traversal guard).
+    """
+    if not selfie_key:
+        return None
+    normalized = selfie_key.replace("\\", "/")
+    parts = normalized.split("/")
+    if len(parts) != 2 or parts[0] != IDENTITY_SELFIE_KEY_PREFIX.rstrip("/"):
+        return None
+    if not parts[1] or parts[1] in (".", ".."):
+        return None
+    path = os.path.join(IDENTITY_SELFIE_DIR, parts[1])
+    if not os.path.isfile(path):
+        return None
+    return path
 
 # Global persistent cache and semaphore for GeoJSON results to avoid hitting Nominatim too hard
 import os
@@ -1353,6 +1378,19 @@ async def get_geojson_state(all_keys: bool = False):
     }
 
 
+@router.get("/identity-selfie")
+async def get_identity_selfie(
+    current_user: User = Depends(get_current_user),
+):
+    """Serve the current user's identity selfie (protected, not public)."""
+    file_path = resolve_identity_selfie_path(current_user.identity_selfie_url)
+    if not file_path:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="No selfie found"
+        )
+    return FileResponse(file_path)
+
+
 @router.get("/{user_id}")
 async def get_profile(user_id: str, current_user: User = Depends(get_current_user)):
     """Get another user's profile (public data only)"""
@@ -1455,6 +1493,7 @@ async def delete_photo(
 async def upload_identity(
     document_type: str = Form(...),
     file: UploadFile = File(...),
+    selfie: UploadFile = File(None),
     current_user: User = Depends(get_current_user),
 ):
     """Upload identity document for verification"""
@@ -1497,6 +1536,41 @@ async def upload_identity(
     # Save file
     with open(file_path, "wb") as f:
         f.write(file_content)
+
+    # Save selfie (protected location, outside /static). Optional at API level.
+    if selfie is not None:
+        selfie_valid_types = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/webp",
+        ]
+        if selfie.content_type not in selfie_valid_types:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid selfie type. Only JPG, PNG, and WEBP are allowed",
+            )
+        selfie_content = await selfie.read()
+        if len(selfie_content) > 5 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Selfie too large. Maximum size is 5MB",
+            )
+        selfie_extension = (selfie.filename or "").split(".")[-1].lower()
+        if selfie_extension not in ("jpg", "jpeg", "png", "webp"):
+            selfie_extension = "jpg"
+        selfie_filename = (
+            f"identity_selfie_{current_user.id}_{uuid.uuid4()}.{selfie_extension}"
+        )
+        os.makedirs(IDENTITY_SELFIE_DIR, exist_ok=True)
+        selfie_path = os.path.join(IDENTITY_SELFIE_DIR, selfie_filename)
+        with open(selfie_path, "wb") as f:
+            f.write(selfie_content)
+        current_user.identity_selfie_url = (
+            f"{IDENTITY_SELFIE_KEY_PREFIX}{selfie_filename}"
+        )
+    else:
+        current_user.identity_selfie_url = None
 
     # Extract information from document using OCR (basic implementation)
     extracted_data = await extract_identity_data(file_path, document_type)
@@ -1545,6 +1619,7 @@ async def upload_identity(
         "success": True,
         "message": "Identity document uploaded successfully",
         "verification_status": "pending",
+        "selfie_uploaded": bool(current_user.identity_selfie_url),
         "extracted_data": {
             "name": extracted_data.get("name"),
             "birth_date": (
@@ -1585,15 +1660,28 @@ async def delete_identity_document(current_user: User = Depends(get_current_user
 
     print("  - Clearing document data...")
 
+    # Resolve selfie path BEFORE clearing the field
+    selfie_path_to_delete = resolve_identity_selfie_path(
+        current_user.identity_selfie_url
+    )
+
     # Clear document data
     current_user.identity_document_url = None
     current_user.identity_document_type = None
+    current_user.identity_selfie_url = None
     current_user.identity_verification_status = "none"
     current_user.identity_submitted_at = None
     current_user.identity_rejection_reason = None
     current_user.updated_at = datetime.utcnow()
 
     await current_user.save()
+
+    # Delete selfie file from disk (best effort)
+    if selfie_path_to_delete:
+        try:
+            os.remove(selfie_path_to_delete)
+        except OSError:
+            pass
 
     print("  - Document deleted successfully")
     print(f"  - New status: {current_user.identity_verification_status}")

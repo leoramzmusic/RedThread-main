@@ -52,6 +52,7 @@ interface PendingVerification {
   submitted_at: string;
   document_type: string;
   document_url: string;
+  has_selfie?: boolean;
   current_real_name?: string;
   birth_date?: string;
 }
@@ -68,6 +69,11 @@ export default function VerificationRequestsTable() {
   const [rejectReason, setRejectReason] = useState('');
   const [rejectDetails, setRejectDetails] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Selfie (protected media, fetched with credentials and shown as blob URL)
+  const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
+  const [selfieLoading, setSelfieLoading] = useState(false);
+  const [selfieError, setSelfieError] = useState(false);
   
   // Snackbar state
   const [snackbar, setSnackbar] = useState<{open: boolean; message: string; severity: 'success' | 'error' | 'warning'}>({open: false, message: '', severity: 'success'});
@@ -98,6 +104,32 @@ export default function VerificationRequestsTable() {
     setRejectReason('');
     setRejectDetails('');
     setDialogOpen(true);
+
+    // Load protected selfie (if any)
+    if (selfieUrl) URL.revokeObjectURL(selfieUrl);
+    setSelfieUrl(null);
+    setSelfieError(false);
+    if (verification.has_selfie) {
+      setSelfieLoading(true);
+      adminApiClient
+        .get(`/portal-redthread/verificaciones/${verification.user_id}/selfie`, {
+          responseType: 'blob',
+        })
+        .then((response) => {
+          setSelfieUrl(URL.createObjectURL(response.data as Blob));
+        })
+        .catch((error) => {
+          console.error('Error loading selfie:', error);
+          setSelfieError(true);
+        })
+        .finally(() => setSelfieLoading(false));
+    }
+  };
+
+  const closeReview = () => {
+    if (selfieUrl) URL.revokeObjectURL(selfieUrl);
+    setSelfieUrl(null);
+    setDialogOpen(false);
   };
 
   const handleApprove = async () => {
@@ -220,7 +252,7 @@ export default function VerificationRequestsTable() {
       {/* Review Dialog */}
       <Dialog 
         open={dialogOpen} 
-        onClose={() => setDialogOpen(false)}
+        onClose={closeReview}
         maxWidth="md"
         fullWidth
       >
@@ -258,6 +290,49 @@ export default function VerificationRequestsTable() {
                 </Box>
                 <Typography variant="caption" display="block" mt={1}>
                   Tipo: {selectedVerification.document_type}
+                </Typography>
+
+                <Typography variant="subtitle2" gutterBottom mt={2}>
+                  Selfie (foto de identidad):
+                </Typography>
+                <Box mt={1}>
+                  {!selectedVerification.has_selfie ? (
+                    <Typography variant="caption" color="text.secondary">
+                      Sin selfie adjunta
+                    </Typography>
+                  ) : selfieLoading ? (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <CircularProgress size={18} />
+                      <Typography variant="caption">Cargando selfie...</Typography>
+                    </Box>
+                  ) : selfieError || !selfieUrl ? (
+                    <Typography variant="caption" color="error">
+                      No se pudo cargar la selfie
+                    </Typography>
+                  ) : (
+                    <Box
+                      sx={{
+                        width: '100%',
+                        maxHeight: 300,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        border: '1px solid #ddd',
+                        borderRadius: 1,
+                        bgcolor: '#000',
+                      }}
+                    >
+                      <img
+                        src={selfieUrl}
+                        alt="Selfie del usuario"
+                        style={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain' }}
+                      />
+                    </Box>
+                  )}
+                </Box>
+                <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+                  Privada — solo visible para revisores
                 </Typography>
               </Grid>
               
@@ -322,7 +397,7 @@ export default function VerificationRequestsTable() {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} color="inherit">
+          <Button onClick={closeReview} color="inherit">
             Cancelar
           </Button>
           <Button 

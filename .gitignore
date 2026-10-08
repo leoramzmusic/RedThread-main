@@ -66,6 +66,9 @@ k8s/overlays/*/secrets.yaml
 backend/static/uploads/
 backend/uploads/
 
+# Identity selfies (protected media, outside /static)
+backend/data/
+
 # =========================
 # Database
 # =========================

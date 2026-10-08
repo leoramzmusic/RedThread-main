@@ -23,12 +23,19 @@ export const useIdentityVerification = ({
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
 
-  const handleSubmit = async (documentType: string, file: File) => {
+  const handleSubmit = async (
+    documentType: string,
+    file: File,
+    selfie: File | null = null,
+  ) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append("document_type", documentType);
       formData.append("file", file);
+      if (selfie) {
+        formData.append("selfie", selfie);
+      }
 
       // Use apiClient which automatically handles authentication
       const { default: apiClient } = await import("@/services/api");
