@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
+import { alpha, useTheme } from '@mui/material/styles';
 import useDebounce from '@/hooks/useDebounce';
 import apiClient from '@/services/api';
 
@@ -22,6 +23,7 @@ export const UsernameEditor: React.FC<UsernameEditorProps> = ({
     onUsernameChange,
 }) => {
     const { t } = useTranslation('common');
+    const theme = useTheme();
     const [username, setUsername] = useState(currentUsername);
     const [checking, setChecking] = useState(false);
     const [available, setAvailable] = useState<boolean | null>(null);
@@ -74,9 +76,17 @@ export const UsernameEditor: React.FC<UsernameEditorProps> = ({
         <Box sx={{ mb: 3 }}>
             <TextField
                 fullWidth
+                size="small"
                 label={t('profile.username')}
                 value={username}
                 onChange={handleChange}
+                sx={{
+                    '& .MuiOutlinedInput-root': { height: 48 },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                        boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.12)}`,
+                    },
+                }}
                 InputProps={{
                     sx: { borderRadius: 2 },
                     endAdornment: (

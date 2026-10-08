@@ -1,10 +1,16 @@
 // @ts-ignore
 import countryCodes from 'country-codes-list';
 
+const flagEmoji = (iso: string): string =>
+  iso
+    .toUpperCase()
+    .replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)));
+
 export interface CountryType {
   code: string;
   label: string;
   phone: string;
+  flag: string;
   suggested?: boolean;
 }
 
@@ -22,6 +28,7 @@ const allCountries: CountryType[] = Object.entries(rawCountries).map(([code, val
     code,
     label,
     phone: phone.replace('+', ''), // Remove + if present, though library usually gives just number
+    flag: flagEmoji(code),
     suggested: SUGGESTED_CODES.includes(code),
   };
 });

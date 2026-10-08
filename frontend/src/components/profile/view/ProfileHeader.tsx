@@ -21,12 +21,14 @@ import {
     AddCircle as AddIcon,
     Image as ImageIcon,
     Close as CloseIcon,
-    Verified as VerifiedIcon,
     AutoAwesome as AutoAwesomeIcon,
 } from '@mui/icons-material';
 
 
 import PlanBadge from '../../subscription/PlanBadge';
+import VerificationBadge, {
+    VerificationStatus,
+} from '../../shared/VerificationBadge';
 
 interface ProfileHeaderProps {
     profile: any;
@@ -37,6 +39,14 @@ interface ProfileHeaderProps {
     smartPhotosEnabled?: boolean;
     mediaItems?: any[];
 }
+
+const identityStatus = (profile: any): VerificationStatus => {
+    const s = profile.identity_verification_status;
+    if (s === 'verified' || s === 'approved') return 'verified';
+    if (s === 'pending') return 'pending';
+    if (profile.verified) return 'verified';
+    return 'none';
+};
 
 export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readOnly, onPhotoClick, smartPhotosEnabled, mediaItems }: ProfileHeaderProps) {
     const { t } = useTranslation('common');
@@ -233,7 +243,7 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                             <Typography variant="h5" color="text.secondary" fontWeight={500}>
                                 {profile.age}
                             </Typography>
-                            {profile.verified && <VerifiedIcon sx={{ color: '#E63946' }} />}
+                            <VerificationBadge status={identityStatus(profile)} size="medium" />
                         </Box>
 
                         {/* Handle */}

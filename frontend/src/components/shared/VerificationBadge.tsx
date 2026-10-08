@@ -1,10 +1,14 @@
 import { Tooltip } from '@mui/material';
-import { Verified as VerifiedIcon } from '@mui/icons-material';
+import {
+  Verified as VerifiedIcon,
+  Pending as PendingIcon,
+} from '@mui/icons-material';
+
+export type VerificationStatus = 'none' | 'pending' | 'verified';
 
 interface VerificationBadgeProps {
-  verified: boolean;
+  status: VerificationStatus;
   size?: 'small' | 'medium' | 'large';
-  showUnverified?: boolean; // Whether to show gray badge for unverified
 }
 
 const sizeMap = {
@@ -13,23 +17,36 @@ const sizeMap = {
   large: 24,
 };
 
+const TOOLTIPS: Record<VerificationStatus, string> = {
+  none: 'No Verificado',
+  pending: 'Verificación de identidad en revisión',
+  verified: 'Este usuario verificó su identidad',
+};
+
 export default function VerificationBadge({
-  verified,
+  status,
   size = 'small',
-  showUnverified = false,
 }: VerificationBadgeProps) {
-  if (!verified && !showUnverified) return null;
-
   const iconSize = sizeMap[size];
-  const color = verified ? '#2196F3' : '#9E9E9E';
-  const tooltipText = verified ? 'Perfil Verificado' : 'No Verificado';
 
+  if (status === 'pending') {
+    return (
+      <Tooltip title={TOOLTIPS.pending} arrow>
+        <PendingIcon sx={{ fontSize: iconSize, color: '#F59E0B' }} />
+      </Tooltip>
+    );
+  }
+
+  const isVerified = status === 'verified';
   return (
-    <Tooltip title={tooltipText} arrow>
+    <Tooltip
+      title={isVerified ? TOOLTIPS.verified : TOOLTIPS.none}
+      arrow
+    >
       <VerifiedIcon
         sx={{
           fontSize: iconSize,
-          color: color,
+          color: isVerified ? '#2196F3' : '#9E9E9E',
         }}
       />
     </Tooltip>

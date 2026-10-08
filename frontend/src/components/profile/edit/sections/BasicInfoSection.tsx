@@ -13,9 +13,9 @@ import {
   AccordionDetails,
   IconButton,
   Tooltip,
-  Divider,
   Chip,
 } from "@mui/material";
+import { alpha, useTheme } from "@mui/material/styles";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "next-i18next";
 import {
@@ -72,6 +72,14 @@ export default function EditBasicInfo({
   setIdentityInfoOpen = () => {},
 }: EditBasicInfoProps) {
   const { t } = useTranslation("common");
+  const theme = useTheme();
+  const inputSx = {
+    "& .MuiOutlinedInput-root": { height: 48 },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderWidth: 2,
+      boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.12)}`,
+    },
+  };
 
   const renderVerifyControl = ({
     verified,
@@ -84,39 +92,78 @@ export default function EditBasicInfo({
     onVerify: () => void;
     onChangeRequest?: () => void;
   }) => {
+    const btnBaseSx = {
+      borderRadius: "10px",
+      textTransform: "none",
+      fontWeight: 600,
+      minHeight: 40,
+      px: 1.75,
+      transition:
+        "background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease",
+      "&:active": { transform: "scale(0.96)" },
+    };
     if (verified) {
       return (
-        <Box display="flex" alignItems="center" gap={0.5}>
+        <Box display="flex" alignItems="center" gap={0.5} sx={{ mt: 0.5 }}>
           <Tooltip title={t("profile.sections.identity.verification.verifiedTooltip")}>
             <Chip
               icon={<VerifiedUserIcon fontSize="small" />}
               label={t("profile.sections.identity.verification.verified")}
               color="success"
               size="small"
+              sx={{
+                fontWeight: 600,
+                borderRadius: "10px",
+                transition: "box-shadow 150ms ease",
+                "&:hover": {
+                  boxShadow: `0 0 8px ${alpha(theme.palette.success.main, 0.55)}`,
+                },
+              }}
             />
           </Tooltip>
           {onChangeRequest && (
-            <Button size="small" onClick={onChangeRequest} sx={{ textTransform: "none" }}>
+            <Button
+              size="small"
+              onClick={onChangeRequest}
+              sx={{
+                ...btnBaseSx,
+                minHeight: 32,
+                color: "text.secondary",
+              }}
+            >
               {t("profile.sections.identity.verification.change")}
             </Button>
           )}
         </Box>
       );
     }
+    if (verifying) {
+      return (
+        <Button
+          size="small"
+          variant="contained"
+          color="warning"
+          disabled
+          sx={btnBaseSx}
+        >
+          <CircularProgress size={14} color="inherit" sx={{ mr: 1 }} />
+          {t("profile.sections.identity.verification.verify")}
+        </Button>
+      );
+    }
     return (
       <Button
         size="small"
-        variant="outlined"
+        variant="contained"
+        startIcon={<VerifiedUserIcon fontSize="small" />}
         onClick={onVerify}
-        disabled={verifying}
         sx={{
-          textTransform: "none",
-          whiteSpace: "nowrap",
-          minWidth: 110,
-          mt: 0.5,
+          ...btnBaseSx,
+          "&:hover": {
+            boxShadow: `0 0 10px ${alpha(theme.palette.primary.main, 0.45)}`,
+          },
         }}
       >
-        {verifying ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}
         {t("profile.sections.identity.verification.verify")}
       </Button>
     );
@@ -183,11 +230,6 @@ export default function EditBasicInfo({
               />
             </Grid>
 
-            {/* Separador: documento | datos personales */}
-            <Grid item xs={12}>
-              <Divider />
-            </Grid>
-
             <Grid item xs={12}>
               <Controller
                 name="display_name"
@@ -206,25 +248,43 @@ export default function EditBasicInfo({
                   <TextField size="small"
                     {...field}
                     fullWidth
-                    label={t("profile.nickname_label", "Apodo / Nickname")}
+                    sx={inputSx}
+                    label={
+                      <Box
+                        component="span"
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                        }}
+                      >
+                        {t("profile.nickname_label", "Apodo / Nickname")}
+                        <Tooltip
+                          title={t(
+                            "profile.nickname_helper",
+                            "Este es el nombre que verán los demás. Puede contener espacios y acentos.",
+                          )}
+                        >
+                          <Info
+                            fontSize="small"
+                            color="action"
+                            sx={{ verticalAlign: "middle" }}
+                          />
+                        </Tooltip>
+                      </Box>
+                    }
                     placeholder={t(
                       "profile.nickname_placeholder",
                       "Cómo quieres que te llamen",
                     )}
                     error={!!error}
-                    helperText={
-                      error?.message ||
-                      t(
-                        "profile.nickname_helper",
-                        "Este es el nombre que verán los demás. Puede contener espacios y acentos.",
-                      )
-                    }
+                    helperText={error?.message}
                   />
                 )}
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ mt: 1.5 }}>
               <UsernameEditor
                 currentUsername={profile.nickname || ""}
                 onUsernameChange={(newUsername) =>
@@ -234,34 +294,27 @@ export default function EditBasicInfo({
             </Grid>
 
             <Grid item xs={12}>
-              <Box display="flex" gap={2} alignItems="flex-start">
+              <Box display="flex" gap={2} alignItems="flex-start" flexWrap="wrap">
                 <Controller
                   name="email"
                   control={control}
                   render={({ field }) => (
                     <TextField size="small"
                       {...field}
-                      fullWidth
+                      sx={{ ...inputSx, flex: "1 1 240px", minWidth: 220 }}
                       label={t("profile.email_label", "Email")}
                       type="email"
-                      helperText={t(
-                        "profile.email_helper",
-                        "Tu correo electrónico",
-                      )}
                     />
                   )}
                 />
-                {renderVerifyControl({
-                  verified: emailVerified,
-                  verifying: isVerifyingEmail,
-                  onVerify: handleVerifyEmail,
-                })}
+                <Box display="flex" alignItems="flex-start" sx={{ mt: 0.5 }}>
+                  {renderVerifyControl({
+                    verified: emailVerified,
+                    verifying: isVerifyingEmail,
+                    onVerify: handleVerifyEmail,
+                  })}
+                </Box>
               </Box>
-            </Grid>
-
-            {/* Separador: datos personales | contacto */}
-            <Grid item xs={12}>
-              <Divider />
             </Grid>
 
             <Grid item xs={12}>
@@ -270,7 +323,7 @@ export default function EditBasicInfo({
                   options={COUNTRY_CODES}
                   autoHighlight
                   getOptionLabel={(option) =>
-                    option.label + " (+" + option.phone + ")"
+                    option.flag + " " + option.label + " (+" + option.phone + ")"
                   }
                   filterOptions={(options, { inputValue }) => {
                     const searchTerm = inputValue.toLowerCase();
@@ -284,10 +337,14 @@ export default function EditBasicInfo({
                   renderOption={(props, option) => (
                     <Box
                       component="li"
-                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
                       {...props}
                     >
-                      {option.label} (+{option.phone})
+                      {option.flag} {option.label} (+{option.phone})
                     </Box>
                   )}
                   value={
@@ -300,11 +357,12 @@ export default function EditBasicInfo({
                     }
                   }}
                   disabled={phoneVerified}
-                  sx={{ width: 250 }}
+                  sx={{ flex: "0 0 210px" }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       size="small"
+                      sx={inputSx}
                       label={t("profile.country_label", "País")}
                       placeholder={t(
                         "profile.country_placeholder",
@@ -318,7 +376,7 @@ export default function EditBasicInfo({
                   )}
                 />
                 <TextField size="small"
-                  fullWidth
+                  sx={{ ...inputSx, flex: "1 1 220px", minWidth: 200 }}
                   label={t("profile.phone_label", "Teléfono")}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -329,12 +387,14 @@ export default function EditBasicInfo({
                     "Puedes usar este número para iniciar sesión en tu cuenta",
                   )}
                 />
-                {renderVerifyControl({
-                  verified: phoneVerified,
-                  verifying: isVerifyingPhone,
-                  onVerify: handleVerifyPhone,
-                  onChangeRequest: phoneVerified ? handleChangePhoneRequest : undefined,
-                })}
+                <Box display="flex" alignItems="flex-start" sx={{ mt: 0.5 }}>
+                  {renderVerifyControl({
+                    verified: phoneVerified,
+                    verifying: isVerifyingPhone,
+                    onVerify: handleVerifyPhone,
+                    onChangeRequest: phoneVerified ? handleChangePhoneRequest : undefined,
+                  })}
+                </Box>
               </Box>
             </Grid>
           </Grid>

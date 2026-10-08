@@ -23,11 +23,14 @@ import {
 import DocumentManager from "./DocumentManager";
 import IdentityVerificationDialog from "./IdentityVerificationDialog";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import VerificationBadge, {
+  VerificationStatus,
+} from "../shared/VerificationBadge";
 import EditIcon from "@mui/icons-material/Edit";
 import WarningIcon from "@mui/icons-material/Warning";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import IconButton from "@mui/material/IconButton";
+import { alpha, useTheme, Theme } from "@mui/material/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -99,6 +102,14 @@ const DAYJS_LOCALE_MAP: Record<string, string> = {
   am: "am",
 };
 
+const inputSx48 = (theme: Theme) => ({
+  "& .MuiOutlinedInput-root": { height: 48 },
+  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderWidth: 2,
+    boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.12)}`,
+  },
+});
+
 /**
  * Birth-date picker with explicitly controlled open state plus a visible
  * calendar toggle, so the popup always opens on tap/click/keyboard.
@@ -114,6 +125,7 @@ function BirthDatePickerInput({
   onUnlock,
 }: BirthDatePickerInputProps) {
   const [calOpen, setCalOpen] = React.useState(false);
+  const theme = useTheme();
   const dayjsLocale = DAYJS_LOCALE_MAP[dateLocale] ?? "en";
   const current = field.value ? dayjs(field.value).locale(dayjsLocale) : null;
   const valid = !error && current !== null && current.isValid();
@@ -219,6 +231,7 @@ function BirthDatePickerInput({
               ),
             },
             sx: {
+              ...inputSx48(theme),
               "& .MuiInputBase-input": {
                 cursor: fieldsLocked ? "pointer" : "text",
               },
@@ -252,6 +265,7 @@ const IdentityVerificationContainer: React.FC<
 }) => {
   const { t, i18n } = useTranslation("common");
   const dateLocale = (i18n.language || "es").split("-")[0];
+  const theme = useTheme();
   const {
     isUploading,
     isDialogOpen,
@@ -295,6 +309,14 @@ const IdentityVerificationContainer: React.FC<
   // Only lock if pending OR verified AND not unlocked
   const fieldsLocked =
     (verificationStatus === "pending" || verified) && !isUnlocked;
+
+  const realNameStatus: VerificationStatus =
+    verificationStatus === "verified" ||
+    (verificationStatus !== "pending" && verified)
+      ? "verified"
+      : verificationStatus === "pending"
+        ? "pending"
+        : "none";
 
   const handleUnlockClick = () => {
     // If already unlocked (shouldn't be clickable if disabled is false, making this redundant but safe)
@@ -362,21 +384,10 @@ const IdentityVerificationContainer: React.FC<
                   readOnly: fieldsLocked,
                   endAdornment: (
                     <InputAdornment position="end">
-                      {verified ? (
-                        <VerifiedUserIcon sx={{ color: "success.main" }} />
-                      ) : fieldsLocked ? (
-                        <Box
-                          component="span"
-                          onClick={handleUnlockClick}
-                          sx={{
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <EditIcon color="action" />
-                        </Box>
-                      ) : null}
+                      <VerificationBadge
+                        status={realNameStatus}
+                        size="medium"
+                      />
                     </InputAdornment>
                   ),
                 }}
@@ -397,6 +408,7 @@ const IdentityVerificationContainer: React.FC<
                         )
                 }
                 sx={{
+                  ...inputSx48(theme),
                   "& .MuiInputBase-input": {
                     cursor: fieldsLocked ? "pointer" : "text",
                   },

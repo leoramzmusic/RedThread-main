@@ -193,13 +193,41 @@ export default function ModifyProfilePage() {
         );
 
         // Get existing bundle and deep-merge profile section so static keys (auth, dashboard, menu_*, etc.) are preserved
+        // apiProfileResources includes top-level `sections` (from sections.* keys in identityRes.data);
+        // a shallow spread would replace the whole static sections subtree and hide keys
+        // like profile.sections.identity.verification.*
+        const deepMerge = (
+          target: Record<string, unknown>,
+          patch: Record<string, unknown>,
+        ): Record<string, unknown> => {
+          const out: Record<string, unknown> = { ...target };
+          for (const [key, value] of Object.entries(patch || {})) {
+            if (
+              value &&
+              typeof value === "object" &&
+              !Array.isArray(value) &&
+              out[key] &&
+              typeof out[key] === "object" &&
+              !Array.isArray(out[key])
+            ) {
+              out[key] = deepMerge(
+                out[key] as Record<string, unknown>,
+                value as Record<string, unknown>,
+              );
+            } else {
+              out[key] = value;
+            }
+          }
+          return out;
+        };
+
         const existingBundle =
           i18n.getResourceBundle(i18n.language, "common") || {};
         const mergedBundle = JSON.parse(JSON.stringify(existingBundle)); // deep clone
-        mergedBundle.profile = {
-          ...(mergedBundle.profile || {}),
-          ...apiProfileResources,
-        };
+        mergedBundle.profile = deepMerge(
+          mergedBundle.profile || {},
+          apiProfileResources,
+        );
         // Partner keys live under profileSections.partner.* (used by PartnerManager)
         const nestedPartner = nestDotted(partnerRes.data);
         // Interests keys live under profileSections.interests.* (used by LifestyleInterests)
