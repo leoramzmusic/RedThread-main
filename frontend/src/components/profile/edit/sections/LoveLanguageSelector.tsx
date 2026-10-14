@@ -22,7 +22,7 @@ import {
   CheckCircle,
 } from "@mui/icons-material";
 import { Controller, Control, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { LOVE_LANGUAGE_OPTIONS } from "../../../../constants/profileOptions";
 
 interface LoveLanguageSelectorProps {
@@ -100,7 +100,11 @@ export default function LoveLanguageSelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           <Favorite sx={{ mr: 1.5, color: loveColor }} />
           <Typography
             variant="subtitle2"
@@ -140,9 +144,11 @@ export default function LoveLanguageSelector({
           {/* Subtitle */}
           <Typography
             variant="body2"
-            color="text.secondary"
-            sx={{ mb: 2, fontWeight: 500 }}
-          >
+            sx={{
+              color: "text.secondary",
+              mb: 2,
+              fontWeight: 500
+            }}>
             {t(
               "profile.additional.love.question",
               "¿Cómo das y recibes afecto?",
@@ -160,7 +166,13 @@ export default function LoveLanguageSelector({
               bgcolor: alpha(theme.palette.error.main, 0.05),
             }}
           >
-            <Box display="flex" alignItems="flex-start" gap={1} mb={1}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 1,
+                mb: 1
+              }}>
               <InfoOutlined
                 sx={{ fontSize: 20, color: "error.main", mt: 0.2 }}
               />
@@ -184,9 +196,11 @@ export default function LoveLanguageSelector({
                     "profile.additional.love.why1",
                     "Evita malentendidos afectivos",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -199,9 +213,11 @@ export default function LoveLanguageSelector({
                     "profile.additional.love.why2",
                     "Alinea formas de expresión emocional",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -214,9 +230,11 @@ export default function LoveLanguageSelector({
                     "profile.additional.love.why3",
                     "Refleja compatibilidad energética y emocional",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -229,9 +247,11 @@ export default function LoveLanguageSelector({
                     "profile.additional.love.why4",
                     "CARE puede adaptar el tono del vínculo",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -247,10 +267,11 @@ export default function LoveLanguageSelector({
                 <Stack
                   direction="row"
                   spacing={1.5}
-                  flexWrap="wrap"
                   useFlexGap
-                  sx={{ gap: 1.5 }}
-                >
+                  sx={{
+                    flexWrap: "wrap",
+                    gap: 1.5
+                  }}>
                   {LOVE_LANGUAGE_OPTIONS.map((option) => {
                     const isSelected = field.value === option.value;
                     return (

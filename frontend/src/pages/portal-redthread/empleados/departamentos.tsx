@@ -22,14 +22,22 @@ const DepartamentosPage: React.FC = () => {
                         <Link component={NextLink} href="/portal-redthread/empleados/listado" underline="hover" color="inherit">
                             Empleados
                         </Link>
-                        <Typography color="text.primary">Departamentos</Typography>
+                        <Typography sx={{
+                            color: "text.primary"
+                        }}>Departamentos</Typography>
                     </Breadcrumbs>
 
-                    <Box mb={4}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
+                    <Box sx={{
+                        mb: 4
+                    }}>
+                        <Typography variant="h4" gutterBottom sx={{
+                            fontWeight: "bold"
+                        }}>
                             Estructura Organizacional
                         </Typography>
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{
+                            color: "text.secondary"
+                        }}>
                             Gestione las áreas, departamentos y responsables de la organización.
                         </Typography>
                     </Box>

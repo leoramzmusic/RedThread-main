@@ -20,7 +20,7 @@ import {
 } from "@mui/icons-material";
 import SmartToast from "../../../common/SmartToast";
 import apiClient from "../../../../services/api";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useEffect, useRef, useState } from "react";
 import MediaManager from "../../MediaManager";
 import { smartPhotosTracker } from "../../../../services/smartPhotos";
@@ -95,7 +95,7 @@ export default function PhotosSection({
   };
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -110,9 +110,16 @@ export default function PhotosSection({
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}
         >
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <PhotoLibrary color="action" />
-            <Typography variant="h6" fontWeight="600">
+            <Typography variant="h6" sx={{
+              fontWeight: "600"
+            }}>
               {t("profile.photos.title", "Fotos")}
             </Typography>
           </Box>
@@ -146,19 +153,28 @@ export default function PhotosSection({
           ) : null}
 
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mt={1.5}
-            p={1.5}
-            bgcolor="action.hover"
-            borderRadius="12px"
-            border="1px solid"
-            borderColor="divider"
-          >
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 1.5,
+              p: 1.5,
+              bgcolor: "action.hover",
+              borderRadius: "12px",
+              border: "1px solid",
+              borderColor: "divider"
+            }}>
             <Box>
-              <Stack direction="row" spacing={1} alignItems="center" mb={0.5}>
-                <Typography variant="subtitle2" fontWeight="600">
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  alignItems: "center",
+                  mb: 0.5
+                }}>
+                <Typography variant="subtitle2" sx={{
+                  fontWeight: "600"
+                }}>
                   {t("profile.photos.smartTitle", "Smart Photos")}
                 </Typography>
                 <Tooltip
@@ -170,7 +186,9 @@ export default function PhotosSection({
                   <AutoAwesome sx={{ fontSize: 16, color: "warning.main" }} />
                 </Tooltip>
               </Stack>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{
+                color: "text.secondary"
+              }}>
                 {t(
                   "profile.photos.smartDesc",
                   "Selecciona automáticamente la mejor foto según interacción",
@@ -180,11 +198,13 @@ export default function PhotosSection({
             <Switch
               checked={smartPhotos}
               onChange={(e) => handleSmartPhotosChange(e.target.checked)}
-              inputProps={{
-                "aria-label": t(
-                  "profile.photos.smartToggle",
-                  "Smart Photos Toggle",
-                ),
+              slotProps={{
+                input: {
+                  "aria-label": t(
+                    "profile.photos.smartToggle",
+                    "Smart Photos Toggle",
+                  ),
+                }
               }}
             />
           </Box>

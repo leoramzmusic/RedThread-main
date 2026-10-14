@@ -92,7 +92,11 @@ export default function SmokingSelector({ control }: SmokingSelectorProps) {
                 },
               }}
             >
-              <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center"
+                }}>
                 <SmokingIcon sx={{ color: categoryColor, mr: 1.5 }} />
                 <Typography
                   variant="subtitle2"
@@ -125,7 +129,12 @@ export default function SmokingSelector({ control }: SmokingSelectorProps) {
                   bgcolor: "background.paper",
                 }}
               >
-                <Box display="flex" flexWrap="wrap" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}>
                   {SMOKING_OPTIONS.map((option) => {
                     const isSelected = currentValue === option.value;
                     return (
@@ -189,9 +198,11 @@ export default function SmokingSelector({ control }: SmokingSelectorProps) {
                     </AlertTitle>
                     <Typography
                       variant="caption"
-                      display="block"
-                      sx={{ lineHeight: 1.5, color: "text.primary" }}
-                    >
+                      sx={{
+                        display: "block",
+                        lineHeight: 1.5,
+                        color: "text.primary"
+                      }}>
                       Fumar con frecuencia puede afectar tu salud y bienestar.
                       Si lo deseas, explora opciones para reducir o dejar el
                       hábito.

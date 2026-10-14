@@ -77,22 +77,29 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
                 vertical: 'top',
                 horizontal: 'left',
             }}
-            PaperProps={{
-                sx: {
-                    width: width,
-                    maxHeight: 600,
-                    bgcolor: 'background.paper',
-                    color: 'text.primary',
-                    borderRadius: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    display: 'flex',
-                    flexDirection: 'column'
+            slotProps={{
+                paper: {
+                    sx: {
+                        width: width,
+                        maxHeight: 600,
+                        bgcolor: 'background.paper',
+                        color: 'text.primary',
+                        borderRadius: 3,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }
                 }
             }}
         >
             <DialogTitle sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-                <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                    }}>
                     {type === 'track' ? <MusicNote color="primary" /> : <Person color="primary" />}
                     <Typography variant="h6">
                         {type === 'track' ? 'Buscar Canción' : 'Buscar Artista'}
@@ -107,24 +114,33 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
                     placeholder={type === 'track' ? "Escribe el nombre de la canción..." : "Escribe el nombre del artista..."}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Search sx={{ color: '#666' }} />
-                            </InputAdornment>
-                        ),
-                        sx: {
-                            bgcolor: 'action.hover',
-                            color: 'text.primary',
-                            borderRadius: 2,
-                            '& fieldset': { borderColor: 'divider' }
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search sx={{ color: '#666' }} />
+                                </InputAdornment>
+                            ),
+                            sx: {
+                                bgcolor: 'action.hover',
+                                color: 'text.primary',
+                                borderRadius: 2,
+                                '& fieldset': { borderColor: 'divider' }
+                            }
                         }
                     }}
                 />
 
-                <Box mt={2}>
+                <Box sx={{
+                    mt: 2
+                }}>
                     {loading ? (
-                        <Box display="flex" justifyContent="center" p={4}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                p: 4
+                            }}>
                             <CircularProgress color="primary" />
                         </Box>
                     ) : (
@@ -170,19 +186,36 @@ export default function SpotifySearchModal({ open, onClose, type, onSelect, anch
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            primary={<Typography color="text.primary" fontWeight="bold">{primaryText}</Typography>}
-                                            secondary={<Typography color="text.secondary" variant="body2">{secondaryText}</Typography>}
+                                            primary={<Typography
+                                                sx={{
+                                                    color: "text.primary",
+                                                    fontWeight: "bold"
+                                                }}>{primaryText}</Typography>}
+                                            secondary={<Typography variant="body2" sx={{
+                                                color: "text.secondary"
+                                            }}>{secondaryText}</Typography>}
                                         />
                                     </ListItem>
                                 );
                             })}
                             {!loading && query.length >= 2 && results.length === 0 && (
                                 searchError ? (
-                                    <Typography color="error" align="center" mt={3} sx={{ px: 2 }}>
+                                    <Typography
+                                        color="error"
+                                        align="center"
+                                        sx={{
+                                            mt: 3,
+                                            px: 2
+                                        }}>
                                         {searchError}
                                     </Typography>
                                 ) : (
-                                    <Typography color="text.secondary" align="center" mt={4}>
+                                    <Typography
+                                        align="center"
+                                        sx={{
+                                            color: "text.secondary",
+                                            mt: 4
+                                        }}>
                                         No se encontraron resultados
                                     </Typography>
                                 )

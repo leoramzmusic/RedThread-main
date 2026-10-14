@@ -108,7 +108,13 @@ export default function AdminCampanas() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -120,12 +126,25 @@ export default function AdminCampanas() {
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
           {/* Header */}
-          <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
-            <Box display="flex" alignItems="center" gap={2}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 4
+            }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2
+              }}>
               <IconButton onClick={() => router.push('/portal-redthread')}>
                 <ArrowBackIcon />
               </IconButton>
-              <Typography variant="h4" fontWeight={700}>
+              <Typography variant="h4" sx={{
+                fontWeight: 700
+              }}>
                 Campañas de Marketing
               </Typography>
             </Box>
@@ -179,7 +198,11 @@ export default function AdminCampanas() {
                     <TableCell align="center">{campaign.sent_count}</TableCell>
                     <TableCell align="center">{campaign.open_rate}%</TableCell>
                     <TableCell align="right">
-                      <Box display="flex" justifyContent="flex-end">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end"
+                        }}>
                         {campaign.status === 'active' ? (
                           <IconButton 
                             size="small" 
@@ -225,7 +248,13 @@ export default function AdminCampanas() {
           <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
             <DialogTitle>Nueva Campaña</DialogTitle>
             <DialogContent>
-              <Box display="flex" flexDirection="column" gap={2} pt={2}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  pt: 2
+                }}>
                 <TextField
                   label="Nombre de la campaña"
                   fullWidth
@@ -261,9 +290,11 @@ export default function AdminCampanas() {
                   label="Programar envío (Opcional)"
                   type="datetime-local"
                   fullWidth
-                  InputLabelProps={{ shrink: true }}
                   value={formData.scheduled_at}
                   onChange={(e) => setFormData({...formData, scheduled_at: e.target.value})}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                 />
               </Box>
             </DialogContent>

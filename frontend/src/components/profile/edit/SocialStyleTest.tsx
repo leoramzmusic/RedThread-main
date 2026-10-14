@@ -17,7 +17,7 @@ import {
   Fade,
 } from "@mui/material";
 import { Psychology, CheckCircle } from "@mui/icons-material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface SocialStyleTestProps {
   open: boolean;
@@ -173,9 +173,17 @@ export default function SocialStyleTest({
           overflow: "hidden",
         }}
       >
-        <Box display="flex" alignItems="center" gap={1} mb={3}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 3
+          }}>
           <Psychology color="primary" />
-          <Typography variant="h6" fontWeight={700}>
+          <Typography variant="h6" sx={{
+            fontWeight: 700
+          }}>
             {t(
               "profile.personality.microtest.title",
               "Microtest: Estilo Social",
@@ -201,10 +209,11 @@ export default function SocialStyleTest({
               <Box sx={{ minHeight: 180 }}>
                 <Typography
                   variant="subtitle1"
-                  fontWeight={600}
                   gutterBottom
-                  sx={{ mb: 2 }}
-                >
+                  sx={{
+                    fontWeight: 600,
+                    mb: 2
+                  }}>
                   {questions[activeStep].text}
                 </Typography>
                 <FormControl component="fieldset" fullWidth>
@@ -217,7 +226,12 @@ export default function SocialStyleTest({
                       )
                     }
                   >
-                    <Box display="flex" flexDirection="column" gap={1}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1
+                      }}>
                       {questions[activeStep].options.map((opt) => (
                         <Paper
                           key={opt.value}
@@ -255,11 +269,20 @@ export default function SocialStyleTest({
                 </FormControl>
               </Box>
 
-              <Box display="flex" justifyContent="space-between" mt={4}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mt: 4
+                }}>
                 <Button onClick={handleClose} size="small" color="inherit">
                   {t("profile.personality.microtest.cancel", "Cancelar")}
                 </Button>
-                <Box display="flex" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1
+                  }}>
                   <Button
                     disabled={activeStep === 0}
                     onClick={handleBack}
@@ -284,7 +307,11 @@ export default function SocialStyleTest({
           </Fade>
         ) : (
           <Fade in={showResult}>
-            <Box textAlign="center" py={2}>
+            <Box
+              sx={{
+                textAlign: "center",
+                py: 2
+              }}>
               <CheckCircle
                 color="success"
                 sx={{ fontSize: 48, mb: 1, opacity: 0.8 }}
@@ -292,8 +319,10 @@ export default function SocialStyleTest({
               <Typography
                 variant="h5"
                 color="primary"
-                fontWeight={700}
                 gutterBottom
+                sx={{
+                  fontWeight: 700
+                }}
               >
                 {t(
                   "profile.personality.microtest.done.title",
@@ -317,7 +346,9 @@ export default function SocialStyleTest({
                   mb: 4,
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{
+                  color: "text.secondary"
+                }}>
                   {t(
                     "profile.personality.microtest.done.expl",
                     "Basado en tus respuestas, este es el estilo que mejor encaja contigo. Puedes aplicarlo ahora o cambiarlo manualmente después.",
@@ -325,7 +356,12 @@ export default function SocialStyleTest({
                 </Typography>
               </Box>
 
-              <Box display="flex" justifyContent="center" gap={2}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 2
+                }}>
                 <Button
                   onClick={() => setShowResult(false)}
                   color="inherit"

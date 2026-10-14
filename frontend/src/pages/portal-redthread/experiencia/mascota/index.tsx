@@ -146,10 +146,17 @@ export default function MascotaDashboard() {
 
                     <Box sx={{ mb: 4, textAlign: 'center' }}>
                         <PetsIcon sx={{ fontSize: 80, color: '#E63946', mb: 2 }} />
-                        <Typography variant="h3" fontWeight={700} gutterBottom>
+                        <Typography variant="h3" gutterBottom sx={{
+                            fontWeight: 700
+                        }}>
                             Mascota — Yuki
                         </Typography>
-                        <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 3
+                            }}>
                             Panel de administración del gato kawaii
                         </Typography>
 
@@ -180,11 +187,15 @@ export default function MascotaDashboard() {
                                         }}
                                     />
                                     <Box sx={{ flexGrow: 1, minWidth: 220 }}>
-                                        <Typography variant="h6" fontWeight={700}>
+                                        <Typography variant="h6" sx={{
+                                            fontWeight: 700
+                                        }}>
                                             Interruptor maestro — Yuki{' '}
                                             {config?.enabled ? 'ACTIVO' : 'APAGADO'}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             Apagado oculta TODO lo de la mascota en la app: botón
                                             flotante, loader, onboarding, badges y gatos
                                             decorativos. Úsalo mientras se corrigen las fallas.
@@ -202,9 +213,11 @@ export default function MascotaDashboard() {
                                         </Box>
                                         <Typography
                                             variant="caption"
-                                            color="text.secondary"
-                                            sx={{ display: 'block', mt: 1 }}
-                                        >
+                                            sx={{
+                                                color: "text.secondary",
+                                                display: 'block',
+                                                mt: 1
+                                            }}>
                                             Aplica en nuevas cargas. Si tienes la app abierta en otra
                                             pestaña, recárgala.
                                         </Typography>
@@ -241,7 +254,12 @@ export default function MascotaDashboard() {
 
                     <Grid container spacing={4}>
                         {modules.map((mod) => (
-                            <Grid item xs={12} md={4} key={mod.title}>
+                            <Grid
+                                key={mod.title}
+                                size={{
+                                    xs: 12,
+                                    md: 4
+                                }}>
                                 <Card
                                     sx={{
                                         height: '100%',
@@ -268,10 +286,18 @@ export default function MascotaDashboard() {
                                         }}
                                     >
                                         {mod.icon}
-                                        <Typography variant="h5" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
+                                        <Typography
+                                            variant="h5"
+                                            sx={{
+                                                fontWeight: 600,
+                                                mt: 2,
+                                                mb: 1
+                                            }}>
                                             {mod.title}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             {mod.description}
                                         </Typography>
                                         <Button

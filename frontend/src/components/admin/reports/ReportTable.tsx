@@ -85,9 +85,16 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onViewDetail, onTake
                                 {priorityIcons[report.priority]}
                             </TableCell>
                             <TableCell>
-                                <Box display="flex" alignItems="center" gap={1}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1
+                                    }}>
                                     <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>{report.reported_user.name[0]}</Avatar>
-                                    <Typography variant="body2" fontWeight={600}>{report.reported_user.name}</Typography>
+                                    <Typography variant="body2" sx={{
+                                        fontWeight: 600
+                                    }}>{report.reported_user.name}</Typography>
                                 </Box>
                             </TableCell>
                             <TableCell>
@@ -96,7 +103,9 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onViewDetail, onTake
                             <TableCell>
                                 <Box>
                                     <Chip label={report.category} size="small" variant="outlined" sx={{ mr: 0.5 }} />
-                                    <Typography variant="caption" color="text.secondary">{report.report_type}</Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>{report.report_type}</Typography>
                                 </Box>
                             </TableCell>
                             <TableCell>
@@ -120,7 +129,11 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onViewDetail, onTake
                                 </Typography>
                             </TableCell>
                             <TableCell align="right">
-                                <Box display="flex" justifyContent="flex-end">
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "flex-end"
+                                    }}>
                                     <IconButton size="small" color="primary" onClick={() => onViewDetail(report)}>
                                         <ViewIcon fontSize="small" />
                                     </IconButton>

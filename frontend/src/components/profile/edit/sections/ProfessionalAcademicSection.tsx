@@ -20,7 +20,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { SectionWithOptionsProps } from "../types";
 import OptionSelector from "./OptionSelector";
 
@@ -41,7 +41,7 @@ export default function ProfessionalAcademicSection({
   const renderProfessional =
     showProfessional !== false && (showProfessional || !showEducation);
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -62,7 +62,12 @@ export default function ProfessionalAcademicSection({
             expandIcon={<ExpandMoreIcon />}
             sx={{ px: 3, py: 1 }}
           >
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}>
               <Work color="action" />
               <Typography variant="h6">
                 {t("profile.professional.title", "Profesional y Académico")}
@@ -88,8 +93,14 @@ export default function ProfessionalAcademicSection({
           <Grid container spacing={2}>
             {/* Bloque 1: Educación */}
             {renderEducation && (
-              <Grid item xs={12}>
-                <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <Grid size={12}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 2
+                  }}>
                   <School
                     sx={{
                       color: isDiscovery ? "gold" : "#FFB300",
@@ -98,19 +109,18 @@ export default function ProfessionalAcademicSection({
                   />
                   <Typography
                     variant="subtitle2"
-                    fontWeight="bold"
                     sx={{
+                      fontWeight: "bold",
                       color: isDiscovery ? "white" : "text.secondary",
                       textTransform: "uppercase",
-                      letterSpacing: 1,
-                    }}
-                  >
+                      letterSpacing: 1
+                    }}>
                     {t("profile.professional.education", "Educación")}
                   </Typography>
                 </Box>
 
                 <Grid container spacing={2}>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Controller
                       name="education_center"
                       control={control}
@@ -145,23 +155,25 @@ export default function ProfessionalAcademicSection({
                                 : "inherit",
                             },
                           }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <School
-                                  sx={{
-                                    color: isDiscovery ? "gold" : "#FFB300",
-                                    opacity: 0.8,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
+                          slotProps={{
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <School
+                                    sx={{
+                                      color: isDiscovery ? "gold" : "#FFB300",
+                                      opacity: 0.8,
+                                    }}
+                                  />
+                                </InputAdornment>
+                              ),
+                            }
                           }}
                         />
                       )}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <OptionSelector
                       control={control}
                       name="education_level"
@@ -181,21 +193,29 @@ export default function ProfessionalAcademicSection({
 
             {/* Bloque 2: Trabajo */}
             {renderProfessional && (
-              <Grid item xs={12}>
-                <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <Grid size={12}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 2
+                  }}>
                   <Work sx={{ color: "#546E7A", fontSize: 20 }} />
                   <Typography
                     variant="subtitle2"
-                    fontWeight="bold"
-                    color="text.secondary"
-                    sx={{ textTransform: "uppercase", letterSpacing: 1 }}
-                  >
+                    sx={{
+                      fontWeight: "bold",
+                      color: "text.secondary",
+                      textTransform: "uppercase",
+                      letterSpacing: 1
+                    }}>
                     {t("profile.professional.work", "Profesional")}
                   </Typography>
                 </Box>
 
                 <Grid container spacing={2}>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Controller
                       name="occupation"
                       control={control}
@@ -229,25 +249,27 @@ export default function ProfessionalAcademicSection({
                                 : "inherit",
                             },
                           }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <Work
-                                  sx={{
-                                    color: isDiscovery
-                                      ? "rgba(255,255,255,0.7)"
-                                      : "#546E7A",
-                                    opacity: 0.8,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
+                          slotProps={{
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <Work
+                                    sx={{
+                                      color: isDiscovery
+                                        ? "rgba(255,255,255,0.7)"
+                                        : "#546E7A",
+                                      opacity: 0.8,
+                                    }}
+                                  />
+                                </InputAdornment>
+                              ),
+                            }
                           }}
                         />
                       )}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Controller
                       name="work_company"
                       control={control}
@@ -281,26 +303,28 @@ export default function ProfessionalAcademicSection({
                                 : "inherit",
                             },
                           }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <Business
-                                  sx={{
-                                    color: isDiscovery
-                                      ? "rgba(255,255,255,0.7)"
-                                      : "#78909C",
-                                    opacity: 0.8,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
+                          slotProps={{
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <Business
+                                    sx={{
+                                      color: isDiscovery
+                                        ? "rgba(255,255,255,0.7)"
+                                        : "#78909C",
+                                      opacity: 0.8,
+                                    }}
+                                  />
+                                </InputAdornment>
+                              ),
+                            }
                           }}
                         />
                       )}
                     />
                   </Grid>
                   {/* Privacidad */}
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Box
                       sx={{
                         mt: 0.2,
@@ -312,16 +336,25 @@ export default function ProfessionalAcademicSection({
                         justifyContent: "space-between",
                       }}
                     >
-                      <Box display="flex" alignItems="center" gap={1.5}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1.5
+                        }}>
                         <Lock sx={{ color: "text.disabled", fontSize: 20 }} />
                         <Box>
-                          <Typography variant="body2" fontWeight="medium">
+                          <Typography variant="body2" sx={{
+                            fontWeight: "medium"
+                          }}>
                             {t(
                               "profile.professional.privacyTitle",
                               "Privacidad selectiva",
                             )}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                          }}>
                             {t(
                               "profile.professional.privacyDesc",
                               "Mostrar esta sección solo si hay coincidencias académicas o laborales.",

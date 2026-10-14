@@ -52,7 +52,12 @@ const ReportDetailDialog: React.FC<ReportDetailDialogProps> = ({ open, reportId,
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                    }}>
                     <ReportIcon color="error" />
                     Detalle de Denuncia
                     {reportId && <Typography variant="caption" sx={{ ml: 'auto' }}>ID: {reportId}</Typography>}
@@ -60,44 +65,88 @@ const ReportDetailDialog: React.FC<ReportDetailDialogProps> = ({ open, reportId,
             </DialogTitle>
             <DialogContent dividers>
                 {loading ? (
-                    <Box display="flex" justifyContent="center" py={10}><CircularProgress /></Box>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            py: 10
+                        }}><CircularProgress /></Box>
                 ) : (
                     <Grid container spacing={3}>
                         {/* Users Info */}
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="subtitle2" gutterBottom color="text.secondary">Denunciado</Typography>
-                            <Box display="flex" alignItems="center" gap={2} p={2} sx={{ bgcolor: 'action.hover', borderRadius: 2 }}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 6
+                            }}>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                                color: "text.secondary"
+                            }}>Denunciado</Typography>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    p: 2,
+                                    bgcolor: 'action.hover',
+                                    borderRadius: 2
+                                }}>
                                 <Avatar sx={{ width: 56, height: 56 }}>U</Avatar>
                                 <Box>
                                     <Typography variant="h6">Nombre Usuario</Typography>
-                                    <Typography variant="caption" color="text.secondary">ID: user_id_123</Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>ID: user_id_123</Typography>
                                 </Box>
                                 <Button size="small" variant="outlined" sx={{ ml: 'auto' }}>Ver Perfil</Button>
                             </Box>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="subtitle2" gutterBottom color="text.secondary">Denunciante</Typography>
-                            <Box display="flex" alignItems="center" gap={2} p={2} sx={{ bgcolor: 'action.hover', borderRadius: 2 }}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 6
+                            }}>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                                color: "text.secondary"
+                            }}>Denunciante</Typography>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    p: 2,
+                                    bgcolor: 'action.hover',
+                                    borderRadius: 2
+                                }}>
                                 <Avatar sx={{ width: 56, height: 56 }}>D</Avatar>
                                 <Box>
                                     <Typography variant="h6">Nombre Denunciante</Typography>
-                                    <Typography variant="caption" color="text.secondary">ID: reporter_id_456</Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>ID: reporter_id_456</Typography>
                                 </Box>
                                 <Button size="small" variant="outlined" sx={{ ml: 'auto' }}>Ver Perfil</Button>
                             </Box>
                         </Grid>
 
                         {/* Report Content */}
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Divider sx={{ my: 1 }} />
                             <Stack spacing={2} sx={{ mt: 2 }}>
                                 <Box>
                                     <Typography variant="subtitle2" gutterBottom>Categoría y Motivo</Typography>
-                                    <Box display="flex" gap={1} mb={1}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 1,
+                                            mb: 1
+                                        }}>
                                         <Chip label="CHAT" color="primary" size="small" />
                                         <Chip label="acosu" variant="outlined" size="small" />
                                     </Box>
-                                    <Typography variant="body1" fontWeight={500}>"Acoso y lenguaje ofensivo constante"</Typography>
+                                    <Typography variant="body1" sx={{
+                                        fontWeight: 500
+                                    }}>"Acoso y lenguaje ofensivo constante"</Typography>
                                 </Box>
 
                                 <Box>
@@ -126,9 +175,16 @@ const ReportDetailDialog: React.FC<ReportDetailDialogProps> = ({ open, reportId,
                         </Grid>
 
                         {/* Moderation Actions */}
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Divider sx={{ my: 2 }} />
-                            <Typography variant="h6" gutterBottom display="flex" alignItems="center" gap={1}>
+                            <Typography
+                                variant="h6"
+                                gutterBottom
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1
+                                }}>
                                 <GavelIcon /> Acciones de Moderación
                             </Typography>
                             <TextField

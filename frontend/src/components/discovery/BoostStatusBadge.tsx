@@ -3,7 +3,7 @@ import { Box, Typography, Chip, Tooltip } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { keyframes } from '@mui/system';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 const pulseGlow = keyframes`
   0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }

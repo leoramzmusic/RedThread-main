@@ -139,7 +139,12 @@ export default function FriendManager() {
 
     // Render Helpers
     const renderEmptyState = (msg: string) => (
-        <Box textAlign="center" py={4} color="text.secondary">
+        <Box
+            sx={{
+                textAlign: "center",
+                py: 4,
+                color: "text.secondary"
+            }}>
             <Typography variant="body1">{msg}</Typography>
         </Box>
     );
@@ -161,7 +166,12 @@ export default function FriendManager() {
                         icon={<TimerIcon />}
                         iconPosition="start"
                         label={
-                            <Box display="flex" alignItems="center" gap={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1
+                                }}>
                                 Solicitudes
                                 {(receivedRequests.length > 0) && (
                                     <Chip label={receivedRequests.length} color="error" size="small" sx={{ height: 20, minWidth: 20 }} />
@@ -218,11 +228,13 @@ export default function FriendManager() {
                             placeholder="Buscar por nombre o usuario..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            InputProps={{
-                                startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
-                                endAdornment: searching && <CircularProgress size={20} />
-                            }}
                             sx={{ mb: 2 }}
+                            slotProps={{
+                                input: {
+                                    startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+                                    endAdornment: searching && <CircularProgress size={20} />
+                                }
+                            }}
                         />
 
                         {searchResults.length > 0 ? (
@@ -281,11 +293,19 @@ export default function FriendManager() {
                 {tabIndex === 2 && (
                     <Box>
                         <Box sx={{ p: 2, bgcolor: 'action.hover' }}>
-                            <Typography variant="subtitle2" fontWeight="bold">Solicitudes Recibidas ({receivedRequests.length})</Typography>
+                            <Typography variant="subtitle2" sx={{
+                                fontWeight: "bold"
+                            }}>Solicitudes Recibidas ({receivedRequests.length})</Typography>
                         </Box>
                         <Divider />
                         {receivedRequests.length === 0 ? (
-                            <Box p={2} textAlign="center"><Typography variant="body2" color="text.secondary">No tienes solicitudes pendientes.</Typography></Box>
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    textAlign: "center"
+                                }}><Typography variant="body2" sx={{
+                                color: "text.secondary"
+                            }}>No tienes solicitudes pendientes.</Typography></Box>
                         ) : (
                             <List>
                                 {receivedRequests.map((req) => (
@@ -311,11 +331,19 @@ export default function FriendManager() {
                         )}
 
                         <Box sx={{ p: 2, bgcolor: 'action.hover', borderTop: 1, borderColor: 'divider' }}>
-                            <Typography variant="subtitle2" fontWeight="bold">Solicitudes Enviadas ({sentRequests.length})</Typography>
+                            <Typography variant="subtitle2" sx={{
+                                fontWeight: "bold"
+                            }}>Solicitudes Enviadas ({sentRequests.length})</Typography>
                         </Box>
                         <Divider />
                         {sentRequests.length === 0 ? (
-                            <Box p={2} textAlign="center"><Typography variant="body2" color="text.secondary">No has enviado solicitudes.</Typography></Box>
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    textAlign: "center"
+                                }}><Typography variant="body2" sx={{
+                                color: "text.secondary"
+                            }}>No has enviado solicitudes.</Typography></Box>
                         ) : (
                             <List>
                                 {sentRequests.map((req) => (

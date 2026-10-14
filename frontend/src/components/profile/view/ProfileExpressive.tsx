@@ -19,7 +19,7 @@ import {
     InfoOutlined
 } from '@mui/icons-material';
 import { InfoSection } from './InfoSection';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface ProfileExpressiveProps {
     profile: any;
@@ -63,7 +63,11 @@ export default function ProfileExpressive({ profile }: ProfileExpressiveProps) {
         <>
             {hasPersonality && (
                 <InfoSection title={t('profile.personality.title')} icon={<Psychology />}>
-                    <Box display="flex" flexWrap="wrap">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexWrap: "wrap"
+                        }}>
                         {renderTrait(t('profile.personality.socialStyle'), profile.social_style, 'personality.socialStyle')}
                         {renderTrait(t('profile.personality.processingStyle'), profile.processing_style, 'personality.processingStyle')}
                         {renderTrait(t('profile.personality.riskTolerance'), profile.risk_tolerance, 'personality.riskTolerance')}
@@ -74,7 +78,11 @@ export default function ProfileExpressive({ profile }: ProfileExpressiveProps) {
 
             {hasNeuro && (
                 <InfoSection title={t('profile.cognitive.title')} icon={<Psychology />}>
-                    <Box display="flex" flexWrap="wrap">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexWrap: "wrap"
+                        }}>
                         {profile.neurodiversity?.map((item: string) => {
                             const isDiagnosed = profile.neurodiversity_diagnoses?.includes(item);
                             return (
@@ -135,33 +143,51 @@ export default function ProfileExpressive({ profile }: ProfileExpressiveProps) {
                 <InfoSection title={t('profile.extras.title')} icon={<WorkspacePremium />}>
                     <Grid container spacing={2}>
                         {profile.superpower && (
-                            <Grid item xs={12}>
-                                <Box display="flex" gap={1}>
+                            <Grid size={12}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1
+                                    }}>
                                     <AutoFixHigh color="primary" fontSize="small" />
                                     <Box>
-                                        <Typography variant="caption" color="text.secondary">{t('profile.extras.superpower')}</Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>{t('profile.extras.superpower')}</Typography>
                                         <Typography variant="body2">{profile.superpower}</Typography>
                                     </Box>
                                 </Box>
                             </Grid>
                         )}
                         {profile.achilles_heel && (
-                            <Grid item xs={12}>
-                                <Box display="flex" gap={1}>
+                            <Grid size={12}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1
+                                    }}>
                                     <HeartBroken color="error" fontSize="small" />
                                     <Box>
-                                        <Typography variant="caption" color="text.secondary">{t('profile.extras.achillesHeel')}</Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>{t('profile.extras.achillesHeel')}</Typography>
                                         <Typography variant="body2">{profile.achilles_heel}</Typography>
                                     </Box>
                                 </Box>
                             </Grid>
                         )}
                         {profile.personal_soundtrack_text && (
-                            <Grid item xs={12}>
-                                <Box display="flex" gap={1}>
+                            <Grid size={12}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1
+                                    }}>
                                     <MusicNote color="secondary" fontSize="small" />
                                     <Box>
-                                        <Typography variant="caption" color="text.secondary">{t('profile.extras.soundtrack')}</Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>{t('profile.extras.soundtrack')}</Typography>
                                         <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
                                             "{profile.personal_soundtrack_text}"
                                         </Typography>
@@ -175,7 +201,11 @@ export default function ProfileExpressive({ profile }: ProfileExpressiveProps) {
 
             {hasLifestyle && (
                 <InfoSection title={t('profile.lifestyle.title')} icon={<Favorite />}>
-                    <Box display="flex" flexWrap="wrap">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexWrap: "wrap"
+                        }}>
                         {renderTrait(t('profile.lifestyle.love_language'), profile.love_language, 'lifestyle')}
                         {renderTrait(t('profile.lifestyle.communication_style'), profile.communication_style, 'lifestyle')}
                         {renderTrait(t('profile.lifestyle.family_plans'), profile.family_plans, 'lifestyle')}

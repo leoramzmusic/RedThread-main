@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import {
     CheckCircle,
-    HelpOutline,
+    HelpOutlined,
     Visibility,
     Hearing,
     FitnessCenter,
@@ -28,7 +28,7 @@ import {
     AutoStories
 } from '@mui/icons-material';
 import { Controller, Control } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface LearningStyleOption {
     value: string;
@@ -120,7 +120,11 @@ export default function LearningStyleSelector({
                                 }
                             }}
                         >
-                            <Box display="flex" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
                                 <Box sx={{ mr: 1.5, color: activeColor, display: 'flex' }}>
                                     <AutoStories />
                                 </Box>
@@ -161,14 +165,30 @@ export default function LearningStyleSelector({
                                 bgcolor: 'background.paper',
                                 mt: 1
                             }}>
-                                <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-                                    <Box display="flex" alignItems="center" gap={1}>
-                                        <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        mb: 2
+                                    }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1
+                                        }}>
+                                        <Typography
+                                            variant="subtitle2"
+                                            sx={{
+                                                color: "text.secondary",
+                                                fontWeight: 600
+                                            }}>
                                             {t('profile.cognitive.learning_help_title', { defaultValue: 'Selecciona hasta 3 estilos' })}
                                         </Typography>
                                         <Tooltip title={t('profile.cognitive.learning_help')}>
                                             <IconButton size="small" color="info">
-                                                <HelpOutline fontSize="small" />
+                                                <HelpOutlined fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                     </Box>
@@ -183,7 +203,12 @@ export default function LearningStyleSelector({
                                         const isDisabled = !isSelected && maxReached && option.value !== 'not_sure' && option.value !== 'prefer_not_to_say';
 
                                         return (
-                                            <Grid item xs={12} sm={6} key={option.value}>
+                                            <Grid
+                                                key={option.value}
+                                                size={{
+                                                    xs: 12,
+                                                    sm: 6
+                                                }}>
                                                 <ButtonBase
                                                     onClick={() => handleToggle(option.value)}
                                                     disabled={isDisabled}
@@ -229,7 +254,9 @@ export default function LearningStyleSelector({
                                                             {option.icon}
                                                         </Box>
 
-                                                        <Box flex={1}>
+                                                        <Box sx={{
+                                                            flex: 1
+                                                        }}>
                                                             <Typography
                                                                 variant="body2"
                                                                 sx={{
@@ -240,7 +267,14 @@ export default function LearningStyleSelector({
                                                                 {option.label}
                                                             </Typography>
                                                             {option.description && (
-                                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1.2, mt: 0.5 }}>
+                                                                <Typography
+                                                                    variant="caption"
+                                                                    sx={{
+                                                                        color: "text.secondary",
+                                                                        display: 'block',
+                                                                        lineHeight: 1.2,
+                                                                        mt: 0.5
+                                                                    }}>
                                                                     {option.description}
                                                                 </Typography>
                                                             )}

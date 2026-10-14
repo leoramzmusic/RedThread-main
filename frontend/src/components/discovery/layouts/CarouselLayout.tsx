@@ -221,12 +221,11 @@ export default function CarouselLayout({
                         >
                             <Typography
                                 variant="caption"
-                                fontWeight={800}
                                 sx={{
+                                    fontWeight: 800,
                                     color: getCompatibilityColor(profile.affinity_score || 0),
                                     fontSize: '0.7rem'
-                                }}
-                            >
+                                }}>
                                 {Math.round(profile.affinity_score || 0)}%
                             </Typography>
                         </Box>
@@ -243,7 +242,12 @@ export default function CarouselLayout({
                                 zIndex: 2
                             }}
                         >
-                            <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1.2 }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontWeight: 700,
+                                    lineHeight: 1.2
+                                }}>
                                 {profile.display_name}, {profile.age}
                             </Typography>
                             {profile.bio && (

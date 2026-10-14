@@ -4,7 +4,7 @@ import { CssBaseline } from '@mui/material';
 import { store } from '../store/store';
 import AuthInitializer from '../components/auth/AuthInitializer';
 import AdminRouteGuard from '../components/auth/AdminRouteGuard';
-import { appWithTranslation } from 'next-i18next';
+import { appWithTranslation } from 'next-i18next/pages';
 import '../styles/globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-easy-crop/react-easy-crop.css';

@@ -63,7 +63,12 @@ export default function GameEditorModal({ open, onClose, gameType }: GameEditorM
             <DialogContent dividers>
                 {tabValue === 0 && (
                     <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Estas son las preguntas estándar. Úsalas en el chat para romper el hielo.
                         </Typography>
                         <List>
@@ -78,11 +83,21 @@ export default function GameEditorModal({ open, onClose, gameType }: GameEditorM
 
                 {tabValue === 1 && (
                     <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Agrega tus propias preguntas, retos o guiones para usar en tus conversaciones.
                         </Typography>
 
-                        <Box display="flex" gap={1} mb={2}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                gap: 1,
+                                mb: 2
+                            }}>
                             <TextField
                                 fullWidth
                                 size="small"
@@ -96,7 +111,9 @@ export default function GameEditorModal({ open, onClose, gameType }: GameEditorM
                         </Box>
 
                         {/* List of custom scripts would be fetched here if implemented fully */}
-                        <Typography variant="caption" fontStyle="italic">
+                        <Typography variant="caption" sx={{
+                            fontStyle: "italic"
+                        }}>
                             Tus scripts guardados aparecerán disponibles en el chat.
                         </Typography>
                     </Box>

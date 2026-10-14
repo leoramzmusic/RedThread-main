@@ -50,7 +50,7 @@ import {
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import AdminLayout from '../../../components/layout/AdminLayout';
 import adminApiClient from '../../../services/adminApi';
 import { getModulePoints } from '../../../utils/profileScoring';
@@ -526,10 +526,14 @@ export default function ModulosPerfilesPage() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <TuneIcon sx={{ fontSize: 40, color: 'primary.main' }} />
                         <Box>
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant="h4" sx={{
+                                fontWeight: 700
+                            }}>
                                 {t('profileModules.title', 'Módulos de perfiles')}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{
+                                color: "text.secondary"
+                            }}>
                                 {t('profileModules.subtitle', 'Gestiona los módulos visibles en los perfiles: visibilidad, orden y contenido.')}
                             </Typography>
                         </Box>
@@ -582,7 +586,9 @@ export default function ModulosPerfilesPage() {
                         <Typography variant="subtitle2">
                             {t('profileModules.countLabel', 'Módulos')} ({modules.length})
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>
                             {t('profileModules.dragHint', 'Arrastra para reordenar')}
                         </Typography>
                     </Box>
@@ -590,10 +596,17 @@ export default function ModulosPerfilesPage() {
                     {modules.length === 0 ? (
                         <Box sx={{ textAlign: 'center', py: 6, px: 2 }}>
                             <TuneIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-                            <Typography color="text.secondary" gutterBottom>
+                            <Typography gutterBottom sx={{
+                                color: "text.secondary"
+                            }}>
                                 {t('profileModules.empty', 'No hay módulos configurados')}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" paragraph>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    color: "text.secondary",
+                                    marginBottom: "16px"
+                                }}>
                                 {t(
                                     'profileModules.emptyHint',
                                     'Carga las 16 secciones base del perfil con un clic.',
@@ -713,7 +726,9 @@ export default function ModulosPerfilesPage() {
                     </DialogTitle>
                     <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
                         <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                                fontWeight: 700
+                            }}>
                                 {t('profileModules.cardCredentials', 'Credenciales')}
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
@@ -800,7 +815,9 @@ export default function ModulosPerfilesPage() {
                             </Box>
                         </Paper>
                         <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                                fontWeight: 700
+                            }}>
                                 {t('profileModules.cardScopes', 'Scopes')}
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
@@ -823,7 +840,9 @@ export default function ModulosPerfilesPage() {
                             />
                         </Paper>
                         <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                                fontWeight: 700
+                            }}>
                                 {t('profileModules.cardOptions', 'Opciones')}
                             </Typography>
                             <Divider sx={{ mb: 1 }} />
@@ -1057,10 +1076,17 @@ function SortableModuleRow({ mod, disabled, onToggle, onEdit, integration, testi
                 )}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                        <Typography variant="subtitle2" fontWeight={700} noWrap>
+                        <Typography variant="subtitle2" noWrap sx={{
+                            fontWeight: 700
+                        }}>
                             {mod.nombre}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "text.secondary",
+                                fontFamily: 'monospace'
+                            }}>
                             {mod.key}
                         </Typography>
                         {mod.icono && (
@@ -1068,7 +1094,13 @@ function SortableModuleRow({ mod, disabled, onToggle, onEdit, integration, testi
                         )}
                     </Box>
                     {mod.descripcion && (
-                        <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
+                        <Typography
+                            variant="caption"
+                            noWrap
+                            sx={{
+                                color: "text.secondary",
+                                display: 'block'
+                            }}>
                             {mod.descripcion}
                         </Typography>
                     )}

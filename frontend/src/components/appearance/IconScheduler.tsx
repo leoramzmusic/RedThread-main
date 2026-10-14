@@ -48,8 +48,15 @@ export default function IconScheduler({ resources }: IconSchedulerProps) {
                             </ListItemAvatar>
                             <ListItemText
                                 primary={
-                                    <Box display="flex" alignItems="center" gap={1}>
-                                        <Typography variant="subtitle1" fontWeight="600">
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1
+                                        }}>
+                                        <Typography variant="subtitle1" sx={{
+                                            fontWeight: "600"
+                                        }}>
                                             {resource.description || "Ícono Programado"}
                                         </Typography>
                                         <Chip
@@ -62,12 +69,18 @@ export default function IconScheduler({ resources }: IconSchedulerProps) {
                                     </Box>
                                 }
                                 secondary={
-                                    <Box mt={0.5}>
-                                        <Typography component="span" variant="body2" color={isPast ? "text.secondary" : "primary"} fontWeight={isPast ? 400 : 600}>
+                                    <Box sx={{
+                                        mt: 0.5
+                                    }}>
+                                        <Typography component="span" variant="body2" color={isPast ? "text.secondary" : "primary"} sx={{
+                                            fontWeight: isPast ? 400 : 600
+                                        }}>
                                             {date.toLocaleDateString()} a las {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </Typography>
                                         <Typography component="span" variant="caption" sx={{ mx: 1, color: 'text.disabled' }}>|</Typography>
-                                        <Typography component="span" variant="body2" color="text.secondary">
+                                        <Typography component="span" variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             {resource.resolution}
                                         </Typography>
                                     </Box>

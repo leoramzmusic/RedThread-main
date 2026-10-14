@@ -28,14 +28,24 @@ const DrawerTip: React.FC<DrawerTipProps> = ({
 
   return (
     <BottomSheet open={open} onClose={onClose}>
-      <Box display="flex" flexDirection="column" gap={2} py={1}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          py: 1
+        }}>
         {resolvedTitle && (
-          <Typography variant="h6" fontWeight="bold">
+          <Typography variant="h6" sx={{
+            fontWeight: "bold"
+          }}>
             {resolvedTitle}
           </Typography>
         )}
         {resolvedBody && (
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {resolvedBody}
           </Typography>
         )}

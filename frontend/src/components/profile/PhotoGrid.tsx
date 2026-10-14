@@ -87,19 +87,15 @@ function SortablePhoto({
   };
 
   return (
-    <Grid 
-      ref={setNodeRef} 
-      style={style} 
-      {...attributes} 
-      {...listeners}
-      item 
-      xs={4} 
+    <Grid
+      ref={setNodeRef}
+      style={style}
       sx={{
         minWidth: '33.33%',
         flexShrink: 0,
         cursor: editable ? 'grab' : 'default',
       }}
-    >
+      size={4}>
       <Box
         sx={{
           position: 'relative',
@@ -260,8 +256,16 @@ export default function PhotoGrid({ photos, onPhotosChange, editable = false }: 
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="subtitle2" color="text.secondary">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2
+        }}>
+        <Typography variant="subtitle2" sx={{
+          color: "text.secondary"
+        }}>
           Fotos ({photos.length}/{MAX_PHOTOS}) - Arrastra para reordenar
         </Typography>
         <IconButton size="small" onClick={() => setExpanded(!expanded)}>
@@ -304,15 +308,13 @@ export default function PhotoGrid({ photos, onPhotosChange, editable = false }: 
 
           {/* Render empty slots */}
           {emptySlots.map((_, index) => (
-            <Grid 
-              item 
-              xs={4} 
+            <Grid
               key={`empty-${index}`}
               sx={!expanded ? {
                 minWidth: '33.33%',
                 flexShrink: 0
               } : {}}
-            >
+              size={4}>
               <Box
                 sx={{
                   position: 'relative',

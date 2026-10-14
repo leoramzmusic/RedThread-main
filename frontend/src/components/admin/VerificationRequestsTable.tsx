@@ -184,7 +184,13 @@ export default function VerificationRequestsTable() {
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="flex-end" mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          mb: 2
+        }}>
         <Tooltip title="Recargar solicitudes">
           <IconButton 
             onClick={fetchVerifications} 
@@ -260,7 +266,11 @@ export default function VerificationRequestsTable() {
         <DialogContent dividers>
           {selectedVerification && (
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 6
+                }}>
                 <Typography variant="subtitle1" gutterBottom>Documento:</Typography>
                 <Box 
                   sx={{ 
@@ -285,23 +295,41 @@ export default function VerificationRequestsTable() {
                       }}
                     />
                   ) : (
-                    <Typography color="text.secondary">No imagen disponible</Typography>
+                    <Typography sx={{
+                      color: "text.secondary"
+                    }}>No imagen disponible</Typography>
                   )}
                 </Box>
-                <Typography variant="caption" display="block" mt={1}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: "block",
+                    mt: 1
+                  }}>
                   Tipo: {selectedVerification.document_type}
                 </Typography>
 
-                <Typography variant="subtitle2" gutterBottom mt={2}>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  mt: 2
+                }}>
                   Selfie (foto de identidad):
                 </Typography>
-                <Box mt={1}>
+                <Box sx={{
+                  mt: 1
+                }}>
                   {!selectedVerification.has_selfie ? (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       Sin selfie adjunta
                     </Typography>
                   ) : selfieLoading ? (
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                      }}>
                       <CircularProgress size={18} />
                       <Typography variant="caption">Cargando selfie...</Typography>
                     </Box>
@@ -331,12 +359,22 @@ export default function VerificationRequestsTable() {
                     </Box>
                   )}
                 </Box>
-                <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mt: 1
+                  }}>
                   Privada — solo visible para revisores
                 </Typography>
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 6
+                }}>
                 <Typography variant="subtitle1" gutterBottom>Datos Extraídos / Manuales:</Typography>
                 
                 <TextField
@@ -355,10 +393,14 @@ export default function VerificationRequestsTable() {
                   value={manualBirthDate}
                   onChange={(e) => setManualBirthDate(e.target.value)}
                   margin="normal"
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                 />
                 
-                <Box mt={4}>
+                <Box sx={{
+                  mt: 4
+                }}>
                   <Typography variant="subtitle2" color="error" gutterBottom>
                     Rechazar Solicitud:
                   </Typography>

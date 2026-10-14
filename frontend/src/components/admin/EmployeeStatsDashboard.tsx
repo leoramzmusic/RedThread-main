@@ -59,7 +59,12 @@ export default function EmployeeStatsDashboard() {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" p={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 4
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -76,13 +81,27 @@ export default function EmployeeStatsDashboard() {
         <Box sx={{ mb: 4 }}>
             <Grid container spacing={2}>
                 {/* Total Employees */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2} sx={{ borderRadius: 2 }}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Total Empleados</Typography>
-                                    <Typography variant="h4" fontWeight={700}>{stats.summary.total}</Typography>
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Total Empleados</Typography>
+                                    <Typography variant="h4" sx={{
+                                        fontWeight: 700
+                                    }}>{stats.summary.total}</Typography>
                                 </Box>
                                 <BadgeIcon color="primary" sx={{ fontSize: 40, opacity: 0.3 }} />
                             </Box>
@@ -91,13 +110,30 @@ export default function EmployeeStatsDashboard() {
                 </Grid>
 
                 {/* Active */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2} sx={{ borderRadius: 2 }}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Activos</Typography>
-                                    <Typography variant="h4" fontWeight={700} color="success.main">
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Activos</Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "success.main"
+                                        }}>
                                         {stats.summary.active}
                                     </Typography>
                                 </Box>
@@ -108,13 +144,30 @@ export default function EmployeeStatsDashboard() {
                 </Grid>
 
                 {/* New This Month */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2} sx={{ borderRadius: 2 }}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Nuevos Ingresos</Typography>
-                                    <Typography variant="h4" fontWeight={700} color="info.main">{stats.summary.new_this_month}</Typography>
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Nuevos Ingresos</Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "info.main"
+                                        }}>{stats.summary.new_this_month}</Typography>
                                 </Box>
                                 <GroupAddIcon color="info" sx={{ fontSize: 40, opacity: 0.3 }} />
                             </Box>
@@ -123,13 +176,27 @@ export default function EmployeeStatsDashboard() {
                 </Grid>
 
                 {/* Avg Retention or something else - reusing BusinessIcon */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2} sx={{ borderRadius: 2 }}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Departamentos</Typography>
-                                    <Typography variant="h4" fontWeight={700}>{stats.distribution.areas.length}</Typography>
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Departamentos</Typography>
+                                    <Typography variant="h4" sx={{
+                                        fontWeight: 700
+                                    }}>{stats.distribution.areas.length}</Typography>
                                 </Box>
                                 <BusinessIcon color="secondary" sx={{ fontSize: 40, opacity: 0.3 }} />
                             </Box>
@@ -140,9 +207,15 @@ export default function EmployeeStatsDashboard() {
 
             {/* Charts */}
             <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Paper sx={{ p: 2, height: 320, borderRadius: 2 }}>
-                        <Typography variant="subtitle1" fontWeight={600} gutterBottom>Distribución por Estado</Typography>
+                        <Typography variant="subtitle1" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>Distribución por Estado</Typography>
                         <Divider sx={{ mb: 2 }} />
                         <ResponsiveContainer width="100%" height="80%">
                             <PieChart>
@@ -165,19 +238,39 @@ export default function EmployeeStatsDashboard() {
                         </ResponsiveContainer>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Paper sx={{ p: 2, height: 320, borderRadius: 2 }}>
-                        <Box display="flex" alignItems="center" mb={1}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 1
+                            }}>
                             <BusinessIcon sx={{ mr: 1, color: 'primary.main' }} />
-                            <Typography variant="subtitle1" fontWeight={600}>Distribución por Área</Typography>
+                            <Typography variant="subtitle1" sx={{
+                                fontWeight: 600
+                            }}>Distribución por Área</Typography>
                         </Box>
                         <Divider sx={{ mb: 2 }} />
                         <Box sx={{ mt: 1, maxHeight: 220, overflowY: 'auto', pr: 1 }}>
                             {stats.distribution.areas.slice(0, 5).map((area, idx) => (
                                 <Box key={area.name} sx={{ mb: 2 }}>
-                                    <Box display="flex" justifyContent="space-between" mb={0.5}>
-                                        <Typography variant="body2" fontWeight={500}>{area.name}</Typography>
-                                        <Typography variant="body2" color="text.secondary">{area.value}</Typography>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            mb: 0.5
+                                        }}>
+                                        <Typography variant="body2" sx={{
+                                            fontWeight: 500
+                                        }}>{area.name}</Typography>
+                                        <Typography variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>{area.value}</Typography>
                                     </Box>
                                     <Box sx={{
                                         height: 6,

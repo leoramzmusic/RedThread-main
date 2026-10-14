@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Container, Grid, Typography, Link as MuiLink, IconButton, Stack, Collapse, Tooltip } from '@mui/material';
 import { useTheme, alpha, darken } from '@mui/material/styles';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import Link from 'next/link';
 import {
   Twitter as TwitterIcon,
@@ -202,7 +202,12 @@ export default function Footer() {
         <Collapse in={expanded} timeout="auto">
           <Grid container spacing={4} sx={{ mb: 6 }}>
             {/* About Section */}
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Typography variant="subtitle1" sx={headerStyles}>
                 RETH
               </Typography>
@@ -255,16 +260,16 @@ export default function Footer() {
 
             {/* Legal Links */}
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={3}
               sx={{
                 borderLeft: { sm: '1px solid', md: '1px solid' },
                 borderColor: dividerColor,
                 pl: { sm: 4 },
               }}
-            >
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Typography variant="subtitle1" sx={headerStyles}>
                 {t('footer.legal', 'LEGAL')}
               </Typography>
@@ -287,16 +292,16 @@ export default function Footer() {
 
             {/* Help Links */}
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={3}
               sx={{
                 borderLeft: { sm: '1px solid', md: '1px solid' },
                 borderColor: dividerColor,
                 pl: { sm: 4 },
               }}
-            >
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Typography variant="subtitle1" sx={headerStyles}>
                 {t('footer.help', 'AYUDA')}
               </Typography>
@@ -316,16 +321,16 @@ export default function Footer() {
 
             {/* Company Links */}
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={3}
               sx={{
                 borderLeft: { sm: '1px solid', md: '1px solid' },
                 borderColor: dividerColor,
                 pl: { sm: 4 },
               }}
-            >
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Typography variant="subtitle1" sx={headerStyles}>
                 {t('footer.company', 'EMPRESA')}
               </Typography>

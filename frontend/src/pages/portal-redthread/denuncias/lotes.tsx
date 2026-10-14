@@ -77,14 +77,23 @@ export default function BulkReports() {
     return (
         <AdminLayout>
             <Container maxWidth="xl">
-                <Box py={4}>
+                <Box sx={{
+                    py: 4
+                }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 4 }}>
                             {error}
                         </Alert>
                     )}
-                    <Typography variant="h4" fontWeight={800} gutterBottom>Procesamiento por Lotes</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                    <Typography variant="h4" gutterBottom sx={{
+                        fontWeight: 800
+                    }}>Procesamiento por Lotes</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 4
+                        }}>
                         Ahorra tiempo procesando múltiples denuncias similares simultáneamente.
                     </Typography>
 
@@ -122,7 +131,12 @@ export default function BulkReports() {
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <Box display="flex" alignItems="center" gap={1}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1
+                                                }}>
                                                 <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem' }}>{report.reported_user.name[0]}</Avatar>
                                                 <Typography variant="body2">{report.reported_user.name}</Typography>
                                             </Box>

@@ -165,22 +165,37 @@ export default function UsersList() {
 
     return (
         <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} gap={2} flexWrap="wrap">
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3,
+                    gap: 2,
+                    flexWrap: "wrap"
+                }}>
                 <TextField
                     placeholder="Buscar por nombre, email, ID o alias..."
                     size="small"
                     sx={{ width: { xs: '100%', md: 400 } }}
                     onChange={(e) => handleSearchChange(e.target.value)}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon color="action" />
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon color="action" />
+                                </InputAdornment>
+                            ),
+                        }
                     }}
                 />
 
-                <Box display="flex" gap={1} alignItems="center">
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "center"
+                    }}>
                     <ToggleButtonGroup
                         value={viewMode}
                         exclusive
@@ -212,7 +227,12 @@ export default function UsersList() {
             />
 
             {loading ? (
-                <Box display="flex" justifyContent="center" py={10}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        py: 10
+                    }}>
                     <CircularProgress />
                 </Box>
             ) : (
@@ -243,18 +263,24 @@ export default function UsersList() {
                                         <TableRow key={user.id} hover>
                                             <TableCell>
                                                 <Box
-                                                    display="flex"
-                                                    alignItems="center"
-                                                    gap={2}
-                                                    sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
                                                     onClick={() => router.push(`/portal-redthread/usuarios/${user.id}`)}
-                                                >
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 2,
+                                                        cursor: 'pointer',
+                                                        '&:hover': { color: 'primary.main' }
+                                                    }}>
                                                     <Avatar src={user.photo || undefined} />
                                                     <Box>
-                                                        <Typography variant="body2" fontWeight={600}>
+                                                        <Typography variant="body2" sx={{
+                                                            fontWeight: 600
+                                                        }}>
                                                             {user.display_name} {user.is_verified && <VerifiedIcon sx={{ fontSize: 14, color: 'primary.main', ml: 0.5 }} />}
                                                         </Typography>
-                                                        <Typography variant="caption" color="text.secondary">{user.email}</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: "text.secondary"
+                                                        }}>{user.email}</Typography>
                                                     </Box>
                                                 </Box>
                                             </TableCell>
@@ -284,21 +310,44 @@ export default function UsersList() {
                     ) : (
                         <Grid container spacing={2}>
                             {users.map((user) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={user.id}>
+                                <Grid
+                                    key={user.id}
+                                    size={{
+                                        xs: 12,
+                                        sm: 6,
+                                        md: 4,
+                                        lg: 3
+                                    }}>
                                     <Card>
                                         <CardContent sx={{ pb: 1 }}>
-                                            <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "center",
+                                                    textAlign: "center"
+                                                }}>
                                                 <Avatar src={user.photo || undefined} sx={{ width: 80, height: 80, mb: 1.5 }} />
-                                                <Typography variant="subtitle1" fontWeight={700}>
+                                                <Typography variant="subtitle1" sx={{
+                                                    fontWeight: 700
+                                                }}>
                                                     {user.display_name}
                                                 </Typography>
-                                                <Typography variant="caption" color="text.secondary" gutterBottom>
+                                                <Typography variant="caption" gutterBottom sx={{
+                                                    color: "text.secondary"
+                                                }}>
                                                     {user.email}
                                                 </Typography>
-                                                <Box mt={1} mb={1}>
+                                                <Box
+                                                    sx={{
+                                                        mt: 1,
+                                                        mb: 1
+                                                    }}>
                                                     {getStatusChip(user.account_status)}
                                                 </Box>
-                                                <Typography variant="caption" color="text.secondary">
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>
                                                     {user.location?.city || 'Sin ubicación'}
                                                 </Typography>
                                             </Box>

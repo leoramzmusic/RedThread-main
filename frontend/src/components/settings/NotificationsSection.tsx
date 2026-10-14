@@ -39,10 +39,14 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                 }
                 label={
                     <Box>
-                        <Typography variant="body1" fontWeight={600}>
+                        <Typography variant="body1" sx={{
+                            fontWeight: 600
+                        }}>
                             Habilitar Notificaciones
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>
                             Activa o desactiva todas las notificaciones
                         </Typography>
                     </Box>
@@ -53,7 +57,13 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
 
             {/* Category-Specific Notifications */}
             <Box>
-                <Typography variant="h6" gutterBottom fontWeight={600} mb={2}>
+                <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 600,
+                        mb: 2
+                    }}>
                     Frecuencia por Categoría
                 </Typography>
                 <Stack spacing={2}>
@@ -70,13 +80,22 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                             />
                         }
                         label={
-                            <Box display="flex" alignItems="center" gap={1.5}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5
+                                }}>
                                 <CampaignIcon color="action" fontSize="small" />
                                 <Box>
-                                    <Typography variant="body2" fontWeight={500}>
+                                    <Typography variant="body2" sx={{
+                                        fontWeight: 500
+                                    }}>
                                         Sugerencias
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Perfiles recomendados
                                     </Typography>
                                 </Box>
@@ -97,13 +116,22 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                             />
                         }
                         label={
-                            <Box display="flex" alignItems="center" gap={1.5}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5
+                                }}>
                                 <MessageIcon color="action" fontSize="small" />
                                 <Box>
-                                    <Typography variant="body2" fontWeight={500}>
+                                    <Typography variant="body2" sx={{
+                                        fontWeight: 500
+                                    }}>
                                         Mensajes
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Nuevos mensajes de chat
                                     </Typography>
                                 </Box>
@@ -124,13 +152,22 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                             />
                         }
                         label={
-                            <Box display="flex" alignItems="center" gap={1.5}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5
+                                }}>
                                 <NewsIcon color="action" fontSize="small" />
                                 <Box>
-                                    <Typography variant="body2" fontWeight={500}>
+                                    <Typography variant="body2" sx={{
+                                        fontWeight: 500
+                                    }}>
                                         Novedades
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Actualizaciones
                                     </Typography>
                                 </Box>
@@ -151,13 +188,22 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                             />
                         }
                         label={
-                            <Box display="flex" alignItems="center" gap={1.5}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5
+                                }}>
                                 <FavoriteIcon color="action" fontSize="small" />
                                 <Box>
-                                    <Typography variant="body2" fontWeight={500}>
+                                    <Typography variant="body2" sx={{
+                                        fontWeight: 500
+                                    }}>
                                         Matches
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Nuevas conexiones
                                     </Typography>
                                 </Box>
@@ -171,9 +217,17 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
 
             {/* Do Not Disturb */}
             <Box>
-                <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        mb: 2
+                    }}>
                     <NightIcon color="action" />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" sx={{
+                        fontWeight: 600
+                    }}>
                         No Molestar
                     </Typography>
                 </Box>
@@ -191,7 +245,9 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                             />
                         }
                         label={
-                            <Typography variant="body2" fontWeight={500}>
+                            <Typography variant="body2" sx={{
+                                fontWeight: 500
+                            }}>
                                 Activar Modo No Molestar
                             </Typography>
                         }
@@ -199,10 +255,14 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
 
                     {dndEnabled && (
                         <Paper variant="outlined" sx={{ p: 2, bgcolor: 'action.hover' }}>
-                            <Typography variant="subtitle2" gutterBottom fontWeight={600}>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                                fontWeight: 600
+                            }}>
                                 Horario
                             </Typography>
-                            <Stack direction="row" spacing={2} alignItems="center">
+                            <Stack direction="row" spacing={2} sx={{
+                                alignItems: "center"
+                            }}>
                                 <TextField
                                     label="Desde"
                                     type="time"
@@ -211,11 +271,15 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                                         ...settings?.do_not_disturb,
                                         start_time: e.target.value
                                     })}
-                                    InputLabelProps={{ shrink: true }}
                                     size="small"
                                     fullWidth
+                                    slotProps={{
+                                        inputLabel: { shrink: true }
+                                    }}
                                 />
-                                <Typography color="text.secondary">hasta</Typography>
+                                <Typography sx={{
+                                    color: "text.secondary"
+                                }}>hasta</Typography>
                                 <TextField
                                     label="Hasta"
                                     type="time"
@@ -224,9 +288,11 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                                         ...settings?.do_not_disturb,
                                         end_time: e.target.value
                                     })}
-                                    InputLabelProps={{ shrink: true }}
                                     size="small"
                                     fullWidth
+                                    slotProps={{
+                                        inputLabel: { shrink: true }
+                                    }}
                                 />
                             </Stack>
                         </Paper>
@@ -246,13 +312,22 @@ export default function NotificationsSection({ settings, onSettingsChange }: Not
                     />
                 }
                 label={
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <NotificationsOffIcon color="action" />
                         <Box>
-                            <Typography variant="body2" fontWeight={500}>
+                            <Typography variant="body2" sx={{
+                                fontWeight: 500
+                            }}>
                                 Notificaciones Offline
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Recibe notificaciones cuando no estés en línea
                             </Typography>
                         </Box>

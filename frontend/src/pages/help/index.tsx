@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -16,7 +16,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon, Search as SearchIcon, ContactSupport as ContactSupportIcon } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { useRouter } from 'next/router';
 import apiClient from '../../services/api';
 import Layout from '../../components/layout/Layout';
@@ -107,7 +107,9 @@ export default function HelpCenter() {
         textAlign: 'center'
       }}>
         <Container maxWidth="md">
-          <Typography variant="h3" component="h1" fontWeight={700} gutterBottom>
+          <Typography variant="h3" component="h1" gutterBottom sx={{
+            fontWeight: 700
+          }}>
             {t('help.title', '¿Cómo podemos ayudarte?')}
           </Typography>
           <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
@@ -126,12 +128,14 @@ export default function HelpCenter() {
                 '& fieldset': { border: 'none' },
               }
             }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+              }
             }}
           />
         </Container>
@@ -145,8 +149,14 @@ export default function HelpCenter() {
         ) : (
           <Grid container spacing={4}>
             {/* Sidebar / Categories */}
-            <Grid item xs={12} md={3}>
-              <Typography variant="h6" gutterBottom fontWeight={600}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 3
+              }}>
+              <Typography variant="h6" gutterBottom sx={{
+                fontWeight: 600
+              }}>
                 {t('help.categories', 'Categorías')}
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, gap: 1, overflowX: 'auto', pb: 2 }}>
@@ -173,8 +183,18 @@ export default function HelpCenter() {
             </Grid>
 
             {/* FAQ Items */}
-            <Grid item xs={12} md={9}>
-              <Typography variant="h5" gutterBottom fontWeight={600} sx={{ mb: 3 }}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 9
+              }}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{
+                  fontWeight: 600,
+                  mb: 3
+                }}>
                 {searchQuery 
                   ? t('help.searchResults', 'Resultados de búsqueda') 
                   : activeCategory === 'all' 
@@ -185,7 +205,9 @@ export default function HelpCenter() {
 
               {filteredItems.length === 0 ? (
                 <Paper sx={{ p: 4, textAlign: 'center' }}>
-                  <Typography color="text.secondary">
+                  <Typography sx={{
+                    color: "text.secondary"
+                  }}>
                     {t('help.noResults', 'No se encontraron resultados para tu búsqueda.')}
                   </Typography>
                 </Paper>
@@ -206,7 +228,9 @@ export default function HelpCenter() {
                       >
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Typography fontWeight={500}>{question}</Typography>
+                            <Typography sx={{
+                              fontWeight: 500
+                            }}>{question}</Typography>
                             {activeCategory === 'all' && (
                               <Chip 
                                 label={category} 
@@ -218,7 +242,9 @@ export default function HelpCenter() {
                           </Box>
                         </AccordionSummary>
                         <AccordionDetails>
-                          <Typography color="text.secondary">
+                          <Typography sx={{
+                            color: "text.secondary"
+                          }}>
                             {answer}
                           </Typography>
                         </AccordionDetails>
@@ -245,7 +271,11 @@ export default function HelpCenter() {
                 <Typography variant="h6" gutterBottom>
                   {t('help.stillNeedHelp', '¿Aún necesitas ayuda?')}
                 </Typography>
-                <Typography color="text.secondary" paragraph>
+                <Typography
+                  sx={{
+                    color: "text.secondary",
+                    marginBottom: "16px"
+                  }}>
                   {t('help.contactDesc', 'Si no encontraste la respuesta que buscabas, nuestro equipo de soporte está listo para ayudarte.')}
                 </Typography>
                 <Button 

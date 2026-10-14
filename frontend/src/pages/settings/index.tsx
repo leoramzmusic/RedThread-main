@@ -12,8 +12,8 @@ import {
 import {
   Save as SaveIcon,
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next/pages';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import ProfileLayout from '../../components/layout/ProfileLayout';
 import { useSettings } from '../../hooks/useSettings';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -87,7 +87,13 @@ export default function SettingsPage() {
   const renderSection = () => {
     if (loading) {
       return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "400px"
+          }}>
           <CircularProgress />
         </Box>
       );
@@ -148,8 +154,15 @@ export default function SettingsPage() {
       case 'localization':
         return (
           <Box sx={{ py: 2 }}>
-            <Typography variant="h6" fontWeight={700} gutterBottom>{t('settings_language', 'Idioma')}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t('settings_language_hint', 'Cambia el idioma de la interfaz. Se guardará en tu cuenta y se sincronizará en todos tus dispositivos.')}</Typography>
+            <Typography variant="h6" gutterBottom sx={{
+              fontWeight: 700
+            }}>{t('settings_language', 'Idioma')}</Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>{t('settings_language_hint', 'Cambia el idioma de la interfaz. Se guardará en tu cuenta y se sincronizará en todos tus dispositivos.')}</Typography>
             <LanguageSelector
               showContinuityHint={false}
               onLanguageChange={async (code) => {
@@ -165,22 +178,38 @@ export default function SettingsPage() {
         );
       case 'advanced':
         return (
-          <Box textAlign="center" py={8}>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 8
+            }}>
+            <Typography variant="h6" gutterBottom sx={{
+              color: "text.secondary"
+            }}>
               {t('settings_wip_title')}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               {t('settings_wip_desc')}
             </Typography>
           </Box>
         );
       default:
         return (
-          <Box textAlign="center" py={8}>
-            <Typography variant="h5" color="text.primary" gutterBottom>
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 8
+            }}>
+            <Typography variant="h5" gutterBottom sx={{
+              color: "text.primary"
+            }}>
               {t('settings_welcome_title')}
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               {t('settings_welcome_desc')}
             </Typography>
           </Box>
@@ -209,7 +238,13 @@ export default function SettingsPage() {
           }}
         >
           {/* Section Title */}
-          <Typography variant="h3" fontWeight={800} gutterBottom mb={3}>
+          <Typography
+            variant="h3"
+            gutterBottom
+            sx={{
+              fontWeight: 800,
+              mb: 3
+            }}>
             {getSectionTitle()}
           </Typography>
 
@@ -218,7 +253,15 @@ export default function SettingsPage() {
 
           {/* Save Button */}
           {!loading && ['appearance', 'notifications', 'security', 'accessibility', 'privacy', 'navbar'].includes(activeSection) && (
-            <Box display="flex" justifyContent="flex-end" pt={4} mt={4} borderTop="1px solid" borderColor="divider">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                pt: 4,
+                mt: 4,
+                borderTop: "1px solid",
+                borderColor: "divider"
+              }}>
               <Button
                 variant="contained"
                 onClick={handleSave}

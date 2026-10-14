@@ -22,7 +22,7 @@ import {
   Public as WorldIcon,
   Piano as JazzIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface MusicGenreSelectorProps {
   selectedGenres: string[];
@@ -200,12 +200,15 @@ export default function MusicGenreSelector({
     <Box>
       {showTitle && (
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={2}
-        >
-          <Typography variant="subtitle2" color="text.secondary">
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2
+          }}>
+          <Typography variant="subtitle2" sx={{
+            color: "text.secondary"
+          }}>
             {t(
               "profile.music.genres.count",
               "Géneros Musicales ({{count}}/25 seleccionados)",
@@ -222,14 +225,16 @@ export default function MusicGenreSelector({
           placeholder={t("profile.music.genres.search", "Buscar géneros...")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-          }}
           sx={{ mb: 2 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }
+          }}
         />
       )}
 
@@ -279,7 +284,13 @@ export default function MusicGenreSelector({
                   },
                 }}
               >
-                <Box display="flex" alignItems="center" gap={1.5} width="100%">
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    width: "100%"
+                  }}>
                   <Box
                     sx={{
                       color: isExpanded ? category.color : "text.secondary",
@@ -320,7 +331,12 @@ export default function MusicGenreSelector({
               </AccordionSummary>
 
               <AccordionDetails sx={{ bgcolor: "background.default", p: 2 }}>
-                <Box display="flex" flexWrap="wrap" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}>
                   {filteredItems.map((genre) => {
                     const isSelected = selectedGenres.includes(genre);
                     return (
@@ -373,10 +389,11 @@ export default function MusicGenreSelector({
         {filteredCategories.length === 0 && (
           <Typography
             variant="body2"
-            color="text.secondary"
-            textAlign="center"
-            py={4}
-          >
+            sx={{
+              color: "text.secondary",
+              textAlign: "center",
+              py: 4
+            }}>
             {t("profile.music.genres.empty", "No se encontraron géneros.")}
           </Typography>
         )}
@@ -385,10 +402,11 @@ export default function MusicGenreSelector({
       {!editable && selectedGenres.length === 0 && (
         <Typography
           variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          py={3}
-        >
+          sx={{
+            color: "text.secondary",
+            textAlign: "center",
+            py: 3
+          }}>
           {t(
             "profile.music.genres.noneSelected",
             "No hay géneros seleccionados",

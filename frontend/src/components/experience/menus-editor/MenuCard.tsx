@@ -30,7 +30,9 @@ export default function MenuCard({ id, label, config, onToggleVisible, onOpenRul
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
-        <Typography variant="subtitle1" fontWeight={600} noWrap>
+        <Typography variant="subtitle1" noWrap sx={{
+          fontWeight: 600
+        }}>
           {label}
         </Typography>
         <Chip
@@ -41,7 +43,9 @@ export default function MenuCard({ id, label, config, onToggleVisible, onOpenRul
       </Box>
 
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>
           v{config.version}
         </Typography>
         {config.roles.length > 0 && (
@@ -61,10 +65,12 @@ export default function MenuCard({ id, label, config, onToggleVisible, onOpenRul
         <Switch
           checked={config.visible}
           onChange={(e) => onToggleVisible(e.target.checked)}
-          inputProps={{ 'aria-label': `Visibilidad de ${label}` }}
           sx={{
             '& .MuiSwitch-switchBase.Mui-checked': { color: '#E63946' },
             '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#E63946' },
+          }}
+          slotProps={{
+            input: { 'aria-label': `Visibilidad de ${label}` }
           }}
         />
         <Button size="small" onClick={onOpenRules} aria-label={`Configurar reglas de ${label}`}>

@@ -48,10 +48,14 @@ export default function NavbarStyleSelector({
               <CardActionArea onClick={() => onSelectStyle(opt.id)}>
                 <CardContent sx={{ py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Box>
-                    <Typography variant="subtitle1" fontWeight={600}>
+                    <Typography variant="subtitle1" sx={{
+                      fontWeight: 600
+                    }}>
                       {selected ? '✓ ' : ''}{opt.label}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">{opt.description}</Typography>
+                    <Typography variant="body2" sx={{
+                      color: "text.secondary"
+                    }}>{opt.description}</Typography>
                   </Box>
                 </CardContent>
               </CardActionArea>
@@ -92,7 +96,9 @@ export default function NavbarStyleSelector({
       <Collapse in={advancedOpen}>
         <Stack spacing={2} sx={{ mt: 1 }}>
           <Box>
-            <Typography variant="caption" color="text.secondary">Color de acento</Typography>
+            <Typography variant="caption" sx={{
+              color: "text.secondary"
+            }}>Color de acento</Typography>
             <ToggleButtonGroup
               exclusive
               size="small"

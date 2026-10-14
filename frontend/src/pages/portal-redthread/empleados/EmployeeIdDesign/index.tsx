@@ -557,15 +557,25 @@ export default function EmployeeIdDesignPage() {
     <AdminLayout>
       <Head><title>EmployeeIdDesign | Admin Portal ReTh</title></Head>
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Box mb={3}>
-          <Typography variant="h4" fontWeight={800}>Credenciales</Typography>
-          <Typography variant="body2" color="text.secondary">Administra el diseño de las credenciales sin tocar código. Vista previa en tiempo real. Ruta: /portal-redthread/empleados/EmployeeIdDesign</Typography>
+        <Box sx={{
+          mb: 3
+        }}>
+          <Typography variant="h4" sx={{
+            fontWeight: 800
+          }}>Credenciales</Typography>
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>Administra el diseño de las credenciales sin tocar código. Vista previa en tiempo real. Ruta: /portal-redthread/empleados/EmployeeIdDesign</Typography>
         </Box>
 
         {saved && <Alert severity="success" sx={{ mb: 2 }}>Configuración guardada. Auditado.</Alert>}
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 7
+            }}>
             <Paper sx={{ p: 2, borderRadius: 2, mb: 2 }}>
               <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto">
                 <Tab label="Diseño visual" />
@@ -579,15 +589,44 @@ export default function EmployeeIdDesignPage() {
 
             {tab === 0 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
                   <PaletteIcon fontSize="small" sx={{ color: '#E63946' }} /> Diseño visual — apariencia general
                 </Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 1.5
+                  }}>
                   Plantillas, paleta con validación de contraste, patrones, fondo y distribución. El estilo actual (geométrico) es la plantilla base.
                 </Typography>
 
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Plantillas</Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" mb={1.5}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Plantillas</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 1.5
+                  }}>
                   {TEMPLATES.map((t) => (
                     <Chip
                       key={t.id}
@@ -601,16 +640,31 @@ export default function EmployeeIdDesignPage() {
                     />
                   ))}
                 </Box>
-                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                  }}>
                   {TEMPLATES.find((t) => t.id === template)?.desc || 'Plantilla personalizada'}
                 </Typography>
 
                 <Divider sx={{ mb: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Paleta de colores</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Paleta de colores</Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}><TextField fullWidth label="Primario" type="color" value={primary} onChange={(e) => { setPrimary(e.target.value); logAudit('set', 'primary'); }} /></Grid>
-                  <Grid item xs={4}><TextField fullWidth label="Secundario" type="color" value={secondary} onChange={(e) => setSecondary(e.target.value)} /></Grid>
-                  <Grid item xs={4}><TextField fullWidth label="Acentos" type="color" value={accent} onChange={(e) => setAccent(e.target.value)} /></Grid>
+                  <Grid size={4}><TextField fullWidth label="Primario" type="color" value={primary} onChange={(e) => { setPrimary(e.target.value); logAudit('set', 'primary'); }} /></Grid>
+                  <Grid size={4}><TextField fullWidth label="Secundario" type="color" value={secondary} onChange={(e) => setSecondary(e.target.value)} /></Grid>
+                  <Grid size={4}><TextField fullWidth label="Acentos" type="color" value={accent} onChange={(e) => setAccent(e.target.value)} /></Grid>
                 </Grid>
                 <Alert severity={contrastOk ? 'success' : 'warning'} sx={{ mt: 1.5, fontSize: '0.75rem' }}>
                   {contrastOk
@@ -619,11 +673,26 @@ export default function EmployeeIdDesignPage() {
                 </Alert>
 
                 <Divider sx={{ my: 2 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Líneas y patrones decorativos</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Líneas y patrones decorativos</Typography>
                 <FormControlLabel control={<Switch checked={decorLines} onChange={(e) => { setDecorLines(e.target.checked); logAudit(e.target.checked ? 'enable' : 'disable', 'decorLines'); }} />} label="Líneas decorativas" />
                 {decorLines && (
                   <>
-                    <Typography variant="caption" fontWeight={700} display="block" mt={1}>Grosor: {decorThickness}px</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        display: "block",
+                        mt: 1
+                      }}>Grosor: {decorThickness}px</Typography>
                     <Slider value={decorThickness} min={1} max={6} step={1} onChange={(_, v) => setDecorThickness(v as number)} valueLabelDisplay="auto" sx={{ color: '#E63946' }} />
                     <FormControl fullWidth size="small" sx={{ mb: 1 }}>
                       <InputLabel>Posición</InputLabel>
@@ -638,7 +707,16 @@ export default function EmployeeIdDesignPage() {
                 )}
 
                 <Divider sx={{ my: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Fondo de la credencial</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Fondo de la credencial</Typography>
                 <ToggleButtonGroup value={cardBgMode} exclusive size="small" onChange={(_, v) => v && setCardBgMode(v)} sx={{ mb: 1.5 }}>
                   <ToggleButton value="solid" sx={{ fontSize: '0.72rem', px: 1.5 }}>Sólido</ToggleButton>
                   <ToggleButton value="gradient" sx={{ fontSize: '0.72rem', px: 1.5 }}>Degradado</ToggleButton>
@@ -652,28 +730,68 @@ export default function EmployeeIdDesignPage() {
                   {watermarkUrl && <Button size="small" onClick={() => setWatermarkUrl(null)}>Quitar</Button>}
                   {watermarkUrl && (
                     <Box sx={{ flex: 1, minWidth: 140 }}>
-                      <Typography variant="caption" fontWeight={700}>Opacidad: {Math.round(watermarkOpacity * 100)}%</Typography>
+                      <Typography variant="caption" sx={{
+                        fontWeight: 700
+                      }}>Opacidad: {Math.round(watermarkOpacity * 100)}%</Typography>
                       <Slider value={watermarkOpacity} min={0} max={0.2} step={0.01} onChange={(_, v) => setWatermarkOpacity(v as number)} size="small" />
                     </Box>
                   )}
                 </Box>
 
                 <Divider sx={{ my: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Distribución general</Typography>
-                <Typography variant="caption" fontWeight={700}>Márgenes laterales: {marginX.toFixed(1)}px</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Distribución general</Typography>
+                <Typography variant="caption" sx={{
+                  fontWeight: 700
+                }}>Márgenes laterales: {marginX.toFixed(1)}px</Typography>
                 <Slider value={marginX} min={4} max={16} step={0.5} onChange={(_, v) => setMarginX(v as number)} valueLabelDisplay="auto" sx={{ color: '#E63946', mb: 1 }} />
-                <Typography variant="caption" fontWeight={700}>Espaciado entre secciones: {contentGap.toFixed(2)}</Typography>
+                <Typography variant="caption" sx={{
+                  fontWeight: 700
+                }}>Espaciado entre secciones: {contentGap.toFixed(2)}</Typography>
                 <Slider value={contentGap} min={0} max={2} step={0.1} onChange={(_, v) => setContentGap(v as number)} valueLabelDisplay="auto" sx={{ color: '#E63946' }} />
 
                 <Divider sx={{ my: 1.5 }} />
-                <Box display="flex" gap={2} flexWrap="wrap">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    flexWrap: "wrap"
+                  }}>
                   <FormControlLabel control={<Switch checked={digitalDark} onChange={(e) => { setDigitalDark(e.target.checked); logAudit(e.target.checked ? 'enable' : 'disable', 'digitalDark'); }} />} label="Modo digital dark (solo preview/export)" />
                 </Box>
-                <Typography variant="caption" color="text.secondary" display="block">La alineación global se controla en Tipografía (izquierda / centro / derecha). Transiciones de color aplican 0.2s en la tarjeta.</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block"
+                  }}>La alineación global se controla en Tipografía (izquierda / centro / derecha). Transiciones de color aplican 0.2s en la tarjeta.</Typography>
 
                 <Divider sx={{ my: 2 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Presets de diseño visual</Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" mb={1}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Presets de diseño visual</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 1
+                  }}>
                   {visualPresets.map((p) => (
                     <Chip key={p.name} label={p.name} size="small" clickable color="primary" variant="outlined" onClick={() => loadVisualPreset(p.name)} onDelete={() => {
                       const next = visualPresets.filter((x) => x.name !== p.name);
@@ -681,9 +799,15 @@ export default function EmployeeIdDesignPage() {
                       localStorage.setItem('reth-visual-presets', JSON.stringify(next));
                     }} />
                   ))}
-                  {visualPresets.length === 0 && <Typography variant="caption" color="text.secondary">Sin presets personalizados aún.</Typography>}
+                  {visualPresets.length === 0 && <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>Sin presets personalizados aún.</Typography>}
                 </Box>
-                <Box display="flex" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1
+                  }}>
                   <TextField size="small" label="Nombre del preset (ej. Staff, Design, VIP)" value={visualPresetName} onChange={(e) => setVisualPresetName(e.target.value)} sx={{ flex: 1 }} />
                   <Button size="small" variant="outlined" onClick={saveVisualPreset} disabled={!visualPresetName.trim()}>Guardar</Button>
                 </Box>
@@ -692,34 +816,58 @@ export default function EmployeeIdDesignPage() {
 
             {tab === 1 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Logo</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={2}>Carga el logo de la empresa para frente y reverso. Se aplica a ambas caras de la tarjeta.</Typography>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Logo</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                  }}>Carga el logo de la empresa para frente y reverso. Se aplica a ambas caras de la tarjeta.</Typography>
                 <Box sx={{ border: '1px dashed', borderColor: 'divider', borderRadius: 2, p: 2, textAlign: 'center', bgcolor: 'rgba(0,0,0,0.02)', maxWidth: 320 }}>
                   <Box sx={{ height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'white', borderRadius: 1, border: '1px solid #eee', mb: 1.5, overflow: 'hidden' }}>
-                    {logoUrl ? <Box component="img" src={logoUrl} alt="logo" sx={{ maxHeight: `${Math.min(logoSize * 6, 56)}px`, maxWidth: '100%', objectFit: 'contain' }} /> : <Typography variant="caption" color="text.secondary">Sin logo</Typography>}
+                    {logoUrl ? <Box component="img" src={logoUrl} alt="logo" sx={{ maxHeight: `${Math.min(logoSize * 6, 56)}px`, maxWidth: '100%', objectFit: 'contain' }} /> : <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>Sin logo</Typography>}
                   </Box>
                   <Button size="small" component="label" variant="outlined" startIcon={<ImageIcon />} sx={{ borderRadius: 2 }}>
                     Cargar logo
                     <input type="file" hidden accept="image/*" onChange={handleLogoUpload} />
                   </Button>
                   {logoUrl && <Button size="small" sx={{ ml: 1 }} onClick={() => setLogoUrl(null)}>Quitar</Button>}
-                  <Typography variant="caption" color="text.secondary" display="block" mt={1}>PNG/JPG/WebP/SVG · máx 2MB · se aplica a frente y reverso</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                      mt: 1
+                    }}>PNG/JPG/WebP/SVG · máx 2MB · se aplica a frente y reverso</Typography>
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="caption" fontWeight={700}>Tamaño del logo: {logoSize}mm</Typography>
+                  <Typography variant="caption" sx={{
+                    fontWeight: 700
+                  }}>Tamaño del logo: {logoSize}mm</Typography>
                   <Slider value={logoSize} min={3} max={18} step={0.5} onChange={(_, v) => setLogoSize(v as number)} valueLabelDisplay="auto" />
-                  <Typography variant="caption" color="text.secondary">Ajusta para que no se vea pequeño. Se refleja en la vista previa y en la tarjeta impresa.</Typography>
+                  <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>Ajusta para que no se vea pequeño. Se refleja en la vista previa y en la tarjeta impresa.</Typography>
                 </Box>
                 <Grid container spacing={2} sx={{ mt: 2 }}>
-                  <Grid item xs={6}><TextField fullWidth label="Título (fila 1)" value={taglineTitle} onChange={(e) => setTaglineTitle(e.target.value)} placeholder="RETH" helperText="Ej. RETH" /></Grid>
-                  <Grid item xs={6}><TextField fullWidth label="Subtítulo (fila 2)" value={taglineSubtitle} onChange={(e) => setTaglineSubtitle(e.target.value)} placeholder="Internal Access System" helperText="Ej. Internal Access System" /></Grid>
+                  <Grid size={6}><TextField fullWidth label="Título (fila 1)" value={taglineTitle} onChange={(e) => setTaglineTitle(e.target.value)} placeholder="RETH" helperText="Ej. RETH" /></Grid>
+                  <Grid size={6}><TextField fullWidth label="Subtítulo (fila 2)" value={taglineSubtitle} onChange={(e) => setTaglineSubtitle(e.target.value)} placeholder="Internal Access System" helperText="Ej. Internal Access System" /></Grid>
                 </Grid>
                 <Box sx={{ mt: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' }}>
-                  <Typography variant="caption" fontWeight={700}>Tamaño título: {taglineTitleSize}mm</Typography>
+                  <Typography variant="caption" sx={{
+                    fontWeight: 700
+                  }}>Tamaño título: {taglineTitleSize}mm</Typography>
                   <Slider value={taglineTitleSize} min={1.2} max={5.0} step={0.1} onChange={(_, v) => setTaglineTitleSize(v as number)} valueLabelDisplay="auto" />
                 </Box>
                 <Box sx={{ mt: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' }}>
-                  <Typography variant="caption" fontWeight={700}>Tamaño subtítulo: {taglineSubtitleSize}mm</Typography>
+                  <Typography variant="caption" sx={{
+                    fontWeight: 700
+                  }}>Tamaño subtítulo: {taglineSubtitleSize}mm</Typography>
                   <Slider value={taglineSubtitleSize} min={0.8} max={3.0} step={0.1} onChange={(_, v) => setTaglineSubtitleSize(v as number)} valueLabelDisplay="auto" />
                 </Box>
                 <FormControl fullWidth sx={{ mt: 2 }}>
@@ -737,8 +885,22 @@ export default function EmployeeIdDesignPage() {
 
             {tab === 2 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><PhotoIcon fontSize="small" /> Photo — marco de la foto de perfil</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={2}>Controla forma, borde, fondo y sombra del marco. La foto oficial se sube en cada empleado; aquí solo se define el estilo del template.</Typography>
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}><PhotoIcon fontSize="small" /> Photo — marco de la foto de perfil</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                  }}>Controla forma, borde, fondo y sombra del marco. La foto oficial se sube en cada empleado; aquí solo se define el estilo del template.</Typography>
 
                 <Box sx={{ border: '1px dashed', borderColor: 'divider', borderRadius: 2, p: 2, mb: 2, maxWidth: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
                   <Box
@@ -771,12 +933,16 @@ export default function EmployeeIdDesignPage() {
                   </Select>
                 </FormControl>
 
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={6}>
-                    <Typography variant="caption" fontWeight={700}>Grosor borde: {photoBorderWidth}px</Typography>
+                <Grid container spacing={2} sx={{
+                  alignItems: "center"
+                }}>
+                  <Grid size={6}>
+                    <Typography variant="caption" sx={{
+                      fontWeight: 700
+                    }}>Grosor borde: {photoBorderWidth}px</Typography>
                     <Slider value={photoBorderWidth} min={0} max={4} step={1} onChange={(_, v) => setPhotoBorderWidth(v as number)} valueLabelDisplay="auto" />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid size={6}>
                     <TextField fullWidth label="Color borde" type="color" value={photoBorderColor} onChange={(e) => setPhotoBorderColor(e.target.value)} helperText="Gris / negro / rojo" />
                   </Grid>
                 </Grid>
@@ -803,18 +969,47 @@ export default function EmployeeIdDesignPage() {
 
             {tab === 3 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={800} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 800,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
                   <TextIcon fontSize="small" sx={{ color: '#E63946' }} /> Estudio de Tipografía
                 </Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                  }}>
                   Control total sobre fuente, tamaño, color y estilo del nombre y puesto. Vista previa en tiempo real con clamp() automático anti-desbordamiento.
                 </Typography>
 
                 {/* Presets rápidos */}
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   <StyleIcon sx={{ fontSize: 13, mr: 0.5, verticalAlign: 'middle' }} />Estilos Rápidos
                 </Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" mb={2.5}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 2.5
+                  }}>
                   {TYPO_PRESETS.map((p) => (
                     <Tooltip key={p.name} title={`${p.font} · ${p.nameColor}`} arrow>
                       <Chip
@@ -837,10 +1032,25 @@ export default function EmployeeIdDesignPage() {
                 <Divider sx={{ mb: 2.5 }} />
 
                 {/* Selector de fuente */}
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   Fuente
                 </Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" mb={2.5}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 2.5
+                  }}>
                   {FONTS.map((f) => (
                     <Chip
                       key={f}
@@ -859,12 +1069,30 @@ export default function EmployeeIdDesignPage() {
                 </Box>
 
                 {/* Tamaños */}
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   Tamaño Nombre: {nameSize.toFixed(1)}mm
                 </Typography>
                 <Slider value={nameSize} min={2.0} max={4.5} step={0.1} onChange={(_, v) => setNameSize(v as number)} valueLabelDisplay="auto" valueLabelFormat={(v) => `${v}mm`} sx={{ color: '#E63946', mb: 1.5 }} />
 
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   Tamaño Puesto/Rol: {roleSize.toFixed(1)}mm
                 </Typography>
                 <Slider value={roleSize} min={1.2} max={2.8} step={0.1} onChange={(_, v) => setRoleSize(v as number)} valueLabelDisplay="auto" valueLabelFormat={(v) => `${v}mm`} sx={{ color: '#E63946', mb: 2 }} />
@@ -872,10 +1100,26 @@ export default function EmployeeIdDesignPage() {
                 <Divider sx={{ mb: 2 }} />
 
                 {/* Paleta colores corporativos — Nombre */}
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   Color del Nombre
                 </Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" alignItems="center" mb={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    mb: 1
+                  }}>
                   {CORPORATE_COLORS.map((c) => (
                     <Tooltip key={c.value} title={c.label} arrow>
                       <Box
@@ -901,10 +1145,27 @@ export default function EmployeeIdDesignPage() {
                 </Box>
 
                 {/* Paleta colores corporativos — Rol */}
-                <Typography variant="caption" fontWeight={700} display="block" mt={1.5} mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mt: 1.5,
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   Color del Rol / Puesto
                 </Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" alignItems="center" mb={2}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    mb: 2
+                  }}>
                   {CORPORATE_COLORS.map((c) => (
                     <Tooltip key={c.value} title={c.label} arrow>
                       <Box
@@ -932,12 +1193,36 @@ export default function EmployeeIdDesignPage() {
                 <Divider sx={{ mb: 2 }} />
 
                 {/* Estilo y alineación */}
-                <Grid container spacing={2} alignItems="flex-start" mb={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    alignItems: "flex-start",
+                    mb: 2
+                  }}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        display: "block",
+                        mb: 1,
+                        color: '#6B7280',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em'
+                      }}>
                       Estilo
                     </Typography>
-                    <Box display="flex" gap={1} flexWrap="wrap">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        flexWrap: "wrap"
+                      }}>
                       <Tooltip title="Nombre en negrita">
                         <ToggleButton value="bold" selected={boldName} size="small" onChange={() => setBoldName(!boldName)} sx={{ px: 1.5 }}>
                           <BoldIcon fontSize="small" />
@@ -955,8 +1240,21 @@ export default function EmployeeIdDesignPage() {
                       </Tooltip>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        display: "block",
+                        mb: 1,
+                        color: '#6B7280',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em'
+                      }}>
                       Alineación
                     </Typography>
                     <ToggleButtonGroup value={textAlign} exclusive size="small" onChange={(_, v) => v && setTextAlign(v)}>
@@ -967,9 +1265,24 @@ export default function EmployeeIdDesignPage() {
                   </Grid>
                 </Grid>
 
-                <Grid container spacing={2} mb={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Grid container spacing={2} sx={{
+                  mb: 2
+                }}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        display: "block",
+                        mb: 1,
+                        color: '#6B7280',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em'
+                      }}>
                       Capitalización
                     </Typography>
                     <FormControl fullWidth size="small">
@@ -980,8 +1293,21 @@ export default function EmployeeIdDesignPage() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        display: "block",
+                        mb: 1,
+                        color: '#6B7280',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em'
+                      }}>
                       Idioma del Rol
                     </Typography>
                     <ToggleButtonGroup value={langRole} exclusive size="small" onChange={(_, v) => v && setLangRole(v)}>
@@ -991,11 +1317,21 @@ export default function EmployeeIdDesignPage() {
                   </Grid>
                 </Grid>
 
-                <Box display="flex" gap={2} mb={2.5}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    mb: 2.5
+                  }}>
                   <FormControlLabel control={<Switch checked={showDivider} size="small" onChange={(e) => setShowDivider(e.target.checked)} />} label="Mostrar separador" />
                   {boldName && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="caption" fontWeight={700} sx={{ color: '#6B7280' }}>Peso: {nameWeight}</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 700,
+                          color: '#6B7280'
+                        }}>Peso: {nameWeight}</Typography>
                       <Slider value={nameWeight} min={400} max={900} step={100} onChange={(_, v) => setNameWeight(v as number)} sx={{ width: 80, color: '#E63946' }} size="small" />
                     </Box>
                   )}
@@ -1004,10 +1340,25 @@ export default function EmployeeIdDesignPage() {
                 <Divider sx={{ mb: 2 }} />
 
                 {/* Test de nombres para comprobar anti-desborde */}
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>
                   <SpellcheckIcon sx={{ fontSize: 13, mr: 0.5, verticalAlign: 'middle' }} /> Prueba Anti-Desborde
                 </Typography>
-                <Box display="flex" gap={1} mb={2.5} flexWrap="wrap">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    mb: 2.5,
+                    flexWrap: "wrap"
+                  }}>
                   {TEST_NAMES.map((t) => (
                     <Chip
                       key={t.id}
@@ -1035,7 +1386,13 @@ export default function EmployeeIdDesignPage() {
                     gap: 0.75,
                   }}
                 >
-                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                      mb: 0.5
+                    }}>
                     Previsualización tipográfica instantánea
                   </Typography>
                   {(() => {
@@ -1096,8 +1453,16 @@ export default function EmployeeIdDesignPage() {
 
             {tab === 4 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Elementos de la credencial</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>Cada switch activa/desactiva un campo en la vista previa al instante. Los cambios se auditán y guardan con “Guardar diseño”.</Typography>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Elementos de la credencial</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 1.5
+                  }}>Cada switch activa/desactiva un campo en la vista previa al instante. Los cambios se auditán y guardan con “Guardar diseño”.</Typography>
 
                 {requiredWarning && (
                   <Alert severity="warning" sx={{ mb: 1.5, fontSize: '0.8rem' }}>
@@ -1105,8 +1470,22 @@ export default function EmployeeIdDesignPage() {
                   </Alert>
                 )}
 
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Campos del frente</Typography>
-                <Box display="flex" flexDirection="column" gap={0.5}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Campos del frente</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 0.5
+                  }}>
                   <FormControlLabel control={<Switch checked={showName} onChange={(e) => toggleWithAudit(setShowName, 'showName')(e.target.checked)} />} label="Nombre del empleado (obligatorio)" />
                   <FormControlLabel control={<Switch checked={showID} onChange={(e) => toggleWithAudit(setShowID, 'showID')(e.target.checked)} />} label="ID / código (obligatorio)" />
                   <FormControlLabel control={<Switch checked={showDOB} onChange={(e) => toggleWithAudit(setShowDOB, 'showDOB')(e.target.checked)} />} label="Mostrar DOB" />
@@ -1116,7 +1495,16 @@ export default function EmployeeIdDesignPage() {
                 </Box>
 
                 <Divider sx={{ my: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Número de serie</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Número de serie</Typography>
                 <FormControlLabel control={<Switch checked={showSerial} onChange={(e) => { toggleWithAudit(setShowSerial, 'showSerial')(e.target.checked); if (e.target.checked && serialWhere === 'none') setSerialWhere('back'); if (!e.target.checked) setSerialWhere('none'); }} />} label="Mostrar número de serie" />
                 {showSerial && (
                   <FormControl fullWidth size="small" sx={{ mt: 1, mb: 1 }}>
@@ -1130,11 +1518,20 @@ export default function EmployeeIdDesignPage() {
                 )}
 
                 <Divider sx={{ my: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>QR trasero</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>QR trasero</Typography>
                 <FormControlLabel control={<Switch checked={showQR} onChange={(e) => toggleWithAudit(setShowQR, 'showQR')(e.target.checked)} />} label="Mostrar QR" />
                 {showQR && (
                   <Grid container spacing={2} sx={{ mt: 0.5 }}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <FormControl fullWidth size="small">
                         <InputLabel>Tamaño QR</InputLabel>
                         <Select value={String(qrSize)} label="Tamaño QR" onChange={(e) => { setQrSize(Number(e.target.value)); logAudit('set', 'qrSize'); }}>
@@ -1144,7 +1541,7 @@ export default function EmployeeIdDesignPage() {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <FormControl fullWidth size="small">
                         <InputLabel>Posición QR</InputLabel>
                         <Select value={qrPos} label="Posición QR" onChange={(e) => { setQrPos(e.target.value as typeof qrPos); logAudit('set', 'qrPos'); }}>
@@ -1154,14 +1551,23 @@ export default function EmployeeIdDesignPage() {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <TextField fullWidth size="small" label="URL base del QR" value={qrUrl} onChange={(e) => setQrUrl(e.target.value)} helperText="Endpoint que abrirá el código (se añade /{employeeCode})" />
                     </Grid>
                   </Grid>
                 )}
 
                 <Divider sx={{ my: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Vigencia</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Vigencia</Typography>
                 <FormControlLabel control={<Switch checked={showDates} onChange={(e) => toggleWithAudit(setShowDates, 'showDates')(e.target.checked)} />} label="Mostrar fechas emisión / expiración" />
                 {showDates && (
                   <FormControl fullWidth size="small" sx={{ mt: 1 }}>
@@ -1177,7 +1583,16 @@ export default function EmployeeIdDesignPage() {
                 )}
 
                 <Divider sx={{ my: 1.5 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={0.5} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Textos del reverso</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 0.5,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Textos del reverso</Typography>
                 <ToggleButtonGroup value={backLang} exclusive size="small" onChange={(_, v) => v && setBackLang(v)} sx={{ mb: 1.5 }}>
                   <ToggleButton value="en" sx={{ fontSize: '0.72rem', px: 1.5 }}>EN</ToggleButton>
                   <ToggleButton value="es" sx={{ fontSize: '0.72rem', px: 1.5 }}>ES</ToggleButton>
@@ -1191,8 +1606,23 @@ export default function EmployeeIdDesignPage() {
                 <TextField fullWidth label="Franja inferior (frente)" value={topText} onChange={(e) => setTopText(e.target.value)} helperText="Ej. Valid with official photo / VISITOR" size="small" />
 
                 <Divider sx={{ my: 2 }} />
-                <Typography variant="caption" fontWeight={700} display="block" mb={1} sx={{ color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Plantillas de elementos (presets)</Typography>
-                <Box display="flex" gap={1} flexWrap="wrap" mb={1}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mb: 1,
+                    color: '#6B7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
+                  }}>Plantillas de elementos (presets)</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 1
+                  }}>
                   {BUILTIN_PRESETS.map((p) => (
                     <Chip key={p.name} label={p.name} size="small" clickable variant="outlined" onClick={() => loadElementPreset(p.name)} />
                   ))}
@@ -1204,7 +1634,11 @@ export default function EmployeeIdDesignPage() {
                     }} />
                   ))}
                 </Box>
-                <Box display="flex" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1
+                  }}>
                   <TextField size="small" label="Nombre del preset" value={presetName} onChange={(e) => setPresetName(e.target.value)} sx={{ flex: 1 }} />
                   <Button size="small" variant="outlined" onClick={saveElementPreset} disabled={!presetName.trim()}>Guardar</Button>
                 </Box>
@@ -1213,34 +1647,72 @@ export default function EmployeeIdDesignPage() {
 
             {tab === 5 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Diseños guardados, versiones y auditoría</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Diseños guardados, versiones y auditoría</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 1.5
+                  }}>
                   El borrador se guarda en este navegador. «Guardar diseño» crea/actualiza un archivo nominado en el servidor (por nombre de versión, sin duplicados).
                 </Typography>
-                <Box display="flex" gap={1} alignItems="flex-end" mb={1.5} flexWrap="wrap">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    alignItems: "flex-end",
+                    mb: 1.5,
+                    flexWrap: "wrap"
+                  }}>
                   <TextField label="Nombre del diseño" value={designName} onChange={(e) => setDesignName(e.target.value)} size="small" sx={{ minWidth: 200 }} helperText="Ej. Staff, Visitor, VIP, Retención" />
                   <TextField label="Versión (archivo)" value={previewVersion} onChange={(e) => setPreviewVersion(e.target.value)} size="small" sx={{ width: 140 }} />
                   <Button variant="outlined" onClick={handleExport} startIcon={<ExportIcon />}>Exportar JSON</Button>
                 </Box>
                 <Divider sx={{ my: 1.5 }} />
-                <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-                  <Typography variant="caption" fontWeight={700}>Diseños en servidor (img/assets/credentials)</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 1
+                  }}>
+                  <Typography variant="caption" sx={{
+                    fontWeight: 700
+                  }}>Diseños en servidor (img/assets/credentials)</Typography>
                   <Button size="small" onClick={fetchDesignList} disabled={loadingList}>{loadingList ? 'Actualizando…' : 'Actualizar'}</Button>
                 </Box>
                 {savedDesigns.length === 0 && (
-                  <Typography variant="caption" color="text.secondary">Sin diseños guardados aún. Pulsa «Guardar diseño».</Typography>
+                  <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>Sin diseños guardados aún. Pulsa «Guardar diseño».</Typography>
                 )}
                 {savedDesigns.map((f) => (
                   <Box key={f.name} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.75, borderBottom: '1px solid', borderColor: 'divider' }}>
                     <Typography variant="body2" sx={{ flex: 1, fontFamily: 'monospace', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</Typography>
                     <Chip size="small" label={`${Math.round(f.size / 1024)} KB`} sx={{ height: 20, fontSize: '0.65rem' }} />
-                    <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>{f.modified.slice(0, 16).replace('T', ' ')}</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        whiteSpace: 'nowrap'
+                      }}>{f.modified.slice(0, 16).replace('T', ' ')}</Typography>
                     <Button size="small" variant="outlined" onClick={() => loadDesignFromUrl(f.url)}>Cargar</Button>
                   </Box>
                 ))}
                 <Divider sx={{ my: 2 }} />
-                <Typography variant="caption" color="text.secondary">Multilenguaje: credenciales en inglés por defecto, con opción de traducir etiquetas. Auditoría registra quién y cuándo modificó el diseño (localStorage).</Typography>
-                <Typography variant="caption" fontWeight={700} display="block" mt={1.5}>Historial (local)</Typography>
+                <Typography variant="caption" sx={{
+                  color: "text.secondary"
+                }}>Multilenguaje: credenciales en inglés por defecto, con opción de traducir etiquetas. Auditoría registra quién y cuándo modificó el diseño (localStorage).</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    display: "block",
+                    mt: 1.5
+                  }}>Historial (local)</Typography>
                 <Box sx={{ maxHeight: 160, overflow: 'auto', mt: 1, p: 1, bgcolor: 'rgba(0,0,0,0.03)', borderRadius: 1, fontFamily: 'monospace', fontSize: '0.7rem' }}>
                   {(JSON.parse(typeof window !== 'undefined' ? localStorage.getItem('reth-credential-audit') || '[]' : '[]') as any[]).map((h: any, i: number) => (
                     <Box key={i} sx={{ mb: 0.5 }}>{h.at} — {h.by} — {h.cfg}</Box>
@@ -1250,15 +1722,32 @@ export default function EmployeeIdDesignPage() {
               </Paper>
             )}
 
-            <Box display="flex" gap={1} mt={2}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                mt: 2
+              }}>
               <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} sx={{ borderRadius: 2, bgcolor: '#E63946', '&:hover': { bgcolor: '#B71C1C' } }}>Guardar diseño</Button>
               <Button variant="outlined" onClick={handleExport} startIcon={<ExportIcon />}>Exportar para dev/prod</Button>
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={5}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 5
+            }}>
             <Paper sx={{ p: 2, borderRadius: 2, position: 'sticky', top: 16 }}>
-              <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><ViewIcon fontSize="small" /> Vista previa en tiempo real</Typography>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}><ViewIcon fontSize="small" /> Vista previa en tiempo real</Typography>
               <Alert severity={(!showEmail || !showDOB || !hasPreviewPhoto || requiredWarning) ? 'warning' : 'info'} sx={{ mb: 2, fontSize: '0.75rem' }} icon={<HistoryIcon fontSize="small" />}>
                 {!hasPreviewPhoto || requiredWarning ? 'Campo obligatorio desactivado o sin foto: validar antes de imprimir' : (!showEmail || !showDOB) ? 'Faltan datos: la credencial mostrará advertencia' : 'Vista previa actualizada'}
               </Alert>
@@ -1378,7 +1867,14 @@ export default function EmployeeIdDesignPage() {
                 <Button fullWidth variant="outlined" onClick={() => window.print()} disabled={!hasPreviewPhoto} sx={{ borderRadius: 2 }} startIcon={!hasPreviewPhoto ? <WarnIcon /> : undefined}>Imprimir</Button>
                 <Button fullWidth variant="contained" onClick={() => window.print()} disabled={!hasPreviewPhoto} sx={{ borderRadius: 2, bgcolor: '#E63946', '&:hover': { bgcolor: '#B71C1C' } }} startIcon={!hasPreviewPhoto ? <WarnIcon /> : undefined}>Descargar PDF</Button>
               </Box>
-              <Typography variant="caption" color="text.secondary" display="block" mt={1} textAlign="center">Validación: si falta foto/nombre/código se desactiva el botón con ícono de advertencia.</Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "text.secondary",
+                  display: "block",
+                  mt: 1,
+                  textAlign: "center"
+                }}>Validación: si falta foto/nombre/código se desactiva el botón con ícono de advertencia.</Typography>
             </Paper>
           </Grid>
         </Grid>

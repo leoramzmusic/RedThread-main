@@ -30,12 +30,11 @@ export default function KawaiiLoader({
       {message && (
         <Typography
           variant="body2"
-          color="text.secondary"
           sx={{
+            color: "text.secondary",
             fontWeight: 500,
-            opacity: 0.8,
-          }}
-        >
+            opacity: 0.8
+          }}>
           {message}
         </Typography>
       )}

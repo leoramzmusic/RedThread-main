@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Box,
   Typography,
@@ -788,12 +788,15 @@ export default function LifestyleInterests({
   return (
     <Box>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Typography variant="subtitle2" color="text.secondary">
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2
+        }}>
+        <Typography variant="subtitle2" sx={{
+          color: "text.secondary"
+        }}>
           {t(
             "profileSections.interests.header",
             "Intereses ({{count}} seleccionados)",
@@ -812,14 +815,16 @@ export default function LifestyleInterests({
           )}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-          }}
           sx={{ mb: 2 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }
+          }}
         />
       )}
 
@@ -869,7 +874,13 @@ export default function LifestyleInterests({
                   },
                 }}
               >
-                <Box display="flex" alignItems="center" gap={1.5} width="100%">
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    width: "100%"
+                  }}>
                   <Box
                     sx={{
                       color: isExpanded ? category.color : "text.secondary",
@@ -910,7 +921,12 @@ export default function LifestyleInterests({
               </AccordionSummary>
 
               <AccordionDetails sx={{ bgcolor: "background.default", p: 2 }}>
-                <Box display="flex" flexWrap="wrap" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}>
                   {filteredItems.map((interest) => {
                     const isSelected = selectedInterests.includes(interest);
                     return (
@@ -982,10 +998,11 @@ export default function LifestyleInterests({
         {filteredCategories.length === 0 && (
           <Typography
             variant="body2"
-            color="text.secondary"
-            textAlign="center"
-            py={4}
-          >
+            sx={{
+              color: "text.secondary",
+              textAlign: "center",
+              py: 4
+            }}>
             {t(
               "profileSections.interests.noResults",
               "No se encontraron intereses.",
@@ -997,10 +1014,11 @@ export default function LifestyleInterests({
       {!editable && selectedInterests.length === 0 && (
         <Typography
           variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          py={3}
-        >
+          sx={{
+            color: "text.secondary",
+            textAlign: "center",
+            py: 3
+          }}>
           {t(
             "profileSections.interests.noneSelected",
             "No hay intereses seleccionados",

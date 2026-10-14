@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { 
@@ -14,7 +14,7 @@ import {
   ToggleButtonGroup,
   Divider
 } from '@mui/material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import apiClient from '../../services/api';
@@ -106,10 +106,14 @@ export default function LegalDocumentPage() {
           <MuiLink component={Link} href="/home" color="inherit" sx={{ cursor: 'pointer', textDecoration: 'none' }}>
             {t('nav.home', 'Inicio')}
           </MuiLink>
-          <Typography color="text.primary">
+          <Typography sx={{
+            color: "text.primary"
+          }}>
             {t('footer.legal', 'Legal')}
           </Typography>
-          <Typography color="text.primary">
+          <Typography sx={{
+            color: "text.primary"
+          }}>
             {document?.title || type}
           </Typography>
         </Breadcrumbs>
@@ -121,10 +125,14 @@ export default function LegalDocumentPage() {
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 4 }}>
               <Box>
-                <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
+                <Typography variant="h4" component="h1" gutterBottom sx={{
+                  fontWeight: 700
+                }}>
                   {document?.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>
                   {t('legal.effectiveDate', 'Fecha de vigencia')}: {new Date(document?.effective_date || '').toLocaleDateString()} • v{document?.version}
                 </Typography>
               </Box>

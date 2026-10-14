@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Card,
   CardMedia,
@@ -608,8 +608,9 @@ export default function ProfileCard({
           >
             <Typography
               variant="caption"
-              fontWeight={800}
               sx={{
+                fontWeight: 800,
+
                 color: (() => {
                   const score = isOwnProfile
                     ? 100
@@ -618,10 +619,10 @@ export default function ProfileCard({
                   if (score > 30) return "#FF9800";
                   return "#F44336";
                 })(),
+
                 fontSize: "0.7rem",
-                lineHeight: 1,
-              }}
-            >
+                lineHeight: 1
+              }}>
               {isOwnProfile ? "100" : Math.round(profile.affinity_score || 0)}%
             </Typography>
           </Box>
@@ -692,7 +693,12 @@ export default function ProfileCard({
             zIndex: 10,
           }}
         >
-          <Typography variant="h4" fontWeight={900} sx={{ color: "#69F0AE" }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 900,
+              color: "#69F0AE"
+            }}>
             LIKE
           </Typography>
         </Box>
@@ -709,7 +715,12 @@ export default function ProfileCard({
             zIndex: 10,
           }}
         >
-          <Typography variant="h4" fontWeight={900} sx={{ color: "#FF5252" }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 900,
+              color: "#FF5252"
+            }}>
             NOPE
           </Typography>
         </Box>
@@ -738,7 +749,12 @@ export default function ProfileCard({
               margin: "0 auto",
             }}
           />
-          <Typography variant="h5" fontWeight={900} sx={{ color: "#2196F3" }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 900,
+              color: "#2196F3"
+            }}>
             SUPERLIKE
           </Typography>
         </Box>

@@ -38,32 +38,34 @@ const RealNameField: React.FC<RealNameFieldProps> = ({
           fullWidth 
           label="Nombre Real" 
           helperText={verified ? "Identidad verificada" : "Haz clic en el ícono para subir tu documento"}
-          InputProps={{
-            readOnly: verified,
-            endAdornment: (
-              <InputAdornment position="end">
-                {verified && (
-                  <VerifiedUserIcon sx={{ color: 'success.main', mr: 1 }} />
-                )}
-                <Tooltip 
-                  title={verified ? "Volver a subir documento" : "Subir documento de identidad"} 
-                  arrow
-                >
-                  <IconButton 
-                    size="small" 
-                    onClick={handleUploadClick}
-                    disabled={isUploading}
-                    sx={{ color: 'text.secondary' }}
+          slotProps={{
+            input: {
+              readOnly: verified,
+              endAdornment: (
+                <InputAdornment position="end">
+                  {verified && (
+                    <VerifiedUserIcon sx={{ color: 'success.main', mr: 1 }} />
+                  )}
+                  <Tooltip 
+                    title={verified ? "Volver a subir documento" : "Subir documento de identidad"} 
+                    arrow
                   >
-                    {isUploading ? (
-                      <CircularProgress size={20} />
-                    ) : (
-                      <UploadFileIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                </Tooltip>
-              </InputAdornment>
-            ),
+                    <IconButton 
+                      size="small" 
+                      onClick={handleUploadClick}
+                      disabled={isUploading}
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {isUploading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <UploadFileIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ),
+            }
           }}
         />
       )}

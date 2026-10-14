@@ -73,7 +73,9 @@ export default function ChatMessage({ message, isOwn, senderName, senderPhoto, s
           </Paper>
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: isOwn ? 'flex-end' : 'flex-start', gap: 0.5, mt: 0.5 }}>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{
+            color: "text.secondary"
+          }}>
             {format(new Date(message.created_at), 'HH:mm')}
           </Typography>
           {isOwn && (

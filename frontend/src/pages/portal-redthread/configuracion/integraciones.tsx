@@ -8,7 +8,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HubIcon from '@mui/icons-material/Hub';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import MailOutlineIcon from '@mui/icons-material/MailOutlined';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -189,7 +189,13 @@ export default function ConfiguracionIntegraciones() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -202,16 +208,29 @@ export default function ConfiguracionIntegraciones() {
     <AdminLayout>
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" gap={2} mb={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 1
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread/configuracion')}>
               <ArrowBackIcon />
             </IconButton>
             <HubIcon color="primary" />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Integraciones
             </Typography>
           </Box>
-          <Typography variant="body2" color="text.secondary" mb={3}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 3
+            }}>
             Vincula servicios externos y exporta notificaciones del portal a tus calendarios y correo.
           </Typography>
 
@@ -219,7 +238,14 @@ export default function ConfiguracionIntegraciones() {
           {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
 
           <Paper sx={{ p: 3, mb: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 1
+              }}>
               <Typography variant="h6">Estado</Typography>
               <Chip
                 label={`${connectedCount} de ${Object.keys(state).length} vinculadas`}
@@ -234,9 +260,20 @@ export default function ConfiguracionIntegraciones() {
               const meta = SERVICE_META[id];
               const item = state[id];
               return (
-                <Grid item xs={12} md={6} key={id}>
+                <Grid
+                  key={id}
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <Box display="flex" alignItems="flex-start" gap={2} mb={1}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 2,
+                        mb: 1
+                      }}>
                       <Box
                         sx={{
                           width: 44, height: 44, borderRadius: 2,
@@ -246,16 +283,30 @@ export default function ConfiguracionIntegraciones() {
                       >
                         {meta.icon}
                       </Box>
-                      <Box flex={1}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="subtitle1" fontWeight={700}>{meta.title}</Typography>
+                      <Box sx={{
+                        flex: 1
+                      }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                          }}>
+                          <Typography variant="subtitle1" sx={{
+                            fontWeight: 700
+                          }}>{meta.title}</Typography>
                           {item.connected ? (
                             <Chip size="small" color="success" icon={<CheckCircleIcon />} label="Vinculada" />
                           ) : (
                             <Chip size="small" variant="outlined" icon={<RadioButtonUncheckedIcon />} label="Sin vincular" />
                           )}
                         </Box>
-                        <Typography variant="body2" color="text.secondary" mt={0.5}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "text.secondary",
+                            mt: 0.5
+                          }}>
                           {meta.description}
                         </Typography>
                       </Box>
@@ -263,7 +314,15 @@ export default function ConfiguracionIntegraciones() {
 
                     <Divider sx={{ my: 2 }} />
 
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mt="auto" gap={1} flexWrap="wrap">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mt: "auto",
+                        gap: 1,
+                        flexWrap: "wrap"
+                      }}>
                       <FormControlLabel
                         control={
                           <Switch
@@ -273,7 +332,12 @@ export default function ConfiguracionIntegraciones() {
                         }
                         label={item.connected ? 'Conectada' : 'Conectar'}
                       />
-                      <Box display="flex" gap={1} flexWrap="wrap">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          flexWrap: "wrap"
+                        }}>
                         {item.connected && meta.exportUrl && (
                           <Button
                             size="small"
@@ -287,7 +351,12 @@ export default function ConfiguracionIntegraciones() {
                           </Button>
                         )}
                         {item.connected && item.connectedAt && (
-                          <Typography variant="caption" color="text.secondary" alignSelf="center">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              alignSelf: "center"
+                            }}>
                             {new Date(item.connectedAt).toLocaleDateString('es-MX')}
                           </Typography>
                         )}
@@ -310,7 +379,12 @@ export default function ConfiguracionIntegraciones() {
               Vincular {linkService ? SERVICE_META[linkService].title : ''}
             </DialogTitle>
             <DialogContent>
-              <Typography variant="body2" color="text.secondary" mb={2}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2
+                }}>
                 Ingresa el correo o identificador de la cuenta que quieres conectar.
                 El flujo OAuth completo se habilita cuando el backend exponga los endpoints correspondientes.
               </Typography>

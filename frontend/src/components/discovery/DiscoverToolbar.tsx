@@ -9,7 +9,7 @@ import BoostStatusBadge from './BoostStatusBadge';
 import { keyframes } from '@mui/system';
 import DiscoveryModeSelector, { DiscoveryMode } from './DiscoveryModeSelector';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface DiscoverToolbarProps {
     title: string;
@@ -130,26 +130,28 @@ export default function DiscoverToolbar({
         >
             {/* MAIN HEADER ROW: Filter - Modes - Boost */}
             <Box
-                display="flex"
-                alignItems="center"
-                width="100%"
                 sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
                     position: 'relative',
                     minHeight: { xs: 'auto', sm: '50px' },
                     py: { xs: 0.5, sm: 0 },
                     px: { xs: 0, sm: 2 },
                     boxSizing: 'border-box',
+
                     '@media (max-width:375px)': {
                         px: '0 !important',
                         py: '0 !important',
                         minHeight: '0 !important',
                         gap: '0 !important',
                     },
+
                     gap: { xs: 0, sm: 2 },
-                    justifyContent: 'flex-start', // Favorecer izquierda
-                    alignItems: 'center',
-                }}
-            >
+
+                    // Favorecer izquierda
+                    justifyContent: 'flex-start'
+                }}>
                 {/* LEFT: Settings & Filter */}
                 <Box sx={{ width: 68, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 0.1 }}>
                     <Tooltip title={t('interaction.title', 'Configuración de Interacción')} arrow>

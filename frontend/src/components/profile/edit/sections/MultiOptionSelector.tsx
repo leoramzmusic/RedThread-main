@@ -88,7 +88,11 @@ export default function MultiOptionSelector({
                                 }
                             }}
                         >
-                            <Box display="flex" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
                                 {icon && <Box sx={{ mr: 1.5, color: categoryColor, display: 'flex' }}>{icon}</Box>}
                                 <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '1rem' }}>
                                     {label}
@@ -126,7 +130,12 @@ export default function MultiOptionSelector({
                                 borderRadius: 3,
                                 bgcolor: 'background.paper'
                             }}>
-                                <Box display="flex" flexWrap="wrap" gap={1}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        gap: 1
+                                    }}>
                                     {options.map((option) => {
                                         const isSelected = currentValues.includes(option.value);
                                         return (

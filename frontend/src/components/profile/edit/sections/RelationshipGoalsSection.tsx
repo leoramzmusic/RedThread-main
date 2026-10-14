@@ -16,7 +16,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { INTENTION_OPTIONS } from "../../../../constants/profileOptions";
 import { BaseSectionProps } from "../types";
 
@@ -56,7 +56,7 @@ export default function RelationshipGoalsSection({
     t(`profile.intentions_desc.${value}`, fallback);
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -77,13 +77,19 @@ export default function RelationshipGoalsSection({
             sx={{ px: 3, py: 1 }}
           >
             <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-              pr={2}
-            >
-              <Box display="flex" alignItems="center" gap={1}>
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                pr: 2
+              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1
+                }}>
                 <Search color="action" fontSize="small" />
                 <Typography variant="h6">
                   {t("profile.fields.goals", "Objetivos de relación")}
@@ -125,7 +131,13 @@ export default function RelationshipGoalsSection({
                 {INTENTION_OPTIONS.map((option) => {
                   const isSelected = (field.value || []).includes(option.value);
                   return (
-                    <Grid item xs={6} sm={4} md={3} key={option.value}>
+                    <Grid
+                      key={option.value}
+                      size={{
+                        xs: 6,
+                        sm: 4,
+                        md: 3
+                      }}>
                       <Tooltip
                         title={goalDesc(option.value, option.description || "")}
                         arrow
@@ -216,7 +228,6 @@ export default function RelationshipGoalsSection({
                           </Box>
                           <Typography
                             variant="body2"
-                            fontWeight={isSelected ? 700 : 400}
                             color={
                               isSelected
                                 ? isDiscovery
@@ -226,6 +237,9 @@ export default function RelationshipGoalsSection({
                                   ? "white"
                                   : "text.primary"
                             }
+                            sx={{
+                              fontWeight: isSelected ? 700 : 400
+                            }}
                           >
                             {t(
                               `profile.intentions_map.${option.value}`,

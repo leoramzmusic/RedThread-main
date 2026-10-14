@@ -19,7 +19,14 @@ export default function CredencialEmpleadoPage() {
     adminApiClient.get(`/portal-redthread/empleados/${id}`).then((res) => setEmployee(res.data)).catch(console.error).finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <AdminLayout><Box display="flex" justifyContent="center" p={5}><CircularProgress /></Box></AdminLayout>;
+  if (loading) return (
+    <AdminLayout><Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        p: 5
+      }}><CircularProgress /></Box></AdminLayout>
+  );
   if (!employee) return <AdminLayout><Container><Typography>Empleado no encontrado</Typography></Container></AdminLayout>;
 
   const serial = `SN-${employee.employee_id}-${String(employee.first_name).slice(0, 2).toUpperCase()}${String(employee.last_name).slice(0, 2).toUpperCase()}`;
@@ -32,19 +39,38 @@ export default function CredencialEmpleadoPage() {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Breadcrumbs sx={{ mb: 2 }}>
           <Link component={NextLink} href="/portal-redthread/empleados/listado" underline="hover" color="inherit">Empleados</Link>
-          <Typography color="text.primary">Credencial</Typography>
+          <Typography sx={{
+            color: "text.primary"
+          }}>Credencial</Typography>
         </Breadcrumbs>
-        <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2} mb={3}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+            mb: 3
+          }}>
           <Box>
-            <Typography variant="h5" fontWeight={800}>Credencial — {employee.first_name} {employee.last_name}</Typography>
-            <Typography variant="body2" color="text.secondary">{employee.employee_id} • {employee.email}</Typography>
+            <Typography variant="h5" sx={{
+              fontWeight: 800
+            }}>Credencial — {employee.first_name} {employee.last_name}</Typography>
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>{employee.employee_id} • {employee.email}</Typography>
           </Box>
           <Button variant="contained" onClick={() => window.print()} sx={{ borderRadius: 2, bgcolor: '#E63946', '&:hover': { bgcolor: '#B71C1C' } }}>Imprimir / Descargar PDF</Button>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', bgcolor: '#f5f5f5', p: 3, borderRadius: 2 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-            <Typography variant="caption" fontWeight={700} color="text.secondary">FRENTE</Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 700,
+                color: "text.secondary"
+              }}>FRENTE</Typography>
             <CredentialCard
               photoUrl={employee.avatar}
               firstName={employee.first_name}
@@ -58,13 +84,20 @@ export default function CredencialEmpleadoPage() {
             />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-            <Typography variant="caption" fontWeight={700} color="text.secondary">REVERSO</Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 700,
+                color: "text.secondary"
+              }}>REVERSO</Typography>
             <CredentialBack employeeCode={employee.employee_id} email={employee.email} issueDate={issueDate} expiryDate={expiryDate} serial={serial} />
           </Box>
         </Box>
 
         <Paper sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' }}>
-          <Typography variant="caption" color="text.secondary">Ruta: <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 700 }}>/portal-redthread/empleados/{id}/credencial</Box> — Accesible desde Listado → Ver credencial o directo por ID.</Typography>
+          <Typography variant="caption" sx={{
+            color: "text.secondary"
+          }}>Ruta: <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 700 }}>/portal-redthread/empleados/{id}/credencial</Box> — Accesible desde Listado → Ver credencial o directo por ID.</Typography>
         </Paper>
       </Container>
     </AdminLayout>

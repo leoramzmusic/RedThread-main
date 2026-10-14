@@ -132,7 +132,13 @@ export default function GridLayout({
                                         p: 2
                                     }}
                                 >
-                                    <Typography variant="h6" fontWeight={700} color="white" sx={{ lineHeight: 1.2 }}>
+                                    <Typography
+                                        variant="h6"
+                                        color="white"
+                                        sx={{
+                                            fontWeight: 700,
+                                            lineHeight: 1.2
+                                        }}>
                                         {profile.display_name}, {profile.age}
                                     </Typography>
                                     {profile.bio && (
@@ -192,12 +198,11 @@ export default function GridLayout({
                                 >
                                     <Typography
                                         variant="caption"
-                                        fontWeight={700}
                                         sx={{
+                                            fontWeight: 700,
                                             color: getCompatibilityColor(profile.affinity_score || 0),
                                             fontSize: '0.6rem'
-                                        }}
-                                    >
+                                        }}>
                                         {Math.round(profile.affinity_score || 0)}%
                                     </Typography>
                                 </Box>
@@ -232,7 +237,12 @@ export default function GridLayout({
                                         color: 'white'
                                     }}
                                 >
-                                    <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem' }}>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            fontWeight: 600,
+                                            fontSize: '0.7rem'
+                                        }}>
                                         {profile.display_name}, {profile.age}
                                     </Typography>
                                 </Box>

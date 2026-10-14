@@ -88,7 +88,9 @@ export default function ImageCropDialog({ open, imageSrc, onClose, onApply }: Im
                     )}
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                    }}>
                         Zoom
                     </Typography>
                     <Slider

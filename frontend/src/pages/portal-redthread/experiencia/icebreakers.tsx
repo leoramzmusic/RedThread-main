@@ -28,22 +28,36 @@ export default function IcebreakerManagerPage() {
         <AdminLayout>
             <Container maxWidth="xl">
                 <Box sx={{ py: 4 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                        <Box display="flex" alignItems="center">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 4
+                        }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
                             <SupportIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant="h4" sx={{
+                                fontWeight: 700
+                            }}>
                                 Icebreaker Manager
                             </Typography>
                         </Box>
                         <TextField
                             size="small"
                             placeholder="Buscar frase..."
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }
                             }}
                         />
                     </Box>

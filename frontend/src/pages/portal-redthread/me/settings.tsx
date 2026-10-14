@@ -65,7 +65,13 @@ export default function AdminSettingsPage() {
     const renderSection = () => {
         if (loading) {
             return (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "400px"
+                    }}>
                     <CircularProgress />
                 </Box>
             );
@@ -85,11 +91,19 @@ export default function AdminSettingsPage() {
                 );
             default:
                 return (
-                    <Box textAlign="center" py={8}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
+                    <Box
+                        sx={{
+                            textAlign: "center",
+                            py: 8
+                        }}>
+                        <Typography variant="h6" gutterBottom sx={{
+                            color: "text.secondary"
+                        }}>
                             Sección en desarrollo
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                            color: "text.secondary"
+                        }}>
                             Esta funcionalidad estará disponible próximamente
                         </Typography>
                     </Box>
@@ -117,7 +131,13 @@ export default function AdminSettingsPage() {
                     }}
                 >
                     {/* Section Title */}
-                    <Typography variant="h4" fontWeight={700} gutterBottom mb={3}>
+                    <Typography
+                        variant="h4"
+                        gutterBottom
+                        sx={{
+                            fontWeight: 700,
+                            mb: 3
+                        }}>
                         {getSectionTitle()}
                     </Typography>
 
@@ -126,7 +146,15 @@ export default function AdminSettingsPage() {
 
                     {/* Save Button */}
                     {!loading && ['appearance'].includes(activeSection) && (
-                        <Box display="flex" justifyContent="flex-end" pt={4} mt={4} borderTop="1px solid" borderColor="divider">
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                pt: 4,
+                                mt: 4,
+                                borderTop: "1px solid",
+                                borderColor: "divider"
+                            }}>
                             <Button
                                 variant="contained"
                                 onClick={handleSave}

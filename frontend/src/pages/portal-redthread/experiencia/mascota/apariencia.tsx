@@ -87,7 +87,9 @@ export default function YukiApariencia() {
                         >
                             <ArrowBackIcon />
                         </Box>
-                        <Typography variant="h4" fontWeight={700}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>
                             Apariencia de Yuki
                         </Typography>
                     </Box>
@@ -96,12 +98,14 @@ export default function YukiApariencia() {
 
                     {/* Yarn Color */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Color de la Bola de Estambre
                         </Typography>
                         <Grid container spacing={2} sx={{ mt: 1 }}>
                             {YARN_COLORS.map((color) => (
-                                <Grid item key={color.value}>
+                                <Grid key={color.value}>
                                     <Box
                                         onClick={() => saveConfig({ yarn_color: color.value })}
                                         sx={{
@@ -124,7 +128,9 @@ export default function YukiApariencia() {
 
                     {/* Yuki Style */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Estilo de Yuki
                         </Typography>
                         <FormControl component="fieldset" sx={{ mt: 1 }}>
@@ -134,7 +140,7 @@ export default function YukiApariencia() {
                             >
                                 <Grid container spacing={2}>
                                     {YUKI_STYLES.map((style) => (
-                                        <Grid item xs={12} key={style.id}>
+                                        <Grid key={style.id} size={12}>
                                             <Card
                                                 sx={{
                                                     border: config?.yuki_style === style.id ? '2px solid' : '1px solid',
@@ -153,10 +159,14 @@ export default function YukiApariencia() {
                                                         sx={{ m: 0 }}
                                                     />
                                                     <Box>
-                                                        <Typography variant="subtitle1" fontWeight={600}>
+                                                        <Typography variant="subtitle1" sx={{
+                                                            fontWeight: 600
+                                                        }}>
                                                             {style.label}
                                                         </Typography>
-                                                        <Typography variant="body2" color="text.secondary">
+                                                        <Typography variant="body2" sx={{
+                                                            color: "text.secondary"
+                                                        }}>
                                                             {style.description}
                                                         </Typography>
                                                     </Box>
@@ -171,10 +181,17 @@ export default function YukiApariencia() {
 
                     {/* Skins */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Skins Personalizadas
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Sube imágenes personalizadas de Yuki en la sección de Assets.
                         </Typography>
                         {skins.length === 0 ? (
@@ -182,7 +199,12 @@ export default function YukiApariencia() {
                         ) : (
                             <Grid container spacing={2}>
                                 {skins.map((skin) => (
-                                    <Grid item xs={6} md={4} key={skin.id}>
+                                    <Grid
+                                        key={skin.id}
+                                        size={{
+                                            xs: 6,
+                                            md: 4
+                                        }}>
                                         <Card
                                             sx={{
                                                 border: config?.custom_skin_id === skin.id ? '2px solid' : '1px solid',
@@ -198,9 +220,13 @@ export default function YukiApariencia() {
                                                 sx={{ width: '100%', height: 120, objectFit: 'contain', bgcolor: 'grey.100' }}
                                             />
                                             <CardContent sx={{ py: 1 }}>
-                                                <Typography variant="body2" fontWeight={600}>{skin.name}</Typography>
+                                                <Typography variant="body2" sx={{
+                                                    fontWeight: 600
+                                                }}>{skin.name}</Typography>
                                                 {skin.unlocked_by && (
-                                                    <Typography variant="caption" color="text.secondary">
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>
                                                         Desbloqueada por: {skin.unlocked_by}
                                                     </Typography>
                                                 )}
@@ -214,7 +240,9 @@ export default function YukiApariencia() {
 
                     {/* Live Preview */}
                     <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Vista Previa
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
@@ -232,7 +260,12 @@ export default function YukiApariencia() {
                                     <circle cx="95" cy="95" r="14" fill={config?.yarn_color || '#E63946'} />
                                     <path d="M88 90 Q95 85 102 90 Q98 98 92 95" fill="none" stroke="white" strokeWidth="1.5" opacity="0.6" />
                                 </svg>
-                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        color: "text.secondary",
+                                        mt: 1
+                                    }}>
                                     Estilo: {config?.yuki_style} | Estambre: {config?.yarn_color}
                                 </Typography>
                             </Box>

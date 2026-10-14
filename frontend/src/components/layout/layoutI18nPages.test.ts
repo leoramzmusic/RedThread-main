@@ -19,7 +19,7 @@ describe('pages that render the Sidebar load the common namespace', () => {
     const file = path.join(process.cwd(), rel);
     expect(fs.existsSync(file)).toBe(true);
     const src = fs.readFileSync(file, 'utf8');
-    expect(src).toContain("from 'next-i18next/serverSideTranslations'");
+    expect(src).toContain("from 'next-i18next/pages/serverSideTranslations'");
     expect(src).toMatch(/export async function get(Static|ServerSide)Props/);
     expect(src).toMatch(/serverSideTranslations\([^)]*['"]common['"]/);
   });

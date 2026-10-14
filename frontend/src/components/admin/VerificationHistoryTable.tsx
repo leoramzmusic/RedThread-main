@@ -56,8 +56,16 @@ export default function VerificationHistoryTable() {
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h6" fontWeight={600}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2
+        }}>
+        <Typography variant="h6" sx={{
+          fontWeight: 600
+        }}>
           Historial de Aprobaciones Recientes
         </Typography>
         <Tooltip title="Recargar historial">
@@ -95,15 +103,23 @@ export default function VerificationHistoryTable() {
                 history.map((row) => (
                   <TableRow key={row.user_id} hover>
                     <TableCell>
-                        <Box display="flex" alignItems="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center"
+                          }}>
                             <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>
                                 {row.display_name.charAt(0).toUpperCase()}
                             </Avatar>
                             <Box>
-                                <Typography variant="body2" fontWeight={500}>
+                                <Typography variant="body2" sx={{
+                                  fontWeight: 500
+                                }}>
                                     {row.display_name}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{
+                                  color: "text.secondary"
+                                }}>
                                     ID: {row.user_id.substring(0, 8)}...
                                 </Typography>
                             </Box>

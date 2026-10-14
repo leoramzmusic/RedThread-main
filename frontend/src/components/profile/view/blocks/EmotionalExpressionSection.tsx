@@ -27,7 +27,13 @@ export default function EmotionalExpressionSection({ profile, onEdit }: Emotiona
             <Stack spacing={3}>
                 {/* Mi Himno */}
                 <Box>
-                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            color: "text.secondary",
+                            display: "block",
+                            mb: 1
+                        }}>
                         {t('profile.fields.anthem', 'Mi Himno')}
                     </Typography>
 
@@ -44,13 +50,20 @@ export default function EmotionalExpressionSection({ profile, onEdit }: Emotiona
                                 <Typography variant="subtitle2" noWrap>
                                     {featuredSong.name}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" noWrap>
+                                <Typography variant="caption" noWrap sx={{
+                                    color: "text.secondary"
+                                }}>
                                     {featuredSong.artist}
                                 </Typography>
                             </Box>
                         </Card>
                     ) : (
-                        <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                fontStyle: "italic"
+                            }}>
                             {t('profile.no_anthem', 'No has seleccionado un himno aún.')}
                         </Typography>
                     )}
@@ -62,9 +75,20 @@ export default function EmotionalExpressionSection({ profile, onEdit }: Emotiona
                         <Stack spacing={2}>
                             {prompts.map((prompt: any, index: number) => (
                                 <Box key={index}>
-                                    <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1,
+                                            mb: 0.5
+                                        }}>
                                         <QuestionAnswer fontSize="small" color="primary" sx={{ opacity: 0.7 }} />
-                                        <Typography variant="body2" fontWeight={600} color="primary.main">
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: "primary.main"
+                                            }}>
                                             {prompt.question}
                                         </Typography>
                                     </Box>

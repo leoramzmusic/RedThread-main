@@ -22,14 +22,22 @@ const RegistrarEmpleadoPage: React.FC = () => {
                         <Link component={NextLink} href="/portal-redthread/empleados/listado" underline="hover" color="inherit">
                             Empleados
                         </Link>
-                        <Typography color="text.primary">Registrar Nuevo</Typography>
+                        <Typography sx={{
+                            color: "text.primary"
+                        }}>Registrar Nuevo</Typography>
                     </Breadcrumbs>
 
-                    <Box mb={4}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
+                    <Box sx={{
+                        mb: 4
+                    }}>
+                        <Typography variant="h4" gutterBottom sx={{
+                            fontWeight: "bold"
+                        }}>
                             Registrar Nuevo Empleado
                         </Typography>
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{
+                            color: "text.secondary"
+                        }}>
                             Complete el formulario para dar de alta a un nuevo miembro del equipo administrativo.
                         </Typography>
                     </Box>

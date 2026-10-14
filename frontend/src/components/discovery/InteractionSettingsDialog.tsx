@@ -28,7 +28,7 @@ import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 export type InteractionMode = 'buttons' | 'taps' | 'swipes' | 'keyboard';
 export type LayoutMode = 'stack' | 'sticker_book' | 'carousel' | 'grid'; // New Layout Modes
@@ -210,14 +210,16 @@ export default function InteractionSettingsDialog({
                     borderRadius: 4
                 }
             }}
-            PaperProps={{
-                sx: {
-                    borderRadius: 4,
-                    backgroundImage: 'linear-gradient(135deg, rgba(30,30,30,0.98) 0%, rgba(10,10,10,0.99) 100%)', // Slightly darker than Curiosity
-                    backdropFilter: 'blur(25px)',
-                    border: '1px solid',
-                    borderColor: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)',
-                    boxShadow: isLight ? '0 24px 80px rgba(0,0,0,0.15)' : '0 24px 80px rgba(0,0,0,0.8)'
+            slotProps={{
+                paper: {
+                    sx: {
+                        borderRadius: 4,
+                        backgroundImage: 'linear-gradient(135deg, rgba(30,30,30,0.98) 0%, rgba(10,10,10,0.99) 100%)', // Slightly darker than Curiosity
+                        backdropFilter: 'blur(25px)',
+                        border: '1px solid',
+                        borderColor: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)',
+                        boxShadow: isLight ? '0 24px 80px rgba(0,0,0,0.15)' : '0 24px 80px rgba(0,0,0,0.8)'
+                    }
                 }
             }}
         >
@@ -256,7 +258,12 @@ export default function InteractionSettingsDialog({
                     <Box>
                         <Grid container spacing={2}>
                             {modes.map((mode) => (
-                                <Grid item xs={12} sm={6} key={mode.value}>
+                                <Grid
+                                    key={mode.value}
+                                    size={{
+                                        xs: 12,
+                                        sm: 6
+                                    }}>
                                     <Card
                                         elevation={0}
                                         sx={{
@@ -279,7 +286,13 @@ export default function InteractionSettingsDialog({
                                         <CardContent sx={{ p: '20px !important', display: 'flex', gap: 2.5, height: '100%', boxSizing: 'border-box' }}>
                                             <Typography sx={{ fontSize: '32px' }}>{mode.icon}</Typography>
                                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "space-between",
+                                                        mb: 0.5
+                                                    }}>
                                                     <Typography variant="subtitle1" sx={{ fontSize: '18px', fontWeight: 700, color: isLight ? 'text.primary' : 'white' }}>
                                                         {t(`interaction.mode.${mode.value}.label`, mode.label)}
                                                     </Typography>
@@ -293,7 +306,14 @@ export default function InteractionSettingsDialog({
                                                     {t(`interaction.mode.${mode.value}.description`, mode.description)}
                                                 </Typography>
                                                 <Box sx={{ mt: 'auto' }}>
-                                                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap gap={1}>
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={1}
+                                                        useFlexGap
+                                                        sx={{
+                                                            flexWrap: "wrap",
+                                                            gap: 1
+                                                        }}>
                                                         {mode.details.map((detail, idx) => (
                                                             <Box key={idx} sx={{
                                                                 bgcolor: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)',
@@ -334,7 +354,12 @@ export default function InteractionSettingsDialog({
                 {tabValue === 1 && (
                     <Grid container spacing={2}>
                         {layouts.map((layout) => (
-                            <Grid item xs={12} sm={6} key={layout.value}>
+                            <Grid
+                                key={layout.value}
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <Card
                                     sx={{
                                         cursor: 'pointer',
@@ -357,7 +382,13 @@ export default function InteractionSettingsDialog({
                                             {layout.icon}
                                         </Box>
                                         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between",
+                                                    mb: 0.5
+                                                }}>
                                                 <Typography variant="subtitle1" sx={{ fontSize: '18px', fontWeight: 700, color: isLight ? 'text.primary' : 'white' }}>
                                                     {t(`interaction.layout.${layout.value}.label`, layout.label)}
                                                 </Typography>
@@ -371,7 +402,9 @@ export default function InteractionSettingsDialog({
                                                 {t(`interaction.layout.${layout.value}.description`, layout.description)}
                                             </Typography>
                                             <Box sx={{ mt: 'auto' }}>
-                                                <Stack direction="row" spacing={0.5} flexWrap="wrap">
+                                                <Stack direction="row" spacing={0.5} sx={{
+                                                    flexWrap: "wrap"
+                                                }}>
                                                     {layout.details.map((detail, idx) => (
                                                         <Typography key={idx} variant="caption" sx={{ color: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
                                                             • {t(`interaction.layout.${layout.value}.detail${idx + 1}`, detail)}

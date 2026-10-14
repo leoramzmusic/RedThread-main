@@ -23,7 +23,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { ListSubheader } from "@mui/material";
 import {
   GENDER_CATEGORIES,
@@ -274,7 +274,7 @@ export default function IdentitySection({
   ]);
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -296,13 +296,19 @@ export default function IdentitySection({
           sx={{ px: isDiscovery ? 1 : 3, py: 1 }}
         >
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            pr={isDiscovery ? 0 : 2}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              pr: isDiscovery ? 0 : 2
+            }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}>
               <Favorite
                 sx={{ color: isDiscovery ? "white" : "action.active" }}
               />
@@ -352,7 +358,7 @@ export default function IdentitySection({
         <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: isDiscovery ? 3 : 2, pt: 0 }}>
           <Grid container spacing={2}>
             {/* Identidad Personal */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography
                 variant="subtitle2"
                 sx={{
@@ -368,7 +374,11 @@ export default function IdentitySection({
                 )}
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <Controller
                     name="gender"
                     control={control}
@@ -422,9 +432,11 @@ export default function IdentitySection({
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    color="text.secondary"
-                                    sx={{ opacity: 0.8, fontStyle: "italic" }}
-                                  >
+                                    sx={{
+                                      color: "text.secondary",
+                                      opacity: 0.8,
+                                      fontStyle: "italic"
+                                    }}>
                                     — {gOptDesc(o.label, o.description)}
                                   </Typography>
                                 </Box>
@@ -436,7 +448,11 @@ export default function IdentitySection({
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <Controller
                     name="sexual_orientation"
                     control={control}
@@ -472,7 +488,7 @@ export default function IdentitySection({
             </Grid>
 
             {/* Preferencias de Atracción */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box
                 sx={{
                   mt: 2,
@@ -484,12 +500,18 @@ export default function IdentitySection({
                 }}
               >
                 <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  mb={2}
-                >
-                  <Box display="flex" alignItems="center" gap={1}>
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 2
+                  }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1
+                    }}>
                     <Favorite
                       sx={{
                         color: isDiscovery ? "white" : "#ff4d4f",
@@ -498,9 +520,10 @@ export default function IdentitySection({
                     />
                     <Typography
                       variant="subtitle2"
-                      fontWeight="bold"
-                      sx={{ color: isDiscovery ? "white" : "inherit" }}
-                    >
+                      sx={{
+                        fontWeight: "bold",
+                        color: isDiscovery ? "white" : "inherit"
+                      }}>
                       {t(
                         "profileSections.identity.attractionTitle",
                         "Preferencias de Atracción (A quién buscas)",
@@ -660,9 +683,11 @@ export default function IdentitySection({
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  color="text.secondary"
-                                  sx={{ opacity: 0.8, fontStyle: "italic" }}
-                                >
+                                  sx={{
+                                    color: "text.secondary",
+                                    opacity: 0.8,
+                                    fontStyle: "italic"
+                                  }}>
                                   — {gOptDesc(o.label, o.description)}
                                 </Typography>
                               </Box>
@@ -681,7 +706,9 @@ export default function IdentitySection({
                           <Typography
                             variant="button"
                             color="primary"
-                            fontWeight="bold"
+                            sx={{
+                              fontWeight: "bold"
+                            }}
                           >
                             {t("profileSections.identity.doneClose", "Cerrar")}
                           </Typography>
@@ -689,13 +716,12 @@ export default function IdentitySection({
                       </Select>
                       <Typography
                         variant="caption"
-                        color="text.secondary"
                         sx={{
+                          color: "text.secondary",
                           mt: 0.5,
                           display: "block",
-                          fontStyle: "italic",
-                        }}
-                      >
+                          fontStyle: "italic"
+                        }}>
                         {t(
                           "profileSections.identity.multiCloseHint",
                           "Selecciona una o más opciones y pulsa Cerrar.",
@@ -834,9 +860,11 @@ export default function IdentitySection({
                               </Typography>
                               <Typography
                                 variant="caption"
-                                color="text.secondary"
-                                sx={{ opacity: 0.8, fontStyle: "italic" }}
-                              >
+                                sx={{
+                                  color: "text.secondary",
+                                  opacity: 0.8,
+                                  fontStyle: "italic"
+                                }}>
                                 — {oOptDesc(o.label, o.description)}
                               </Typography>
                             </Box>
@@ -854,7 +882,9 @@ export default function IdentitySection({
                           <Typography
                             variant="button"
                             color="primary"
-                            fontWeight="bold"
+                            sx={{
+                              fontWeight: "bold"
+                            }}
                           >
                             {t("profileSections.identity.doneClose", "Cerrar")}
                           </Typography>
@@ -862,19 +892,24 @@ export default function IdentitySection({
                       </Select>
                       <Typography
                         variant="caption"
-                        color="text.secondary"
                         sx={{
+                          color: "text.secondary",
                           mt: 0.5,
                           display: "block",
-                          fontStyle: "italic",
-                        }}
-                      >
+                          fontStyle: "italic"
+                        }}>
                         {t(
                           "profileSections.identity.multiCloseHint",
                           "Selecciona una o más opciones y pulsa Cerrar.",
                         )}
                       </Typography>
-                      <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mt: 0.5
+                        }}>
                         <Typography
                           variant="caption"
                           sx={{ color: "text.secondary", fontStyle: "italic" }}
@@ -916,7 +951,12 @@ export default function IdentitySection({
                     justifyContent: "space-between",
                   }}
                 >
-                  <Box display="flex" alignItems="center" gap={1.5}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5
+                    }}>
                     <Tooltip
                       title={t(
                         "profileSections.identity.curiousTooltip",
@@ -928,9 +968,10 @@ export default function IdentitySection({
                     <Box>
                       <Typography
                         variant="body2"
-                        fontWeight="bold"
-                        color="primary.main"
-                      >
+                        sx={{
+                          fontWeight: "bold",
+                          color: "primary.main"
+                        }}>
                         {t(
                           "profileSections.identity.curiousTitle",
                           "Hoy me siento curioso",
@@ -938,9 +979,11 @@ export default function IdentitySection({
                       </Typography>
                       <Typography
                         variant="caption"
-                        color="text.secondary"
-                        sx={{ display: "block", lineHeight: 1.2 }}
-                      >
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          lineHeight: 1.2
+                        }}>
                         {t(
                           "profileSections.identity.curiousDesc",
                           "Amplía sugerencias con géneros diversos sin cambiar tus preferencias permanentes.",
@@ -1069,9 +1112,11 @@ export default function IdentitySection({
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    color="text.secondary"
-                                    sx={{ opacity: 0.8, fontStyle: "italic" }}
-                                  >
+                                    sx={{
+                                      color: "text.secondary",
+                                      opacity: 0.8,
+                                      fontStyle: "italic"
+                                    }}>
                                     {gOptDesc(o.label, o.description)}
                                   </Typography>
                                 </Box>
@@ -1102,8 +1147,14 @@ export default function IdentitySection({
                   )}
                 />
 
-                <Box mt={2} mb={2}>
-                  <Typography variant="caption" color="text.secondary">
+                <Box
+                  sx={{
+                    mt: 2,
+                    mb: 2
+                  }}>
+                  <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>
                     {t(
                       "profileSections.identity.careNote",
                       "CARE usará estas preferencias para filtrar matches con atracción mutua.",

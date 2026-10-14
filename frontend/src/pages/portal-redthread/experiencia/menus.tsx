@@ -159,10 +159,14 @@ export default function MenusExperienciaPage() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <MenuIcon sx={{ fontSize: 40, color: 'primary.main' }} />
                         <Box>
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant="h4" sx={{
+                                fontWeight: 700
+                            }}>
                                 Gestión de Menús del Portal
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Visibilidad, estados, roles y reglas condicionales del sidebar del usuario.
                             </Typography>
                         </Box>
@@ -178,7 +182,11 @@ export default function MenusExperienciaPage() {
                 </Box>
 
                 <Grid container spacing={3}>
-                    <Grid item xs={12} lg={8}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            lg: 8
+                        }}>
                         <Paper sx={{ p: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
                                 <Typography variant="subtitle2">Módulos ({filtered.length})</Typography>
@@ -210,17 +218,26 @@ export default function MenusExperienciaPage() {
                             <Divider sx={{ mb: 2 }} />
                             {filtered.length === 0 ? (
                                 <Box sx={{ textAlign: 'center', py: 6, px: 2 }}>
-                                    <Typography color="text.secondary" gutterBottom>
+                                    <Typography gutterBottom sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         No hay módulos que coincidan
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Ajusta la búsqueda o el filtro de estado.
                                     </Typography>
                                 </Box>
                             ) : (
                                 <Grid container spacing={2}>
                                     {filtered.map((item) => (
-                                        <Grid item xs={12} sm={6} key={item.id}>
+                                        <Grid
+                                            key={item.id}
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <MenuCard
                                                 id={item.id}
                                                 label={item.label}
@@ -239,7 +256,11 @@ export default function MenusExperienciaPage() {
                         </Paper>
                     </Grid>
 
-                    <Grid item xs={12} lg={4}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            lg: 4
+                        }}>
                         <Paper sx={{ p: 2 }}>
                             <MenusPreview
                                 metadata={metadata}
@@ -254,7 +275,9 @@ export default function MenusExperienciaPage() {
                             <Typography variant="subtitle2">Versiones guardadas ({metadata.snapshots.length})</Typography>
                             <Divider sx={{ my: 1.5 }} />
                             {metadata.snapshots.length === 0 ? (
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>
                                     Sin versiones. Cada cambio guarda una copia anterior para poder restaurarla (máx. 10).
                                 </Typography>
                             ) : (
@@ -267,7 +290,9 @@ export default function MenusExperienciaPage() {
                                             <Typography variant="body2" noWrap>
                                                 {snapshot.label}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {new Date(snapshot.at).toLocaleString()}
                                             </Typography>
                                         </Box>

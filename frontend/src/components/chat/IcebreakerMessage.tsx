@@ -50,9 +50,13 @@ export default function IcebreakerMessage({ message, isOwn, user }: IcebreakerMe
     if (stage === 'revealed') {
         return (
             <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: 2 }}>
-                <Stack spacing={1} alignItems="center">
+                <Stack spacing={1} sx={{
+                    alignItems: "center"
+                }}>
                     <FavoriteIcon color="error" />
-                    <Typography variant="subtitle2" align="center" fontWeight="bold">
+                    <Typography variant="subtitle2" align="center" sx={{
+                        fontWeight: "bold"
+                    }}>
                         36 Preguntas para Enamorarse
                     </Typography>
                     <Typography variant="body1" align="center" sx={{ fontStyle: 'italic', mb: 1 }}>
@@ -64,7 +68,9 @@ export default function IcebreakerMessage({ message, isOwn, user }: IcebreakerMe
                     <Box sx={{ width: '100%', mt: 1 }}>
                         {Object.entries(data.answers || {}).map(([uid, ans]: [string, any]) => (
                             <Box key={uid} sx={{ mb: 1, p: 1, bgcolor: 'background.paper', borderRadius: 1 }}>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>
                                     {uid === user?.user_id ? 'Tú' : 'Partner'}
                                 </Typography>
                                 <Typography variant="body2">{ans}</Typography>
@@ -82,22 +88,42 @@ export default function IcebreakerMessage({ message, isOwn, user }: IcebreakerMe
     return (
         <Paper elevation={0} sx={{ p: 2, bgcolor: 'action.hover', border: '1px dashed grey', borderRadius: 2, maxWidth: 300 }}>
             <Stack spacing={2}>
-                <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                    }}>
                     <FavoriteIcon color="disabled" fontSize="small" />
-                    <Typography variant="caption" fontWeight="bold" color="text.secondary">ICEBREAKER</Typography>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            fontWeight: "bold",
+                            color: "text.secondary"
+                        }}>ICEBREAKER</Typography>
                 </Box>
 
-                <Typography variant="body2" fontWeight="medium">
+                <Typography variant="body2" sx={{
+                    fontWeight: "medium"
+                }}>
                     {questionText || "Pregunta Misteriosa"}
                 </Typography>
 
                 {hasAnswered ? (
-                    <Box textAlign="center" py={1}>
+                    <Box
+                        sx={{
+                            textAlign: "center",
+                            py: 1
+                        }}>
                         <LockIcon sx={{ color: 'text.secondary', fontSize: 40, mb: 1 }} />
-                        <Typography variant="caption" display="block">
+                        <Typography variant="caption" sx={{
+                            display: "block"
+                        }}>
                             Tu respuesta está guardada y oculta.
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>
                             Esperando a la otra persona...
                         </Typography>
                     </Box>

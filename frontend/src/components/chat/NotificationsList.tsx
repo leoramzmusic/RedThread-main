@@ -99,8 +99,14 @@ export default function NotificationsList({ onUnreadCountChange }: Notifications
 
   if (notifications.length === 0) {
     return (
-      <Box p={4} textAlign="center">
-        <Typography color="text.secondary">No tienes notificaciones nuevas</Typography>
+      <Box
+        sx={{
+          p: 4,
+          textAlign: "center"
+        }}>
+        <Typography sx={{
+          color: "text.secondary"
+        }}>No tienes notificaciones nuevas</Typography>
       </Box>
     );
   }
@@ -117,7 +123,9 @@ export default function NotificationsList({ onUnreadCountChange }: Notifications
             }}
           >
             <ListItemAvatar>
-              <Box position="relative">
+              <Box sx={{
+                position: "relative"
+              }}>
                 <Avatar src={notif.user.photo || undefined} alt={notif.user.name}>
                   {!notif.user.photo && notif.user.name.charAt(0)}
                 </Avatar>
@@ -138,7 +146,9 @@ export default function NotificationsList({ onUnreadCountChange }: Notifications
             </ListItemAvatar>
             <ListItemText
               primary={
-                <Typography variant="subtitle2" component="span" fontWeight={notif.is_read ? 400 : 600}>
+                <Typography variant="subtitle2" component="span" sx={{
+                  fontWeight: notif.is_read ? 400 : 600
+                }}>
                   {notif.user.name}
                 </Typography>
               }
@@ -147,12 +157,16 @@ export default function NotificationsList({ onUnreadCountChange }: Notifications
                   <Typography
                     component="span"
                     variant="body2"
-                    color="text.primary"
-                    sx={{ display: 'inline', mr: 1 }}
-                  >
+                    sx={{
+                      color: "text.primary",
+                      display: 'inline',
+                      mr: 1
+                    }}>
                     {notif.content}
                   </Typography>
-                  <Typography component="span" variant="caption" color="text.secondary">
+                  <Typography component="span" variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>
                     {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: es })}
                   </Typography>
                 </React.Fragment>

@@ -16,7 +16,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import PartnerManager from "../../PartnerManager";
 import { SectionWithOptionsProps } from "../types";
 
@@ -38,7 +38,7 @@ export default function CivilStatusSection({
 }: CivilStatusSectionProps) {
   const { t } = useTranslation("common");
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -59,7 +59,12 @@ export default function CivilStatusSection({
           }
           sx={{ px: isDiscovery ? 1 : 3, py: 1 }}
         >
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <VolunteerActivism
               sx={{ color: isDiscovery ? "white" : "action.active" }}
             />
@@ -75,7 +80,11 @@ export default function CivilStatusSection({
         </AccordionSummary>
         <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Controller
                 name="relationship_status"
                 control={control}
@@ -113,7 +122,11 @@ export default function CivilStatusSection({
             {(relationshipStatus === "in_relationship" ||
               relationshipStatus === "married" ||
               relationshipStatus === "open_relationship") && (
-              <Grid item xs={12} md={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 6
+                }}>
                 <PartnerManager
                   profile={profile}
                   onUpdate={() => {

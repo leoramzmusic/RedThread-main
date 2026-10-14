@@ -174,7 +174,13 @@ export default function LanguageSelectorModal({ open, onClose, currentLang, onLa
           {visible.map((lang) => {
             const isActive = lang.code === currentLang;
             return (
-              <Grid item xs={6} sm={4} md={3} key={lang.code}>
+              <Grid
+                key={lang.code}
+                size={{
+                  xs: 6,
+                  sm: 4,
+                  md: 3
+                }}>
                 <Box
                   data-lang-tile
                   onClick={() => handleChange(lang.code)}

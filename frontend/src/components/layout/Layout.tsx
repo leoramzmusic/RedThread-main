@@ -37,7 +37,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store/store';
 import { logout } from '../../store/slices/authSlice';
 import Sidebar from './Sidebar';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import apiClient from '../../services/api';
 import { useUI } from '../../context/UIContext';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -601,7 +601,9 @@ export default function Layout({ children }: LayoutProps) {
                   <ListItemIcon>
                     <PersonIcon fontSize="small" />
                   </ListItemIcon>
-                  <Typography textAlign="center">{t('nav.profile', 'Perfil')}</Typography>
+                  <Typography sx={{
+                    textAlign: "center"
+                  }}>{t('nav.profile', 'Perfil')}</Typography>
                 </MenuItem>
 
                 <Divider />
@@ -610,21 +612,27 @@ export default function Layout({ children }: LayoutProps) {
                   <ListItemIcon>
                     <NotificationsIcon fontSize="small" />
                   </ListItemIcon>
-                  <Typography textAlign="center">{t('nav.notifications', 'Notificaciones')}</Typography>
+                  <Typography sx={{
+                    textAlign: "center"
+                  }}>{t('nav.notifications', 'Notificaciones')}</Typography>
                 </MenuItem>
 
                 <MenuItem onClick={() => { router.push('/settings'); handleCloseUserMenu(); }}>
                   <ListItemIcon>
                     <SettingsIcon fontSize="small" />
                   </ListItemIcon>
-                  <Typography textAlign="center">{t('nav.settings', 'Configuración')}</Typography>
+                  <Typography sx={{
+                    textAlign: "center"
+                  }}>{t('nav.settings', 'Configuración')}</Typography>
                 </MenuItem>
 
                 <MenuItem onClick={() => { router.push('/settings?section=security'); handleCloseUserMenu(); }}>
                   <ListItemIcon>
                     <SecurityIcon fontSize="small" />
                   </ListItemIcon>
-                  <Typography textAlign="center">{t('nav.security', 'Centro de Seguridad')}</Typography>
+                  <Typography sx={{
+                    textAlign: "center"
+                  }}>{t('nav.security', 'Centro de Seguridad')}</Typography>
                 </MenuItem>
 
                 <Divider />
@@ -633,7 +641,9 @@ export default function Layout({ children }: LayoutProps) {
                   <ListItemIcon>
                     <LogoutIcon fontSize="small" />
                   </ListItemIcon>
-                  <Typography textAlign="center">{t('auth.logout', 'Cerrar Sesión')}</Typography>
+                  <Typography sx={{
+                    textAlign: "center"
+                  }}>{t('auth.logout', 'Cerrar Sesión')}</Typography>
                 </MenuItem>
               </Menu>
             </Toolbar>
@@ -655,14 +665,17 @@ export default function Layout({ children }: LayoutProps) {
           anchor="right"
           open={notificationOpen}
           onClose={() => setNotificationOpen(false)}
-          PaperProps={{
-            sx: {
-              width: 380,
-              mt: { xs: '60px', sm: '72px' },
-              height: { xs: 'calc(100% - 60px)', sm: 'calc(100% - 72px)' }
-            }, // Match fixed AppBar height
+          // Ensure it's below AppBar if needed, or adjust
+          sx={{ zIndex: (theme) => theme.zIndex.drawer }}
+          slotProps={{
+            paper: {
+              sx: {
+                width: 380,
+                mt: { xs: '60px', sm: '72px' },
+                height: { xs: 'calc(100% - 60px)', sm: 'calc(100% - 72px)' }
+              }, // Match fixed AppBar height
+            }
           }}
-          sx={{ zIndex: (theme) => theme.zIndex.drawer }} // Ensure it's below AppBar if needed, or adjust
         >
           <Suspense fallback={null}>
             <NotificationPanel

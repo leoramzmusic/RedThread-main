@@ -88,11 +88,24 @@ export default function NavbarResponsivePreview({ sections, currentLang, draft, 
 
   return (
     <Paper elevation={2} sx={{ p: 2, borderRadius: 3, overflow: 'hidden', background: 'linear-gradient(135deg, #1c1d20 0%, #232529 55%, #2a1014 100%)' }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1} sx={{ mb: 1.5 }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 1,
+          mb: 1.5
+        }}>
         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
           Vista previa — {currentLang.toUpperCase()}
         </Typography>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1
+          }}>
           <ToggleButtonGroup exclusive size="small" value={resolution} onChange={(_, v) => { if (v) setResolution(v); }} aria-label="Resolución">
             {RESUMEN_RESOLUTIONS.map((r) => (
               <ToggleButton key={r.id} value={r.id} sx={{ px: 1.5, color: 'white' }}>

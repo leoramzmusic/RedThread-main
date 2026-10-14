@@ -38,17 +38,32 @@ const BulkActionPanel: React.FC<BulkActionPanelProps> = ({ selectedCount, onAppl
 
     return (
         <Paper sx={{ p: 3, mb: 4, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)', border: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="h6" gutterBottom display="flex" alignItems="center" gap={1}>
+            <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1
+                }}>
                 <GavelIcon color="primary" /> Acciones por Lote
             </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" gutterBottom sx={{
+                color: "text.secondary"
+            }}>
                 Se han seleccionado <b>{selectedCount}</b> denuncias. Elige una acción para aplicarla a todas.
             </Typography>
 
             <Divider sx={{ my: 2 }} />
 
-            <Grid container spacing={3} alignItems="flex-end">
-                <Grid item xs={12} md={3}>
+            <Grid container spacing={3} sx={{
+                alignItems: "flex-end"
+            }}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Acción</InputLabel>
                         <Select
@@ -64,7 +79,11 @@ const BulkActionPanel: React.FC<BulkActionPanelProps> = ({ selectedCount, onAppl
                 </Grid>
 
                 {action === 'assign' && (
-                    <Grid item xs={12} md={3}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            md: 3
+                        }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -75,7 +94,11 @@ const BulkActionPanel: React.FC<BulkActionPanelProps> = ({ selectedCount, onAppl
                     </Grid>
                 )}
 
-                <Grid item xs={12} md={action === 'assign' ? 3 : 6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: action === 'assign' ? 3 : 6
+                    }}>
                     <TextField
                         fullWidth
                         size="small"
@@ -86,7 +109,11 @@ const BulkActionPanel: React.FC<BulkActionPanelProps> = ({ selectedCount, onAppl
                     />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}>
                     <Button
                         fullWidth
                         variant="contained"

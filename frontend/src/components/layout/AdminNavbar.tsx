@@ -226,10 +226,14 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
           onClose={handleCloseUserMenu}
         >
           <Box sx={{ px: 2, py: 1 }}>
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography variant="subtitle1" sx={{
+              fontWeight: "bold"
+            }}>
               {userName || 'Admin'}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               {user?.email}
             </Typography>
           </Box>
@@ -239,28 +243,36 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
             <ListItemIcon>
               <PersonIcon fontSize="small" />
             </ListItemIcon>
-            <Typography textAlign="center">Mi Perfil</Typography>
+            <Typography sx={{
+              textAlign: "center"
+            }}>Mi Perfil</Typography>
           </MenuItem>
 
           <MenuItem onClick={() => { router.push('/portal-redthread/mi-perfil?tab=preferencias'); handleCloseUserMenu(); }}>
             <ListItemIcon>
               <TuneIcon fontSize="small" />
             </ListItemIcon>
-            <Typography textAlign="center">Preferencias</Typography>
+            <Typography sx={{
+              textAlign: "center"
+            }}>Preferencias</Typography>
           </MenuItem>
 
           <MenuItem onClick={() => { router.push('/portal-redthread/mi-perfil?tab=notificaciones'); handleCloseUserMenu(); }}>
             <ListItemIcon>
               <NotificationsIcon fontSize="small" />
             </ListItemIcon>
-            <Typography textAlign="center">Notificaciones</Typography>
+            <Typography sx={{
+              textAlign: "center"
+            }}>Notificaciones</Typography>
           </MenuItem>
 
           <MenuItem onClick={() => { router.push('/portal-redthread/configuracion'); handleCloseUserMenu(); }}>
             <ListItemIcon>
               <SettingsIcon fontSize="small" />
             </ListItemIcon>
-            <Typography textAlign="center">Configuración</Typography>
+            <Typography sx={{
+              textAlign: "center"
+            }}>Configuración</Typography>
           </MenuItem>
 
           <Divider />
@@ -269,7 +281,9 @@ export default function AdminNavbar({ sidebarCollapsed = false }: AdminNavbarPro
             <ListItemIcon>
               <LogoutIcon fontSize="small" color="error" />
             </ListItemIcon>
-            <Typography textAlign="center" color="error">Cerrar Sesión</Typography>
+            <Typography color="error" sx={{
+              textAlign: "center"
+            }}>Cerrar Sesión</Typography>
           </MenuItem>
         </Menu>
       </Toolbar>

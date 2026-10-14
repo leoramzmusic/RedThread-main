@@ -45,7 +45,9 @@ export default function ProfileIdentityView({ profile }: ProfileIdentityViewProp
                 <Typography variant="h5" gutterBottom>
                     Identidad Creativa
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{
+                    color: "text.secondary"
+                }}>
                     Explora dinámicas para conectar y revelar tu identidad.
                 </Typography>
             </Box>
@@ -54,7 +56,13 @@ export default function ProfileIdentityView({ profile }: ProfileIdentityViewProp
 
             <Grid container spacing={3}>
                 {games.map((game) => (
-                    <Grid item xs={12} sm={6} md={4} key={game.id}>
+                    <Grid
+                        key={game.id}
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 4
+                        }}>
                         <CreativeGameCard game={game} onPlay={handlePlay} />
                     </Grid>
                 ))}

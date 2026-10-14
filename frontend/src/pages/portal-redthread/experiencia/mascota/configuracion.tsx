@@ -122,7 +122,9 @@ export default function YukiConfiguracion() {
                         <IconButton onClick={() => router.push('/portal-redthread/experiencia/mascota')}>
                             <ArrowBackIcon />
                         </IconButton>
-                        <Typography variant="h4" fontWeight={700}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>
                             Configuración de Yuki
                         </Typography>
                     </Box>
@@ -132,7 +134,9 @@ export default function YukiConfiguracion() {
 
                     {/* Environment */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Entorno
                         </Typography>
                         <FormControl fullWidth sx={{ mt: 2 }}>
@@ -151,7 +155,9 @@ export default function YukiConfiguracion() {
 
                     {/* Master Toggle */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Maestro
                         </Typography>
                         <FormControlLabel
@@ -169,10 +175,17 @@ export default function YukiConfiguracion() {
 
                     {/* Screen Filters */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Filtros de Pantalla
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Deja vacío para permitir todas las pantallas. Usa Allowed para mostrar solo en rutas específicas, o Blocked para excluir rutas.
                         </Typography>
 
@@ -216,7 +229,9 @@ export default function YukiConfiguracion() {
                     {/* Rules */}
                     <Paper sx={{ p: 3, mb: 3 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6" fontWeight={600}>
+                            <Typography variant="h6" sx={{
+                                fontWeight: 600
+                            }}>
                                 Reglas de Apariencia
                             </Typography>
                             <Button
@@ -227,7 +242,12 @@ export default function YukiConfiguracion() {
                                 Nueva Regla
                             </Button>
                         </Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Define condiciones para mostrar/ocultar Yuki o cambiar su estilo automáticamente.
                         </Typography>
 

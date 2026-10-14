@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/router';
 import {
@@ -57,7 +57,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { formatDistanceToNow, differenceInMinutes, differenceInDays } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import PlanAvatar from '../../components/subscription/PlanAvatar';
 import IcebreakerButton from '../../components/chat/IcebreakerButton';
 
@@ -428,7 +428,12 @@ export default function Chat() {
     <Layout>
       <Grid container spacing={2} sx={{ height: 'calc(100vh - 100px)' }}>
         {/* Conversation List */}
-        <Grid item xs={12} md={4} sx={{ height: '100%' }}>
+        <Grid
+          sx={{ height: '100%' }}
+          size={{
+            xs: 12,
+            md: 4
+          }}>
           <Paper sx={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs
@@ -499,7 +504,11 @@ export default function Chat() {
                         }}
                       >
                         <ListItemAvatar>
-                          <Box position="relative" display="inline-block">
+                          <Box
+                            sx={{
+                              position: "relative",
+                              display: "inline-block"
+                            }}>
                             <PlanAvatar
                               tier={conv.subscription_tier}
                               size={40}
@@ -525,10 +534,19 @@ export default function Chat() {
                           primary={conv.display_name}
                           secondary={
                             <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
-                              <Typography variant="body2" component="span" noWrap color="text.primary" fontWeight={conv.unread_count > 0 ? 700 : 400}>
+                              <Typography
+                                variant="body2"
+                                component="span"
+                                noWrap
+                                sx={{
+                                  color: "text.primary",
+                                  fontWeight: conv.unread_count > 0 ? 700 : 400
+                                }}>
                                 {conv.last_message_content || t('chat.start_chatting', 'Comienza a chatear...')}
                               </Typography>
-                              <Typography variant="caption" component="span" color="text.secondary">
+                              <Typography variant="caption" component="span" sx={{
+                                color: "text.secondary"
+                              }}>
                                 {getOnlineStatusText(conv)}
                               </Typography>
                             </Box>
@@ -549,7 +567,12 @@ export default function Chat() {
         </Grid>
 
         {/* Chat Window */}
-        <Grid item xs={12} md={8} sx={{ height: '100%', display: { xs: activeConversationId ? 'block' : 'none', md: 'block' } }}>
+        <Grid
+          sx={{ height: '100%', display: { xs: activeConversationId ? 'block' : 'none', md: 'block' } }}
+          size={{
+            xs: 12,
+            md: 8
+          }}>
           <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
             {activeConversationId ? (
               <>
@@ -566,7 +589,12 @@ export default function Chat() {
                   bgcolor: activeThemeColor, // Dynamic Header Color
                   color: '#fff'
                 }}>
-                  <Box display="flex" alignItems="center" gap={2}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2
+                    }}>
                     <PlanAvatar
                       tier={activeConversation?.subscription_tier}
                       size={40}
@@ -574,10 +602,20 @@ export default function Chat() {
                       src={activeConversation?.photo}
                     />
                     <Box>
-                      <Typography variant="subtitle1" fontWeight={700} color="inherit">
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 700,
+                          color: "inherit"
+                        }}>
                         {activeConversation?.display_name}
                       </Typography>
-                      <Typography variant="caption" color="inherit" sx={{ opacity: 0.8 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "inherit",
+                          opacity: 0.8
+                        }}>
                         {activeConversation && getOnlineStatusText(activeConversation)}
                         {activeConversation?.emotional_status && ` • ${activeConversation.emotional_status}`}
                       </Typography>
@@ -658,7 +696,9 @@ export default function Chat() {
                 {/* Input */}
                 {activeConversation?.status === 'blocked' ? (
                   <Box sx={{ p: 2, borderTop: '1px solid #eee', textAlign: 'center', bgcolor: 'action.disabledBackground', borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}>
-                    <Typography color="text.secondary">
+                    <Typography sx={{
+                      color: "text.secondary"
+                    }}>
                       {activeConversation.blocked_by === user?.user_id
                         ? t('chat.you_blocked', 'Has bloqueado a este usuario.')
                         : t('chat.user_blocked', 'Este usuario no está disponible.')}
@@ -737,7 +777,9 @@ export default function Chat() {
               </>
             ) : (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <Typography color="text.secondary">{t('chat.select_conversation', 'Selecciona una conversación para comenzar')}</Typography>
+                <Typography sx={{
+                  color: "text.secondary"
+                }}>{t('chat.select_conversation', 'Selecciona una conversación para comenzar')}</Typography>
               </Box>
             )}
           </Paper>

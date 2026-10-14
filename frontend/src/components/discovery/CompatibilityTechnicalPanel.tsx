@@ -9,7 +9,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { Profile } from '../profile/ProfileCard';
 import { useAppTheme } from '../../context/ThemeContext';
 import { keyframes, styled } from '@mui/system';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface CompatibilityTechnicalPanelProps {
     profile: Profile;
@@ -195,7 +195,13 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                 }}>
                     {/* Header Score */}
                     <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="h3" fontWeight={900} sx={{ color: 'primary.main', textShadow: '0 0 20px rgba(255, 77, 79, 0.3)' }}>
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontWeight: 900,
+                                color: 'primary.main',
+                                textShadow: '0 0 20px rgba(255, 77, 79, 0.3)'
+                            }}>
                             {Math.round(profile.affinity_score || 0)}%
                         </Typography>
                         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 2 }}>
@@ -216,7 +222,12 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                                 { label: t('card.lifestyle', 'Estilo de Vida'), val: (breakdown as any).lifestyle },
                             ].map((item, i) => (
                                 <Box key={i}>
-                                    <Box display="flex" justifyContent="space-between" mb={0.5}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            mb: 0.5
+                                        }}>
                                         <Typography variant="caption" sx={{ fontWeight: 600, opacity: 0.8 }}>{item.label}</Typography>
                                         <Typography variant="caption" sx={{ fontWeight: 800 }}>{item.val}%</Typography>
                                     </Box>
@@ -239,7 +250,14 @@ export default function CompatibilityTechnicalPanel({ profile, isVisible, onView
                         <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800, mb: 1, display: 'block' }}>
                             {t('card.emotionalBalance', 'Balance Emocional')}
                         </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap gap={1}>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            useFlexGap
+                            sx={{
+                                flexWrap: "wrap",
+                                gap: 1
+                            }}>
                             {[
                                 t('careNarrative.narrativeLink', 'Vínculo narrativo'),
                                 t('careNarrative.sharedRhythm', 'Ritmo compartido'),

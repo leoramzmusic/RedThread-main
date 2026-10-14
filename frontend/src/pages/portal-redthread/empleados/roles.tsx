@@ -22,14 +22,22 @@ const RolesPage: React.FC = () => {
                         <Link component={NextLink} href="/portal-redthread/empleados/listado" underline="hover" color="inherit">
                             Empleados
                         </Link>
-                        <Typography color="text.primary">Roles y Permisos</Typography>
+                        <Typography sx={{
+                            color: "text.primary"
+                        }}>Roles y Permisos</Typography>
                     </Breadcrumbs>
 
-                    <Box mb={4}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
+                    <Box sx={{
+                        mb: 4
+                    }}>
+                        <Typography variant="h4" gutterBottom sx={{
+                            fontWeight: "bold"
+                        }}>
                             Seguridad y Roles
                         </Typography>
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{
+                            color: "text.secondary"
+                        }}>
                             Defina la estructura de seguridad y los niveles de acceso para el personal administrativo.
                         </Typography>
                     </Box>

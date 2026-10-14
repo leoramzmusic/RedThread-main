@@ -23,7 +23,7 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Save as SaveIcon,
-    HelpOutline as HelpIcon,
+    HelpOutlined as HelpIcon,
 } from '@mui/icons-material';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -228,10 +228,14 @@ export default function TipsPage() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <HelpIcon sx={{ fontSize: 40, color: 'primary.main' }} />
                         <Box>
-                            <Typography variant="h4" fontWeight={700}>
+                            <Typography variant="h4" sx={{
+                                fontWeight: 700
+                            }}>
                                 Tips de perfiles
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Gestiona los modales de ayuda del editor de perfil: estado, orden, contenido e imágenes.
                             </Typography>
                         </Box>
@@ -269,7 +273,9 @@ export default function TipsPage() {
                 <Paper sx={{ p: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography variant="subtitle2">Tips ({tips.length})</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>
                             Arrastra para reordenar
                         </Typography>
                     </Box>
@@ -277,7 +283,9 @@ export default function TipsPage() {
                     {tips.length === 0 ? (
                         <Box sx={{ textAlign: 'center', py: 6, px: 2 }}>
                             <HelpIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-                            <Typography color="text.secondary" gutterBottom>
+                            <Typography gutterBottom sx={{
+                                color: "text.secondary"
+                            }}>
                                 No hay tips configurados
                             </Typography>
                             <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate} disabled={saving || readOnly}>
@@ -390,10 +398,17 @@ function SortableTipRow({
                 )}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                        <Typography variant="subtitle2" fontWeight={700} noWrap>
+                        <Typography variant="subtitle2" noWrap sx={{
+                            fontWeight: 700
+                        }}>
                             {title}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "text.secondary",
+                                fontFamily: 'monospace'
+                            }}>
                             {tip.tip_key}
                         </Typography>
                         <Chip size="small" label={tip.type} variant="outlined" sx={{ fontSize: '0.7rem', height: 22 }} />

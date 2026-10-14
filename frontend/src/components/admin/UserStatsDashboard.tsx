@@ -69,7 +69,12 @@ export default function UserStatsDashboard() {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" p={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 4
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -87,13 +92,27 @@ export default function UserStatsDashboard() {
         <Box sx={{ mb: 4 }}>
             <Grid container spacing={2}>
                 {/* Total Users */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Total Usuarios</Typography>
-                                    <Typography variant="h4" fontWeight={700}>{stats.overview.total}</Typography>
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Total Usuarios</Typography>
+                                    <Typography variant="h4" sx={{
+                                        fontWeight: 700
+                                    }}>{stats.overview.total}</Typography>
                                 </Box>
                                 <PeopleIcon color="primary" sx={{ fontSize: 40, opacity: 0.3 }} />
                             </Box>
@@ -102,13 +121,30 @@ export default function UserStatsDashboard() {
                 </Grid>
 
                 {/* New Today */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Nuevos Hoy</Typography>
-                                    <Typography variant="h4" fontWeight={700} color="success.main">
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Nuevos Hoy</Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "success.main"
+                                        }}>
                                         +{stats.overview.new.today}
                                     </Typography>
                                 </Box>
@@ -119,13 +155,27 @@ export default function UserStatsDashboard() {
                 </Grid>
 
                 {/* Active 7d */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Activos (7d)</Typography>
-                                    <Typography variant="h4" fontWeight={700}>{stats.overview.active_7d}</Typography>
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Activos (7d)</Typography>
+                                    <Typography variant="h4" sx={{
+                                        fontWeight: 700
+                                    }}>{stats.overview.active_7d}</Typography>
                                 </Box>
                                 <CheckCircleIcon color="info" sx={{ fontSize: 40, opacity: 0.3 }} />
                             </Box>
@@ -134,13 +184,30 @@ export default function UserStatsDashboard() {
                 </Grid>
 
                 {/* Verified */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <Card elevation={2}>
                         <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                 <Box>
-                                    <Typography color="text.secondary" variant="overline">Verificados</Typography>
-                                    <Typography variant="h4" fontWeight={700} color="primary.main">{stats.overview.verified}</Typography>
+                                    <Typography variant="overline" sx={{
+                                        color: "text.secondary"
+                                    }}>Verificados</Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "primary.main"
+                                        }}>{stats.overview.verified}</Typography>
                                 </Box>
                                 <CheckCircleIcon color="primary" sx={{ fontSize: 40, opacity: 0.3 }} />
                             </Box>
@@ -151,9 +218,15 @@ export default function UserStatsDashboard() {
 
             {/* Charts */}
             <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Paper sx={{ p: 2, height: 300 }}>
-                        <Typography variant="subtitle1" fontWeight={600} gutterBottom>Distribución por Estado</Typography>
+                        <Typography variant="subtitle1" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>Distribución por Estado</Typography>
                         <Divider sx={{ mb: 2 }} />
                         <ResponsiveContainer width="100%" height="80%">
                             <PieChart>
@@ -176,19 +249,37 @@ export default function UserStatsDashboard() {
                         </ResponsiveContainer>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Paper sx={{ p: 2, height: 300 }}>
-                        <Box display="flex" alignItems="center" mb={1}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 1
+                            }}>
                             <PublicIcon sx={{ mr: 1, color: 'primary.main' }} />
-                            <Typography variant="subtitle1" fontWeight={600}>Top Países</Typography>
+                            <Typography variant="subtitle1" sx={{
+                                fontWeight: 600
+                            }}>Top Países</Typography>
                         </Box>
                         <Divider sx={{ mb: 2 }} />
                         <Box sx={{ mt: 2 }}>
                             {stats.distribution.countries.map((country, idx) => (
                                 <Box key={country.name} sx={{ mb: 2 }}>
-                                    <Box display="flex" justifyContent="space-between" mb={0.5}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            mb: 0.5
+                                        }}>
                                         <Typography variant="body2">{country.name || 'Desconocido'}</Typography>
-                                        <Typography variant="body2" fontWeight={600}>{country.value}</Typography>
+                                        <Typography variant="body2" sx={{
+                                            fontWeight: 600
+                                        }}>{country.value}</Typography>
                                     </Box>
                                     <Box sx={{
                                         height: 8,

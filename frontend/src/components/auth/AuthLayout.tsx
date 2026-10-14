@@ -222,38 +222,37 @@ export default function AuthLayout(props: AuthLayoutProps) {
                             className="rt-thread-frame-base"
                             x="2"
                             y="2"
-                            width="96"
-                            height="96"
                             rx="4"
                             pathLength={100}
                             fill="none"
                             sx={{
+                                width: "96",
+                                height: "96",
                                 stroke: 'rgba(211,47,47,0.45)',
                                 strokeWidth: 1.5,
                                 vectorEffect: 'non-scaling-stroke',
-                                transition: 'opacity 0.3s ease',
-                            }}
-                        />
+                                transition: 'opacity 0.3s ease'
+                            }} />
                         <Box
                             component="rect"
                             className="rt-thread-frame-flow"
                             x="2"
                             y="2"
-                            width="96"
-                            height="96"
                             rx="4"
                             pathLength={100}
                             fill="none"
                             sx={{
+                                width: "96",
+                                height: "96",
                                 stroke: '#E63946',
                                 strokeWidth: 2.4,
                                 vectorEffect: 'non-scaling-stroke',
                                 strokeDasharray: '4 21 3 72',
+
                                 '@media (prefers-reduced-motion: no-preference)': {
                                     animation: `${threadFlow} 6s linear infinite`,
-                                },
-                            }}
-                        />
+                                }
+                            }} />
                     </Box>
 
                     {/* Thread segment anchored to the focused field */}
@@ -288,7 +287,9 @@ export default function AuthLayout(props: AuthLayoutProps) {
                         </Box>
 
                         {/* Logo / Header */}
-                        <Box mb={4}>
+                        <Box sx={{
+                            mb: 4
+                        }}>
                             <RedThreadLogo
                                 variant="mark"
                                 height={88}
@@ -302,15 +303,14 @@ export default function AuthLayout(props: AuthLayoutProps) {
                             />
                             <Typography
                                 variant="h4"
-                                fontWeight={800}
                                 color="white"
                                 sx={{
+                                    fontWeight: 800,
                                     letterSpacing: '-1px',
                                     mt: 2,
                                     mb: 1,
-                                    textShadow: '0 2px 8px rgba(0,0,0,0.25)',
-                                }}
-                            >
+                                    textShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                                }}>
                                 {title}
                             </Typography>
                             <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.85)' }}>

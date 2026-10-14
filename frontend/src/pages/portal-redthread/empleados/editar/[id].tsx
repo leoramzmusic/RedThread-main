@@ -26,14 +26,22 @@ const EditarEmpleadoPage: React.FC = () => {
                         <Link component={NextLink} href="/portal-redthread/empleados/listado" underline="hover" color="inherit">
                             Empleados
                         </Link>
-                        <Typography color="text.primary">Editar Empleado</Typography>
+                        <Typography sx={{
+                            color: "text.primary"
+                        }}>Editar Empleado</Typography>
                     </Breadcrumbs>
 
-                    <Box mb={4}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
+                    <Box sx={{
+                        mb: 4
+                    }}>
+                        <Typography variant="h4" gutterBottom sx={{
+                            fontWeight: "bold"
+                        }}>
                             Perfil de Empleado
                         </Typography>
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{
+                            color: "text.secondary"
+                        }}>
                             Gestione la información, accesos e historial de auditoría del personal administrativo.
                         </Typography>
                     </Box>
@@ -41,7 +49,12 @@ const EditarEmpleadoPage: React.FC = () => {
                     {id ? (
                         <EmployeeEditForm employeeId={id as string} />
                     ) : (
-                        <Box display="flex" justifyContent="center" py={10}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                py: 10
+                            }}>
                             <CircularProgress />
                         </Box>
                     )}

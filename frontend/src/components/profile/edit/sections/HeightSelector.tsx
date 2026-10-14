@@ -23,7 +23,7 @@ import {
   LockOutlined,
 } from "@mui/icons-material";
 import { Controller, Control, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import apiClient from "../../../../services/api";
 import { formatHeight } from "../../../../utils/formatters";
 
@@ -125,7 +125,11 @@ export default function HeightSelector({
             },
           }}
         >
-          <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center"
+            }}>
             <Straighten sx={{ mr: 1.5, color: heightColor }} />
             <Typography
               variant="subtitle2"
@@ -171,7 +175,8 @@ export default function HeightSelector({
               name="height_cm"
               control={control}
               render={({ field }) => (
-                <TextField size="small"
+                <TextField
+                  size="small"
                   {...field}
                   fullWidth
                   label={t("profile.additional.height.label", "Tu Altura")}
@@ -181,23 +186,6 @@ export default function HeightSelector({
                     "profile.additional.height.placeholder",
                     "Ej: 170",
                   )}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Straighten
-                          sx={{ color: isDiscovery ? "white" : heightColor }}
-                        />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment
-                        position="end"
-                        sx={{ color: isDiscovery ? "white" : "inherit" }}
-                      >
-                        cm
-                      </InputAdornment>
-                    ),
-                  }}
                   helperText={
                     field.value
                       ? formatHeight(field.value)
@@ -206,16 +194,6 @@ export default function HeightSelector({
                           "Tu altura se mostrará en tu perfil si lo deseas.",
                         )
                   }
-                  FormHelperTextProps={{
-                    sx: {
-                      fontWeight: 500,
-                      color: isDiscovery
-                        ? "rgba(255,255,255,0.7)"
-                        : "text.secondary",
-                      fontSize: "0.8rem",
-                      mt: 1,
-                    },
-                  }}
                   sx={{
                     "& .MuiOutlinedInput-root": isDiscovery
                       ? {
@@ -233,7 +211,36 @@ export default function HeightSelector({
                       ? { color: "rgba(255,255,255,0.7)" }
                       : {},
                   }}
-                />
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Straighten
+                            sx={{ color: isDiscovery ? "white" : heightColor }}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          sx={{ color: isDiscovery ? "white" : "inherit" }}
+                        >
+                          cm
+                        </InputAdornment>
+                      ),
+                    },
+
+                    formHelperText: {
+                      sx: {
+                        fontWeight: 500,
+                        color: isDiscovery
+                          ? "rgba(255,255,255,0.7)"
+                          : "text.secondary",
+                        fontSize: "0.8rem",
+                        mt: 1,
+                      },
+                    }
+                  }} />
               )}
             />
           </Box>
@@ -361,10 +368,12 @@ export default function HeightSelector({
                             <Stack
                               direction="row"
                               spacing={1}
-                              flexWrap="wrap"
                               useFlexGap
-                              sx={{ gap: 1.5, mb: 2 }}
-                            >
+                              sx={{
+                                flexWrap: "wrap",
+                                gap: 1.5,
+                                mb: 2
+                              }}>
                               {HEIGHT_PREFERENCES.map((opt) => {
                                 const isSelected = currentPrefs.includes(
                                   opt.value,

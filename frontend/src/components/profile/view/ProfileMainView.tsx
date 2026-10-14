@@ -22,7 +22,11 @@ export default function ProfileMainView({ profile, onEdit, isPublicView = false 
         <Box sx={{ p: { xs: 2, md: 4 } }}>
             <Grid container spacing={3}>
                 {/* Left Column: Identity & Context */}
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Stack spacing={3}>
                         <BasicIdentitySection profile={profile} onEdit={onEdit} />
                         <PersonalContextSection profile={profile} onEdit={onEdit} />
@@ -35,7 +39,11 @@ export default function ProfileMainView({ profile, onEdit, isPublicView = false 
                 </Grid>
 
                 {/* Right Column: Emotional & Relationship */}
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Stack spacing={3}>
                         <EmotionalExpressionSection profile={profile} onEdit={onEdit} />
                         <RelationshipSection profile={profile} onEdit={onEdit} />

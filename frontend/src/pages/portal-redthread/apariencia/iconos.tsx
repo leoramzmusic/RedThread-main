@@ -220,7 +220,9 @@ export default function IconosPage() {
             <Container maxWidth="lg">
                 <Box sx={{ py: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                        <Typography variant="h4" fontWeight={700}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>
                             Favicon & Iconos
                         </Typography>
                         <Button

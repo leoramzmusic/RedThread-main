@@ -232,10 +232,17 @@ export default function QuickInterests({ onInterestsUpdate }: QuickInterestsProp
     return (
         <Box sx={{ width: '100%', maxWidth: 900, mx: 'auto', p: 2 }}>
             {/* Title */}
-            <Typography variant="h5" fontWeight={700} gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{
+                fontWeight: 700
+            }}>
                 {t('quickInterests.title', 'Agrega intereses rápidamente')}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 {t('quickInterests.subtitle', 'Ayúdanos a encontrar personas afines a ti')}
             </Typography>
 
@@ -245,27 +252,31 @@ export default function QuickInterests({ onInterestsUpdate }: QuickInterestsProp
                 placeholder={t('quickInterests.search', 'Buscar intereses...')}
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                    endAdornment: searchQuery && (
-                        <InputAdornment position="end">
-                            <IconButton size="small" onClick={() => handleSearch('')}>
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </InputAdornment>
-                    )
-                }}
                 sx={{ mb: 3 }}
+                slotProps={{
+                    input: {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon />
+                            </InputAdornment>
+                        ),
+                        endAdornment: searchQuery && (
+                            <InputAdornment position="end">
+                                <IconButton size="small" onClick={() => handleSearch('')}>
+                                    <CloseIcon fontSize="small" />
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }
+                }}
             />
 
             {/* Search Results */}
             <Collapse in={searchResults.length > 0}>
                 <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    <Typography variant="subtitle2" gutterBottom sx={{
+                        color: "text.secondary"
+                    }}>
                         {t('quickInterests.searchResults', 'Resultados')}
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -277,7 +288,9 @@ export default function QuickInterests({ onInterestsUpdate }: QuickInterestsProp
             {/* Selected Interests */}
             <Collapse in={selectedInterests.size > 0}>
                 <Box sx={{ mb: 4, p: 2, bgcolor: 'rgba(255, 255, 255, 0.03)', borderRadius: 2 }}>
-                    <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                    <Typography variant="subtitle1" gutterBottom sx={{
+                        fontWeight: 600
+                    }}>
                         {t('quickInterests.yourInterests', 'Tus Intereses')} ({selectedInterests.size})
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -294,7 +307,9 @@ export default function QuickInterests({ onInterestsUpdate }: QuickInterestsProp
             {/* Suggestions */}
             {suggestions.length > 0 && !searchQuery && (
                 <Box sx={{ mb: 4 }}>
-                    <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                    <Typography variant="subtitle1" gutterBottom sx={{
+                        fontWeight: 600
+                    }}>
                         {t('quickInterests.suggested', '✨ Sugeridos para ti')}
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -311,9 +326,11 @@ export default function QuickInterests({ onInterestsUpdate }: QuickInterestsProp
                     <Box key={category} sx={{ mb: 4 }}>
                         <Typography
                             variant="subtitle1"
-                            fontWeight={600}
-                            sx={{ color: config.color, mb: 1.5 }}
-                        >
+                            sx={{
+                                fontWeight: 600,
+                                color: config.color,
+                                mb: 1.5
+                            }}>
                             {config.title}
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>

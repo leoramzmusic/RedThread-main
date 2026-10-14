@@ -22,13 +22,23 @@ export default function NavbarHistory({ history, onClear }: NavbarHistoryProps) 
 
   return (
     <Box>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          mb: 2
+        }}>
         <Button variant="outlined" color="error" size="small" onClick={onClear} disabled={history.length === 0}>
           Limpiar Historial
         </Button>
       </Box>
       {history.length === 0 ? (
-        <Typography color="text.secondary" align="center" sx={{ py: 4 }}>No hay historial disponible.</Typography>
+        <Typography
+          align="center"
+          sx={{
+            color: "text.secondary",
+            py: 4
+          }}>No hay historial disponible.</Typography>
       ) : (
         <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #eee' }}>
           <Table size="small">

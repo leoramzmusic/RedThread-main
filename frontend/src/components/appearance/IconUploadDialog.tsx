@@ -105,12 +105,14 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
             onClose={onClose}
             maxWidth="md"
             fullWidth
-            PaperProps={{
-                sx: {
-                    borderRadius: 3,
-                    overflow: 'hidden',
-                    bgcolor: 'background.paper',
-                    backgroundImage: 'none'
+            slotProps={{
+                paper: {
+                    sx: {
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                        bgcolor: 'background.paper',
+                        backgroundImage: 'none'
+                    }
                 }
             }}
         >
@@ -121,7 +123,9 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
                 borderBottom: `1px solid ${theme.palette.divider}`,
                 pb: 2
             }}>
-                <Typography variant="h6" fontWeight="bold">
+                <Typography variant="h6" sx={{
+                    fontWeight: "bold"
+                }}>
                     Subir Nuevo Icono ({platform})
                 </Typography>
                 <IconButton onClick={onClose} size="small">
@@ -132,7 +136,11 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
             <DialogContent sx={{ p: 4 }}>
                 <Grid container spacing={4}>
                     {/* Left Column: Drag & Drop Area */}
-                    <Grid item xs={12} md={5}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            md: 5
+                        }}>
                         <Paper
                             variant="outlined"
                             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -182,16 +190,25 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
                                         color: 'white',
                                         backdropFilter: 'blur(4px)'
                                     }}>
-                                        <Typography variant="caption" fontWeight="bold">Click para cambiar</Typography>
+                                        <Typography variant="caption" sx={{
+                                            fontWeight: "bold"
+                                        }}>Click para cambiar</Typography>
                                     </Box>
                                 </Box>
                             ) : (
                                 <>
                                     <CloudUploadIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                                    <Typography variant="body1" fontWeight={600} color="text.primary">
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            fontWeight: 600,
+                                            color: "text.primary"
+                                        }}>
                                         Arrastra tu archivo aquí
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         o haz click para seleccionar
                                     </Typography>
                                 </>
@@ -203,20 +220,38 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
                             <Paper sx={{ mt: 2, p: 1.5, display: 'flex', alignItems: 'center', gap: 2, bgcolor: 'action.selected' }}>
                                 <ImageSearchIcon color="action" />
                                 <Box>
-                                    <Typography variant="caption" color="text.secondary" display="block">Resolución Detectada</Typography>
-                                    <Typography variant="body2" fontWeight="bold">{resolution}</Typography>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: "text.secondary",
+                                            display: "block"
+                                        }}>Resolución Detectada</Typography>
+                                    <Typography variant="body2" sx={{
+                                        fontWeight: "bold"
+                                    }}>{resolution}</Typography>
                                 </Box>
                             </Paper>
                         </Fade>
                     </Grid>
 
                     {/* Right Column: Form Data */}
-                    <Grid item xs={12} md={7}>
-                        <Box display="flex" flexDirection="column" gap={3}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            md: 7
+                        }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 3
+                            }}>
 
                             {/* Narrative Field */}
                             <Box>
-                                <Typography variant="subtitle2" gutterBottom fontWeight="bold">
+                                <Typography variant="subtitle2" gutterBottom sx={{
+                                    fontWeight: "bold"
+                                }}>
                                     Narrativa Emocional & Descripción
                                 </Typography>
                                 <TextField
@@ -232,12 +267,27 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
 
                             {/* Scheduling Section */}
                             <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={scheduleEnabled ? 2 : 0}>
-                                    <Box display="flex" alignItems="center" gap={1}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        mb: scheduleEnabled ? 2 : 0
+                                    }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1
+                                        }}>
                                         <CalendarMonthIcon color={scheduleEnabled ? "primary" : "disabled"} />
                                         <Box>
-                                            <Typography variant="body1" fontWeight={600}>Programar Activación</Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="body1" sx={{
+                                                fontWeight: 600
+                                            }}>Programar Activación</Typography>
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {scheduleEnabled ? "El ícono se activará automáticamente" : "¿Deseas activar esto en el futuro?"}
                                             </Typography>
                                         </Box>
@@ -255,10 +305,11 @@ export default function IconUploadDialog({ open, onClose, onUpload, platform }: 
                                             fullWidth
                                             value={scheduleDate}
                                             onChange={(e) => setScheduleDate(e.target.value)}
-                                            inputProps={{ min: minDate }}
-                                            InputLabelProps={{ shrink: true }}
                                             label="Fecha y Hora de Activación"
-                                        />
+                                            slotProps={{
+                                                htmlInput: { min: minDate },
+                                                inputLabel: { shrink: true }
+                                            }} />
                                         <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 1, fontStyle: 'italic' }}>
                                             🗓️ Este ícono se activará el {scheduleDate ? new Date(scheduleDate).toLocaleDateString() : '...'} a las {scheduleDate ? new Date(scheduleDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...'}.
                                         </Typography>

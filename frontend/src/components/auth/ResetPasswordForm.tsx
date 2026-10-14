@@ -78,7 +78,9 @@ export default function ResetPasswordForm() {
                     <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
                         ¡Contraseña actualizada!
                     </Typography>
-                    <Typography color="text.secondary">
+                    <Typography sx={{
+                        color: "text.secondary"
+                    }}>
                         Tu contraseña ha sido cambiada con éxito. Serás redireccionado al inicio de sesión en unos segundos...
                     </Typography>
                     <Button
@@ -96,7 +98,12 @@ export default function ResetPasswordForm() {
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+                variant="body1"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 Crea una nueva contraseña segura para tu cuenta.
             </Typography>
 
@@ -113,19 +120,21 @@ export default function ResetPasswordForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                InputProps={{
-                    startAdornment: <LockReset sx={{ color: 'action.active', mr: 1 }} />,
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={() => setShowPassword(!showPassword)}
-                                edge="end"
-                            >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        startAdornment: <LockReset sx={{ color: 'action.active', mr: 1 }} />,
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }
                 }}
             />
 
@@ -142,8 +151,10 @@ export default function ResetPasswordForm() {
                 disabled={loading}
                 error={confirmPassword !== '' && !passwordsMatch}
                 helperText={confirmPassword !== '' && !passwordsMatch ? "Las contraseñas no coinciden" : ""}
-                InputProps={{
-                    startAdornment: <LockReset sx={{ color: 'action.active', mr: 1 }} />,
+                slotProps={{
+                    input: {
+                        startAdornment: <LockReset sx={{ color: 'action.active', mr: 1 }} />,
+                    }
                 }}
             />
 
@@ -165,9 +176,11 @@ export default function ResetPasswordForm() {
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={rule.label}
-                                    primaryTypographyProps={{
-                                        variant: 'body2',
-                                        color: isMet ? 'text.primary' : 'text.secondary'
+                                    slotProps={{
+                                        primary: {
+                                            variant: 'body2',
+                                            color: isMet ? 'text.primary' : 'text.secondary'
+                                        }
                                     }}
                                 />
                             </ListItem>

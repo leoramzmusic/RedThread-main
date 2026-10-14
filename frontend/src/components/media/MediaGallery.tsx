@@ -3,7 +3,7 @@ import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { MediaItem, MediaType } from '../../types/media';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutlined';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import MusicNoteIcon from '@mui/icons-material/MusicNote'; // For TikTok
 import ParallaxImage from '../motion/ParallaxImage';
@@ -29,7 +29,9 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({ items, height = 400 }) => {
           justifyContent: 'center',
         }}
       >
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           No media available
         </Typography>
       </Box>

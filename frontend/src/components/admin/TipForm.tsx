@@ -160,13 +160,23 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
         const tr = value.translations?.[lang] ?? EMPTY_TR;
         return (
             <Grid container spacing={2} key={lang} sx={{ mb: 2 }}>
-                <Grid item xs={12}>
-                    <Typography variant="subtitle2" fontWeight={700} sx={{ textTransform: 'uppercase' }}>
+                <Grid size={12}>
+                    <Typography
+                        variant="subtitle2"
+                        sx={{
+                            fontWeight: 700,
+                            textTransform: 'uppercase'
+                        }}>
                         {lang}
                     </Typography>
                 </Grid>
                 {TR_FIELDS.map((f) => (
-                    <Grid item xs={12} sm={f.multiline ? 12 : 6} key={f.key}>
+                    <Grid
+                        key={f.key}
+                        size={{
+                            xs: 12,
+                            sm: f.multiline ? 12 : 6
+                        }}>
                         <TextField
                             label={`${f.label} (${lang})`}
                             value={(tr[f.key] as string) ?? ''}
@@ -193,7 +203,11 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
 
             {tab === 0 && (
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6
+                        }}>
                         <TextField
                             label="tip_key"
                             value={value.tip_key ?? ''}
@@ -204,7 +218,11 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                             size="small"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6
+                        }}>
                         <FormControl fullWidth size="small">
                             <InputLabel>Tipo</InputLabel>
                             <Select
@@ -220,7 +238,11 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6
+                        }}>
                         <TextField
                             label="section_key"
                             value={value.section_key ?? ''}
@@ -230,7 +252,11 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                             size="small"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6
+                        }}>
                         <TextField
                             label="Orden"
                             type="number"
@@ -241,7 +267,7 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                             size="small"
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                         <FormControlLabel
                             control={
                                 <Switch
@@ -275,7 +301,12 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                     {(value.slides ?? []).map((slide, i) => (
                         <Box key={i} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, p: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                                <Typography variant="subtitle2" fontWeight={700} sx={{ flex: 1 }}>
+                                <Typography
+                                    variant="subtitle2"
+                                    sx={{
+                                        fontWeight: 700,
+                                        flex: 1
+                                    }}>
                                     Slide {i + 1}
                                 </Typography>
                                 <IconButton size="small" disabled={readOnly || i === 0} onClick={() => moveSlide(i, -1)} aria-label="subir slide">
@@ -292,7 +323,12 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                 {MAIN_LANGS.map((lang) => (
                                     <React.Fragment key={lang}>
                                         {SLIDE_TR_FIELDS.map((f) => (
-                                            <Grid item xs={12} sm={6} key={`${lang}-${f.key}`}>
+                                            <Grid
+                                                key={`${lang}-${f.key}`}
+                                                size={{
+                                                    xs: 12,
+                                                    sm: 6
+                                                }}>
                                                 <TextField
                                                     label={`${f.label} (${lang})`}
                                                     value={(slide.translations?.[lang] as any)?.[f.key] ?? ''}
@@ -307,7 +343,7 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                         ))}
                                     </React.Fragment>
                                 ))}
-                                <Grid item xs={12}>
+                                <Grid size={12}>
                                     <Accordion>
                                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                             <Typography variant="caption">
@@ -319,7 +355,12 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                                 {EXTRA_LANGS.map((lang) => (
                                                     <React.Fragment key={lang}>
                                                         {SLIDE_TR_FIELDS.map((f) => (
-                                                            <Grid item xs={12} sm={6} key={`${lang}-${f.key}`}>
+                                                            <Grid
+                                                                key={`${lang}-${f.key}`}
+                                                                size={{
+                                                                    xs: 12,
+                                                                    sm: 6
+                                                                }}>
                                                                 <TextField
                                                                     label={`${f.label} (${lang})`}
                                                                     value={(slide.translations?.[lang] as any)?.[f.key] ?? ''}
@@ -339,7 +380,12 @@ export default function TipForm({ value, onChange, persistedTipKey, readOnly, on
                                     </Accordion>
                                 </Grid>
                                 {(['ok_image_url', 'ko_image_url'] as const).map((field) => (
-                                    <Grid item xs={12} sm={6} key={field}>
+                                    <Grid
+                                        key={field}
+                                        size={{
+                                            xs: 12,
+                                            sm: 6
+                                        }}>
                                         {(slide[field] as string) ? (
                                             <Box
                                                 component="img"

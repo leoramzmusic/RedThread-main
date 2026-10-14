@@ -108,7 +108,12 @@ const EmployeeForm: React.FC = () => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" p={5}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 5
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -125,15 +130,28 @@ const EmployeeForm: React.FC = () => {
 
             <Grid container spacing={3}>
                 {/* Section 1: Personal Info */}
-                <Grid item xs={12} md={8}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 8
+                    }}>
                     <Paper sx={{ p: 3, borderRadius: 2 }}>
-                        <Box display="flex" alignItems="center" mb={2}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 2
+                            }}>
                             <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
                             <Typography variant="h6">Información Personal</Typography>
                         </Box>
                         <Divider sx={{ mb: 3 }} />
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Nombre(s)"
@@ -142,7 +160,11 @@ const EmployeeForm: React.FC = () => {
                                     onChange={(e) => handleChange('first_name', e.target.value)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Apellidos"
@@ -151,7 +173,11 @@ const EmployeeForm: React.FC = () => {
                                     onChange={(e) => handleChange('last_name', e.target.value)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Email Corporativo"
@@ -162,7 +188,11 @@ const EmployeeForm: React.FC = () => {
                                     placeholder="ejemplo@redthread.com"
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Teléfono"
@@ -170,17 +200,27 @@ const EmployeeForm: React.FC = () => {
                                     onChange={(e) => handleChange('phone', e.target.value)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Fecha de Nacimiento"
                                     type="date"
-                                    InputLabelProps={{ shrink: true }}
                                     value={formData.birth_date}
                                     onChange={(e) => handleChange('birth_date', e.target.value)}
+                                    slotProps={{
+                                        inputLabel: { shrink: true }
+                                    }}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Contraseña Inicial"
@@ -195,7 +235,11 @@ const EmployeeForm: React.FC = () => {
                 </Grid>
 
                 {/* Avatar/Status Column */}
-                <Grid item xs={12} md={4}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 4
+                    }}>
                     <Paper sx={{ p: 3, borderRadius: 2, textAlign: 'center', height: '100%' }}>
                         <Avatar
                             sx={{
@@ -209,14 +253,27 @@ const EmployeeForm: React.FC = () => {
                         >
                             {formData.first_name ? formData.first_name[0] : <PersonIcon fontSize="large" />}
                         </Avatar>
-                        <Typography variant="subtitle1" fontWeight="bold">
+                        <Typography variant="subtitle1" sx={{
+                            fontWeight: "bold"
+                        }}>
                             {formData.first_name} {formData.last_name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <Typography variant="body2" gutterBottom sx={{
+                            color: "text.secondary"
+                        }}>
                             {formData.email || 'correo@ejemplo.com'}
                         </Typography>
-                        <Box mt={4} textAlign="left">
-                            <Box display="flex" alignItems="center" mb={1}>
+                        <Box
+                            sx={{
+                                mt: 4,
+                                textAlign: "left"
+                            }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <SecurityIcon sx={{ mr: 1, fontSize: 18, color: 'text.secondary' }} />
                                 <Typography variant="subtitle2">Seguridad</Typography>
                             </Box>
@@ -229,7 +286,13 @@ const EmployeeForm: React.FC = () => {
                                 }
                                 label="Habilitar 2FA"
                             />
-                            <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    display: "block",
+                                    color: "text.secondary",
+                                    mt: 1
+                                }}>
                                 El empleado deberá configurar la autenticación de dos factores en su primer inicio de sesión.
                             </Typography>
                         </Box>
@@ -237,15 +300,24 @@ const EmployeeForm: React.FC = () => {
                 </Grid>
 
                 {/* Section 2: Organizational Data */}
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Paper sx={{ p: 3, borderRadius: 2 }}>
-                        <Box display="flex" alignItems="center" mb={2}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 2
+                            }}>
                             <BusinessIcon sx={{ mr: 1, color: 'primary.main' }} />
                             <Typography variant="h6">Datos Organizacionales</Typography>
                         </Box>
                         <Divider sx={{ mb: 3 }} />
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid size={12}>
                                 <TextField
                                     fullWidth
                                     label="ID de Empleado / Código Interno"
@@ -255,7 +327,11 @@ const EmployeeForm: React.FC = () => {
                                     placeholder="Ej: RT-2025-001"
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <FormControl fullWidth required>
                                     <InputLabel>Departamento</InputLabel>
                                     <Select
@@ -271,18 +347,24 @@ const EmployeeForm: React.FC = () => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Fecha de Ingreso"
                                     type="date"
                                     required
-                                    InputLabelProps={{ shrink: true }}
                                     value={formData.hire_date}
                                     onChange={(e) => handleChange('hire_date', e.target.value)}
+                                    slotProps={{
+                                        inputLabel: { shrink: true }
+                                    }}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={12}>
                                 <FormControl fullWidth required>
                                     <InputLabel id="roles-label">Roles Asignados</InputLabel>
                                     <Select
@@ -313,15 +395,28 @@ const EmployeeForm: React.FC = () => {
                 </Grid>
 
                 {/* Section 3: Location Data */}
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Paper sx={{ p: 3, borderRadius: 2 }}>
-                        <Box display="flex" alignItems="center" mb={2}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 2
+                            }}>
                             <PublicIcon sx={{ mr: 1, color: 'primary.main' }} />
                             <Typography variant="h6">Ubicación</Typography>
                         </Box>
                         <Divider sx={{ mb: 3 }} />
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="País"
@@ -329,7 +424,11 @@ const EmployeeForm: React.FC = () => {
                                     onChange={(e) => handleChange('country', e.target.value)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    sm: 6
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Ciudad"
@@ -342,8 +441,13 @@ const EmployeeForm: React.FC = () => {
                 </Grid>
 
                 {/* Form Actions */}
-                <Grid item xs={12}>
-                    <Box display="flex" justifyContent="flex-end" gap={2}>
+                <Grid size={12}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 2
+                        }}>
                         <Button
                             variant="outlined"
                             onClick={() => router.push('/portal-redthread/empleados/listado')}

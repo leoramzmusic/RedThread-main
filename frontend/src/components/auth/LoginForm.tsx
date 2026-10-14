@@ -22,7 +22,7 @@ import Link from 'next/link';
 import apiClient from '../../services/api';
 import { setCredentials } from '../../store/slices/authSlice';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { persistLangLocal, normalizeLang, PROFILE_LANG_STORAGE_KEY } from '../../utils/landingLanguage';
 import { AUTH_INPUT_SX, SOCIAL_BTN_SX, SUBMIT_BTN_SX } from './authInputStyles';
 
@@ -159,12 +159,14 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}
                 required
                 autoFocus
                 sx={AUTH_INPUT_SX}
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <Email sx={{ fontSize: 20, color: 'rgba(255,255,255,0.55)' }} />
-                        </InputAdornment>
-                    )
+                slotProps={{
+                    input: {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <Email sx={{ fontSize: 20, color: 'rgba(255,255,255,0.55)' }} />
+                            </InputAdornment>
+                        )
+                    }
                 }}
             />
             <TextField
@@ -178,21 +180,31 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}
                 margin="normal"
                 required
                 sx={AUTH_INPUT_SX}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                                <Box sx={{ position: 'relative', width: 24, height: 24 }}>
-                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
-                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
-                                </Box>
-                            </IconButton>
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                                    <Box sx={{ position: 'relative', width: 24, height: 24 }}>
+                                        <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
+                                        <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
+                                    </Box>
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }
                 }}
             />
 
-            <Box display="flex" justifyContent="space-between" alignItems="center" mt={1} mb={2} sx={{ color: 'white' }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mt: 1,
+                    mb: 2,
+                    color: 'white'
+                }}>
                 <FormControlLabel
                     control={
                         <Checkbox

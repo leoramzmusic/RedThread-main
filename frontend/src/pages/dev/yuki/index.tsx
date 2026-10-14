@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Container, Typography, Paper, Stack, Button, Chip, useTheme } from '@mui/material';
 import { KawaiiCat, YukiLottie, YukiLoader, YukiEmptyState, YukiBadge, YukiOnboarding, YukiTooltip, YukiErrorBoundary } from '../../../components/common/yuki';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import type { GetStaticProps } from 'next';
 
 const STATES = ['idle', 'loading', 'success', 'error', 'sleeping', 'curious', 'waving', 'playful'] as const;
@@ -23,16 +23,25 @@ export default function YukiDemo() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" fontWeight={800} gutterBottom>
+      <Typography variant="h3" gutterBottom sx={{
+        fontWeight: 800
+      }}>
         Yuki (雪) — Component Demo
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 4
+        }}>
         Mascota oficial de RedThread. Gatito kawaii blanco que juega con una bola de estambre.
       </Typography>
 
       {/* SVG Interactive */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>KawaiiCat (SVG Interactive)</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>KawaiiCat (SVG Interactive)</Typography>
         <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
           {STATES.map((s) => (
             <Chip
@@ -66,12 +75,19 @@ export default function YukiDemo() {
 
       {/* Lottie Animations */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiLottie (Bodymovin)</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiLottie (Bodymovin)</Typography>
         <Stack direction="row" spacing={3} sx={{ justifyContent: 'center', flexWrap: 'wrap', gap: 3, py: 2 }}>
           {(['idle', 'loading', 'success', 'error', 'sleeping'] as const).map((s) => (
             <Box key={s} sx={{ textAlign: 'center' }}>
               <YukiLottie state={s} size={100} />
-              <Typography variant="caption" display="block" sx={{ mt: 1 }}>{s}</Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: "block",
+                  mt: 1
+                }}>{s}</Typography>
             </Box>
           ))}
         </Stack>
@@ -79,13 +95,17 @@ export default function YukiDemo() {
 
       {/* Loader */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiLoader</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiLoader</Typography>
         <YukiLoader message="Cargando tu perfil..." size={100} />
       </Paper>
 
       {/* Empty State */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiEmptyState</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiEmptyState</Typography>
         <YukiEmptyState
           title="Sin matches aún"
           description="¡Sigue explorando! Yuki encontrará a alguien especial para ti."
@@ -97,7 +117,9 @@ export default function YukiDemo() {
 
       {/* Badge */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiBadge (Gamificación)</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiBadge (Gamificación)</Typography>
         <Stack spacing={2} sx={{ maxWidth: 320 }}>
           <YukiBadge type="achievement" title="Primer Match" description="¡Conectaste con alguien por primera vez!" visible={showBadge} autoHide={false} />
           <YukiBadge type="streak" title="Racha de 7 días" description="Has abierto la app 7 días seguidos" visible={showBadge} autoHide={false} />
@@ -111,13 +133,25 @@ export default function YukiDemo() {
 
       {/* Color Palette */}
       <Paper sx={{ p: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>Paleta Oficial</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>Paleta Oficial</Typography>
         <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 2 }}>
           {MODULE_COLORS.map((c) => (
             <Box key={c.color} sx={{ textAlign: 'center' }}>
               <Box sx={{ width: 48, height: 48, borderRadius: 2, bgcolor: c.color, boxShadow: 2 }} />
-              <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>{c.name}</Typography>
-              <Typography variant="caption" display="block" color="text.secondary">{c.color}</Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: "block",
+                  mt: 0.5
+                }}>{c.name}</Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: "block",
+                  color: "text.secondary"
+                }}>{c.color}</Typography>
             </Box>
           ))}
         </Stack>
@@ -125,8 +159,15 @@ export default function YukiDemo() {
 
       {/* Onboarding */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiOnboarding</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiOnboarding</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2
+          }}>
           Guía interactiva para nuevos usuarios. Se muestra automáticamente la primera vez.
         </Typography>
         <Button
@@ -150,7 +191,9 @@ export default function YukiDemo() {
 
       {/* Tooltip */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiTooltip</Typography>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiTooltip</Typography>
         <Stack direction="row" spacing={4} sx={{ justifyContent: 'center', py: 3 }}>
           <YukiTooltip message="¡Prueba deslizar para descubrir!" position="top" autoShow={false} storageKey="tooltip-demo-top">
             <Button variant="contained">Tooltip Arriba</Button>
@@ -163,8 +206,15 @@ export default function YukiDemo() {
 
       {/* Error Boundary */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: isDark ? '#1a1a2e' : '#f8f9fa' }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>YukiErrorBoundary</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{
+          fontWeight: 700
+        }}>YukiErrorBoundary</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2
+          }}>
           Captura errores de React y muestra a Yuki con un mensaje amigable.
         </Typography>
         <YukiErrorBoundary>

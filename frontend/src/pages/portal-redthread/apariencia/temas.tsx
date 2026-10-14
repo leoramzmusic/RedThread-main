@@ -94,7 +94,9 @@ export default function TemasPage() {
             <Container maxWidth="md">
                 <Box sx={{ py: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                        <Typography variant="h4" fontWeight={700}>Configuración de Tema</Typography>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>Configuración de Tema</Typography>
                         <Button
                             variant="contained"
                             startIcon={<SaveIcon />}
@@ -109,25 +111,37 @@ export default function TemasPage() {
                         <Paper sx={{ p: 4 }}>
                             <Typography variant="h6" gutterBottom>Paleta de Colores</Typography>
                             <Grid container spacing={3} sx={{ mb: 4 }}>
-                                <Grid item xs={12} md={6}>
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
                                     <TextField
                                         fullWidth
                                         label="Color Primario"
                                         value={primaryColor}
                                         onChange={(e) => setPrimaryColor(e.target.value)}
-                                        InputProps={{
-                                            endAdornment: <Box sx={{ width: 24, height: 24, bgcolor: primaryColor, border: '1px solid #ddd', borderRadius: 1 }} />
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: <Box sx={{ width: 24, height: 24, bgcolor: primaryColor, border: '1px solid #ddd', borderRadius: 1 }} />
+                                            }
                                         }}
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
                                     <TextField
                                         fullWidth
                                         label="Color Secundario"
                                         value={secondaryColor}
                                         onChange={(e) => setSecondaryColor(e.target.value)}
-                                        InputProps={{
-                                            endAdornment: <Box sx={{ width: 24, height: 24, bgcolor: secondaryColor, border: '1px solid #ddd', borderRadius: 1 }} />
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: <Box sx={{ width: 24, height: 24, bgcolor: secondaryColor, border: '1px solid #ddd', borderRadius: 1 }} />
+                                            }
                                         }}
                                     />
                                 </Grid>
@@ -137,7 +151,11 @@ export default function TemasPage() {
 
                             <Typography variant="h6" gutterBottom>Tipografía y Estilos</Typography>
                             <Grid container spacing={3}>
-                                <Grid item xs={12} md={6}>
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
                                     <FormControl fullWidth>
                                         <InputLabel>Fuente Principal</InputLabel>
                                         <Select
@@ -152,7 +170,11 @@ export default function TemasPage() {
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
                                     <FormControl fullWidth>
                                         <InputLabel>Bordes (Border Radius)</InputLabel>
                                         <Select

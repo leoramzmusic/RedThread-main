@@ -69,7 +69,12 @@ export default function StickerBookLayout({
         <Box sx={{ width: '100%', px: 2 }}>
             <Grid container spacing={2}>
                 {profiles.map((profile, index) => (
-                    <Grid item xs={6} sm={4} key={profile.user_id}>
+                    <Grid
+                        key={profile.user_id}
+                        size={{
+                            xs: 6,
+                            sm: 4
+                        }}>
                         <Fade in timeout={300 + index * 50}>
                             <Card
                                 onClick={() => handleOpenDetail(profile, index)}
@@ -131,12 +136,11 @@ export default function StickerBookLayout({
                                 >
                                     <Typography
                                         variant="caption"
-                                        fontWeight={700}
                                         sx={{
+                                            fontWeight: 700,
                                             color: getCompatibilityColor(profile.affinity_score || 0),
                                             fontSize: '0.65rem'
-                                        }}
-                                    >
+                                        }}>
                                         {Math.round(profile.affinity_score || 0)}%
                                     </Typography>
                                 </Box>
@@ -153,7 +157,12 @@ export default function StickerBookLayout({
                                         zIndex: 2
                                     }}
                                 >
-                                    <Typography variant="subtitle1" fontWeight={700} sx={{ lineHeight: 1.2 }}>
+                                    <Typography
+                                        variant="subtitle1"
+                                        sx={{
+                                            fontWeight: 700,
+                                            lineHeight: 1.2
+                                        }}>
                                         {profile.display_name}, {profile.age}
                                     </Typography>
                                     {profile.distance_km && (

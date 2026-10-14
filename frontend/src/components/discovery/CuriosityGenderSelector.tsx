@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon, AutoAwesome as SparkleIcon } from '@mui/icons-material';
 import { GENDER_CATEGORIES } from '../../constants/profileOptions';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface CuriosityGenderSelectorProps {
     open: boolean;
@@ -106,12 +106,14 @@ export default function CuriosityGenderSelector({
                     borderRadius: 3
                 }
             }}
-            PaperProps={{
-                sx: {
-                    borderRadius: 3,
-                    backgroundImage: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(10,10,10,0.98) 100%)',
-                    border: '1px solid rgba(171, 71, 188, 0.3)',
-                    boxShadow: '0 8px 32px rgba(171, 71, 188, 0.3)',
+            slotProps={{
+                paper: {
+                    sx: {
+                        borderRadius: 3,
+                        backgroundImage: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(10,10,10,0.98) 100%)',
+                        border: '1px solid rgba(171, 71, 188, 0.3)',
+                        boxShadow: '0 8px 32px rgba(171, 71, 188, 0.3)',
+                    }
                 }
             }}
         >

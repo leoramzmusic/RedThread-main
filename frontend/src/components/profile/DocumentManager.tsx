@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Box,
   Button,
@@ -102,12 +102,18 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
   return (
     <Paper sx={{ p: 3, mb: 3 }}>
       <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={2}
-      >
-        <Box display="flex" alignItems="center" gap={1}>
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2
+        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1
+          }}>
           <Typography variant="h6">
             {t("profile.docManager.title", "Documento de Identidad")}
           </Typography>
@@ -130,7 +136,9 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
       {/* Rejection message */}
       {verificationStatus === "rejected" && rejectionReason && (
         <Alert severity="error" sx={{ mb: 2 }} icon={<WarningIcon />}>
-          <Typography variant="subtitle2" fontWeight={600}>
+          <Typography variant="subtitle2" sx={{
+            fontWeight: 600
+          }}>
             {t("profile.docManager.rejectedTitle", "Documento Rechazado")}
           </Typography>
           <Typography variant="body2">
@@ -138,7 +146,12 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
               reason: rejectionReason,
             })}
           </Typography>
-          <Typography variant="caption" display="block" mt={1}>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              mt: 1
+            }}>
             {t(
               "profile.docManager.rejectedHint",
               "Puedes subir un nuevo documento para solicitar verificación nuevamente.",
@@ -169,8 +182,12 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
 
       {/* Document info */}
       {documentUrl && (
-        <Box mb={2}>
-          <Typography variant="body2" color="text.secondary">
+        <Box sx={{
+          mb: 2
+        }}>
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {t("profile.docManager.docTypeLabel", "Tipo de documento:")}{" "}
             <strong>
               {documentType ||
@@ -205,13 +222,20 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
           <CloudUploadIcon
             sx={{ fontSize: 48, color: "primary.main", mb: 2 }}
           />
-          <Typography variant="h6" color="primary.main" gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{
+            color: "primary.main"
+          }}>
             {t(
               "profile.docManager.uploadTitle",
               "Subir Documento de Identidad",
             )}
           </Typography>
-          <Typography variant="body2" color="text.secondary" textAlign="center">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              textAlign: "center"
+            }}>
             {t(
               "profile.docManager.uploadHint",
               "Haz clic aquí para seleccionar tu documento oficial",
@@ -222,7 +246,11 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
 
       {/* Action buttons for pending and rejected */}
       {verificationStatus === "pending" && documentUrl && (
-        <Box display="flex" gap={2}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2
+          }}>
           <Button
             variant="outlined"
             color="inherit"
@@ -246,7 +274,11 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
 
       {/* Rejected with document - show both options */}
       {verificationStatus === "rejected" && documentUrl && (
-        <Box display="flex" gap={2}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2
+          }}>
           <Button
             variant="outlined"
             color="inherit"
@@ -291,10 +323,17 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
           }}
         >
           <CloudUploadIcon sx={{ fontSize: 48, color: "primary.main", mb: 2 }} />
-          <Typography variant="h6" color="primary.main" gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{
+            color: "primary.main"
+          }}>
             {t("profile.docManager.uploadNewTitle", "Subir documento oficial")}
           </Typography>
-          <Typography variant="body2" color="text.secondary" textAlign="center">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              textAlign: "center"
+            }}>
             {t(
               "profile.docManager.uploadNewHint",
               "Tu documento anterior fue rechazado. Sube un nuevo documento para verificar tu identidad.",
@@ -332,7 +371,9 @@ const DocumentManager: React.FC<DocumentManagerProps> = ({
               "¿Estás seguro de que deseas eliminar tu documento oficial?",
             )}
           </Alert>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {t(
               "profile.docManager.deleteConsequences",
               "Al eliminar el documento:",

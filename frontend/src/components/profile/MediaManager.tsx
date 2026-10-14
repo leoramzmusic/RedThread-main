@@ -29,7 +29,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MediaItem, MediaType } from "../../types/media";
 import apiClient from "../../services/api";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import VisualTipsSheet from "./VisualTipsSheet";
@@ -167,13 +167,14 @@ function SortableMediaItem({
           {(item.type === MediaType.TIKTOK ||
             item.type === MediaType.INSTAGRAM) && (
             <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              height="100%"
-              bgcolor="black"
-              color="white"
-            >
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                bgcolor: "black",
+                color: "white"
+              }}>
               {item.type === MediaType.TIKTOK ? (
                 <MusicNoteIcon />
               ) : (
@@ -490,13 +491,16 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
   return (
     <Box>
       <Box
-        display="flex"
-        alignItems="center"
-        gap={1}
-        mb={2}
         className="section-header"
-      >
-        <Typography variant="subtitle1" fontWeight="bold">
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 2
+        }}>
+        <Typography variant="subtitle1" sx={{
+          fontWeight: "bold"
+        }}>
           {t("profile.mediaGallery", "Galería Multimedia")}
         </Typography>
         <Tooltip
@@ -512,13 +516,16 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
       </Box>
 
       {/* Photos Section */}
-      <Box mb={3}>
+      <Box sx={{
+        mb: 3
+      }}>
         <Box
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="center"
-          mb={1}
-        >
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            mb: 1
+          }}>
           <Button
             startIcon={<LightbulbIcon />}
             onClick={() => setShowTips(true)}
@@ -622,7 +629,9 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
                       <AddPhotoAlternateIcon
                         sx={{ fontSize: 24, color: "text.secondary", mb: 0.5 }}
                       />
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                      }}>
                         {t("profile.media.add", "Agregar")}
                       </Typography>
                       <input
@@ -643,13 +652,16 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
       </Box>
 
       {/* Videos Section */}
-      <Box mb={3}>
+      <Box sx={{
+        mb: 3
+      }}>
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={1}
-        ></Box>
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1
+          }}></Box>
 
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -675,11 +687,12 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
               }}
             >
               <Box
-                display="grid"
-                gridTemplateColumns="repeat(auto-fit, minmax(80px, 1fr))"
-                gap="12px"
-                maxWidth={videoTotalSlots <= 2 ? 360 : "100%"}
-              >
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))",
+                  gap: "12px",
+                  maxWidth: videoTotalSlots <= 2 ? 360 : "100%"
+                }}>
                 <SortableContext
                   items={videos.map((item) => item._id)}
                   strategy={rectSortingStrategy}
@@ -729,7 +742,9 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
                       <VideoCallIcon
                         sx={{ fontSize: 24, color: "text.secondary", mb: 0.5 }}
                       />
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                      }}>
                         {t("profile.media.add", "Agregar")}
                       </Typography>
                       <input
@@ -790,15 +805,17 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
         open={!!previewItem}
         onClose={() => setPreviewItem(null)}
         maxWidth="lg"
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-            bgcolor: "black",
-            backgroundImage: "none",
-            overflow: "hidden",
-            width: "min(90vw, 900px)",
-            m: 0,
-          },
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "12px",
+              bgcolor: "black",
+              backgroundImage: "none",
+              overflow: "hidden",
+              width: "min(90vw, 900px)",
+              m: 0,
+            },
+          }
         }}
       >
         <IconButton
@@ -842,20 +859,22 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
       <Dialog
         open={deleteConfirmationOpen}
         onClose={handleCancelDelete}
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-            maxWidth: "360px",
-            width: "100%",
-            m: 2, // Margin for mobile
-            p: 3, // 24px padding matching user request
-            bgcolor: "background.paper",
-            backgroundImage: "none", // Remove default Paper overlay in dark mode if desired, or keep for elevation
-          },
-        }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "12px",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+              maxWidth: "360px",
+              width: "100%",
+              m: 2, // Margin for mobile
+              p: 3, // 24px padding matching user request
+              bgcolor: "background.paper",
+              backgroundImage: "none", // Remove default Paper overlay in dark mode if desired, or keep for elevation
+            },
+          }
+        }}
       >
         <DialogTitle
           id="alert-dialog-title"
@@ -917,17 +936,19 @@ const MediaManager: React.FC<MediaManagerProps> = ({ userId, smartPhotosEnabled 
       <Dialog
         open={errorOpen}
         onClose={handleErrorClose}
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-            maxWidth: "320px",
-            width: "100%",
-            m: 2,
-            p: 3, // 20px padding requested, but 3 (24px) works well with MUI spacing
-            bgcolor: "background.paper",
-            textAlign: "center",
-          },
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "12px",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+              maxWidth: "320px",
+              width: "100%",
+              m: 2,
+              p: 3, // 20px padding requested, but 3 (24px) works well with MUI spacing
+              bgcolor: "background.paper",
+              textAlign: "center",
+            },
+          }
         }}
       >
         <DialogTitle sx={{ p: 0, mb: 1, fontSize: "16px", fontWeight: 600 }}>

@@ -63,24 +63,46 @@ export default function ConfigReports() {
     return (
         <AdminLayout>
             <Container maxWidth="xl">
-                <Box py={4}>
-                    <Typography variant="h4" fontWeight={800} gutterBottom>Configuración de Moderación</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                <Box sx={{
+                    py: 4
+                }}>
+                    <Typography variant="h4" gutterBottom sx={{
+                        fontWeight: 800
+                    }}>Configuración de Moderación</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 4
+                        }}>
                         Configura reglas de automatización para mantener la comunidad segura sin intervención manual constante.
                     </Typography>
 
                     <ModerationRuleForm onSubmit={handleCreateRule} loading={loading} />
 
-                    <Typography variant="h6" fontWeight={700} sx={{ mt: 4, mb: 2 }}>Reglas Activas</Typography>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            mt: 4,
+                            mb: 2
+                        }}>Reglas Activas</Typography>
                     <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
                         <List>
                             {rules.map((rule: any, index: number) => (
                                 <Box key={rule.id || index}>
                                     <ListItem>
                                         <ListItemText
-                                            primary={<Typography fontWeight={600}>{rule.name}</Typography>}
+                                            primary={<Typography sx={{
+                                                fontWeight: 600
+                                            }}>{rule.name}</Typography>}
                                             secondary={
-                                                <Box display="flex" gap={1} mt={0.5}>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        gap: 1,
+                                                        mt: 0.5
+                                                    }}>
                                                     <Chip label={`Si denuncias >= ${rule.threshold}`} size="small" variant="outlined" />
                                                     <Chip label={`Acción: ${rule.action}`} size="small" color="primary" />
                                                     {rule.category_filter && <Chip label={`Categoría: ${rule.category_filter}`} size="small" />}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Box,
   Typography,
@@ -191,8 +191,18 @@ export default function PartnerManager({
           boxShadow: "0 4px 15px rgba(253, 185, 49, 0.3)",
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2
+            }}>
             <Box
               sx={{
                 p: 1,
@@ -215,7 +225,9 @@ export default function PartnerManager({
               >
                 {t("profileSections.partner.linkedTitle", "Vínculo Confirmado")}
               </Typography>
-              <Typography variant="h6" fontWeight={700}>
+              <Typography variant="h6" sx={{
+                fontWeight: 700
+              }}>
                 {profile.partner_name ||
                   t("profileSections.partner.partnerFallback", "Tu pareja")}
               </Typography>
@@ -253,19 +265,27 @@ export default function PartnerManager({
           border: "1px solid #ff9800",
         }}
       >
-        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+        <Typography variant="subtitle1" gutterBottom sx={{
+          fontWeight: 600
+        }}>
           {t(
             "profileSections.partner.pendingTitle",
             "Solicitud de pareja pendiente",
           )}
         </Typography>
-        <Typography variant="body2" paragraph>
+        <Typography variant="body2" sx={{
+          marginBottom: "16px"
+        }}>
           {t(
             "profileSections.partner.pendingBody",
             "Alguien quiere vincular su perfil contigo.",
           )}
         </Typography>
-        <Box display="flex" gap={1}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1
+          }}>
           <Button
             variant="contained"
             color="primary"
@@ -303,20 +323,33 @@ export default function PartnerManager({
           borderRadius: 3,
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2
+            }}>
             <Box sx={{ position: "relative", display: "flex" }}>
               <CircularProgress size={24} sx={{ color: "text.secondary" }} />
             </Box>
             <Box>
               <Typography
                 variant="subtitle2"
-                fontWeight={700}
-                color="text.secondary"
-              >
+                sx={{
+                  fontWeight: 700,
+                  color: "text.secondary"
+                }}>
                 {t("profileSections.partner.sentTitle", "Solicitud enviada")}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{
+                color: "text.secondary"
+              }}>
                 {t(
                   "profileSections.partner.sentBody",
                   "Esperando confirmación...",
@@ -368,7 +401,12 @@ export default function PartnerManager({
           <Typography variant="h6" gutterBottom>
             {t("profileSections.partner.linkTitle", "Vincular Pareja")}
           </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              marginBottom: "16px"
+            }}>
             {t(
               "profileSections.partner.linkBody",
               "Busca a tu pareja por nombre de usuario o nombre visible.",
@@ -384,18 +422,20 @@ export default function PartnerManager({
             )}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <>
-                  {searching ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : (
-                    <SearchIcon color="action" />
-                  )}
-                </>
-              ),
-            }}
             sx={{ mb: 2 }}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <>
+                    {searching ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : (
+                      <SearchIcon color="action" />
+                    )}
+                  </>
+                ),
+              }
+            }}
           />
 
           {/* Results List */}
@@ -431,15 +471,24 @@ export default function PartnerManager({
                     "&:last-child": { borderBottom: "none" },
                   }}
                 >
-                  <Box display="flex" alignItems="center" gap={1}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1
+                    }}>
                     <Avatar sx={{ width: 32, height: 32 }}>
                       {user.display_name.charAt(0).toUpperCase()}
                     </Avatar>
                     <Box>
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body2" sx={{
+                        fontWeight: 600
+                      }}>
                         {user.display_name}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                      }}>
                         @{user.nickname}
                       </Typography>
                     </Box>
@@ -456,9 +505,12 @@ export default function PartnerManager({
             !selectedUser && (
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ mb: 2, fontStyle: "italic", textAlign: "center" }}
-              >
+                sx={{
+                  color: "text.secondary",
+                  mb: 2,
+                  fontStyle: "italic",
+                  textAlign: "center"
+                }}>
                 {t(
                   "profileSections.partner.noResults",
                   "No se encontraron usuarios.",
@@ -485,7 +537,12 @@ export default function PartnerManager({
             </Alert>
           )}
 
-          <Box display="flex" justifyContent="flex-end" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 1
+            }}>
             <Button onClick={() => setOpenSearch(false)}>
               {t("profileSections.partner.cancel", "Cancelar")}
             </Button>

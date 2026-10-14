@@ -12,15 +12,24 @@ export default function SuspendedUsersPage() {
     <AdminLayout>
       <Container maxWidth="xl">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: 4
+            }}>
             <BlockIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Usuarios Suspendidos
             </Typography>
           </Box>
 
           <Paper sx={{ p: 3 }}>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               Usuarios suspendidos (Implementación pendiente)
             </Typography>
           </Paper>

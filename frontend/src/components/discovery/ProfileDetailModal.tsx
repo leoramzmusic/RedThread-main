@@ -42,11 +42,15 @@ export default function ProfileDetailModal({
             open={open}
             onClose={onClose}
             fullScreen
-            TransitionComponent={Fade}
-            PaperProps={{
-                sx: {
-                    bgcolor: 'background.default',
-                    backgroundImage: 'none'
+            slots={{
+                transition: Fade
+            }}
+            slotProps={{
+                paper: {
+                    sx: {
+                        bgcolor: 'background.default',
+                        backgroundImage: 'none'
+                    }
                 }
             }}
         >

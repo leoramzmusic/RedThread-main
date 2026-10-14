@@ -93,21 +93,30 @@ export default function NotificationItem({ notification, onRead }: NotificationI
       </ListItemAvatar>
       <ListItemText
         primary={
-          <Typography variant="subtitle2" component="span" fontWeight={notification.is_read ? 400 : 600}>
+          <Typography variant="subtitle2" component="span" sx={{
+            fontWeight: notification.is_read ? 400 : 600
+          }}>
             {getTitle(notification.type, notification.user?.name || 'Usuario')}
           </Typography>
         }
         secondary={
           <React.Fragment>
             <Typography
-              sx={{ display: 'inline' }}
               component="span"
               variant="body2"
-              color="text.primary"
-            >
+              sx={{
+                color: "text.primary",
+                display: 'inline'
+              }}>
               {notification.content}
             </Typography>
-            <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                display: "block",
+                color: "text.secondary",
+                mt: 0.5
+              }}>
               {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: es })}
             </Typography>
           </React.Fragment>

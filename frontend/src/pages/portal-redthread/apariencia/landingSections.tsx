@@ -158,10 +158,14 @@ export default function LandingSectionsPage() {
           }}
         >
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Landing Page Sections
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               Secciones modulares del landing: título, tipo de contenido, orden y visibilidad.
             </Typography>
           </Box>
@@ -171,7 +175,11 @@ export default function LandingSectionsPage() {
         </Box>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} lg={8}>
+          <Grid
+            size={{
+              xs: 12,
+              lg: 8
+            }}>
             <Paper sx={{ p: 2 }}>
               <Typography variant="subtitle2">
                 Secciones ({sections.length})
@@ -184,10 +192,18 @@ export default function LandingSectionsPage() {
               ) : sections.length === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 6, px: 2 }}>
                   <ViewWeek sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                  <Typography color="text.secondary" gutterBottom>
+                  <Typography gutterBottom sx={{
+                    color: "text.secondary"
+                  }}>
                     Aún no hay secciones
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                      mb: 2
+                    }}>
                     Agrega la primera sección del landing para empezar.
                   </Typography>
                   <Button variant="outlined" startIcon={<Add />} onClick={openAdd}>
@@ -205,7 +221,11 @@ export default function LandingSectionsPage() {
               )}
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={4}>
+          <Grid
+            size={{
+              xs: 12,
+              lg: 4
+            }}>
             <Paper sx={{ p: 2 }}>
               <SectionsPreview sections={sections} />
             </Paper>

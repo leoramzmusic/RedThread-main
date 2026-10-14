@@ -32,7 +32,7 @@ import PresenceIndicator from './PresenceIndicator';
 import PhotoLightbox from './PhotoLightbox';
 import { CompatibilityMeter } from '../discovery/CompatibilityMeter';
 import { IDENTITY_COLORS } from '../../constants/profileOptions';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface ProfileDetailsModalProps {
     open: boolean;
@@ -185,17 +185,18 @@ export default function ProfileDetailsModal({
                 >
                     <Typography
                         variant="h6"
-                        fontWeight={800}
                         noWrap
                         sx={{
+                            fontWeight: 800,
                             flexShrink: 1,
                             minWidth: 0,
+
                             fontSize: isLandscapePhone
                                 ? '1.15rem'
                                 : { xs: '1.25rem', sm: '1.5rem' },
+
                             lineHeight: 1.2
-                        }}
-                    >
+                        }}>
                         {profile.nickname || profile.display_name}
                         {profile.age ? `, ${profile.age}` : ''}
                     </Typography>
@@ -417,9 +418,11 @@ export default function ProfileDetailsModal({
                                 <Stack
                                     direction="row"
                                     spacing={1}
-                                    mt={1}
-                                    sx={{ overflowX: 'auto', pb: 0.5 }}
-                                >
+                                    sx={{
+                                        mt: 1,
+                                        overflowX: 'auto',
+                                        pb: 0.5
+                                    }}>
                                     {(photos || []).slice(0, 5).map((photo, idx) => (
                                         <Box
                                             key={idx}
@@ -456,7 +459,9 @@ export default function ProfileDetailsModal({
 
                     {/* Location + identity */}
                     <Box>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        <Stack direction="row" spacing={1} useFlexGap sx={{
+                            flexWrap: "wrap"
+                        }}>
                             <Chip
                                 icon={<LocationOnIcon />}
                                 label={
@@ -507,14 +512,14 @@ export default function ProfileDetailsModal({
                             <Typography
                                 variant="overline"
                                 color="primary"
-                                fontWeight={800}
                                 sx={{
+                                    fontWeight: 800,
                                     display: 'block',
+
                                     fontSize: isLandscapePhone
                                         ? '0.85rem'
                                         : { xs: '0.85rem', sm: '0.75rem' }
-                                }}
-                            >
+                                }}>
                                 {t('common:profile.interests', 'Intereses')}
                             </Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1.5 }}>
@@ -546,14 +551,14 @@ export default function ProfileDetailsModal({
                         <Typography
                             variant="overline"
                             color="primary"
-                            fontWeight={800}
                             sx={{
+                                fontWeight: 800,
                                 display: 'block',
+
                                 fontSize: isLandscapePhone
                                     ? '0.85rem'
                                     : { xs: '0.85rem', sm: '0.75rem' }
-                            }}
-                        >
+                            }}>
                             {t('common:profile.aboutMe', 'SOBRE MÍ')}
                         </Typography>
                         <Box
@@ -576,8 +581,14 @@ export default function ProfileDetailsModal({
                     {(profile.occupation || profile.education_center || profile.height_cm) && (
                         <Grid container spacing={2}>
                             {profile.occupation && (
-                                <Grid item xs={12} md={6}>
-                                    <Stack direction="row" spacing={1} alignItems="center">
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
+                                    <Stack direction="row" spacing={1} sx={{
+                                        alignItems: "center"
+                                    }}>
                                         <WorkIcon color="action" fontSize="small" />
                                         <Typography variant="body2">
                                             {profile.occupation}{' '}
@@ -587,16 +598,28 @@ export default function ProfileDetailsModal({
                                 </Grid>
                             )}
                             {profile.education_center && (
-                                <Grid item xs={12} md={6}>
-                                    <Stack direction="row" spacing={1} alignItems="center">
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
+                                    <Stack direction="row" spacing={1} sx={{
+                                        alignItems: "center"
+                                    }}>
                                         <SchoolIcon color="action" fontSize="small" />
                                         <Typography variant="body2">{profile.education_center}</Typography>
                                     </Stack>
                                 </Grid>
                             )}
                             {profile.height_cm && (
-                                <Grid item xs={12} md={6}>
-                                    <Stack direction="row" spacing={1} alignItems="center">
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
+                                    <Stack direction="row" spacing={1} sx={{
+                                        alignItems: "center"
+                                    }}>
                                         <HeightIcon color="action" fontSize="small" />
                                         <Typography variant="body2">{profile.height_cm} cm</Typography>
                                     </Stack>
@@ -616,12 +639,20 @@ export default function ProfileDetailsModal({
                                 borderColor: 'primary.main'
                             }}
                         >
-                            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <CompatibilityMeter
                                     score={profile.compatibility_score || profile.affinity_score || 0}
                                     size={40}
                                 />
-                                <Typography variant="subtitle1" fontWeight="bold">
+                                <Typography variant="subtitle1" sx={{
+                                    fontWeight: "bold"
+                                }}>
                                     {t('card.careHarmony', 'Sintonía CARE')}
                                 </Typography>
                             </Stack>

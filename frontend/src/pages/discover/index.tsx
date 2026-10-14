@@ -49,8 +49,8 @@ import ProfileCard, { Profile } from "../../components/profile/ProfileCard";
 import apiClient from "../../services/api";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import DiscoverEmptyState from "../../components/discovery/DiscoverEmptyState";
 import QuickInterests from "../../components/discovery/QuickInterests";
 import { useSnackbar } from "notistack";
@@ -999,10 +999,17 @@ export default function Discover() {
       <Layout>
         <Container maxWidth="sm" sx={{ mt: 10, textAlign: "center" }}>
           <FavoriteIcon sx={{ fontSize: 80, color: "gold", mb: 2 }} />
-          <Typography variant="h4" gutterBottom fontWeight="bold">
+          <Typography variant="h4" gutterBottom sx={{
+            fontWeight: "bold"
+          }}>
             {t("discoverLocked.title", "Vínculo Confirmado")}
           </Typography>
-          <Typography variant="body1" paragraph color="text.secondary">
+          <Typography
+            variant="body1"
+            sx={{
+              color: "text.secondary",
+              marginBottom: "16px"
+            }}>
             {t(
               "discoverLocked.message",
               "Tu vínculo está confirmado. Discover se ha desactivado para respetar tu relación. Golth sigue disponible para explorar afinidades compartidas.",
@@ -1400,9 +1407,11 @@ export default function Discover() {
             >
               <Typography
                 variant="h2"
-                fontWeight={700}
-                sx={{ color: "#FF6B6B", mb: 2 }}
-              >
+                sx={{
+                  fontWeight: 700,
+                  color: "#FF6B6B",
+                  mb: 2
+                }}>
                 {t("match.title")}
               </Typography>
               <Typography variant="h5">
@@ -2040,12 +2049,14 @@ export default function Discover() {
             maxWidth="md"
             fullWidth
             sx={{ display: { xs: "block", md: "none" } }} // Only modal on mobile/tablet
-            PaperProps={{
-              sx: {
-                bgcolor: "transparent",
-                boxShadow: "none",
-                backgroundImage: "none",
-              },
+            slotProps={{
+              paper: {
+                sx: {
+                  bgcolor: "transparent",
+                  boxShadow: "none",
+                  backgroundImage: "none",
+                },
+              }
             }}
           >
             <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -2063,12 +2074,14 @@ export default function Discover() {
             maxWidth="md"
             fullWidth
             sx={{ display: { xs: "block", lg: "none" } }} // Only modal on mobile/tablet
-            PaperProps={{
-              sx: {
-                bgcolor: "transparent",
-                boxShadow: "none",
-                backgroundImage: "none",
-              },
+            slotProps={{
+              paper: {
+                sx: {
+                  bgcolor: "transparent",
+                  boxShadow: "none",
+                  backgroundImage: "none",
+                },
+              }
             }}
           >
             <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -2088,17 +2101,6 @@ export default function Discover() {
             fullWidth
             maxWidth={false}
             disablePortal // Render inside containerRef
-            PaperProps={{
-              sx: {
-                width: "100%",
-                maxWidth: 800,
-                borderRadius: 4,
-                backgroundImage: "none",
-                bgcolor: "background.paper",
-                m: 0,
-                ml: { xs: 0, md: "250px" }, // Shift right as requested only on desktop
-              },
-            }}
             sx={{
               position: "absolute", // Absolute to the relative Box
               zIndex: 1300,
@@ -2112,6 +2114,19 @@ export default function Discover() {
                 position: "absolute",
                 borderRadius: 4,
               },
+            }}
+            slotProps={{
+              paper: {
+                sx: {
+                  width: "100%",
+                  maxWidth: 800,
+                  borderRadius: 4,
+                  backgroundImage: "none",
+                  bgcolor: "background.paper",
+                  m: 0,
+                  ml: { xs: 0, md: "250px" }, // Shift right as requested only on desktop
+                },
+              }
             }}
           >
             <DialogTitle
@@ -2145,11 +2160,12 @@ export default function Discover() {
                   {/* Age Filter */}
                   <Box>
                     <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      mb={1}
-                    >
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1
+                      }}>
                       <Typography
                         variant="subtitle2"
                         sx={{ color: "text.secondary", fontWeight: 600 }}
@@ -2217,7 +2233,12 @@ export default function Discover() {
                               />
                             }
                             label={
-                              <Box display="flex" alignItems="center" gap={0.5}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 0.5
+                                }}>
                                 <Typography
                                   variant="caption"
                                   sx={{
@@ -2276,10 +2297,11 @@ export default function Discover() {
                       </Typography>
                       <Typography
                         variant="body2"
-                        color="primary.main"
-                        fontWeight={700}
-                        sx={{ fontSize: "0.85rem" }}
-                      >
+                        sx={{
+                          color: "primary.main",
+                          fontWeight: 700,
+                          fontSize: "0.85rem"
+                        }}>
                         {`${distance} ${t("filters.distance.unit", "km")}`}
                       </Typography>
                     </Box>
@@ -2327,7 +2349,9 @@ export default function Discover() {
                           bgcolor: "action.hover",
                         }}
                       >
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                          color: "text.secondary"
+                        }}>
                           {t(
                             "filters.distance.noLocation",
                             "Configura tu ubicación en el perfil para ver el mapa",
@@ -2353,9 +2377,10 @@ export default function Discover() {
                       >
                         <Typography
                           variant="caption"
-                          fontWeight={600}
-                          sx={{ fontSize: "0.65rem" }}
-                        >
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "0.65rem"
+                          }}>
                           {t(
                             "filters.distance.currentLocation",
                             "Buscando cerca de: ",
@@ -2368,9 +2393,11 @@ export default function Discover() {
 
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: "0.75rem", opacity: 0.8 }}
-                  >
+                    sx={{
+                      color: "text.secondary",
+                      fontSize: "0.75rem",
+                      opacity: 0.8
+                    }}>
                     {t(
                       "filters.distance.syncMessage",
                       "Este ajuste también se guardará en tu perfil.",
@@ -2539,11 +2566,12 @@ export default function Discover() {
                   >
                     <Typography
                       variant="subtitle2"
-                      fontWeight={700}
-                      color="primary.main"
                       gutterBottom
-                      sx={{ fontSize: "0.85rem" }}
-                    >
+                      sx={{
+                        fontWeight: 700,
+                        color: "primary.main",
+                        fontSize: "0.85rem"
+                      }}>
                       {t(
                         "filters.premium.upsellTitle",
                         "Explora más allá de tu zona",
@@ -2551,10 +2579,12 @@ export default function Discover() {
                     </Typography>
                     <Typography
                       variant="caption"
-                      color="text.secondary"
-                      display="block"
-                      sx={{ mb: 1.5, fontSize: "0.75rem" }}
-                    >
+                      sx={{
+                        color: "text.secondary",
+                        display: "block",
+                        mb: 1.5,
+                        fontSize: "0.75rem"
+                      }}>
                       {t(
                         "filters.premium.upsellDesc",
                         "Suscríbete a ReTh Premium o VIP para buscar personas en cualquier estado o país.",
@@ -2619,9 +2649,10 @@ export default function Discover() {
                             </Typography>
                             <Typography
                               variant="caption"
-                              color="text.disabled"
-                              sx={{ fontSize: "0.7rem" }}
-                            >
+                              sx={{
+                                color: "text.disabled",
+                                fontSize: "0.7rem"
+                              }}>
                               {t(
                                 "filters.highCompatibilityDesc",
                                 "Filtra perfiles con menor afinidad.",
@@ -2720,9 +2751,10 @@ export default function Discover() {
                             </Typography>
                             <Typography
                               variant="caption"
-                              color="text.disabled"
-                              sx={{ fontSize: "0.7rem" }}
-                            >
+                              sx={{
+                                color: "text.disabled",
+                                fontSize: "0.7rem"
+                              }}>
                               {t(
                                 "filters.online.desc",
                                 "Muestra solo personas activas ahora mismo.",

@@ -103,7 +103,9 @@ export default function DenunciasDashboard() {
     return (
         <AdminLayout>
             <Container maxWidth="xl">
-                <Box py={4}>
+                <Box sx={{
+                    py: 4
+                }}>
                     {error && (
                         <Alert
                             severity="error"
@@ -117,28 +119,59 @@ export default function DenunciasDashboard() {
                             {error}
                         </Alert>
                     )}
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                        <Typography variant="h4" fontWeight={800}>Panel de Denuncias</Typography>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 4
+                        }}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 800
+                        }}>Panel de Denuncias</Typography>
                         <Button variant="contained" startIcon={<RuleIcon />}>Reglas de Auto-moderación</Button>
                     </Box>
 
                     {/* Stats Summary */}
-                    <Grid container spacing={3} mb={5}>
+                    <Grid container spacing={3} sx={{
+                        mb: 5
+                    }}>
                         {[
                             { label: 'Total Denuncias', value: stats?.total_reports || 0, icon: <FlagIcon />, color: 'primary.main' },
                             { label: 'Pendientes', value: stats?.by_status?.pending || 0, icon: <PendingIcon />, color: 'error.main' },
                             { label: 'En Proceso', value: stats?.by_status?.under_review || 0, icon: <AssignmentIcon />, color: 'warning.main' },
                             { label: 'Resueltas', value: stats?.by_status?.resolved || 0, icon: <RuleIcon />, color: 'success.main' },
                         ].map((stat, i) => (
-                            <Grid item xs={12} sm={6} md={3} key={i}>
+                            <Grid
+                                key={i}
+                                size={{
+                                    xs: 12,
+                                    sm: 6,
+                                    md: 3
+                                }}>
                                 <Card>
                                     <CardContent>
-                                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center"
+                                            }}>
                                             <Box>
-                                                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{
+                                                        color: "text.secondary",
+                                                        fontWeight: 600
+                                                    }}>
                                                     {stat.label}
                                                 </Typography>
-                                                <Typography variant="h4" fontWeight={800} sx={{ color: stat.color }}>
+                                                <Typography
+                                                    variant="h4"
+                                                    sx={{
+                                                        fontWeight: 800,
+                                                        color: stat.color
+                                                    }}>
                                                     {stat.value}
                                                 </Typography>
                                             </Box>
@@ -153,7 +186,9 @@ export default function DenunciasDashboard() {
                     </Grid>
 
                     {/* Recent Reports Table */}
-                    <Typography variant="h6" fontWeight={700} gutterBottom>Denuncias Recientes</Typography>
+                    <Typography variant="h6" gutterBottom sx={{
+                        fontWeight: 700
+                    }}>Denuncias Recientes</Typography>
                     <ReportTable
                         reports={reports}
                         onViewDetail={handleViewDetail}

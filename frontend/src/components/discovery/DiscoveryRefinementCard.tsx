@@ -18,7 +18,7 @@ import {
   AutoAwesome as MagicIcon,
   ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useForm, Controller } from "react-hook-form";
 import ZodiacSelector from "../profile/edit/sections/ZodiacSelector";
 import RelationshipGoalsSection from "../profile/edit/sections/RelationshipGoalsSection";
@@ -151,7 +151,9 @@ export default function DiscoveryRefinementCard({
           >
             {t("refinement.profileProgress", "PROGRESO DEL PERFIL")}
           </Typography>
-          <Typography variant="h6" fontWeight={800} color="gold">
+          <Typography variant="h6" color="gold" sx={{
+            fontWeight: 800
+          }}>
             {calculateCompletionPercentage(calculateProfileScore(profile))}%
           </Typography>
         </Box>
@@ -206,9 +208,11 @@ export default function DiscoveryRefinementCard({
           <Typography
             variant="subtitle1"
             gutterBottom
-            fontWeight={600}
-            sx={{ mb: 1, textAlign: "center" }}
-          >
+            sx={{
+              fontWeight: 600,
+              mb: 1,
+              textAlign: "center"
+            }}>
             {t(
               `profile.suggestions.${suggestion.messageKey}`,
               suggestion.message,

@@ -103,7 +103,9 @@ export default function YukiFuncionalidades() {
                         >
                             <ArrowBackIcon />
                         </Box>
-                        <Typography variant="h4" fontWeight={700}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>
                             Funcionalidades de Yuki
                         </Typography>
                     </Box>
@@ -112,7 +114,7 @@ export default function YukiFuncionalidades() {
 
                     <Grid container spacing={3}>
                         {FEATURES.map((feature) => (
-                            <Grid item xs={12} key={feature.key}>
+                            <Grid key={feature.key} size={12}>
                                 <Card
                                     sx={{
                                         borderLeft: `4px solid ${feature.color}`,
@@ -123,10 +125,14 @@ export default function YukiFuncionalidades() {
                                     <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <Typography variant="h4">{feature.icon}</Typography>
                                         <Box sx={{ flexGrow: 1 }}>
-                                            <Typography variant="h6" fontWeight={600}>
+                                            <Typography variant="h6" sx={{
+                                                fontWeight: 600
+                                            }}>
                                                 {feature.title}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
+                                            <Typography variant="body2" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {feature.description}
                                             </Typography>
                                         </Box>
@@ -145,7 +151,9 @@ export default function YukiFuncionalidades() {
 
                     {/* Summary */}
                     <Paper sx={{ p: 3, mt: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Resumen
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>

@@ -8,7 +8,7 @@ import {
     InputAdornment
 } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { alpha, useTheme } from '@mui/material/styles';
 import useDebounce from '@/hooks/useDebounce';
 import apiClient from '@/services/api';
@@ -87,20 +87,6 @@ export const UsernameEditor: React.FC<UsernameEditorProps> = ({
                         boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.12)}`,
                     },
                 }}
-                InputProps={{
-                    sx: { borderRadius: 2 },
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            {checking ? (
-                                <CircularProgress size={20} />
-                            ) : available === true ? (
-                                <CheckCircle color="success" />
-                            ) : available === false ? (
-                                <Cancel color="error" />
-                            ) : null}
-                        </InputAdornment>
-                    ),
-                }}
                 helperText={
                     available === false
                         ? t('auth.usernameTaken')
@@ -109,12 +95,34 @@ export const UsernameEditor: React.FC<UsernameEditorProps> = ({
                             : t('profile.usernameHelp')
                 }
                 error={available === false}
+                slotProps={{
+                    input: {
+                        sx: { borderRadius: 2 },
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                {checking ? (
+                                    <CircularProgress size={20} />
+                                ) : available === true ? (
+                                    <CheckCircle color="success" />
+                                ) : available === false ? (
+                                    <Cancel color="error" />
+                                ) : null}
+                            </InputAdornment>
+                        ),
+                    }
+                }}
             />
 
             {/* Suggestions */}
             {available === false && suggestions.length > 0 && (
                 <Box sx={{ mt: 1.5 }}>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            color: "text.secondary",
+                            display: 'block',
+                            mb: 0.5
+                        }}>
                         {t('auth.usernameSuggestions')}:
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

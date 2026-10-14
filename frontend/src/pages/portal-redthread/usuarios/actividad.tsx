@@ -12,15 +12,24 @@ export default function ActivityHistoryPage() {
     <AdminLayout>
       <Container maxWidth="xl">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: 4
+            }}>
             <HistoryIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Historial de Actividad
             </Typography>
           </Box>
 
           <Paper sx={{ p: 3 }}>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               Historial de actividad (Implementación pendiente)
             </Typography>
           </Paper>

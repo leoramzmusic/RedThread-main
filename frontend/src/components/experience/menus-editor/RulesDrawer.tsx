@@ -107,8 +107,10 @@ function RuleRow({
             <Switch
               checked={checked}
               onChange={(e) => onToggle(e.target.checked)}
-              inputProps={{ 'aria-label': ariaLabel }}
               sx={switchSx}
+              slotProps={{
+                input: { 'aria-label': ariaLabel }
+              }}
             />
           }
           label={label}
@@ -215,7 +217,9 @@ function RulesPanel({ initial, saving, itemLabel, onClose, onSave }: RulesPanelP
           bgcolor: 'background.paper',
         }}
       >
-        <Typography variant="h6" fontWeight={600}>
+        <Typography variant="h6" sx={{
+          fontWeight: 600
+        }}>
           Reglas — {itemLabel}
         </Typography>
         <IconButton size="small" onClick={onClose} aria-label="Cerrar">
@@ -252,7 +256,13 @@ function RulesPanel({ initial, saving, itemLabel, onClose, onSave }: RulesPanelP
               />
             ))}
           </Box>
-          <Typography variant="caption" sx={{ color: PASSION_RED, fontWeight: 600 }} display="block">
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              color: PASSION_RED,
+              fontWeight: 600
+            }}>
             {describeRoleAccess(roles)}
           </Typography>
         </SectionCard>
@@ -466,15 +476,17 @@ export default function RulesDrawer({
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{
-        style: {
-          top: `${NAVBAR_HEIGHT}px`,
-          height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
-        },
-        sx: {
-          width: { xs: '100vw', sm: 440 },
-          overflow: 'hidden',
-        },
+      slotProps={{
+        paper: {
+          style: {
+            top: `${NAVBAR_HEIGHT}px`,
+            height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+          },
+          sx: {
+            width: { xs: '100vw', sm: 440 },
+            overflow: 'hidden',
+          },
+        }
       }}
     >
       <RulesPanel

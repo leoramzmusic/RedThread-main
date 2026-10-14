@@ -28,7 +28,7 @@ import {
   Security as SecurityIcon,
   Report as ReportIcon,
   Flag as FlagIcon,
-  PersonOutline as UserIcon,
+  PersonOutlined as UserIcon,
   AttachMoney as MoneyIcon,
   Campaign as CampaignIcon,
   Support as SupportIcon,
@@ -53,7 +53,7 @@ import {
   Gavel as GavelIcon,
   ContactSupport as ContactSupportIcon,
 } from '@mui/icons-material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 
 export const DRAWER_WIDTH = 260;
 export const DRAWER_WIDTH_COLLAPSED = 70;
@@ -600,10 +600,15 @@ export default function AdminSidebar({
                     <>
                       <ListItemText
                         primary={item.label}
-                        primaryTypographyProps={{
-                          fontSize: '0.88rem',
-                          fontWeight: isActive(item.path) ? 600 : 500,
-                          sx: { color: isActive(item.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
+                        slotProps={{
+                          primary: {
+                            sx: {
+                              fontSize: '0.88rem',
+                              fontWeight: isActive(item.path) ? 600 : 500,
+                              color: isActive(item.path) ? textActive : textInactive,
+                              transition: 'color 0.2s ease'
+                            },
+                          }
                         }}
                       />
                       {item.children && (
@@ -665,10 +670,15 @@ export default function AdminSidebar({
                           </ListItemIcon>
                           <ListItemText
                             primary={child.label}
-                            primaryTypographyProps={{
-                              fontSize: '0.875rem',
-                              fontWeight: isActive(child.path) ? 600 : 400,
-                              sx: { color: isActive(child.path) ? textActive : textInactive, transition: 'color 0.2s ease' },
+                            slotProps={{
+                              primary: {
+                                sx: {
+                                  fontSize: '0.875rem',
+                                  fontWeight: isActive(child.path) ? 600 : 400,
+                                  color: isActive(child.path) ? textActive : textInactive,
+                                  transition: 'color 0.2s ease'
+                                },
+                              }
                             }}
                           />
                         </ListItemButton>

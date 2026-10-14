@@ -273,7 +273,12 @@ const DepartmentList: React.FC = () => {
 
     if (loading && departments.length === 0) {
         return (
-            <Box display="flex" justifyContent="center" p={5}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 5
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -281,11 +286,26 @@ const DepartmentList: React.FC = () => {
 
     return (
         <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={2}>
-                <Typography variant="h5" fontWeight="bold">
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                    flexWrap: "wrap",
+                    gap: 2
+                }}>
+                <Typography variant="h5" sx={{
+                    fontWeight: "bold"
+                }}>
                     Departamentos y Estructura
                 </Typography>
-                <Box display="flex" gap={1} flexWrap="wrap">
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                        flexWrap: "wrap"
+                    }}>
                     <Button variant="outlined" startIcon={viewMode === 'tree' ? <TableIcon /> : <TreeIcon />} onClick={() => setViewMode(viewMode === 'tree' ? 'table' : 'tree')} sx={{ borderRadius: 2 }}>
                         {viewMode === 'tree' ? 'Vista tabla' : 'Vista árbol'}
                     </Button>
@@ -313,10 +333,11 @@ const DepartmentList: React.FC = () => {
                     size="small"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    InputProps={{ startAdornment: <SearchIcon sx={{ fontSize: 18, mr: 1, color: 'text.disabled' }} /> }}
-                    inputProps={{ list: "dept-search-list" }}
                     sx={{ minWidth: 260, flex: 1 }}
-                />
+                    slotProps={{
+                        input: { startAdornment: <SearchIcon sx={{ fontSize: 18, mr: 1, color: 'text.disabled' }} /> },
+                        htmlInput: { list: "dept-search-list" }
+                    }} />
                 <datalist id="dept-search-list">
                     {departments.map((d) => (
                         <option key={d.code} value={d.name} />
@@ -361,7 +382,12 @@ const DepartmentList: React.FC = () => {
                         <MenuItem value="without">Sin responsable</MenuItem>
                     </Select>
                 </FormControl>
-                <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+                <Typography
+                    variant="caption"
+                    sx={{
+                        color: "text.secondary",
+                        ml: 'auto'
+                    }}>
                     {filteredSorted.length} de {departments.length} · {departments.filter((d) => d.status === 'active').length} activos
                 </Typography>
             </Paper>
@@ -370,25 +396,49 @@ const DepartmentList: React.FC = () => {
 
             {viewMode === 'tree' ? (
                 <Paper sx={{ borderRadius: 3, p: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                    <Typography variant="subtitle2" fontWeight="bold" mb={1.5} display="flex" alignItems="center" gap={1}><TreeIcon fontSize="small" /> Árbol organizacional (expandible por ubicación)</Typography>
+                    <Typography
+                        variant="subtitle2"
+                        sx={{
+                            fontWeight: "bold",
+                            mb: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}><TreeIcon fontSize="small" /> Árbol organizacional (expandible por ubicación)</Typography>
                     {Array.from(new Set(filteredSorted.map((d) => d.location || 'Sin ubicación'))).map((loc) => (
                         <Box key={loc} sx={{ mb: 1.5, border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, overflow: 'hidden' }}>
                             <Box sx={{ bgcolor: 'rgba(0,0,0,0.03)', px: 2, py: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Typography variant="body2" fontWeight="bold">{loc} ({filteredSorted.filter((d) => (d.location || 'Sin ubicación') === loc).length})</Typography>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: "bold"
+                                }}>{loc} ({filteredSorted.filter((d) => (d.location || 'Sin ubicación') === loc).length})</Typography>
                                 <Chip size="small" label={`${filteredSorted.filter((d) => (d.location || 'Sin ubicación') === loc && d.status === 'active').length} activos`} color="success" variant="outlined" />
                             </Box>
                             <Box sx={{ divideY: '1px solid rgba(0,0,0,0.06)' }}>
                                 {filteredSorted.filter((d) => (d.location || 'Sin ubicación') === loc).map((dept) => (
                                     <Box key={dept.code} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1.2, '&:hover': { bgcolor: 'rgba(0,0,0,0.02)' } }}>
-                                        <Box display="flex" alignItems="center" gap={1}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1
+                                            }}>
                                             <BusinessIcon sx={{ color: dept.status === 'active' ? 'success.main' : 'text.disabled', fontSize: 18 }} />
                                             <Box>
-                                                <Typography variant="body2" fontWeight="medium">{dept.name} <Chip label={dept.code} size="small" sx={{ ml: 0.5, height: 16, fontSize: '0.65rem' }} /></Typography>
-                                                <Typography variant="caption" color="text.secondary">{dept.description}</Typography>
+                                                <Typography variant="body2" sx={{
+                                                    fontWeight: "medium"
+                                                }}>{dept.name} <Chip label={dept.code} size="small" sx={{ ml: 0.5, height: 16, fontSize: '0.65rem' }} /></Typography>
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>{dept.description}</Typography>
                                             </Box>
                                             {!dept.head_id && <Tooltip title="Sin responsable asignado"><WarningIcon sx={{ fontSize: 16, color: 'warning.main' }} /></Tooltip>}
                                         </Box>
-                                        <Box display="flex" alignItems="center" gap={1}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1
+                                            }}>
                                             <Chip label={dept.status === 'active' ? 'Activo' : 'Inactivo'} size="small" color={dept.status === 'active' ? 'success' : 'default'} variant={dept.status === 'active' ? 'filled' : 'outlined'} sx={{ height: 20 }} />
                                             <IconButton size="small" onClick={() => handleOpenForm(dept)}><EditIcon fontSize="small" /></IconButton>
                                             <Tooltip title={isDefaultDept(dept) ? 'Ocultar (por defecto)' : 'Eliminar'}>
@@ -402,7 +452,13 @@ const DepartmentList: React.FC = () => {
                             </Box>
                         </Box>
                     ))}
-                    {filteredSorted.length === 0 && <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>Sin resultados para los filtros actuales.</Typography>}
+                    {filteredSorted.length === 0 && <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            textAlign: "center",
+                            py: 3
+                        }}>Sin resultados para los filtros actuales.</Typography>}
                 </Paper>
             ) : (
             <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
@@ -421,13 +477,21 @@ const DepartmentList: React.FC = () => {
                         {filteredSorted.map((dept) => (
                             <TableRow key={dept.code} hover>
                                 <TableCell>
-                                    <Box display="flex" alignItems="center">
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center"
+                                        }}>
                                         <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
                                         <Box>
-                                            <Typography variant="body2" fontWeight="medium">
+                                            <Typography variant="body2" sx={{
+                                                fontWeight: "medium"
+                                            }}>
                                                 {dept.name}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {dept.description}
                                             </Typography>
                                         </Box>
@@ -438,7 +502,9 @@ const DepartmentList: React.FC = () => {
                                 </TableCell>
                                 <TableCell>
                                     {dept.head_id ? (
-                                        <Stack direction="row" spacing={1} alignItems="center">
+                                        <Stack direction="row" spacing={1} sx={{
+                                            alignItems: "center"
+                                        }}>
                                             <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>
                                                 {getHeadName(dept.head_id).charAt(0)}
                                             </Avatar>
@@ -447,14 +513,25 @@ const DepartmentList: React.FC = () => {
                                             </Typography>
                                         </Stack>
                                     ) : (
-                                        <Box display="flex" alignItems="center" gap={0.5}>
-                                            <Typography variant="body2" color="text.disabled">No asignado</Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 0.5
+                                            }}>
+                                            <Typography variant="body2" sx={{
+                                                color: "text.disabled"
+                                            }}>No asignado</Typography>
                                             <Tooltip title="Sin responsable asignado"><WarningIcon sx={{ fontSize: 14, color: 'warning.main' }} /></Tooltip>
                                         </Box>
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <Box display="flex" alignItems="center">
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center"
+                                        }}>
                                         <LocationIcon sx={{ fontSize: 'small', mr: 0.5, color: 'text.disabled' }} />
                                         <Typography variant="body2">{dept.location || 'N/A'}</Typography>
                                     </Box>
@@ -492,7 +569,13 @@ const DepartmentList: React.FC = () => {
                     {editingDept ? 'Editar Departamento' : 'Crear Nuevo Departamento'}
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mt={1}>
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 2,
+                            mt: 1
+                        }}>
                         <TextField
                             label="Nombre del Departamento"
                             fullWidth
@@ -509,7 +592,9 @@ const DepartmentList: React.FC = () => {
                             placeholder="EJ: RRHH"
                             helperText="Identificador alfa-numérico"
                         />
-                        <Box gridColumn="span 2">
+                        <Box sx={{
+                            gridColumn: "span 2"
+                        }}>
                             <TextField
                                 label="Descripción"
                                 fullWidth

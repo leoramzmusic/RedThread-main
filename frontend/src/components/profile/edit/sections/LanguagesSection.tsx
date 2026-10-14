@@ -54,7 +54,7 @@ export default function LanguagesSection({
   }
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -70,13 +70,19 @@ export default function LanguagesSection({
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            pr={2}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              pr: 2
+            }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}>
               <Translate color="action" />
               <Typography variant="h6">
                 {t("profile.languages.title", "Idiomas")}
@@ -100,7 +106,7 @@ export default function LanguagesSection({
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
             {/* 1. Idiomas Hablados (Lo que ofreces) */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Controller
                 name="languages"
                 control={control}
@@ -171,11 +177,19 @@ export default function LanguagesSection({
             </Grid>
 
             {/* 2. Configuración de Matching (Lo que buscas) */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 0.5
+                  }}>
                   <Language color="action" fontSize="small" />
-                  <Typography variant="subtitle2" fontWeight={700}>
+                  <Typography variant="subtitle2" sx={{
+                    fontWeight: 700
+                  }}>
                     {t(
                       "profile.languages.affinityTitle",
                       "Afinidad Lingüística Global",
@@ -184,15 +198,14 @@ export default function LanguagesSection({
                 </Box>
                 <Typography
                   variant="body2"
-                  color="text.secondary"
                   sx={{
+                    color: "text.secondary",
                     fontStyle: "italic",
                     pl: 3.5,
                     borderLeft: "3px solid",
                     borderColor: "primary.light",
-                    ml: 0.5,
-                  }}
-                >
+                    ml: 0.5
+                  }}>
                   {t(
                     "profile.languages.affinityQuote",
                     '"Tus idiomas son puentes. CARE los usa para conectar con personas que puedan entenderte de verdad."',
@@ -225,7 +238,9 @@ export default function LanguagesSection({
                       }
                       label={
                         <Box sx={{ ml: 1 }}>
-                          <Typography variant="body2" fontWeight={600}>
+                          <Typography variant="body2" sx={{
+                            fontWeight: 600
+                          }}>
                             {t(
                               "profile.languages.filterLabel",
                               "Usar mis idiomas para filtrar matches",
@@ -233,10 +248,12 @@ export default function LanguagesSection({
                           </Typography>
                           <Typography
                             variant="caption"
-                            color="text.secondary"
-                            display="block"
-                            sx={{ mt: 0.5, lineHeight: 1.4 }}
-                          >
+                            sx={{
+                              color: "text.secondary",
+                              display: "block",
+                              mt: 0.5,
+                              lineHeight: 1.4
+                            }}>
                             {field.value
                               ? t(
                                   "profile.languages.filterOn",

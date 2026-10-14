@@ -210,7 +210,11 @@ export default function PetsSelector({ control }: PetsSelectorProps) {
                 },
               }}
             >
-              <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center"
+                }}>
                 <PetsIcon sx={{ color: "#4CAF50", mr: 1.5 }} />
                 <Typography
                   variant="subtitle2"
@@ -302,7 +306,12 @@ export default function PetsSelector({ control }: PetsSelectorProps) {
                       </Typography>
 
                       {/* Horizontal Flow Container */}
-                      <Box display="flex" flexWrap="wrap" gap={1}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 1
+                        }}>
                         {filteredItems.map((pet) => {
                           const isSelected = currentValue.includes(pet.value);
                           return (
@@ -379,9 +388,11 @@ export default function PetsSelector({ control }: PetsSelectorProps) {
                             </AlertTitle>
                             <Typography
                               variant="caption"
-                              display="block"
-                              sx={{ lineHeight: 1.5, color: "text.primary" }}
-                            >
+                              sx={{
+                                display: "block",
+                                lineHeight: 1.5,
+                                color: "text.primary"
+                              }}>
                               En RedThread no fomentamos la adquisición de
                               animales exóticos o en riesgo. Por respeto a la
                               biodiversidad y las leyes locales, no solicitamos
@@ -397,10 +408,11 @@ export default function PetsSelector({ control }: PetsSelectorProps) {
                 {filteredCategories.length === 0 && (
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    textAlign="center"
-                    py={4}
-                  >
+                    sx={{
+                      color: "text.secondary",
+                      textAlign: "center",
+                      py: 4
+                    }}>
                     No se encontraron mascotas.
                   </Typography>
                 )}

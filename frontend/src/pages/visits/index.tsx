@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Box,
@@ -99,10 +99,21 @@ export default function VisitsPage() {
   return (
     <Layout>
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: "bold",
+            mb: 1
+          }}>
           Tus visitas recientes
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, opacity: 0.8 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "text.secondary",
+            mb: 4,
+            opacity: 0.8
+          }}>
           Descubre quién ha visitado tu perfil y cuándo.
         </Typography>
 
@@ -113,28 +124,54 @@ export default function VisitsPage() {
         )}
 
         {/* Stats */}
-        <Grid container spacing={3} mb={4}>
-          <Grid item xs={6} md={3}>
+        <Grid container spacing={3} sx={{
+          mb: 4
+        }}>
+          <Grid
+            size={{
+              xs: 6,
+              md: 3
+            }}>
             <Paper sx={{ p: 3, textAlign: 'center', background: 'linear-gradient(135deg, #3498DB 0%, #5DADE2 100%)', color: '#fff' }}>
-              <Typography variant="h3" fontWeight={800}>{stats?.today ?? '—'}</Typography>
+              <Typography variant="h3" sx={{
+                fontWeight: 800
+              }}>{stats?.today ?? '—'}</Typography>
               <Typography sx={{ opacity: 0.9, fontWeight: 500 }}>Hoy</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={6} md={3}>
+          <Grid
+            size={{
+              xs: 6,
+              md: 3
+            }}>
             <Paper sx={{ p: 3, textAlign: 'center', background: 'linear-gradient(135deg, #2E86C1 0%, #5499C7 100%)', color: '#fff' }}>
-              <Typography variant="h3" fontWeight={800}>{stats?.week ?? '—'}</Typography>
+              <Typography variant="h3" sx={{
+                fontWeight: 800
+              }}>{stats?.week ?? '—'}</Typography>
               <Typography sx={{ opacity: 0.9, fontWeight: 500 }}>Esta semana</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={6} md={3}>
+          <Grid
+            size={{
+              xs: 6,
+              md: 3
+            }}>
             <Paper sx={{ p: 3, textAlign: 'center', background: 'linear-gradient(135deg, #2471A3 0%, #5DADE2 100%)', color: '#fff' }}>
-              <Typography variant="h3" fontWeight={800}>{stats?.month ?? '—'}</Typography>
+              <Typography variant="h3" sx={{
+                fontWeight: 800
+              }}>{stats?.month ?? '—'}</Typography>
               <Typography sx={{ opacity: 0.9, fontWeight: 500 }}>Este mes</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={6} md={3}>
+          <Grid
+            size={{
+              xs: 6,
+              md: 3
+            }}>
             <Paper sx={{ p: 3, textAlign: 'center', background: 'linear-gradient(135deg, #1A5276 0%, #3498DB 100%)', color: '#fff' }}>
-              <Typography variant="h3" fontWeight={800}>{stats?.total ?? '—'}</Typography>
+              <Typography variant="h3" sx={{
+                fontWeight: 800
+              }}>{stats?.total ?? '—'}</Typography>
               <Typography sx={{ opacity: 0.9, fontWeight: 500 }}>Total</Typography>
             </Paper>
           </Grid>
@@ -142,7 +179,12 @@ export default function VisitsPage() {
 
         {/* Chart */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              mb: 2
+            }}>
             Visitas por día (últimos 14 días)
           </Typography>
           <Box sx={{ width: '100%', height: 240 }}>
@@ -154,12 +196,26 @@ export default function VisitsPage() {
 
         {/* Privacy */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 1
+            }}>
             <Box>
-              <Typography variant="h6" fontWeight={700}>
+              <Typography variant="h6" sx={{
+                fontWeight: 700
+              }}>
                 Privacidad de visitas
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 480 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  maxWidth: 480
+                }}>
                 Al activar esta opción, no aparecerás en la lista de visitas de otros perfiles.
               </Typography>
             </Box>
@@ -179,8 +235,16 @@ export default function VisitsPage() {
 
         {/* Visitors list */}
         <Paper sx={{ p: 3 }}>
-          <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-            <Typography variant="h6" fontWeight={700}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 2
+            }}>
+            <Typography variant="h6" sx={{
+              fontWeight: 700
+            }}>
               Visitantes
             </Typography>
             {!loading && data && (
@@ -195,10 +259,14 @@ export default function VisitsPage() {
           ) : !data || data.visits.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 8, opacity: 0.7 }}>
               <VisibilityIcon sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary">
+              <Typography variant="h6" sx={{
+                color: "text.secondary"
+              }}>
                 Aún no tienes visitas.
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>
                 Cuando alguien vea tu perfil, aparecerá aquí.
               </Typography>
             </Box>
@@ -211,7 +279,11 @@ export default function VisitsPage() {
                     alignItems="center"
                     disableGutters
                     secondaryAction={
-                      <Box display="flex" gap={1}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1
+                        }}>
                         <Button
                           size="small"
                           variant="outlined"
@@ -240,17 +312,32 @@ export default function VisitsPage() {
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-                          <Typography fontWeight={600}>{v.display_name}</Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            flexWrap: "wrap"
+                          }}>
+                          <Typography sx={{
+                            fontWeight: 600
+                          }}>{v.display_name}</Typography>
                           {v.nickname && (
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                              color: "text.secondary"
+                            }}>
                               @{v.nickname}
                             </Typography>
                           )}
                         </Box>
                       }
                       secondary={
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "text.secondary",
+                            mt: 0.5
+                          }}>
                           {formatVisited(v.visited_at)}
                         </Typography>
                       }

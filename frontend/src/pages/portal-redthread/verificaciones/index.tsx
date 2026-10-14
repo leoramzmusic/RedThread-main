@@ -118,9 +118,16 @@ export default function VerificationsPage() {
     <AdminLayout>
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: 4
+            }}>
             <VerifiedUserIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Verificaciones de Identidad
             </Typography>
           </Box>
@@ -190,7 +197,11 @@ export default function VerificationsPage() {
           <DialogContent dividers>
             {selectedVerification && (
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <Typography variant="subtitle1" gutterBottom>Documento:</Typography>
                   <Box 
                     sx={{ 
@@ -211,15 +222,26 @@ export default function VerificationsPage() {
                         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
                       />
                     ) : (
-                      <Typography color="text.secondary">No imagen disponible</Typography>
+                      <Typography sx={{
+                        color: "text.secondary"
+                      }}>No imagen disponible</Typography>
                     )}
                   </Box>
-                  <Typography variant="caption" display="block" mt={1}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "block",
+                      mt: 1
+                    }}>
                     Tipo: {selectedVerification.document_type}
                   </Typography>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <Typography variant="subtitle1" gutterBottom>Datos Extraídos / Manuales:</Typography>
                   
                   <TextField
@@ -238,10 +260,14 @@ export default function VerificationsPage() {
                     value={manualBirthDate}
                     onChange={(e) => setManualBirthDate(e.target.value)}
                     margin="normal"
-                    InputLabelProps={{ shrink: true }}
+                    slotProps={{
+                      inputLabel: { shrink: true }
+                    }}
                   />
                   
-                  <Box mt={4}>
+                  <Box sx={{
+                    mt: 4
+                  }}>
                     <Typography variant="subtitle2" color="error" gutterBottom>
                       Rechazar Solicitud:
                     </Typography>

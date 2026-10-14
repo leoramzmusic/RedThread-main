@@ -41,13 +41,22 @@ export default function AccessibilitySection({
                     />
                 }
                 label={
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <ContrastIcon color="action" />
                         <Box>
-                            <Typography variant="body1" fontWeight={500}>
+                            <Typography variant="body1" sx={{
+                                fontWeight: 500
+                            }}>
                                 Modo Alto Contraste
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Aumenta el contraste de colores para mejorar la legibilidad
                             </Typography>
                         </Box>
@@ -67,13 +76,22 @@ export default function AccessibilitySection({
                     />
                 }
                 label={
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <VoiceIcon color="action" />
                         <Box>
-                            <Typography variant="body1" fontWeight={500}>
+                            <Typography variant="body1" sx={{
+                                fontWeight: 500
+                            }}>
                                 Compatibilidad con Lector de Pantalla
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Optimiza la interfaz para lectores de pantalla
                             </Typography>
                         </Box>
@@ -93,13 +111,22 @@ export default function AccessibilitySection({
                     />
                 }
                 label={
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <KeyboardIcon color="action" />
                         <Box>
-                            <Typography variant="body1" fontWeight={500}>
+                            <Typography variant="body1" sx={{
+                                fontWeight: 500
+                            }}>
                                 Navegación por Teclado Mejorada
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Habilita atajos de teclado y mejora los indicadores de foco
                             </Typography>
                         </Box>
@@ -119,13 +146,22 @@ export default function AccessibilitySection({
                     />
                 }
                 label={
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <MotionIcon color="action" />
                         <Box>
-                            <Typography variant="body1" fontWeight={500}>
+                            <Typography variant="body1" sx={{
+                                fontWeight: 500
+                            }}>
                                 Reducir Movimiento
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>
                                 Minimiza animaciones y transiciones
                             </Typography>
                         </Box>

@@ -42,7 +42,13 @@ export default function AdminMetricas() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -53,22 +59,41 @@ export default function AdminMetricas() {
     <AdminLayout>
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 3
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread')}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Métricas y Analíticas
             </Typography>
           </Box>
 
           <Grid container spacing={3}>
-            <Grid item xs={12} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 3
+              }}>
               <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                 <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}>
                     <Box>
-                      <Typography variant="h3" fontWeight={700} color="white">
+                      <Typography variant="h3" color="white" sx={{
+                        fontWeight: 700
+                      }}>
                         {metricas?.total_usuarios || 0}
                       </Typography>
                       <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
@@ -81,12 +106,23 @@ export default function AdminMetricas() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 3
+              }}>
               <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
                 <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}>
                     <Box>
-                      <Typography variant="h3" fontWeight={700} color="white">
+                      <Typography variant="h3" color="white" sx={{
+                        fontWeight: 700
+                      }}>
                         {metricas?.usuarios_activos || 0}
                       </Typography>
                       <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
@@ -99,12 +135,23 @@ export default function AdminMetricas() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 3
+              }}>
               <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
                 <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}>
                     <Box>
-                      <Typography variant="h3" fontWeight={700} color="white">
+                      <Typography variant="h3" color="white" sx={{
+                        fontWeight: 700
+                      }}>
                         {metricas?.nuevos_usuarios_30d || 0}
                       </Typography>
                       <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
@@ -117,12 +164,23 @@ export default function AdminMetricas() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 3
+              }}>
               <Card sx={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
                 <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}>
                     <Box>
-                      <Typography variant="h3" fontWeight={700} color="white">
+                      <Typography variant="h3" color="white" sx={{
+                        fontWeight: 700
+                      }}>
                         {metricas?.tasa_activacion || 0}%
                       </Typography>
                       <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
@@ -135,12 +193,14 @@ export default function AdminMetricas() {
               </Card>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Paper sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>
                   Métricas Adicionales
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography sx={{
+                  color: "text.secondary"
+                }}>
                   Gráficos y analíticas detalladas - Funcionalidad pendiente de implementación
                 </Typography>
               </Paper>

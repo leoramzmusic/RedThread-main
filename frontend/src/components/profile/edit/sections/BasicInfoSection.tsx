@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Edit as EditIcon,
   VerifiedUser as VerifiedUserIcon,
@@ -104,7 +104,13 @@ export default function EditBasicInfo({
     };
     if (verified) {
       return (
-        <Box display="flex" alignItems="center" gap={0.5} sx={{ mt: 0.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 0.5,
+            mt: 0.5
+          }}>
           <Tooltip title={t("profile.sections.identity.verification.verifiedTooltip")}>
             <Chip
               icon={<VerifiedUserIcon fontSize="small" />}
@@ -170,7 +176,7 @@ export default function EditBasicInfo({
   };
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -184,15 +190,23 @@ export default function EditBasicInfo({
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            pr={2}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              pr: 2
+            }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}>
               <Info color="action" />
-              <Typography variant="h6" fontWeight="600">
+              <Typography variant="h6" sx={{
+                fontWeight: "600"
+              }}>
                 {t("profile.sections.identity.title", "Identidad")}
               </Typography>
             </Box>
@@ -214,7 +228,7 @@ export default function EditBasicInfo({
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <IdentityVerificationContainer
                 control={control}
                 setValue={setValue}
@@ -230,7 +244,7 @@ export default function EditBasicInfo({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Controller
                 name="display_name"
                 control={control}
@@ -284,7 +298,7 @@ export default function EditBasicInfo({
               />
             </Grid>
 
-            <Grid item xs={12} sx={{ mt: 1.5 }}>
+            <Grid sx={{ mt: 1.5 }} size={12}>
               <UsernameEditor
                 currentUsername={profile.nickname || ""}
                 onUsernameChange={(newUsername) =>
@@ -293,8 +307,14 @@ export default function EditBasicInfo({
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <Box display="flex" gap={2} alignItems="flex-start" flexWrap="wrap">
+            <Grid size={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  alignItems: "flex-start",
+                  flexWrap: "wrap"
+                }}>
                 <Controller
                   name="email"
                   control={control}
@@ -307,7 +327,12 @@ export default function EditBasicInfo({
                     />
                   )}
                 />
-                <Box display="flex" alignItems="flex-start" sx={{ mt: 0.5 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    mt: 0.5
+                  }}>
                   {renderVerifyControl({
                     verified: emailVerified,
                     verifying: isVerifyingEmail,
@@ -317,8 +342,14 @@ export default function EditBasicInfo({
               </Box>
             </Grid>
 
-            <Grid item xs={12}>
-              <Box display="flex" gap={2} alignItems="flex-start" flexWrap="wrap">
+            <Grid size={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  alignItems: "flex-start",
+                  flexWrap: "wrap"
+                }}>
                 <Autocomplete size="small"
                   options={COUNTRY_CODES}
                   autoHighlight
@@ -368,9 +399,13 @@ export default function EditBasicInfo({
                         "profile.country_placeholder",
                         "Buscar por país o código...",
                       )}
-                      inputProps={{
-                        ...params.inputProps,
-                        autoComplete: "new-password",
+                      slotProps={{
+                        ...params.slotProps,
+
+                        htmlInput: {
+                          ...params.slotProps.htmlInput,
+                          autoComplete: "new-password",
+                        }
                       }}
                     />
                   )}
@@ -387,7 +422,12 @@ export default function EditBasicInfo({
                     "Puedes usar este número para iniciar sesión en tu cuenta",
                   )}
                 />
-                <Box display="flex" alignItems="flex-start" sx={{ mt: 0.5 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    mt: 0.5
+                  }}>
                   {renderVerifyControl({
                     verified: phoneVerified,
                     verifying: isVerifyingPhone,

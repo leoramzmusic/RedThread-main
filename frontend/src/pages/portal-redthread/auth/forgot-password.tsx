@@ -62,10 +62,22 @@ export default function AdminForgotPassword() {
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
           <AdminPanelSettings sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
-          <Typography variant="h5" align="center" fontWeight={700} color="text.primary">
+          <Typography
+            variant="h5"
+            align="center"
+            sx={{
+              fontWeight: 700,
+              color: "text.primary"
+            }}>
             Recuperar Contraseña
           </Typography>
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{
+              color: "text.secondary",
+              mt: 1
+            }}>
             Portal de Administración
           </Typography>
         </Box>
@@ -92,7 +104,12 @@ export default function AdminForgotPassword() {
           </Box>
         ) : (
           <form onSubmit={handleSubmit}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 3
+              }}>
               Ingresa tu correo electrónico administrativo y te enviaremos instrucciones para restablecer tu contraseña.
             </Typography>
 

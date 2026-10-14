@@ -76,17 +76,24 @@ const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
             onClose={submitting ? undefined : onClose}
             maxWidth="xs"
             fullWidth
-            PaperProps={{
-                sx: {
-                    borderRadius: 4,
-                    p: 2,
-                    bgcolor: 'background.paper',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-                    border: '1px solid rgba(255,255,255,0.05)'
+            slotProps={{
+                paper: {
+                    sx: {
+                        borderRadius: 4,
+                        p: 2,
+                        bgcolor: 'background.paper',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                        border: '1px solid rgba(255,255,255,0.05)'
+                    }
                 }
             }}
         >
-            <Box textAlign="center" mb={2} mt={1}>
+            <Box
+                sx={{
+                    textAlign: "center",
+                    mb: 2,
+                    mt: 1
+                }}>
                 <Box
                     sx={{
                         display: 'inline-flex',
@@ -99,10 +106,14 @@ const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
                 >
                     <LockResetIcon fontSize="large" />
                 </Box>
-                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                <Typography variant="h5" gutterBottom sx={{
+                    fontWeight: "bold"
+                }}>
                     Restablecer Contraseña
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                }}>
                     Ingresa una nueva contraseña segura para el empleado.
                 </Typography>
             </Box>
@@ -117,19 +128,21 @@ const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             variant="outlined"
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <KeyIcon color="action" fontSize="small" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small">
-                                            {showPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <KeyIcon color="action" fontSize="small" />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small">
+                                                {showPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
                             }}
                         />
 
@@ -140,24 +153,32 @@ const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             variant="outlined"
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <LockIcon color="action" fontSize="small" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end" size="small">
-                                            {showConfirm ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <LockIcon color="action" fontSize="small" />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end" size="small">
+                                                {showConfirm ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
                             }}
                         />
 
                         <Box>
-                            <Box display="flex" flexWrap="wrap" gap={1} justifyContent="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: 1,
+                                    justifyContent: "center"
+                                }}>
                                 {rules.map((rule, index) => {
                                     const met = rule.test(password);
                                     return (

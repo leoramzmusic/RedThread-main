@@ -17,7 +17,7 @@ import {
     DarkMode as DarkModeIcon,
     Palette as PaletteIcon,
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { useRouter } from 'next/router';
 import { alpha, useTheme } from '@mui/material/styles';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -184,9 +184,17 @@ export default function AppearanceSection({
         }}>
             {/* Theme Selection */}
             <Box sx={glassCard}>
-                <Box display="flex" alignItems="center" gap={1} mb={2}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 2
+                    }}>
                     <PaletteIcon sx={{ color: 'primary.main' }} />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" sx={{
+                        fontWeight: 600
+                    }}>
                         {t('settings_appearance_visualTheme')}
                     </Typography>
                 </Box>
@@ -195,7 +203,13 @@ export default function AppearanceSection({
                         const isActive = (settings?.visual_theme || 'redThread') === themeItem.id;
                         const accentColor = themeItem.color || primary;
                         return (
-                            <Grid item xs={6} sm={4} md={3} key={themeItem.id}>
+                            <Grid
+                                key={themeItem.id}
+                                size={{
+                                    xs: 6,
+                                    sm: 4,
+                                    md: 3
+                                }}>
                                 <Box
                                     onClick={() => handleThemeSelect(themeItem.id)}
                                     sx={{
@@ -226,7 +240,9 @@ export default function AppearanceSection({
                                         backdropFilter: 'blur(6px)',
                                         WebkitBackdropFilter: 'blur(6px)',
                                     }}>
-                                        <Typography variant="caption" fontWeight={600}>
+                                        <Typography variant="caption" sx={{
+                                            fontWeight: 600
+                                        }}>
                                             {themeItem.label}
                                         </Typography>
                                     </Box>
@@ -239,15 +255,23 @@ export default function AppearanceSection({
 
             {/* Dark Mode */}
             <Box sx={glassCard}>
-                <Box display="flex" alignItems="center" gap={1} mb={2.5}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 2.5
+                    }}>
                     <DarkModeIcon sx={{ color: 'primary.main' }} />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" sx={{
+                        fontWeight: 600
+                    }}>
                         {t('settings_appearance_darkMode')}
                     </Typography>
                 </Box>
 
                 <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <Box
                             role="button"
                             tabIndex={0}
@@ -280,13 +304,19 @@ export default function AppearanceSection({
                                     transition: 'all 0.3s ease',
                                 }}
                             />
-                            <Typography variant="body2" fontWeight={600} mt={1} color={!isDarkMode ? 'text.primary' : 'text.secondary'}>
+                            <Typography
+                                variant="body2"
+                                color={!isDarkMode ? 'text.primary' : 'text.secondary'}
+                                sx={{
+                                    fontWeight: 600,
+                                    mt: 1
+                                }}>
                                 {t('settings_appearance_lightMode')}
                             </Typography>
                         </Box>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <Box
                             role="button"
                             tabIndex={0}
@@ -319,35 +349,64 @@ export default function AppearanceSection({
                                     transition: 'all 0.3s ease',
                                 }}
                             />
-                            <Typography variant="body2" fontWeight={600} mt={1} color={isDarkMode ? 'text.primary' : 'text.secondary'}>
+                            <Typography
+                                variant="body2"
+                                color={isDarkMode ? 'text.primary' : 'text.secondary'}
+                                sx={{
+                                    fontWeight: 600,
+                                    mt: 1
+                                }}>
                                 {t('settings_appearance_darkMode')}
                             </Typography>
                         </Box>
                     </Grid>
                 </Grid>
 
-                <Typography variant="body2" fontWeight={600} color={isDarkMode ? 'text.primary' : 'primary'} sx={{ mt: 2.5 }}>
+                <Typography
+                    variant="body2"
+                    color={isDarkMode ? 'text.primary' : 'primary'}
+                    sx={{
+                        fontWeight: 600,
+                        mt: 2.5
+                    }}>
                     {isDarkMode
                         ? t('settings_appearance_activateLight')
                         : t('settings_appearance_activateDark')}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                }}>
                     {isDarkMode ? t('settings_appearance_darkModeOn') : t('settings_appearance_darkModeOff')}
                 </Typography>
             </Box>
 
             {/* Font Size */}
             <Box sx={glassCard}>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1
+                    }}>
                     <TextFieldsIcon sx={{ color: 'primary.main' }} />
-                    <Typography variant="h6" fontWeight={600}>{t('settings_appearance_fontSize')}</Typography>
+                    <Typography variant="h6" sx={{
+                        fontWeight: 600
+                    }}>{t('settings_appearance_fontSize')}</Typography>
                 </Box>
 
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        mb: 2
+                    }}>
                     {t('settings_appearance_fontSizeHint', 'Ajusta el tamaño de texto de toda la interfaz')}
                 </Typography>
 
-                <Stack direction="row" spacing={1} mb={2.5}>
+                <Stack direction="row" spacing={1} sx={{
+                    mb: 2.5
+                }}>
                     {FONT_PRESETS.map((preset) => {
                         const isPreset = fontValue === preset.value;
                         return (
@@ -374,7 +433,9 @@ export default function AppearanceSection({
                                     },
                                 }}
                             >
-                                <Typography variant="caption" fontWeight={isPreset ? 700 : 600} color={isPreset ? 'primary' : 'text.secondary'}>
+                                <Typography variant="caption" color={isPreset ? 'primary' : 'text.secondary'} sx={{
+                                    fontWeight: isPreset ? 700 : 600
+                                }}>
                                     {preset.label}
                                 </Typography>
                             </Box>
@@ -382,7 +443,13 @@ export default function AppearanceSection({
                     })}
                 </Stack>
 
-                <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 2 }}>
+                <Stack
+                    direction="row"
+                    spacing={3}
+                    sx={{
+                        alignItems: "center",
+                        mb: 2
+                    }}>
                     <Slider
                         value={fontValue}
                         min={10}
@@ -425,19 +492,6 @@ export default function AppearanceSection({
                         value={fontValue}
                         onChange={(e) => handleFontSizeChange(e, e.target.value)}
                         className="no-scale"
-                        inputProps={{
-                            min: 10,
-                            max: 40,
-                            className: 'no-scale'
-                        }}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end" className="no-scale">
-                                    <Typography className="no-scale" sx={{ fontSize: '14px !important' }}>px</Typography>
-                                </InputAdornment>
-                            ),
-                            className: 'no-scale'
-                        }}
                         sx={{
                             width: 96,
                             '& .MuiOutlinedInput-root': {
@@ -454,7 +508,22 @@ export default function AppearanceSection({
                                 },
                             },
                         }}
-                    />
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end" className="no-scale">
+                                        <Typography className="no-scale" sx={{ fontSize: '14px !important' }}>px</Typography>
+                                    </InputAdornment>
+                                ),
+                                className: 'no-scale'
+                            },
+
+                            htmlInput: {
+                                min: 10,
+                                max: 40,
+                                className: 'no-scale'
+                            }
+                        }} />
                 </Stack>
 
                 <Box
@@ -480,7 +549,13 @@ export default function AppearanceSection({
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ff5f57' }} />
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#febc2e' }} />
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#28c840' }} />
-                        <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5, fontWeight: 500 }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "text.secondary",
+                                ml: 0.5,
+                                fontWeight: 500
+                            }}>
                             Vista Previa
                         </Typography>
                     </Box>
@@ -516,16 +591,35 @@ export default function AppearanceSection({
 
             {/* Language Selection */}
             <Box sx={glassCard}>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1
+                    }}>
                     <TranslateIcon sx={{ color: 'primary.main' }} />
-                    <Typography variant="h6" fontWeight={600}>{t('settings_appearance_language')}</Typography>
+                    <Typography variant="h6" sx={{
+                        fontWeight: 600
+                    }}>{t('settings_appearance_language')}</Typography>
                 </Box>
 
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        mb: 2
+                    }}>
                     {t('settings_appearance_languageHint', 'Idioma de la interfaz')}
                 </Typography>
 
-                <Box display="flex" alignItems="center" gap={1.5} mb={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        mb: 1
+                    }}>
                     <Box
                         sx={{
                             width: 46,
@@ -541,7 +635,13 @@ export default function AppearanceSection({
                             boxShadow: `0 0 12px ${alpha(primary, 0.15)}`,
                         }}
                     >
-                        <Typography variant="h6" fontWeight={800} sx={{ color: 'primary.main', letterSpacing: '0.5px' }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 800,
+                                color: 'primary.main',
+                                letterSpacing: '0.5px'
+                            }}>
                             {langValue.slice(0, 2).toUpperCase()}
                         </Typography>
                     </Box>
@@ -573,8 +673,20 @@ export default function AppearanceSection({
                         >
 {supportedLanguages.map((lang) => (
                             <MenuItem key={lang.code} value={lang.code} sx={{ py: 1.25, px: 1.5 }}>
-                                <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" gap={2}>
-                                    <Typography variant="body2" fontWeight={600} color="text.primary">
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        gap: 2
+                                    }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            fontWeight: 600,
+                                            color: "text.primary"
+                                        }}>
                                         {lang.label}
                                     </Typography>
                                     <Box
@@ -592,14 +704,13 @@ export default function AppearanceSection({
                                     >
                                         <Typography
                                             variant="caption"
-                                            fontWeight={700}
                                             sx={{
+                                                fontWeight: 700,
                                                 color: '#D32F2F',
                                                 textShadow: '0 0 6px rgba(211,47,47,0.6)',
                                                 letterSpacing: '1px',
-                                                lineHeight: 1,
-                                            }}
-                                        >
+                                                lineHeight: 1
+                                            }}>
                                             {lang.sample}
                                         </Typography>
                                     </Box>
@@ -610,7 +721,9 @@ export default function AppearanceSection({
                     </Box>
                 </Box>
 
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                }}>
                     {t('settings_appearance_languageNote', '{{count}} idiomas disponibles', { count: supportedLanguages.length })}
                 </Typography>
             </Box>

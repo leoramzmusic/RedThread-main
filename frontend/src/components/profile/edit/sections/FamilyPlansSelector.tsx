@@ -22,7 +22,7 @@ import {
   LockOutlined,
 } from "@mui/icons-material";
 import { Controller, Control, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   FAMILY_PLAN_OPTIONS,
   CHILD_ACCEPTANCE_OPTIONS,
@@ -108,7 +108,11 @@ export default function FamilyPlansSelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           <ChildCare sx={{ mr: 1.5, color: familyColor }} />
           <Typography
             variant="subtitle2"
@@ -148,9 +152,11 @@ export default function FamilyPlansSelector({
           {/* Subtitle */}
           <Typography
             variant="body2"
-            color="text.secondary"
-            sx={{ mb: 2, fontWeight: 500 }}
-          >
+            sx={{
+              color: "text.secondary",
+              mb: 2,
+              fontWeight: 500
+            }}>
             {t(
               "profile.additional.family.question",
               "¿Cuál es tu postura actual sobre tener hijos?",
@@ -171,9 +177,10 @@ export default function FamilyPlansSelector({
           >
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ fontStyle: "italic" }}
-            >
+              sx={{
+                color: "text.secondary",
+                fontStyle: "italic"
+              }}>
               {t(
                 "profile.additional.family.tip",
                 "💡 Tu decisión sobre tener hijos es parte de tu camino. Aquí puedes expresarla con libertad.",
@@ -191,7 +198,12 @@ export default function FamilyPlansSelector({
                   {FAMILY_PLAN_OPTIONS.map((option, index) => {
                     const isSelected = field.value === option.value;
                     return (
-                      <Grid item xs={12} sm={6} key={option.value}>
+                      <Grid
+                        key={option.value}
+                        size={{
+                          xs: 12,
+                          sm: 6
+                        }}>
                         <Tooltip
                           title={planDesc(option.value, option.description)}
                           arrow
@@ -254,8 +266,10 @@ export default function FamilyPlansSelector({
                             </Box>
                             <Typography
                               variant="body1"
-                              fontWeight={isSelected ? 700 : 500}
                               color={isSelected ? familyColor : "text.primary"}
+                              sx={{
+                                fontWeight: isSelected ? 700 : 500
+                              }}
                             >
                               {planLabel(option.value, option.label)}
                             </Typography>
@@ -357,10 +371,11 @@ export default function FamilyPlansSelector({
                       <Stack
                         direction="row"
                         spacing={1.5}
-                        flexWrap="wrap"
                         useFlexGap
-                        sx={{ gap: 1.5 }}
-                      >
+                        sx={{
+                          flexWrap: "wrap",
+                          gap: 1.5
+                        }}>
                         {CHILD_ACCEPTANCE_OPTIONS.map((option) => {
                           const isSelected =
                             acceptanceField.value === option.value;

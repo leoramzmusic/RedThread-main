@@ -8,7 +8,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { AutoAwesome, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import LifestyleInterests from "../../LifestyleInterests";
 
 interface InterestsSectionProps {
@@ -24,7 +24,7 @@ export default function InterestsSection({
 }: InterestsSectionProps) {
   const { t } = useTranslation("common");
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -45,7 +45,12 @@ export default function InterestsSection({
           }
           sx={{ px: isDiscovery ? 1 : 3, py: 1 }}
         >
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <AutoAwesome
               sx={{ color: isDiscovery ? "white" : "action.active" }}
             />

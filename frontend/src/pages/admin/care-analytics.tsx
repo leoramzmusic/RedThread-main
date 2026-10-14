@@ -17,8 +17,8 @@ import {
 } from '@mui/icons-material';
 import AdminLayout from '../../components/layout/AdminLayout';
 import apiClient from '../../services/api';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next/pages';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 
 interface MetricCardProps {
     title: string;
@@ -37,10 +37,17 @@ function MetricCard({ title, value, change, trend, icon, color }: MetricCardProp
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <Box>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <Typography variant="body2" gutterBottom sx={{
+                            color: "text.secondary"
+                        }}>
                             {title}
                         </Typography>
-                        <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 700,
+                                mb: 1
+                            }}>
                             {value}
                         </Typography>
                         {change && (
@@ -117,17 +124,26 @@ export default function CareAnalytics() {
         <AdminLayout>
             <Container maxWidth="lg" sx={{ py: 4 }}>
                 <Box sx={{ mb: 4 }}>
-                    <Typography variant="h4" fontWeight={700} gutterBottom>
+                    <Typography variant="h4" gutterBottom sx={{
+                        fontWeight: 700
+                    }}>
                         CARE Engine Analytics
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body1" sx={{
+                        color: "text.secondary"
+                    }}>
                         Monitor recommendation quality, engagement, and fairness metrics
                     </Typography>
                 </Box>
 
                 {/* Metric Cards */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 3
+                        }}>
                         <MetricCard
                             title="Match Rate"
                             value={`${(engagement.match_rate * 100).toFixed(1)}%`}
@@ -137,7 +153,12 @@ export default function CareAnalytics() {
                             color="#FF4D4F"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 3
+                        }}>
                         <MetricCard
                             title="Message Rate"
                             value={`${(engagement.message_rate * 100).toFixed(1)}%`}
@@ -147,7 +168,12 @@ export default function CareAnalytics() {
                             color="#2196F3"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 3
+                        }}>
                         <MetricCard
                             title="Total Matches"
                             value={engagement.total_matches?.toString() || '0'}
@@ -157,7 +183,12 @@ export default function CareAnalytics() {
                             color="#4CAF50"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 3
+                        }}>
                         <MetricCard
                             title="Avg Dwell Time"
                             value={`${((engagement.avg_dwell_time || 0) / 1000).toFixed(1)}s`}
@@ -172,40 +203,80 @@ export default function CareAnalytics() {
                 {/* Diversity Distribution */}
                 <Card sx={{ mb: 4, bgcolor: 'background.paper', borderRadius: 3 }}>
                     <CardContent>
-                        <Typography variant="h6" fontWeight={700} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 700
+                        }}>
                             Diversity Distribution
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 3
+                            }}>
                             Recommendations across popularity buckets
                         </Typography>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={4}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    md: 4
+                                }}>
                                 <Box sx={{ p: 2, bgcolor: 'rgba(76, 175, 80, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Low Popularity
                                     </Typography>
-                                    <Typography variant="h5" fontWeight={700} color="#4CAF50">
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "#4CAF50"
+                                        }}>
                                         {((diversity.low_pop || 0) * 100).toFixed(1)}%
                                     </Typography>
                                 </Box>
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    md: 4
+                                }}>
                                 <Box sx={{ p: 2, bgcolor: 'rgba(33, 150, 243, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Mid Popularity
                                     </Typography>
-                                    <Typography variant="h5" fontWeight={700} color="#2196F3">
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "#2196F3"
+                                        }}>
                                         {((diversity.mid_pop || 0) * 100).toFixed(1)}%
                                     </Typography>
                                 </Box>
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid
+                                size={{
+                                    xs: 12,
+                                    md: 4
+                                }}>
                                 <Box sx={{ p: 2, bgcolor: 'rgba(255, 152, 0, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         High Popularity
                                     </Typography>
-                                    <Typography variant="h5" fontWeight={700} color="#FF9800">
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: "#FF9800"
+                                        }}>
                                         {((diversity.high_pop || 0) * 100).toFixed(1)}%
                                     </Typography>
                                 </Box>
@@ -218,10 +289,17 @@ export default function CareAnalytics() {
                 {metrics?.active_experiments && metrics.active_experiments.length > 0 && (
                     <Card sx={{ bgcolor: 'background.paper', borderRadius: 3 }}>
                         <CardContent>
-                            <Typography variant="h6" fontWeight={700} gutterBottom>
+                            <Typography variant="h6" gutterBottom sx={{
+                                fontWeight: 700
+                            }}>
                                 Active A/B Tests
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    color: "text.secondary",
+                                    mb: 3
+                                }}>
                                 Comparing CARE Engine variants
                             </Typography>
 
@@ -229,15 +307,26 @@ export default function CareAnalytics() {
                                 <Box key={exp.experiment_id} sx={{ mb: 2 }}>
                                     <Grid container spacing={2}>
                                         {Object.entries(exp.variants || {}).map(([variant, data]: [string, any]) => (
-                                            <Grid item xs={12} md={6} key={variant}>
+                                            <Grid
+                                                key={variant}
+                                                size={{
+                                                    xs: 12,
+                                                    md: 6
+                                                }}>
                                                 <Box sx={{ p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2 }}>
-                                                    <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                                                    <Typography variant="subtitle2" gutterBottom sx={{
+                                                        fontWeight: 600
+                                                    }}>
                                                         {variant.toUpperCase()}
                                                     </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
+                                                    <Typography variant="body2" sx={{
+                                                        color: "text.secondary"
+                                                    }}>
                                                         Match Rate: <strong>{(data.match_rate * 100).toFixed(1)}%</strong>
                                                     </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
+                                                    <Typography variant="body2" sx={{
+                                                        color: "text.secondary"
+                                                    }}>
                                                         Users: <strong>{data.users}</strong>
                                                     </Typography>
                                                 </Box>

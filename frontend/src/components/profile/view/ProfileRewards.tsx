@@ -61,19 +61,32 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                 }}
             >
                 <TrophyIcon sx={{ color: '#ffd700', fontSize: 24 }} />
-                <Typography variant="h6" fontWeight="bold" color="white">
+                <Typography variant="h6" color="white" sx={{
+                    fontWeight: "bold"
+                }}>
                     Recompensas y Logros
                 </Typography>
             </Box>
 
             <CardContent>
                 {/* Level Progress */}
-                <Box mb={4}>
-                    <Box display="flex" justifyContent="space-between" mb={1}>
-                        <Typography variant="subtitle2" color="rgba(255,255,255,0.7)">
+                <Box sx={{
+                    mb: 4
+                }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            mb: 1
+                        }}>
+                        <Typography variant="subtitle2" sx={{
+                            color: "rgba(255,255,255,0.7)"
+                        }}>
                             Nivel {level}
                         </Typography>
-                        <Typography variant="caption" color="rgba(255,255,255,0.5)">
+                        <Typography variant="caption" sx={{
+                            color: "rgba(255,255,255,0.5)"
+                        }}>
                             {experience}/100 XP
                         </Typography>
                     </Box>
@@ -93,11 +106,22 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                 </Box>
 
                 {/* Rewards Grid */}
-                <Typography variant="subtitle1" fontWeight="600" color="white" gutterBottom mb={2}>
+                <Typography
+                    variant="subtitle1"
+                    color="white"
+                    gutterBottom
+                    sx={{
+                        fontWeight: "600",
+                        mb: 2
+                    }}>
                     Insignias
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={6} sm={4}>
+                    <Grid
+                        size={{
+                            xs: 6,
+                            sm: 4
+                        }}>
                         <Tooltip title="Completaste tu perfil">
                             <Box
                                 sx={{
@@ -118,7 +142,13 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                                 }}
                             >
                                 <BadgeIcon sx={{ color: '#ffd700', fontSize: 32 }} />
-                                <Typography variant="caption" color="#ffd700" textAlign="center" fontWeight="bold">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "#ffd700",
+                                        textAlign: "center",
+                                        fontWeight: "bold"
+                                    }}>
                                     Perfil Top
                                 </Typography>
                             </Box>
@@ -126,7 +156,11 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                     </Grid>
 
                     {/* Placeholder for more badges */}
-                    <Grid item xs={6} sm={4}>
+                    <Grid
+                        size={{
+                            xs: 6,
+                            sm: 4
+                        }}>
                         <Box
                             sx={{
                                 p: 2,
@@ -141,7 +175,12 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                                 justifyContent: 'center'
                             }}
                         >
-                            <Typography variant="caption" color="rgba(255,255,255,0.3)" textAlign="center">
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "rgba(255,255,255,0.3)",
+                                    textAlign: "center"
+                                }}>
                                 Próximo logro
                             </Typography>
                         </Box>
@@ -149,8 +188,17 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                 </Grid>
 
                 {/* Recent Activity / Logros */}
-                <Box mt={4}>
-                    <Typography variant="subtitle1" fontWeight="600" color="white" gutterBottom mb={2}>
+                <Box sx={{
+                    mt: 4
+                }}>
+                    <Typography
+                        variant="subtitle1"
+                        color="white"
+                        gutterBottom
+                        sx={{
+                            fontWeight: "600",
+                            mb: 2
+                        }}>
                         Logros Recientes
                     </Typography>
                     <Stack spacing={1}>
@@ -183,10 +231,14 @@ export default function ProfileRewards({ profile }: ProfileRewardsProps) {
                                     <StarIcon sx={{ color: '#4dabf5', fontSize: 18 }} />
                                 </Box>
                                 <Box>
-                                    <Typography variant="body2" color="white" fontWeight="500">
+                                    <Typography variant="body2" color="white" sx={{
+                                        fontWeight: "500"
+                                    }}>
                                         {reward.title}
                                     </Typography>
-                                    <Typography variant="caption" color="rgba(255,255,255,0.5)">
+                                    <Typography variant="caption" sx={{
+                                        color: "rgba(255,255,255,0.5)"
+                                    }}>
                                         {reward.description}
                                     </Typography>
                                 </Box>

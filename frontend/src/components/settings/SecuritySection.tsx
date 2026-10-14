@@ -37,7 +37,7 @@ import {
     Lock as LockIcon,
     Smartphone as SmartphoneIcon,
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface SecuritySectionProps {
     settings: any;
@@ -195,8 +195,19 @@ export default function SecuritySection({
         <Stack spacing={3}>
             {/* 2FA Section */}
             <Paper sx={cardStyle}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: 2
+                    }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <SmartphoneIcon sx={{ color: 'text.secondary' }} />
                         <Box>
                             <Typography sx={sectionTitleStyle}>
@@ -222,7 +233,12 @@ export default function SecuritySection({
                 </Box>
 
                 {twoFactorEnabled && (
-                    <Box mt={3} pt={3} borderTop="1px solid rgba(255,255,255,0.05)">
+                    <Box
+                        sx={{
+                            mt: 3,
+                            pt: 3,
+                            borderTop: "1px solid rgba(255,255,255,0.05)"
+                        }}>
                         <FormControl component="fieldset" fullWidth>
                             <FormLabel component="legend" sx={{ mb: 2, color: 'text.secondary', fontSize: '0.85rem' }}>
                                 {t('settings_security_2fa_method')}
@@ -251,15 +267,24 @@ export default function SecuritySection({
                                                 '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' }
                                             }}
                                             label={
-                                                <Box display="flex" alignItems="center" gap={2}>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 2
+                                                    }}>
                                                     <Box sx={{ color: twoFactorMethod === method.value ? 'text.primary' : 'text.secondary' }}>
                                                         {method.icon}
                                                     </Box>
                                                     <Box>
-                                                        <Typography variant="body2" fontWeight={500}>
+                                                        <Typography variant="body2" sx={{
+                                                            fontWeight: 500
+                                                        }}>
                                                             {method.label}
                                                         </Typography>
-                                                        <Typography variant="caption" color="text.secondary">
+                                                        <Typography variant="caption" sx={{
+                                                            color: "text.secondary"
+                                                        }}>
                                                             {method.desc}
                                                         </Typography>
                                                     </Box>
@@ -295,8 +320,19 @@ export default function SecuritySection({
 
             {/* Change Password Section */}
             <Paper sx={cardStyle}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={showPasswordForm ? 2 : 0}>
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: showPasswordForm ? 2 : 0
+                    }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <LockIcon sx={{ color: 'text.secondary' }} />
                         <Box>
                             <Typography sx={sectionTitleStyle}>
@@ -319,7 +355,14 @@ export default function SecuritySection({
                 </Box>
 
                 {showPasswordForm && (
-                    <Box component="form" onSubmit={handlePasswordChange} mt={3} pt={3} borderTop="1px solid rgba(255,255,255,0.05)">
+                    <Box
+                        component="form"
+                        onSubmit={handlePasswordChange}
+                        sx={{
+                            mt: 3,
+                            pt: 3,
+                            borderTop: "1px solid rgba(255,255,255,0.05)"
+                        }}>
                         <Stack spacing={2.5}>
                             {passwordStatus.type && (
                                 <Alert
@@ -345,21 +388,23 @@ export default function SecuritySection({
                                 required
                                 size="small"
                                 helperText={t('settings_security_password_error_complexity')}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowNewPassword(!showNewPassword)}
-                                                edge="end"
-                                                size="small"
-                                                sx={{ color: 'rgba(255,255,255,0.5)' }}
-                                            >
-                                                {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
                                 sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'rgba(255,255,255,0.02)' } }}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                                    edge="end"
+                                                    size="small"
+                                                    sx={{ color: 'rgba(255,255,255,0.5)' }}
+                                                >
+                                                    {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }
+                                }}
                             />
 
                             <TextField
@@ -370,24 +415,31 @@ export default function SecuritySection({
                                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                                 required
                                 size="small"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                edge="end"
-                                                size="small"
-                                                sx={{ color: 'rgba(255,255,255,0.5)' }}
-                                            >
-                                                {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
                                 sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'rgba(255,255,255,0.02)' } }}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    edge="end"
+                                                    size="small"
+                                                    sx={{ color: 'rgba(255,255,255,0.5)' }}
+                                                >
+                                                    {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }
+                                }}
                             />
 
-                            <Box display="flex" gap={2} pt={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2,
+                                    pt: 1
+                                }}>
                                 <Button
                                     type="submit"
                                     variant="contained"
@@ -417,8 +469,19 @@ export default function SecuritySection({
 
             {/* Account Suspension */}
             <Paper sx={cardStyle}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: 2
+                    }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <SuspendIcon sx={{ color: 'text.secondary' }} />
                         <Box>
                             <Typography sx={sectionTitleStyle}>
@@ -439,7 +502,12 @@ export default function SecuritySection({
                     </Button>
                 </Box>
 
-                <Box mt={3} pt={3} borderTop="1px solid rgba(255,255,255,0.05)">
+                <Box
+                    sx={{
+                        mt: 3,
+                        pt: 3,
+                        borderTop: "1px solid rgba(255,255,255,0.05)"
+                    }}>
                     <FormControl fullWidth>
                         <FormLabel sx={{ mb: 1, color: 'text.secondary', fontSize: '0.85rem' }}>
                             {t('settings_security_suspend_label')}
@@ -477,8 +545,19 @@ export default function SecuritySection({
                     }
                 }}
             >
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Box display="flex" alignItems="center" gap={1.5}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: 2
+                    }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <DeleteIcon sx={{ color: 'text.secondary' }} />
                         <Box>
                             <Typography sx={{ ...sectionTitleStyle, color: 'text.primary' }}>
@@ -590,13 +669,19 @@ export default function SecuritySection({
                                     />
                                 }
                                 label={
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         {t('settings_security_delete_checkbox')}
                                     </Typography>
                                 }
                             />
 
-                            <Box display="flex" gap={2}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2
+                                }}>
                                 <Button
                                     variant="contained"
                                     onClick={handleDelete}

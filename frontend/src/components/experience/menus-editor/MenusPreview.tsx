@@ -112,12 +112,16 @@ export default function MenusPreview({ metadata, ctx, device, onCtxChange, onDev
           label="Energía social"
           value={ctx.energy}
           onChange={(e) => onCtxChange({ energy: Number(e.target.value) })}
-          inputProps={{ min: 1, max: 5 }}
           sx={{ width: 130 }}
+          slotProps={{
+            htmlInput: { min: 1, max: 5 }
+          }}
         />
       </Box>
 
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" sx={{
+        color: "text.secondary"
+      }}>
         {visible.size} de {TOTAL_ITEMS} visibles
       </Typography>
 

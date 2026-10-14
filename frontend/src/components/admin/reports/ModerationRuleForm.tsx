@@ -46,12 +46,21 @@ const ModerationRuleForm: React.FC<ModerationRuleFormProps> = ({ onSubmit, loadi
     return (
         <Paper component="form" onSubmit={handleSubmit} sx={{ p: 3, mb: 4 }}>
             <Typography variant="h6" gutterBottom>Nueva Regla de Automatización</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 Define disparadores para acciones automáticas basadas en el comportamiento de los usuarios.
             </Typography>
 
             <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <TextField
                         fullWidth
                         label="Nombre de la regla"
@@ -61,7 +70,11 @@ const ModerationRuleForm: React.FC<ModerationRuleFormProps> = ({ onSubmit, loadi
                         required
                     />
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}>
                     <FormControl fullWidth>
                         <InputLabel>Disparador</InputLabel>
                         <Select value={triggerType} label="Disparador" onChange={(e) => setTriggerType(e.target.value)}>
@@ -70,7 +83,11 @@ const ModerationRuleForm: React.FC<ModerationRuleFormProps> = ({ onSubmit, loadi
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}>
                     <FormControl fullWidth>
                         <InputLabel>Categoría (Opcional)</InputLabel>
                         <Select value={category} label="Categoría (Opcional)" onChange={(e) => setCategory(e.target.value)}>
@@ -82,7 +99,11 @@ const ModerationRuleForm: React.FC<ModerationRuleFormProps> = ({ onSubmit, loadi
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}>
                     <Typography gutterBottom variant="subtitle2">Umbral: {threshold} denuncias</Typography>
                     <Slider
                         value={threshold}
@@ -94,7 +115,11 @@ const ModerationRuleForm: React.FC<ModerationRuleFormProps> = ({ onSubmit, loadi
                     />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}>
                     <FormControl fullWidth>
                         <InputLabel>Acción Automática</InputLabel>
                         <Select value={action} label="Acción Automática" onChange={(e) => setAction(e.target.value)}>
@@ -106,7 +131,12 @@ const ModerationRuleForm: React.FC<ModerationRuleFormProps> = ({ onSubmit, loadi
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={3} sx={{ display: 'flex', alignItems: 'flex-end' }}>
+                <Grid
+                    sx={{ display: 'flex', alignItems: 'flex-end' }}
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}>
                     <Button
                         fullWidth
                         type="submit"

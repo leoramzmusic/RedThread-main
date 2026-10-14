@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import apiClient from '../../services/api';
 import EmailIcon from '@mui/icons-material/Email';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function ForgotPasswordForm() {
@@ -49,7 +49,11 @@ export default function ForgotPasswordForm() {
                     <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
                         Revisa tu bandeja de entrada
                     </Typography>
-                    <Typography color="text.secondary" paragraph>
+                    <Typography
+                        sx={{
+                            color: "text.secondary",
+                            marginBottom: "16px"
+                        }}>
                         Si el correo <strong>{email}</strong> está registrado, recibirás un enlace para restablecer tu contraseña en unos momentos.
                     </Typography>
                     <Box sx={{ mt: 4 }}>
@@ -70,7 +74,12 @@ export default function ForgotPasswordForm() {
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 3 }}>
+            <Typography
+                variant="body1"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 Ingresa tu correo electrónico para recibir instrucciones para recuperar tu cuenta.
             </Typography>
 
@@ -88,11 +97,13 @@ export default function ForgotPasswordForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                InputProps={{
-                    startAdornment: <EmailIcon sx={{ color: 'action.active', mr: 1 }} />,
-                }}
                 helperText="Usa el correo con el que te registraste"
                 sx={{ mb: 3 }}
+                slotProps={{
+                    input: {
+                        startAdornment: <EmailIcon sx={{ color: 'action.active', mr: 1 }} />,
+                    }
+                }}
             />
 
             <Button

@@ -86,7 +86,9 @@ export default function NotificationPanel({ onClose, onUpdateUnreadCount }: Noti
     <Box sx={{ width: 380, height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="h6" fontWeight={700}>
+        <Typography variant="h6" sx={{
+          fontWeight: 700
+        }}>
           Notificaciones
         </Typography>
         <Box>
@@ -131,7 +133,9 @@ export default function NotificationPanel({ onClose, onUpdateUnreadCount }: Noti
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', p: 4, opacity: 0.6 }}>
             <EmptyIcon sx={{ fontSize: 60, mb: 2, color: 'text.secondary' }} />
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               No tienes notificaciones
             </Typography>
           </Box>

@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -25,7 +25,7 @@ import {
   AccessTime as TimeIcon,
   Chat as ChatIcon,
   Close as CloseIcon,
-  DeleteOutline as DeleteIcon,
+  DeleteOutlined as DeleteIcon,
   Visibility as VisibilityIcon,
   Replay as ReplayIcon
 } from '@mui/icons-material';
@@ -34,7 +34,7 @@ import ParallaxImage from '../../components/motion/ParallaxImage';
 import apiClient from '../../services/api';
 import ProfileCard, { Profile } from '../../components/profile/ProfileCard';
 import PresenceIndicator, { parseServerDate } from '../../components/profile/PresenceIndicator';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/router';
@@ -277,7 +277,9 @@ export default function LikesPage() {
       return (
         <Box sx={{ textAlign: 'center', py: 8, opacity: 0.7 }}>
           <HeartIcon sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" sx={{
+            color: "text.secondary"
+          }}>
             No hay perfiles para mostrar en esta sección
           </Typography>
         </Box>
@@ -289,7 +291,14 @@ export default function LikesPage() {
     profiles.forEach((p) => buckets[getPeriodKey(p[dateField])].push(p));
 
     const renderCard = (profile: LikeProfile) => (
-          <Grid item key={`${type}-${profile.match_id || profile.user_id}`} xs={12} sm={6} md={4} lg={3}>
+          <Grid
+            key={`${type}-${profile.match_id || profile.user_id}`}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 4,
+              lg: 3
+            }}>
             <Card
               onClick={() => handleProfileClick(profile)}
               sx={{
@@ -327,9 +336,12 @@ export default function LikesPage() {
                   <Typography
                     variant="h6"
                     color="white"
-                    fontWeight="bold"
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                  >
+                    sx={{
+                      fontWeight: "bold",
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
+                    }}>
                     {profile.display_name}, {profile.age}
                     <PresenceIndicator
                       status={profile.connection_status}
@@ -367,14 +379,31 @@ export default function LikesPage() {
 
               <CardContent sx={{ flexGrow: 1, p: 2 }}>
                 {type === 'top' && profile.bio && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      mb: 2,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}>
                     {profile.bio}
                   </Typography>
                 )}
 
-                <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 'auto' }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: "center",
+                    mt: 'auto'
+                  }}>
                   <TimeIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>
                     {type === 'received' && profile.liked_at && `Te dio like ${formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true, locale: es })}`}
                     {type === 'sent' && profile.liked_at && `Le diste like ${formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true, locale: es })}`}
                     {type === 'top' && 'Recomendado hoy'}
@@ -451,7 +480,9 @@ export default function LikesPage() {
           .map((k) => (
             <Box key={k} sx={{ mb: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <Typography variant="h6" fontWeight={700}>
+                <Typography variant="h6" sx={{
+                  fontWeight: 700
+                }}>
                   {PERIOD_LABELS[k]}
                 </Typography>
                 <Chip size="small" label={buckets[k].length} />
@@ -468,7 +499,12 @@ export default function LikesPage() {
   return (
     <Layout>
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: "bold",
+            mb: 4
+          }}>
           Likes
         </Typography>
 
@@ -527,13 +563,15 @@ export default function LikesPage() {
           open={!!selectedProfile}
           onClose={handleCloseProfile}
           scroll="body"
-          PaperProps={{
-            sx: {
-              borderRadius: '12px',
-              overflow: 'hidden',
-              maxWidth: 400,
-              width: '100%',
-              m: 2
+          slotProps={{
+            paper: {
+              sx: {
+                borderRadius: '12px',
+                overflow: 'hidden',
+                maxWidth: 400,
+                width: '100%',
+                m: 2
+              }
             }
           }}
         >
@@ -621,18 +659,27 @@ export default function LikesPage() {
           onClose={() => setMatchDialogOpen(false)}
           maxWidth="xs"
           fullWidth
-          PaperProps={{
-            sx: { borderRadius: '12px', textAlign: 'center', p: 2 }
+          slotProps={{
+            paper: {
+              sx: { borderRadius: '12px', textAlign: 'center', p: 2 }
+            }
           }}
         >
           <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Avatar sx={{ width: 80, height: 80, bgcolor: 'secondary.main', mb: 2 }}>
               <HeartIcon sx={{ fontSize: 40 }} />
             </Avatar>
-            <Typography variant="h4" fontWeight="bold" gutterBottom color="secondary">
+            <Typography variant="h4" gutterBottom color="secondary" sx={{
+              fontWeight: "bold"
+            }}>
               ¡Es un Match!
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.secondary",
+                mb: 4
+              }}>
               Tú y esa persona se gustan. ¡Es hora de conversar!
             </Typography>
             <Button

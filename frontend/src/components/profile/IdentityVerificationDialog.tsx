@@ -18,7 +18,7 @@ import {
   LinearProgress,
   Paper,
 } from "@mui/material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
@@ -364,7 +364,11 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
   const hasSelfie = !!selectedSelfie;
 
   const renderStep = (number: 1 | 2, label: string, done: boolean) => (
-    <Box display="flex" alignItems="center">
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center"
+      }}>
       {done ? (
         <CheckCircleIcon color="success" sx={{ fontSize: 24 }} />
       ) : (
@@ -415,6 +419,18 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
             bgcolor: "rgba(0,0,0,0.55)",
           },
         },
+
+        paper: {
+          sx: {
+            borderRadius: "12px",
+            bgcolor: isDark ? "#232428" : "background.paper",
+            color: isDark ? "#E0E0E0" : "text.primary",
+            backgroundImage: "none",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+            m: { xs: 2 },
+            width: { xs: "calc(100% - 32px)" },
+          },
+        }
       }}
       sx={{
         // Center on the content area (which sits right of the sidebar on md+),
@@ -422,19 +438,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
         "& .MuiDialog-container": {
           pl: { xs: 0, md: `${drawerWidth}px` },
         },
-      }}
-      PaperProps={{
-        sx: {
-          borderRadius: "12px",
-          bgcolor: isDark ? "#232428" : "background.paper",
-          color: isDark ? "#E0E0E0" : "text.primary",
-          backgroundImage: "none",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-          m: { xs: 2 },
-          width: { xs: "calc(100% - 32px)" },
-        },
-      }}
-    >
+      }}>
       <DialogTitle
         id="identity-verification-title"
         sx={{
@@ -493,7 +497,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                   )}
                   MenuProps={{
                     disablePortal: true,
-                    PaperProps: {
+                    slotProps: { paper: {
                       sx: {
                         maxHeight: "40vh",
                         // Never wider than the dialog content: long labels wrap
@@ -516,6 +520,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                           borderRadius: 4,
                         },
                       },
+                    },
                     },
                   }}
                 >
@@ -574,7 +579,9 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                     <Typography variant="body1" gutterBottom>
                       {selectedFile.name}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </Typography>
                     {preview ? (
@@ -593,9 +600,12 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                         />
                         <Typography
                           variant="caption"
-                          color="success.main"
-                          sx={{ display: "block", mt: 1, fontWeight: 600 }}
-                        >
+                          sx={{
+                            color: "success.main",
+                            display: "block",
+                            mt: 1,
+                            fontWeight: 600
+                          }}>
                           {t(
                             "identityVerification.validFile",
                             "✓ Archivo válido, listo para enviar",
@@ -605,9 +615,12 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                     ) : (
                       <Typography
                         variant="caption"
-                        color="success.main"
-                        sx={{ display: "block", mt: 1, fontWeight: 600 }}
-                      >
+                        sx={{
+                          color: "success.main",
+                          display: "block",
+                          mt: 1,
+                          fontWeight: 600
+                        }}>
                         {t(
                           "identityVerification.validFile",
                           "✓ Archivo válido, listo para enviar",
@@ -626,7 +639,9 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                         "Arrastra tu documento aquí o haz clic para seleccionar",
                       )}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       {t(
                         "identityVerification.formatsHint",
                         "Formatos: JPG, PNG, WEBP, PDF (máx. 10MB)",
@@ -680,9 +695,12 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                     </Box>
                     <Typography
                       variant="caption"
-                      color="success.main"
-                      sx={{ display: "block", mt: 1.5, fontWeight: 600 }}
-                    >
+                      sx={{
+                        color: "success.main",
+                        display: "block",
+                        mt: 1.5,
+                        fontWeight: 600
+                      }}>
                       {t(
                         "identityVerification.selfieOk",
                         "✓ Selfie capturada",
@@ -774,9 +792,11 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
 
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ display: "block", mt: 1.5 }}
-              >
+                sx={{
+                  color: "text.secondary",
+                  display: "block",
+                  mt: 1.5
+                }}>
                 {t(
                   "identityVerification.selfieHint",
                   "La selfie debe mostrar tu rostro de frente. Máx. 5MB (JPG, PNG, WEBP).",
@@ -790,9 +810,11 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
               <LinearProgress />
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ mt: 1, display: "block" }}
-              >
+                sx={{
+                  color: "text.secondary",
+                  mt: 1,
+                  display: "block"
+                }}>
                 {t(
                   "identityVerification.uploadingMsg",
                   "Subiendo documento...",

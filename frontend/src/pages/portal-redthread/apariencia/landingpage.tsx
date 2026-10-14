@@ -1141,7 +1141,11 @@ export default function BannersPage() {
     };
 
     if (loading && !config) {
-        return <AdminLayout><Box p={4}><CircularProgress /></Box></AdminLayout>;
+        return (
+            <AdminLayout><Box sx={{
+                p: 4
+            }}><CircularProgress /></Box></AdminLayout>
+        );
     }
 
     const t = config.translations[currentLang];
@@ -1162,20 +1166,38 @@ export default function BannersPage() {
             </Snackbar>
 
             <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Typography variant="h4" fontWeight={700} gutterBottom>
+                <Typography variant="h4" gutterBottom sx={{
+                    fontWeight: 700
+                }}>
                     Gestión de Portada y Contenido
                 </Typography>
-                <Typography variant="body1" color="text.secondary" paragraph>
+                <Typography
+                    variant="body1"
+                    sx={{
+                        color: "text.secondary",
+                        marginBottom: "16px"
+                    }}>
                     Personaliza la experiencia de la página de inicio para cada idioma.
                 </Typography>
 
                 <Grid container spacing={4}>
                     {/* Columna 2: Idioma de edición, Textos, Cómo Funciona, Botones de Acción */}
-                    <Grid item xs={12} md={4} sx={{ order: 2 }}>
+                    <Grid
+                        sx={{ order: 2 }}
+                        size={{
+                            xs: 12,
+                            md: 4
+                        }}>
 
                         {/* Language Selector */}
                         <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Idioma de edición</Typography>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    fontWeight: "bold",
+                                    display: "block",
+                                    mb: 1
+                                }}>Idioma de edición</Typography>
                             <TextField
                                 select
                                 fullWidth
@@ -1189,7 +1211,13 @@ export default function BannersPage() {
                                     <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
                                 ))}
                             </TextField>
-                            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "text.secondary",
+                                    display: "block",
+                                    mt: 0.5
+                                }}>
                                 Selecciona el idioma para editar los textos del Héroe, Cómo Funciona y los botones de acción.
                             </Typography>
                         </Box>
@@ -1201,12 +1229,31 @@ export default function BannersPage() {
 
                             {/* Configuración Visual del Héroe (global — aplica a todos los idiomas) */}
                             <Box sx={{ mb: 3, p: 2, borderRadius: 1, bgcolor: 'action.hover', border: '1px dashed', borderColor: 'divider' }}>
-                                <Typography variant="caption" fontWeight="bold" display="block" mb={2} color="primary.main">Configuración Visual del Héroe (Global)</Typography>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        fontWeight: "bold",
+                                        display: "block",
+                                        mb: 2,
+                                        color: "primary.main"
+                                    }}>Configuración Visual del Héroe (Global)</Typography>
 
                                 {/* Typography Control */}
-                                <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="caption" fontWeight="bold">Tamaño Título (rem)</Typography>
+                                <Grid
+                                    container
+                                    spacing={2}
+                                    sx={{
+                                        alignItems: "center",
+                                        mb: 3
+                                    }}>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            md: 6
+                                        }}>
+                                        <Typography variant="caption" sx={{
+                                            fontWeight: "bold"
+                                        }}>Tamaño Título (rem)</Typography>
                                         <Slider
                                             value={config.subtitleFontSize}
                                             min={4} max={10} step={0.1}
@@ -1214,13 +1261,33 @@ export default function BannersPage() {
                                             valueLabelDisplay="auto"
                                             sx={{ color: '#FF6B6B' }}
                                         />
-                                        <Typography variant="caption" color="text.secondary" display="block">
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                color: "text.secondary",
+                                                display: "block"
+                                            }}>
                                             Igual que en la landing: usa este rem y el texto nunca se corta (ocupa las líneas que necesite).
                                         </Typography>
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Color Título</Typography>
-                                        <Box display="flex" alignItems="center" gap={1}>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            md: 6
+                                        }}>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                display: "block",
+                                                mb: 1
+                                            }}>Color Título</Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1
+                                            }}>
                                             <input
                                                 type="color"
                                                 value={config.subtitleColor}
@@ -1229,7 +1296,9 @@ export default function BannersPage() {
                                             />
                                             <Box>
                                                 <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>{config.subtitleColor}</Typography>
-                                                <Typography variant="caption" color="text.secondary">{hexToRgb(config.subtitleColor)}</Typography>
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>{hexToRgb(config.subtitleColor)}</Typography>
                                             </Box>
                                         </Box>
                                     </Grid>
@@ -1237,8 +1306,18 @@ export default function BannersPage() {
 
                                 {/* Typography Fonts */}
                                 <Grid container spacing={2} sx={{ mb: 3 }}>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Tipografía Título</Typography>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            md: 6
+                                        }}>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                display: "block",
+                                                mb: 1
+                                            }}>Tipografía Título</Typography>
                                         <TextField
                                             select
                                             fullWidth
@@ -1254,8 +1333,18 @@ export default function BannersPage() {
                                             ))}
                                         </TextField>
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Tipografía de Texto</Typography>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            md: 6
+                                        }}>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                display: "block",
+                                                mb: 1
+                                            }}>Tipografía de Texto</Typography>
                                         <TextField
                                             select
                                             fullWidth
@@ -1286,8 +1375,16 @@ export default function BannersPage() {
 
                             {/* Tamaño de la descripción — global (mismo valor en todos los idiomas y tipografías) */}
                             <Box sx={{ mb: 2, p: 2, borderRadius: 1, bgcolor: 'action.hover', border: '1px dashed', borderColor: 'divider' }}>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
-                                    <Typography variant="caption" fontWeight="bold">Tamaño de la descripción (rem)</Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        mb: 0.5
+                                    }}>
+                                    <Typography variant="caption" sx={{
+                                        fontWeight: "bold"
+                                    }}>Tamaño de la descripción (rem)</Typography>
                                     <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'primary.main', fontWeight: 700 }}>
                                         {Number(config.descriptionFontSize || 1.15).toFixed(2)}rem
                                     </Typography>
@@ -1302,14 +1399,25 @@ export default function BannersPage() {
                                     valueLabelFormat={(v) => `${Number(v).toFixed(2)}rem`}
                                     sx={{ color: '#FF6B6B', ml: 1, mr: 1, width: 'calc(100% - 16px)' }}
                                 />
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     Cambia el texto "Descripción". Global para todos los idiomas. Por defecto 1.15rem.
                                 </Typography>
                             </Box>
 
                             {/* Tipografía de la descripción — global */}
                             <Box sx={{ mb: 2 }}>
-                                <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Tipografía de la descripción</Typography>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        fontWeight: "bold",
+                                        display: "block",
+                                        mb: 1
+                                    }}>Tipografía de la descripción</Typography>
                                 <TextField
                                     select
                                     fullWidth
@@ -1336,7 +1444,12 @@ export default function BannersPage() {
                                 margin="normal"
                             />
 
-                            <Box display="flex" gap={2} mt={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2,
+                                    mt: 1
+                                }}>
                                 <TextField
                                     fullWidth
                                     label="Botón Primario"
@@ -1404,7 +1517,12 @@ export default function BannersPage() {
                         <Paper sx={{ p: 3, mb: 3 }}>
                             <Typography variant="h6" gutterBottom>Botones de Acción — Cómo Funciona [{currentLang.toUpperCase()}]</Typography>
                             <Divider sx={{ mb: 2 }} />
-                            <Box display="flex" gap={2} flexWrap="wrap">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2,
+                                    flexWrap: "wrap"
+                                }}>
                                 <TextField
                                     fullWidth
                                     size="small"
@@ -1424,7 +1542,11 @@ export default function BannersPage() {
                             </Box>
                         </Paper>
 
-                        <Box mt={3} mb={10}>
+                        <Box
+                            sx={{
+                                mt: 3,
+                                mb: 10
+                            }}>
                             <Button
                                 variant="contained"
                                 startIcon={<SaveIcon />}
@@ -1439,10 +1561,21 @@ export default function BannersPage() {
                     </Grid>
 
                     {/* Columna 3: Icono Principal y Logo del Navbar */}
-                    <Grid item xs={12} md={4} sx={{ order: 3 }}>
+                    <Grid
+                        sx={{ order: 3 }}
+                        size={{
+                            xs: 12,
+                            md: 4
+                        }}>
                         {/* Hero Icon Upload */}
                         <Paper sx={{ p: 3, mb: 3 }}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    mb: 2
+                                }}>
                                 <Typography variant="h6">Icono Principal</Typography>
                                 <Button component="label" size="small" startIcon={<CloudUploadIcon />}>
                                     Cambiar
@@ -1477,9 +1610,19 @@ export default function BannersPage() {
 
                         {/* Imagotipo Navbar (Horizontal) — similar a Icono Principal pero debajo */}
                         <Paper sx={{ p: 3, mb: 3 }}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    mb: 2
+                                }}>
                                 <Typography variant="h6">Logo del Navbar (isotipo por defecto)</Typography>
-                                <Box display="flex" gap={1}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1
+                                    }}>
                                     {previewNavLogo && previewNavLogo !== '/img/assets/isotipo.png' && (
                                         <Button size="small" color="inherit" onClick={handleDeleteNavLogo} disabled={loading}>
                                             Restablecer
@@ -1513,18 +1656,37 @@ export default function BannersPage() {
                                     onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/img/assets/isotipo.png'; }}
                                 />
                             </Box>
-                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "text.secondary",
+                                    mt: 1,
+                                    display: 'block'
+                                }}>
                                 URL actual: <Box component="span" sx={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{previewNavLogo || '/img/assets/isotipo.png'}</Box>
                             </Typography>
                         </Paper>
                     </Grid>
 
                     {/* Columna 1: Fondo de Portada */}
-                    <Grid item xs={12} md={4} sx={{ order: 1 }}>
+                    <Grid
+                        sx={{ order: 1 }}
+                        size={{
+                            xs: 12,
+                            md: 4
+                        }}>
 
                         {/* Hero Banner Upload — con resolución por pantalla */}
                         <Paper sx={{ p: 3, mb: 3 }}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} flexWrap="wrap" gap={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    mb: 1,
+                                    flexWrap: "wrap",
+                                    gap: 1
+                                }}>
                                 <Typography variant="h6">Fondo de Portada ({bannerResources.length}/10)</Typography>
                                 <Button component="label" size="small" startIcon={<CloudUploadIcon />} disabled={bannerResources.length >= 10}>
                                     Agregar
@@ -1575,7 +1737,13 @@ export default function BannersPage() {
                             </Alert>
 
                             {/* Gallery of Active Banners — con badge resolución */}
-                            <Box display="flex" gap={1} flexWrap="wrap" mb={2}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    flexWrap: "wrap",
+                                    mb: 2
+                                }}>
                                 {bannerResources.map((banner, index) => {
                                     const res = (banner.metadata?.resolution || (banner.metadata?.isMobile ? 'mobile' : 'all')) as string;
                                     const label = BANNER_RESOLUTIONS.find(r => r.value === res)?.label || res;
@@ -1697,7 +1865,12 @@ export default function BannersPage() {
                                         )}
                                     </>
                                 ) : (
-                                    <Typography color="text.secondary" sx={{ position: 'relative', zIndex: 1 }}>
+                                    <Typography
+                                        sx={{
+                                            color: "text.secondary",
+                                            position: 'relative',
+                                            zIndex: 1
+                                        }}>
                                         {bannerResources.length === 0 ? 'Usando Gradiente' : 'Sin banner para esta resolución'}
                                     </Typography>
                                 )}
@@ -1709,15 +1882,25 @@ export default function BannersPage() {
                             <Typography variant="h6" gutterBottom>Gradientes del Tema</Typography>
                             <Divider sx={{ mb: 2 }} />
 
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                <Typography variant="caption" fontWeight="bold">Gradientes del Tema</Typography>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    mb: 2
+                                }}>
+                                <Typography variant="caption" sx={{
+                                    fontWeight: "bold"
+                                }}>Gradientes del Tema</Typography>
                                 <Button size="small" variant="outlined" startIcon={<SaveIcon />} onClick={handleSaveGradient}>
                                     Guardar Gradiente
                                 </Button>
                             </Box>
 
-                            <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={6}>
+                            <Grid container spacing={2} sx={{
+                                alignItems: "center"
+                            }}>
+                                <Grid size={6}>
                                     <Typography variant="caption">Inicio (Start)</Typography>
                                     <input
                                         type="color"
@@ -1725,12 +1908,16 @@ export default function BannersPage() {
                                         onChange={(e) => setConfig({ ...config, gradientStart: e.target.value })}
                                         style={{ display: 'block', width: '100%', height: '40px', cursor: 'pointer', border: '1px solid #ddd', borderRadius: '4px', padding: '2px' }}
                                     />
-                                    <Box mt={0.5}>
+                                    <Box sx={{
+                                        mt: 0.5
+                                    }}>
                                         <Typography variant="caption" sx={{ fontFamily: 'monospace', display: 'block' }}>{config.gradientStart}</Typography>
-                                        <Typography variant="caption" color="text.secondary">{hexToRgb(config.gradientStart)}</Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>{hexToRgb(config.gradientStart)}</Typography>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid size={6}>
                                     <Typography variant="caption">Fin (End)</Typography>
                                     <input
                                         type="color"
@@ -1738,21 +1925,33 @@ export default function BannersPage() {
                                         onChange={(e) => setConfig({ ...config, gradientEnd: e.target.value })}
                                         style={{ display: 'block', width: '100%', height: '40px', cursor: 'pointer', border: '1px solid #ddd', borderRadius: '4px', padding: '2px' }}
                                     />
-                                    <Box mt={0.5}>
+                                    <Box sx={{
+                                        mt: 0.5
+                                    }}>
                                         <Typography variant="caption" sx={{ fontFamily: 'monospace', display: 'block' }}>{config.gradientEnd}</Typography>
-                                        <Typography variant="caption" color="text.secondary">{hexToRgb(config.gradientEnd)}</Typography>
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>{hexToRgb(config.gradientEnd)}</Typography>
                                     </Box>
                                 </Grid>
                             </Grid>
 
                             {/* Preset Backgrounds */}
-                            <Box mt={3}>
-                                <Typography variant="caption" color="text.secondary" mb={1} display="block">Fondos predefinidos:</Typography>
+                            <Box sx={{
+                                mt: 3
+                            }}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        mb: 1,
+                                        display: "block"
+                                    }}>Fondos predefinidos:</Typography>
                                 <Grid container spacing={1}>
                                     {PRESET_GRADIENTS.map((preset) => {
                                         const isActive = config.gradientStart === preset.start && config.gradientEnd === preset.end;
                                         return (
-                                            <Grid item xs={6} key={preset.id}>
+                                            <Grid key={preset.id} size={6}>
                                                 <Paper
                                                     onClick={() => handleApplyPreset(preset)}
                                                     variant="outlined"
@@ -1777,10 +1976,24 @@ export default function BannersPage() {
                                                         }}
                                                     />
                                                     <Box sx={{ minWidth: 0 }}>
-                                                        <Typography variant="caption" fontWeight="bold" display="block" noWrap>
+                                                        <Typography
+                                                            variant="caption"
+                                                            noWrap
+                                                            sx={{
+                                                                fontWeight: "bold",
+                                                                display: "block"
+                                                            }}>
                                                             {preset.name}
                                                         </Typography>
-                                                        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontFamily: 'monospace', fontSize: '0.65rem' }} noWrap>
+                                                        <Typography
+                                                            variant="caption"
+                                                            noWrap
+                                                            sx={{
+                                                                color: "text.secondary",
+                                                                display: "block",
+                                                                fontFamily: 'monospace',
+                                                                fontSize: '0.65rem'
+                                                            }}>
                                                             {preset.start} → {preset.end}
                                                         </Typography>
                                                     </Box>
@@ -1793,9 +2006,22 @@ export default function BannersPage() {
 
                             {/* Saved Gradients List */}
                             {config.savedGradients && config.savedGradients.length > 0 && (
-                                <Box mt={3}>
-                                    <Typography variant="caption" color="text.secondary" mb={1} display="block">Guardados:</Typography>
-                                    <Box display="flex" gap={1} flexWrap="wrap">
+                                <Box sx={{
+                                    mt: 3
+                                }}>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: "text.secondary",
+                                            mb: 1,
+                                            display: "block"
+                                        }}>Guardados:</Typography>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 1,
+                                            flexWrap: "wrap"
+                                        }}>
                                         {config.savedGradients.map((g) => (
                                             <Box
                                                 key={g.id}
@@ -1842,7 +2068,7 @@ export default function BannersPage() {
                     </Grid>
 
                     {/* Vista Previa en vivo — ancho completo, arriba */}
-                    <Grid item xs={12} sx={{ order: 0 }}>
+                    <Grid sx={{ order: 0 }} size={12}>
                         {/* Live Preview Mockup */}
                         <Paper sx={{ p: 0, overflow: 'hidden' }}>
                             <Box sx={{ p: 1.5, bgcolor: '#222', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -2139,7 +2365,7 @@ export default function BannersPage() {
                                                     {t.howItWorksTitle}
                                                 </Box>
                                                 <Grid container spacing={2}>
-                                                    <Grid item xs={6}>
+                                                    <Grid size={6}>
                                                         <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                             <FavoriteIcon sx={{ fontSize: 32, color: '#3B82F6', mb: 0.5 }} />
                                                             <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
@@ -2147,7 +2373,7 @@ export default function BannersPage() {
                                                             </Box>
                                                         </Paper>
                                                     </Grid>
-                                                    <Grid item xs={6}>
+                                                    <Grid size={6}>
                                                         <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                             <ChatIcon sx={{ fontSize: 32, color: '#8B5CF6', mb: 0.5 }} />
                                                             <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
@@ -2155,7 +2381,7 @@ export default function BannersPage() {
                                                             </Box>
                                                         </Paper>
                                                     </Grid>
-                                                    <Grid item xs={6}>
+                                                    <Grid size={6}>
                                                         <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                             <RadarIcon sx={{ fontSize: 32, color: '#F59E0B', mb: 0.5 }} />
                                                             <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>
@@ -2163,7 +2389,7 @@ export default function BannersPage() {
                                                             </Box>
                                                         </Paper>
                                                     </Grid>
-                                                    <Grid item xs={6}>
+                                                    <Grid size={6}>
                                                         <Paper sx={{ p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 18px 40px rgba(88, 8, 34, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08)' }}>
                                                             <GroupsIcon sx={{ fontSize: 32, color: '#E63946', mb: 0.5 }} />
                                                             <Box sx={{ fontFamily: getTitleFontFamily(config.titleFont || DEFAULT_THEME.titleFont), fontWeight: 600, fontSize: '0.85rem', color: '#3B1C2A' }}>

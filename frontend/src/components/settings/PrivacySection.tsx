@@ -36,7 +36,7 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface PrivacySectionProps {
     settings: any;
@@ -92,14 +92,20 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                         }
                         label={
                             <Box>
-                                <Typography variant="body2" fontWeight={600}>Modo Invisible</Typography>
-                                <Typography variant="caption" color="text.secondary">Navega sin aparecer en listas o sugerencias</Typography>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: 600
+                                }}>Modo Invisible</Typography>
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>Navega sin aparecer en listas o sugerencias</Typography>
                             </Box>
                         }
                     />
 
                     <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>Control por Hilo</Typography>
-                    <Stack direction="row" spacing={1} flexWrap="wrap">
+                    <Stack direction="row" spacing={1} sx={{
+                        flexWrap: "wrap"
+                    }}>
                         {['RedThread', 'Blueth', 'Purpleth'].map((thread) => (
                             <FormControlLabel
                                 key={thread}
@@ -127,7 +133,12 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                 <Typography variant="h6" sx={sectionTitleStyle}>
                     <DataIcon color="primary" /> {t('privacy_data_management', 'Gestión de Datos Personales')}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        mb: 2
+                    }}>
                     Controla qué información conservamos y cómo la usamos.
                 </Typography>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -169,8 +180,12 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                         }
                         label={
                             <Box>
-                                <Typography variant="body2" fontWeight={600}>Consentimiento explícito para interacciones sensibles</Typography>
-                                <Typography variant="caption" color="text.secondary">Fantasía, contenido íntimo, etc.</Typography>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: 600
+                                }}>Consentimiento explícito para interacciones sensibles</Typography>
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>Fantasía, contenido íntimo, etc.</Typography>
                             </Box>
                         }
                     />
@@ -255,18 +270,32 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                         }
                         label={
                             <Box>
-                                <Typography variant="body2" fontWeight={600}>Activar Modo Seguro</Typography>
-                                <Typography variant="caption" color="text.secondary">Oculta contenido sensible y desactiva sugerencias íntimas</Typography>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: 600
+                                }}>Activar Modo Seguro</Typography>
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>Oculta contenido sensible y desactiva sugerencias íntimas</Typography>
                             </Box>
                         }
                     />
 
                     <Paper variant="outlined" sx={{ p: 2, bgcolor: 'action.hover' }}>
-                        <Typography variant="subtitle2" gutterBottom fontWeight={600}>Mantener Hilos Ocultos</Typography>
-                        <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                        <Typography variant="subtitle2" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>Mantener Hilos Ocultos</Typography>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "text.secondary",
+                                display: "block",
+                                mb: 2
+                            }}>
                             Usa un hilo de forma privada mientras otros permanecen invisibles.
                         </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                        <Stack direction="row" spacing={1} sx={{
+                            flexWrap: "wrap"
+                        }}>
                             {['RedThread', 'Blueth', 'Purpleth'].map((thread) => (
                                 <Button
                                     key={thread}
@@ -306,8 +335,12 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                     component={Link}
                     href="/legal/privacy"
                 >
-                    <Box flex={1}>
-                        <Typography variant="subtitle1" fontWeight={700}>Resumen de Privacidad</Typography>
+                    <Box sx={{
+                        flex: 1
+                    }}>
+                        <Typography variant="subtitle1" sx={{
+                            fontWeight: 700
+                        }}>Resumen de Privacidad</Typography>
                         <Typography variant="body2" sx={{ opacity: 0.9 }}>Entiende cómo protegemos tus datos en un lenguaje claro.</Typography>
                     </Box>
                     <PolicyIcon fontSize="large" />
@@ -328,7 +361,12 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                 <Typography variant="h6" sx={{ ...sectionTitleStyle, color: 'primary.main', mb: 1 }}>
                     <EmotionalIcon /> Tu Privacidad Emocional
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mb={3}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        mb: 3
+                    }}>
                     En ReTh, tu bienestar emocional es nuestra prioridad. Define cómo quieres interactuar.
                 </Typography>
 
@@ -356,8 +394,12 @@ export default function PrivacySection({ settings, onSettingsChange }: PrivacySe
                         }
                         label={
                             <Box>
-                                <Typography variant="body2" fontWeight={600}>Filtrar mensajes nuevos</Typography>
-                                <Typography variant="caption" color="text.secondary">Recibir mensajes solo de conocidos o matches</Typography>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: 600
+                                }}>Filtrar mensajes nuevos</Typography>
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>Recibir mensajes solo de conocidos o matches</Typography>
                             </Box>
                         }
                     />

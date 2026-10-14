@@ -30,7 +30,13 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto, 
             }}
             elevation={0}
         >
-            <Typography variant="h6" gutterBottom fontWeight={700} mb={2}>
+            <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                    fontWeight: 700,
+                    mb: 2
+                }}>
                 Galería
             </Typography>
 
@@ -155,7 +161,14 @@ export default function ProfileGallery({ profile, mediaItems, mainProfilePhoto, 
                         ))
                     )
                 ) : (
-                    <Typography variant="body2" color="text.secondary" sx={{ gridColumn: '1 / -1', textAlign: 'center', py: 4 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            gridColumn: '1 / -1',
+                            textAlign: 'center',
+                            py: 4
+                        }}>
                         No hay fotos disponibles
                     </Typography>
                 )}

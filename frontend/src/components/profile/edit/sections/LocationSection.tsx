@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import useDebounce from "../../../../hooks/useDebounce";
 import {
   Grid,
@@ -226,7 +226,9 @@ const LockedOverlay = ({
         }}
       >
         <Lock color="primary" fontSize="small" />
-        <Typography variant="body2" fontWeight="700" color="primary">
+        <Typography variant="body2" color="primary" sx={{
+          fontWeight: "700"
+        }}>
           Exclusivo {planRequired}
         </Typography>
       </Box>
@@ -245,7 +247,9 @@ const LockedOverlay = ({
       }}
     >
       <Icon color="disabled" />
-      <Typography variant="body1" color="text.disabled">
+      <Typography variant="body1" sx={{
+        color: "text.disabled"
+      }}>
         {label}
       </Typography>
     </Box>
@@ -753,7 +757,7 @@ export default function LocationSection({
   };
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -774,13 +778,19 @@ export default function LocationSection({
             sx={{ px: 3, py: 1 }}
           >
             <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-              pr={2}
-            >
-              <Box display="flex" alignItems="center" gap={1}>
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                pr: 2
+              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1
+                }}>
                 <LocationOn color="action" />
                 <Typography variant="h6">
                   {t("profile.location.title", "Ubicación y Alcance")}
@@ -805,7 +815,7 @@ export default function LocationSection({
         )}
         <AccordionDetails sx={{ px: isDiscovery ? 1 : 2.5, pb: isDiscovery ? 3 : 2, pt: 0 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box
                 sx={{
                   height: isDiscovery ? 250 : 400,
@@ -948,16 +958,17 @@ export default function LocationSection({
               )}
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography
                 variant="subtitle1"
-                fontWeight="700"
                 gutterBottom
-                display="flex"
-                alignItems="center"
-                gap={1}
-                sx={{ color: isDiscovery ? "white" : "inherit" }}
-              >
+                sx={{
+                  fontWeight: "700",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: isDiscovery ? "white" : "inherit"
+                }}>
                 <MyLocation
                   fontSize="small"
                   color={isDiscovery ? "inherit" : "primary"}
@@ -971,7 +982,9 @@ export default function LocationSection({
                   setIsFocused(false);
                 }}
               >
-                <Box position="relative">
+                <Box sx={{
+                  position: "relative"
+                }}>
                   <TextField size="small"
                     fullWidth
                     value={citySearch}
@@ -1003,31 +1016,33 @@ export default function LocationSection({
                           : "inherit",
                       },
                     }}
-                    InputProps={{
-                      sx: { borderRadius: 2 },
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={detectLocation}
-                            disabled={loadingLocation}
-                            sx={{
-                              color: isDetected
-                                ? isDiscovery
-                                  ? "gold"
-                                  : "primary.main"
-                                : isDiscovery
-                                  ? "rgba(255,255,255,0.5)"
-                                  : "default",
-                            }}
-                          >
-                            {loadingLocation ? (
-                              <CircularProgress size={24} color="inherit" />
-                            ) : (
-                              <MyLocation />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        sx: { borderRadius: 2 },
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={detectLocation}
+                              disabled={loadingLocation}
+                              sx={{
+                                color: isDetected
+                                  ? isDiscovery
+                                    ? "gold"
+                                    : "primary.main"
+                                  : isDiscovery
+                                    ? "rgba(255,255,255,0.5)"
+                                    : "default",
+                              }}
+                            >
+                              {loadingLocation ? (
+                                <CircularProgress size={24} color="inherit" />
+                              ) : (
+                                <MyLocation />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }
                     }}
                   />
                   {showSuggestions && suggestions.length > 0 && (
@@ -1060,9 +1075,11 @@ export default function LocationSection({
                           >
                             <ListItemText
                               primary={suggestion.label}
-                              primaryTypographyProps={{
-                                variant: "body2",
-                                fontWeight: 600,
+                              slotProps={{
+                                primary: {
+                                  variant: "body2",
+                                  sx: { fontWeight: 600 }
+                                }
                               }}
                             />
                           </ListItemButton>
@@ -1074,21 +1091,23 @@ export default function LocationSection({
               </ClickAwayListener>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={1}
-              >
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 1
+                }}>
                 <Typography
                   variant="subtitle1"
-                  fontWeight="700"
-                  display="flex"
-                  alignItems="center"
-                  gap={1}
-                  sx={{ color: isDiscovery ? "white" : "inherit" }}
-                >
+                  sx={{
+                    fontWeight: "700",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    color: isDiscovery ? "white" : "inherit"
+                  }}>
                   <RadarRounded
                     fontSize="small"
                     color={isDiscovery ? "inherit" : "primary"}
@@ -1208,39 +1227,41 @@ export default function LocationSection({
 
                       <Typography
                         variant="caption"
-                        display="block"
                         sx={{
+                          display: "block",
+
                           color: isDiscovery
                             ? "rgba(255,255,255,0.5)"
                             : "text.secondary",
-                          mt: 0.5,
-                        }}
-                      >
+
+                          mt: 0.5
+                        }}>
                         {RADIUS_STEP_HELP}
                       </Typography>
 
                       <Box
-                        mt={3}
-                        p={2}
-                        borderRadius={2}
-                        bgcolor={
-                          isDiscovery
+                        sx={{
+                          mt: 3,
+                          p: 2,
+                          borderRadius: 2,
+
+                          bgcolor: isDiscovery
                             ? "rgba(255,215,0,0.05)"
-                            : alpha("#9333EA", 0.05)
-                        }
-                        border="1px dashed"
-                        borderColor={
-                          isDiscovery
+                            : alpha("#9333EA", 0.05),
+
+                          border: "1px dashed",
+
+                          borderColor: isDiscovery
                             ? "rgba(255,215,0,0.2)"
                             : alpha("#9333EA", 0.3)
-                        }
-                      >
+                        }}>
                         <Typography
                           variant="subtitle2"
-                          fontWeight="bold"
                           gutterBottom
-                          sx={{ color: isDiscovery ? "gold" : "primary.main" }}
-                        >
+                          sx={{
+                            fontWeight: "bold",
+                            color: isDiscovery ? "gold" : "primary.main"
+                          }}>
                           {tone(toneKey + ".label", toneLabel)} ·{" "}
                           <Typography
                             component="span"
@@ -1257,15 +1278,16 @@ export default function LocationSection({
 
                         <Typography
                           variant="caption"
-                          display="block"
                           sx={{
+                            display: "block",
+
                             color: isDiscovery
                               ? "rgba(255,255,255,0.5)"
                               : "text.secondary",
+
                             mb: 1.5,
-                            fontStyle: "italic",
-                          }}
-                        >
+                            fontStyle: "italic"
+                          }}>
                           {t(
                             "profile.location.careSuggests",
                             '"CARE sugiere vínculos con tono {{tone}}."',
@@ -1279,7 +1301,12 @@ export default function LocationSection({
                         </Typography>
 
                         {/* Achievement Badges */}
-                        <Box display="flex" gap={1.5} flexWrap="wrap">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1.5,
+                            flexWrap: "wrap"
+                          }}>
                           <Tooltip
                             title={t(
                               "profile.location.badge.closeTip",
@@ -1444,15 +1471,27 @@ export default function LocationSection({
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                mb={1}
-              >
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Typography variant="subtitle1" fontWeight="700">
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 1
+                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1
+                  }}>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: "700"
+                  }}>
                     {t("profile.location.statesTitle", "🌎 Estados")}
                   </Typography>
                   <Chip
@@ -1587,15 +1626,27 @@ export default function LocationSection({
               )}
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                mb={1}
-              >
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Typography variant="subtitle1" fontWeight="700">
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 1
+                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1
+                  }}>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: "700"
+                  }}>
                     {t("profile.location.countriesTitle", "🌍 Países")}
                   </Typography>
                   <Chip

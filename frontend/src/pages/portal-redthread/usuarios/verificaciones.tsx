@@ -52,9 +52,16 @@ export default function VerificationRequestsPage() {
     <AdminLayout>
       <Container maxWidth="xl">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: 4
+            }}>
             <VerifiedUserIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Gestión de Verificaciones
             </Typography>
           </Box>

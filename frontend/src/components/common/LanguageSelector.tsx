@@ -128,20 +128,24 @@ export default function LanguageSelector({ showContinuityHint, onLanguageChange 
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
-                TransitionComponent={MenuTransition}
                 transitionDuration={{ enter: 300, exit: 200 }}
-                PaperProps={{
-                    sx: {
-                        borderRadius: 2,
-                        mt: 1,
-                        minWidth: 180,
-                        maxHeight: 360,
-                        bgcolor: 'rgba(255,255,255,0.12)',
-                        backdropFilter: 'blur(18px)',
-                        WebkitBackdropFilter: 'blur(18px)',
-                        border: '1px solid rgba(255,255,255,0.25)',
-                        boxShadow: '0 18px 50px rgba(20, 30, 90, 0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
+                slotProps={{
+                    paper: {
+                        sx: {
+                            borderRadius: 2,
+                            mt: 1,
+                            minWidth: 180,
+                            maxHeight: 360,
+                            bgcolor: 'rgba(255,255,255,0.12)',
+                            backdropFilter: 'blur(18px)',
+                            WebkitBackdropFilter: 'blur(18px)',
+                            border: '1px solid rgba(255,255,255,0.25)',
+                            boxShadow: '0 18px 50px rgba(20, 30, 90, 0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
+                        }
                     }
+                }}
+                slots={{
+                    transition: MenuTransition
                 }}
             >
                 {LANGUAGES.map((lang) => (

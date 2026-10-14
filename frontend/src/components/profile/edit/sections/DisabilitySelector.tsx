@@ -20,13 +20,13 @@ import {
 } from "@mui/material";
 import {
   ExpandMore,
-  HelpOutline,
+  HelpOutlined,
   CheckCircle,
   InfoOutlined,
   Accessible,
 } from "@mui/icons-material";
 import { Controller, Control, UseFormSetValue } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface Option {
   value: string;
@@ -89,7 +89,11 @@ export default function DisabilitySelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           <Box sx={{ mr: 1.5, color: categoryColor, display: "flex" }}>
             <Accessible />
           </Box>
@@ -160,11 +164,12 @@ export default function DisabilitySelector({
         >
           {/* Top Bar: Privacy & Help */}
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={2}
-          >
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2
+            }}>
             <Controller
               name={privacyName}
               control={control}
@@ -179,7 +184,9 @@ export default function DisabilitySelector({
                     />
                   }
                   label={
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       {t("profile.health.disability.show_public", {
                         defaultValue: "Mostrar en perfil público",
                       })}
@@ -195,7 +202,7 @@ export default function DisabilitySelector({
               })}
             >
               <IconButton size="small">
-                <HelpOutline fontSize="small" sx={{ color: "#03a9f4" }} />
+                <HelpOutlined fontSize="small" sx={{ color: "#03a9f4" }} />
               </IconButton>
             </Tooltip>
           </Box>
@@ -290,9 +297,9 @@ export default function DisabilitySelector({
                         size="small"
                       />
                     )}
-                    renderTags={(value, getTagProps) =>
+                    renderValue={(value, getItemProps) =>
                       value.map((option: any, index: number) => {
-                        const { key, ...tagProps } = getTagProps({ index });
+                        const { key, ...tagProps } = getItemProps({ index });
                         return (
                           <Chip
                             key={key}
@@ -317,7 +324,12 @@ export default function DisabilitySelector({
 
                   {/* Custom Input for "Other" */}
                   <Collapse in={isOtherSelected}>
-                    <Box display="flex" gap={1} mb={2}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        mb: 2
+                      }}>
                       <TextField
                         fullWidth
                         size="small"
@@ -346,7 +358,12 @@ export default function DisabilitySelector({
                   </Collapse>
 
                   {/* Quick Chip for "Ninguna" */}
-                  <Box display="flex" gap={1} mb={2}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      mb: 2
+                    }}>
                     <Chip
                       label={t("profile.health.disability.none", {
                         defaultValue: "Ninguna",
@@ -384,7 +401,12 @@ export default function DisabilitySelector({
                       if (filteredValues.length === 0) return <></>;
 
                       return (
-                        <Box display="flex" flexDirection="column" gap={1.5}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1.5
+                          }}>
                           {filteredValues.map((val: string) => {
                             const isDiagnosed = currentDiags.includes(val);
                             const option = extendedOptions.find(
@@ -407,11 +429,12 @@ export default function DisabilitySelector({
                                 }}
                               >
                                 <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="space-between"
-                                  mb={1}
-                                >
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    mb: 1
+                                  }}>
                                   <Typography
                                     variant="subtitle2"
                                     sx={{ fontWeight: 700 }}
@@ -437,10 +460,11 @@ export default function DisabilitySelector({
                                 </Box>
 
                                 <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="space-between"
-                                >
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between"
+                                  }}>
                                   <FormControlLabel
                                     control={
                                       <Checkbox

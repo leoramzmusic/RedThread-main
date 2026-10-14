@@ -90,7 +90,13 @@ export default function AdminFinanzas() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -102,11 +108,19 @@ export default function AdminFinanzas() {
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
           {/* Header */}
-          <Box display="flex" alignItems="center" gap={2} mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 4
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread')}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Finanzas y Suscripciones
             </Typography>
           </Box>
@@ -115,56 +129,100 @@ export default function AdminFinanzas() {
 
           {/* Stats Cards */}
           {stats && (
-            <Grid container spacing={3} mb={4}>
-              <Grid item xs={12} md={4}>
+            <Grid container spacing={3} sx={{
+              mb: 4
+            }}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <Card>
                   <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1
+                      }}>
                       <PeopleIcon color="primary" />
-                      <Typography variant="subtitle2" color="text.secondary">
+                      <Typography variant="subtitle2" sx={{
+                        color: "text.secondary"
+                      }}>
                         Suscripciones Activas
                       </Typography>
                     </Box>
                     <Typography variant="h4">
                       {stats.active_subscriptions}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       de {stats.total_subscriptions} totales
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <Card>
                   <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1
+                      }}>
                       <AttachMoneyIcon color="success" />
-                      <Typography variant="subtitle2" color="text.secondary">
+                      <Typography variant="subtitle2" sx={{
+                        color: "text.secondary"
+                      }}>
                         Ingresos Mensuales
                       </Typography>
                     </Box>
                     <Typography variant="h4">
                       $0.00
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       (Simulado)
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <Card>
                   <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1
+                      }}>
                       <TrendingUpIcon color="warning" />
-                      <Typography variant="subtitle2" color="text.secondary">
+                      <Typography variant="subtitle2" sx={{
+                        color: "text.secondary"
+                      }}>
                         Tasa de Cancelación
                       </Typography>
                     </Box>
                     <Typography variant="h4">
                       {(stats.churn_rate * 100).toFixed(1)}%
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       Churn Rate
                     </Typography>
                   </CardContent>
@@ -174,7 +232,9 @@ export default function AdminFinanzas() {
           )}
 
           {/* Subscriptions Table */}
-          <Typography variant="h6" mb={2}>
+          <Typography variant="h6" sx={{
+            mb: 2
+          }}>
             Listado de Suscripciones
           </Typography>
           <TableContainer component={Paper}>

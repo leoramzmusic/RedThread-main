@@ -30,10 +30,18 @@ export default function RelationshipSection({ profile, onEdit }: RelationshipSec
             <Stack spacing={3}>
                 {goals.length > 0 && (
                     <Box>
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "text.secondary",
+                                display: "block",
+                                mb: 1
+                            }}>
                             {t('profile.fields.goals', 'Objetivos de relación')}
                         </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        <Stack direction="row" spacing={1} useFlexGap sx={{
+                            flexWrap: "wrap"
+                        }}>
                             {goals.map((goal: string, i: number) => (
                                 <Chip
                                     key={i}
@@ -50,7 +58,13 @@ export default function RelationshipSection({ profile, onEdit }: RelationshipSec
 
                 {interests.length > 0 && (
                     <Box>
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "text.secondary",
+                                display: "block",
+                                mb: 1
+                            }}>
                             {t('profile.fields.interests', 'Intereses')}
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

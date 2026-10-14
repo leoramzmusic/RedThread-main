@@ -22,7 +22,7 @@ import {
   Logout as LogoutIcon,
   Tune as TuneIcon,
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { alpha } from '@mui/material/styles';
 import { useAppTheme } from '../../context/ThemeContext';
 import MorphToggleIcon from '../motion/MorphToggleIcon';
@@ -303,11 +303,15 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
                     {!collapsed && (
                       <ListItemText
                         primary={item.label}
-                        primaryTypographyProps={{
-                          fontSize: '0.88rem',
-                          fontWeight: active ? 600 : 500,
-                          color: active ? textActive : textInactive,
-                          sx: { transition: 'color 0.2s ease' },
+                        slotProps={{
+                          primary: {
+                            sx: {
+                              fontSize: '0.88rem',
+                              fontWeight: active ? 600 : 500,
+                              color: active ? textActive : textInactive,
+                              transition: 'color 0.2s ease'
+                            },
+                          }
                         }}
                       />
                     )}
@@ -359,10 +363,14 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
               {!collapsed && (
                 <ListItemText
                   primary={t('menu_logout', 'Cerrar Sesión')}
-                  primaryTypographyProps={{
-                    fontSize: '0.88rem',
-                    fontWeight: 600,
-                    color: 'inherit',
+                  slotProps={{
+                    primary: {
+                      sx: {
+                        fontSize: '0.88rem',
+                        fontWeight: 600,
+                        color: 'inherit'
+                      },
+                    }
                   }}
                 />
               )}

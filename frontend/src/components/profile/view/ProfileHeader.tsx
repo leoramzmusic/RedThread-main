@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import {
     Box,
     Button,
@@ -97,7 +97,9 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
     const bannerUrl = profile.banner_url || 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop';
 
     return (
-        <Box mb={4}>
+        <Box sx={{
+            mb: 4
+        }}>
             {/* 1. Banner Section */}
             <Box
                 sx={{
@@ -138,7 +140,9 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                     }}
                 >
                     {/* Avatar Group */}
-                    <Box position="relative">
+                    <Box sx={{
+                        position: "relative"
+                    }}>
                         <Box
                             sx={{
                                 position: 'relative',
@@ -231,23 +235,39 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                     >
                         {/* Name & Age Row */}
                         <Box
-                            display="flex"
-                            alignItems="center"
-                            gap={1}
-                            justifyContent={{ xs: 'center', sm: 'flex-start' }}
-                            flexWrap="wrap"
-                        >
-                            <Typography variant="h4" fontWeight={800} color="text.primary">
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                justifyContent: { xs: 'center', sm: 'flex-start' },
+                                flexWrap: "wrap"
+                            }}>
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    fontWeight: 800,
+                                    color: "text.primary"
+                                }}>
                                 {profile.display_name}
                             </Typography>
-                            <Typography variant="h5" color="text.secondary" fontWeight={500}>
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    color: "text.secondary",
+                                    fontWeight: 500
+                                }}>
                                 {profile.age}
                             </Typography>
                             <VerificationBadge status={identityStatus(profile)} size="medium" />
                         </Box>
 
                         {/* Handle */}
-                        <Typography variant="subtitle1" color="text.disabled" fontWeight={500}>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                color: "text.disabled",
+                                fontWeight: 500
+                            }}>
                             @{profile.nickname}
                         </Typography>
 
@@ -255,9 +275,10 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                         <Stack
                             direction="row"
                             spacing={1}
-                            mt={1}
-                            justifyContent={{ xs: 'center', sm: 'flex-start' }}
-                        >
+                            sx={{
+                                mt: 1,
+                                justifyContent: { xs: 'center', sm: 'flex-start' }
+                            }}>
                             {profile.subscription_tier && profile.subscription_tier !== 'free' && (
                                 <PlanBadge tier={profile.subscription_tier} size="small" />
                             )}
@@ -316,16 +337,31 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                 </Box>
 
                 {/* Bio & Socials (Below Avatar Row) */}
-                <Box mt={3} sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                <Box
+                    sx={{
+                        mt: 3,
+                        textAlign: { xs: 'center', sm: 'left' }
+                    }}>
                     {/* Links Placeholder */}
-                    <Stack direction="row" spacing={2} mb={2} justifyContent={{ xs: 'center', sm: 'flex-start' }}>
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{
+                            mb: 2,
+                            justifyContent: { xs: 'center', sm: 'flex-start' }
+                        }}>
                         {/* Example Social Icons - in real app would verify existence */}
                         {/* <IconButton size="small"><InstagramIcon /></IconButton> */}
                     </Stack>
 
                     {/* Short Bio (if exists) */}
                     {profile.bio && (
-                        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: "text.secondary",
+                                maxWidth: 600
+                            }}>
                             {profile.bio}
                         </Typography>
                     )}
@@ -337,11 +373,13 @@ export default function ProfileHeader({ profile, mainProfilePhoto, onEdit, readO
                 anchorEl={cameraMenuAnchor}
                 open={isMenuOpen}
                 onClose={handleMenuClose}
-                PaperProps={{
-                    sx: {
-                        mt: 1,
-                        minWidth: 180,
-                        borderRadius: 2
+                slotProps={{
+                    paper: {
+                        sx: {
+                            mt: 1,
+                            minWidth: 180,
+                            borderRadius: 2
+                        }
                     }
                 }}
             >

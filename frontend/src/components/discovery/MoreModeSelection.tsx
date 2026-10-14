@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Grid, Paper, Card, CardContent, CardActionArea, Chip } from '@mui/material';
 import { Person as PersonIcon, Favorite as FavoriteIcon, EmojiEvents as TrophyIcon } from '@mui/icons-material';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 export interface MoreCategory {
     id: string;
@@ -155,12 +155,20 @@ export default function MoreModeSelection({ onSelectCategory }: MoreModeSelectio
 
             <Grid container spacing={2}>
                 {/* Row 1: Large Featured Item (Pareja Estable) */}
-                <Grid item xs={12} sm={8}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 8
+                    }}>
                     {renderCard(CATEGORIES[0], 240, '2rem')}
                 </Grid>
 
                 {/* Row 1 Col 2: Stacked smaller items */}
-                <Grid item xs={12} sm={4}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 4
+                    }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
                         <Box sx={{ flex: 1 }}>
                             {renderCard(CATEGORIES[1], 112, '1.2rem')}
@@ -173,7 +181,13 @@ export default function MoreModeSelection({ onSelectCategory }: MoreModeSelectio
 
                 {/* Row 2: Grid of remaining items */}
                 {CATEGORIES.slice(3).map((cat) => (
-                    <Grid item xs={6} sm={4} md={3} key={cat.id}>
+                    <Grid
+                        key={cat.id}
+                        size={{
+                            xs: 6,
+                            sm: 4,
+                            md: 3
+                        }}>
                         {renderCard(cat, 160, '1.25rem')}
                     </Grid>
                 ))}

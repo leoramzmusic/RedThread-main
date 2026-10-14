@@ -18,7 +18,7 @@ import {
   ExpandMore,
 } from "@mui/icons-material";
 import { Controller, Control, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useState } from "react";
 import { RELATIONSHIP_TYPE_OPTIONS } from "../../../../constants/profileOptions";
 
@@ -99,7 +99,11 @@ export default function RelationshipTypeSelector({
             },
           }}
         >
-          <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center"
+            }}>
             <FavoriteBorder sx={{ mr: 1.5, color: relationshipColor }} />
             <Typography
               variant="subtitle2"
@@ -142,9 +146,7 @@ export default function RelationshipTypeSelector({
           <Typography
             variant="body2"
             color={isDiscovery ? "rgba(255,255,255,0.7)" : "text.secondary"}
-            paragraph
-            sx={{ mb: 2 }}
-          >
+            sx={{ mb: 2 }}>
             {t(
               "profile.additional.relationship.question",
               "¿Cómo te vinculas emocional y sexualmente?",
@@ -221,7 +223,12 @@ export default function RelationshipTypeSelector({
                     {exclusiveOptions.map((option, index) => {
                       const isSelected = field.value === option.value;
                       return (
-                        <Grid item xs={12} sm={6} key={option.value}>
+                        <Grid
+                          key={option.value}
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <Tooltip
                             title={rtDesc(option.value, option.description)}
                             arrow
@@ -288,8 +295,10 @@ export default function RelationshipTypeSelector({
                               </Box>
                               <Typography
                                 variant="body1"
-                                fontWeight={isSelected ? 700 : 500}
                                 color={isSelected ? "#E91E63" : "text.primary"}
+                                sx={{
+                                  fontWeight: isSelected ? 700 : 500
+                                }}
                               >
                                 {rtLabel(option.value, option.label)}
                               </Typography>
@@ -328,7 +337,13 @@ export default function RelationshipTypeSelector({
                       const isSelected = field.value === option.value;
                       const adjustedIndex = exclusiveOptions.length + index;
                       return (
-                        <Grid item xs={12} sm={6} md={4} key={option.value}>
+                        <Grid
+                          key={option.value}
+                          size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 4
+                          }}>
                           <Tooltip
                             title={rtDesc(option.value, option.description)}
                             arrow
@@ -395,8 +410,10 @@ export default function RelationshipTypeSelector({
                               </Box>
                               <Typography
                                 variant="body1"
-                                fontWeight={isSelected ? 700 : 500}
                                 color={isSelected ? "#9C27B0" : "text.primary"}
+                                sx={{
+                                  fontWeight: isSelected ? 700 : 500
+                                }}
                               >
                                 {rtLabel(option.value, option.label)}
                               </Typography>

@@ -13,8 +13,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { useTranslation } from "next-i18next";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlined";
+import { useTranslation } from "next-i18next/pages";
 
 export type SmartToastSeverity = "success" | "info" | "warning" | "error";
 
@@ -119,22 +119,26 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(function ToastCard(
         {icon ?? DEFAULT_ICON[severity ?? "info"]}
       </Box>
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography variant="subtitle2" fontWeight={700} lineHeight={1.3}>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            fontWeight: 700,
+            lineHeight: 1.3
+          }}>
           {title}
         </Typography>
         {message ? (
           <Typography
             variant="body2"
-            color="text.secondary"
-            lineHeight={1.4}
             sx={{
+              color: "text.secondary",
+              lineHeight: 1.4,
               mt: 0.25,
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
+              overflow: "hidden"
+            }}>
             {message}
           </Typography>
         ) : null}
@@ -179,9 +183,11 @@ export default function SmartToast({
         if (reason !== "clickaway") onClose();
       }}
       anchorOrigin={anchorOrigin}
-      TransitionComponent={SlideLeft}
       transitionDuration={300}
       sx={isPortrait ? { mt: 8 } : { mb: 2 }}
+      slots={{
+        transition: SlideLeft
+      }}
     >
       <ToastCard
         severity={severity}

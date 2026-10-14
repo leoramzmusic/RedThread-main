@@ -16,7 +16,9 @@ export default function EmployeeListadoPage() {
                     </Head>
 
                     {/* Header / Breadcrumbs */}
-                    <Box mb={4}>
+                    <Box sx={{
+                        mb: 4
+                    }}>
                         <Breadcrumbs
                             separator={<NavigateNextIcon fontSize="small" />}
                             sx={{ mb: 1, '& .MuiBreadcrumbs-li': { color: 'text.secondary', fontSize: '0.875rem' } }}
@@ -24,15 +26,34 @@ export default function EmployeeListadoPage() {
                             <Link href="/portal-redthread/dashboard" passHref legacyBehavior>
                                 <MuiLink underline="hover" color="inherit">Dashboard</MuiLink>
                             </Link>
-                            <Typography color="text.primary" variant="body2" fontWeight={500}>Empleados</Typography>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    color: "text.primary",
+                                    fontWeight: 500
+                                }}>Empleados</Typography>
                         </Breadcrumbs>
 
-                        <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                                gap: 2
+                            }}>
                             <Box>
-                                <Typography variant="h4" fontWeight={800} letterSpacing="-0.02em">
+                                <Typography
+                                    variant="h4"
+                                    sx={{
+                                        fontWeight: 800,
+                                        letterSpacing: "-0.02em"
+                                    }}>
                                     Gestión de <Box component="span" sx={{ color: 'primary.main' }}>Empleados</Box>
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" sx={{
+                                    color: "text.secondary"
+                                }}>
                                     Administra el personal, roles y accesos del portal administrativo.
                                 </Typography>
                             </Box>

@@ -47,77 +47,85 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
         <Dialog
             open={open}
             onClose={onClose}
-            PaperProps={{
-                className: 'modal-container',
-                sx: {
-                    borderRadius: '12px',
-                    maxWidth: 600,
-                    width: { xs: '92%', sm: '600px' },
-                    mx: 'auto',
-                    mt: { xs: 2, md: 4 },
-                    bgcolor: 'rgba(15,15,15,0.92)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 0 16px rgba(255,0,0,0.25)',
-                    overflow: 'hidden',
-                    animation: 'liquidFade 0.4s ease',
-                    '@keyframes liquidFade': {
-                        from: { transform: 'scale(0.95)', opacity: 0 },
-                        to: { transform: 'scale(1)', opacity: 1 },
+            slotProps={{
+                paper: {
+                    className: 'modal-container',
+                    sx: {
+                        borderRadius: '12px',
+                        maxWidth: 600,
+                        width: { xs: '92%', sm: '600px' },
+                        mx: 'auto',
+                        mt: { xs: 2, md: 4 },
+                        bgcolor: 'rgba(15,15,15,0.92)',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: '0 0 16px rgba(255,0,0,0.25)',
+                        overflow: 'hidden',
+                        animation: 'liquidFade 0.4s ease',
+                        '@keyframes liquidFade': {
+                            from: { transform: 'scale(0.95)', opacity: 0 },
+                            to: { transform: 'scale(1)', opacity: 1 },
+                        },
+                        '@media (max-width: 1024px)': {
+                            transform: 'none !important',
+                        },
+                        '@media (min-width:768px) and (max-width:1366px) and (orientation: portrait)': {
+                            width: '70% !important',
+                            maxWidth: '70% !important',
+                            mx: 'auto !important',
+                            marginTop: '10rem !important',
+                            transform: 'none !important',
+                            pt: '0.75rem !important',
+                            pb: '0.75rem !important',
+                            maxHeight: '60vh !important',
+                            height: 'auto !important',
+                        },
+                        '@media (min-width:768px) and (max-width:1366px) and (orientation: landscape)': {
+                            width: '70% !important',
+                            maxWidth: '70% !important',
+                            mx: 'auto !important',
+                            margin: 'auto !important',
+                            transform: 'none !important',
+                            pt: '1rem !important',
+                            pb: '1rem !important',
+                        },
+                        '@media (max-width:767px) and (orientation: portrait)': {
+                            width: '92% !important',
+                            maxWidth: '92% !important',
+                            mx: 'auto !important',
+                            marginTop: '2rem !important',
+                            transform: 'none !important',
+                        },
+                        '@media (max-width:767px) and (orientation: landscape)': {
+                            width: '85% !important',
+                            maxWidth: '85% !important',
+                            mx: 'auto !important',
+                            marginTop: '1rem !important',
+                            transform: 'none !important',
+                        },
                     },
-                    '@media (max-width: 1024px)': {
-                        transform: 'none !important',
-                    },
-                    '@media (min-width:768px) and (max-width:1366px) and (orientation: portrait)': {
-                        width: '70% !important',
-                        maxWidth: '70% !important',
-                        mx: 'auto !important',
-                        marginTop: '10rem !important',
-                        transform: 'none !important',
-                        pt: '0.75rem !important',
-                        pb: '0.75rem !important',
-                        maxHeight: '60vh !important',
-                        height: 'auto !important',
-                    },
-                    '@media (min-width:768px) and (max-width:1366px) and (orientation: landscape)': {
-                        width: '70% !important',
-                        maxWidth: '70% !important',
-                        mx: 'auto !important',
-                        margin: 'auto !important',
-                        transform: 'none !important',
-                        pt: '1rem !important',
-                        pb: '1rem !important',
-                    },
-                    '@media (max-width:767px) and (orientation: portrait)': {
-                        width: '92% !important',
-                        maxWidth: '92% !important',
-                        mx: 'auto !important',
-                        marginTop: '2rem !important',
-                        transform: 'none !important',
-                    },
-                    '@media (max-width:767px) and (orientation: landscape)': {
-                        width: '85% !important',
-                        maxWidth: '85% !important',
-                        mx: 'auto !important',
-                        marginTop: '1rem !important',
-                        transform: 'none !important',
-                    },
-                },
+                }
             }}
         >
-            <Box display="flex" justifyContent="space-between" alignItems="center" p={2} pb={1}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    p: 2,
+                    pb: 1
+                }}>
                 <Typography
                     variant="h6"
-                    fontWeight={700}
                     sx={{
+                        fontWeight: 700,
                         color: 'white',
                         fontFamily: "'Poppins', sans-serif",
                         fontSize: 'clamp(1rem, 4vw, 1.2rem)',
                         textAlign: 'center',
-                        flexGrow: 1,
-                    }}
-                >
+                        flexGrow: 1
+                    }}>
                     {isRecharging ? '⚡ Recargar Batería' : '🔋 Tempotalizador'}
                 </Typography>
                 <IconButton onClick={onClose} sx={{ color: 'text.secondary', ml: 1 }}>
@@ -126,23 +134,44 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
             </Box>
 
             <DialogContent>
-                <Box textAlign="center" mb={3}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Box
+                    sx={{
+                        textAlign: "center",
+                        mb: 3
+                    }}>
+                    <Typography variant="body2" gutterBottom sx={{
+                        color: "text.secondary"
+                    }}>
                         {isRecharging ? "¡Bienvenido de vuelta!" : "Nivel actual de energía social:"}
                     </Typography>
 
                     <Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Typography variant="h3" fontWeight={800} color={currentBattery < 30 ? '#FF5252' : '#4CAF50'}>
+                        <Typography variant="h3" color={currentBattery < 30 ? '#FF5252' : '#4CAF50'} sx={{
+                            fontWeight: 800
+                        }}>
                             {currentBattery}%
                         </Typography>
                         {isRecharging && (
-                            <Typography variant="h5" color="text.secondary" sx={{ ml: 1, opacity: 0.5 }}>
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    color: "text.secondary",
+                                    ml: 1,
+                                    opacity: 0.5
+                                }}>
                                 / {maxBattery}%
                             </Typography>
                         )}
                     </Box>
 
-                    <Typography variant="caption" display="block" fontStyle="italic" color="text.disabled" mt={1}>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            display: "block",
+                            fontStyle: "italic",
+                            color: "text.disabled",
+                            mt: 1
+                        }}>
                         {currentBattery < 30
                             ? (isRecharging ? "¿Listo para socializar?" : "Ya anda medio Cheems...")
                             : "Andamos al 100"}
@@ -162,10 +191,18 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                                 border: '1px solid rgba(255,255,255,0.06)',
                             }}
                         >
-                            <Typography variant="caption" color="text.secondary" gutterBottom>
+                            <Typography variant="caption" gutterBottom sx={{
+                                color: "text.secondary"
+                            }}>
                                 Calibrando tu batería social:
                             </Typography>
-                            <Box display="flex" justifyContent="center" gap={1} mt={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    gap: 1,
+                                    mt: 1
+                                }}>
                                 {['introvert', 'ambivert', 'extrovert'].map((type) => (
                                     <Chip
                                         key={type}
@@ -228,21 +265,20 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                     <>
                         <Typography
                             variant="subtitle2"
-                            fontWeight={700}
                             sx={{
+                                fontWeight: 700,
                                 color: 'white',
                                 mb: 1.5,
                                 fontFamily: "'Poppins', sans-serif",
                                 fontSize: 'clamp(0.9rem, 3vw, 1rem)',
-                                textAlign: 'center',
-                            }}
-                        >
+                                textAlign: 'center'
+                            }}>
                             ¿Cuánto tiempo necesitas?
                         </Typography>
 
                         <Grid container spacing={2}>
                             {timeoutOptions.map((option) => (
-                                <Grid item xs={6} key={option.hours}>
+                                <Grid key={option.hours} size={6}>
                                     <Button
                                         fullWidth
                                         variant="outlined"
@@ -270,19 +306,25 @@ export default function TimeOutModal({ open, onClose, onSetTimeOut, onRecharge, 
                                         }}
                                     >
                                         {option.icon}
-                                        <Box textAlign="center">
+                                        <Box sx={{
+                                            textAlign: "center"
+                                        }}>
                                             <Typography
                                                 variant="body2"
-                                                fontWeight={700}
                                                 sx={{
+                                                    fontWeight: 700,
                                                     fontFamily: "'Poppins', sans-serif",
                                                     fontSize: 'clamp(0.85rem, 3vw, 0.95rem)',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
+                                                    textAlign: 'center'
+                                                }}>
                                                 {option.label}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    fontSize: '0.75rem'
+                                                }}>
                                                 {option.phrase}
                                             </Typography>
                                         </Box>

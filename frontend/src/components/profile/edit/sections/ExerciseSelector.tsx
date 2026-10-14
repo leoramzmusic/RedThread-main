@@ -83,7 +83,11 @@ export default function ExerciseSelector({ control }: ExerciseSelectorProps) {
                 },
               }}
             >
-              <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center"
+                }}>
                 <ExerciseIcon sx={{ color: categoryColor, mr: 1.5 }} />
                 <Typography
                   variant="subtitle2"
@@ -116,7 +120,12 @@ export default function ExerciseSelector({ control }: ExerciseSelectorProps) {
                   bgcolor: "background.paper",
                 }}
               >
-                <Box display="flex" flexWrap="wrap" gap={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}>
                   {EXERCISE_OPTIONS.map((option) => {
                     const isSelected = currentValue === option.value;
                     return (

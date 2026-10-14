@@ -79,7 +79,9 @@ export default function MultimediaPage() {
             <Container maxWidth="lg">
                 <Box sx={{ py: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                        <Typography variant="h4" fontWeight={700}>Multimedia</Typography>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>Multimedia</Typography>
                         <Button variant="contained" startIcon={<CloudUploadIcon />} onClick={() => setOpenUpload(true)}>
                             Subir Recurso
                         </Button>
@@ -88,7 +90,12 @@ export default function MultimediaPage() {
                     {loading ? <CircularProgress /> : (
                         <Grid container spacing={2}>
                             {resources.map((r) => (
-                                <Grid item xs={6} md={3} key={r._id}>
+                                <Grid
+                                    key={r._id}
+                                    size={{
+                                        xs: 6,
+                                        md: 3
+                                    }}>
                                     <Card>
                                         {/* Simple distinction for demo, ideally check mime type in metadata */}
                                         {r.url.endsWith('.mp4') ? (

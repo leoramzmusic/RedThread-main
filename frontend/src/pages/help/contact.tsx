@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import React, { useState } from 'react';
 import { 
   Box, 
@@ -19,7 +19,7 @@ import {
   AccessTime as AccessTimeIcon,
   Send as SendIcon
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import apiClient from '../../services/api';
@@ -78,11 +78,22 @@ export default function ContactPage() {
       <Container maxWidth="lg" sx={{ py: 6 }}>
         <Grid container spacing={6}>
           {/* Contact Info */}
-          <Grid item xs={12} md={5}>
-            <Typography variant="h3" component="h1" fontWeight={700} gutterBottom>
+          <Grid
+            size={{
+              xs: 12,
+              md: 5
+            }}>
+            <Typography variant="h3" component="h1" gutterBottom sx={{
+              fontWeight: 700
+            }}>
               {t('contact.title', 'Contáctanos')}
             </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.secondary",
+                mb: 4
+              }}>
               {t('contact.subtitle', 'Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos lo antes posible.')}
             </Typography>
 
@@ -92,13 +103,19 @@ export default function ContactPage() {
                   <EmailIcon />
                 </Paper>
                 <Box>
-                  <Typography variant="subtitle1" fontWeight={600}>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: 600
+                  }}>
                     {t('contact.email', 'Email')}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>
                     support@redthread.app
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>
                     partners@redthread.app
                   </Typography>
                 </Box>
@@ -109,10 +126,14 @@ export default function ContactPage() {
                   <LocationIcon />
                 </Paper>
                 <Box>
-                  <Typography variant="subtitle1" fontWeight={600}>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: 600
+                  }}>
                     {t('contact.location', 'Ubicación')}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>
                     Ciudad de México, México
                   </Typography>
                 </Box>
@@ -123,10 +144,14 @@ export default function ContactPage() {
                   <AccessTimeIcon />
                 </Paper>
                 <Box>
-                  <Typography variant="subtitle1" fontWeight={600}>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: 600
+                  }}>
                     {t('contact.hours', 'Horario de Atención')}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>
                     Lunes - Viernes: 9:00 AM - 6:00 PM (CST)
                   </Typography>
                 </Box>
@@ -135,15 +160,29 @@ export default function ContactPage() {
           </Grid>
 
           {/* Contact Form */}
-          <Grid item xs={12} md={7}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 7
+            }}>
             <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 3 }}>
-              <Typography variant="h5" gutterBottom fontWeight={600} sx={{ mb: 3 }}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{
+                  fontWeight: 600,
+                  mb: 3
+                }}>
                 {t('contact.formTitle', 'Envíanos un mensaje')}
               </Typography>
               
               <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
                     <TextField
                       fullWidth
                       id="name"
@@ -155,7 +194,11 @@ export default function ContactPage() {
                       helperText={formik.touched.name && formik.errors.name}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
                     <TextField
                       fullWidth
                       id="email"
@@ -167,7 +210,7 @@ export default function ContactPage() {
                       helperText={formik.touched.email && formik.errors.email}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <TextField
                       fullWidth
                       select
@@ -186,7 +229,7 @@ export default function ContactPage() {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <TextField
                       fullWidth
                       multiline
@@ -200,7 +243,7 @@ export default function ContactPage() {
                       helperText={formik.touched.message && formik.errors.message}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Button
                       color="primary"
                       variant="contained"

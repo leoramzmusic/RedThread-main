@@ -81,8 +81,10 @@ function SectionForm({
           label="Tipo de contenido"
           value={contentType}
           onChange={(e) => setContentType(e.target.value as SectionContentType)}
-          SelectProps={{ native: true }}
           sx={{ mb: 3 }}
+          slotProps={{
+            select: { native: true }
+          }}
         >
           {SECTION_CONTENT_TYPES.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -94,12 +96,24 @@ function SectionForm({
         <Typography variant="subtitle2" gutterBottom>
           Títulos por idioma
         </Typography>
-        <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+            display: "block",
+            mb: 1
+          }}>
           Cada pestaña es un idioma. Puedes guardar títulos parciales: los idiomas vacíos usan
           fallback en inglés. Máx. {SECTION_MAX_TITLE_LENGTH} caracteres.
         </Typography>
         {error && (
-          <Typography variant="caption" color="error" display="block" mb={1}>
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{
+              display: "block",
+              mb: 1
+            }}>
             {error}
           </Typography>
         )}
@@ -147,8 +161,10 @@ function SectionForm({
               label={`Título en ${activeLang.toUpperCase()}`}
               value={translations[activeLang] || ''}
               onChange={(e) => setTranslation(activeLang, e.target.value)}
-              inputProps={{ maxLength: SECTION_MAX_TITLE_LENGTH }}
               helperText={`Texto de la sección para el idioma ${activeLang.toUpperCase()}`}
+              slotProps={{
+                htmlInput: { maxLength: SECTION_MAX_TITLE_LENGTH }
+              }}
             />
           </Box>
         </Box>

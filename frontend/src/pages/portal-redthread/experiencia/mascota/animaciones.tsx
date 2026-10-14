@@ -116,7 +116,9 @@ export default function YukiAnimaciones() {
                         >
                             <ArrowBackIcon />
                         </Box>
-                        <Typography variant="h4" fontWeight={700}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>
                             Animaciones de Yuki
                         </Typography>
                     </Box>
@@ -125,10 +127,17 @@ export default function YukiAnimaciones() {
 
                     {/* Animation Speed */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Velocidad de Animación
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Controla la velocidad global de las animaciones de Yuki.
                         </Typography>
                         <Box sx={{ px: 2 }}>
@@ -153,25 +162,44 @@ export default function YukiAnimaciones() {
 
                     {/* State Animations */}
                     <Paper sx={{ p: 3, mb: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Animaciones por Estado
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Configura qué animación reproduce Yuki en cada estado.
                         </Typography>
 
                         <Grid container spacing={2}>
                             {ANIMATION_STATES.map((state) => (
-                                <Grid item xs={12} md={6} key={state.key}>
+                                <Grid
+                                    key={state.key}
+                                    size={{
+                                        xs: 12,
+                                        md: 6
+                                    }}>
                                     <Card sx={{ borderLeft: `4px solid ${state.color}` }}>
                                         <CardContent>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                                <Typography variant="subtitle1" fontWeight={600}>
+                                                <Typography variant="subtitle1" sx={{
+                                                    fontWeight: 600
+                                                }}>
                                                     {state.label}
                                                 </Typography>
                                                 <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: state.color }} />
                                             </Box>
-                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    mb: 2
+                                                }}>
                                                 {state.description}
                                             </Typography>
                                             <FormControl fullWidth size="small">
@@ -197,10 +225,17 @@ export default function YukiAnimaciones() {
 
                     {/* Screen Overrides */}
                     <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{
+                            fontWeight: 600
+                        }}>
                             Activación por Pantalla
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                mb: 2
+                            }}>
                             Define en qué pantallas Yuki aparece o usa animaciones específicas.
                         </Typography>
                         <Alert severity="info">

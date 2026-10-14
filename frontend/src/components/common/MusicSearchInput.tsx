@@ -98,27 +98,31 @@ export default function MusicSearchInput({ placeholder, apiEndpoint, onSelect, i
                     {...params}
                     placeholder={placeholder}
                     fullWidth
-                    InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Search sx={{ color: '#666' }} />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <>
-                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                            </>
-                        ),
-                        sx: {
-                            bgcolor: '#1e1e1e',
-                            color: '#fff',
-                            borderRadius: 2,
-                            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#444' },
-                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#666' },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
-                            '& input': { color: '#fff' }
+                    slotProps={{
+                        ...params.slotProps,
+
+                        input: {
+                            ...params.slotProps.input,
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search sx={{ color: '#666' }} />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.slotProps.input.endAdornment}
+                                </>
+                            ),
+                            sx: {
+                                bgcolor: '#1e1e1e',
+                                color: '#fff',
+                                borderRadius: 2,
+                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#444' },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#666' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+                                '& input': { color: '#fff' }
+                            }
                         }
                     }}
                 />
@@ -132,11 +136,13 @@ export default function MusicSearchInput({ placeholder, apiEndpoint, onSelect, i
                     </div>
                 </li>
             )}
-            PaperComponent={({ children }) => (
-                <div style={{ backgroundColor: '#1e1e1e', borderRadius: '0 0 8px 8px', border: '1px solid #444' }}>
-                    {children}
-                </div>
-            )}
+            slots={{
+                paper: ({ children }) => (
+                    <div style={{ backgroundColor: '#1e1e1e', borderRadius: '0 0 8px 8px', border: '1px solid #444' }}>
+                        {children}
+                    </div>
+                )
+            }}
         />
     );
 }

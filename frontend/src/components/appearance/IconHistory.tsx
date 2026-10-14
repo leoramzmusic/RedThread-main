@@ -20,7 +20,14 @@ interface IconHistoryProps {
 
 export default function IconHistoryComponent({ history, onClear }: IconHistoryProps) {
     if (history.length === 0) {
-        return <Typography color="text.secondary" align="center" sx={{ py: 4 }}>No hay historial disponible.</Typography>;
+        return (
+            <Typography
+                align="center"
+                sx={{
+                    color: "text.secondary",
+                    py: 4
+                }}>No hay historial disponible.</Typography>
+        );
     }
 
     const getActionColor = (action: HistoryAction) => {
@@ -36,7 +43,12 @@ export default function IconHistoryComponent({ history, onClear }: IconHistoryPr
 
     return (
         <Box>
-            <Box display="flex" justifyContent="flex-end" mb={2}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    mb: 2
+                }}>
                 <Button
                     variant="outlined"
                     color="error"

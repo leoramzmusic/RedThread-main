@@ -93,7 +93,9 @@ export default function YukiAssets() {
                         >
                             <ArrowBackIcon />
                         </Box>
-                        <Typography variant="h4" fontWeight={700}>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>
                             Assets de Yuki
                         </Typography>
                     </Box>
@@ -127,7 +129,9 @@ export default function YukiAssets() {
                         <Typography variant="h6" gutterBottom>
                             {uploading ? 'Subiendo...' : 'Arrastra o haz clic para subir'}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                            color: "text.secondary"
+                        }}>
                             Formatos soportados: SVG, PNG, JPG, WebP, Lottie JSON (máx. 10MB)
                         </Typography>
                     </Paper>
@@ -138,7 +142,13 @@ export default function YukiAssets() {
                     ) : (
                         <Grid container spacing={3}>
                             {assets.map((asset) => (
-                                <Grid item xs={12} sm={6} md={4} key={asset.id}>
+                                <Grid
+                                    key={asset.id}
+                                    size={{
+                                        xs: 12,
+                                        sm: 6,
+                                        md: 4
+                                    }}>
                                     <Card>
                                         <Box
                                             sx={{
@@ -152,7 +162,9 @@ export default function YukiAssets() {
                                             {asset.type === 'lottie' ? (
                                                 <Box sx={{ textAlign: 'center' }}>
                                                     <Typography variant="h3">🎬</Typography>
-                                                    <Typography variant="caption" color="text.secondary">
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>
                                                         Lottie JSON
                                                     </Typography>
                                                 </Box>
@@ -166,10 +178,14 @@ export default function YukiAssets() {
                                             )}
                                         </Box>
                                         <CardContent sx={{ py: 1 }}>
-                                            <Typography variant="body2" fontWeight={600} noWrap>
+                                            <Typography variant="body2" noWrap sx={{
+                                                fontWeight: 600
+                                            }}>
                                                 {asset.filename}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {asset.type.toUpperCase()} · {formatSize(asset.size)}
                                             </Typography>
                                         </CardContent>

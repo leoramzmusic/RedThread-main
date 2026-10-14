@@ -53,7 +53,13 @@ export default function CreativeGameCard({ game, onPlay }: CreativeGameCardProps
                 {game.title}
             </Typography>
 
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
+            <Typography
+                variant="body2"
+                align="center"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 {game.description}
             </Typography>
 

@@ -31,14 +31,26 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
 
     return (
         <Paper sx={{ p: 2, mb: 3 }}>
-            <Box display="flex" alignItems="center" mb={2}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    mb: 2
+                }}>
                 <FilterListIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" fontWeight={600}>Filtros Avanzados</Typography>
+                <Typography variant="h6" sx={{
+                    fontWeight: 600
+                }}>Filtros Avanzados</Typography>
             </Box>
 
             <Grid container spacing={2}>
                 {/* Basic Filters */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Estado de Cuenta</InputLabel>
                         <Select
@@ -55,7 +67,12 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Verificación</InputLabel>
                         <Select
@@ -70,7 +87,12 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Suscripción</InputLabel>
                         <Select
@@ -86,7 +108,12 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <TextField
                         fullWidth
                         size="small"
@@ -100,25 +127,39 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
 
             <Accordion sx={{ mt: 2, boxShadow: 'none', '&:before': { display: 'none' } }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="body2" color="primary" fontWeight={600}>Filtros de Ubicación y Fecha</Typography>
+                    <Typography variant="body2" color="primary" sx={{
+                        fontWeight: 600
+                    }}>Filtros de Ubicación y Fecha</Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 0 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={4}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 4
+                            }}>
                             <TextField
                                 fullWidth size="small" label="País"
                                 value={filters.country || ''}
                                 onChange={(e) => handleChange('country', e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={12} md={4}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 4
+                            }}>
                             <TextField
                                 fullWidth size="small" label="Estado/Región"
                                 value={filters.state || ''}
                                 onChange={(e) => handleChange('state', e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={12} md={4}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 4
+                            }}>
                             <TextField
                                 fullWidth size="small" label="Ciudad"
                                 value={filters.city || ''}
@@ -126,26 +167,38 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
                             />
                         </Grid>
 
-                        <Grid item xs={12} md={6}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 6
+                            }}>
                             <TextField
                                 fullWidth
                                 size="small"
                                 label="Desde"
                                 type="date"
-                                InputLabelProps={{ shrink: true }}
                                 value={filters.date_from || ''}
                                 onChange={(e) => handleChange('date_from', e.target.value)}
+                                slotProps={{
+                                    inputLabel: { shrink: true }
+                                }}
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 6
+                            }}>
                             <TextField
                                 fullWidth
                                 size="small"
                                 label="Hasta"
                                 type="date"
-                                InputLabelProps={{ shrink: true }}
                                 value={filters.date_to || ''}
                                 onChange={(e) => handleChange('date_to', e.target.value)}
+                                slotProps={{
+                                    inputLabel: { shrink: true }
+                                }}
                             />
                         </Grid>
                     </Grid>
@@ -154,7 +207,12 @@ export default function UserFilters({ filters, onFilterChange, onClear }: Filter
 
             <Divider sx={{ my: 1 }} />
 
-            <Box display="flex" justifyContent="flex-end" gap={2}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 2
+                }}>
                 <Button
                     startIcon={<RestartAltIcon />}
                     variant="text"

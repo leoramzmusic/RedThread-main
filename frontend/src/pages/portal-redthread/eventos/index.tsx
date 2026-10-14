@@ -32,16 +32,29 @@ export default function AdminEventos() {
     <AdminLayout>
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 3
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread')}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Gestión de Eventos
             </Typography>
           </Box>
 
-          <Box display="flex" justifyContent="flex-end" mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mb: 3
+            }}>
             <Button
               variant="contained"
               startIcon={<AddIcon />}

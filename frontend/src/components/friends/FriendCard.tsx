@@ -13,7 +13,7 @@ import {
     useTheme
 } from '@mui/material';
 import {
-    ChatBubbleOutline as MessageIcon,
+    ChatBubbleOutlined as MessageIcon,
     PersonRemove as RemoveIcon,
     Check as AcceptIcon,
     Close as RejectIcon,
@@ -146,9 +146,13 @@ const FriendCard: React.FC<FriendCardProps> = ({ friend, onAction }) => {
                 }}
             />
 
-            <Stack spacing={2} alignItems="center">
+            <Stack spacing={2} sx={{
+                alignItems: "center"
+            }}>
                 {/* Avatar Section */}
-                <Box position="relative">
+                <Box sx={{
+                    position: "relative"
+                }}>
                     <Avatar
                         src={friend.photo || undefined}
                         alt={friend.display_name}
@@ -196,12 +200,25 @@ const FriendCard: React.FC<FriendCardProps> = ({ friend, onAction }) => {
                 </Box>
 
                 {/* Info Section */}
-                <Box textAlign="center" width="100%">
-                    <Typography variant="h6" fontWeight={700} noWrap>
+                <Box
+                    sx={{
+                        textAlign: "center",
+                        width: "100%"
+                    }}>
+                    <Typography variant="h6" noWrap sx={{
+                        fontWeight: 700
+                    }}>
                         {friend.display_name}
                     </Typography>
 
-                    <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 0.5, mb: 1 }}>
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                            justifyContent: "center",
+                            mt: 0.5,
+                            mb: 1
+                        }}>
                         {friend.is_golth && (
                             <Chip
                                 label="Golth"
@@ -212,14 +229,22 @@ const FriendCard: React.FC<FriendCardProps> = ({ friend, onAction }) => {
                             />
                         )}
                         {friend.age && (
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>
                                 {friend.age} años
                             </Typography>
                         )}
                     </Stack>
 
                     {friend.city && (
-                        <Typography variant="body2" color="text.secondary" noWrap sx={{ opacity: 0.8 }}>
+                        <Typography
+                            variant="body2"
+                            noWrap
+                            sx={{
+                                color: "text.secondary",
+                                opacity: 0.8
+                            }}>
                             📍 {friend.city}
                         </Typography>
                     )}
@@ -228,7 +253,9 @@ const FriendCard: React.FC<FriendCardProps> = ({ friend, onAction }) => {
                 {/* Actions Section */}
                 <Box sx={{ width: '100%', pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
                     {isPending ? (
-                        <Stack direction="row" spacing={1} justifyContent="center">
+                        <Stack direction="row" spacing={1} sx={{
+                            justifyContent: "center"
+                        }}>
                             <Tooltip title="Aceptar">
                                 <Button
                                     variant="contained"
@@ -255,7 +282,9 @@ const FriendCard: React.FC<FriendCardProps> = ({ friend, onAction }) => {
                             </Tooltip>
                         </Stack>
                     ) : (
-                        <Stack direction="row" spacing={1} justifyContent="center">
+                        <Stack direction="row" spacing={1} sx={{
+                            justifyContent: "center"
+                        }}>
                             <Tooltip title="Enviar mensaje">
                                 <IconButton
                                     color="primary"

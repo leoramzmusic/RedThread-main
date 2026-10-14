@@ -36,8 +36,8 @@ import {
 } from "@mui/icons-material";
 import Layout from "../../components/layout/Layout";
 import apiClient from "../../services/api";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation, Trans } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
+import { useTranslation, Trans } from "next-i18next/pages";
 import {
   RED,
   RED_DARK,
@@ -173,16 +173,16 @@ function StatNumber({ value, isDark, className }: StatNumberProps) {
     >
       <Typography
         variant="h2"
-        fontWeight={700}
         sx={{
+          fontWeight: 700,
           color,
           transition: "color 0.4s ease, transform 0.3s ease",
           fontFamily: "'Poppins', Inter, system-ui, sans-serif",
           letterSpacing: "-0.02em",
+
           animation:
-            isPercent && percent >= 100 ? "rtPulse 0.6s ease 3" : undefined,
-        }}
-      >
+            isPercent && percent >= 100 ? "rtPulse 0.6s ease 3" : undefined
+        }}>
         {isPercent ? (
           <AnimatedPercent target={percent} />
         ) : (
@@ -359,11 +359,12 @@ export default function Dashboard() {
     return (
       <Layout>
         <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          minHeight="80vh"
-        >
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </Layout>
@@ -445,12 +446,13 @@ export default function Dashboard() {
         >
           {/* Header */}
           <Box
-            display="flex"
-            alignItems="center"
-            gap={2}
-            mb={4}
-            flexWrap="wrap"
-          >
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 4,
+              flexWrap: "wrap"
+            }}>
             <Typography
               variant="h4"
               component="h1"
@@ -713,9 +715,17 @@ export default function Dashboard() {
           <Box component="hr" sx={sectionDivider(isDark)} />
 
           {/* Stats Cards */}
-          <Grid container spacing={3} mb={4}>
+          <Grid container spacing={3} sx={{
+            mb: 4
+          }}>
             {statBodies.map((stat, idx) => (
-              <Grid item xs={12} sm={6} md={3} key={stat.label}>
+              <Grid
+                key={stat.label}
+                size={{
+                  xs: 12,
+                  sm: 6,
+                  md: 3
+                }}>
                 <Card
                   role="button"
                   tabIndex={0}
@@ -770,10 +780,11 @@ export default function Dashboard() {
                   )}
                   <CardContent>
                     <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                    >
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}>
                       <Box>
                         <StatNumber
                           value={stat.value}
@@ -852,17 +863,22 @@ export default function Dashboard() {
               zIndex: 1,
             }}
           >
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={6}>
+            <Grid container spacing={2} sx={{
+              alignItems: "center"
+            }}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 6
+                }}>
                 <Typography
                   variant="h5"
-                  mb={1}
                   sx={{
+                    mb: 1,
                     ...glassHeading,
                     color: textPrimary(isDark),
-                    fontSize: "1.375rem",
-                  }}
-                >
+                    fontSize: "1.375rem"
+                  }}>
                   {t("dashboard.quickReady")}
                 </Typography>
                 <Typography
@@ -872,13 +888,18 @@ export default function Dashboard() {
                   {t("dashboard.quickReadyDesc")}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                size={{
+                  xs: 12,
+                  md: 6
+                }}>
                 <Box
-                  display="flex"
-                  gap={2}
-                  justifyContent={{ xs: "flex-start", md: "flex-end" }}
-                  flexWrap="wrap"
-                >
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    justifyContent: { xs: "flex-start", md: "flex-end" },
+                    flexWrap: "wrap"
+                  }}>
                   <RippleActionButton
                     label={t("dashboard.quickRoulette")}
                     icon={<CasinoIcon sx={{ color: "inherit" }} />}
@@ -909,7 +930,11 @@ export default function Dashboard() {
 
           <Grid container spacing={3}>
             {/* Recent Matches */}
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Paper
                 elevation={0}
                 sx={{
@@ -923,11 +948,12 @@ export default function Dashboard() {
                 }}
               >
                 <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mb={2}
-                >
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2
+                  }}>
                   <Typography
                     variant="h6"
                     sx={{
@@ -954,7 +980,11 @@ export default function Dashboard() {
                   </IconButton>
                 </Box>
                 {recentMatches.length > 0 ? (
-                  <Box display="flex" flexDirection="column">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column"
+                    }}>
                     {recentMatches.map((match) => (
                       <Box
                         key={match.match_id}
@@ -969,12 +999,17 @@ export default function Dashboard() {
                         >
                           {match.display_name[0]}
                         </Avatar>
-                        <Box flex={1} minWidth={0}>
+                        <Box
+                          sx={{
+                            flex: 1,
+                            minWidth: 0
+                          }}>
                           <Typography
                             variant="body1"
-                            fontWeight={600}
-                            sx={{ color: textPrimary(isDark) }}
-                          >
+                            sx={{
+                              fontWeight: 600,
+                              color: textPrimary(isDark)
+                            }}>
                             {match.display_name}
                           </Typography>
                           <Typography
@@ -999,7 +1034,11 @@ export default function Dashboard() {
             </Grid>
 
             {/* Recent Conversations */}
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Paper
                 elevation={0}
                 sx={{
@@ -1013,11 +1052,12 @@ export default function Dashboard() {
                 }}
               >
                 <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mb={2}
-                >
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2
+                  }}>
                   <Typography
                     variant="h6"
                     sx={{
@@ -1044,7 +1084,11 @@ export default function Dashboard() {
                   </IconButton>
                 </Box>
                 {recentConversations.length > 0 ? (
-                  <Box display="flex" flexDirection="column">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column"
+                    }}>
                     {recentConversations.map((conv) => (
                       <Box
                         key={conv.user_id}
@@ -1059,12 +1103,17 @@ export default function Dashboard() {
                         >
                           {conv.display_name[0]}
                         </Avatar>
-                        <Box flex={1} minWidth={0}>
+                        <Box
+                          sx={{
+                            flex: 1,
+                            minWidth: 0
+                          }}>
                           <Typography
                             variant="body1"
-                            fontWeight={600}
-                            sx={{ color: textPrimary(isDark) }}
-                          >
+                            sx={{
+                              fontWeight: 600,
+                              color: textPrimary(isDark)
+                            }}>
                             {conv.display_name}
                           </Typography>
                           <Typography
@@ -1092,7 +1141,7 @@ export default function Dashboard() {
             </Grid>
 
             {/* Suggestions */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Paper
                 elevation={0}
                 sx={{
@@ -1107,25 +1156,24 @@ export default function Dashboard() {
               >
                 <Typography
                   variant="h6"
-                  mb={2}
                   sx={{
+                    mb: 2,
                     ...glassHeading,
                     color: textPrimary(isDark),
-                    fontSize: "1.125rem",
-                  }}
-                >
+                    fontSize: "1.125rem"
+                  }}>
                   {t("dashboard.suggestions")}
                 </Typography>
                 <Grid container spacing={2}>
                   {suggestions.map((suggestion) => (
                     <Grid
-                      item
-                      xs={12}
-                      sm={6}
-                      md={4}
-                      lg={2.4}
                       key={suggestion.user_id}
-                    >
+                      size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4,
+                        lg: 2.4
+                      }}>
                       <Card
                         sx={{
                           ...glassSurface(isDark, {
@@ -1183,9 +1231,10 @@ export default function Dashboard() {
                         <CardContent>
                           <Typography
                             variant="body1"
-                            fontWeight={600}
-                            sx={{ color: textPrimary(isDark) }}
-                          >
+                            sx={{
+                              fontWeight: 600,
+                              color: textPrimary(isDark)
+                            }}>
                             {suggestion.display_name}, {suggestion.age}
                           </Typography>
                           <Typography
@@ -1199,7 +1248,13 @@ export default function Dashboard() {
                           >
                             {suggestion.bio || t("dashboard.noBio")}
                           </Typography>
-                          <Box display="flex" gap={0.5} mt={1} flexWrap="wrap">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              gap: 0.5,
+                              mt: 1,
+                              flexWrap: "wrap"
+                            }}>
                             {suggestion.interests.map((interest, idx) => (
                               <Chip
                                 key={idx}
@@ -1242,20 +1297,24 @@ export default function Dashboard() {
       <Dialog
         open={careOpen}
         onClose={handleCareClose}
-        TransitionComponent={CareTransition}
         maxWidth="sm"
         fullWidth
-        BackdropProps={{
-          sx: {
-            bgcolor: isDark ? "rgba(10,11,13,0.55)" : "rgba(26,27,30,0.35)",
-            WebkitBackdropFilter: "blur(8px)",
-            backdropFilter: "blur(8px)",
+        slotProps={{
+          backdrop: {
+            sx: {
+              bgcolor: isDark ? "rgba(10,11,13,0.55)" : "rgba(26,27,30,0.35)",
+              WebkitBackdropFilter: "blur(8px)",
+              backdropFilter: "blur(8px)",
+            },
           },
+
+          paper: {
+            sx: glassSurface(isDark, { blur: 32, level: "high", elevated: true }),
+          }
         }}
-        PaperProps={{
-          sx: glassSurface(isDark, { blur: 32, level: "high", elevated: true }),
-        }}
-      >
+        slots={{
+          transition: CareTransition
+        }}>
         <DialogTitle
           sx={{
             fontWeight: 700,
@@ -1269,7 +1328,9 @@ export default function Dashboard() {
           dividers
           sx={{ borderColor: hairline(isDark), color: textSecondary(isDark) }}
         >
-          <Typography variant="body1" paragraph>
+          <Typography variant="body1" sx={{
+            marginBottom: "16px"
+          }}>
             <Trans i18nKey="dashboard.modalIntro" />
           </Typography>
           <Box component="ul" sx={{ pl: 3, m: 0 }}>

@@ -99,7 +99,9 @@ function SortableNavItem({ section, currentLang, onEdit, onDelete, onToggle, onT
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-            <Typography variant="subtitle2" fontWeight={700} noWrap>{section.key}</Typography>
+            <Typography variant="subtitle2" noWrap sx={{
+              fontWeight: 700
+            }}>{section.key}</Typography>
             <Tooltip title={filled || 'Sin traducciones'}>
               <Chip
                 size="small"
@@ -109,7 +111,13 @@ function SortableNavItem({ section, currentLang, onEdit, onDelete, onToggle, onT
               />
             </Tooltip>
           </Box>
-          <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
+          <Typography
+            variant="caption"
+            noWrap
+            sx={{
+              color: "text.secondary",
+              display: 'block'
+            }}>
             {section.route}
           </Typography>
         </Box>

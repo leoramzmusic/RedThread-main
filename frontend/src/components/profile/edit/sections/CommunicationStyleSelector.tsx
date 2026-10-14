@@ -22,7 +22,7 @@ import {
   CheckCircle,
 } from "@mui/icons-material";
 import { Controller, Control, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { COMMUNICATION_STYLE_OPTIONS } from "../../../../constants/profileOptions";
 
 interface CommunicationStyleSelectorProps {
@@ -100,7 +100,11 @@ export default function CommunicationStyleSelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           <Chat sx={{ mr: 1.5, color: communicationColor }} />
           <Typography
             variant="subtitle2"
@@ -143,9 +147,11 @@ export default function CommunicationStyleSelector({
           {/* Subtitle */}
           <Typography
             variant="body2"
-            color="text.secondary"
-            sx={{ mb: 2, fontWeight: 500 }}
-          >
+            sx={{
+              color: "text.secondary",
+              mb: 2,
+              fontWeight: 500
+            }}>
             {t(
               "profile.additional.communication.question",
               "¿Cómo prefieres comunicarte con tus conexiones?",
@@ -163,7 +169,13 @@ export default function CommunicationStyleSelector({
               bgcolor: alpha(theme.palette.info.main, 0.05),
             }}
           >
-            <Box display="flex" alignItems="flex-start" gap={1} mb={1}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 1,
+                mb: 1
+              }}>
               <InfoOutlined
                 sx={{ fontSize: 20, color: "info.main", mt: 0.2 }}
               />
@@ -187,9 +199,11 @@ export default function CommunicationStyleSelector({
                     "profile.additional.communication.why1",
                     "Evita frustraciones tempranas",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -202,9 +216,11 @@ export default function CommunicationStyleSelector({
                     "profile.additional.communication.why2",
                     "Alinea expectativas de contacto",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -217,9 +233,11 @@ export default function CommunicationStyleSelector({
                     "profile.additional.communication.why3",
                     "Refleja compatibilidad energética",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -232,9 +250,11 @@ export default function CommunicationStyleSelector({
                     "profile.additional.communication.why4",
                     "Modula el tono del vínculo",
                   )}
-                  primaryTypographyProps={{
-                    variant: "caption",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "caption",
+                      color: "text.secondary",
+                    }
                   }}
                 />
               </ListItem>
@@ -250,10 +270,11 @@ export default function CommunicationStyleSelector({
                 <Stack
                   direction="row"
                   spacing={1.5}
-                  flexWrap="wrap"
                   useFlexGap
-                  sx={{ gap: 1.5 }}
-                >
+                  sx={{
+                    flexWrap: "wrap",
+                    gap: 1.5
+                  }}>
                   {COMMUNICATION_STYLE_OPTIONS.map((option) => {
                     const isSelected = field.value === option.value;
                     return (

@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import React, { useState } from 'react';
 import { Box, Typography, Button, Container, Grid, Paper, Chip, Tooltip, IconButton, Fade } from '@mui/material';
 import { Hub, Explore, Security, Group, Stars, InfoOutlined, Lock } from '@mui/icons-material';
@@ -41,8 +41,14 @@ export default function GolthPage() {
                 >
                     <Container maxWidth="sm">
                         <Lock sx={{ fontSize: 60, color: GOLTH_COLOR, mb: 3 }} />
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>Acceso Restringido</Typography>
-                        <Typography color="text.secondary" sx={{ mb: 4 }}>
+                        <Typography variant="h4" gutterBottom sx={{
+                            fontWeight: "bold"
+                        }}>Acceso Restringido</Typography>
+                        <Typography
+                            sx={{
+                                color: "text.secondary",
+                                mb: 4
+                            }}>
                             Golth es un espacio exclusivo para miembros Premium y VIP. Suscríbete para explorar afinidades doradas.
                         </Typography>
                         <Button
@@ -88,16 +94,31 @@ export default function GolthPage() {
                 <Container maxWidth="lg">
                     {!isActive ? (
                         <Fade in={true} timeout={1000}>
-                            <Box textAlign="center" sx={{ mt: 8 }}>
-                                <Hub sx={{ fontSize: 80, color: GOLTH_COLOR, mb: 3 }} />
-                                <Typography variant="h2" fontWeight="800" gutterBottom sx={{
-                                    background: `linear-gradient(45deg, ${GOLTH_COLOR}, #fff)`,
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent'
+                            <Box
+                                sx={{
+                                    textAlign: "center",
+                                    mt: 8
                                 }}>
+                                <Hub sx={{ fontSize: 80, color: GOLTH_COLOR, mb: 3 }} />
+                                <Typography
+                                    variant="h2"
+                                    gutterBottom
+                                    sx={{
+                                        fontWeight: "800",
+                                        background: `linear-gradient(45deg, ${GOLTH_COLOR}, #fff)`,
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent'
+                                    }}>
                                     Bienvenido a Golth
                                 </Typography>
-                                <Typography variant="h5" color="text.secondary" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
+                                <Typography
+                                    variant="h5"
+                                    sx={{
+                                        color: "text.secondary",
+                                        mb: 4,
+                                        maxWidth: 600,
+                                        mx: 'auto'
+                                    }}>
                                     Explora afinidades doradas en un espacio diseñado para la curiosidad y el respeto.
                                 </Typography>
 
@@ -113,9 +134,17 @@ export default function GolthPage() {
                                         mb: 6
                                     }}
                                 >
-                                    <Box display="flex" alignItems="center" gap={2} mb={3}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 2,
+                                            mb: 3
+                                        }}>
                                         <Security sx={{ color: GOLTH_COLOR }} />
-                                        <Typography variant="body1" textAlign="left">
+                                        <Typography variant="body1" sx={{
+                                            textAlign: "left"
+                                        }}>
                                             Este espacio es para explorar afinidades de manera respetuosa. Tu consentimiento es nuestra prioridad.
                                         </Typography>
                                     </Box>
@@ -143,10 +172,20 @@ export default function GolthPage() {
                     ) : (
                         <Fade in={true}>
                             <Box>
-                                <Box display="flex" alignItems="center" justifyContent="space-between" mb={6}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        mb: 6
+                                    }}>
                                     <Box>
-                                        <Typography variant="h3" fontWeight="bold">Explora Afinidades</Typography>
-                                        <Typography color="text.secondary">Selecciona los hilos que deseas seguir hoy.</Typography>
+                                        <Typography variant="h3" sx={{
+                                            fontWeight: "bold"
+                                        }}>Explora Afinidades</Typography>
+                                        <Typography sx={{
+                                            color: "text.secondary"
+                                        }}>Selecciona los hilos que deseas seguir hoy.</Typography>
                                     </Box>
                                     <Chip
                                         label="Modo Gold"
@@ -161,7 +200,13 @@ export default function GolthPage() {
 
                                 <Grid container spacing={4}>
                                     {ABSTRACT_CATEGORIES.map((cat) => (
-                                        <Grid item xs={12} sm={6} md={3} key={cat.name}>
+                                        <Grid
+                                            key={cat.name}
+                                            size={{
+                                                xs: 12,
+                                                sm: 6,
+                                                md: 3
+                                            }}>
                                             <Paper
                                                 sx={{
                                                     p: 3,
@@ -182,8 +227,12 @@ export default function GolthPage() {
                                                 <Box sx={{ color: GOLTH_COLOR, mb: 2 }}>
                                                     {cat.icon}
                                                 </Box>
-                                                <Typography variant="h6" fontWeight="bold" gutterBottom>{cat.name}</Typography>
-                                                <Typography variant="body2" color="text.secondary">
+                                                <Typography variant="h6" gutterBottom sx={{
+                                                    fontWeight: "bold"
+                                                }}>{cat.name}</Typography>
+                                                <Typography variant="body2" sx={{
+                                                    color: "text.secondary"
+                                                }}>
                                                     {cat.description}
                                                 </Typography>
                                             </Paper>
@@ -224,7 +273,9 @@ export default function GolthPage() {
                                                 />
                                             ))}
                                         </Box>
-                                        <Typography variant="body1" color="text.secondary">
+                                        <Typography variant="body1" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             Próximamente: Visualización de Constelación
                                         </Typography>
                                     </Paper>

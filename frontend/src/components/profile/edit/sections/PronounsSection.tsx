@@ -20,7 +20,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { ListSubheader } from "@mui/material";
 import { PRONOUN_CATEGORIES } from "../../../../constants/profileOptions";
 import { SectionWithOptionsProps } from "../types";
@@ -45,7 +45,7 @@ export default function PronounsSection({
   const pCat = (cat: string) => t(`profile.pronouns.cat.${normKey(cat)}`, cat);
   const pOpt = (opt: string) => t(`profile.pronouns.opt.${normKey(opt)}`, opt);
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -59,14 +59,24 @@ export default function PronounsSection({
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            pr={2}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box display="flex" sx={{ color: "text.secondary" }}>
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              pr: 2
+            }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  color: "text.secondary"
+                }}>
                 <Male fontSize="small" />
                 <Female fontSize="small" />
               </Box>
@@ -96,16 +106,23 @@ export default function PronounsSection({
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ display: "block", mb: 2, fontWeight: 500 }}
-          >
+            sx={{
+              color: "text.secondary",
+              display: "block",
+              mb: 2,
+              fontWeight: 500
+            }}>
             {t(
               "profile.pronouns.quote",
               "“Tus pronombres definen cómo te nombramos, no cómo conectas.”",
             )}
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Controller
                 name="pronouns"
                 control={control}

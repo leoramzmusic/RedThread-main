@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography, Box, Button, Stack, IconButton, InputBase, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { Add as AddIcon, Close as CloseIcon, DragIndicator as DragIndicatorIcon, HelpOutline, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Add as AddIcon, Close as CloseIcon, DragIndicator as DragIndicatorIcon, HelpOutlined, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
     DndContext,
     closestCenter,
@@ -95,9 +95,17 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
             </IconButton>
 
             {/* Content Container (Padded left for handle) */}
-            <Box pl={4}>
+            <Box sx={{
+                pl: 4
+            }}>
                 {/* Header: Quotes + Question */}
-                <Box display="flex" gap={0.5} mb={1} pr={4}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 0.5,
+                        mb: 1,
+                        pr: 4
+                    }}>
                     <Typography
                         component="span"
                         sx={{
@@ -114,13 +122,12 @@ function SortablePromptItem({ prompt, index, onRemove, onUpdate }: SortablePromp
                     <Typography
                         variant="h6"
                         gutterBottom
-                        color="text.primary"
                         sx={{
+                            color: "text.primary",
                             pt: 1,
                             fontWeight: 'bold',
                             fontStyle: 'italic'
-                        }}
-                    >
+                        }}>
                         {prompt.question}
                     </Typography>
                 </Box>
@@ -179,7 +186,7 @@ export default function AskMeAboutSection({
     handleRemovePrompt
 }: AskMeAboutSectionProps) {
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Accordion
                 defaultExpanded
                 sx={{
@@ -195,13 +202,23 @@ export default function AskMeAboutSection({
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 3, py: 1 }}
                 >
-                    <Box display="flex" alignItems="center" gap={1}>
-                        <HelpOutline color="action" />
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}>
+                        <HelpOutlined color="action" />
                         <Typography variant="h6">Pregúntame sobre...</Typography>
                     </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-                    <Typography variant="body2" color="text.secondary" paragraph>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            marginBottom: "16px"
+                        }}>
                         Escoge hasta 5 de las siguientes frases para que te conozcan un poco mejor
                     </Typography>
 
@@ -229,23 +246,23 @@ export default function AskMeAboutSection({
 
                         {prompts.length < 5 && (
                             <Box
-                                p={3}
-                                border="2px dashed"
-                                borderColor="divider"
-                                borderRadius={1}
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
+                                onClick={() => setPromptSelectorOpen(true)}
                                 sx={{
+                                    p: 3,
+                                    border: "2px dashed",
+                                    borderColor: "divider",
+                                    borderRadius: 1,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
+
                                     '&:hover': {
                                         borderColor: 'text.primary',
                                         bgcolor: 'action.hover'
                                     }
-                                }}
-                                onClick={() => setPromptSelectorOpen(true)}
-                            >
+                                }}>
                                 <Button startIcon={<AddIcon />} sx={{ color: 'text.secondary' }}>
                                     Agregar frase
                                 </Button>

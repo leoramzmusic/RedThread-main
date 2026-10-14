@@ -29,14 +29,26 @@ export default function EmployeeFilters({ filters, roles, departments, onFilterC
 
     return (
         <Paper sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-            <Box display="flex" alignItems="center" mb={2}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    mb: 2
+                }}>
                 <FilterListIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
-                <Typography variant="body1" fontWeight={600}>Filtros de Búsqueda</Typography>
+                <Typography variant="body1" sx={{
+                    fontWeight: 600
+                }}>Filtros de Búsqueda</Typography>
             </Box>
 
             <Grid container spacing={2}>
                 {/* Role Filter */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Rol en Sistema</InputLabel>
                         <Select
@@ -53,7 +65,12 @@ export default function EmployeeFilters({ filters, roles, departments, onFilterC
                 </Grid>
 
                 {/* Area Filter */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Departamento</InputLabel>
                         <Select
@@ -70,7 +87,12 @@ export default function EmployeeFilters({ filters, roles, departments, onFilterC
                 </Grid>
 
                 {/* Status Filter */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <FormControl fullWidth size="small">
                         <InputLabel>Estado</InputLabel>
                         <Select
@@ -87,7 +109,12 @@ export default function EmployeeFilters({ filters, roles, departments, onFilterC
                 </Grid>
 
                 {/* Country Filter */}
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 3
+                    }}>
                     <TextField
                         fullWidth
                         size="small"
@@ -98,7 +125,12 @@ export default function EmployeeFilters({ filters, roles, departments, onFilterC
                 </Grid>
             </Grid>
 
-            <Box display="flex" justifyContent="flex-end" mt={2}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    mt: 2
+                }}>
                 <Button
                     startIcon={<RestartAltIcon />}
                     variant="text"

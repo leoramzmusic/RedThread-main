@@ -8,7 +8,7 @@ import { Profile } from '../profile/ProfileCard';
 import { useUI } from '../../context/UIContext';
 import { useAppTheme } from '../../context/ThemeContext';
 import { keyframes, styled } from '@mui/system';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface CareNarrativePanelProps {
     profile: Profile;
@@ -198,7 +198,13 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                         }}>
                             <PsychologyIcon sx={{ fontSize: 24, color: '#AB47BC' }} />
                         </Box>
-                        <Typography variant="h6" fontWeight={900} sx={{ letterSpacing: 0.5, fontSize: '1.1rem' }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 900,
+                                letterSpacing: 0.5,
+                                fontSize: '1.1rem'
+                            }}>
                             {t('careNarrative.title', 'CARE Interpreta')}
                         </Typography>
                     </Box>
@@ -247,9 +253,20 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
 
                     {/* Rituales Sugeridos */}
                     <Box>
-                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{
+                                alignItems: "center",
+                                mb: 2
+                            }}>
                             <AutoAwesomeIcon sx={{ fontSize: 18, color: '#FFD700' }} />
-                            <Typography variant="overline" fontWeight={800} sx={{ color: '#FFD700' }}>
+                            <Typography
+                                variant="overline"
+                                sx={{
+                                    fontWeight: 800,
+                                    color: '#FFD700'
+                                }}>
                                 {t('careNarrative.suggestedRituals', 'RITUALES SUGERIDOS')}
                             </Typography>
                         </Stack>
@@ -271,7 +288,13 @@ export default function CareNarrativePanel({ profile, isVisible, mobileOpen = fa
                                     }
                                 }}>
                                     <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#FFD700' }} />
-                                    <Typography variant="caption" fontWeight={700} sx={{ fontSize: '0.75rem', letterSpacing: 0.5 }}>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            fontWeight: 700,
+                                            fontSize: '0.75rem',
+                                            letterSpacing: 0.5
+                                        }}>
                                         {ritual}
                                     </Typography>
                                 </Box>

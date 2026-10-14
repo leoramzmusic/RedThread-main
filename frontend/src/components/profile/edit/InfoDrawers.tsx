@@ -1,5 +1,5 @@
 import { Box, Paper, Typography, Button, Container } from "@mui/material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   useProfileTip,
   type ProfileTipData,
@@ -139,17 +139,30 @@ export default function InfoDrawers({
                   />
                 </Box>
 
-                <Box px={3} pb={2} textAlign="center">
+                <Box
+                  sx={{
+                    px: 3,
+                    pb: 2,
+                    textAlign: "center"
+                  }}>
                   <Typography
                     variant="subtitle1"
-                    fontWeight={700}
-                    sx={{ color: "text.primary", mb: 2 }}
-                  >
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      mb: 2
+                    }}>
                     {tr(safety)?.title ||
                       t("profile.safety.title", "Consejos de Seguridad")}
                   </Typography>
 
-                  <Box display="flex" gap={1} justifyContent="center" mb={2}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      justifyContent: "center",
+                      mb: 2
+                    }}>
                     <Typography
                       variant="body2"
                       sx={{
@@ -291,17 +304,30 @@ export default function InfoDrawers({
                   />
                 </Box>
 
-                <Box px={3} pb={2} textAlign="center">
+                <Box
+                  sx={{
+                    px: 3,
+                    pb: 2,
+                    textAlign: "center"
+                  }}>
                   <Typography
                     variant="subtitle1"
-                    fontWeight={700}
-                    sx={{ color: "text.primary", mb: 2 }}
-                  >
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      mb: 2
+                    }}>
                     {tr(goals)?.title ||
                       t("profile.goals_info.title", "Las emociones cambian")}
                   </Typography>
 
-                  <Box display="flex" gap={1} justifyContent="center" mb={2}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      justifyContent: "center",
+                      mb: 2
+                    }}>
                     <Typography
                       variant="body2"
                       sx={{
@@ -421,12 +447,19 @@ export default function InfoDrawers({
                   />
                 </Box>
 
-                <Box px={3} pb={2} textAlign="center">
+                <Box
+                  sx={{
+                    px: 3,
+                    pb: 2,
+                    textAlign: "center"
+                  }}>
                   <Typography
                     variant="subtitle1"
-                    fontWeight={700}
-                    sx={{ color: "text.primary", mb: 2 }}
-                  >
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      mb: 2
+                    }}>
                     {tr(pronouns)?.title ||
                       t(
                         "profile.pronouns.infoModal.title",
@@ -435,12 +468,13 @@ export default function InfoDrawers({
                   </Typography>
 
                   <Box
-                    display="flex"
-                    gap={1}
-                    justifyContent="center"
-                    mb={2}
-                    flexDirection="column"
-                  >
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      justifyContent: "center",
+                      mb: 2,
+                      flexDirection: "column"
+                    }}>
                     <Typography
                       variant="body2"
                       sx={{
@@ -568,13 +602,30 @@ export default function InfoDrawers({
                   />
                 </Box>
 
-                <Box px={3} pb={2} textAlign="center">
-                  <Typography variant="subtitle1" fontWeight={700} sx={{ color: "text.primary", mb: 2 }}>
+                <Box
+                  sx={{
+                    px: 3,
+                    pb: 2,
+                    textAlign: "center"
+                  }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      mb: 2
+                    }}>
                     {tr(location)?.title ||
                       t("profile.location.infoModal.title", "¿Por qué pedimos tu ubicación?")}
                   </Typography>
 
-                  <Box display="flex" gap={1} justifyContent="center" mb={2}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      justifyContent: "center",
+                      mb: 2
+                    }}>
                     <Typography variant="body2" sx={{ color: "text.secondary", maxWidth: 400, mx: "auto" }}>
                       {tr(location)?.description ||
                         t("profile.location.infoModal.text", "Tu ubicación nos ayuda a mostrarte personas cercanas y a definir el alcance de tus conexiones. Nunca compartiremos tu ubicación exacta sin tu consentimiento.")}
@@ -678,13 +729,30 @@ export default function InfoDrawers({
                   />
                 </Box>
 
-                <Box px={3} pb={2} textAlign="center">
-                  <Typography variant="subtitle1" fontWeight={700} sx={{ color: "text.primary", mb: 2 }}>
+                <Box
+                  sx={{
+                    px: 3,
+                    pb: 2,
+                    textAlign: "center"
+                  }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      mb: 2
+                    }}>
                     {tr(identity)?.title ||
                       t("profile.identity.infoModal.title", "¿Por qué pedimos tu identidad?")}
                   </Typography>
 
-                  <Box display="flex" gap={1} justifyContent="center" mb={2}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      justifyContent: "center",
+                      mb: 2
+                    }}>
                     <Typography variant="body2" sx={{ color: "text.secondary", maxWidth: 400, mx: "auto" }}>
                       {tr(identity)?.description ||
                         t("profile.identity.infoModal.text", "Tu identidad nos ayuda a verificar tu perfil y mantener la seguridad de la comunidad. Nunca compartiremos tus datos sin tu consentimiento.")}

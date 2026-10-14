@@ -11,7 +11,7 @@ import {
   Zoom,
   IconButton
 } from '@mui/material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import apiClient from '../../services/api';
 import { useAppTheme } from '../../context/ThemeContext';
 import FavoriteIcon from '@mui/icons-material/Favorite'; // Enamorado
@@ -112,22 +112,33 @@ export default function EmotionModal() {
       open={open}
       fullWidth
       maxWidth="sm"
-      PaperProps={{
-        style: { borderRadius: 20, padding: 20 }
+      slotProps={{
+        paper: {
+          style: { borderRadius: 20, padding: 20 }
+        }
       }}
     >
       <DialogTitle sx={{ textAlign: 'center' }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: "bold"
+        }}>
           ¿Cómo te sientes hoy?
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{
+          color: "text.secondary"
+        }}>
           Tu estado de ánimo definirá el color de tu experiencia hoy.
         </Typography>
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
           {EMOTIONS.map((emotion) => (
-            <Grid item xs={6} sm={4} key={emotion.id}>
+            <Grid
+              key={emotion.id}
+              size={{
+                xs: 6,
+                sm: 4
+              }}>
               <Zoom in={true} style={{ transitionDelay: '100ms' }}>
                 <Paper
                   elevation={3}
@@ -148,7 +159,9 @@ export default function EmotionModal() {
                   <Box sx={{ color: emotion.color, mb: 1 }}>
                     {emotion.icon}
                   </Box>
-                  <Typography variant="subtitle1" fontWeight="bold">
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: "bold"
+                  }}>
                     {emotion.label}
                   </Typography>
                 </Paper>

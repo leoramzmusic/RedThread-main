@@ -1,6 +1,6 @@
 import { Paper, Box, Typography, Button } from '@mui/material';
 import { MusicNote as MusicIcon } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 export default function ProfileMusic() {
     const { t } = useTranslation('common');
@@ -15,24 +15,36 @@ export default function ProfileMusic() {
             }}
             elevation={0}
         >
-            <Box display="flex" alignItems="center" gap={2} mb={3}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    mb: 3
+                }}>
                 <Box
-                    p={1.5}
-                    bgcolor="#1DB954"
-                    borderRadius="50%"
-                    color="white"
-                    display="flex"
                     sx={{
+                        p: 1.5,
+                        bgcolor: "#1DB954",
+                        borderRadius: "50%",
+                        color: "white",
+                        display: "flex",
                         boxShadow: '0 4px 12px rgba(29, 185, 84, 0.3)'
-                    }}
-                >
+                    }}>
                     <MusicIcon sx={{ fontSize: 28 }} />
                 </Box>
                 <Box>
-                    <Typography variant="h6" fontWeight={700} mb={0.5}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            mb: 0.5
+                        }}>
                         {t('profile.fields.anthem', 'Mi Himno')}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                    }}>
                         {t('profile.anthem_subtitle', 'Comparte tu música favorita')}
                     </Typography>
                 </Box>
@@ -60,8 +72,12 @@ export default function ProfileMusic() {
                     fontWeight: 600
                 }}
             >
-                <Box textAlign="left">
-                    <Typography variant="body1" fontWeight={700}>
+                <Box sx={{
+                    textAlign: "left"
+                }}>
+                    <Typography variant="body1" sx={{
+                        fontWeight: 700
+                    }}>
                         {t('profile.connectSpotify', 'Conectar con Spotify')}
                     </Typography>
                     <Typography variant="caption" sx={{ opacity: 0.9 }}>

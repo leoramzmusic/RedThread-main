@@ -270,7 +270,12 @@ const RoleList: React.FC = () => {
 
     if (loading && roles.length === 0) {
         return (
-            <Box display="flex" justifyContent="center" p={5}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 5
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -278,8 +283,16 @@ const RoleList: React.FC = () => {
 
     return (
         <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h5" fontWeight="bold">
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3
+                }}>
+                <Typography variant="h5" sx={{
+                    fontWeight: "bold"
+                }}>
                     Gestión de Roles y Permisos
                 </Typography>
                 <Button
@@ -310,9 +323,15 @@ const RoleList: React.FC = () => {
                         {roles.map((role) => (
                             <TableRow key={role.slug} hover>
                                 <TableCell>
-                                    <Box display="flex" alignItems="center">
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center"
+                                        }}>
                                         <ShieldIcon sx={{ mr: 1, color: role.is_system_role ? 'primary.main' : 'text.secondary' }} />
-                                        <Typography variant="body2" fontWeight="medium">
+                                        <Typography variant="body2" sx={{
+                                            fontWeight: "medium"
+                                        }}>
                                             {role.name}
                                         </Typography>
                                     </Box>
@@ -324,7 +343,9 @@ const RoleList: React.FC = () => {
                                     {role.description}
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         {role.permissions.length} permisos asignados
                                     </Typography>
                                 </TableCell>
@@ -357,7 +378,13 @@ const RoleList: React.FC = () => {
                     {editingRole ? 'Editar Rol' : 'Crear Nuevo Rol'}
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mt={1}>
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 2,
+                            mt: 1
+                        }}>
                         <TextField
                             label="Nombre del Rol"
                             fullWidth
@@ -402,7 +429,9 @@ const RoleList: React.FC = () => {
                                 <MenuItem value="inactive">Inactivo</MenuItem>
                             </Select>
                         </FormControl>
-                        <Box gridColumn="span 2">
+                        <Box sx={{
+                            gridColumn: "span 2"
+                        }}>
                             <TextField
                                 label="Descripción"
                                 fullWidth
@@ -413,21 +442,54 @@ const RoleList: React.FC = () => {
                             />
                         </Box>
 
-                        <Box gridColumn="span 2" py={1}>
-                            <Box p={1.5} bgcolor="rgba(0,0,0,0.03)" borderRadius={2} border="1px dashed rgba(0,0,0,0.1)">
-                                <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                        <Box
+                            sx={{
+                                gridColumn: "span 2",
+                                py: 1
+                            }}>
+                            <Box
+                                sx={{
+                                    p: 1.5,
+                                    bgcolor: "rgba(0,0,0,0.03)",
+                                    borderRadius: 2,
+                                    border: "1px dashed rgba(0,0,0,0.1)"
+                                }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                        mb: 0.5
+                                    }}>
                                     <InfoIcon fontSize="small" color="primary" />
-                                    <Typography variant="caption" fontWeight="bold">
+                                    <Typography variant="caption" sx={{
+                                        fontWeight: "bold"
+                                    }}>
                                         Guía de Niveles Jerárquicos
                                     </Typography>
                                 </Box>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     <strong>Niveles 0-1:</strong> Administración y control total del sistema.
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     <strong>Niveles 2-3:</strong> Gestión de personal, áreas y supervisión intermedia.
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     <strong>Niveles 4-5:</strong> Funciones operativas, colaboradores y acceso básico.
                                 </Typography>
                                 <Typography variant="caption" sx={{ mt: 1, display: 'block', fontStyle: 'italic' }}>
@@ -436,10 +498,25 @@ const RoleList: React.FC = () => {
                             </Box>
                         </Box>
 
-                        <Box gridColumn="span 2">
-                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-                                <Typography variant="subtitle2" fontWeight="bold">Permisos del departamento</Typography>
-                                <Box display="flex" alignItems="center" gap={1}>
+                        <Box sx={{
+                            gridColumn: "span 2"
+                        }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    mb: 1
+                                }}>
+                                <Typography variant="subtitle2" sx={{
+                                    fontWeight: "bold"
+                                }}>Permisos del departamento</Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1
+                                    }}>
                                     <Checkbox
                                         checked={formData.permissions?.length === permissions.length && permissions.length > 0}
                                         indeterminate={!!formData.permissions?.length && formData.permissions.length < permissions.length}
@@ -463,7 +540,7 @@ const RoleList: React.FC = () => {
                                             ))}
                                         </Box>
                                     )}
-                                    MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+                                    MenuProps={{ slotProps: { paper: { style: { maxHeight: 300 } } } }}
                                 >
                                     {permissions.map((perm) => (
                                         <MenuItem key={perm.id} value={perm.id}>
@@ -473,16 +550,42 @@ const RoleList: React.FC = () => {
                                     ))}
                                 </Select>
                             </FormControl>
-                            <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="caption" color="text.secondary">¿Necesitas permisos de otros módulos?</Typography>
+                            <Box
+                                sx={{
+                                    mt: 2,
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>¿Necesitas permisos de otros módulos?</Typography>
                                 <Button size="small" variant="outlined" onClick={handleAddMoreClick} disabled={canAddMore}>
                                     {canAddMore ? '✓ Acceso ampliado' : 'Agregar más permisos'}
                                 </Button>
                             </Box>
                             {canAddMore && (
-                                <Box mt={2} p={1.5} border="1px solid rgba(0,0,0,0.08)" borderRadius={2} bgcolor="rgba(0,0,0,0.02)">
-                                    <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Permisos adicionales por módulo (desbloqueados)</Typography>
-                                    <Box display="flex" flexWrap="wrap" gap={1}>
+                                <Box
+                                    sx={{
+                                        mt: 2,
+                                        p: 1.5,
+                                        border: "1px solid rgba(0,0,0,0.08)",
+                                        borderRadius: 2,
+                                        bgcolor: "rgba(0,0,0,0.02)"
+                                    }}>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            display: "block",
+                                            mb: 1
+                                        }}>Permisos adicionales por módulo (desbloqueados)</Typography>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            flexWrap: "wrap",
+                                            gap: 1
+                                        }}>
                                         {permissions.map((perm) => {
                                             const active = (formData.permissions || []).some((p: string) => p.toLowerCase() === perm.id.toLowerCase());
                                             return (
@@ -493,7 +596,13 @@ const RoleList: React.FC = () => {
                                             }} color={active ? 'primary' : 'default'} />
                                         )})}
                                     </Box>
-                                    <Typography variant="caption" color="text.secondary" display="block" mt={1}>Auditoría: se registrarán usuario, fecha/hora y permisos añadidos al guardar.</Typography>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: "text.secondary",
+                                            display: "block",
+                                            mt: 1
+                                        }}>Auditoría: se registrarán usuario, fecha/hora y permisos añadidos al guardar.</Typography>
                                 </Box>
                             )}
                         </Box>
@@ -517,7 +626,12 @@ const RoleList: React.FC = () => {
             <Dialog open={showValidationModal} onClose={() => setShowValidationModal(false)} maxWidth="xs" fullWidth>
                 <DialogTitle>Validación requerida para permisos extra</DialogTitle>
                 <DialogContent dividers>
-                    <Typography variant="body2" color="text.secondary" mb={2}>Ingresa usuario y contraseña de un supervisor para desbloquear permisos de otros módulos.</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 2
+                        }}>Ingresa usuario y contraseña de un supervisor para desbloquear permisos de otros módulos.</Typography>
                     {validationError && <Alert severity="error" sx={{ mb: 2 }}>{validationError}</Alert>}
                     <TextField fullWidth label="Usuario (email)" value={validationUser} onChange={(e) => setValidationUser(e.target.value)} margin="dense" />
                     <TextField fullWidth label="Contraseña" type="password" value={validationPass} onChange={(e) => setValidationPass(e.target.value)} margin="dense" />
@@ -534,7 +648,12 @@ const RoleList: React.FC = () => {
             <Dialog open={showPasswordConfirm} onClose={() => setShowPasswordConfirm(false)} maxWidth="xs" fullWidth>
                 <DialogTitle>Confirmar con contraseña</DialogTitle>
                 <DialogContent dividers>
-                    <Typography variant="body2" color="text.secondary" mb={2}>Por auditoría, confirma tu contraseña para asignar permisos adicionales.</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 2
+                        }}>Por auditoría, confirma tu contraseña para asignar permisos adicionales.</Typography>
                     {validationError && <Alert severity="error" sx={{ mb: 2 }}>{validationError}</Alert>}
                     <TextField fullWidth label="Contraseña" type="password" value={validationPass} onChange={(e) => setValidationPass(e.target.value)} margin="dense" autoFocus />
                 </DialogContent>

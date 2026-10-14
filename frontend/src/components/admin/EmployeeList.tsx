@@ -248,15 +248,17 @@ export default function EmployeeList() {
                     value={quickSearch}
                     onChange={(e) => { setQuickSearch(e.target.value); handleSearchChange(e.target.value); }}
                     sx={{ minWidth: 260, flex: 1 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon color="action" sx={{ fontSize: 18 }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                    inputProps={{ list: 'emp-quick-list' }}
-                />
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon color="action" sx={{ fontSize: 18 }} />
+                                </InputAdornment>
+                            ),
+                        },
+
+                        htmlInput: { list: 'emp-quick-list' }
+                    }} />
                 <datalist id="emp-quick-list">
                     {employees.slice(0, 8).map((e) => (
                         <option key={e.id} value={e.display_name} />
@@ -304,7 +306,12 @@ export default function EmployeeList() {
             />
 
             {loading ? (
-                <Box display="flex" justifyContent="center" py={10}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        py: 10
+                    }}>
                     <CircularProgress />
                 </Box>
             ) : (
@@ -334,20 +341,36 @@ export default function EmployeeList() {
                                     {sortedEmployees.map((e) => (
                                         <TableRow key={e.id} hover>
                                             <TableCell>
-                                                <Box display="flex" alignItems="center" gap={1.5}>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 1.5
+                                                    }}>
                                                     <Avatar src={e.avatar ? getMediaUrl(e.avatar) : undefined} sx={{ width: 32, height: 32 }} />
                                                     <Box>
-                                                        <Typography variant="body2" fontWeight={600}>{e.display_name}</Typography>
-                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>{e.email}</Typography>
+                                                        <Typography variant="body2" sx={{
+                                                            fontWeight: 600
+                                                        }}>{e.display_name}</Typography>
+                                                        <Typography
+                                                            variant="caption"
+                                                            sx={{
+                                                                color: "text.secondary",
+                                                                display: 'block'
+                                                            }}>{e.email}</Typography>
                                                     </Box>
                                                 </Box>
                                             </TableCell>
-                                            <TableCell><Typography variant="body2" color="primary" fontWeight={500}>{e.employee_id}</Typography></TableCell>
+                                            <TableCell><Typography variant="body2" color="primary" sx={{
+                                                fontWeight: 500
+                                            }}>{e.employee_id}</Typography></TableCell>
                                             <TableCell>
                                                 <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                                     <AdminIcon sx={{ fontSize: 16, color: 'text.secondary' }} /> {(e.role || 'N/A').replace('_', ' ').toUpperCase()}
                                                 </Typography>
-                                                <Typography variant="caption" color="text.secondary">{e.area || 'Sin Área'}</Typography>
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>{e.area || 'Sin Área'}</Typography>
                                             </TableCell>
                                             <TableCell>
                                                 <Typography variant="caption">{e.city ? `${e.city}, ` : ''}{e.country || 'N/A'}</Typography>
@@ -367,32 +390,73 @@ export default function EmployeeList() {
                     ) : (
                         <Grid container spacing={2}>
                             {sortedEmployees.map((e) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={e.id}>
+                                <Grid
+                                    key={e.id}
+                                    size={{
+                                        xs: 12,
+                                        sm: 6,
+                                        md: 4,
+                                        lg: 3
+                                    }}>
                                     <Card sx={{ borderRadius: 2 }}>
                                         <CardContent sx={{ pb: 1 }}>
-                                            <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "center",
+                                                    textAlign: "center"
+                                                }}>
                                                 <Avatar src={e.avatar ? getMediaUrl(e.avatar) : undefined} sx={{ width: 64, height: 64, mb: 1.5 }} />
-                                                <Typography variant="subtitle2" fontWeight={700}>{e.display_name}</Typography>
-                                                <Typography variant="caption" color="text.secondary" gutterBottom>
+                                                <Typography variant="subtitle2" sx={{
+                                                    fontWeight: 700
+                                                }}>{e.display_name}</Typography>
+                                                <Typography variant="caption" gutterBottom sx={{
+                                                    color: "text.secondary"
+                                                }}>
                                                     {e.employee_id} • {e.email}
                                                 </Typography>
                                                 <Divider sx={{ width: '100%', my: 1.5, opacity: 0.5 }} />
-                                                <Box display="flex" justifyContent="space-between" width="100%" mb={1}>
-                                                    <Typography variant="caption" color="text.secondary">Área:</Typography>
-                                                    <Typography variant="caption" fontWeight={600}>{e.area || 'Sin Área'}</Typography>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        width: "100%",
+                                                        mb: 1
+                                                    }}>
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>Área:</Typography>
+                                                    <Typography variant="caption" sx={{
+                                                        fontWeight: 600
+                                                    }}>{e.area || 'Sin Área'}</Typography>
                                                 </Box>
-                                                <Box display="flex" justifyContent="space-between" width="100%" mb={1}>
-                                                    <Typography variant="caption" color="text.secondary">Rol:</Typography>
-                                                    <Typography variant="caption" fontWeight={600}>{(e.role || 'N/A').toUpperCase()}</Typography>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        width: "100%",
+                                                        mb: 1
+                                                    }}>
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>Rol:</Typography>
+                                                    <Typography variant="caption" sx={{
+                                                        fontWeight: 600
+                                                    }}>{(e.role || 'N/A').toUpperCase()}</Typography>
                                                 </Box>
-                                                <Box mt={1}>
+                                                <Box sx={{
+                                                    mt: 1
+                                                }}>
                                                     {getStatusChip(e.status)}
                                                 </Box>
                                             </Box>
                                         </CardContent>
                                         <Divider />
                                         <CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {e.country || 'Sin ubicación'}
                                             </Typography>
                                             <Box>
@@ -430,7 +494,7 @@ export default function EmployeeList() {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleActionClose}
-                PaperProps={{ elevation: 3, sx: { minWidth: 200, borderRadius: 2 } }}
+                slotProps={{ paper: { elevation: 3, sx: { minWidth: 200, borderRadius: 2 } } }}
             >
                 <Typography variant="overline" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary' }}>Acciones</Typography>
                 <MenuItem onClick={() => router.push(`/portal-redthread/empleados/editar/${selectedEmployee?.id}`)}>
@@ -483,7 +547,9 @@ export default function EmployeeList() {
             >
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
                     <BadgeIcon color="primary" />
-                    <Typography variant="subtitle1" fontWeight={800}>Vista previa de credencial</Typography>
+                    <Typography variant="subtitle1" sx={{
+                        fontWeight: 800
+                    }}>Vista previa de credencial</Typography>
                     {credDesign.designName ? (
                         <Chip label={`Diseño: ${String(credDesign.designName)}`} size="small" color="primary" variant="outlined" />
                     ) : null}
@@ -493,7 +559,12 @@ export default function EmployeeList() {
                     {credentialEmployee && (
                         <>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="caption" fontWeight={700} color="text.secondary">FRENTE</Typography>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        fontWeight: 700,
+                                        color: "text.secondary"
+                                    }}>FRENTE</Typography>
                                 <CredentialCard
                                     photoUrl={credentialEmployee.avatar}
                                     firstName={credentialEmployee.first_name}
@@ -508,7 +579,12 @@ export default function EmployeeList() {
                                 />
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="caption" fontWeight={700} color="text.secondary">REVERSO</Typography>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        fontWeight: 700,
+                                        color: "text.secondary"
+                                    }}>REVERSO</Typography>
                                 <CredentialBack
                                     employeeCode={credentialEmployee.employee_id}
                                     email={credentialEmployee.email}

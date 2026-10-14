@@ -8,7 +8,13 @@ interface ProfileRewardsViewProps {
 export default function ProfileRewardsView({ profile }: ProfileRewardsViewProps) {
     return (
         <Grid container spacing={4} sx={{ px: { xs: 2, md: 4 }, py: 3 }}>
-            <Grid item xs={12} md={8} lg={6} sx={{ mx: 'auto' }}>
+            <Grid
+                sx={{ mx: 'auto' }}
+                size={{
+                    xs: 12,
+                    md: 8,
+                    lg: 6
+                }}>
                 <ProfileRewards profile={profile} />
             </Grid>
         </Grid>

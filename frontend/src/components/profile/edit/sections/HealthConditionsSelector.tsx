@@ -18,14 +18,14 @@ import {
 } from "@mui/material";
 import {
   ExpandMore,
-  HelpOutline,
+  HelpOutlined,
   CheckCircle,
   Add,
   HealthAndSafety,
   InfoOutlined,
 } from "@mui/icons-material";
 import { Controller, Control } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface HealthConditionsSelectorProps {
   control: Control<any>;
@@ -79,7 +79,11 @@ export default function HealthConditionsSelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           <Box sx={{ mr: 1.5, color: categoryColor, display: "flex" }}>
             <HealthAndSafety />
           </Box>
@@ -164,11 +168,12 @@ export default function HealthConditionsSelector({
         >
           {/* Top Bar: Privacy & Help */}
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={2}
-          >
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2
+            }}>
             <Controller
               name={privacyName}
               control={control}
@@ -183,7 +188,9 @@ export default function HealthConditionsSelector({
                     />
                   }
                   label={
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       {t("profile.health.conditions.show_public", {
                         defaultValue: "Mostrar en perfil público",
                       })}
@@ -199,7 +206,7 @@ export default function HealthConditionsSelector({
               })}
             >
               <IconButton size="small">
-                <HelpOutline fontSize="small" sx={{ color: "#03a9f4" }} />
+                <HelpOutlined fontSize="small" sx={{ color: "#03a9f4" }} />
               </IconButton>
             </Tooltip>
           </Box>
@@ -240,7 +247,13 @@ export default function HealthConditionsSelector({
                   return (
                     <Box>
                       {/* Status Shortcuts */}
-                      <Box display="flex" gap={1} mb={2} flexWrap="wrap">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          mb: 2,
+                          flexWrap: "wrap"
+                        }}>
                         <Chip
                           label={t("profile.health.conditions.good", {
                             defaultValue: "Mi salud es buena",
@@ -302,25 +315,32 @@ export default function HealthConditionsSelector({
                             handleAddCondition();
                           }
                         }}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={handleAddCondition}
-                                disabled={isInputDisabled || !inputValue.trim()}
-                              >
-                                <Add />
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
                         sx={{ mb: 2 }}
+                        slotProps={{
+                          input: {
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  onClick={handleAddCondition}
+                                  disabled={isInputDisabled || !inputValue.trim()}
+                                >
+                                  <Add />
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }
+                        }}
                       />
 
                       {/* Tag Cloud */}
-                      <Box display="flex" flexWrap="wrap" gap={1}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 1
+                        }}>
                         {conditions.map((c: string) => (
                           <Chip
                             key={c}
@@ -348,16 +368,22 @@ export default function HealthConditionsSelector({
                           borderColor: alpha(theme.palette.info.main, 0.3),
                         }}
                       >
-                        <Box display="flex" gap={1}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1
+                          }}>
                           <InfoOutlined
                             color="info"
                             sx={{ fontSize: 18, mt: 0.2 }}
                           />
                           <Typography
                             variant="caption"
-                            color="text.secondary"
-                            sx={{ fontStyle: "italic", lineHeight: 1.4 }}
-                          >
+                            sx={{
+                              color: "text.secondary",
+                              fontStyle: "italic",
+                              lineHeight: 1.4
+                            }}>
                             {t("profile.health.conditions.info", {
                               defaultValue:
                                 "Puedes compartir esta información si lo deseas. Nos ayuda a adaptar tu experiencia, pero nunca se mostrará sin tu consentimiento.",

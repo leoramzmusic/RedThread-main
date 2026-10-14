@@ -33,7 +33,14 @@ export default function IconGallery({ resources, selectedId, onSelect, onDelete 
     return (
         <Grid container spacing={3}>
             {resources.map((resource) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={resource._id}>
+                <Grid
+                    key={resource._id}
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4,
+                        lg: 3
+                    }}>
                     <Card
                         sx={{
                             height: '100%',
@@ -65,7 +72,9 @@ export default function IconGallery({ resources, selectedId, onSelect, onDelete 
                                 {resource.url.split('/').pop()}
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                <Typography variant="caption" color="text.secondary" noWrap title={resource.resolution}>
+                                <Typography variant="caption" noWrap title={resource.resolution} sx={{
+                                    color: "text.secondary"
+                                }}>
                                     {resource.resolution || "Sin resolución"}
                                 </Typography>
                                 <Radio
@@ -77,7 +86,14 @@ export default function IconGallery({ resources, selectedId, onSelect, onDelete 
                             </Box>
 
                             {resource.description && (
-                                <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontStyle: 'italic' }}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 1,
+                                        fontStyle: 'italic'
+                                    }}>
                                     "{resource.description}"
                                 </Typography>
                             )}

@@ -28,9 +28,14 @@ export default function PersonalContextSection({ profile, onEdit }: PersonalCont
             <Stack spacing={2}>
                 <Grid container spacing={2}>
                     {languages.length > 0 && (
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Box>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     {t('profile.fields.languages', 'Idiomas')}
                                 </Typography>
                                 <Typography variant="body2">
@@ -41,9 +46,14 @@ export default function PersonalContextSection({ profile, onEdit }: PersonalCont
                     )}
 
                     {locationDisplay && (
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Box>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     {t('profile.fields.location', 'Ubicación / Nacionalidad')}
                                 </Typography>
                                 <Typography variant="body2">
@@ -54,16 +64,25 @@ export default function PersonalContextSection({ profile, onEdit }: PersonalCont
                     )}
 
                     {(profile.occupation || profile.work_company) && (
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Box>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     {t('profile.fields.occupation', 'Profesional')}
                                 </Typography>
-                                <Typography variant="body2" fontWeight={500}>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: 500
+                                }}>
                                     {profile.occupation || '-'}
                                 </Typography>
                                 {profile.work_company && (
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         @ {profile.work_company}
                                     </Typography>
                                 )}
@@ -72,17 +91,26 @@ export default function PersonalContextSection({ profile, onEdit }: PersonalCont
                     )}
 
                     {(profile.education_level || profile.school) && (
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Box>
-                                <Typography variant="caption" color="text.secondary" display="block">
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     {t('profile.fields.education', 'Académico')}
                                 </Typography>
-                                <Typography variant="body2" fontWeight={500}>
+                                <Typography variant="body2" sx={{
+                                    fontWeight: 500
+                                }}>
                                     {profile.education_level ? t(`education.${profile.education_level}`, profile.education_level) as string : '-'}
                                 </Typography>
 
                                 {profile.school && (
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         @ {profile.school}
                                     </Typography>
                                 )}

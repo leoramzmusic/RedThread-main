@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { useTranslation, Trans } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next/pages';
 
 interface BoostActivationModalProps {
     open: boolean;
@@ -49,13 +49,17 @@ export default function BoostActivationModal({
             onClose={onClose}
             maxWidth="sm"
             fullWidth
-            TransitionComponent={Fade}
-            PaperProps={{
-                sx: {
-                    bgcolor: 'background.paper',
-                    borderRadius: 4,
-                    border: `2px solid ${tierColor}40`,
-                    boxShadow: `0 0 40px ${tierColor}30`
+            slots={{
+                transition: Fade
+            }}
+            slotProps={{
+                paper: {
+                    sx: {
+                        bgcolor: 'background.paper',
+                        borderRadius: 4,
+                        border: `2px solid ${tierColor}40`,
+                        boxShadow: `0 0 40px ${tierColor}30`
+                    }
                 }
             }}
         >
@@ -74,7 +78,9 @@ export default function BoostActivationModal({
                     color: tierColor
                 }}>
                     <BoltIcon sx={{ fontSize: '2rem' }} />
-                    <Typography variant="h5" fontWeight={800}>
+                    <Typography variant="h5" sx={{
+                        fontWeight: 800
+                    }}>
                         Activar Boost
                     </Typography>
                 </Box>
@@ -103,11 +109,18 @@ export default function BoostActivationModal({
                 </Box>
 
                 {/* Boost Details */}
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        mb: 2
+                    }}>
                     Tu perfil será prioritario en Discover, Radar y Ruleta durante <strong>30 minutos</strong>.
                 </Typography>
 
-                <Typography variant="caption" color="text.disabled">
+                <Typography variant="caption" sx={{
+                    color: "text.disabled"
+                }}>
                     Boosts disponibles: <strong>{availableBoosts}</strong>
                 </Typography>
             </DialogContent>

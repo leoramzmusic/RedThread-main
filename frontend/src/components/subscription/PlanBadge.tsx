@@ -161,11 +161,23 @@ export default function PlanBadge({
       <Tooltip
         title={
           <Box sx={{ p: 0.5 }}>
-            <Typography variant="caption" fontWeight={600} display="block" mb={0.5}>
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 600,
+                display: "block",
+                mb: 0.5
+              }}>
               {label}
             </Typography>
             {config.features.slice(0, 3).map((feature, idx) => (
-              <Typography key={idx} variant="caption" display="block" sx={{ opacity: 0.9 }}>
+              <Typography
+                key={idx}
+                variant="caption"
+                sx={{
+                  display: "block",
+                  opacity: 0.9
+                }}>
                 • {feature}
               </Typography>
             ))}

@@ -77,7 +77,9 @@ function SortableRow({
       </IconButton>
 
       <Box sx={{ flex: '1 1 180px', minWidth: 0 }}>
-        <Typography fontWeight={600} noWrap title={title}>
+        <Typography noWrap title={title} sx={{
+          fontWeight: 600
+        }}>
           {title}
         </Typography>
       </Box>
@@ -90,7 +92,9 @@ function SortableRow({
           size="small"
           checked={section.visible}
           onChange={(e) => onToggleVisible(section.id, e.target.checked)}
-          inputProps={{ 'aria-label': `Visibilidad de ${title}` }}
+          slotProps={{
+            input: { 'aria-label': `Visibilidad de ${title}` }
+          }}
         />
         <IconButton size="small" aria-label={`Editar ${title}`} onClick={() => onEdit(section.id)}>
           <EditIcon fontSize="small" />

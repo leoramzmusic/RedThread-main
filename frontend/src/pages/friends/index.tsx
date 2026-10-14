@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import { useState, useEffect } from 'react';
 import {
     Box,
@@ -102,18 +102,25 @@ export default function FriendsPage() {
                 <Box sx={{ mb: 6, textAlign: 'center' }}>
                     <Typography
                         variant="h3"
-                        fontWeight={800}
                         gutterBottom
                         sx={{
+                            fontWeight: 800,
                             background: 'linear-gradient(45deg, #FF6B6B 30%, #4ECDC4 90%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             mb: 1
-                        }}
-                    >
+                        }}>
                         Mis Vínculos
                     </Typography>
-                    <Typography variant="h6" color="text.secondary" sx={{ opacity: 0.8, maxWidth: 600, mx: 'auto', fontStyle: 'italic' }}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            color: "text.secondary",
+                            opacity: 0.8,
+                            maxWidth: 600,
+                            mx: 'auto',
+                            fontStyle: 'italic'
+                        }}>
                         “Aquí están tus vínculos. No son solo nombres, son hilos que te conectan con lo que te hace sentir.”
                     </Typography>
                 </Box>
@@ -175,14 +182,23 @@ export default function FriendsPage() {
                             <Grid container spacing={3}>
                                 {filteredFriends.length > 0 ? (
                                     filteredFriends.map((friend) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3} key={friend.user_id}>
+                                        <Grid
+                                            key={friend.user_id}
+                                            size={{
+                                                xs: 12,
+                                                sm: 6,
+                                                md: 4,
+                                                lg: 3
+                                            }}>
                                             <FriendCard friend={friend} onAction={fetchData} />
                                         </Grid>
                                     ))
                                 ) : (
-                                    <Grid item xs={12}>
+                                    <Grid size={12}>
                                         <Paper sx={{ p: 4, textAlign: 'center', border: '2px dashed', borderColor: 'divider', bgcolor: 'transparent' }}>
-                                            <Typography color="text.secondary">
+                                            <Typography sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {searchQuery ? 'No se encontraron vínculos con ese nombre.' : 'Aún no tienes hilos conectados. ¡Explora y conecta!'}
                                             </Typography>
                                         </Paper>
@@ -193,14 +209,23 @@ export default function FriendsPage() {
                             <Grid container spacing={3}>
                                 {filteredRequests.length > 0 ? (
                                     filteredRequests.map((request) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3} key={request.user_id}>
+                                        <Grid
+                                            key={request.user_id}
+                                            size={{
+                                                xs: 12,
+                                                sm: 6,
+                                                md: 4,
+                                                lg: 3
+                                            }}>
                                             <FriendCard friend={request} onAction={fetchData} />
                                         </Grid>
                                     ))
                                 ) : (
-                                    <Grid item xs={12}>
+                                    <Grid size={12}>
                                         <Paper sx={{ p: 4, textAlign: 'center', border: '2px dashed', borderColor: 'divider', bgcolor: 'transparent' }}>
-                                            <Typography color="text.secondary">
+                                            <Typography sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 No hay solicitudes pendientes en este momento.
                                             </Typography>
                                         </Paper>

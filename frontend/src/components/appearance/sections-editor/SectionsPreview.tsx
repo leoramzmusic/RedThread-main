@@ -24,7 +24,9 @@ export default function SectionsPreview({ sections, lang = 'en' }: SectionsPrevi
             textAlign: 'center',
           }}
         >
-          <Typography color="text.secondary">No hay contenido aún</Typography>
+          <Typography sx={{
+            color: "text.secondary"
+          }}>No hay contenido aún</Typography>
         </Box>
       ) : (
         sections.map((section) => (
@@ -42,7 +44,9 @@ export default function SectionsPreview({ sections, lang = 'en' }: SectionsPrevi
               flexWrap: 'wrap',
             }}
           >
-            <Typography fontWeight={600}>{getSectionTitle(section, lang)}</Typography>
+            <Typography sx={{
+              fontWeight: 600
+            }}>{getSectionTitle(section, lang)}</Typography>
             {!section.visible && <Chip size="small" label="Oculta" />}
           </Paper>
         ))

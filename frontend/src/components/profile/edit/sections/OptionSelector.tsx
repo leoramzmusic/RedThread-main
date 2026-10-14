@@ -97,7 +97,11 @@ export default function OptionSelector({
                                 }
                             }}
                         >
-                            <Box display="flex" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
                                 {icon && <Box sx={{ mr: 1.5, color: isDiscovery ? 'gold' : categoryColor, display: 'flex' }}>{icon}</Box>}
                                 <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: isDiscovery ? '0.9rem' : '1rem', color: isDiscovery ? 'white' : 'text.primary' }}>
                                     {label}
@@ -128,7 +132,13 @@ export default function OptionSelector({
                                 borderRadius: 3,
                                 bgcolor: isDiscovery ? 'transparent' : 'background.paper'
                             }}>
-                                <Box display="flex" flexWrap="wrap" gap={1} sx={{ flexDirection: options.some(o => o.description) ? 'column' : 'row' }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        gap: 1,
+                                        flexDirection: options.some(o => o.description) ? 'column' : 'row'
+                                    }}>
                                     {options.map((option) => {
                                         const isSelected = currentValue === option.value;
                                         const hasDescription = !!option.description;
@@ -156,7 +166,12 @@ export default function OptionSelector({
                                                         }
                                                     }}
                                                 >
-                                                    <Box display="flex" alignItems="center" width="100%">
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            width: "100%"
+                                                        }}>
                                                         <Typography variant="body2" sx={{ fontWeight: 600, flex: 1, color: isSelected ? (isDiscovery ? 'gold' : categoryColor) : (isDiscovery ? 'white' : 'text.primary') }}>
                                                             {option.label}
                                                         </Typography>

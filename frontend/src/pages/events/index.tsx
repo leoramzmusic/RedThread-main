@@ -32,8 +32,8 @@ import {
 import Layout from '../../components/layout/Layout';
 import ParallaxImage from '../../components/motion/ParallaxImage';
 import apiClient from '../../services/api';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
+import { useTranslation } from 'next-i18next/pages';
 
 interface Event {
   id: string;
@@ -125,7 +125,13 @@ export default function Events() {
   if (loading) {
     return (
       <Layout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </Layout>
@@ -135,12 +141,22 @@ export default function Events() {
   return (
     <Layout>
       <Container maxWidth="xl">
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4
+          }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom sx={{
+              fontWeight: 700
+            }}>
               Eventos Virtuales
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               Únete a salas temáticas y conoce gente con tus mismos intereses
             </Typography>
           </Box>
@@ -168,7 +184,14 @@ export default function Events() {
 
         <Grid container spacing={3}>
           {filteredEvents.map((event) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={event.id}>
+            <Grid
+              key={event.id}
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 4,
+                lg: 3
+              }}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <ParallaxImage
                   src={event.image_url || `https://source.unsplash.com/random/800x600/?${event.theme.toLowerCase()}`}
@@ -178,9 +201,21 @@ export default function Events() {
                   frameSx={{ height: 140 }}
                 />
                 <CardContent sx={{ flexGrow: 1 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      mb: 1
+                    }}>
                     <Chip label={event.theme} size="small" color="primary" variant="outlined" />
-                    <Box display="flex" alignItems="center" gap={0.5} color="text.secondary">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        color: "text.secondary"
+                      }}>
                       <PersonIcon fontSize="small" />
                       <Typography variant="caption">
                         {event.participants.length}/{event.max_participants}
@@ -188,30 +223,50 @@ export default function Events() {
                     </Box>
                   </Box>
                   
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                  <Typography variant="h6" gutterBottom sx={{
+                    fontWeight: 600
+                  }}>
                     {event.title}
                   </Typography>
                   
-                  <Box display="flex" alignItems="center" gap={1} mb={1} color="text.secondary">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 1,
+                      color: "text.secondary"
+                    }}>
                     <CalendarIcon fontSize="small" />
                     <Typography variant="body2">
                       {new Date(event.date).toLocaleDateString()}
                     </Typography>
                   </Box>
                   
-                  <Box display="flex" alignItems="center" gap={1} mb={2} color="text.secondary">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 2,
+                      color: "text.secondary"
+                    }}>
                     <TimeIcon fontSize="small" />
                     <Typography variant="body2">
                       {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({event.duration_minutes} min)
                     </Typography>
                   </Box>
 
-                  <Typography variant="body2" color="text.secondary" paragraph sx={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden'
-                  }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      marginBottom: "16px"
+                    }}>
                     {event.description}
                   </Typography>
 
@@ -231,9 +286,15 @@ export default function Events() {
         </Grid>
 
         {filteredEvents.length === 0 && (
-          <Box textAlign="center" py={8}>
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 8
+            }}>
             <EventIcon sx={{ fontSize: 60, color: 'text.secondary', opacity: 0.5, mb: 2 }} />
-            <Typography variant="h6" color="text.secondary">
+            <Typography variant="h6" sx={{
+              color: "text.secondary"
+            }}>
               No hay eventos programados en esta categoría
             </Typography>
           </Box>
@@ -243,7 +304,13 @@ export default function Events() {
         <Dialog open={openCreate} onClose={() => setOpenCreate(false)} maxWidth="sm" fullWidth>
           <DialogTitle>Crear Nuevo Evento</DialogTitle>
           <DialogContent>
-            <Box display="flex" flexDirection="column" gap={2} pt={1}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                pt: 1
+              }}>
               <TextField
                 label="Título"
                 fullWidth
@@ -271,22 +338,30 @@ export default function Events() {
                   </MenuItem>
                 ))}
               </TextField>
-              <Box display="flex" gap={2}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2
+                }}>
                 <TextField
                   type="date"
                   label="Fecha"
                   fullWidth
-                  InputLabelProps={{ shrink: true }}
                   value={newEvent.date}
                   onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                 />
                 <TextField
                   type="time"
                   label="Hora"
                   fullWidth
-                  InputLabelProps={{ shrink: true }}
                   value={newEvent.time}
                   onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                 />
               </Box>
             </Box>

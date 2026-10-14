@@ -176,13 +176,6 @@ export default function PhotoLightbox({
             open={open}
             onClose={onClose}
             fullScreen
-            PaperProps={{
-                sx: {
-                    bgcolor: 'rgba(0, 0, 0, 0.95)',
-                    backgroundImage: 'none',
-                    boxShadow: 'none'
-                }
-            }}
             slotProps={{
                 backdrop: {
                     sx: {
@@ -190,9 +183,16 @@ export default function PhotoLightbox({
                         backdropFilter: 'blur(8px)',
                         WebkitBackdropFilter: 'blur(8px)'
                     }
+                },
+
+                paper: {
+                    sx: {
+                        bgcolor: 'rgba(0, 0, 0, 0.95)',
+                        backgroundImage: 'none',
+                        boxShadow: 'none'
+                    }
                 }
-            }}
-        >
+            }}>
             <LightboxContent
                 photos={photos}
                 initialIndex={initialIndex}

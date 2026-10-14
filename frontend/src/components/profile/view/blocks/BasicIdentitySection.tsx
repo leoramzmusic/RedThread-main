@@ -32,12 +32,15 @@ export default function BasicIdentitySection({
           <Box>
             <Typography
               variant="caption"
-              color="text.secondary"
-              display="block"
-            >
+              sx={{
+                color: "text.secondary",
+                display: "block"
+              }}>
               {t("profile.fields.pronouns", "Pronombres")}
             </Typography>
-            <Stack direction="row" alignItems="center" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{
+              alignItems: "center"
+            }}>
               <Chip
                 label={profile.pronouns}
                 size="small"
@@ -49,9 +52,10 @@ export default function BasicIdentitySection({
               />
               <Typography
                 variant="caption"
-                color="text.disabled"
-                sx={{ fontStyle: "italic" }}
-              >
+                sx={{
+                  color: "text.disabled",
+                  fontStyle: "italic"
+                }}>
                 Tu pronombre es parte de tu identidad. La compatibilidad se basa
                 en la orientación sexual y otros factores.
               </Typography>
@@ -60,16 +64,22 @@ export default function BasicIdentitySection({
         )}
 
         <Box>
-          <Typography variant="caption" color="text.secondary" display="block">
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+              display: "block"
+            }}>
             {t("profile.sections.identity.title", "Identidad")}
           </Typography>
           <Stack
             direction="row"
             spacing={1}
-            flexWrap="wrap"
             useFlexGap
-            sx={{ mt: 0.5 }}
-          >
+            sx={{
+              flexWrap: "wrap",
+              mt: 0.5
+            }}>
             {profile.gender && (
               <Chip
                 label={t(`gender.${profile.gender}`, profile.gender) as string}
@@ -96,9 +106,10 @@ export default function BasicIdentitySection({
           <Box>
             <Typography
               variant="caption"
-              color="text.secondary"
-              display="block"
-            >
+              sx={{
+                color: "text.secondary",
+                display: "block"
+              }}>
               {t("profile.fields.relationship_status", "Estado civil")}
             </Typography>
             <Typography variant="body2" sx={{ mt: 0.5 }}>

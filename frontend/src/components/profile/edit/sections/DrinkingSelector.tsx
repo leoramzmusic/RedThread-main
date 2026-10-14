@@ -89,7 +89,11 @@ export default function DrinkingSelector({ control }: DrinkingSelectorProps) {
                                 }
                             }}
                         >
-                            <Box display="flex" alignItems="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
                                 <BarIcon sx={{ color: categoryColor, mr: 1.5 }} />
                                 <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '1rem' }}>
                                     ¿Cada cuánto bebes?
@@ -122,7 +126,12 @@ export default function DrinkingSelector({ control }: DrinkingSelectorProps) {
                                 borderRadius: 3,
                                 bgcolor: 'background.paper'
                             }}>
-                                <Box display="flex" flexWrap="wrap" gap={1}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        gap: 1
+                                    }}>
                                     {DRINKING_OPTIONS.map((option) => {
                                         const isSelected = currentValue === option.value;
                                         return (
@@ -170,7 +179,13 @@ export default function DrinkingSelector({ control }: DrinkingSelectorProps) {
                                         }}
                                     >
                                         <AlertTitle sx={{ fontSize: '0.85rem', fontWeight: 700 }}>Consumo Responsable</AlertTitle>
-                                        <Typography variant="caption" display="block" sx={{ lineHeight: 1.5, color: 'text.primary' }}>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                display: "block",
+                                                lineHeight: 1.5,
+                                                color: 'text.primary'
+                                            }}>
                                             Recuerda moderar tu consumo de alcohol. El consumo frecuente puede afectar tu salud y bienestar.
                                             Si lo deseas, explora opciones de sobriedad o hábitos más saludables.
                                         </Typography>

@@ -27,7 +27,7 @@ import RelationshipTypeSelector from "./RelationshipTypeSelector";
 import FamilyPlansSelector from "./FamilyPlansSelector";
 import CommunicationStyleSelector from "./CommunicationStyleSelector";
 import LoveLanguageSelector from "./LoveLanguageSelector";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 export default function AdditionalDataSection({
   control,
@@ -35,7 +35,7 @@ export default function AdditionalDataSection({
 }: SectionWithOptionsProps) {
   const { t } = useTranslation("common");
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -48,38 +48,43 @@ export default function AdditionalDataSection({
         }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListAlt color="action" />
             {t("profile.additional.title", "Datos Adicionales")}
           </Box>
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <HeightSelector control={control} />
             </Grid>
 
             {/* Relationship Type - Enhanced Component */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <RelationshipTypeSelector control={control} />
             </Grid>
 
             {/* Education Level moved to ProfessionalAcademicSection */}
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <ZodiacSelector control={control} />
             </Grid>
 
             {/* Moved Fields from Lifestyle */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FamilyPlansSelector control={control} />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <CommunicationStyleSelector control={control} />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <LoveLanguageSelector control={control} />
             </Grid>
           </Grid>

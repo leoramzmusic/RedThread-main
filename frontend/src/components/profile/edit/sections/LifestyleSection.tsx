@@ -9,7 +9,7 @@ import OptionSelector from './OptionSelector';
 
 export default function LifestyleSection({ control }: Pick<SectionWithOptionsProps, 'control'>) {
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Accordion
                 defaultExpanded
                 sx={{
@@ -25,7 +25,12 @@ export default function LifestyleSection({ control }: Pick<SectionWithOptionsPro
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 3, py: 1 }}
                 >
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}>
                         <Nightlife color="action" />
                         <Typography variant="h6">Estilo de vida</Typography>
                     </Box>
@@ -33,19 +38,19 @@ export default function LifestyleSection({ control }: Pick<SectionWithOptionsPro
                 <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
                     <Grid container spacing={2}>
                         {/* Pets Selector - Full Width */}
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <PetsSelector control={control} />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <DrinkingSelector control={control} />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <SmokingSelector control={control} />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <ExerciseSelector control={control} />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <OptionSelector
                                 control={control}
                                 name="social_media_usage"

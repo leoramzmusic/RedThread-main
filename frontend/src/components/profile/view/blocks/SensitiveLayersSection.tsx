@@ -59,7 +59,13 @@ export default function SensitiveLayersSection({ profile, isOwnProfile, onEdit }
             <Stack spacing={3}>
                 {renderNeuro && (
                     <Box>
-                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 1
+                            }}>
                             <Psychology fontSize="small" color="action" />
                             <Typography variant="subtitle2">
                                 {t('profile.fields.neurodiversity', 'Neurodiversidad')}
@@ -68,7 +74,9 @@ export default function SensitiveLayersSection({ profile, isOwnProfile, onEdit }
                                 <Chip label="Hidden" size="small" variant="outlined" color="warning" sx={{ height: 20 }} />
                             )}
                         </Box>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        <Stack direction="row" spacing={1} useFlexGap sx={{
+                            flexWrap: "wrap"
+                        }}>
                             {/* Combine self-id and diagnoses? */}
                             {[...(profile.neurodiversity || []), ...(profile.neurodiversity_diagnoses || [])].map((item: string, i) => (
                                 <Chip
@@ -84,7 +92,13 @@ export default function SensitiveLayersSection({ profile, isOwnProfile, onEdit }
 
                 {renderHealth && (
                     <Box>
-                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 1
+                            }}>
                             <Favorite fontSize="small" color="action" />
                             <Typography variant="subtitle2">
                                 {t('profile.fields.health', 'Salud y bienestar')}
@@ -93,7 +107,9 @@ export default function SensitiveLayersSection({ profile, isOwnProfile, onEdit }
                                 <Chip label="Hidden" size="small" variant="outlined" color="warning" sx={{ height: 20 }} />
                             )}
                         </Box>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        <Stack direction="row" spacing={1} useFlexGap sx={{
+                            flexWrap: "wrap"
+                        }}>
                             {[...(profile.health_conditions || []), ...(profile.disabilities || [])].map((item: string, i) => (
                                 <Chip
                                     key={`health-${i}`}

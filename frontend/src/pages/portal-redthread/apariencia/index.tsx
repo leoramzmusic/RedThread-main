@@ -71,10 +71,14 @@ export default function AppearanceDashboard() {
                     {/* Header */}
                     <Box sx={{ mb: 4, textAlign: 'center' }}>
                         <PaletteIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
-                        <Typography variant="h3" fontWeight={700} gutterBottom>
+                        <Typography variant="h3" gutterBottom sx={{
+                            fontWeight: 700
+                        }}>
                             Apariencia
                         </Typography>
-                        <Typography variant="h6" color="text.secondary">
+                        <Typography variant="h6" sx={{
+                            color: "text.secondary"
+                        }}>
                             Gestión de recursos visuales y temas
                         </Typography>
                     </Box>
@@ -82,7 +86,12 @@ export default function AppearanceDashboard() {
                     {/* Modules Grid */}
                     <Grid container spacing={4}>
                         {modules.map((module) => (
-                            <Grid item xs={12} md={4} key={module.title}>
+                            <Grid
+                                key={module.title}
+                                size={{
+                                    xs: 12,
+                                    md: 4
+                                }}>
                                 <Card
                                     sx={{
                                         height: '100%',
@@ -108,10 +117,18 @@ export default function AppearanceDashboard() {
                                         }}
                                     >
                                         {module.icon}
-                                        <Typography variant="h5" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
+                                        <Typography
+                                            variant="h5"
+                                            sx={{
+                                                fontWeight: 600,
+                                                mt: 2,
+                                                mb: 1
+                                            }}>
                                             {module.title}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             {module.description}
                                         </Typography>
                                         <Button

@@ -11,7 +11,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { Settings, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { Controller } from "react-hook-form";
 import { BaseSectionProps } from "../types";
 
@@ -28,7 +28,7 @@ export default function ProfileControlSection({
   const showLocation = watch("show_location");
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -41,7 +41,12 @@ export default function ProfileControlSection({
         }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <Settings color="action" />
             <Typography variant="h6">
               {t("profile.control.title", {
@@ -54,12 +59,16 @@ export default function ProfileControlSection({
           <Stack spacing={3}>
             {/* Emotional Transparency & Narrative Control Info */}
             <Box sx={{ p: 2, bgcolor: "action.hover", borderRadius: 2 }}>
-              <Typography variant="subtitle2" gutterBottom fontWeight="bold">
+              <Typography variant="subtitle2" gutterBottom sx={{
+                fontWeight: "bold"
+              }}>
                 {t("profile.control.subtitle", {
                   defaultValue: "Tu privacidad, tu narrativa",
                 })}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>
                 {t("profile.control.description", {
                   defaultValue:
                     "Tú decides qué mostrar. CARE respeta tus decisiones y ajusta la forma en que te presenta a los demás. Si ocultas información, CARE interpretará esto como una preferencia por la privacidad y modulará la conexión.",
@@ -86,18 +95,20 @@ export default function ProfileControlSection({
                   }}
                 >
                   <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Box>
                       <Typography
                         variant="subtitle1"
-                        fontWeight={600}
-                        display="flex"
-                        alignItems="center"
-                        gap={1}
-                      >
+                        sx={{
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1
+                        }}>
                         {field.value
                           ? t("profile.control.age.label", {
                               defaultValue: "Edad visible",
@@ -108,9 +119,11 @@ export default function ProfileControlSection({
                       </Typography>
                       <Typography
                         variant="caption"
-                        color="text.secondary"
-                        sx={{ display: "block", mt: 0.5 }}
-                      >
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mt: 0.5
+                        }}>
                         {field.value
                           ? t("profile.control.age.description", {
                               defaultValue:
@@ -148,8 +161,10 @@ export default function ProfileControlSection({
                     </Typography>
                     <Typography
                       variant="caption"
-                      fontWeight={500}
                       color="primary"
+                      sx={{
+                        fontWeight: 500
+                      }}
                     >
                       {field.value
                         ? t("profile.control.age.careOn", {
@@ -184,18 +199,20 @@ export default function ProfileControlSection({
                   }}
                 >
                   <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Box>
                       <Typography
                         variant="subtitle1"
-                        fontWeight={600}
-                        display="flex"
-                        alignItems="center"
-                        gap={1}
-                      >
+                        sx={{
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1
+                        }}>
                         {field.value
                           ? t("profile.control.distance.label", {
                               defaultValue: "Distancia visible",
@@ -206,9 +223,11 @@ export default function ProfileControlSection({
                       </Typography>
                       <Typography
                         variant="caption"
-                        color="text.secondary"
-                        sx={{ display: "block", mt: 0.5 }}
-                      >
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mt: 0.5
+                        }}>
                         {field.value
                           ? t("profile.control.distance.description", {
                               defaultValue: "Facilita encuentros cercanos.",
@@ -245,8 +264,10 @@ export default function ProfileControlSection({
                     </Typography>
                     <Typography
                       variant="caption"
-                      fontWeight={500}
                       color="primary"
+                      sx={{
+                        fontWeight: 500
+                      }}
                     >
                       {field.value
                         ? t("profile.control.distance.careOn", {

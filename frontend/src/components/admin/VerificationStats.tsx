@@ -62,7 +62,12 @@ export default function VerificationStatsDashboard() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" p={4}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          p: 4
+        }}>
         <CircularProgress />
       </Box>
     );
@@ -99,8 +104,16 @@ export default function VerificationStatsDashboard() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5" fontWeight={600}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2
+        }}>
+        <Typography variant="h5" sx={{
+          fontWeight: 600
+        }}>
           Dashboard de Verificación
         </Typography>
         <Button 
@@ -113,16 +126,35 @@ export default function VerificationStatsDashboard() {
       </Box>
 
       {/* Summary Cards */}
-      <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={3} sx={{
+        mb: 4
+      }}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 3
+          }}>
           <Card sx={{ bgcolor: '#e8f5e9' }}>
             <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
                 <Box>
-                  <Typography color="text.secondary" variant="subtitle2">
+                  <Typography variant="subtitle2" sx={{
+                    color: "text.secondary"
+                  }}>
                     Total Aprobados
                   </Typography>
-                  <Typography variant="h4" fontWeight={700} color="success.main">
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: "success.main"
+                    }}>
                     {stats.total_verified}
                   </Typography>
                 </Box>
@@ -132,15 +164,32 @@ export default function VerificationStatsDashboard() {
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 3
+          }}>
           <Card sx={{ bgcolor: '#ffebee' }}>
             <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
                 <Box>
-                  <Typography color="text.secondary" variant="subtitle2">
+                  <Typography variant="subtitle2" sx={{
+                    color: "text.secondary"
+                  }}>
                     Total Rechazados
                   </Typography>
-                  <Typography variant="h4" fontWeight={700} color="error.main">
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: "error.main"
+                    }}>
                     {stats.total_rejected}
                   </Typography>
                 </Box>
@@ -150,15 +199,32 @@ export default function VerificationStatsDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 3
+          }}>
           <Card sx={{ bgcolor: '#fff3e0' }}>
              <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
                 <Box>
-                  <Typography color="text.secondary" variant="subtitle2">
+                  <Typography variant="subtitle2" sx={{
+                    color: "text.secondary"
+                  }}>
                     Pendientes
                   </Typography>
-                  <Typography variant="h4" fontWeight={700} color="warning.main">
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: "warning.main"
+                    }}>
                     {stats.total_pending}
                   </Typography>
                 </Box>
@@ -168,17 +234,31 @@ export default function VerificationStatsDashboard() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 3
+          }}>
            <Card>
             <CardContent>
                <Box>
-                  <Typography color="text.secondary" variant="subtitle2">
+                  <Typography variant="subtitle2" sx={{
+                    color: "text.secondary"
+                  }}>
                     Tasa de Aprobación
                   </Typography>
-                  <Typography variant="h4" fontWeight={700} color="primary.main">
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: "primary.main"
+                    }}>
                     {stats.approval_rate}%
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>
                     de solicitudes procesadas
                   </Typography>
                 </Box>
@@ -190,7 +270,11 @@ export default function VerificationStatsDashboard() {
       {/* Charts Section */}
       <Grid container spacing={3}>
         {/* Rejection Reasons Bar Chart */}
-        <Grid item xs={12} md={8}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 8
+          }}>
           <Paper sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom>
               Top Motivos de Rechazo
@@ -211,15 +295,27 @@ export default function VerificationStatsDashboard() {
                 </BarChart>
                 </ResponsiveContainer>
             ) : (
-                <Box display="flex" alignItems="center" justifyContent="center" height="100%">
-                    <Typography color="text.secondary">No hay datos de rechazos suficientes</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%"
+                  }}>
+                    <Typography sx={{
+                      color: "text.secondary"
+                    }}>No hay datos de rechazos suficientes</Typography>
                 </Box>
             )}
           </Paper>
         </Grid>
 
         {/* Overall Distribution Pie Chart */}
-        <Grid item xs={12} md={4}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 4
+          }}>
            <Paper sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom>
               Distribución Total

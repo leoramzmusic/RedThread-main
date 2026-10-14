@@ -34,7 +34,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Controller, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useAppTheme } from "../../../../context/ThemeContext";
 import { BaseSectionProps } from "../types";
 import SpotifySearchModal from "../SpotifySearchModal"; // Adjust path if needed
@@ -316,7 +316,7 @@ export default function MusicSection({
   if (!showSpotify && !showGenres) return null;
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <SpotifySearchModal
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
@@ -341,7 +341,12 @@ export default function MusicSection({
         }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <MusicNote color="action" />
             <Typography variant="h6">
               {t("profile.music.title", "Mi Himno")}
@@ -386,7 +391,7 @@ export default function MusicSection({
           <Grid container spacing={2}>
             {/* Conexión Spotify (sub-módulo Spotify) */}
             {showSpotify && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               {isConnected && freeSpotifyAccount && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   {t(
@@ -433,7 +438,7 @@ export default function MusicSection({
 
             {/* Géneros musicales (sub-módulo independiente) */}
             {showGenres && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Accordion
                 defaultExpanded={false}
                 sx={{
@@ -446,11 +451,18 @@ export default function MusicSection({
                 }}
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Box display="flex" alignItems="center" gap={1}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1
+                    }}>
                     <Typography variant="h6" sx={{ fontSize: "1rem" }}>
                       {t("profile.music.genresTitle", "Géneros Musicales")}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{
+                      color: "text.secondary"
+                    }}>
                       ({(watch("music_genres") || []).length}/25)
                     </Typography>
                   </Box>
@@ -476,7 +488,7 @@ export default function MusicSection({
                 featuredSongs.length > 0) && (
               <>
                 {freeSpotifyAccount && (
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Alert
                       severity="info"
                       sx={{
@@ -493,13 +505,14 @@ export default function MusicSection({
                   </Grid>
                 )}
                 {/* Favorite Artists */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={2}
-                  >
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 2
+                    }}>
                     <Typography variant="h6">
                       {t(
                         "profile.music.artistsTitle",
@@ -583,14 +596,15 @@ export default function MusicSection({
                 </Grid>
 
                 {/* Featured Songs */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={2}
-                    mt={2}
-                  >
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 2,
+                      mt: 2
+                    }}>
                     <Typography variant="h6">
                       {t(
                         "profile.music.songsTitle",
@@ -683,7 +697,12 @@ function VisualArtistCard({
   readOnly?: boolean;
 }) {
   return (
-    <Box position="relative" sx={{ textAlign: "center", width: 80 }}>
+    <Box
+      sx={{
+        position: "relative",
+        textAlign: "center",
+        width: 80
+      }}>
       <Avatar
         src={artist.image}
         sx={{

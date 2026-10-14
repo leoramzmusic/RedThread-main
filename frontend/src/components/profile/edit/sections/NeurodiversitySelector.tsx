@@ -20,13 +20,13 @@ import {
 } from "@mui/material";
 import {
   ExpandMore,
-  HelpOutline,
+  HelpOutlined,
   CheckCircle,
   InfoOutlined,
   Add,
 } from "@mui/icons-material";
 import { Controller, Control, UseFormSetValue } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface Option {
   value: string;
@@ -92,7 +92,11 @@ export default function NeurodiversitySelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           {icon && (
             <Box sx={{ mr: 1.5, color: categoryColor, display: "flex" }}>
               {icon}
@@ -157,11 +161,12 @@ export default function NeurodiversitySelector({
         >
           {/* Top Bar: Privacy & Help */}
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={2}
-          >
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2
+            }}>
             <Controller
               name={privacyName}
               control={control}
@@ -176,7 +181,9 @@ export default function NeurodiversitySelector({
                     />
                   }
                   label={
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       {t("profile.cognitive.neurodiversity_show")}
                     </Typography>
                   }
@@ -185,7 +192,7 @@ export default function NeurodiversitySelector({
             />
             <Tooltip title={t("profile.cognitive.neurodiversity_help_text")}>
               <IconButton size="small">
-                <HelpOutline fontSize="small" sx={{ color: "#03a9f4" }} />
+                <HelpOutlined fontSize="small" sx={{ color: "#03a9f4" }} />
               </IconButton>
             </Tooltip>
           </Box>
@@ -271,7 +278,7 @@ export default function NeurodiversitySelector({
                         size="small"
                       />
                     )}
-                    renderTags={(value, getTagProps) =>
+                    renderValue={(value, getItemProps) =>
                       value.map((option, index) => {
                         const raw =
                           (option as any)?.label ??
@@ -282,7 +289,7 @@ export default function NeurodiversitySelector({
                           typeof raw === "string" || typeof raw === "number"
                             ? String(raw)
                             : "";
-                        const { key, ...tagProps } = getTagProps({ index });
+                        const { key, ...tagProps } = getItemProps({ index });
                         return (
                           <Chip
                             key={key}
@@ -303,7 +310,13 @@ export default function NeurodiversitySelector({
                   />
 
                   {/* Add special options as quick chips below */}
-                  <Box display="flex" gap={1} mb={2} flexWrap="wrap">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      mb: 2,
+                      flexWrap: "wrap"
+                    }}>
                     {["other", "not_sure", "prefer_not_to_say"].map((val) => {
                       const isSelected = currentValues.includes(val);
                       return (
@@ -391,7 +404,12 @@ export default function NeurodiversitySelector({
                       );
 
                       return (
-                        <Box display="flex" flexDirection="column" gap={1.5}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1.5
+                          }}>
                           {filteredValues.map((val: string) => {
                             const isDiagnosed = currentDiags.includes(val);
                             const option = options.find((o) => o.value === val);
@@ -412,11 +430,12 @@ export default function NeurodiversitySelector({
                                 }}
                               >
                                 <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="space-between"
-                                  mb={1}
-                                >
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    mb: 1
+                                  }}>
                                   <Typography
                                     variant="subtitle2"
                                     sx={{ fontWeight: 700 }}
@@ -438,10 +457,11 @@ export default function NeurodiversitySelector({
                                 </Box>
 
                                 <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="space-between"
-                                >
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between"
+                                  }}>
                                   <FormControlLabel
                                     control={
                                       <Checkbox
@@ -517,13 +537,19 @@ export default function NeurodiversitySelector({
               borderColor: alpha(theme.palette.info.main, 0.3),
             }}
           >
-            <Box display="flex" gap={1.5}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1.5
+              }}>
               <InfoOutlined color="info" sx={{ fontSize: 20, mt: 0.2 }} />
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ fontStyle: "italic", lineHeight: 1.4 }}
-              >
+                sx={{
+                  color: "text.secondary",
+                  fontStyle: "italic",
+                  lineHeight: 1.4
+                }}>
                 {t("profile.cognitive.neurodiversity_self_id_help")}
               </Typography>
             </Box>

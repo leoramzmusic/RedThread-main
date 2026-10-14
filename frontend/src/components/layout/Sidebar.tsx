@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { APP_VERSION } from '../../config/version';
 import {
   Box,
@@ -551,11 +551,15 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                             <>
                               <ListItemText
                                 primary={item.label}
-                                primaryTypographyProps={{
-                                  fontSize: '0.88rem',
-                                  fontWeight: active ? 600 : 500,
-                                  color: active ? textActive : textInactive,
-                                  sx: { transition: 'color 0.2s ease' }
+                                slotProps={{
+                                  primary: {
+                                    sx: {
+                                      fontSize: '0.88rem',
+                                      fontWeight: active ? 600 : 500,
+                                      color: active ? textActive : textInactive,
+                                      transition: 'color 0.2s ease'
+                                    },
+                                  }
                                 }}
                               />
                               {item.children && (
@@ -618,10 +622,14 @@ export default function Sidebar({ open: externalOpen, onClose, mobileOpen = fals
                                 </ListItemIcon>
                                 <ListItemText
                                   primary={child.label}
-                                  primaryTypographyProps={{
-                                    fontSize: '0.82rem',
-                                    fontWeight: 400,
-                                    color: isActive(child.path) ? textActive : textInactive,
+                                  slotProps={{
+                                    primary: {
+                                      sx: {
+                                        fontSize: '0.82rem',
+                                        fontWeight: 400,
+                                        color: isActive(child.path) ? textActive : textInactive,
+                                      },
+                                    }
                                   }}
                                 />
                               </ListItemButton>

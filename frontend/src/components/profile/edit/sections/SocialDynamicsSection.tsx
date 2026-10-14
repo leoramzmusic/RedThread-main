@@ -1,6 +1,6 @@
 import { Diversity3, Groups, Explore, Handshake, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Control } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { Grid, Paper, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import OptionSelector from './OptionSelector';
 
@@ -12,7 +12,7 @@ export default function SocialDynamicsSection({ control }: SocialDynamicsSection
     const { t } = useTranslation('common');
 
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Accordion
                 defaultExpanded
                 sx={{
@@ -28,14 +28,19 @@ export default function SocialDynamicsSection({ control }: SocialDynamicsSection
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 3, py: 1 }}
                 >
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}>
                         <Diversity3 color="action" />
                         <Typography variant="h6">{t('profile.social.title')}</Typography>
                     </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <OptionSelector
                                 control={control}
                                 name="interaction_preference"
@@ -49,7 +54,7 @@ export default function SocialDynamicsSection({ control }: SocialDynamicsSection
                                 ]}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <OptionSelector
                                 control={control}
                                 name="openness_to_experience"
@@ -63,7 +68,7 @@ export default function SocialDynamicsSection({ control }: SocialDynamicsSection
                                 ]}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <OptionSelector
                                 control={control}
                                 name="collaboration_style"

@@ -85,15 +85,25 @@ export default function CredencialEmpleadoConfigPage() {
     <AdminLayout>
       <Head><title>Credencial {employeeId} | ReTh Admin</title></Head>
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Box mb={3}>
-          <Typography variant="h4" fontWeight={800}>Credenciales — {employee?.first_name || employeeId}</Typography>
-          <Typography variant="body2" color="text.secondary">Ruta: /portal-redthread/empleados/{employeeId} • Diseño por empleado sin tocar código.</Typography>
+        <Box sx={{
+          mb: 3
+        }}>
+          <Typography variant="h4" sx={{
+            fontWeight: 800
+          }}>Credenciales — {employee?.first_name || employeeId}</Typography>
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>Ruta: /portal-redthread/empleados/{employeeId} • Diseño por empleado sin tocar código.</Typography>
         </Box>
 
         {saved && <Alert severity="success" sx={{ mb: 2 }}>Configuración guardada para {employeeId}. Auditado.</Alert>}
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 7
+            }}>
             <Paper sx={{ p: 2, borderRadius: 2, mb: 2 }}>
               <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto">
                 <Tab label="Diseño visual" />
@@ -106,7 +116,9 @@ export default function CredencialEmpleadoConfigPage() {
 
             {tab === 0 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Plantilla</Typography>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Plantilla</Typography>
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Selector de plantillas</InputLabel>
                   <Select value={template} label="Selector de plantillas" onChange={(e) => setTemplate(e.target.value)}>
@@ -114,9 +126,9 @@ export default function CredencialEmpleadoConfigPage() {
                   </Select>
                 </FormControl>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}><TextField fullWidth label="Primario" type="color" value={primary} onChange={(e) => setPrimary(e.target.value)} /></Grid>
-                  <Grid item xs={4}><TextField fullWidth label="Secundario" type="color" value={secondary} onChange={(e) => setSecondary(e.target.value)} /></Grid>
-                  <Grid item xs={4}><TextField fullWidth label="Acentos" type="color" value={accent} onChange={(e) => setAccent(e.target.value)} /></Grid>
+                  <Grid size={4}><TextField fullWidth label="Primario" type="color" value={primary} onChange={(e) => setPrimary(e.target.value)} /></Grid>
+                  <Grid size={4}><TextField fullWidth label="Secundario" type="color" value={secondary} onChange={(e) => setSecondary(e.target.value)} /></Grid>
+                  <Grid size={4}><TextField fullWidth label="Acentos" type="color" value={accent} onChange={(e) => setAccent(e.target.value)} /></Grid>
                 </Grid>
                 <FormControlLabel control={<Switch checked={decorLines} onChange={(e) => setDecorLines(e.target.checked)} />} label="Líneas decorativas" sx={{ mt: 2 }} />
               </Paper>
@@ -130,7 +142,12 @@ export default function CredencialEmpleadoConfigPage() {
                     {FONTS.map((f) => <MenuItem key={f} value={f} sx={{ fontFamily: f }}>{f}</MenuItem>)}
                   </Select>
                 </FormControl>
-                <Box display="flex" gap={2} flexWrap="wrap">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    flexWrap: "wrap"
+                  }}>
                   <FormControlLabel control={<Switch checked={boldName} onChange={(e) => setBoldName(e.target.checked)} />} label="Nombre en negrita" />
                   <FormControlLabel control={<Switch checked={italicRole} onChange={(e) => setItalicRole(e.target.checked)} />} label="Rol en italic" />
                 </Box>
@@ -139,7 +156,9 @@ export default function CredencialEmpleadoConfigPage() {
 
             {tab === 2 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Logo y branding</Typography>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Logo y branding</Typography>
                 <TextField fullWidth label="Tagline institucional" value={tagline} onChange={(e) => setTagline(e.target.value)} sx={{ mb: 2 }} />
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Posición del logo</InputLabel>
@@ -154,8 +173,15 @@ export default function CredencialEmpleadoConfigPage() {
 
             {tab === 3 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Elementos de la credencial</Typography>
-                <Box display="flex" flexDirection="column" gap={1}>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Elementos de la credencial</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1
+                  }}>
                   <FormControlLabel control={<Switch checked={showDOB} onChange={(e) => setShowDOB(e.target.checked)} />} label="Mostrar DOB" />
                   <FormControlLabel control={<Switch checked={showPhone} onChange={(e) => setShowPhone(e.target.checked)} />} label="Mostrar teléfono" />
                   <FormControlLabel control={<Switch checked={showEmail} onChange={(e) => setShowEmail(e.target.checked)} />} label="Mostrar email" />
@@ -164,7 +190,7 @@ export default function CredencialEmpleadoConfigPage() {
                 </Box>
                 <Divider sx={{ my: 2 }} />
                 <Grid container spacing={2}>
-                  <Grid item xs={6}>
+                  <Grid size={6}>
                     <FormControl fullWidth size="small">
                       <InputLabel>Tamaño QR</InputLabel>
                       <Select value={qrSize} label="Tamaño QR" onChange={(e) => setQrSize(e.target.value)}>
@@ -174,7 +200,7 @@ export default function CredencialEmpleadoConfigPage() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid size={6}>
                     <FormControl fullWidth size="small">
                       <InputLabel>Posición QR</InputLabel>
                       <Select value={qrPos} label="Posición QR" onChange={(e) => setQrPos(e.target.value)}>
@@ -191,24 +217,45 @@ export default function CredencialEmpleadoConfigPage() {
 
             {tab === 4 && (
               <Paper sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} gutterBottom>Versionado y auditoría</Typography>
-                <Box display="flex" gap={1} alignItems="center" mb={2}>
+                <Typography variant="subtitle2" gutterBottom sx={{
+                  fontWeight: 700
+                }}>Versionado y auditoría</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    alignItems: "center",
+                    mb: 2
+                  }}>
                   <TextField label="Versión" value={previewVersion} onChange={(e) => setPreviewVersion(e.target.value)} size="small" sx={{ width: 120 }} />
                   <Button variant="outlined" onClick={handleExport} startIcon={<ExportIcon />}>Exportar</Button>
                 </Box>
-                <Typography variant="caption" color="text.secondary">Multilenguaje y auditoría por empleado.</Typography>
+                <Typography variant="caption" sx={{
+                  color: "text.secondary"
+                }}>Multilenguaje y auditoría por empleado.</Typography>
               </Paper>
             )}
 
-            <Box display="flex" gap={1} mt={2}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                mt: 2
+              }}>
               <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} sx={{ borderRadius: 2, bgcolor: '#E63946', '&:hover': { bgcolor: '#B71C1C' } }}>Guardar diseño</Button>
               <Button variant="outlined" onClick={handleExport} startIcon={<ExportIcon />}>Exportar</Button>
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={5}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 5
+            }}>
             <Paper sx={{ p: 2, borderRadius: 2, position: 'sticky', top: 16 }}>
-              <Typography variant="subtitle2" fontWeight={700} gutterBottom>Vista previa — {employeeId}</Typography>
+              <Typography variant="subtitle2" gutterBottom sx={{
+                fontWeight: 700
+              }}>Vista previa — {employeeId}</Typography>
               <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center', flexWrap: 'wrap', transform: 'scale(0.85)', transformOrigin: 'top center' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                   <Chip label={`Plantilla: ${template}`} size="small" />

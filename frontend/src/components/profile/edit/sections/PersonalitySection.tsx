@@ -5,11 +5,11 @@ import {
   WarningAmber,
   AccountTree,
   Favorite,
-  HelpOutline,
+  HelpOutlined,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Control, UseFormSetValue } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useState } from "react";
 import {
   Grid,
@@ -40,7 +40,7 @@ export default function PersonalitySection({
   const { tip: socialStyleTip } = useProfileTip("social_style_test");
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -53,7 +53,12 @@ export default function PersonalitySection({
         }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <Psychology color="action" />
             <Typography variant="h6">
               {t("profile.personality.title", {
@@ -64,18 +69,22 @@ export default function PersonalitySection({
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={1}
-              >
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 1
+                }}>
                 <Typography
                   variant="subtitle2"
-                  color="text.secondary"
-                  sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-                >
+                  sx={{
+                    color: "text.secondary",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5
+                  }}>
                   {t("profile.personality.social.label", {
                     defaultValue: "Estilo social",
                   })}
@@ -83,7 +92,7 @@ export default function PersonalitySection({
                 <Button
                   size="small"
                   color="info"
-                  startIcon={<HelpOutline />}
+                  startIcon={<HelpOutlined />}
                   onClick={() => setTestOpen(true)}
                   sx={{ textTransform: "none", fontSize: "0.75rem" }}
                 >
@@ -141,7 +150,7 @@ export default function PersonalitySection({
                 ]}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <OptionSelector
                 control={control}
                 name="processing_style"
@@ -229,7 +238,7 @@ export default function PersonalitySection({
                 ]}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <OptionSelector
                 control={control}
                 name="risk_tolerance"
@@ -261,7 +270,7 @@ export default function PersonalitySection({
                 ]}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <OptionSelector
                 control={control}
                 name="decision_making"
@@ -298,9 +307,11 @@ export default function PersonalitySection({
           {socialStyleTip?.translation?.title && (
             <Typography
               variant="subtitle2"
-              fontWeight={700}
-              sx={{ mt: 1, mb: 1 }}
-            >
+              sx={{
+                fontWeight: 700,
+                mt: 1,
+                mb: 1
+              }}>
               {socialStyleTip.translation.title}
             </Typography>
           )}

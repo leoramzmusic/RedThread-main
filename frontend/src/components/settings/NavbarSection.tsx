@@ -23,13 +23,13 @@ import {
   WorkspacePremium as PlansIcon,
   Favorite as FavoriteIcon,
   History as HistoryIcon,
-  HelpOutline as HelpIcon,
+  HelpOutlined as HelpIcon,
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
   Person as PersonIcon,
   Language as TranslateIcon,
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import QuickActionIcon from '../motion/QuickActionIcon';
 import ThemeSwitch from '../motion/ThemeSwitch';
 import BasicThemeSwitch from '../motion/BasicThemeSwitch';
@@ -144,10 +144,14 @@ function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRo
       </Box>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography variant="body1" fontWeight={600}>
+        <Typography variant="body1" sx={{
+          fontWeight: 600
+        }}>
           {label}
         </Typography>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>
           {description}
         </Typography>
       </Box>
@@ -174,12 +178,15 @@ function GroupLabel({ children }: { children: ReactNode }) {
   return (
     <Typography
       variant="caption"
-      fontWeight={700}
-      textTransform="uppercase"
-      letterSpacing="0.08em"
-      color="text.secondary"
-      sx={{ display: 'block', px: 1, mb: 1 }}
-    >
+      sx={{
+        fontWeight: 700,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        color: "text.secondary",
+        display: 'block',
+        px: 1,
+        mb: 1
+      }}>
       {children}
     </Typography>
   );
@@ -221,20 +228,26 @@ function QuickIconRow({
     >
       {icon}
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography variant="body1" fontWeight={600}>
+        <Typography variant="body1" sx={{
+          fontWeight: 600
+        }}>
           {label}
         </Typography>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>
           {description}
         </Typography>
       </Box>
       <Checkbox
         checked={enabled}
         onChange={(e) => onToggle(e.target.checked)}
-        inputProps={{ 'aria-label': `Mostrar ${label} en el navbar` }}
         sx={{
           '&.Mui-checked': { color: RED_THREAD },
           '&.Mui-checked:hover': { backgroundColor: 'rgba(211,47,47,0.08)' },
+        }}
+        slotProps={{
+          input: { 'aria-label': `Mostrar ${label} en el navbar` }
         }}
       />
       <Select
@@ -267,7 +280,9 @@ interface SegmentGroupProps {
 function SegmentGroup({ label, value, options, onChange }: SegmentGroupProps) {
   return (
     <Box>
-      <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle2" gutterBottom sx={{
+        fontWeight: 600
+      }}>
         {label}
       </Typography>
       <ToggleButtonGroup
@@ -519,16 +534,35 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
 
       {/* Bloque 1: Atajos de navegación */}
       <Box sx={glassCard}>
-        <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-          <Typography variant="h5" fontWeight={700} sx={{ fontSize: '1.4rem', mt: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 0.5
+          }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              fontSize: '1.4rem',
+              mt: 1
+            }}>
             {t('navbar_nav_title', 'Atajos de navegación')}
           </Typography>
         </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2.5
+          }}>
           {t('navbar_nav_desc', 'Los menús principales y enlaces opcionales que aparecen en el centro del navbar.')}
         </Typography>
 
-        <Box mb={1}>
+        <Box sx={{
+          mb: 1
+        }}>
           <GroupLabel>{t('navbar_nav_main', 'Principales')}</GroupLabel>
           <Stack spacing={1.5}>
             {mainNavRows.map((row) => (
@@ -565,15 +599,37 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
 
       {/* Bloque 2: Iconos de acción rápida */}
       <Box sx={glassCard}>
-        <Typography variant="h5" fontWeight={700} gutterBottom sx={{ fontSize: '1.4rem', mt: 1 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            fontWeight: 700,
+            fontSize: '1.4rem',
+            mt: 1
+          }}>
           {t('navbar_actions_title', 'Iconos de acción rápida')}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 1.5
+          }}>
           {t('navbar_actions_desc', 'Activa cada ícono para mostrarlo en el navbar y elige su estilo visual.')}
         </Typography>
 
         {/* Barra de vista previa en vivo */}
-        <Typography variant="caption" fontWeight={700} textTransform="uppercase" letterSpacing="0.08em" color="text.secondary" sx={{ display: 'block', px: 1, mb: 1 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "text.secondary",
+            display: 'block',
+            px: 1,
+            mb: 1
+          }}>
           {t('navbar_actions_preview', 'Vista previa del navbar')}
         </Typography>
         <Box
@@ -638,14 +694,28 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
 
       {/* Estilo del perfil */}
       <Box sx={glassCard}>
-        <Typography variant="h5" fontWeight={700} gutterBottom sx={{ fontSize: '1.4rem', mt: 1 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            fontWeight: 700,
+            fontSize: '1.4rem',
+            mt: 1
+          }}>
           {t('navbar_profile_title', 'Estilo de tu perfil')}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2.5
+          }}>
           {t('navbar_profile_desc', 'Tu avatar es fijo en el navbar; aquí editas su forma, borde y resplandor.')}
         </Typography>
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} alignItems={{ sm: 'center' }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{
+          alignItems: { sm: 'center' }
+        }}>
           {/* Vista previa */}
           <Box
             sx={{

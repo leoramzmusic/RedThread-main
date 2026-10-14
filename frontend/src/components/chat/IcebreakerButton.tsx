@@ -83,9 +83,11 @@ export default function IcebreakerButton({ conversationId, otherUserId, onSend, 
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
-                PaperProps={{
-                    elevation: 3,
-                    sx: { borderRadius: 4, mt: 1, minWidth: 200 }
+                slotProps={{
+                    paper: {
+                        elevation: 3,
+                        sx: { borderRadius: 4, mt: 1, minWidth: 200 }
+                    }
                 }}
             >
                 {/* Level 1: Basic Hello */}

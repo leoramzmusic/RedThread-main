@@ -28,14 +28,20 @@ export default function IdiomasAdminPage() {
 
   return (
     <Box sx={{p:3}}>
-      <Typography variant="h5" fontWeight={700}>Idiomas disponibles</Typography>
-      <Typography variant="caption" color="text.secondary">Habilita/deshabilita idiomas para los usuarios. No fuerza el idioma de nadie.</Typography>
+      <Typography variant="h5" sx={{
+        fontWeight: 700
+      }}>Idiomas disponibles</Typography>
+      <Typography variant="caption" sx={{
+        color: "text.secondary"
+      }}>Habilita/deshabilita idiomas para los usuarios. No fuerza el idioma de nadie.</Typography>
       <Paper sx={{p:2, mt:2}}>
         <Stack spacing={1}>
           {supportedLanguages.map(l => (
             <Box key={l.code} sx={{display:'flex', justifyContent:'space-between', alignItems:'center', py:0.5}}>
               <Typography>{l.label} ({l.code.toUpperCase()})</Typography>
-              <Switch checked={enabled.includes(l.code)} onChange={()=>toggle(l.code)} inputProps={{ role: 'switch' }} />
+              <Switch checked={enabled.includes(l.code)} onChange={()=>toggle(l.code)} slotProps={{
+                input: { role: 'switch' }
+              }} />
             </Box>
           ))}
         </Stack>

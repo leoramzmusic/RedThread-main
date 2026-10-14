@@ -25,11 +25,19 @@ export default function AdminEmpleados() {
     <AdminLayout>
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 3
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread')}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Gestión de Empleados
             </Typography>
           </Box>
@@ -45,7 +53,9 @@ export default function AdminEmpleados() {
               <Typography variant="h6" gutterBottom>
                 Lista de Empleados
               </Typography>
-              <Typography color="text.secondary">
+              <Typography sx={{
+                color: "text.secondary"
+              }}>
                 Funcionalidad pendiente de implementación
               </Typography>
             </Paper>
@@ -58,12 +68,19 @@ export default function AdminEmpleados() {
               </Typography>
               <Grid container spacing={2} sx={{ mt: 2 }}>
                 {['Admin', 'Moderador', 'Usuario'].map((rol) => (
-                  <Grid item xs={12} md={4} key={rol}>
+                  <Grid
+                    key={rol}
+                    size={{
+                      xs: 12,
+                      md: 4
+                    }}>
                     <Card>
                       <CardContent>
                         <SecurityIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
                         <Typography variant="h6">{rol}</Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                          color: "text.secondary"
+                        }}>
                           Gestionar permisos del rol
                         </Typography>
                       </CardContent>
@@ -79,7 +96,9 @@ export default function AdminEmpleados() {
               <Typography variant="h6" gutterBottom>
                 Gestión de Permisos
               </Typography>
-              <Typography color="text.secondary">
+              <Typography sx={{
+                color: "text.secondary"
+              }}>
                 Funcionalidad pendiente de implementación
               </Typography>
             </Paper>

@@ -47,9 +47,13 @@ export default function GameSession({ message, isOwn, user }: GameSessionProps) 
     if (state === 'INVITE') {
         return (
             <Paper elevation={0} sx={{ p: 2, bgcolor: 'action.hover', border: '1px dashed grey', borderRadius: 2, maxWidth: 300 }}>
-                <Stack spacing={1} alignItems="center">
+                <Stack spacing={1} sx={{
+                    alignItems: "center"
+                }}>
                     <ExtensionIcon color="primary" />
-                    <Typography variant="subtitle2" fontWeight="bold"> Invitación a {gameType} </Typography>
+                    <Typography variant="subtitle2" sx={{
+                        fontWeight: "bold"
+                    }}> Invitación a {gameType} </Typography>
                     <Typography variant="body2" align="center"> {promptText} </Typography>
 
                     {!isOwn && (
@@ -62,7 +66,9 @@ export default function GameSession({ message, isOwn, user }: GameSessionProps) 
                             Aceptar Reto
                         </Button>
                     )}
-                    {isOwn && <Typography variant="caption" fontStyle="italic">Esperando aceptación...</Typography>}
+                    {isOwn && <Typography variant="caption" sx={{
+                        fontStyle: "italic"
+                    }}>Esperando aceptación...</Typography>}
                 </Stack>
             </Paper>
         );
@@ -72,8 +78,16 @@ export default function GameSession({ message, isOwn, user }: GameSessionProps) 
     if (state === 'REVEALED') {
         return (
             <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: 2 }}>
-                <Stack spacing={1} alignItems="center">
-                    <Typography variant="subtitle2" align="center" fontWeight="bold" color="error.main">
+                <Stack spacing={1} sx={{
+                    alignItems: "center"
+                }}>
+                    <Typography
+                        variant="subtitle2"
+                        align="center"
+                        sx={{
+                            fontWeight: "bold",
+                            color: "error.main"
+                        }}>
                         {gameType === 'icebreaker' ? '✨ Respuestas Reveladas ✨' : '🔥 Resultados 🔥'}
                     </Typography>
                     <Typography variant="body2" align="center" sx={{ fontStyle: 'italic', mb: 1 }}>
@@ -83,7 +97,13 @@ export default function GameSession({ message, isOwn, user }: GameSessionProps) 
                     <Stack spacing={1} sx={{ width: '100%' }}>
                         {Object.entries(responses).map(([uid, ans]: [string, any]) => (
                             <Box key={uid} sx={{ p: 1.5, bgcolor: 'background.paper', borderRadius: 2, position: 'relative' }}>
-                                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                                <Typography
+                                    variant="caption"
+                                    gutterBottom
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block"
+                                    }}>
                                     {uid === user?.user_id ? 'Tú' : 'Partner'}
                                 </Typography>
                                 <Typography variant="body1">{ans}</Typography>
@@ -107,22 +127,47 @@ export default function GameSession({ message, isOwn, user }: GameSessionProps) 
     return (
         <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 2, maxWidth: 300 }}>
             <Stack spacing={2}>
-                <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                    }}>
                     <ExtensionIcon color="action" fontSize="small" />
-                    <Typography variant="caption" fontWeight="bold" color="text.secondary">{gameType.toUpperCase()}</Typography>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            fontWeight: "bold",
+                            color: "text.secondary"
+                        }}>{gameType.toUpperCase()}</Typography>
                 </Box>
 
-                <Typography variant="body2" fontWeight="medium">
+                <Typography variant="body2" sx={{
+                    fontWeight: "medium"
+                }}>
                     {promptText}
                 </Typography>
 
                 {hasAnswered ? (
-                    <Box textAlign="center" py={1} bgcolor="action.hover" borderRadius={1}>
+                    <Box
+                        sx={{
+                            textAlign: "center",
+                            py: 1,
+                            bgcolor: "action.hover",
+                            borderRadius: 1
+                        }}>
                         <LockIcon sx={{ color: 'text.secondary', fontSize: 32, mb: 1 }} />
-                        <Typography variant="caption" display="block" fontWeight="bold">
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                display: "block",
+                                fontWeight: "bold"
+                            }}>
                             Tu respuesta está guardada.
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>
                             Esperando a la otra persona para revelar...
                         </Typography>
                     </Box>

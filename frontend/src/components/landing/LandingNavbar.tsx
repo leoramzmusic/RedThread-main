@@ -167,15 +167,17 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         ModalProps={{ keepMounted: true }}
-        PaperProps={{
-          sx: {
-            width: 300,
-            maxWidth: '85vw',
-            bgcolor: 'rgba(26,27,30,0.92)',
-            backdropFilter: 'blur(20px) saturate(1.5)',
-            color: 'white',
-            borderLeft: '1px solid rgba(255,255,255,0.12)',
-          },
+        slotProps={{
+          paper: {
+            sx: {
+              width: 300,
+              maxWidth: '85vw',
+              bgcolor: 'rgba(26,27,30,0.92)',
+              backdropFilter: 'blur(20px) saturate(1.5)',
+              color: 'white',
+              borderLeft: '1px solid rgba(255,255,255,0.12)',
+            },
+          }
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
@@ -191,7 +193,9 @@ export default function LandingNavbar({ currentLang, onLangChange }: LandingNavb
         <List sx={{ p: 1.5 }}>
           {visibleNavItems.map((item) => (
             <ListItemButton key={item.label} onClick={() => handleNavClick(item.href)} sx={{ borderRadius: 2, mb: 0.5 }}>
-              <ListItemText primary={item.label} primaryTypographyProps={{ fontWeight: 500, fontFamily: 'Inter, system-ui, sans-serif' }} />
+              <ListItemText primary={item.label} slotProps={{
+                primary: { sx: { fontWeight: 500, fontFamily: 'Inter, system-ui, sans-serif' } }
+              }} />
             </ListItemButton>
           ))}
         </List>

@@ -16,13 +16,13 @@ import {
   WbSunny,
   NightsStay,
   Sync,
-  HelpOutline,
+  HelpOutlined,
   InfoOutlined,
   CheckCircle,
   ExpandMore,
 } from "@mui/icons-material";
 import { Controller, Control } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface EnergyLevelSelectorProps {
   control: Control<any>;
@@ -107,7 +107,11 @@ export default function EnergyLevelSelector({
           },
         }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center"
+          }}>
           <Box
             sx={{ mr: 1.5, color: theme.palette.primary.main, display: "flex" }}
           >
@@ -166,16 +170,19 @@ export default function EnergyLevelSelector({
         >
           {/* Intro with Help */}
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="flex-start"
-            mb={3}
-          >
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              mb: 3
+            }}>
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ maxWidth: "85%", lineHeight: 1.5 }}
-            >
+              sx={{
+                color: "text.secondary",
+                maxWidth: "85%",
+                lineHeight: 1.5
+              }}>
               {t("profile.health.energy.description", {
                 defaultValue:
                   "El nivel de energía ayuda a enviar notificaciones y sugerir actividades según tu ritmo.",
@@ -188,7 +195,7 @@ export default function EnergyLevelSelector({
               })}
             >
               <IconButton size="small">
-                <HelpOutline
+                <HelpOutlined
                   fontSize="small"
                   sx={{ color: theme.palette.info.main }}
                 />
@@ -205,7 +212,12 @@ export default function EnergyLevelSelector({
                 {energyOptions.map((opt) => {
                   const isSelected = field.value === opt.value;
                   return (
-                    <Grid item xs={12} sm={4} key={opt.value}>
+                    <Grid
+                      key={opt.value}
+                      size={{
+                        xs: 12,
+                        sm: 4
+                      }}>
                       <ButtonBase
                         onClick={() =>
                           field.onChange(isSelected ? "" : opt.value)
@@ -262,10 +274,11 @@ export default function EnergyLevelSelector({
                         </Typography>
                         <Typography
                           variant="caption"
-                          color="text.secondary"
                           align="center"
-                          sx={{ fontSize: "0.7rem" }}
-                        >
+                          sx={{
+                            color: "text.secondary",
+                            fontSize: "0.7rem"
+                          }}>
                           {opt.desc}
                         </Typography>
 
@@ -301,13 +314,19 @@ export default function EnergyLevelSelector({
               borderColor: alpha(theme.palette.info.main, 0.3),
             }}
           >
-            <Box display="flex" gap={1.5}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1.5
+              }}>
               <InfoOutlined color="info" sx={{ fontSize: 20, mt: 0.2 }} />
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ fontStyle: "italic", lineHeight: 1.4 }}
-              >
+                sx={{
+                  color: "text.secondary",
+                  fontStyle: "italic",
+                  lineHeight: 1.4
+                }}>
                 {t("profile.health.energy.note", {
                   defaultValue:
                     "Esto también ayuda a encontrar personas con ritmos de vida similares o complementarios.",

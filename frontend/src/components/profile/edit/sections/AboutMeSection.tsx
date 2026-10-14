@@ -14,7 +14,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Info as InfoIcon,
   Add as AddIcon,
@@ -112,9 +112,17 @@ function SortablePromptItem({
       </IconButton>
 
       {/* Content Container (Padded left for handle) */}
-      <Box pl={4}>
+      <Box sx={{
+        pl: 4
+      }}>
         {/* Header: Quotes + Question */}
-        <Box display="flex" gap={0.5} mb={1} pr={4}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 0.5,
+            mb: 1,
+            pr: 4
+          }}>
           <Typography
             component="span"
             sx={{
@@ -131,13 +139,12 @@ function SortablePromptItem({
           <Typography
             variant="h6"
             gutterBottom
-            color="text.primary"
             sx={{
+              color: "text.primary",
               pt: 1,
               fontWeight: "bold",
-              fontStyle: "italic",
-            }}
-          >
+              fontStyle: "italic"
+            }}>
             {prompt.question}
           </Typography>
         </Box>
@@ -204,7 +211,7 @@ export default function AboutMeSection({
   const { t } = useTranslation("common");
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -218,13 +225,19 @@ export default function AboutMeSection({
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="100%"
-            pr={2}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              pr: 2
+            }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}>
               <EditNote color="action" />
               <Typography variant="h6">
                 {t("profile.aboutMe", "Sobre mí")}
@@ -254,8 +267,12 @@ export default function AboutMeSection({
               },
             }}
             render={({ field, fieldState: { error } }) => (
-              <Box mb={3}>
-                <Box position="relative">
+              <Box sx={{
+                mb: 3
+              }}>
+                <Box sx={{
+                  position: "relative"
+                }}>
                   <TextField size="small"
                     {...field}
                     fullWidth
@@ -294,10 +311,17 @@ export default function AboutMeSection({
 
           {/* Prompts Section */}
           <Box>
-            <Typography variant="subtitle1" gutterBottom fontWeight={600}>
+            <Typography variant="subtitle1" gutterBottom sx={{
+              fontWeight: 600
+            }}>
               {t("profile.prompts_title", "Pregúntame sobre...")}
             </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                marginBottom: "16px"
+              }}>
               {t(
                 "profile.prompts_subtitle",
                 "Escoge hasta 5 de las siguientes frases para que te conozcan un poco mejor",
@@ -328,23 +352,23 @@ export default function AboutMeSection({
 
               {prompts.length < 5 && (
                 <Box
-                  p={3}
-                  border="2px dashed"
-                  borderColor="divider"
-                  borderRadius={1}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
+                  onClick={() => setPromptSelectorOpen(true)}
                   sx={{
+                    p: 3,
+                    border: "2px dashed",
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     cursor: "pointer",
                     transition: "all 0.2s",
+
                     "&:hover": {
                       borderColor: "text.primary",
                       bgcolor: "action.hover",
-                    },
-                  }}
-                  onClick={() => setPromptSelectorOpen(true)}
-                >
+                    }
+                  }}>
                   <Button
                     startIcon={<AddIcon />}
                     sx={{ color: "text.secondary" }}

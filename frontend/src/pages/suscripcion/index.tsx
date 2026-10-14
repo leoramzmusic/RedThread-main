@@ -43,8 +43,8 @@ import {
 } from '@mui/icons-material';
 import Layout from '../../components/layout/Layout';
 import apiClient from '../../services/api';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
+import { useTranslation } from 'next-i18next/pages';
 import { PLAN_CONFIGS, SubscriptionTier } from '../../config/planConfig';
 
 interface PremiumFeature {
@@ -325,7 +325,13 @@ export default function Planes() {
   if (loading) {
     return (
       <Layout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </Layout>
@@ -337,26 +343,47 @@ export default function Planes() {
   return (
     <Layout>
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box textAlign="center" mb={8}>
-          <Typography variant="h2" fontWeight={900} gutterBottom sx={{
-            background: 'linear-gradient(45deg, #FF6B6B 30%, #FFD700 90%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            display: 'inline-block',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            fontFamily: "'Outfit', sans-serif"
+        <Box
+          sx={{
+            textAlign: "center",
+            mb: 8
           }}>
+          <Typography
+            variant="h2"
+            gutterBottom
+            sx={{
+              fontWeight: 900,
+              background: 'linear-gradient(45deg, #FF6B6B 30%, #FFD700 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              display: 'inline-block',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              fontFamily: "'Outfit', sans-serif"
+            }}>
             SUSCRIPCIÓN
           </Typography>
-          <Typography variant="h6" color="text.secondary" maxWidth={700} mx="auto" sx={{ opacity: 0.8 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "text.secondary",
+              maxWidth: 700,
+              mx: "auto",
+              opacity: 0.8
+            }}>
             Gestiona tu experiencia en Red Thread, potencia tu visibilidad y descubre conexiones más profundas.
           </Typography>
         </Box>
 
         {/* CURRENT STATUS DASHBOARD */}
-        <Grid container spacing={4} mb={8}>
-          <Grid item xs={12} md={5}>
+        <Grid container spacing={4} sx={{
+          mb: 8
+        }}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 5
+            }}>
             <Paper sx={{
               p: 4,
               height: '100%',
@@ -369,10 +396,23 @@ export default function Planes() {
               justifyContent: 'space-between'
             }}>
               <Box>
-                <Typography variant="overline" color="text.secondary" fontWeight={700} sx={{ letterSpacing: '0.2em' }}>
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: "text.secondary",
+                    fontWeight: 700,
+                    letterSpacing: '0.2em'
+                  }}>
                   ESTADO ACTUAL
                 </Typography>
-                <Box display="flex" alignItems="center" gap={2} mt={2} mb={3}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    mt: 2,
+                    mb: 3
+                  }}>
                   <Box sx={{
                     p: 2,
                     borderRadius: 4,
@@ -387,10 +427,14 @@ export default function Planes() {
                     }
                   </Box>
                   <Box>
-                    <Typography variant="h4" fontWeight={900}>
+                    <Typography variant="h4" sx={{
+                      fontWeight: 900
+                    }}>
                       {PLAN_CONFIGS[status?.subscription_tier as SubscriptionTier || 'free'].label.toUpperCase()}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{
+                      color: "text.secondary"
+                    }}>
                       {status?.is_active
                         ? `Expira el ${new Date(status.expires_at!).toLocaleDateString()}`
                         : 'Plan gratuito limitado'}
@@ -400,9 +444,18 @@ export default function Planes() {
 
                 <Divider sx={{ my: 3, opacity: 0.5 }} />
 
-                <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography variant="body2" color="text.secondary">Boosts automáticos:</Typography>
-                  <Typography variant="body2" fontWeight={700}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1
+                  }}>
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>Boosts automáticos:</Typography>
+                  <Typography variant="body2" sx={{
+                    fontWeight: 700
+                  }}>
                     {PLAN_CONFIGS[status?.subscription_tier as SubscriptionTier || 'free'].boostAllocation}
                   </Typography>
                 </Box>
@@ -423,7 +476,11 @@ export default function Planes() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={7}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 7
+            }}>
             {/* QUICK BOOST SHOP */}
             <Paper sx={{
               p: 4,
@@ -432,14 +489,34 @@ export default function Planes() {
               border: '1px solid rgba(255,215,0,0.2)',
               borderRadius: 5
             }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3
+                }}>
                 <Box>
-                  <Typography variant="h5" fontWeight={800}>TIENDA DE BOOSTS</Typography>
-                  <Typography variant="body2" color="text.secondary">Aumenta tu visibilidad x3 de inmediato.</Typography>
+                  <Typography variant="h5" sx={{
+                    fontWeight: 800
+                  }}>TIENDA DE BOOSTS</Typography>
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>Aumenta tu visibilidad x3 de inmediato.</Typography>
                 </Box>
                 <Box sx={{ bgcolor: 'rgba(255,255,255,0.05)', px: 2, py: 1, borderRadius: 3, border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <Typography variant="caption" color="text.secondary" display="block">DISPONIBLES</Typography>
-                  <Typography variant="h6" fontWeight={900} textAlign="center">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      display: "block"
+                    }}>DISPONIBLES</Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 900,
+                      textAlign: "center"
+                    }}>
                     ⚡ {status?.available_boosts || 0}
                   </Typography>
                 </Box>
@@ -447,7 +524,12 @@ export default function Planes() {
 
               <Grid container spacing={2}>
                 {boostPackages.map((pkg) => (
-                  <Grid item xs={12} sm={4} key={pkg.id}>
+                  <Grid
+                    key={pkg.id}
+                    size={{
+                      xs: 12,
+                      sm: 4
+                    }}>
                     <Paper sx={{
                       p: 2,
                       textAlign: 'center',
@@ -457,18 +539,37 @@ export default function Planes() {
                       transition: 'all 0.3s',
                       '&:hover': { bgcolor: 'rgba(255,255,255,0.06)', transform: 'translateY(-4px)' }
                     }}>
-                      <Typography variant="h4" fontWeight={900} color="primary.main">
+                      <Typography
+                        variant="h4"
+                        sx={{
+                          fontWeight: 900,
+                          color: "primary.main"
+                        }}>
                         {pkg.count}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mb: 2
+                        }}>
                         BOOSTS
                       </Typography>
 
-                      <Typography variant="h6" fontWeight={700}>
+                      <Typography variant="h6" sx={{
+                        fontWeight: 700
+                      }}>
                         ${pkg.price}
                       </Typography>
                       {pkg.discount_percent > 0 && (
-                        <Typography variant="caption" color="success.main" fontWeight={700} display="block">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "success.main",
+                            fontWeight: 700,
+                            display: "block"
+                          }}>
                           -{pkg.discount_percent}% DCTO
                         </Typography>
                       )}
@@ -493,15 +594,29 @@ export default function Planes() {
 
         {/* PLAN COMPARISON */}
         {!status?.is_active && (
-          <Box mb={10}>
-            <Typography variant="h4" fontWeight={900} textAlign="center" mb={6} sx={{ fontFamily: "'Outfit', sans-serif" }}>
+          <Box sx={{
+            mb: 10
+          }}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 900,
+                textAlign: "center",
+                mb: 6,
+                fontFamily: "'Outfit', sans-serif"
+              }}>
               MEJORAR TU EXPERIENCIA
             </Typography>
             <Grid container spacing={4}>
               {['premium', 'vip'].map((tier) => {
                 const config = PLAN_CONFIGS[tier as SubscriptionTier];
                 return (
-                  <Grid item xs={12} md={6} key={tier}>
+                  <Grid
+                    key={tier}
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <PhysicalPricingCard
                       isVip={tier === 'vip'}
                       accentColor={config.color.primary}
@@ -516,12 +631,26 @@ export default function Planes() {
                         </Box>
                       )}
                       <CardContent sx={{ p: 5, transform: 'translateZ(30px)' }}>
-                        <Typography variant="h4" fontWeight={900} textAlign="center" gutterBottom>
+                        <Typography
+                          variant="h4"
+                          gutterBottom
+                          sx={{
+                            fontWeight: 900,
+                            textAlign: "center"
+                          }}>
                           {config.label.toUpperCase()}
                         </Typography>
-                        <Typography variant="h3" fontWeight={900} textAlign="center" sx={{ my: 3 }}>
+                        <Typography
+                          variant="h3"
+                          sx={{
+                            fontWeight: 900,
+                            textAlign: "center",
+                            my: 3
+                          }}>
                           ${getPrice(tier as 'premium' | 'vip', selectedDuration)}
-                          <Typography component="span" variant="body1" color="text.secondary">
+                          <Typography component="span" variant="body1" sx={{
+                            color: "text.secondary"
+                          }}>
                             /{selectedDuration === '1' ? 'mes' : selectedDuration === '12' ? 'año' : `${selectedDuration} meses`}
                           </Typography>
                         </Typography>
@@ -559,7 +688,7 @@ export default function Planes() {
                       </CardContent>
                     </PhysicalPricingCard>
                   </Grid>
-                )
+                );
               })}
             </Grid>
 
@@ -581,7 +710,16 @@ export default function Planes() {
 
         {/* PROXIMAMENTE SECTION */}
         <Box sx={{ mb: 8 }}>
-          <Typography variant="overline" color="primary.main" fontWeight={900} textAlign="center" display="block" sx={{ letterSpacing: '0.3em', mb: 2 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: "primary.main",
+              fontWeight: 900,
+              textAlign: "center",
+              display: "block",
+              letterSpacing: '0.3em',
+              mb: 2
+            }}>
             PRÓXIMAMENTE • CARE ECONOMY
           </Typography>
           <Grid container spacing={3}>
@@ -590,11 +728,20 @@ export default function Planes() {
               { title: 'Moneda Hilos', desc: 'Gana créditos por interacciones positivas y canjéalos por funciones premium.', icon: <UnlimitedIcon /> },
               { title: 'Eventos VIP', desc: 'Acceso exclusivo a dinámicas grupales y salas de conversación de alta afinidad.', icon: <StarIcon /> }
             ].map((item, i) => (
-              <Grid item xs={12} md={4} key={i}>
+              <Grid
+                key={i}
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <Paper sx={{ p: 3, textAlign: 'center', opacity: 0.6, border: '1px dashed rgba(255,255,255,0.2)', borderRadius: 4, bgcolor: 'transparent' }}>
                   <Box sx={{ color: 'text.secondary', mb: 1 }}>{item.icon}</Box>
-                  <Typography variant="h6" fontWeight={700}>{item.title}</Typography>
-                  <Typography variant="body2" color="text.secondary">{item.desc}</Typography>
+                  <Typography variant="h6" sx={{
+                    fontWeight: 700
+                  }}>{item.title}</Typography>
+                  <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                  }}>{item.desc}</Typography>
                 </Paper>
               </Grid>
             ))}
@@ -605,11 +752,15 @@ export default function Planes() {
         <Dialog
           open={openSuccess}
           onClose={() => setOpenSuccess(false)}
-          PaperProps={{ sx: { borderRadius: 4, px: 2, py: 1 } }}
+          slotProps={{
+            paper: { sx: { borderRadius: 4, px: 2, py: 1 } }
+          }}
         >
           <DialogTitle sx={{ fontWeight: 800, textAlign: 'center' }}>¡Éxito!</DialogTitle>
           <DialogContent>
-            <DialogContentText textAlign="center">
+            <DialogContentText sx={{
+              textAlign: "center"
+            }}>
               {successMessage}
             </DialogContentText>
           </DialogContent>

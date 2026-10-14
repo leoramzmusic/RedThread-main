@@ -15,7 +15,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LaptopIcon from '@mui/icons-material/Laptop';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import TabletMacIcon from '@mui/icons-material/TabletMac';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../../components/layout/AdminLayout';
 import adminApiClient from '../../../services/adminApi';
@@ -164,7 +164,13 @@ export default function ConfiguracionSeguridad() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -175,16 +181,29 @@ export default function ConfiguracionSeguridad() {
     <AdminLayout>
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Box display="flex" alignItems="center" gap={2} mb={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 1
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread/configuracion')}>
               <ArrowBackIcon />
             </IconButton>
             <SecurityIcon color="primary" />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Seguridad
             </Typography>
           </Box>
-          <Typography variant="body2" color="text.secondary" mb={3}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 3
+            }}>
             Autenticación de dos factores, alertas de dispositivo desconocido y sesiones activas.
           </Typography>
 
@@ -193,13 +212,28 @@ export default function ConfiguracionSeguridad() {
 
           <Grid container spacing={3}>
             {/* 2FA */}
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Paper sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 1
+                  }}>
                   <SecurityIcon color="primary" fontSize="small" />
                   <Typography variant="h6">Autenticación de dos factores (2FA)</Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 2
+                  }}>
                   Solicita un segundo paso al iniciar sesión para proteger tu cuenta.
                 </Typography>
                 <FormControlLabel
@@ -213,9 +247,17 @@ export default function ConfiguracionSeguridad() {
                   label={is2fa ? '2FA activada' : '2FA desactivada'}
                 />
                 {saving2fa && (
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mt: 1
+                    }}>
                     <CircularProgress size={16} />
-                    <Typography variant="caption" color="text.secondary">Guardando…</Typography>
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>Guardando…</Typography>
                   </Box>
                 )}
                 <Divider sx={{ my: 2 }} />
@@ -232,13 +274,28 @@ export default function ConfiguracionSeguridad() {
             </Grid>
 
             {/* Unknown device alerts */}
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Paper sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 1
+                  }}>
                   <NotificationsActiveIcon color="primary" fontSize="small" />
                   <Typography variant="h6">Alertas de dispositivo desconocido</Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 2
+                  }}>
                   Recibe una notificación cuando se inicie sesión desde un dispositivo o navegador nuevo.
                 </Typography>
                 <FormControlLabel
@@ -258,16 +315,30 @@ export default function ConfiguracionSeguridad() {
             </Grid>
 
             {/* Active sessions */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Paper sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2} mb={2}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 2,
+                    mb: 2
+                  }}>
                   <Box>
                     <Typography variant="h6">Sesiones activas</Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{
+                      color: "text.secondary"
+                    }}>
                       {sessions.length} {sessions.length === 1 ? 'sesión' : 'sesiones'} en curso en este momento.
                     </Typography>
                   </Box>
-                  <Box display="flex" gap={1}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1
+                    }}>
                     <Button
                       variant="outlined"
                       startIcon={<LogoutIcon />}
@@ -296,10 +367,17 @@ export default function ConfiguracionSeguridad() {
                       {sessions.map((s) => (
                         <TableRow key={s.id} hover>
                           <TableCell>
-                            <Box display="flex" alignItems="center" gap={1}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1
+                              }}>
                               {deviceIcon(s.device_type)}
                               <Box>
-                                <Typography variant="body2" fontWeight={600}>{s.device_name || 'Navegador'}</Typography>
+                                <Typography variant="body2" sx={{
+                                  fontWeight: 600
+                                }}>{s.device_name || 'Navegador'}</Typography>
                                 <Chip
                                   size="small"
                                   label={s.device_type}
@@ -332,7 +410,12 @@ export default function ConfiguracionSeguridad() {
                       {sessions.length === 0 && (
                         <TableRow>
                           <TableCell colSpan={6}>
-                            <Typography color="text.secondary" align="center" py={2}>
+                            <Typography
+                              align="center"
+                              sx={{
+                                color: "text.secondary",
+                                py: 2
+                              }}>
                               No hay sesiones activas.
                             </Typography>
                           </TableCell>

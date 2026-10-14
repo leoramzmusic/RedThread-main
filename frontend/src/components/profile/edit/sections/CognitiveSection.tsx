@@ -1,6 +1,6 @@
 import { AutoStories, Psychology, Bolt, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Control, UseFormSetValue } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { Grid, Paper, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import OptionSelector from './OptionSelector';
 import NeurodiversitySelector from './NeurodiversitySelector';
@@ -15,7 +15,7 @@ export default function CognitiveSection({ control, setValue }: CognitiveSection
     const { t } = useTranslation('common');
 
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Accordion
                 defaultExpanded
                 sx={{
@@ -31,14 +31,19 @@ export default function CognitiveSection({ control, setValue }: CognitiveSection
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 3, py: 1 }}
                 >
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}>
                         <Psychology color="action" />
                         <Typography variant="h6">{t('profile.cognitive.title')}</Typography>
                     </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <NeurodiversitySelector
                                 control={control}
                                 setValue={setValue}
@@ -67,7 +72,7 @@ export default function CognitiveSection({ control, setValue }: CognitiveSection
                                 ]}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <LearningStyleSelector
                                 control={control}
                                 name="learning_preferences"

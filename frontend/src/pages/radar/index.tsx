@@ -18,8 +18,8 @@ import Layout from '../../components/layout/Layout';
 import apiClient from '../../services/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next/pages';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 
 interface NearbyUser {
   user_id: string;
@@ -105,10 +105,14 @@ export default function Radar() {
       <Container maxWidth="md">
         <Box sx={{ py: 4 }}>
           <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" gutterBottom sx={{
+              fontWeight: 700
+            }}>
               {t('title')}
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               {t('subtitle')}
             </Typography>
           </Box>
@@ -116,10 +120,19 @@ export default function Radar() {
           {!locationEnabled ? (
             <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 4 }}>
               <LocationOnIcon sx={{ fontSize: 80, color: '#FF6B6B', mb: 2 }} />
-              <Typography variant="h5" gutterBottom fontWeight={600}>
+              <Typography variant="h5" gutterBottom sx={{
+                fontWeight: 600
+              }}>
                 {t('enableLocation.title')}
               </Typography>
-              <Typography variant="body1" color="text.secondary" paragraph sx={{ maxWidth: 400, mx: 'auto', mb: 4 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "text.secondary",
+                  maxWidth: 400,
+                  mx: 'auto',
+                  mb: 4
+                }}>
                 {t('enableLocation.description')}
               </Typography>
               <Button
@@ -134,8 +147,14 @@ export default function Radar() {
           ) : (
             <>
               <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={12} md={6}>
+                <Grid container spacing={3} sx={{
+                  alignItems: "center"
+                }}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <Typography gutterBottom>{t('searchRadius')}: {range} km</Typography>
                     <Slider
                       value={range}
@@ -147,12 +166,19 @@ export default function Radar() {
                       disabled={loading}
                     />
                     {user?.subscription_tier !== 'premium' && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                      }}>
                         {t('upgradeMessage')}
                       </Typography>
                     )}
                   </Grid>
-                  <Grid item xs={12} md={6} sx={{ textAlign: 'right' }}>
+                  <Grid
+                    sx={{ textAlign: 'right' }}
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <FormControlLabel
                       control={<Switch checked={locationEnabled} onChange={() => setLocationEnabled(false)} />}
                       label={t('locationSharing')}
@@ -168,7 +194,13 @@ export default function Radar() {
               ) : nearbyUsers.length > 0 ? (
                 <Grid container spacing={3}>
                   {nearbyUsers.map((u) => (
-                    <Grid item xs={12} sm={6} md={4} key={u.user_id}>
+                    <Grid
+                      key={u.user_id}
+                      size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4
+                      }}>
                       <Paper
                         sx={{
                           p: 2,
@@ -186,7 +218,9 @@ export default function Radar() {
                           src={u.photo}
                           sx={{ width: 80, height: 80, mb: 2 }}
                         />
-                        <Typography variant="h6" fontWeight={600}>
+                        <Typography variant="h6" sx={{
+                          fontWeight: 600
+                        }}>
                           {u.display_name}, {u.age}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1, color: 'text.secondary' }}>
@@ -217,7 +251,9 @@ export default function Radar() {
                 </Grid>
               ) : (
                 <Box sx={{ textAlign: 'center', py: 8 }}>
-                  <Typography variant="h6" color="text.secondary">
+                  <Typography variant="h6" sx={{
+                    color: "text.secondary"
+                  }}>
                     {t('noUsers')}
                   </Typography>
                 </Box>

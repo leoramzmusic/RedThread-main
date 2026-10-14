@@ -92,31 +92,53 @@ export default function LogosPage() {
             <Container maxWidth="lg">
                 <Box sx={{ py: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                        <Typography variant="h4" fontWeight={700}>Logos</Typography>
+                        <Typography variant="h4" sx={{
+                            fontWeight: 700
+                        }}>Logos</Typography>
                         <Button variant="contained" startIcon={<CloudUploadIcon />} onClick={() => setOpenUpload(true)}>
                             Subir Logo
                         </Button>
                     </Box>
 
-                    <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 600,
+                            mb: 1
+                        }}>
                         Kit de marca
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 2
+                        }}>
                         Archivos del kit en img/assets, listos para Principal, Dark Mode y Mobile.
                     </Typography>
                     <Grid container spacing={3} sx={{ mb: 4 }}>
                         {BRAND_LOGO_KIT.map((asset) => (
-                            <Grid item xs={12} sm={6} md={4} key={asset.id}>
+                            <Grid
+                                key={asset.id}
+                                size={{
+                                    xs: 12,
+                                    sm: 6,
+                                    md: 4
+                                }}>
                                 <Card sx={{ bgcolor: asset.variant === 'dark' ? '#1A1B1E' : '#fff' }}>
                                     <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', height: 200, alignItems: 'center' }}>
                                         <img src={asset.src} alt={asset.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                                     </Box>
                                     <CardContent>
                                         <Typography variant="subtitle2">{asset.title}</Typography>
-                                        <Typography variant="caption" color={asset.variant === 'dark' ? 'grey.400' : 'text.secondary'} display="block">
+                                        <Typography variant="caption" color={asset.variant === 'dark' ? 'grey.400' : 'text.secondary'} sx={{
+                                            display: "block"
+                                        }}>
                                             {asset.description}
                                         </Typography>
-                                        <Typography variant="caption" color="primary.main">
+                                        <Typography variant="caption" sx={{
+                                            color: "primary.main"
+                                        }}>
                                             {asset.variant === 'main' ? 'Principal' : asset.variant === 'dark' ? 'Dark Mode' : 'Mobile'}
                                         </Typography>
                                     </CardContent>
@@ -136,7 +158,12 @@ export default function LogosPage() {
                     {loading ? <CircularProgress /> : (
                         <Grid container spacing={3}>
                             {filteredResources.length === 0 && (
-                                <Grid item xs={12} sm={6} md={4}>
+                                <Grid
+                                    size={{
+                                        xs: 12,
+                                        sm: 6,
+                                        md: 4
+                                    }}>
                                     <Card sx={{ bgcolor: tabIndex === 1 ? '#1A1B1E' : '#fff' }}>
                                         <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', height: 200, alignItems: 'center' }}>
                                             <img
@@ -154,7 +181,13 @@ export default function LogosPage() {
                                 </Grid>
                             )}
                             {filteredResources.map((r) => (
-                                <Grid item xs={12} sm={6} md={4} key={r._id}>
+                                <Grid
+                                    key={r._id}
+                                    size={{
+                                        xs: 12,
+                                        sm: 6,
+                                        md: 4
+                                    }}>
                                     <Card sx={{ bgcolor: tabIndex === 1 ? '#333' : '#fff' }}>
                                         <Box sx={{ p: 2, display: 'flex', justifyContent: 'center', height: 200, alignItems: 'center' }}>
                                             <img src={getMediaUrl(r.url)} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%' }} />

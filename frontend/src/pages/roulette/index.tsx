@@ -27,8 +27,8 @@ import {
 } from '@mui/icons-material';
 import Layout from '../../components/layout/Layout';
 import apiClient from '../../services/api';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
+import { useTranslation } from 'next-i18next/pages';
 
 interface MatchUser {
   match_id: string;
@@ -176,13 +176,14 @@ export default function Roulette() {
       <Container maxWidth="lg" sx={{ height: 'calc(100vh - 100px)' }}>
         {status === 'idle' && (
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            height="100%"
-            gap={4}
-          >
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              gap: 4
+            }}>
             <Box
               sx={{
                 width: 200,
@@ -203,10 +204,21 @@ export default function Roulette() {
             >
               <CasinoIcon sx={{ fontSize: 100, color: 'white' }} />
             </Box>
-            <Typography variant="h3" fontWeight={700} textAlign="center">
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                textAlign: "center"
+              }}>
               Ruleta de Conversación
             </Typography>
-            <Typography variant="h6" color="text.secondary" textAlign="center" maxWidth={600}>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+                maxWidth: 600
+              }}>
               Conecta aleatoriamente con personas que comparten tus intereses.
               Tienes 5 minutos para romper el hielo.
             </Typography>
@@ -256,25 +268,39 @@ export default function Roulette() {
 
         {status === 'searching' && (
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            height="100%"
-            gap={4}
-          >
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              gap: 4
+            }}>
             <CircularProgress size={80} thickness={4} sx={{ color: '#FF6B6B' }} />
-            <Typography variant="h4" fontWeight={600} color="text.secondary">
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 600,
+                color: "text.secondary"
+              }}>
               Buscando a alguien especial...
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               Analizando intereses y compatibilidad
             </Typography>
           </Box>
         )}
 
         {status === 'matched' && match && (
-          <Box display="flex" height="100%" gap={3} sx={{ flexDirection: { xs: 'column', md: 'row' } }}>
+          <Box
+            sx={{
+              display: "flex",
+              height: "100%",
+              gap: 3,
+              flexDirection: { xs: 'column', md: 'row' }
+            }}>
             {/* Profile Card */}
             <Paper
               sx={{
@@ -293,20 +319,35 @@ export default function Roulette() {
               >
                 {match.display_name[0]}
               </Avatar>
-              <Typography variant="h5" fontWeight={700}>
+              <Typography variant="h5" sx={{
+                fontWeight: 700
+              }}>
                 {match.display_name}, {match.age}
               </Typography>
-              <Typography variant="body2" textAlign="center" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  textAlign: "center",
+                  color: "text.secondary"
+                }}>
                 {match.bio || 'Sin biografía'}
               </Typography>
               
-              <Box display="flex" flexWrap="wrap" gap={1} justifyContent="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 1,
+                  justifyContent: "center"
+                }}>
                 {match.interests.map((interest, idx) => (
                   <Chip key={idx} label={interest} size="small" variant="outlined" />
                 ))}
               </Box>
 
-              <Box flex={1} />
+              <Box sx={{
+                flex: 1
+              }} />
 
               <Box
                 sx={{
@@ -322,10 +363,14 @@ export default function Roulette() {
                 }}
               >
                 <TimerIcon />
-                <Typography fontWeight={600}>{formatTime(timeLeft)}</Typography>
+                <Typography sx={{
+                  fontWeight: 600
+                }}>{formatTime(timeLeft)}</Typography>
               </Box>
 
-              <Stack direction="row" spacing={2} width="100%">
+              <Stack direction="row" spacing={2} sx={{
+                width: "100%"
+              }}>
                 <Button
                   variant="outlined"
                   color="error"
@@ -371,13 +416,14 @@ export default function Roulette() {
               >
                 {messages.length === 0 && (
                   <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100%"
-                    sx={{ opacity: 0.5 }}
-                  >
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%",
+                      opacity: 0.5
+                    }}>
                     <ChatIcon sx={{ fontSize: 60, mb: 2 }} />
                     <Typography>¡Di hola! Rompe el hielo.</Typography>
                   </Box>
@@ -404,9 +450,12 @@ export default function Roulette() {
                     </Paper>
                     <Typography
                       variant="caption"
-                      color="text.secondary"
-                      sx={{ mt: 0.5, display: 'block', textAlign: msg.sender_id === 'me' ? 'right' : 'left' }}
-                    >
+                      sx={{
+                        color: "text.secondary",
+                        mt: 0.5,
+                        display: 'block',
+                        textAlign: msg.sender_id === 'me' ? 'right' : 'left'
+                      }}>
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </Typography>
                   </Box>

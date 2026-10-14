@@ -103,18 +103,39 @@ export default function ConfirmationDrawer({
                             />
                         </Box>
 
-                        <Box px={3} textAlign="center">
-                            <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'text.primary', mb: 2 }}>
+                        <Box
+                            sx={{
+                                px: 3,
+                                textAlign: "center"
+                            }}>
+                            <Typography
+                                variant="subtitle1"
+                                sx={{
+                                    fontWeight: 700,
+                                    color: 'text.primary',
+                                    mb: 2
+                                }}>
                                 {title}
                             </Typography>
 
-                            <Box display="flex" gap={1} justifyContent="center" mb={3}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    justifyContent: "center",
+                                    mb: 3
+                                }}>
                                 <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, mx: 'auto' }}>
                                     {message}
                                 </Typography>
                             </Box>
 
-                            <Box display="flex" gap={2} justifyContent="center">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2,
+                                    justifyContent: "center"
+                                }}>
                                 <Button
                                     variant="outlined"
                                     color="inherit"

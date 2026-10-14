@@ -128,14 +128,18 @@ export default function AsyncLocationSelector({
                     {...params}
                     label={label}
                     placeholder={placeholder}
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                            <>
-                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                            </>
-                        ),
+                    slotProps={{
+                        ...params.slotProps,
+
+                        input: {
+                            ...params.slotProps.input,
+                            endAdornment: (
+                                <>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.slotProps.input.endAdornment}
+                                </>
+                            ),
+                        }
                     }}
                 />
             )}

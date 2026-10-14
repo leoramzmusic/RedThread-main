@@ -10,7 +10,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 export type VerificationChannel = "phone" | "email";
 
@@ -116,9 +116,11 @@ export default function VerificationCodeDialog({
             setCode(e.target.value.replace(/\D/g, "").substring(0, 6))
           }
           placeholder="000000"
-          inputProps={{ style: { textAlign: "center", letterSpacing: "8px", fontSize: "1.5rem" } }}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleConfirm();
+          }}
+          slotProps={{
+            htmlInput: { style: { textAlign: "center", letterSpacing: "8px", fontSize: "1.5rem" } }
           }}
         />
         {channel === "email" && (

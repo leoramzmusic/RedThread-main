@@ -20,7 +20,7 @@ import {
   LockOutlined,
 } from "@mui/icons-material";
 import { Controller, Control } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 interface ZodiacOption {
   value: string;
@@ -86,7 +86,11 @@ export default function ZodiacSelector({
             },
           }}
         >
-          <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center"
+            }}>
             <AutoAwesome sx={{ mr: 1.5, color: zodiacColor }} />
             <Typography
               variant="subtitle2"
@@ -169,11 +173,11 @@ export default function ZodiacSelector({
                               : zodiacColor;
                             return (
                               <Grid
-                                item
-                                xs={isDiscovery ? 4 : 4}
-                                sm={isDiscovery ? 4 : 2}
                                 key={sign.value}
-                              >
+                                size={{
+                                  xs: isDiscovery ? 4 : 4,
+                                  sm: isDiscovery ? 4 : 2
+                                }}>
                                 <ButtonBase
                                   onClick={() =>
                                     zodiacField.onChange(

@@ -15,7 +15,7 @@ const SocialSection: React.FC<SocialSectionProps> = ({ control, setValue, watch 
     const { t } = useTranslation();
 
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Accordion
                 defaultExpanded
                 sx={{
@@ -31,13 +31,23 @@ const SocialSection: React.FC<SocialSectionProps> = ({ control, setValue, watch 
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 3, py: 1 }}
                 >
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}>
                         <Diversity3 color="action" />
                         <Typography variant="h6">Mi Círculo Social</Typography>
                     </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-                    <Typography variant="body2" color="text.secondary" paragraph>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            marginBottom: "16px"
+                        }}>
                         Gestiona tu círculo social. Agrega amigos, acepta solicitudes y mantente conectado.
                     </Typography>
 

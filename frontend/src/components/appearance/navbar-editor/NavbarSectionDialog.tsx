@@ -111,7 +111,11 @@ function NavbarSectionForm({
     <>
       <DialogContent sx={{ py: 2 }}>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <TextField
               fullWidth
               label="Clave única (key)"
@@ -119,10 +123,16 @@ function NavbarSectionForm({
               onChange={(e) => setField('key', e.target.value)}
               helperText={errors.key || 'Identificador único: home, plans, events, etc.'}
               error={!!errors.key}
-              inputProps={{ maxLength: MAX_INPUT_LENGTH }}
+              slotProps={{
+                htmlInput: { maxLength: MAX_INPUT_LENGTH }
+              }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <TextField
               fullWidth
               label="Ruta (href)"
@@ -130,24 +140,36 @@ function NavbarSectionForm({
               onChange={(e) => setField('route', e.target.value)}
               helperText={errors.route || 'Ruta relativa o anchor: /, #planes, /auth/register'}
               error={!!errors.route}
-              inputProps={{ maxLength: MAX_INPUT_LENGTH }}
+              slotProps={{
+                htmlInput: { maxLength: MAX_INPUT_LENGTH }
+              }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <TextField
               fullWidth
               select
               label="Icono"
               value={formData.icon}
               onChange={(e) => setField('icon', e.target.value)}
-              SelectProps={{ native: true }}
+              slotProps={{
+                select: { native: true }
+              }}
             >
               {ICON_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </TextField>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6
+            }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, height: '100%' }}>
               <Switch checked={formData.visible} onChange={(e) => setField('visible', e.target.checked)} color="primary" />
               <Typography>Visible en navbar</Typography>
@@ -160,11 +182,23 @@ function NavbarSectionForm({
         </Grid>
 
         <Typography variant="subtitle2" gutterBottom>Traducciones por idioma</Typography>
-        <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+            display: "block",
+            mb: 1
+          }}>
           Cada pestaña es un idioma. Puedes guardar con traducciones parciales: los idiomas vacíos usan fallback en inglés. Máx. {MAX_TRANSLATION_LENGTH} caracteres.
         </Typography>
         {errors.translations && (
-          <Typography variant="caption" color="error" display="block" mb={1}>
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{
+              display: "block",
+              mb: 1
+            }}>
             {errors.translations}
           </Typography>
         )}
@@ -209,15 +243,17 @@ function NavbarSectionForm({
               onChange={(e) => setTranslation(activeLang, e.target.value)}
               error={!!langError(activeLang)}
               helperText={langError(activeLang) || `Texto mostrado en el navbar para el idioma ${activeLang.toUpperCase()}`}
-              inputProps={{ maxLength: MAX_TRANSLATION_LENGTH }}
-              InputProps={{
-                endAdornment: (formData.translations[activeLang] || '') ? (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => setTranslation(activeLang, '')}><Cancel fontSize="small" /></IconButton>
-                  </InputAdornment>
-                ) : null,
-              }}
-            />
+              slotProps={{
+                input: {
+                  endAdornment: (formData.translations[activeLang] || '') ? (
+                    <InputAdornment position="end">
+                      <IconButton size="small" onClick={() => setTranslation(activeLang, '')}><Cancel fontSize="small" /></IconButton>
+                    </InputAdornment>
+                  ) : null,
+                },
+
+                htmlInput: { maxLength: MAX_TRANSLATION_LENGTH }
+              }} />
           </Box>
         </Box>
       </DialogContent>

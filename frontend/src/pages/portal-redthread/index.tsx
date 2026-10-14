@@ -91,10 +91,14 @@ export default function AdminPortal() {
           {/* Header */}
           <Box sx={{ mb: 4, textAlign: 'center' }}>
             <AdminPanelSettingsIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
-            <Typography variant="h3" fontWeight={700} gutterBottom>
+            <Typography variant="h3" gutterBottom sx={{
+              fontWeight: 700
+            }}>
               Portal de Administración
             </Typography>
-            <Typography variant="h6" color="text.secondary">
+            <Typography variant="h6" sx={{
+              color: "text.secondary"
+            }}>
               Red Thread - Panel de Control
             </Typography>
           </Box>
@@ -102,7 +106,12 @@ export default function AdminPortal() {
           {/* Modules Grid */}
           <Grid container spacing={4}>
             {modules.map((module) => (
-              <Grid item xs={12} md={4} key={module.title}>
+              <Grid
+                key={module.title}
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <Card
                   sx={{
                     height: '100%',
@@ -128,10 +137,18 @@ export default function AdminPortal() {
                     }}
                   >
                     {module.icon}
-                    <Typography variant="h5" fontWeight={600} sx={{ mt: 2, mb: 1 }}>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 600,
+                        mt: 2,
+                        mb: 1
+                      }}>
                       {module.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{
+                      color: "text.secondary"
+                    }}>
                       {module.description}
                     </Typography>
                     <Button
@@ -155,7 +172,9 @@ export default function AdminPortal() {
 
           {/* Info Section */}
           <Paper sx={{ mt: 4, p: 3, bgcolor: 'info.light' }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{
+              fontWeight: 600
+            }}>
               ℹ️ Información
             </Typography>
             <Typography variant="body2">

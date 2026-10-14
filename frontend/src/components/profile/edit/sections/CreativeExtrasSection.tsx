@@ -7,7 +7,7 @@ import {
     ExpandMore as ExpandMoreIcon
 } from '@mui/icons-material';
 import { Control, Controller } from 'react-hook-form';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface CreativeExtrasSectionProps {
     control: Control<any>;
@@ -17,7 +17,7 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
     const { t } = useTranslation('common');
 
     return (
-        <Grid item xs={12}>
+        <Grid size={12}>
             <Accordion
                 defaultExpanded
                 sx={{
@@ -33,14 +33,19 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 3, py: 1 }}
                 >
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1
+                        }}>
                         <WorkspacePremium color="action" />
                         <Typography variant="h6">{t('profile.extras.title')}</Typography>
                     </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Controller
                                 name="superpower"
                                 control={control}
@@ -51,11 +56,6 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                                         label={t('profile.extras.superpower')}
                                         placeholder="Ej. escuchar bien, improvisar, resolver problemas..."
                                         variant="outlined"
-                                        InputProps={{
-                                            startAdornment: (
-                                                <AutoFixHigh color="primary" sx={{ mr: 1 }} />
-                                            ),
-                                        }}
                                         sx={{
                                             bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
                                             borderRadius: 2,
@@ -63,11 +63,18 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                                                 borderRadius: 2,
                                             }
                                         }}
+                                        slotProps={{
+                                            input: {
+                                                startAdornment: (
+                                                    <AutoFixHigh color="primary" sx={{ mr: 1 }} />
+                                                ),
+                                            }
+                                        }}
                                     />
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Controller
                                 name="achilles_heel"
                                 control={control}
@@ -78,16 +85,18 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                                         label={t('profile.extras.achillesHeel')}
                                         placeholder="Una vulnerabilidad que reconozcas..."
                                         variant="outlined"
-                                        InputProps={{
-                                            startAdornment: (
-                                                <HeartBroken color="error" sx={{ mr: 1 }} />
-                                            ),
-                                        }}
                                         sx={{
                                             bgcolor: (theme) => alpha(theme.palette.error.main, 0.05),
                                             borderRadius: 2,
                                             '& .MuiOutlinedInput-root': {
                                                 borderRadius: 2,
+                                            }
+                                        }}
+                                        slotProps={{
+                                            input: {
+                                                startAdornment: (
+                                                    <HeartBroken color="error" sx={{ mr: 1 }} />
+                                                ),
                                             }
                                         }}
                                     />
@@ -98,7 +107,7 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                             Alternatively, we could link it to Spotify like Mi Himno, 
                             but the request implies a more "narrative" expression.
                         */}
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Controller
                                 name="personal_soundtrack_text" // Using a text field for simplicity in this iteration
                                 control={control}
@@ -111,16 +120,18 @@ export default function CreativeExtrasSection({ control }: CreativeExtrasSection
                                         label={t('profile.extras.soundtrack')}
                                         placeholder="Canciones que reflejen tu personalidad o tu mood actual..."
                                         variant="outlined"
-                                        InputProps={{
-                                            startAdornment: (
-                                                <MusicNote color="secondary" sx={{ mr: 1, mt: -2 }} />
-                                            ),
-                                        }}
                                         sx={{
                                             bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.05),
                                             borderRadius: 2,
                                             '& .MuiOutlinedInput-root': {
                                                 borderRadius: 2,
+                                            }
+                                        }}
+                                        slotProps={{
+                                            input: {
+                                                startAdornment: (
+                                                    <MusicNote color="secondary" sx={{ mr: 1, mt: -2 }} />
+                                                ),
                                             }
                                         }}
                                     />

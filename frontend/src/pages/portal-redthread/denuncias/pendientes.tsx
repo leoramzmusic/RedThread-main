@@ -59,14 +59,23 @@ export default function PendingReports() {
     return (
         <AdminLayout>
             <Container maxWidth="xl">
-                <Box py={4}>
+                <Box sx={{
+                    py: 4
+                }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 4 }}>
                             {error}
                         </Alert>
                     )}
-                    <Typography variant="h4" fontWeight={800} gutterBottom>Denuncias Pendientes</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                    <Typography variant="h4" gutterBottom sx={{
+                        fontWeight: 800
+                    }}>Denuncias Pendientes</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 4
+                        }}>
                         Estas denuncias requieren atención inmediata de un moderador.
                     </Typography>
 

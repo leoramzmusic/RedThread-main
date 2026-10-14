@@ -123,7 +123,13 @@ export default function AdminSoporte() {
   if (loading && !selectedTicket) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -135,11 +141,19 @@ export default function AdminSoporte() {
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
           {/* Header */}
-          <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 3
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread')}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Soporte Técnico
             </Typography>
           </Box>
@@ -222,7 +236,12 @@ export default function AdminSoporte() {
             {selectedTicket && (
               <>
                 <DialogTitle>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="h6">{selectedTicket.subject}</Typography>
                     <Chip label={selectedTicket.status} size="small" />
                   </Box>
@@ -237,12 +256,18 @@ export default function AdminSoporte() {
                       }}>
                         <ListItemText
                           primary={
-                            <Box display="flex" justifyContent="space-between">
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between"
+                              }}>
                               <Typography variant="subtitle2" color="primary">
                                 {msg.sender_id === selectedTicket.user_id ? 'Usuario' : 'Soporte'}
                                 {msg.is_internal && ' (Nota Interna)'}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                              }}>
                                 {new Date(msg.created_at).toLocaleString()}
                               </Typography>
                             </Box>
@@ -261,7 +286,9 @@ export default function AdminSoporte() {
                     value={responseContent}
                     onChange={(e) => setResponseContent(e.target.value)}
                   />
-                  <Box mt={1}>
+                  <Box sx={{
+                    mt: 1
+                  }}>
                     <Button 
                       size="small" 
                       onClick={() => setIsInternalNote(!isInternalNote)}

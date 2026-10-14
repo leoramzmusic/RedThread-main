@@ -112,7 +112,13 @@ export default function AdminConfiguracion() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "80vh"
+          }}>
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -124,23 +130,40 @@ export default function AdminConfiguracion() {
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
           {/* Header */}
-          <Box display="flex" alignItems="center" gap={2} mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 4
+            }}>
             <IconButton onClick={() => router.push('/portal-redthread')}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{
+              fontWeight: 700
+            }}>
               Configuración del Sistema
             </Typography>
           </Box>
 
           <Grid container spacing={4}>
             {/* Feature Flags */}
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Typography variant="h6" gutterBottom>
                   Feature Flags
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 2
+                  }}>
                   Activa o desactiva funcionalidades globales del sistema.
                 </Typography>
                 <List>
@@ -160,7 +183,12 @@ export default function AdminConfiguracion() {
                     </ListItem>
                   ))}
                   {featureFlags.length === 0 && (
-                    <Typography color="text.secondary" align="center" py={2}>
+                    <Typography
+                      align="center"
+                      sx={{
+                        color: "text.secondary",
+                        py: 2
+                      }}>
                       No hay feature flags configurados
                     </Typography>
                   )}
@@ -169,7 +197,11 @@ export default function AdminConfiguracion() {
             </Grid>
 
             {/* Environment Info */}
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6
+              }}>
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Typography variant="h6" gutterBottom>
                   Información del Entorno
@@ -195,14 +227,19 @@ export default function AdminConfiguracion() {
             </Grid>
 
             {/* System Options */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Paper sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>
                   Opciones del Sistema
                 </Typography>
                 <Grid container spacing={3}>
                   {Object.entries(settings).map(([category, options]) => (
-                    <Grid item xs={12} md={6} key={category}>
+                    <Grid
+                      key={category}
+                      size={{
+                        xs: 12,
+                        md: 6
+                      }}>
                       <Typography variant="subtitle1" color="primary" sx={{ textTransform: 'capitalize', mt: 2, mb: 1 }}>
                         {category.replace('_', ' ')}
                       </Typography>
@@ -232,7 +269,9 @@ export default function AdminConfiguracion() {
           <Dialog open={!!editOption} onClose={() => setEditOption(null)}>
             <DialogTitle>Editar Opción</DialogTitle>
             <DialogContent>
-              <Box pt={1}>
+              <Box sx={{
+                pt: 1
+              }}>
                 <TextField
                   label="Etiqueta / Nombre"
                   fullWidth

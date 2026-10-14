@@ -59,14 +59,23 @@ export default function InProcessReports() {
     return (
         <AdminLayout>
             <Container maxWidth="xl">
-                <Box py={4}>
+                <Box sx={{
+                    py: 4
+                }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 4 }}>
                             {error}
                         </Alert>
                     )}
-                    <Typography variant="h4" fontWeight={800} gutterBottom>En Proceso</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                    <Typography variant="h4" gutterBottom sx={{
+                        fontWeight: 800
+                    }}>En Proceso</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 4
+                        }}>
                         Denuncias que están siendo revisadas o esperan respuesta.
                     </Typography>
 

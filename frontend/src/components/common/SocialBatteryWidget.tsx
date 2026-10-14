@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { Box, Typography, IconButton, Tooltip, Zoom, Menu, MenuItem } from '@mui/material';
 import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
 import BatteryFullIcon from '@mui/icons-material/BatteryFull';
@@ -59,8 +59,10 @@ export default function SocialBatteryWidget({ batteryLevel, onOpenTimeOut, compa
                         {status.phrase}
                     </Box>
                 }
-                TransitionComponent={Zoom}
                 arrow
+                slots={{
+                    transition: Zoom
+                }}
             >
                 <IconButton
                     onClick={onOpenTimeOut}

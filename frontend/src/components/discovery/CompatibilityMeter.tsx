@@ -122,27 +122,37 @@ export const CompatibilityMeter: React.FC<CompatibilityMeterProps> = ({ score, b
                             vertical: 'top',
                             horizontal: 'center',
                         }}
-                        PaperProps={{
-                            sx: {
-                                width: 280,
-                                p: 2,
-                                borderRadius: 2,
-                                bgcolor: 'rgba(20, 20, 20, 0.95)',
-                                backdropFilter: 'blur(10px)',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                mt: 1
+                        slotProps={{
+                            paper: {
+                                sx: {
+                                    width: 280,
+                                    p: 2,
+                                    borderRadius: 2,
+                                    bgcolor: 'rgba(20, 20, 20, 0.95)',
+                                    backdropFilter: 'blur(10px)',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    mt: 1
+                                }
                             }
                         }}
                     >
-                        <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                        <Typography variant="subtitle2" gutterBottom sx={{
+                            fontWeight: 700
+                        }}>
                             {isOpposites ? t('compatibility.whyOpposites', 'Por qué se complementan') : t('compatibility.whyCompatible', 'Por qué son compatibles')}
                         </Typography>
 
                         {/* Interests */}
                         {breakdown.common_interests.length > 0 && (
                             <Box sx={{ mb: 1.5 }}>
-                                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 0.5
+                                    }}>
                                     {t('compatibility.interests', 'Intereses en común')}
                                 </Typography>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -156,7 +166,13 @@ export const CompatibilityMeter: React.FC<CompatibilityMeterProps> = ({ score, b
                         {/* Unique Interests (Opposites) */}
                         {isOpposites && breakdown.unique_interests.length > 0 && (
                             <Box sx={{ mb: 1.5 }}>
-                                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 0.5
+                                    }}>
                                     {t('compatibility.uniqueInterests', 'Intereses que te aportará')}
                                 </Typography>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -170,7 +186,13 @@ export const CompatibilityMeter: React.FC<CompatibilityMeterProps> = ({ score, b
                         {/* Values / Lifestyle */}
                         {breakdown.common_lifestyle.length > 0 && (
                             <Box sx={{ mb: 1.5 }}>
-                                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 0.5
+                                    }}>
                                     {t('compatibility.values', 'Valores y Estilo de vida')}
                                 </Typography>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -184,7 +206,13 @@ export const CompatibilityMeter: React.FC<CompatibilityMeterProps> = ({ score, b
                         {/* Intentions */}
                         {breakdown.common_intentions.length > 0 && (
                             <Box>
-                                <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 0.5
+                                    }}>
                                     {t('compatibility.intentions', 'Intenciones compartidas')}
                                 </Typography>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -196,7 +224,12 @@ export const CompatibilityMeter: React.FC<CompatibilityMeterProps> = ({ score, b
                         )}
 
                         {(breakdown.common_interests.length === 0 && breakdown.common_lifestyle.length === 0 && breakdown.common_intentions.length === 0) && (
-                            <Typography variant="caption" color="text.disabled" fontStyle="italic">
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "text.disabled",
+                                    fontStyle: "italic"
+                                }}>
                                 {t('compatibility.basicsOnly', 'Compatibilidad basada en edad, ubicación y preferencias básicas.')}
                             </Typography>
                         )}

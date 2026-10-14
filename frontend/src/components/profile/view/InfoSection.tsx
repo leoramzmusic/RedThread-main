@@ -43,27 +43,37 @@ export const InfoSection = ({ title, icon, children, defaultExpanded = false }: 
             elevation={0}
         >
             <Box
-                p={2.5}
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
                 onClick={() => setExpanded(!expanded)}
                 sx={{
+                    p: 2.5,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                     cursor: 'pointer',
                     bgcolor: 'transparent'
-                }}
-            >
-                <Box display="flex" alignItems="center" gap={2}>
+                }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2
+                    }}>
                     <Box
-                        color="primary.main"
-                        display="flex"
-                        p={1}
-                        bgcolor="primary.50"
-                        borderRadius="50%"
-                    >
+                        sx={{
+                            color: "primary.main",
+                            display: "flex",
+                            p: 1,
+                            bgcolor: "primary.50",
+                            borderRadius: "50%"
+                        }}>
                         {icon}
                     </Box>
-                    <Typography variant="h6" fontWeight={700} fontSize="1.1rem">{title}</Typography>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            fontSize: "1.1rem"
+                        }}>{title}</Typography>
                 </Box>
                 <IconButton
                     size="small"
@@ -77,7 +87,11 @@ export const InfoSection = ({ title, icon, children, defaultExpanded = false }: 
                 </IconButton>
             </Box>
             <Collapse in={expanded}>
-                <Box p={3} pt={0}>
+                <Box
+                    sx={{
+                        p: 3,
+                        pt: 0
+                    }}>
                     {children}
                 </Box>
             </Collapse>

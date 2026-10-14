@@ -1,6 +1,6 @@
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import { i18n as i18nConfig } from '../../../next-i18next.config';
 import ErrorPage from '../../components/errors/ErrorPage';
 import { ERROR_REGISTRY, getErrorMeta, isErrorCode } from '../../components/errors/registry';

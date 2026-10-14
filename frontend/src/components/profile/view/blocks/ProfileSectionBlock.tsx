@@ -17,7 +17,7 @@ interface ProfileSectionBlockProps {
 const SectionPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: alpha(theme.palette.background.paper, 0.4),
     backdropFilter: 'blur(10px)',
-    borderRadius: theme.shape.borderRadius * 2,
+    borderRadius: Number(theme.shape.borderRadius) * 2,
     border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
     padding: theme.spacing(3),
     height: '100%',
@@ -64,7 +64,12 @@ export default function ProfileSectionBlock({
                 }}>
                     {icon}
                 </Box>
-                <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1 }}>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: "bold",
+                        flexGrow: 1
+                    }}>
                     {title}
                 </Typography>
                 {onEdit && (
@@ -93,7 +98,11 @@ export default function ProfileSectionBlock({
                             textAlign: 'center'
                         }}
                     >
-                        <Typography color="text.secondary" fontStyle="italic">
+                        <Typography
+                            sx={{
+                                color: "text.secondary",
+                                fontStyle: "italic"
+                            }}>
                             {hiddenMessage || t('profile.section_hidden', 'Esta sección está oculta. Puedes activarla desde configuración de privacidad.')}
                         </Typography>
                     </Box>
@@ -108,7 +117,9 @@ export default function ProfileSectionBlock({
                             bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05)
                         }}
                     >
-                        <Typography color="text.secondary" gutterBottom>
+                        <Typography gutterBottom sx={{
+                            color: "text.secondary"
+                        }}>
                             {emptyMessage || t('profile.section_empty', 'Aún no has compartido esta parte.')}
                         </Typography>
                         {onEdit && (

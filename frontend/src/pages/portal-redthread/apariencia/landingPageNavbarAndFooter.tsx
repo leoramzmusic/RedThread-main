@@ -352,7 +352,9 @@ export default function LandingPageNavbarAndFooterAdminPage() {
       <AdminLayout>
         <Container maxWidth="xl">
           <Box sx={{ py: 8, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">Cargando…</Typography>
+            <Typography variant="h6" sx={{
+              color: "text.secondary"
+            }}>Cargando…</Typography>
           </Box>
         </Container>
       </AdminLayout>
@@ -369,8 +371,12 @@ export default function LandingPageNavbarAndFooterAdminPage() {
         <Box sx={{ py: 4 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Typography variant="h4" fontWeight={700} gutterBottom>Landing Page — Navbar y Footer</Typography>
-              <Typography variant="body1" color="text.secondary">Administra las secciones del navbar y el contenido del footer del landing.</Typography>
+              <Typography variant="h4" gutterBottom sx={{
+                fontWeight: 700
+              }}>Landing Page — Navbar y Footer</Typography>
+              <Typography variant="body1" sx={{
+                color: "text.secondary"
+              }}>Administra las secciones del navbar y el contenido del footer del landing.</Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button variant="contained" startIcon={<Save />} onClick={saveFooter} disabled={saving} size="large">
@@ -389,7 +395,13 @@ export default function LandingPageNavbarAndFooterAdminPage() {
           {activeTab === 0 && (
             <>
               <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" fontWeight="bold" display="block" mb={1}>Idioma de edición</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: "bold",
+                    display: "block",
+                    mb: 1
+                  }}>Idioma de edición</Typography>
                 <TextField
                   select
                   fullWidth
@@ -412,7 +424,11 @@ export default function LandingPageNavbarAndFooterAdminPage() {
               />
 
               <Grid container spacing={3}>
-                <Grid item xs={12} lg={7}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 7
+                  }}>
                   <Paper sx={{ p: 2 }}>
                     <NavbarSectionList
                       sections={sections}
@@ -436,8 +452,15 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                     </Button>
                     <Collapse in={showDebugTable}>
                       <Paper sx={{ p: 2, mt: 1 }}>
-                        <Typography variant="h6" gutterBottom mb={2}>Editor de Traducciones Navbar (depuración)</Typography>
-                        <Typography variant="body2" color="text.secondary" paragraph>
+                        <Typography variant="h6" gutterBottom sx={{
+                          mb: 2
+                        }}>Editor de Traducciones Navbar (depuración)</Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "text.secondary",
+                            marginBottom: "16px"
+                          }}>
                           Cada fila es una sección; cada columna un idioma. Si falta traducción, se usa fallback (idioma → EN → ES → primera disponible).
                         </Typography>
                         <TableContainer sx={{ maxHeight: 500, overflow: 'auto' }}>
@@ -461,8 +484,15 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                                     <Chip label={section.icon} size="small" variant="outlined" />
                                   </TableCell>
                                   <TableCell>
-                                    <Typography variant="caption" display="block" color="text.secondary">{section.key}</Typography>
-                                    <Typography variant="caption" fontFamily="monospace">{section.route}</Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        display: "block",
+                                        color: "text.secondary"
+                                      }}>{section.key}</Typography>
+                                    <Typography variant="caption" sx={{
+                                      fontFamily: "monospace"
+                                    }}>{section.route}</Typography>
                                   </TableCell>
                                   {LANGUAGES.map(lang => (
                                     <TableCell key={lang} align="center">
@@ -475,20 +505,22 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                                           setSections(newSections);
                                           markDirty();
                                         }}
-                                        inputProps={{ style: { textAlign: 'center' } }}
                                         sx={{ width: '100%' }}
                                         placeholder={section.translations[lang] ? '' : `(${getTranslationFallback(section.translations, lang) || 'vacío'})`}
-                                        InputProps={{
-                                          endAdornment: section.translations[lang] ? (
-                                            <IconButton size="small" onClick={() => {
-                                              const newSections = [...sections];
-                                              newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: '' } };
-                                              setSections(newSections);
-                                              markDirty();
-                                            }}><Cancel fontSize="small" /></IconButton>
-                                          ) : null
-                                        }}
-                                      />
+                                        slotProps={{
+                                          input: {
+                                            endAdornment: section.translations[lang] ? (
+                                              <IconButton size="small" onClick={() => {
+                                                const newSections = [...sections];
+                                                newSections[rowIndex] = { ...newSections[rowIndex], translations: { ...newSections[rowIndex].translations, [lang]: '' } };
+                                                setSections(newSections);
+                                                markDirty();
+                                              }}><Cancel fontSize="small" /></IconButton>
+                                            ) : null
+                                          },
+
+                                          htmlInput: { style: { textAlign: 'center' } }
+                                        }} />
                                     </TableCell>
                                   ))}
                                   <TableCell align="center">
@@ -509,7 +541,11 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                     </Collapse>
                   </Box>
                 </Grid>
-                <Grid item xs={12} lg={5}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    lg: 5
+                  }}>
                   <Paper sx={{ p: 2, mb: 2 }}>
                     <NavbarStyleSelector
                       draft={styleDraft}
@@ -573,7 +609,11 @@ export default function LandingPageNavbarAndFooterAdminPage() {
               </Box>
 
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <TextField
                     fullWidth
                     multiline
@@ -585,7 +625,11 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                     margin="normal"
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid
+                  size={{
+                    xs: 12,
+                    md: 6
+                  }}>
                   <TextField
                     fullWidth
                     label="Texto Copyright"
@@ -598,7 +642,9 @@ export default function LandingPageNavbarAndFooterAdminPage() {
 
               <Divider sx={{ my: 3 }} />
 
-              <Typography variant="subtitle2" gutterBottom mb={2}>Editor de Traducciones Footer (Todos los idiomas)</Typography>
+              <Typography variant="subtitle2" gutterBottom sx={{
+                mb: 2
+              }}>Editor de Traducciones Footer (Todos los idiomas)</Typography>
               <TableContainer sx={{ maxHeight: 400, overflow: 'auto' }}>
                 <Table size="small">
                   <TableHead>
@@ -620,9 +666,11 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                             size="small"
                             value={footerData[lang]?.footerTagline || ''}
                             onChange={e => handleFooterLangChange(lang, 'footerTagline', e.target.value)}
-                            inputProps={{ style: { textAlign: 'center' } }}
                             sx={{ width: '100%' }}
                             placeholder={footerData[lang]?.footerTagline ? '' : '(vacío)'}
+                            slotProps={{
+                              htmlInput: { style: { textAlign: 'center' } }
+                            }}
                           />
                         </TableCell>
                       ))}
@@ -635,9 +683,11 @@ export default function LandingPageNavbarAndFooterAdminPage() {
                             size="small"
                             value={footerData[lang]?.footerText || ''}
                             onChange={e => handleFooterLangChange(lang, 'footerText', e.target.value)}
-                            inputProps={{ style: { textAlign: 'center' } }}
                             sx={{ width: '100%' }}
                             placeholder={footerData[lang]?.footerText ? '' : '(vacío)'}
+                            slotProps={{
+                              htmlInput: { style: { textAlign: 'center' } }
+                            }}
                           />
                         </TableCell>
                       ))}

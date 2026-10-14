@@ -129,8 +129,18 @@ export default function CareMotorPage() {
             <Container maxWidth="xl">
                 <Box sx={{ py: 4 }}>
                     {/* Header Section */}
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                        <Box display="flex" alignItems="center">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 4
+                        }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
                             <Box sx={{
                                 bgcolor: 'primary.main',
                                 p: 1.5,
@@ -142,10 +152,17 @@ export default function CareMotorPage() {
                                 <PsychologyIcon sx={{ fontSize: 32, color: 'white' }} />
                             </Box>
                             <Box>
-                                <Typography variant="h4" fontWeight={800} sx={{ letterSpacing: '-0.5px' }}>
+                                <Typography
+                                    variant="h4"
+                                    sx={{
+                                        fontWeight: 800,
+                                        letterSpacing: '-0.5px'
+                                    }}>
                                     Motor CARE & Compatibilidad
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" sx={{
+                                    color: "text.secondary"
+                                }}>
                                     Administración unificada del motor de afinidad y narrativa emocional.
                                 </Typography>
                             </Box>
@@ -185,23 +202,49 @@ export default function CareMotorPage() {
                             {/* TAB 0: CRITERIA PANEL */}
                             {activeTab === 0 && (
                                 <Box>
-                                    <Grid container spacing={3} mb={4}>
-                                        <Grid item xs={12} md={4}>
+                                    <Grid container spacing={3} sx={{
+                                        mb: 4
+                                    }}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 4
+                                            }}>
                                             <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderColor: 'primary.light', borderStyle: 'dashed' }}>
-                                                <Typography variant="overline" color="text.secondary">Total Ponderado</Typography>
-                                                <Typography variant="h4" fontWeight={800} color="primary">100%</Typography>
+                                                <Typography variant="overline" sx={{
+                                                    color: "text.secondary"
+                                                }}>Total Ponderado</Typography>
+                                                <Typography variant="h4" color="primary" sx={{
+                                                    fontWeight: 800
+                                                }}>100%</Typography>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={4}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 4
+                                            }}>
                                             <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
-                                                <Typography variant="overline" color="text.secondary">Bloques Activos</Typography>
-                                                <Typography variant="h4" fontWeight={800}>{factors.filter(f => f.status === 'active').length}</Typography>
+                                                <Typography variant="overline" sx={{
+                                                    color: "text.secondary"
+                                                }}>Bloques Activos</Typography>
+                                                <Typography variant="h4" sx={{
+                                                    fontWeight: 800
+                                                }}>{factors.filter(f => f.status === 'active').length}</Typography>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={4}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 4
+                                            }}>
                                             <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
-                                                <Typography variant="overline" color="text.secondary">Identidades Detectadas</Typography>
-                                                <Typography variant="h4" fontWeight={800}>18</Typography>
+                                                <Typography variant="overline" sx={{
+                                                    color: "text.secondary"
+                                                }}>Identidades Detectadas</Typography>
+                                                <Typography variant="h4" sx={{
+                                                    fontWeight: 800
+                                                }}>18</Typography>
                                             </Paper>
                                         </Grid>
                                     </Grid>
@@ -221,15 +264,25 @@ export default function CareMotorPage() {
                                                 {factors.map((f) => (
                                                     <TableRow key={f.id} hover sx={{ opacity: f.status === 'inactive' ? 0.6 : 1 }}>
                                                         <TableCell>
-                                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                            <Stack direction="row" spacing={1.5} sx={{
+                                                                alignItems: "center"
+                                                            }}>
                                                                 <Box sx={{ p: 1, bgcolor: f.type === 'care' ? 'rgba(255,77,79,0.1)' : 'rgba(25,118,210,0.1)', borderRadius: 1.5 }}>
                                                                     {f.type === 'care' ? <PsychologyIcon fontSize="small" color="primary" /> : <PeopleIcon fontSize="small" sx={{ color: 'info.main' }} />}
                                                                 </Box>
                                                                 <Box>
-                                                                    <Typography variant="subtitle2" fontWeight={700}>
+                                                                    <Typography variant="subtitle2" sx={{
+                                                                        fontWeight: 700
+                                                                    }}>
                                                                         {f.name} {f.locked && <LockIcon sx={{ fontSize: 12, ml: 0.5, verticalAlign: 'middle', color: 'primary.main' }} />}
                                                                     </Typography>
-                                                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', maxWidth: 250 }}>
+                                                                    <Typography
+                                                                        variant="caption"
+                                                                        sx={{
+                                                                            color: "text.secondary",
+                                                                            display: 'block',
+                                                                            maxWidth: 250
+                                                                        }}>
                                                                         {f.description}
                                                                     </Typography>
                                                                 </Box>
@@ -244,7 +297,12 @@ export default function CareMotorPage() {
                                                             />
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Box display="flex" alignItems="center" gap={3}>
+                                                            <Box
+                                                                sx={{
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    gap: 3
+                                                                }}>
                                                                 <Slider
                                                                     value={f.weight}
                                                                     onChange={(_, v) => handleWeightChange(f.id, v as number)}
@@ -285,12 +343,23 @@ export default function CareMotorPage() {
                             {activeTab === 1 && (
                                 <Box>
                                     <Grid container spacing={4}>
-                                        <Grid item xs={12} md={6}>
-                                            <Typography variant="h6" fontWeight={700} gutterBottom>Configuración Base del Algoritmo</Typography>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 6
+                                            }}>
+                                            <Typography variant="h6" gutterBottom sx={{
+                                                fontWeight: 700
+                                            }}>Configuración Base del Algoritmo</Typography>
                                             <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
                                                 <Stack spacing={3}>
                                                     <Box>
-                                                        <Box display="flex" justifyContent="space-between" mb={1}>
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                                mb: 1
+                                                            }}>
                                                             <Typography variant="subtitle2">Factor Caos (Seed Randomness)</Typography>
                                                             <Typography variant="subtitle2" color="primary">{chaosFactor}%</Typography>
                                                         </Box>
@@ -299,7 +368,9 @@ export default function CareMotorPage() {
                                                             onChange={(_, v) => setChaosFactor(v as number)}
                                                             min={0} max={25} step={0.5}
                                                         />
-                                                        <Typography variant="caption" color="text.secondary">
+                                                        <Typography variant="caption" sx={{
+                                                            color: "text.secondary"
+                                                        }}>
                                                             Añade una variación aleatoria controlada para evitar burbujas de filtro y fomentar descubrimientos inesperados ("Serendipity").
                                                         </Typography>
                                                     </Box>
@@ -309,15 +380,23 @@ export default function CareMotorPage() {
                                                         label={
                                                             <Box>
                                                                 <Typography variant="subtitle2">Suma Positiva (Intereses)</Typography>
-                                                                <Typography variant="caption" color="text.secondary">Solo puntúa afinidades compartidas, no penaliza lo ausente.</Typography>
+                                                                <Typography variant="caption" sx={{
+                                                                    color: "text.secondary"
+                                                                }}>Solo puntúa afinidades compartidas, no penaliza lo ausente.</Typography>
                                                             </Box>
                                                         }
                                                     />
                                                 </Stack>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <Typography variant="h6" fontWeight={700} gutterBottom>Pre-Filtros de Seguridad e Identidad</Typography>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 6
+                                            }}>
+                                            <Typography variant="h6" gutterBottom sx={{
+                                                fontWeight: 700
+                                            }}>Pre-Filtros de Seguridad e Identidad</Typography>
                                             <Paper variant="outlined" sx={{ p: 3 }}>
                                                 <Stack spacing={2}>
                                                     <Alert severity="info" icon={<AutoFixHighIcon />}>
@@ -338,22 +417,42 @@ export default function CareMotorPage() {
                             {activeTab === 2 && (
                                 <Box>
                                     <Grid container spacing={3}>
-                                        <Grid item xs={12} md={4}>
-                                            <Typography variant="subtitle1" fontWeight={700} gutterBottom>Tonos Narrativos</Typography>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 4
+                                            }}>
+                                            <Typography variant="subtitle1" gutterBottom sx={{
+                                                fontWeight: 700
+                                            }}>Tonos Narrativos</Typography>
                                             <Stack spacing={1}>
                                                 {['Directo', 'Poético', 'Lúdico', 'Emocional', 'Curioso'].map(tone => (
                                                     <Paper key={tone} variant="outlined" sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <Typography variant="body2" fontWeight={600}>{tone}</Typography>
+                                                        <Typography variant="body2" sx={{
+                                                            fontWeight: 600
+                                                        }}>{tone}</Typography>
                                                         <Chip label="24 fragmentos" size="small" />
                                                     </Paper>
                                                 ))}
                                             </Stack>
                                         </Grid>
-                                        <Grid item xs={12} md={8}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 8
+                                            }}>
                                             <Paper variant="outlined" sx={{ p: 4, bgcolor: 'action.hover', minHeight: 400, borderStyle: 'dashed', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                                 <PsychologyIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
-                                                <Typography variant="h6" color="text.secondary" gutterBottom>Editor de Rituales y Narrativas</Typography>
-                                                <Typography variant="body2" color="text.disabled" align="center" sx={{ maxWidth: 400 }}>
+                                                <Typography variant="h6" gutterBottom sx={{
+                                                    color: "text.secondary"
+                                                }}>Editor de Rituales y Narrativas</Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    align="center"
+                                                    sx={{
+                                                        color: "text.disabled",
+                                                        maxWidth: 400
+                                                    }}>
                                                     Configura cómo el algoritmo traduce los números en microcopy emocional. Selecciona un bloque funcional para editar sus reglas de interpretación.
                                                 </Typography>
                                             </Paper>
@@ -366,8 +465,14 @@ export default function CareMotorPage() {
                             {activeTab === 3 && (
                                 <Box>
                                     <Grid container spacing={4}>
-                                        <Grid item xs={12} md={5}>
-                                            <Typography variant="h6" fontWeight={700} gutterBottom>Simulador de Conexión</Typography>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 5
+                                            }}>
+                                            <Typography variant="h6" gutterBottom sx={{
+                                                fontWeight: 700
+                                            }}>Simulador de Conexión</Typography>
                                             <Paper sx={{ p: 3, border: '1px solid', borderColor: 'primary.light', borderRadius: 2 }}>
                                                 <Stack spacing={3}>
                                                     <Box>
@@ -384,18 +489,34 @@ export default function CareMotorPage() {
                                                 </Stack>
                                             </Paper>
                                         </Grid>
-                                        <Grid item xs={12} md={7}>
-                                            <Typography variant="h6" fontWeight={700} gutterBottom>Resultado del Motor CARE</Typography>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                md: 7
+                                            }}>
+                                            <Typography variant="h6" gutterBottom sx={{
+                                                fontWeight: 700
+                                            }}>Resultado del Motor CARE</Typography>
                                             <Paper variant="outlined" sx={{ p: 4, minHeight: 300 }}>
-                                                <Box display="flex" alignItems="center" gap={4} mb={4}>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 4,
+                                                        mb: 4
+                                                    }}>
                                                     <Box sx={{ textAlign: 'center' }}>
                                                         <Avatar sx={{ width: 80, height: 80, mb: 1, bgcolor: 'action.selected' }}>A</Avatar>
                                                         <Typography variant="caption">Usuario</Typography>
                                                     </Box>
                                                     <Box sx={{ flexGrow: 1, textAlign: 'center' }}>
-                                                        <Typography variant="h3" fontWeight={800} color="primary">--%</Typography>
+                                                        <Typography variant="h3" color="primary" sx={{
+                                                            fontWeight: 800
+                                                        }}>--%</Typography>
                                                         <Divider sx={{ my: 1 }}>CARE Affinity</Divider>
-                                                        <Typography variant="caption" color="text.secondary">Cálculo en tiempo real</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: "text.secondary"
+                                                        }}>Cálculo en tiempo real</Typography>
                                                     </Box>
                                                     <Box sx={{ textAlign: 'center' }}>
                                                         <Avatar sx={{ width: 80, height: 80, mb: 1, bgcolor: 'action.selected' }}>B</Avatar>
@@ -403,7 +524,9 @@ export default function CareMotorPage() {
                                                     </Box>
                                                 </Box>
                                                 <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
-                                                    <Typography variant="overline" color="text.secondary">CARE Narrative Output</Typography>
+                                                    <Typography variant="overline" sx={{
+                                                        color: "text.secondary"
+                                                    }}>CARE Narrative Output</Typography>
                                                     <Typography variant="body1" sx={{ fontStyle: 'italic', color: 'text.disabled' }}>
                                                         "Esperando simulación..."
                                                     </Typography>

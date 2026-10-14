@@ -13,8 +13,8 @@ import ProfileView from "../../../components/profile/ProfileView";
 import apiClient from "../../../services/api";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -97,11 +97,12 @@ export default function ProfilePage() {
     return (
       <Layout>
         <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          minHeight="400px"
-        >
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "400px"
+          }}>
           <CircularProgress />
         </Box>
       </Layout>
@@ -113,17 +114,20 @@ export default function ProfilePage() {
       <Layout>
         <Container maxWidth="md">
           <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="400px"
-            gap={2}
-          >
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "400px",
+              gap: 2
+            }}>
             <Typography variant="h5" color="error" gutterBottom>
               User Not Found
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" sx={{
+              color: "text.secondary"
+            }}>
               The user {nickname} does not exist or their profile is private.
             </Typography>
             <Button

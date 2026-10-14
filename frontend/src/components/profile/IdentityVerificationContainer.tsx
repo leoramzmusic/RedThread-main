@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Snackbar,
   Alert,
@@ -368,7 +368,11 @@ const IdentityVerificationContainer: React.FC<
 
       {/* Real Name and Birth Date Fields */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <Controller
             name="real_name"
             control={control}
@@ -380,17 +384,6 @@ const IdentityVerificationContainer: React.FC<
                 label={t("profile.identityDoc.realNameLabel", "Nombre Real")}
                 disabled={fieldsLocked}
                 onClick={fieldsLocked ? handleUnlockClick : undefined}
-                InputProps={{
-                  readOnly: fieldsLocked,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <VerificationBadge
-                        status={realNameStatus}
-                        size="medium"
-                      />
-                    </InputAdornment>
-                  ),
-                }}
                 helperText={
                   verified
                     ? t(
@@ -413,11 +406,28 @@ const IdentityVerificationContainer: React.FC<
                     cursor: fieldsLocked ? "pointer" : "text",
                   },
                 }}
+                slotProps={{
+                  input: {
+                    readOnly: fieldsLocked,
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <VerificationBadge
+                          status={realNameStatus}
+                          size="medium"
+                        />
+                      </InputAdornment>
+                    ),
+                  }
+                }}
               />
             )}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6
+          }}>
           <Controller
             name="birth_date"
             control={control}

@@ -108,14 +108,18 @@ export default function UniversitySelect({
                     fullWidth
                     error={error}
                     helperText={helperText || "Escribe para buscar o ingresar manualmente"}
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                            <React.Fragment>
-                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                            </React.Fragment>
-                        ),
+                    slotProps={{
+                        ...params.slotProps,
+
+                        input: {
+                            ...params.slotProps.input,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.slotProps.input.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }
                     }}
                 />
             )}

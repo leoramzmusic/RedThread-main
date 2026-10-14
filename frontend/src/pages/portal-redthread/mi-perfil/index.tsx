@@ -396,7 +396,12 @@ export default function MiPerfilPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" py={10}><CircularProgress /></Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            py: 10
+          }}><CircularProgress /></Box>
       </AdminLayout>
     );
   }
@@ -429,20 +434,41 @@ export default function MiPerfilPage() {
           <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
             <Link component={NextLink} href="/portal-redthread" underline="hover" color="inherit">Admin</Link>
             <Link component={NextLink} href="/portal-redthread/mi-perfil?tab=perfil" underline="hover" color="inherit">Mi perfil</Link>
-            {view !== 'perfil' && <Typography color="text.primary">{sectionTitle}</Typography>}
-            {view === 'perfil' && <Typography color="text.primary">Perfil personal</Typography>}
+            {view !== 'perfil' && <Typography sx={{
+              color: "text.primary"
+            }}>{sectionTitle}</Typography>}
+            {view === 'perfil' && <Typography sx={{
+              color: "text.primary"
+            }}>Perfil personal</Typography>}
           </Breadcrumbs>
 
-          <Box display="flex" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap" gap={2} mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+              gap: 2,
+              mb: 3
+            }}>
             <Box>
-              <Typography variant="h4" fontWeight="bold" gutterBottom>
+              <Typography variant="h4" gutterBottom sx={{
+                fontWeight: "bold"
+              }}>
                 {view === 'perfil' ? 'Mi perfil' : sectionTitle}
               </Typography>
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body1" sx={{
+                color: "text.secondary"
+              }}>
                 {sectionBlurb}
               </Typography>
             </Box>
-            <Box display="flex" gap={1} alignItems="center">
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                alignItems: "center"
+              }}>
               <Chip icon={<BadgeIcon />} label={profile.employee_id || 'Sin ID'} size="small" />
               {twoFa && <Chip icon={<LockIcon />} label="2FA activo" color="success" size="small" />}
             </Box>
@@ -457,8 +483,17 @@ export default function MiPerfilPage() {
               <Box sx={{ p: 3 }}>
                 {editingProfile ? (
                   <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Stack alignItems="center" spacing={2} sx={{ py: 2 }}>
+                    <Grid
+                      size={{
+                        xs: 12,
+                        md: 4
+                      }}>
+                      <Stack
+                        spacing={2}
+                        sx={{
+                          alignItems: "center",
+                          py: 2
+                        }}>
                         <Badge overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                           badgeContent={
                             <label style={{ cursor: 'pointer' }}>
@@ -476,7 +511,12 @@ export default function MiPerfilPage() {
                             {(profile.first_name[0] || 'M').toUpperCase()}{(profile.last_name[0] || 'P').toUpperCase()}
                           </Avatar>
                         </Badge>
-                        <Typography variant="caption" color="text.secondary" textAlign="center">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            textAlign: "center"
+                          }}>
                           Foto oficial 1:1 · JPG/PNG · máx 3MB · <strong>obligatoria</strong>
                         </Typography>
                         {!avatarPreview && !profile.avatar && (
@@ -484,12 +524,28 @@ export default function MiPerfilPage() {
                         )}
                       </Stack>
                     </Grid>
-                    <Grid item xs={12} md={8}>
-                      <Typography variant="subtitle2" fontWeight={700} mb={1.5} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Grid
+                      size={{
+                        xs: 12,
+                        md: 8
+                      }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 700,
+                          mb: 1.5,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1
+                        }}>
                         <EditIcon fontSize="small" color="primary" /> Editar datos personales
                       </Typography>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <TextField
                             fullWidth required size="small" label="Nombre"
                             value={profile.first_name}
@@ -498,7 +554,11 @@ export default function MiPerfilPage() {
                             onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <TextField
                             fullWidth required size="small" label="Apellido"
                             value={profile.last_name}
@@ -507,7 +567,11 @@ export default function MiPerfilPage() {
                             onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <TextField
                             fullWidth required size="small" label="Correo" type="email"
                             value={profile.email}
@@ -516,23 +580,46 @@ export default function MiPerfilPage() {
                             onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                           />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <TextField fullWidth size="small" label="Teléfono" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField fullWidth size="small" label="Fecha de nacimiento" type="date" InputLabelProps={{ shrink: true }} value={profile.birth_date} onChange={(e) => setProfile({ ...profile, birth_date: e.target.value })} />
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
+                          <TextField fullWidth size="small" label="Fecha de nacimiento" type="date" value={profile.birth_date} onChange={(e) => setProfile({ ...profile, birth_date: e.target.value })} slotProps={{
+                            inputLabel: { shrink: true }
+                          }} />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <TextField fullWidth size="small" label="País" value={profile.country} onChange={(e) => setProfile({ ...profile, country: e.target.value })} />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid
+                          size={{
+                            xs: 12,
+                            sm: 6
+                          }}>
                           <TextField fullWidth size="small" label="Ciudad" value={profile.city} onChange={(e) => setProfile({ ...profile, city: e.target.value })} />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                           <TextField fullWidth size="small" label="Dirección" value={profile.address} onChange={(e) => setProfile({ ...profile, address: e.target.value })} />
                         </Grid>
                       </Grid>
-                      <Box mt={2} display="flex" gap={1}>
+                      <Box
+                        sx={{
+                          mt: 2,
+                          display: "flex",
+                          gap: 1
+                        }}>
                         <Button
                           variant="contained"
                           startIcon={<SaveIcon />}
@@ -599,14 +686,34 @@ export default function MiPerfilPage() {
                       >
                         {(profile.first_name[0] || 'M').toUpperCase()}{(profile.last_name[0] || 'P').toUpperCase()}
                       </Avatar>
-                      <Typography variant="h5" fontWeight={800}>{fullName}</Typography>
-                      <Typography variant="subtitle1" fontStyle="italic" color="text.secondary" mt={0.5}>
+                      <Typography variant="h5" sx={{
+                        fontWeight: 800
+                      }}>{fullName}</Typography>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontStyle: "italic",
+                          color: "text.secondary",
+                          mt: 0.5
+                        }}>
                         {puestoLabel}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" mt={1.5}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          mt: 1.5
+                        }}>
                         {profile.email || '—'}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" mt={0.5} sx={{ letterSpacing: 1 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mt: 0.5,
+                          letterSpacing: 1
+                        }}>
                         ID {profile.employee_id || '—'}
                       </Typography>
                       {!profile.avatar && !avatarPreview && (
@@ -616,8 +723,20 @@ export default function MiPerfilPage() {
 
                     <Grid container spacing={3}>
                       {/* Columna izquierda — datos personales (editables) */}
-                      <Grid item xs={12} md={6}>
-                        <Typography variant="subtitle2" fontWeight={700} mb={2} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Grid
+                        size={{
+                          xs: 12,
+                          md: 6
+                        }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 700,
+                            mb: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1
+                          }}>
                           <PersonIcon fontSize="small" color="primary" /> Datos personales
                         </Typography>
                         <List dense sx={{ bgcolor: 'action.hover', borderRadius: 2 }}>
@@ -654,18 +773,31 @@ export default function MiPerfilPage() {
 
                       {/* Columna derecha — datos de la empresa (solo lectura) */}
                       <Grid
-                        item
-                        xs={12}
-                        md={6}
                         sx={{
                           borderLeft: { xs: 'none', md: '1px solid' },
                           borderColor: 'divider',
                           pl: { xs: 0, md: 3 },
                         }}
-                      >
-                        <Typography variant="subtitle2" fontWeight={700} mb={2} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        size={{
+                          xs: 12,
+                          md: 6
+                        }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 700,
+                            mb: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1
+                          }}>
                           <LockIcon fontSize="small" color="action" /> Datos de la empresa
-                          <Typography variant="caption" color="text.secondary" fontWeight={400}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              fontWeight: 400
+                            }}>
                             (solo lectura)
                           </Typography>
                         </Typography>
@@ -700,24 +832,39 @@ export default function MiPerfilPage() {
 
                         {/* Historial compacto — últimas 2 credenciales */}
                         <Divider sx={{ my: 2.5 }} />
-                        <Typography variant="subtitle2" fontWeight={700} mb={1}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 700,
+                            mb: 1
+                          }}>
                           Últimas credenciales
                         </Typography>
-                        <Stack spacing={1} mb={1}>
+                        <Stack spacing={1} sx={{
+                          mb: 1
+                        }}>
                           {credentials.slice(0, 2).map((c) => (
                             <Box
                               key={c.id}
-                              display="flex"
-                              justifyContent="space-between"
-                              alignItems="center"
-                              gap={1}
-                              sx={{ bgcolor: 'action.hover', borderRadius: 2, px: 1.5, py: 1 }}
-                            >
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: 1,
+                                bgcolor: 'action.hover',
+                                borderRadius: 2,
+                                px: 1.5,
+                                py: 1
+                              }}>
                               <Box>
-                                <Typography variant="body2" fontWeight={600}>
+                                <Typography variant="body2" sx={{
+                                  fontWeight: 600
+                                }}>
                                   {c.version}{c.designName ? ` · ${c.designName}` : ''}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{
+                                  color: "text.secondary"
+                                }}>
                                   {c.issued} → {c.expires}
                                 </Typography>
                               </Box>
@@ -737,7 +884,9 @@ export default function MiPerfilPage() {
                           Ver historial completo
                         </Button>
 
-                        <Box mt={2}>
+                        <Box sx={{
+                          mt: 2
+                        }}>
                           <Button
                             size="small"
                             startIcon={<SupportIcon />}
@@ -751,7 +900,12 @@ export default function MiPerfilPage() {
 
                     {/* Accesos rápidos como cards */}
                     <Divider sx={{ my: 3 }} />
-                    <Typography variant="subtitle2" fontWeight={700} mb={2}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: 700,
+                        mb: 2
+                      }}>
                       Accesos rápidos
                     </Typography>
                     <Grid container spacing={2}>
@@ -761,7 +915,13 @@ export default function MiPerfilPage() {
                         { title: 'Descargar credencial', desc: 'Archivo PDF/JSON de tu credencial', icon: <DownloadIcon />, tab: 'documentos', tone: 'primary' as const },
                         { title: 'Aviso de vencimiento', desc: 'Alertas de vencimiento', icon: <NotificationsIcon />, tab: 'notificaciones', tone: 'warning' as const },
                       ].map((q) => (
-                        <Grid item xs={12} sm={6} md={3} key={q.tab}>
+                        <Grid
+                          key={q.tab}
+                          size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 3
+                          }}>
                           <Paper
                             variant="outlined"
                             onClick={() => router.push(`/portal-redthread/mi-perfil?tab=${q.tab}`)}
@@ -789,8 +949,12 @@ export default function MiPerfilPage() {
                             >
                               {q.icon}
                             </Box>
-                            <Typography variant="body2" fontWeight={700}>{q.title}</Typography>
-                            <Typography variant="caption" color="text.secondary">{q.desc}</Typography>
+                            <Typography variant="body2" sx={{
+                              fontWeight: 700
+                            }}>{q.title}</Typography>
+                            <Typography variant="caption" sx={{
+                              color: "text.secondary"
+                            }}>{q.desc}</Typography>
                           </Paper>
                         </Grid>
                       ))}
@@ -803,9 +967,19 @@ export default function MiPerfilPage() {
             {/* ========== PREFERENCIAS ========== */}
             {view === 'preferencias' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Preferencias personales del portal</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Preferencias personales del portal</Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4
+                    }}>
                     <FormControl fullWidth size="small">
                       <InputLabel>Idioma del portal</InputLabel>
                       <Select value={prefs.language} label="Idioma del portal" onChange={(e) => setPrefs({ ...prefs, language: e.target.value })}>
@@ -815,7 +989,12 @@ export default function MiPerfilPage() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4
+                    }}>
                     <FormControl fullWidth size="small">
                       <InputLabel>Formato de fecha</InputLabel>
                       <Select value={prefs.dateFormat} label="Formato de fecha" onChange={(e) => setPrefs({ ...prefs, dateFormat: e.target.value })}>
@@ -825,7 +1004,12 @@ export default function MiPerfilPage() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4
+                    }}>
                     <FormControl fullWidth size="small">
                       <InputLabel>Formato de hora</InputLabel>
                       <Select value={prefs.timeFormat} label="Formato de hora" onChange={(e) => setPrefs({ ...prefs, timeFormat: e.target.value })}>
@@ -834,9 +1018,19 @@ export default function MiPerfilPage() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2 }}>
-                      <Typography variant="caption" fontWeight={700} display="block" mb={1}>Tema</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 700,
+                          display: "block",
+                          mb: 1
+                        }}>Tema</Typography>
                       <ToggleButtonGroup
                         exclusive
                         size="small"
@@ -848,16 +1042,28 @@ export default function MiPerfilPage() {
                       </ToggleButtonGroup>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2 }}>
-                      <Typography variant="caption" fontWeight={700} display="block" mb={1}>Notificaciones</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 700,
+                          display: "block",
+                          mb: 1
+                        }}>Notificaciones</Typography>
                       <FormControlLabel control={<Switch checked={prefs.notifyExpiry} onChange={(e) => setPrefs({ ...prefs, notifyExpiry: e.target.checked })} />} label="Vencimiento de credencial" />
                       <FormControlLabel control={<Switch checked={prefs.notifyDataChange} onChange={(e) => setPrefs({ ...prefs, notifyDataChange: e.target.checked })} />} label="Cambios en datos" />
                       <FormControlLabel control={<Switch checked={prefs.notifyReports} onChange={(e) => setPrefs({ ...prefs, notifyReports: e.target.checked })} />} label="Estado de reportes" />
                     </Paper>
                   </Grid>
                 </Grid>
-                <Box mt={2}>
+                <Box sx={{
+                  mt: 2
+                }}>
                   <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSavePrefs} sx={{ borderRadius: 2, bgcolor: '#E63946', '&:hover': { bgcolor: '#B71C1C' } }}>
                     Guardar preferencias
                   </Button>
@@ -868,8 +1074,19 @@ export default function MiPerfilPage() {
             {/* ========== CREDENCIALES ========== */}
             {view === 'credenciales' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={1}>Credenciales emitidas</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 1
+                  }}>Credenciales emitidas</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                  }}>
                   Vigencia de 5 años. Estado: activa, extraviada o bloqueada.
                 </Typography>
                 <TableContainer>
@@ -915,10 +1132,20 @@ export default function MiPerfilPage() {
                 </TableContainer>
 
                 <Divider sx={{ my: 3 }} />
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Vista previa con tu diseño actual</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Vista previa con tu diseño actual</Typography>
                 <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', justifyContent: 'center' }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="caption" fontWeight={700} color="text.secondary">FRENTE</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        color: "text.secondary"
+                      }}>FRENTE</Typography>
                     <CredentialCard
                       photoUrl={avatarPreview || profile.avatar}
                       firstName={profile.first_name || 'Nombre'}
@@ -931,7 +1158,12 @@ export default function MiPerfilPage() {
                     />
                   </Box>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="caption" fontWeight={700} color="text.secondary">REVERSO</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        color: "text.secondary"
+                      }}>REVERSO</Typography>
                     <CredentialBack
                       employeeCode={profile.employee_id || 'EMP-0000'}
                       email={profile.email}
@@ -948,7 +1180,15 @@ export default function MiPerfilPage() {
             {/* ========== REPORTAR (incidente / seguridad) ========== */}
             {(view === 'reportar-incidente' || view === 'reportar-seguridad') && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={1} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
                   {view === 'reportar-seguridad' ? <SecurityIcon color="error" fontSize="small" /> : <ReportIcon color="primary" fontSize="small" />}
                   {view === 'reportar-seguridad' ? 'Reportar seguridad' : 'Reportar incidente'}
                 </Typography>
@@ -958,7 +1198,11 @@ export default function MiPerfilPage() {
                     : 'Fallas técnicas, problemas del portal o errores de datos.'}
                 </Alert>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
                     <FormControl fullWidth size="small">
                       <InputLabel>Categoría</InputLabel>
                       <Select
@@ -984,14 +1228,20 @@ export default function MiPerfilPage() {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6
+                    }}>
                     <TextField fullWidth size="small" label="Título" value={reportForm.title} onChange={(e) => setReportForm({ ...reportForm, title: e.target.value })} />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <TextField fullWidth multiline minRows={4} label="Descripción" value={reportForm.description} onChange={(e) => setReportForm({ ...reportForm, description: e.target.value })} />
                   </Grid>
                 </Grid>
-                <Box mt={2}>
+                <Box sx={{
+                  mt: 2
+                }}>
                   <Button
                     variant="contained"
                     disabled={submittingReport}
@@ -1007,7 +1257,12 @@ export default function MiPerfilPage() {
             {/* ========== SEGUIMIENTO ========== */}
             {view === 'seguimiento' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Seguimiento de reportes</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Seguimiento de reportes</Typography>
                 {reports.length === 0 && (
                   <Alert severity="info">No tienes reportes abiertos. Usa «Reportar incidente» o «Reportar seguridad».</Alert>
                 )}
@@ -1015,18 +1270,46 @@ export default function MiPerfilPage() {
                   {reports.map((r) => {
                     const meta = REPORT_STATUS_META[r.status];
                     return (
-                      <Grid item xs={12} md={6} key={r.id}>
+                      <Grid
+                        key={r.id}
+                        size={{
+                          xs: 12,
+                          md: 6
+                        }}>
                         <Paper variant="outlined" sx={{ p: 2 }}>
-                          <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1} mb={1}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "flex-start",
+                              gap: 1,
+                              mb: 1
+                            }}>
                             <Box>
                               <Chip size="small" label={r.kind === 'seguridad' ? 'Seguridad' : 'Incidente'} color={r.kind === 'seguridad' ? 'error' : 'primary'} variant="outlined" />
-                              <Typography variant="subtitle2" fontWeight={700} mt={0.5}>{r.title}</Typography>
+                              <Typography
+                                variant="subtitle2"
+                                sx={{
+                                  fontWeight: 700,
+                                  mt: 0.5
+                                }}>{r.title}</Typography>
                             </Box>
                             <Chip size="small" icon={meta.icon as any} label={meta.label} color={meta.color} />
                           </Box>
-                          <Typography variant="caption" color="text.secondary" display="block">Categoría: {r.category}</Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              display: "block"
+                            }}>Categoría: {r.category}</Typography>
                           {r.description && <Typography variant="body2" sx={{ mt: 0.5 }}>{r.description}</Typography>}
-                          <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                              display: "block",
+                              mt: 1
+                            }}>
                             {new Date(r.createdAt).toLocaleString()}
                           </Typography>
                         </Paper>
@@ -1040,7 +1323,12 @@ export default function MiPerfilPage() {
             {/* ========== HISTORIAL REPORTES ========== */}
             {view === 'historial' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Historial de reportes</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Historial de reportes</Typography>
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
@@ -1079,8 +1367,16 @@ export default function MiPerfilPage() {
             {/* ========== NOTIFICACIONES ========== */}
             {view === 'notificaciones' && (
               <Box sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                  <Typography variant="subtitle2" fontWeight={700}>Notificaciones personales</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2
+                  }}>
+                  <Typography variant="subtitle2" sx={{
+                    fontWeight: 700
+                  }}>Notificaciones personales</Typography>
                   <Button size="small" onClick={() => {
                     const next = notifications.map((n) => ({ ...n, read: true }));
                     setNotifications(next);
@@ -1116,29 +1412,82 @@ export default function MiPerfilPage() {
             {/* ========== DOCUMENTOS ========== */}
             {view === 'documentos' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Documentos personales</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Documentos personales</Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
                       <DescriptionIcon color="primary" />
-                      <Typography variant="subtitle2" fontWeight={700} mt={1}>Credencial (JSON de diseño)</Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>Configuración de tu credencial actual para respaldo o soporte.</Typography>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 700,
+                          mt: 1
+                        }}>Credencial (JSON de diseño)</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mb: 1.5
+                        }}>Configuración de tu credencial actual para respaldo o soporte.</Typography>
                       <Button size="small" variant="outlined" startIcon={<DownloadIcon />} onClick={downloadCredentialJson}>Descargar</Button>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
                       <PrintIcon color="primary" />
-                      <Typography variant="subtitle2" fontWeight={700} mt={1}>Credencial en PDF</Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>Usa el diálogo de impresión del navegador para exportar a PDF.</Typography>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 700,
+                          mt: 1
+                        }}>Credencial en PDF</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mb: 1.5
+                        }}>Usa el diálogo de impresión del navegador para exportar a PDF.</Typography>
                       <Button size="small" variant="outlined" startIcon={<PrintIcon />} onClick={() => window.print()}>Imprimir / PDF</Button>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 4
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
                       <BadgeIcon color="primary" />
-                      <Typography variant="subtitle2" fontWeight={700} mt={1}>Comprobante de emisión</Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>Listado de credenciales con fechas de emisión y vigencia.</Typography>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 700,
+                          mt: 1
+                        }}>Comprobante de emisión</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "text.secondary",
+                          display: "block",
+                          mb: 1.5
+                        }}>Listado de credenciales con fechas de emisión y vigencia.</Typography>
                       <Button size="small" variant="outlined" onClick={() => router.push('/portal-redthread/mi-perfil?tab=credenciales', undefined, { shallow: true })}>
                         Ver credenciales
                       </Button>
@@ -1151,16 +1500,30 @@ export default function MiPerfilPage() {
             {/* ========== SEGURIDAD 2FA ========== */}
             {view === 'seguridad' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Seguridad de la cuenta</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Seguridad de la cuenta</Typography>
                 <Paper variant="outlined" sx={{ p: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
                   <Box>
-                    <Typography variant="body1" fontWeight={600}>Doble autenticación (2FA)</Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="body1" sx={{
+                      fontWeight: 600
+                    }}>Doble autenticación (2FA)</Typography>
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       Código de 6 dígitos desde tu app autenticadora (Google Authenticator, Authy, etc.).
                     </Typography>
                   </Box>
                   {twoFa ? (
-                    <Box display="flex" gap={1} alignItems="center">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "center"
+                      }}>
                       <Chip icon={<CheckIcon />} label="Activo" color="success" size="small" />
                       <Button size="small" variant="outlined" color="error" onClick={disable2Fa}>Desactivar</Button>
                     </Box>
@@ -1171,8 +1534,16 @@ export default function MiPerfilPage() {
                   )}
                 </Paper>
                 <Paper variant="outlined" sx={{ p: 2.5, mt: 2 }}>
-                  <Typography variant="body1" fontWeight={600}>Contraseña</Typography>
-                  <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>
+                  <Typography variant="body1" sx={{
+                    fontWeight: 600
+                  }}>Contraseña</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                      mb: 1.5
+                    }}>
                     Para cambiar tu contraseña contacta a RRHH o usa el flujo de recuperación.
                   </Typography>
                   <Button size="small" variant="outlined" onClick={() => router.push('/portal-redthread/configuracion/seguridad')}>
@@ -1185,7 +1556,12 @@ export default function MiPerfilPage() {
             {/* ========== AUDITORÍA ========== */}
             {view === 'auditoria' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Auditoría personal — accesos al portal</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Auditoría personal — accesos al portal</Typography>
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
@@ -1212,15 +1588,37 @@ export default function MiPerfilPage() {
             {/* ========== SOPORTE ========== */}
             {view === 'soporte' && (
               <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} mb={2}>Soporte directo</Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 2
+                  }}>Soporte directo</Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2.5, height: '100%' }}>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mb: 1
+                        }}>
                         <AgentIcon color="primary" />
-                        <Typography variant="subtitle2" fontWeight={700}>Mesa de ayuda / Soporte técnico</Typography>
+                        <Typography variant="subtitle2" sx={{
+                          fontWeight: 700
+                        }}>Mesa de ayuda / Soporte técnico</Typography>
                       </Box>
-                      <Typography variant="body2" color="text.secondary" mb={1.5}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          mb: 1.5
+                        }}>
                         Incidencias del portal, accesos y fallas técnicas.
                       </Typography>
                       <Button size="small" variant="contained" startIcon={<SupportIcon />} onClick={() => router.push('/portal-redthread/soporte/tickets')} sx={{ borderRadius: 2 }}>
@@ -1228,13 +1626,30 @@ export default function MiPerfilPage() {
                       </Button>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 6
+                    }}>
                     <Paper variant="outlined" sx={{ p: 2.5, height: '100%' }}>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mb: 1
+                        }}>
                         <PersonIcon color="primary" />
-                        <Typography variant="subtitle2" fontWeight={700}>Contacto con RRHH</Typography>
+                        <Typography variant="subtitle2" sx={{
+                          fontWeight: 700
+                        }}>Contacto con RRHH</Typography>
                       </Box>
-                      <Typography variant="body2" color="text.secondary" mb={0.5}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          mb: 0.5
+                        }}>
                         Datos de contacto, renovación de credencial y cambios de puesto.
                       </Typography>
                       <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>rrhh@reth.app</Typography>
@@ -1254,7 +1669,12 @@ export default function MiPerfilPage() {
       <Dialog open={twoFaDialog} onClose={() => setTwoFaDialog(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Activar doble autenticación</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" mb={2}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 2
+            }}>
             Escanea el QR en tu app autenticadora (demo: ingresa cualquier código de 6 dígitos).
           </Typography>
           <TextField
@@ -1262,7 +1682,9 @@ export default function MiPerfilPage() {
             label="Código de 6 dígitos"
             value={twoFaCode}
             onChange={(e) => setTwoFaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+            slotProps={{
+              htmlInput: { inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }
+            }}
           />
         </DialogContent>
         <DialogActions>

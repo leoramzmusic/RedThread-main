@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Tooltip, Zoom, FormControlLabel, Switch } from '@mui/material';
 import { styled, keyframes, Theme } from '@mui/material/styles';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 export type DiscoveryMode = 'suggested' | 'opposites' | 'blind' | 'free' | 'more';
 

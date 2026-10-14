@@ -20,7 +20,7 @@ import {
 import {
     Visibility,
     VisibilityOff,
-    CheckCircleOutline,
+    CheckCircleOutlined,
     HighlightOff,
     Google,
     Facebook,
@@ -30,7 +30,7 @@ import {
     Lock,
 } from '@mui/icons-material';
 import apiClient from '../../services/api';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { AUTH_INPUT_SX, SOCIAL_BTN_SX, SUBMIT_BTN_SX } from './authInputStyles';
 import { keyframes } from '@mui/material';
 
@@ -302,11 +302,13 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                     autoFocus
                     placeholder="000000"
                     sx={AUTH_INPUT_SX}
-                    InputProps={{
-                        sx: { fontSize: '1.5rem', letterSpacing: '8px', textAlign: 'center' }
-                    }}
-                    inputProps={{ style: { textAlign: 'center' } }}
-                />
+                    slotProps={{
+                        input: {
+                            sx: { fontSize: '1.5rem', letterSpacing: '8px', textAlign: 'center' }
+                        },
+
+                        htmlInput: { style: { textAlign: 'center' } }
+                    }} />
 
                 <Button
                     fullWidth
@@ -349,14 +351,16 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                 required
                 autoFocus
                 sx={AUTH_INPUT_SX}
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <Email sx={{ fontSize: 20, color: 'rgba(255,255,255,0.55)' }} />
-                        </InputAdornment>
-                    )
-                }}
                 helperText={identifierType === 'phone' ? t('auth.phoneFormat') : ''}
+                slotProps={{
+                    input: {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <Email sx={{ fontSize: 20, color: 'rgba(255,255,255,0.55)' }} />
+                            </InputAdornment>
+                        )
+                    }
+                }}
             />
 
             {/* Username Field with Uniqueness Check */}
@@ -380,25 +384,27 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                                 : ''
                 }
                 sx={AUTH_INPUT_SX}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            {checkingUsername ? (
-                                <CircularProgress size={20} sx={{ color: 'rgba(255,255,255,0.7)' }} />
-                            ) : usernameAvailable === true ? (
-                                <CheckCircle
-                                    color="success"
-                                    sx={{
-                                        fontSize: 20,
-                                        transition: 'filter 0.3s ease',
-                                        filter: 'drop-shadow(0 0 6px rgba(76, 175, 80, 0.85))',
-                                    }}
-                                />
-                            ) : usernameAvailable === false ? (
-                                <Cancel color="error" sx={{ fontSize: 20 }} />
-                            ) : null}
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                {checkingUsername ? (
+                                    <CircularProgress size={20} sx={{ color: 'rgba(255,255,255,0.7)' }} />
+                                ) : usernameAvailable === true ? (
+                                    <CheckCircle
+                                        color="success"
+                                        sx={{
+                                            fontSize: 20,
+                                            transition: 'filter 0.3s ease',
+                                            filter: 'drop-shadow(0 0 6px rgba(76, 175, 80, 0.85))',
+                                        }}
+                                    />
+                                ) : usernameAvailable === false ? (
+                                    <Cancel color="error" sx={{ fontSize: 20 }} />
+                                ) : null}
+                            </InputAdornment>
+                        ),
+                    }
                 }}
             />
 
@@ -447,17 +453,19 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
                 sx={AUTH_INPUT_SX}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                                <Box sx={{ position: 'relative', width: 24, height: 24 }}>
-                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
-                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
-                                </Box>
-                            </IconButton>
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                                    <Box sx={{ position: 'relative', width: 24, height: 24 }}>
+                                        <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
+                                        <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
+                                    </Box>
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }
                 }}
             />
 
@@ -474,16 +482,18 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                                 <ListItem key={index} sx={{ py: 0, px: 0 }}>
                                     <ListItemIcon sx={{ minWidth: 24 }}>
                                         {isMet ? (
-                                            <CheckCircleOutline color="success" fontSize="small" />
+                                            <CheckCircleOutlined color="success" fontSize="small" />
                                         ) : (
                                             <HighlightOff color="error" fontSize="small" />
                                         )}
                                     </ListItemIcon>
                                     <ListItemText
                                         primary={rule.label}
-                                        primaryTypographyProps={{
-                                            variant: 'caption',
-                                            color: isMet ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)'
+                                        slotProps={{
+                                            primary: {
+                                                variant: 'caption',
+                                                color: isMet ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)'
+                                            }
                                         }}
                                     />
                                 </ListItem>
@@ -507,40 +517,42 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                 onFocus={() => setConfirmPasswordFocused(true)}
                 onBlur={() => setConfirmPasswordFocused(false)}
                 sx={AUTH_INPUT_SX}
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <Lock
-                                sx={{
-                                    fontSize: 20,
-                                    transition: 'color 0.3s ease, filter 0.3s ease',
-                                    color: passwordsMatch
-                                        ? '#E63946'
-                                        : 'rgba(255,255,255,0.45)',
-                                    filter: passwordsMatch
-                                        ? 'drop-shadow(0 0 6px rgba(230, 57, 70, 0.9))'
-                                        : 'none',
-                                    ...(formData.confirmPassword.length > 0 && !passwordsMatch
-                                        ? {
-                                              '@media (prefers-reduced-motion: no-preference)': {
-                                                  animation: `${lockShake} 1.1s ease-in-out infinite`,
-                                              },
-                                          }
-                                        : {}),
-                                }}
-                            />
-                        </InputAdornment>
-                    ),
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                                <Box sx={{ position: 'relative', width: 24, height: 24 }}>
-                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showConfirmPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
-                                    <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showConfirmPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
-                                </Box>
-                            </IconButton>
-                        </InputAdornment>
-                    ),
+                slotProps={{
+                    input: {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <Lock
+                                    sx={{
+                                        fontSize: 20,
+                                        transition: 'color 0.3s ease, filter 0.3s ease',
+                                        color: passwordsMatch
+                                            ? '#E63946'
+                                            : 'rgba(255,255,255,0.45)',
+                                        filter: passwordsMatch
+                                            ? 'drop-shadow(0 0 6px rgba(230, 57, 70, 0.9))'
+                                            : 'none',
+                                        ...(formData.confirmPassword.length > 0 && !passwordsMatch
+                                            ? {
+                                                  '@media (prefers-reduced-motion: no-preference)': {
+                                                      animation: `${lockShake} 1.1s ease-in-out infinite`,
+                                                  },
+                                              }
+                                            : {}),
+                                    }}
+                                />
+                            </InputAdornment>
+                        ),
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                                    <Box sx={{ position: 'relative', width: 24, height: 24 }}>
+                                        <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={!showConfirmPassword} timeout={160}><Visibility fontSize="small" /></Fade></Box>
+                                        <Box sx={{ position: 'absolute', inset: 0 }}><Fade in={showConfirmPassword} timeout={160}><VisibilityOff fontSize="small" /></Fade></Box>
+                                    </Box>
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }
                 }}
             />
 
@@ -549,15 +561,19 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void } =
                 <Box sx={{ mt: 1, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                     {passwordsMatch ? (
                         <>
-                            <CheckCircleOutline color="success" fontSize="small" />
-                            <Typography variant="caption" color="success.main">
+                            <CheckCircleOutlined color="success" fontSize="small" />
+                            <Typography variant="caption" sx={{
+                                color: "success.main"
+                            }}>
                                 {t('auth.passwordsMatch')}
                             </Typography>
                         </>
                     ) : (
                         <>
                             <HighlightOff color="error" fontSize="small" />
-                            <Typography variant="caption" color="error.main">
+                            <Typography variant="caption" sx={{
+                                color: "error.main"
+                            }}>
                                 {t('auth.passwordsDontMatch')}
                             </Typography>
                         </>

@@ -23,7 +23,12 @@ export default function OnlineStatusIndicator({
   const dotSize = sizeMap[size];
 
   return (
-    <Box display="flex" alignItems="center" gap={0.5}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0.5
+      }}>
       <CircleIcon
         sx={{
           fontSize: dotSize,
@@ -31,7 +36,9 @@ export default function OnlineStatusIndicator({
         }}
       />
       {showText && (
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>
           {isOnline ? 'Activo ahora' : lastSeen ? `Visto ${getRelativeTime(lastSeen)}` : 'Desconectado'}
         </Typography>
       )}

@@ -5,7 +5,7 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { Control, Controller, UseFormSetValue } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   Grid,
   Paper,
@@ -33,7 +33,7 @@ export default function WellnessSection({
   const { t } = useTranslation("common");
 
   return (
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Accordion
         defaultExpanded
         sx={{
@@ -46,7 +46,12 @@ export default function WellnessSection({
         }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1 }}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
             <HealthAndSafety color="action" />
             <Typography variant="h6">
               {t("profile.health.title", { defaultValue: "Salud y Bienestar" })}
@@ -55,7 +60,7 @@ export default function WellnessSection({
         </AccordionSummary>
         <AccordionDetails sx={{ px: 2.5, pb: 2, pt: 0 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <HealthConditionsSelector
                 control={control}
                 name="health_conditions"
@@ -67,7 +72,7 @@ export default function WellnessSection({
                 color="#ef5350"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <DisabilitySelector
                 control={control}
                 setValue={setValue}
@@ -124,7 +129,7 @@ export default function WellnessSection({
                 ]}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <EnergyLevelSelector
                 control={control}
                 name="energy_level"

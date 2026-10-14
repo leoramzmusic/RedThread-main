@@ -10,7 +10,7 @@ import {
 import {
     Edit as EditIcon
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { useRouter } from 'next/router';
 import { calculateProfileScore, calculateCompletionPercentage } from '../../utils/profileScoring';
 
@@ -56,21 +56,35 @@ export default function DiscoverEmptyState({
             />
 
             {/* Title */}
-            <Typography variant="h5" fontWeight={700} gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{
+                fontWeight: 700
+            }}>
                 {t('emptyState.title', '¡Ups! No encontramos a nadie cerca')}
             </Typography>
 
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+            <Typography
+                variant="body1"
+                sx={{
+                    color: "text.secondary",
+                    mb: 4
+                }}>
                 {t('emptyState.subtitle', 'Pero no te preocupes, aquí hay algunas sugerencias:')}
             </Typography>
 
             {/* Profile Completion */}
             {percentage < 80 && (
                 <Paper elevation={0} sx={{ p: 3, mb: 4, bgcolor: 'rgba(255, 107, 107, 0.1)', borderRadius: 3 }}>
-                    <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                    <Typography variant="subtitle1" gutterBottom sx={{
+                        fontWeight: 600
+                    }}>
                         {t('emptyState.completeProfile', 'Completa tu perfil')}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 2
+                        }}>
                         {t('emptyState.profileDesc', 'Un perfil completo aumenta tus posibilidades de match')}
                     </Typography>
                     <LinearProgress
@@ -87,7 +101,9 @@ export default function DiscoverEmptyState({
                             }
                         }}
                     />
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                    }}>
                         {percentage}% {t('emptyState.complete', 'completado')}
                     </Typography>
                     <Box sx={{ mt: 2 }}>
@@ -107,7 +123,13 @@ export default function DiscoverEmptyState({
             )}
 
             {/* Actions */}
-            <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 2 }}>
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    justifyContent: "center",
+                    mt: 2
+                }}>
                 <Button
                     variant="outlined"
                     onClick={onExpandSearch}

@@ -63,14 +63,23 @@ export default function HistoryReports() {
     return (
         <AdminLayout>
             <Container maxWidth="xl">
-                <Box py={4}>
+                <Box sx={{
+                    py: 4
+                }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 4 }}>
                             {error}
                         </Alert>
                     )}
-                    <Typography variant="h4" fontWeight={800} gutterBottom>Historial de Denuncias</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                    <Typography variant="h4" gutterBottom sx={{
+                        fontWeight: 800
+                    }}>Historial de Denuncias</Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 4
+                        }}>
                         Registro completo de denuncias resueltas y desestimadas.
                     </Typography>
 

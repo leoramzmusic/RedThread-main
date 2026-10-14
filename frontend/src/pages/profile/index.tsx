@@ -1,4 +1,4 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Box, CircularProgress } from '@mui/material';
@@ -34,7 +34,13 @@ export default function ProfileRedirect() {
 
   return (
     <Layout>
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "60vh"
+        }}>
         <CircularProgress />
       </Box>
     </Layout>

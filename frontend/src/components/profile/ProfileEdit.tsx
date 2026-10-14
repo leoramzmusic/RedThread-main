@@ -48,7 +48,7 @@ import {
   DialogContentText,
   DialogActions,
 } from '@mui/material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { alpha } from '@mui/material/styles';
 import apiClient from '../../services/api';
 import { PROFILE_SECTION_REGISTRY } from './sections/registry';
@@ -763,7 +763,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // and always renders.
   const sectionBlocks: Record<string, ReactNode> = {
     'section-photos': (
-      <Grid item xs={12} id="section-photos" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-photos" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <PhotosSection
           profile={profile}
           smartPhotos={smartPhotos}
@@ -772,7 +772,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-basic': (
-      <Grid item xs={12} id="section-basic" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-basic" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <BasicInfoSection
           control={control}
           setValue={setValue}
@@ -797,7 +797,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-location': (
-      <Grid item xs={12} id="section-location" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-location" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <LocationSection
           control={control}
           setValue={setValue}
@@ -810,7 +810,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-aboutme': (
-      <Grid item xs={12} id="section-aboutme" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-aboutme" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <AboutMeSection
           control={control}
           setInfoDrawerOpen={setInfoDrawerOpen}
@@ -825,7 +825,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-goals': (
-      <Grid item xs={12} id="section-goals" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-goals" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <RelationshipGoalsSection
           control={control}
           setValue={setValue}
@@ -835,7 +835,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-interests': (
-      <Grid item xs={12} id="section-interests" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-interests" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <InterestsSection
           lifestyleInterests={lifestyleInterests}
           setLifestyleInterests={setLifestyleInterests}
@@ -843,7 +843,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-pronouns': (
-      <Grid item xs={12} id="section-pronouns" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-pronouns" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <PronounsSection
           control={control}
           setValue={setValue}
@@ -854,7 +854,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-additional': (
-      <Grid item xs={12} id="section-additional" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-additional" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <AdditionalDataSection
           control={control}
           setValue={setValue}
@@ -864,7 +864,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-professional': (
-      <Grid item xs={12} id="section-professional" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid
+        id="section-professional"
+        sx={{ '& > .MuiGrid-item': { p: 0 } }}
+        size={12}>
         <ProfessionalAcademicSection
           control={control}
           setValue={setValue}
@@ -874,7 +877,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-music': (
-      <Grid item xs={12} id="section-music" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-music" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <MusicSection
           control={control}
           watch={watch}
@@ -885,7 +888,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-identity': (
-      <Grid item xs={12} id="section-identity" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-identity" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <IdentitySection
           control={control}
           setValue={setValue}
@@ -895,17 +898,17 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-personality': (
-      <Grid item xs={12} id="section-personality" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-personality" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <PersonalitySection control={control} setValue={setValue} />
       </Grid>
     ),
     'section-cognitive': (
-      <Grid item xs={12} id="section-cognitive" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-cognitive" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <CognitiveSection control={control} setValue={setValue} />
       </Grid>
     ),
     'section-wellness': (
-      <Grid item xs={12} id="section-wellness" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-wellness" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <WellnessSection control={control} setValue={setValue} />
       </Grid>
     ),
@@ -917,7 +920,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       />
     ),
     'section-status': (
-      <Grid item xs={12} id="section-status" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-status" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <CivilStatusSection
           control={control}
           setValue={setValue}
@@ -930,7 +933,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
     ),
     'section-languages': (
-      <Grid item xs={12} id="section-languages" sx={{ '& > .MuiGrid-item': { p: 0 } }}>
+      <Grid id="section-languages" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
         <LanguagesSection
           control={control}
           setValue={setValue}
@@ -976,18 +979,23 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
       {/* Header: fila única (atrás + título a la izq. / acciones a la der.) */}
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
         sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
           bgcolor: { xs: 'background.paper', md: 'transparent' },
           boxShadow: { xs: 1, md: 0 },
           borderRadius: { xs: 2, md: 0 },
-          p: { xs: 1, md: 0 },
-        }}
-      >
-        <Box display="flex" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
+          p: { xs: 1, md: 0 }
+        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            minWidth: 0
+          }}>
           <Tooltip title={t('actions.goBack', 'Regresar')}>
             <Button
               onClick={onBack}
@@ -1424,9 +1432,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         </DialogActions>
       </Dialog>
 
-
       {/* Profile Completion Widget */}
-      <Box mb={2}>
+      <Box sx={{
+        mb: 2
+      }}>
         <ProfileCompletionWidget
           control={control}
           onSuggestionClick={handleSuggestionClick}
@@ -1545,20 +1554,22 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         maxWidth="md"
         fullWidth
         scroll="paper"
-        PaperProps={{
-          sx: {
-            m: { xs: 1, sm: 2 },
-            mx: 'auto',
-            width: { xs: '95%', sm: '80%', md: '70%' },
-            maxHeight: '70vh',
-            borderRadius: '12px',
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-            // Clear the sidebar on desktop, clear the navbar on mobile.
-            left: { xs: 0, sm: 0, md: '5%', lg: '8%' },
-            mt: { xs: '12vh', sm: 2 },
-          },
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1, sm: 2 },
+              mx: 'auto',
+              width: { xs: '95%', sm: '80%', md: '70%' },
+              maxHeight: '70vh',
+              borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              // Clear the sidebar on desktop, clear the navbar on mobile.
+              left: { xs: 0, sm: 0, md: '5%', lg: '8%' },
+              mt: { xs: '12vh', sm: 2 },
+            },
+          }
         }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -1573,7 +1584,9 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           <Typography variant="h6" sx={{ flex: 1 }}>
             {t('profile.prompts.ui.title', 'Selecciona una frase divertida')}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{
+            color: "text.secondary"
+          }}>
             {t('profile.prompts.ui.counter', '{{n}}/5 seleccionadas', { n: prompts.length + stagedPrompts.length })}
           </Typography>
         </DialogTitle>
@@ -1588,7 +1601,9 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             onChange={(e) => setPromptSearch(e.target.value)}
             placeholder={t('profile.prompts.ui.search', 'Buscar frases...')}
           />
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          <Stack direction="row" spacing={1} useFlexGap sx={{
+            flexWrap: "wrap"
+          }}>
             {(['all', 'musica', 'viajes', 'comida', 'recuerdos', 'hobbies'] as const).map((cat) => (
               <Chip
                 key={cat}
@@ -1612,7 +1627,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             }}
           >
             {promptVisible.length === 0 && (
-              <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  textAlign: "center",
+                  py: 2
+                }}>
                 {t('profile.prompts.ui.noresults', 'Sin resultados para tu búsqueda.')}
               </Typography>
             )}

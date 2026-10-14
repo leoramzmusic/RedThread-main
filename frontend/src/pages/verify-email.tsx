@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import AuthLayout from "../components/auth/AuthLayout";
 import apiClient from "../services/api";
 
@@ -46,12 +46,14 @@ export default function VerifyEmailPage() {
       subtitle={t("auth.emailVerifySubtitle")}
     >
       <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        sx={{ minHeight: 240, width: "100%" }}
-      >
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: 240,
+          width: "100%"
+        }}>
         {status === "loading" && !missingToken && <CircularProgress />}
 
         {status === "success" && (

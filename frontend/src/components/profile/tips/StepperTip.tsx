@@ -23,7 +23,12 @@ const StepperTip: React.FC<StepperTipProps> = ({
     <Collapse in={open}>
       <Box>
         {titleOverride && (
-          <Typography variant="h6" fontWeight={700} mb={1}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              mb: 1
+            }}>
             {titleOverride}
           </Typography>
         )}

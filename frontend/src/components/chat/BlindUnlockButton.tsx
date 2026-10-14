@@ -39,8 +39,15 @@ export default function BlindUnlockButton({
             {/* State: Locked but Ready */}
             {isReady && unlockState === 'locked' && (
                 <Zoom in={true}>
-                    <Box display="flex" flexDirection="column" alignItems="center">
-                        <Typography variant="caption" color="text.secondary" gutterBottom>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center"
+                        }}>
+                        <Typography variant="caption" gutterBottom sx={{
+                            color: "text.secondary"
+                        }}>
                             ¡Han conversado lo suficiente!
                         </Typography>
                         <Tooltip title="Revelar información pública y fotos. Requiere que ambos acepten.">
@@ -65,12 +72,28 @@ export default function BlindUnlockButton({
 
             {/* State: Pending (I clicked, waiting for them) */}
             {unlockState === 'pending' && (
-                <Box display="flex" alignItems="center" justifyContent="center" gap={1} p={1} bgcolor="rgba(156, 39, 176, 0.1)" borderRadius={2}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1,
+                        p: 1,
+                        bgcolor: "rgba(156, 39, 176, 0.1)",
+                        borderRadius: 2
+                    }}>
                     <CheckCircleIcon color="success" fontSize="small" />
-                    <Typography variant="body2" fontWeight={600} color="secondary.main">
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            fontWeight: 600,
+                            color: "secondary.main"
+                        }}>
                         Esperando a tu match...
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                        color: "text.secondary"
+                    }}>
                         (Tu info se revelará cuando ell/el acepte)
                     </Typography>
                 </Box>
@@ -78,9 +101,20 @@ export default function BlindUnlockButton({
 
             {/* State: Locked and NOT Ready */}
             {!isReady && unlockState === 'locked' && (
-                <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1
+                    }}>
                     <LockIcon fontSize="small" color="disabled" />
-                    <Typography variant="caption" color="text.disabled" fontStyle="italic">
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            color: "text.disabled",
+                            fontStyle: "italic"
+                        }}>
                         Conversa más para desbloquear fotos...
                     </Typography>
                 </Box>

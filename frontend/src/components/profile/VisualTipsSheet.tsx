@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { Box, Button, Typography, useTheme, alpha } from "@mui/material";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import BottomSheet from "../shared/BottomSheet";
@@ -147,9 +147,17 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
 
   return (
     <BottomSheet open={open} onClose={onClose}>
-      <Box display="flex" alignItems="center" gap={1} mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 2
+        }}>
         <LightbulbIcon color="action" />
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h6" sx={{
+          fontWeight: "bold"
+        }}>
           {sheetTitle}
         </Typography>
       </Box>
@@ -183,14 +191,27 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
                 boxSizing: "border-box",
               }}
             >
-              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              <Typography variant="subtitle1" gutterBottom sx={{
+                fontWeight: "bold"
+              }}>
                 {s.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary" mb={2}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2
+                }}>
                 {s.desc}
               </Typography>
 
-              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mb={1}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 2,
+                  mb: 1
+                }}>
                 {/* OK Example */}
                 <Box>
                   <Box
@@ -279,15 +300,16 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
       {/* Controls: isolated from sheet drag/swipe gestures so taps
           on buttons can never dismiss the sheet on touch devices. */}
       <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mt={3}
-        mb={2}
         onTouchStart={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
         onTouchEnd={(e) => e.stopPropagation()}
-      >
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mt: 3,
+          mb: 2
+        }}>
         <Button
           onClick={(e) => {
             e.stopPropagation();
@@ -312,7 +334,13 @@ const VisualTipsSheet: React.FC<VisualTipsSheetProps> = ({
           {t("profile.photoTips.prev", "Anterior")}
         </Button>
 
-        <Box display="flex" gap={1} role="group" aria-label={t("profile.photoTips.slidesNav", "Diapositivas")}>
+        <Box
+          role="group"
+          aria-label={t("profile.photoTips.slidesNav", "Diapositivas")}
+          sx={{
+            display: "flex",
+            gap: 1
+          }}>
           {slides.map((_, i) => (
             <Box
               key={i}

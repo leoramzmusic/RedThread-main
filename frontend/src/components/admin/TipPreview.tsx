@@ -125,10 +125,18 @@ export default function TipPreview({ tip, onChange, persistedTipKey, readOnly, o
                 mx: 'auto',
             }}
         >
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+            <Typography variant="subtitle2" gutterBottom sx={{
+                fontWeight: 700
+            }}>
                 Vista previa
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+            <Typography
+                variant="caption"
+                gutterBottom
+                sx={{
+                    color: "text.secondary",
+                    display: "block"
+                }}>
                 Así verá el usuario el tip (idioma es). Clic en un recuadro para subir/reemplazar su imagen.
             </Typography>
             <input

@@ -1,6 +1,6 @@
 import AuthLayout from '../../components/auth/AuthLayout';
 import ResetPasswordForm from '../../components/auth/ResetPasswordForm';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
 
 export default function ResetPasswordPage() {
     return (

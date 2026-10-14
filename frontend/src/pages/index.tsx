@@ -31,8 +31,8 @@ import {
   landingTypography,
   getLandingHeroFontSize,
 } from "../theme/liquidGlass";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
 const getTitleFontFamily = (font?: string) =>
   `${font || landingTypography.heroTitle.family}, Poppins, Inter, sans-serif`;
@@ -959,7 +959,14 @@ export default function Home() {
               spacing={{ xs: 2, sm: 3, md: 3, xl: 4 }}
               sx={{ position: "relative", zIndex: 1 }}
             >
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 6,
+                  lg: 4,
+                  xl: 3
+                }}>
                 <Card
                   className="rt-feature-card"
                   sx={{
@@ -1021,7 +1028,14 @@ export default function Home() {
                 </Card>
               </Grid>
 
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 6,
+                  lg: 4,
+                  xl: 3
+                }}>
                 <Card
                   className="rt-feature-card"
                   sx={{
@@ -1083,7 +1097,14 @@ export default function Home() {
                 </Card>
               </Grid>
 
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 6,
+                  lg: 4,
+                  xl: 3
+                }}>
                 <Card
                   className="rt-feature-card"
                   sx={{
@@ -1145,7 +1166,14 @@ export default function Home() {
                 </Card>
               </Grid>
 
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 6,
+                  lg: 4,
+                  xl: 3
+                }}>
                 <Card
                   className="rt-feature-card"
                   sx={{

@@ -17,7 +17,7 @@ import { useState, useEffect, useRef } from "react";
 import apiClient from "../../services/api";
 
 import { Control, useWatch } from "react-hook-form";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import {
   calculateProfileScore,
   calculateCompletionPercentage,
@@ -216,13 +216,19 @@ export default function ProfileCompletionWidget({
       />
 
       <Box
-        display="flex"
-        alignItems="center"
-        mb={1.5}
-        justifyContent="space-between"
-        sx={{ position: "relative" }}
-      >
-        <Box display="flex" alignItems="center" gap={1.5}>
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mb: 1.5,
+          justifyContent: "space-between",
+          position: "relative"
+        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5
+          }}>
           {/* Insignia trofeo con gradiente + halo al completar + pulso único al 100% */}
           <Box
             sx={{
@@ -267,7 +273,12 @@ export default function ProfileCompletionWidget({
             <EmojiEvents sx={{ fontSize: 26 }} />
           </Box>
           <Box>
-            <Typography variant="subtitle2" fontWeight="700" color="text.primary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                fontWeight: "700",
+                color: "text.primary"
+              }}>
               {title}
             </Typography>
             <Fade in key={tier} timeout={400}>
@@ -282,10 +293,12 @@ export default function ProfileCompletionWidget({
         </Box>
         <Typography
           variant="subtitle1"
-          fontWeight="800"
           color={color}
-          sx={{ fontVariantNumeric: "tabular-nums", transition: "color 0.5s ease" }}
-        >
+          sx={{
+            fontWeight: "800",
+            fontVariantNumeric: "tabular-nums",
+            transition: "color 0.5s ease"
+          }}>
           {shown}%
         </Typography>
       </Box>
@@ -358,13 +371,22 @@ export default function ProfileCompletionWidget({
       {/* Suggestions Checklist */}
       {suggestions.length > 0 && percentage < 100 && (
         <Box
-          mt={2}
-          pt={2}
-          borderTop={`1px dashed ${alpha(theme.palette.text.secondary, 0.2)}`}
-        >
-          <Box display="flex" alignItems="center" gap={1} mb={1}>
+          sx={{
+            mt: 2,
+            pt: 2,
+            borderTop: `1px dashed ${alpha(theme.palette.text.secondary, 0.2)}`
+          }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: 1
+            }}>
             <AutoFixHigh fontSize="small" color="primary" />
-            <Typography variant="subtitle2" fontWeight={600} color="primary">
+            <Typography variant="subtitle2" color="primary" sx={{
+              fontWeight: 600
+            }}>
               {t(
                 "profile.suggestionsTitle",
                 "Sugerencias para completar tu perfil:",
@@ -413,15 +435,15 @@ export default function ProfileCompletionWidget({
                     />
                     <Typography
                       variant="body2"
-                      color="text.secondary"
                       sx={{
+                        color: "text.secondary",
                         textDecoration: "underline",
+
                         textDecorationColor: alpha(
                           theme.palette.text.secondary,
                           0.3,
-                        ),
-                      }}
-                    >
+                        )
+                      }}>
                       {t(`profile.suggestions.${s.messageKey}`, s.message)}
                     </Typography>
                   </ButtonBase>

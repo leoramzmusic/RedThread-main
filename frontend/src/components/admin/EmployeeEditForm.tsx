@@ -376,7 +376,12 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" p={5}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 5
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -384,7 +389,13 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
 
     return (
         <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3
+                }}>
                 <Button
                     startIcon={<BackIcon />}
                     onClick={() => router.push('/portal-redthread/empleados/listado')}
@@ -407,22 +418,50 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                     <Grid container spacing={3}>
                         {/* LEFT COLUMN: Personal & Location */}
-                        <Grid item xs={12} md={7}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 7
+                            }}>
                             <Stack spacing={3}>
                                 {/* Foto de Perfil — 1:1 crop, preview, bucket seguro y trazabilidad */}
                                 <Paper sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                                    <Box display="flex" alignItems="center" gap={1.5} mb={1}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            mb: 1
+                                        }}>
                                         <Box sx={{ p: 1, bgcolor: 'success.light', borderRadius: 2, display: 'flex', color: 'success.main' }}>
                                             <PersonIcon />
                                         </Box>
-                                        <Typography variant="h6" fontWeight="bold">Foto de Perfil</Typography>
+                                        <Typography variant="h6" sx={{
+                                            fontWeight: "bold"
+                                        }}>Foto de Perfil</Typography>
                                         <Chip label="1:1" size="small" sx={{ ml: 1 }} />
                                     </Box>
-                                    <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: "text.secondary",
+                                            display: "block",
+                                            mb: 2
+                                        }}>
                                         Para credencial digital y documentos oficiales. Se guarda en bucket seguro (S3/Azure) y queda auditado quién la cambió. Solo RRHH/Admin pueden reemplazarla.
                                     </Typography>
-                                    <Grid container spacing={2} alignItems="center">
-                                        <Grid item xs={12} sm={4} display="flex" justifyContent="center">
+                                    <Grid container spacing={2} sx={{
+                                        alignItems: "center"
+                                    }}>
+                                        <Grid
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "center"
+                                            }}
+                                            size={{
+                                                xs: 12,
+                                                sm: 4
+                                            }}>
                                             <Box sx={{ width: 140, height: 140, borderRadius: 2, overflow: 'hidden', border: '1px solid', borderColor: 'divider', bgcolor: isDark ? '#232428' : '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                                                 <Box
                                                     key={formData.avatar || 'no-avatar'}
@@ -442,7 +481,11 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 <Box sx={{ position: 'absolute', inset: 0, border: '2px dashed', borderColor: 'rgba(0,0,0,0.12)', borderRadius: 2, pointerEvents: 'none' }} />
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={8}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 8
+                                            }}>
                                             <Box
                                                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                                                 onDragLeave={() => setIsDragging(false)}
@@ -451,12 +494,25 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 sx={{ p: 2, borderRadius: 2, border: '1px dashed', borderColor: isDragging ? 'primary.main' : 'divider', bgcolor: isDragging ? 'action.hover' : 'rgba(0,0,0,0.02)', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease' }}
                                             >
                                                 <input ref={fileInputRef} type="file" hidden accept="image/jpeg,image/png,image/webp" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarFile(f); e.currentTarget.value = ''; }} />
-                                                <Typography variant="body2" fontWeight={600}>Arrastrar y soltar o <Box component="span" sx={{ color: 'primary.main' }}>Subir foto</Box></Typography>
-                                                <Typography variant="caption" color="text.secondary">JPG, PNG — máx. 3MB — recorte 1:1 cuadrado</Typography>
+                                                <Typography variant="body2" sx={{
+                                                    fontWeight: 600
+                                                }}>Arrastrar y soltar o <Box component="span" sx={{ color: 'primary.main' }}>Subir foto</Box></Typography>
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>JPG, PNG — máx. 3MB — recorte 1:1 cuadrado</Typography>
                                             </Box>
-                                            <Box display="flex" gap={1} mt={1.5} flexWrap="wrap" alignItems="center">
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 1,
+                                                    mt: 1.5,
+                                                    flexWrap: "wrap",
+                                                    alignItems: "center"
+                                                }}>
                                                 <Button size="small" variant="outlined" startIcon={<PhotoCameraIcon />} onClick={handleOpenCamera}>Tomar foto</Button>
-                                                <Typography variant="caption" color="text.secondary">o usa tu cámara integrada</Typography>
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>o usa tu cámara integrada</Typography>
                                             </Box>
                                             {cameraError && <Alert severity="error" sx={{ mt: 1 }}>{cameraError}</Alert>}
                                             {isCameraOpen && (
@@ -465,18 +521,34 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                         <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                         <canvas ref={canvasRef} style={{ display: 'none' }} />
                                                     </Box>
-                                                    <Box display="flex" gap={1} mt={1}>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            gap: 1,
+                                                            mt: 1
+                                                        }}>
                                                         <Button size="small" variant="contained" startIcon={<PhotoCameraIcon />} onClick={handleCapture}>Capturar</Button>
                                                         <Button size="small" onClick={handleCloseCamera}>Cancelar</Button>
                                                     </Box>
-                                                    <Typography variant="caption" color="text.secondary">Se recortará 1:1 y se aplicará mejora de brillo/contraste. Pedirá permisos si es necesario.</Typography>
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>Se recortará 1:1 y se aplicará mejora de brillo/contraste. Pedirá permisos si es necesario.</Typography>
                                                 </Box>
                                             )}
                                             {avatarPreview && (
-                                                <Box mt={1.5}>
-                                                    <Typography variant="caption" fontWeight="bold">Zoom y posición</Typography>
+                                                <Box sx={{
+                                                    mt: 1.5
+                                                }}>
+                                                    <Typography variant="caption" sx={{
+                                                        fontWeight: "bold"
+                                                    }}>Zoom y posición</Typography>
                                                     <Slider value={avatarZoom} min={1} max={2.2} step={0.05} onChange={(_, v) => setAvatarZoom(v as number)} size="small" />
-                                                    <Box display="flex" gap={1} mt={1}>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            gap: 1,
+                                                            mt: 1
+                                                        }}>
                                                         <Button size="small" variant="contained" onClick={handleAvatarUpload} disabled={avatarUploading} sx={{ borderRadius: 2 }}>
                                                             {avatarUploading ? <CircularProgress size={18} color="inherit" /> : 'Guardar foto'}
                                                         </Button>
@@ -485,114 +557,172 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 </Box>
                                             )}
                                             {!avatarPreview && formData.avatar && (
-                                                <Typography variant="caption" color="text.secondary" display="block" mt={1}>Foto actual guardada en bucket seguro. Cada cambio queda en auditoría.</Typography>
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{
+                                                        color: "text.secondary",
+                                                        display: "block",
+                                                        mt: 1
+                                                    }}>Foto actual guardada en bucket seguro. Cada cambio queda en auditoría.</Typography>
                                             )}
-                                            <Typography variant="caption" color="text.secondary" display="block" mt={1}>Extras: credencial digital con QR y foto en listados/dashboard se generan automáticamente.</Typography>
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    display: "block",
+                                                    mt: 1
+                                                }}>Extras: credencial digital con QR y foto en listados/dashboard se generan automáticamente.</Typography>
                                         </Grid>
                                     </Grid>
                                 </Paper>
                                 {/* Personal Data Card */}
                                 <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                                    <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            mb: 3
+                                        }}>
                                         <Box sx={{ p: 1, bgcolor: 'primary.light', borderRadius: 2, display: 'flex', color: 'primary.main' }}>
                                             <PersonIcon />
                                         </Box>
-                                        <Typography variant="h6" fontWeight="bold">Datos Personales</Typography>
+                                        <Typography variant="h6" sx={{
+                                            fontWeight: "bold"
+                                        }}>Datos Personales</Typography>
                                     </Box>
                                     <Grid container spacing={2.5}>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <TextField
                                                 fullWidth
                                                 label="Nombre(s)"
                                                 required
                                                 value={formData.first_name}
                                                 onChange={(e) => handleChange('first_name', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <PersonIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PersonIcon fontSize="small" color="action" />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
                                                 }}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <TextField
                                                 fullWidth
                                                 label="Apellidos"
                                                 required
                                                 value={formData.last_name}
                                                 onChange={(e) => handleChange('last_name', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <PersonIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PersonIcon fontSize="small" color="action" />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
                                                 }}
                                             />
                                         </Grid>
-                                        <Grid item xs={12}>
+                                        <Grid size={12}>
                                             <TextField
                                                 fullWidth
                                                 label="Email Corporativo"
                                                 required
                                                 value={formData.email}
                                                 onChange={(e) => handleChange('email', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <EmailIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <EmailIcon fontSize="small" color="action" />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
                                                 }}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <TextField
                                                 fullWidth
                                                 label="Teléfono"
                                                 value={formData.phone}
                                                 onChange={(e) => handleChange('phone', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <PhoneIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PhoneIcon fontSize="small" color="action" />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
                                                 }}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <TextField
                                                 fullWidth
                                                 label="Fecha de Nacimiento"
                                                 type="date"
-                                                InputLabelProps={{ shrink: true }}
                                                 value={formData.birth_date ? formData.birth_date.split('T')[0] : ''}
                                                 onChange={(e) => handleChange('birth_date', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <BirthIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
-                                            />
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <BirthIcon fontSize="small" color="action" />
+                                                            </InputAdornment>
+                                                        ),
+                                                    },
+
+                                                    inputLabel: { shrink: true }
+                                                }} />
                                         </Grid>
                                     </Grid>
                                 </Paper>
 
                                 {/* Location Card */}
                                 <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                                    <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            mb: 3
+                                        }}>
                                         <Box sx={{ p: 1, bgcolor: 'secondary.light', borderRadius: 2, display: 'flex', color: 'secondary.main' }}>
                                             <PublicIcon />
                                         </Box>
-                                        <Typography variant="h6" fontWeight="bold">Ubicación</Typography>
+                                        <Typography variant="h6" sx={{
+                                            fontWeight: "bold"
+                                        }}>Ubicación</Typography>
                                     </Box>
                                     <Grid container spacing={2.5}>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <Autocomplete
                                                 freeSolo
                                                 options={COUNTRIES}
@@ -608,22 +738,30 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                         {...params}
                                                         label="País"
                                                         placeholder="Selecciona país"
-                                                        InputProps={{
-                                                            ...params.InputProps,
-                                                            startAdornment: (
-                                                                <>
-                                                                    <InputAdornment position="start">
-                                                                        <PlaceIcon fontSize="small" color="action" />
-                                                                    </InputAdornment>
-                                                                    {params.InputProps.startAdornment}
-                                                                </>
-                                                            ),
+                                                        slotProps={{
+                                                            ...params.slotProps,
+
+                                                            input: {
+                                                                ...params.slotProps.input,
+                                                                startAdornment: (
+                                                                    <>
+                                                                        <InputAdornment position="start">
+                                                                            <PlaceIcon fontSize="small" color="action" />
+                                                                        </InputAdornment>
+                                                                        {params.slotProps.input.startAdornment}
+                                                                    </>
+                                                                ),
+                                                            }
                                                         }}
                                                     />
                                                 )}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             {(() => {
                                                 const selected = COUNTRIES.find((c) => c.name === formData.country || c.code === formData.country);
                                                 const states = selected ? selected.states : [];
@@ -642,16 +780,20 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                                 {...params}
                                                                 label="Estado / Ciudad"
                                                                 placeholder={formData.country ? 'Selecciona estado' : 'Selecciona un país primero'}
-                                                                InputProps={{
-                                                                    ...params.InputProps,
-                                                                    startAdornment: (
-                                                                        <>
-                                                                            <InputAdornment position="start">
-                                                                                <PlaceIcon fontSize="small" color="action" />
-                                                                            </InputAdornment>
-                                                                            {params.InputProps.startAdornment}
-                                                                        </>
-                                                                    ),
+                                                                slotProps={{
+                                                                    ...params.slotProps,
+
+                                                                    input: {
+                                                                        ...params.slotProps.input,
+                                                                        startAdornment: (
+                                                                            <>
+                                                                                <InputAdornment position="start">
+                                                                                    <PlaceIcon fontSize="small" color="action" />
+                                                                                </InputAdornment>
+                                                                                {params.slotProps.input.startAdornment}
+                                                                            </>
+                                                                        ),
+                                                                    }
                                                                 }}
                                                             />
                                                         )}
@@ -660,18 +802,20 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                 );
                                             })()}
                                         </Grid>
-                                        <Grid item xs={12}>
+                                        <Grid size={12}>
                                             <TextField
                                                 fullWidth
                                                 label="Dirección"
                                                 value={formData.address || ''}
                                                 onChange={(e) => handleChange('address', e.target.value)}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <PlaceIcon fontSize="small" color="action" />
-                                                        </InputAdornment>
-                                                    ),
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <PlaceIcon fontSize="small" color="action" />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
                                                 }}
                                             />
                                         </Grid>
@@ -688,14 +832,29 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                     const credVisualH = 390 * credScale;
                                     return (
                                         <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflow: 'hidden', width: '100%' }}>
-                                            <Box display="flex" alignItems="center" gap={1.5} mb={1} flexWrap="wrap">
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1.5,
+                                                    mb: 1,
+                                                    flexWrap: "wrap"
+                                                }}>
                                                 <Box sx={{ p: 1, bgcolor: 'error.light', borderRadius: 2, display: 'flex', color: 'error.main' }}>
                                                     <BadgeIcon />
                                                 </Box>
-                                                <Typography variant="h6" fontWeight="bold">Credencial de empleado</Typography>
+                                                <Typography variant="h6" sx={{
+                                                    fontWeight: "bold"
+                                                }}>Credencial de empleado</Typography>
                                                 <Chip label="CR80 85.6×53.98mm" size="small" sx={{ ml: 1 }} />
                                             </Box>
-                                            <Typography variant="caption" color="text.secondary" display="block" mb={2}>Vista previa con el diseño de EmployeeIdDesign aplicado a foto, nombre, departamento, código y QR. Se genera en vertical para impresión.</Typography>
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    display: "block",
+                                                    mb: 2
+                                                }}>Vista previa con el diseño de EmployeeIdDesign aplicado a foto, nombre, departamento, código y QR. Se genera en vertical para impresión.</Typography>
                                             {credDesign.designName ? (
                                                 <Chip label={`Diseño: ${String(credDesign.designName)}`} size="small" color="primary" variant="outlined" sx={{ mb: 1.5 }} />
                                             ) : null}
@@ -730,9 +889,18 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                     </Box>
                                                 </Box>
                                                 <Box sx={{ flex: 1, minWidth: 200 }}>
-                                                    <Typography variant="body2" fontWeight={600}>{formData.first_name || '-'} {formData.last_name || ''}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">{deptName || 'Sin departamento'} · {formData.employee_id || 'Sin código'}</Typography>
-                                                    <Typography variant="caption" color="text.secondary" display="block">
+                                                    <Typography variant="body2" sx={{
+                                                        fontWeight: 600
+                                                    }}>{formData.first_name || '-'} {formData.last_name || ''}</Typography>
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>{deptName || 'Sin departamento'} · {formData.employee_id || 'Sin código'}</Typography>
+                                                    <Typography
+                                                        variant="caption"
+                                                        sx={{
+                                                            color: "text.secondary",
+                                                            display: "block"
+                                                        }}>
                                                         Plantilla: {String(credDesign.template || 'geométrico')} · {String(credDesign.font || 'Inter')} · {String(credDesign.nameCase || 'UPPERCASE')}
                                                     </Typography>
                                                     <Box sx={{ display: 'flex', gap: 1, mt: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -746,7 +914,13 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                             </Box>
                                                         )}
                                                     </Box>
-                                                    <Typography variant="caption" color="text.secondary" display="block" mt={1}>Requiere: foto, nombre, departamento y código. Usa la foto 1:1 de arriba.</Typography>
+                                                    <Typography
+                                                        variant="caption"
+                                                        sx={{
+                                                            color: "text.secondary",
+                                                            display: "block",
+                                                            mt: 1
+                                                        }}>Requiere: foto, nombre, departamento y código. Usa la foto 1:1 de arriba.</Typography>
                                                 </Box>
                                             </Box>
                                         </Paper>
@@ -756,15 +930,27 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                         </Grid>
 
                         {/* RIGHT COLUMN: Laboral & Security */}
-                        <Grid item xs={12} md={5}>
+                        <Grid
+                            size={{
+                                xs: 12,
+                                md: 5
+                            }}>
                             <Stack spacing={3}>
                                 {/* Organizational Data Card */}
                                 <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                                    <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            mb: 3
+                                        }}>
                                         <Box sx={{ p: 1, bgcolor: 'info.light', borderRadius: 2, display: 'flex', color: 'info.main' }}>
                                             <BusinessIcon />
                                         </Box>
-                                        <Typography variant="h6" fontWeight="bold">Información Laboral</Typography>
+                                        <Typography variant="h6" sx={{
+                                            fontWeight: "bold"
+                                        }}>Información Laboral</Typography>
                                     </Box>
                                     <Stack spacing={2.5}>
                                         <TextField
@@ -772,14 +958,16 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                             label="ID Interno"
                                             value={formData.employee_id}
                                             disabled
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <BadgeIcon fontSize="small" color="disabled" />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             helperText="El ID interno es generado por el sistema"
+                                            slotProps={{
+                                                input: {
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <BadgeIcon fontSize="small" color="disabled" />
+                                                        </InputAdornment>
+                                                    ),
+                                                }
+                                            }}
                                         />
 
                                         <FormControl fullWidth>
@@ -884,12 +1072,14 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                             label="Fecha de Ingreso"
                                             value={formData.hire_date ? new Date(formData.hire_date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }) : ''}
                                             disabled
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <HireIcon fontSize="small" color="disabled" />
-                                                    </InputAdornment>
-                                                ),
+                                            slotProps={{
+                                                input: {
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <HireIcon fontSize="small" color="disabled" />
+                                                        </InputAdornment>
+                                                    ),
+                                                }
                                             }}
                                         />
                                     </Stack>
@@ -897,17 +1087,37 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
 
                                 {/* Security & Meta Card */}
                                 <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                                    <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            mb: 3
+                                        }}>
                                         <Box sx={{ p: 1, bgcolor: 'warning.light', borderRadius: 2, display: 'flex', color: 'warning.main' }}>
                                             <SecurityIcon />
                                         </Box>
-                                        <Typography variant="h6" fontWeight="bold">Seguridad y Acceso</Typography>
+                                        <Typography variant="h6" sx={{
+                                            fontWeight: "bold"
+                                        }}>Seguridad y Acceso</Typography>
                                     </Box>
                                     <Stack spacing={2}>
-                                        <Box p={2} border="1px solid rgba(0,0,0,0.08)" borderRadius={2} display="flex" justifyContent="space-between" alignItems="center">
+                                        <Box
+                                            sx={{
+                                                p: 2,
+                                                border: "1px solid rgba(0,0,0,0.08)",
+                                                borderRadius: 2,
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center"
+                                            }}>
                                             <Box>
-                                                <Typography variant="subtitle2" fontWeight="bold">Autenticación 2FA</Typography>
-                                                <Typography variant="caption" color="text.secondary">Protección adicional de cuenta</Typography>
+                                                <Typography variant="subtitle2" sx={{
+                                                    fontWeight: "bold"
+                                                }}>Autenticación 2FA</Typography>
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>Protección adicional de cuenta</Typography>
                                             </Box>
                                             <Switch
                                                 checked={formData.is_2fa_enabled}
@@ -929,15 +1139,36 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
 
                                         <Divider sx={{ my: 1 }} />
 
-                                        <Box p={2} bgcolor="rgba(0,0,0,0.02)" borderRadius={2}>
+                                        <Box
+                                            sx={{
+                                                p: 2,
+                                                bgcolor: "rgba(0,0,0,0.02)",
+                                                borderRadius: 2
+                                            }}>
                                             <Stack spacing={1}>
-                                                <Box display="flex" justifyContent="space-between">
-                                                    <Typography variant="caption" color="text.secondary">Último acceso:</Typography>
-                                                    <Typography variant="caption" fontWeight="medium">{formData.last_login_at ? new Date(formData.last_login_at).toLocaleString('es-ES') : 'Nunca'}</Typography>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between"
+                                                    }}>
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>Último acceso:</Typography>
+                                                    <Typography variant="caption" sx={{
+                                                        fontWeight: "medium"
+                                                    }}>{formData.last_login_at ? new Date(formData.last_login_at).toLocaleString('es-ES') : 'Nunca'}</Typography>
                                                 </Box>
-                                                <Box display="flex" justifyContent="space-between">
-                                                    <Typography variant="caption" color="text.secondary">Registro sistema:</Typography>
-                                                    <Typography variant="caption" fontWeight="medium">{new Date(formData.created_at).toLocaleString('es-ES')}</Typography>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between"
+                                                    }}>
+                                                    <Typography variant="caption" sx={{
+                                                        color: "text.secondary"
+                                                    }}>Registro sistema:</Typography>
+                                                    <Typography variant="caption" sx={{
+                                                        fontWeight: "medium"
+                                                    }}>{new Date(formData.created_at).toLocaleString('es-ES')}</Typography>
                                                 </Box>
                                             </Stack>
                                         </Box>
@@ -1003,13 +1234,23 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
             {activeTab === 1 && (
                 <Stack spacing={3} sx={{ mt: 2 }}>
                     <Paper sx={{ p: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                        <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.5,
+                                mb: 3
+                            }}>
                             <Box sx={{ p: 1, bgcolor: 'primary.light', borderRadius: 2, display: 'flex', color: 'primary.main' }}>
                                 <HistoryIcon />
                             </Box>
                             <Box>
-                                <Typography variant="h6" fontWeight="bold">Historial de Auditoría</Typography>
-                                <Typography variant="caption" color="text.secondary">Registro completo de modificaciones realizadas a este perfil</Typography>
+                                <Typography variant="h6" sx={{
+                                    fontWeight: "bold"
+                                }}>Historial de Auditoría</Typography>
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>Registro completo de modificaciones realizadas a este perfil</Typography>
                             </Box>
                         </Box>
 
@@ -1029,7 +1270,9 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                         <TableRow>
                                             <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
                                                 <InfoIcon sx={{ fontSize: 48, color: 'action.disabled', mb: 1 }} />
-                                                <Typography variant="body2" color="text.secondary">No hay registros de auditoría para este empleado.</Typography>
+                                                <Typography variant="body2" sx={{
+                                                    color: "text.secondary"
+                                                }}>No hay registros de auditoría para este empleado.</Typography>
                                             </TableCell>
                                         </TableRow>
                                     ) : (
@@ -1039,9 +1282,16 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                     {new Date(log.date).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Box display="flex" alignItems="center" gap={1}>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: 1
+                                                        }}>
                                                         <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem', bgcolor: 'primary.main' }}>{log.admin_name[0]}</Avatar>
-                                                        <Typography variant="body2" fontWeight="medium">{log.admin_name}</Typography>
+                                                        <Typography variant="body2" sx={{
+                                                            fontWeight: "medium"
+                                                        }}>{log.admin_name}</Typography>
                                                     </Box>
                                                 </TableCell>
                                                 <TableCell sx={{ bgcolor: 'rgba(255, 152, 0, 0.05)' }}> {/* Pale Orange Tint */}
@@ -1072,7 +1322,13 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                                     </Box>
                                                 </TableCell>
                                                 <TableCell sx={{ bgcolor: 'rgba(76, 175, 80, 0.05)' }}> {/* Pale Green Tint */}
-                                                    <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: 1,
+                                                            flexWrap: "wrap"
+                                                        }}>
                                                         <Typography variant="caption" sx={{
                                                             color: 'error.main',
                                                             bgcolor: 'error.light',
@@ -1106,7 +1362,14 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                                 </TableBody>
                             </Table>
                             {auditLogs.length > 5 && (
-                                <Box p={2} display="flex" justifyContent="center" bgcolor="rgba(0,0,0,0.01)" borderTop="1px solid rgba(0,0,0,0.05)">
+                                <Box
+                                    sx={{
+                                        p: 2,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        bgcolor: "rgba(0,0,0,0.01)",
+                                        borderTop: "1px solid rgba(0,0,0,0.05)"
+                                    }}>
                                     <Button
                                         size="small"
                                         onClick={() => setShowAllLogs(!showAllLogs)}
@@ -1118,7 +1381,9 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                             )}
                         </TableContainer>
                     </Paper>
-                    <Box py={10} /> {/* Spacer for floating bar */}
+                    <Box sx={{
+                        py: 10
+                    }} /> {/* Spacer for floating bar */}
                 </Stack>
             )}
 
@@ -1142,12 +1407,19 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
             >
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
                     <BadgeIcon color="primary" />
-                    <Typography variant="subtitle1" fontWeight={800}>Vista previa de credencial</Typography>
+                    <Typography variant="subtitle1" sx={{
+                        fontWeight: 800
+                    }}>Vista previa de credencial</Typography>
                     <Box sx={{ ml: 'auto', fontSize: '0.7rem', color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 1, px: 1, py: 0.3 }}>85.6×53.98mm</Box>
                 </DialogTitle>
                 <DialogContent dividers sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', bgcolor: isDark ? '#121212' : '#f5f5f5', py: 3 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary">FRENTE</Typography>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                fontWeight: 700,
+                                color: "text.secondary"
+                            }}>FRENTE</Typography>
                     <CredentialCard
                         photoUrl={formData.avatar || avatarPreview}
                         firstName={formData.first_name}
@@ -1162,7 +1434,12 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeId }) => {
                     />
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary">REVERSO</Typography>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                fontWeight: 700,
+                                color: "text.secondary"
+                            }}>REVERSO</Typography>
                         <CredentialBack
                             employeeCode={formData.employee_id}
                             email={formData.email}

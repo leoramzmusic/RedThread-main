@@ -5,7 +5,7 @@ import {
     TheaterComedy,
     EmojiEvents
 } from '@mui/icons-material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 
 interface ProfileTabsProps {
     activeTab: string;
@@ -50,7 +50,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
         minWidth: 'auto',
         fontSize: '0.8rem',
         padding: '12px 12px',
-        '& .MuiTab-iconWrapper': {
+        "& .MuiTab-icon": {
             marginBottom: 0,
             marginRight: 6
         }
