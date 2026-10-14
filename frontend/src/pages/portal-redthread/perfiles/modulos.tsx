@@ -64,6 +64,8 @@ interface ProfileModule {
     visible: boolean;
     origen: 'core' | 'integracion';
     requiere_premium: boolean;
+    email_verification_enabled?: boolean;
+    phone_verification_enabled?: boolean;
 }
 
 interface Snack {
@@ -348,6 +350,22 @@ export default function ModulosPerfilesPage() {
         setModules((cur) => cur.map((m) => (m.key === mod.key ? { ...m, visible } : m)));
     };
 
+    const verificationFlag = (mod: ProfileModule, field: 'email' | 'phone'): boolean =>
+        field === 'email' ? (mod.email_verification_enabled ?? true) : (mod.phone_verification_enabled ?? true);
+
+    const handleVerificationToggle = (mod: ProfileModule, field: 'email' | 'phone', value: boolean) => {
+        if (readOnly) return;
+        setModules((cur) =>
+            cur.map((m) =>
+                m.key === mod.key
+                    ? field === 'email'
+                        ? { ...m, email_verification_enabled: value }
+                        : { ...m, phone_verification_enabled: value }
+                    : m,
+            ),
+        );
+    };
+
     const handleDragEnd = (event: DragEndEvent) => {
         if (readOnly) return;
         const { active, over } = event;
@@ -358,12 +376,16 @@ export default function ModulosPerfilesPage() {
         setModules(arrayMove(modules, oldIndex, newIndex));
     };
 
-    // ¿Hay cambios sin guardar? (visibilidad u orden)
+    // ¿Hay cambios sin guardar? (visibilidad, verificación u orden)
     const dirty =
         modules.length !== savedModules.length ||
         modules.some((m, i) => {
             const s = savedModules[i];
-            return !s || s.key !== m.key || s.visible !== m.visible;
+            if (!s || s.key !== m.key || s.visible !== m.visible) return true;
+            return (
+                verificationFlag(m, 'email') !== verificationFlag(s, 'email') ||
+                verificationFlag(m, 'phone') !== verificationFlag(s, 'phone')
+            );
         });
 
     const resetDraft = () => {
@@ -383,7 +405,23 @@ export default function ModulosPerfilesPage() {
                     });
                 }
             }
-            // 2. Orden si cambió la secuencia de keys
+            // 2. Flags de verificación (solo cambian en section-basic)
+            const prevFlags = new Map(savedModules.map((m) => [m.key, m] as const));
+            for (const m of modules) {
+                const prev = prevFlags.get(m.key);
+                if (!prev) continue;
+                const prevEmail = prev.email_verification_enabled ?? true;
+                const prevPhone = prev.phone_verification_enabled ?? true;
+                const currEmail = m.email_verification_enabled ?? true;
+                const currPhone = m.phone_verification_enabled ?? true;
+                if (prevEmail !== currEmail || prevPhone !== currPhone) {
+                    await adminApiClient.patch(`${BASE}/${m.key}`, {
+                        email_verification_enabled: currEmail,
+                        phone_verification_enabled: currPhone,
+                    });
+                }
+            }
+            // 3. Orden si cambió la secuencia de keys
             const prevOrder = savedModules.map((m) => m.key).join(',');
             const nextOrder = modules.map((m) => m.key).join(',');
             if (prevOrder !== nextOrder) {
@@ -653,6 +691,7 @@ export default function ModulosPerfilesPage() {
                                                 points={totalPts}
                                                 indented={isChildModule(modules, mod.key)}
                                                 onToggle={(visible) => void handleToggle(mod, visible)}
+                                                onVerificationToggle={(field, value) => void handleVerificationToggle(mod, field, value)}
                                                 onEdit={() => openEdit(mod)}
                                                 integration={integration}
                                                 testing={provider ? testing === provider : false}
@@ -989,6 +1028,7 @@ interface SortableModuleRowProps {
     mod: ProfileModule;
     disabled: boolean;
     onToggle: (visible: boolean) => void;
+    onVerificationToggle?: (field: 'email' | 'phone', value: boolean) => void;
     onEdit: () => void;
     integration?: IntegrationStatus | null;
     testing?: boolean;
@@ -1029,8 +1069,11 @@ function integrationChip(integration: IntegrationStatus | null | undefined, t: (
     return <Chip size="small" label={t('profileModules.intPending', 'Integración pendiente')} color="warning" sx={{ fontSize: '0.7rem', height: 22 }} />;
 }
 
-function SortableModuleRow({ mod, disabled, onToggle, onEdit, integration, testing, onTest, onConfig, points: pointsProp, indented }: SortableModuleRowProps & { points?: number; indented?: boolean }) {
+function SortableModuleRow({ mod, disabled, onToggle, onVerificationToggle, onEdit, integration, testing, onTest, onConfig, points: pointsProp, indented }: SortableModuleRowProps & { points?: number; indented?: boolean }) {
     const { t } = useTranslation('common');
+    const emailVerification = mod.email_verification_enabled ?? true;
+    const phoneVerification = mod.phone_verification_enabled ?? true;
+    const isIdentityBasic = mod.key === 'section-basic';
     const pts = pointsProp ?? getModulePoints(mod.key);
     const points = pts;
     const ptsSuffix = pts > 0 ? (mod.visible ? ` (−${pts} pts)` : ` (+${pts} pts)`) : '';
@@ -1103,6 +1146,52 @@ function SortableModuleRow({ mod, disabled, onToggle, onEdit, integration, testi
                             }}>
                             {mod.descripcion}
                         </Typography>
+                    )}
+                    {isIdentityBasic && onVerificationToggle && (
+                        <Box sx={{ display: 'flex', gap: 1.5, mt: 1, flexWrap: 'wrap' }}>
+                            <Tooltip
+                                title={t(
+                                    'profileModules.verificationEmailHint',
+                                    'Si está apagado, el botón de verificar correo aparece deshabilitado en el perfil.',
+                                )}
+                                arrow
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            size="small"
+                                            color="success"
+                                            checked={emailVerification}
+                                            onChange={(e) => onVerificationToggle('email', e.target.checked)}
+                                            disabled={disabled}
+                                        />
+                                    }
+                                    label={t('profileModules.verificationEmail', 'Verificación de correo')}
+                                    sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.75rem', fontWeight: 600 } }}
+                                />
+                            </Tooltip>
+                            <Tooltip
+                                title={t(
+                                    'profileModules.verificationPhoneHint',
+                                    'Si está apagado, el botón de verificar teléfono aparece deshabilitado en el perfil.',
+                                )}
+                                arrow
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            size="small"
+                                            color="success"
+                                            checked={phoneVerification}
+                                            onChange={(e) => onVerificationToggle('phone', e.target.checked)}
+                                            disabled={disabled}
+                                        />
+                                    }
+                                    label={t('profileModules.verificationPhone', 'Verificación de teléfono')}
+                                    sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.75rem', fontWeight: 600 } }}
+                                />
+                            </Tooltip>
+                        </Box>
                     )}
                     <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
                         <Chip

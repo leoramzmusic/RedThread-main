@@ -42,7 +42,7 @@ MODULE_SCORE_FIELDS: Dict[str, List[str]] = {
 
 
 class ProfileModule(Document):
-    key: Indexed(str, unique=True)  # e.g. "section-music" — contract with frontend registry.ts
+    key: Indexed(str, unique=True)
     nombre: str
     descripcion: str = ""
     icono: str = "tune"
@@ -50,6 +50,8 @@ class ProfileModule(Document):
     visible: bool = True
     origen: str = "core"  # "core" | "integracion"
     requiere_premium: bool = False
+    email_verification_enabled: bool = True
+    phone_verification_enabled: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

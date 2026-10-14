@@ -31,7 +31,6 @@ import {
   Button,
   IconButton,
   CircularProgress,
-  Snackbar,
   Alert,
   Stack,
   Chip,
@@ -114,7 +113,6 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const { t, i18n } = useTranslation('common');
   const { enqueueSnackbar } = useSnackbar();
   const [saving, setSaving] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   // Drawer states
   const [infoDrawerOpen, setInfoDrawerOpen] = useState(false);
@@ -214,6 +212,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
   const [emailVerified, setEmailVerified] = useState(!!profile?.email_verified);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
+
+  // Kill-switches globales de verificación (módulo section-basic; default True)
+  const emailVerificationEnabled = profile?.email_verification_enabled ?? true;
+  const phoneVerificationEnabled = profile?.phone_verification_enabled ?? true;
 
   // Sync citySearch when profile changes (e.g. after save)
   useEffect(() => {
@@ -426,6 +428,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       : maskEmail(profile?.email);
 
   const handleVerifyPhone = async () => {
+    if (!phoneVerificationEnabled) return;
     setIsVerifyingPhone(true);
     try {
       await apiClient.post('/profiles/verify-phone');
@@ -444,6 +447,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   };
 
   const handleVerifyEmail = async () => {
+    if (!emailVerificationEnabled) return;
     setIsVerifyingEmail(true);
     try {
       await apiClient.post('/profiles/verify-email');
@@ -461,8 +465,9 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     }
   };
 
-  const confirmVerification = async (code: string) => {
-    if (!verificationDialog) return;
+  const confirmVerification = async (code: string): Promise<boolean> => {
+    if (!verificationDialog) return false;
+    setVerificationError(null);
     try {
       if (verificationDialog.channel === 'phone') {
         await apiClient.post('/profiles/confirm-phone', { code });
@@ -477,14 +482,15 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           : t(v + 'emailVerifiedSuccess'),
         { variant: 'success' },
       );
-      setVerificationDialog(null);
       setVerificationError(null);
+      return true;
     } catch (err: any) {
       setVerificationError(
         err.response?.status === 400
           ? t(v + 'invalidCode')
           : t(v + 'genericError'),
       );
+      return false;
     }
   };
 
@@ -660,7 +666,6 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       console.log('Sending clean payload:', payload);
 
       await onSave(payload);
-      setSnackbarOpen(true);
     } catch (err: any) {
       console.error('Save failed details:', err);
       if (err.response) {
@@ -788,6 +793,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           isVerifyingPhone={isVerifyingPhone}
           emailVerified={emailVerified}
           isVerifyingEmail={isVerifyingEmail}
+          phoneVerificationEnabled={phoneVerificationEnabled}
+          emailVerificationEnabled={emailVerificationEnabled}
           setNicknameDialogOpen={setNicknameDialogOpen}
           handleVerifyPhone={handleVerifyPhone}
           handleVerifyEmail={handleVerifyEmail}
@@ -1470,23 +1477,6 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         */}
       </Grid>
 
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity="success"
-          sx={{ width: '100%' }}
-          variant="filled"
-        >
-          {t('common.success', 'Cambios guardados correctamente')}
-        </Alert>
-      </Snackbar>
-
       {/* Nickname Change Dialog */}
       <Dialog open={nicknameDialogOpen} onClose={() => setNicknameDialogOpen(false)}>
         <DialogTitle>Cambiar Nickname</DialogTitle>
@@ -1545,6 +1535,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         onClose={() => setVerificationDialog(null)}
         onConfirm={confirmVerification}
         onResend={handleResendVerification}
+        onDismissError={() => setVerificationError(null)}
       />
 
       {/* Prompt Selector Dialog */}

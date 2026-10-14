@@ -370,6 +370,27 @@ class UpdateDistanceRequest(BaseModel):
         return v
 
 
+async def _verification_flags() -> tuple:
+    """Kill-switches globales de verificación (módulo section-basic; default True)."""
+    try:
+        mod = await ProfileModule.find_one({"key": "section-basic"})
+        if not mod:
+            return True, True
+        email_on = (
+            mod.email_verification_enabled
+            if mod.email_verification_enabled is not None
+            else True
+        )
+        phone_on = (
+            mod.phone_verification_enabled
+            if mod.phone_verification_enabled is not None
+            else True
+        )
+        return bool(email_on), bool(phone_on)
+    except Exception:
+        return True, True
+
+
 @router.get("/me")
 async def get_my_profile(current_user: User = Depends(get_current_user)):
     """Get current user's profile (privacy-protected)"""
@@ -386,10 +407,17 @@ async def get_my_profile(current_user: User = Depends(get_current_user)):
         )
         await profile.insert()
 
+    # Kill-switches globales de verificación (módulo section-basic; default True)
+    email_on, phone_on = await _verification_flags()
+
     # Create privacy-protected response using DTO
     # This automatically masks email/phone and excludes identity_document_url
     response_dto = UserProfileResponseDTO.from_user_and_profile(
-        current_user, profile, mask_data=False
+        current_user,
+        profile,
+        mask_data=False,
+        email_verification_enabled=email_on,
+        phone_verification_enabled=phone_on,
     )
 
     # Debug logging
@@ -618,8 +646,13 @@ async def update_my_profile(
     # Invalidate dashboard cache (stats depend on profile_completion, suggestions on profile fields)
     await redis_service.invalidar_usuario(["stats", "suggest"], str(current_user.id))
 
+    email_on, phone_on = await _verification_flags()
     return UserProfileResponseDTO.from_user_and_profile(
-        current_user, profile, mask_data=False
+        current_user,
+        profile,
+        mask_data=False,
+        email_verification_enabled=email_on,
+        phone_verification_enabled=phone_on,
     )
 
 

@@ -34,6 +34,7 @@ import {
   Suggestion,
   calculateProfileScore,
   calculateCompletionPercentage,
+  getMaxScore,
 } from "../../utils/profileScoring";
 
 interface DiscoveryRefinementCardProps {
@@ -41,6 +42,7 @@ interface DiscoveryRefinementCardProps {
   suggestion: Suggestion;
   profile?: any;
   options?: any;
+  hiddenSections?: string[] | null;
   onSave: (field: string, value: any) => Promise<void>;
   onSkip: () => void;
 }
@@ -50,6 +52,7 @@ export default function DiscoveryRefinementCard({
   suggestion,
   profile = {},
   options = {},
+  hiddenSections = null,
   onSave,
   onSkip,
 }: DiscoveryRefinementCardProps) {
@@ -154,12 +157,19 @@ export default function DiscoveryRefinementCard({
           <Typography variant="h6" color="gold" sx={{
             fontWeight: 800
           }}>
-            {calculateCompletionPercentage(calculateProfileScore(profile))}%
+            {calculateCompletionPercentage(
+              calculateProfileScore(profile, hiddenSections),
+              getMaxScore(hiddenSections),
+            )}
+            %
           </Typography>
         </Box>
         <LinearProgress
           variant="determinate"
-          value={calculateCompletionPercentage(calculateProfileScore(profile))}
+          value={calculateCompletionPercentage(
+            calculateProfileScore(profile, hiddenSections),
+            getMaxScore(hiddenSections),
+          )}
           sx={{
             height: 8,
             borderRadius: 4,

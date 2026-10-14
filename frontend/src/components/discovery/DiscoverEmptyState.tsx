@@ -12,11 +12,12 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next/pages';
 import { useRouter } from 'next/router';
-import { calculateProfileScore, calculateCompletionPercentage } from '../../utils/profileScoring';
+import { calculateProfileScore, calculateCompletionPercentage, getMaxScore } from '../../utils/profileScoring';
 
 
 interface DiscoverEmptyStateProps {
     profile: any;
+    hiddenSections?: string[] | null;
     onRefresh: () => void;
     onExpandSearch: () => void;
     t: any;
@@ -24,14 +25,15 @@ interface DiscoverEmptyStateProps {
 
 export default function DiscoverEmptyState({
     profile,
+    hiddenSections = null,
     onRefresh,
     onExpandSearch,
     t
 }: DiscoverEmptyStateProps) {
     const router = useRouter();
 
-    const score = calculateProfileScore(profile);
-    const percentage = calculateCompletionPercentage(score);
+    const score = calculateProfileScore(profile, hiddenSections);
+    const percentage = calculateCompletionPercentage(score, getMaxScore(hiddenSections));
 
 
 

@@ -222,6 +222,8 @@ class UserProfileResponseDTO(BaseModel):
     verified: bool = False
     email_verified: bool = False
     phone_verified: bool = False
+    email_verification_enabled: bool = True
+    phone_verification_enabled: bool = True
     subscription_tier: str = "free"
 
     # Verification status (no document URL)
@@ -369,7 +371,14 @@ class UserProfileResponseDTO(BaseModel):
     profile_completed_achievement: bool = False
 
     @classmethod
-    def from_user_and_profile(cls, user, profile, mask_data: bool = True):
+    def from_user_and_profile(
+        cls,
+        user,
+        profile,
+        mask_data: bool = True,
+        email_verification_enabled: bool = True,
+        phone_verification_enabled: bool = True,
+    ):
         """
         Create UserProfileResponseDTO from User and Profile models.
 
@@ -377,6 +386,8 @@ class UserProfileResponseDTO(BaseModel):
             user: User model instance
             profile: Profile model instance
             mask_data: If True, mask email and phone
+            email_verification_enabled: global kill-switch from section-basic module
+            phone_verification_enabled: global kill-switch from section-basic module
         """
         from src.services.data_privacy_service import mask_email, mask_phone
         from src.utils.height_context import (
@@ -413,6 +424,8 @@ class UserProfileResponseDTO(BaseModel):
             verified=user.verified,
             email_verified=profile.email_verified if profile else False,
             phone_verified=profile.phone_verified if profile else False,
+            email_verification_enabled=email_verification_enabled,
+            phone_verification_enabled=phone_verification_enabled,
             subscription_tier=(
                 str(user.subscription_tier.value) if user.subscription_tier else "free"
             ),

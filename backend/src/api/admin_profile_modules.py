@@ -33,6 +33,8 @@ class ModuleUpdate(BaseModel):
     nombre: Optional[str] = None
     descripcion: Optional[str] = None
     icono: Optional[str] = None
+    email_verification_enabled: Optional[bool] = None
+    phone_verification_enabled: Optional[bool] = None
 
 
 class VisibilidadUpdate(BaseModel):

@@ -486,7 +486,8 @@ export default function ModifyProfilePage() {
 
         <Snackbar
           open={notification.open}
-          autoHideDuration={6000}
+          autoHideDuration={4000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           onClose={() => setNotification({ ...notification, open: false })}
         >
           <Alert

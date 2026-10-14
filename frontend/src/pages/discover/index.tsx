@@ -57,6 +57,7 @@ import { useSnackbar } from "notistack";
 import {
   calculateProfileScore,
   calculateCompletionPercentage,
+  getMaxScore,
   getProfileSuggestions,
 } from "../../utils/profileScoring";
 import AsyncLocationSelector from "../../components/common/AsyncLocationSelector";
@@ -284,9 +285,12 @@ export default function Discover() {
   const profileCompletion = useMemo(
     () =>
       myProfile
-        ? calculateCompletionPercentage(calculateProfileScore(myProfile))
+        ? calculateCompletionPercentage(
+            calculateProfileScore(myProfile, hiddenModules),
+            getMaxScore(hiddenModules),
+          )
         : 0,
-    [myProfile],
+    [myProfile, hiddenModules],
   );
 
   const PROFILE_NUDGE_KEY = "discover-profile-nudge-last";
@@ -461,7 +465,8 @@ export default function Discover() {
 
       if (newProfiles.length === 0 && myProfile) {
         const completion = calculateCompletionPercentage(
-          calculateProfileScore(myProfile),
+          calculateProfileScore(myProfile, hiddenModules),
+          getMaxScore(hiddenModules),
         );
         if (completion < 100) {
           const suggestions = getProfileSuggestions(
@@ -789,7 +794,8 @@ export default function Discover() {
     if (!myProfile) return;
 
     const completion = calculateCompletionPercentage(
-      calculateProfileScore(myProfile),
+      calculateProfileScore(myProfile, hiddenModules),
+      getMaxScore(hiddenModules),
     );
     if (completion >= 100) return;
 
@@ -834,7 +840,7 @@ export default function Discover() {
         }
       });
     }
-  }, [likesSinceLastCard, myProfile]);
+  }, [likesSinceLastCard, myProfile, hiddenModules]);
 
   const handleRefinementSave = async (field: string, value: any) => {
     try {
@@ -1592,6 +1598,7 @@ export default function Discover() {
                         suggestion={(queue[0] as any).suggestion}
                         profile={myProfile}
                         options={options}
+                        hiddenSections={hiddenModules}
                         onSave={handleRefinementSave}
                         onSkip={() => setQueue((prev) => prev.slice(1))}
                       />
@@ -1704,6 +1711,7 @@ export default function Discover() {
           ) : (
             <DiscoverEmptyState
               profile={myProfile}
+              hiddenSections={hiddenModules}
               onRefresh={fetchQueue}
               onExpandSearch={handleExpandSearch}
               t={t}

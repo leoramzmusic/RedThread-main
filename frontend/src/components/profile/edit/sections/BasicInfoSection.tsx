@@ -43,6 +43,8 @@ interface EditBasicInfoProps {
   isVerifyingPhone: boolean;
   emailVerified: boolean;
   isVerifyingEmail: boolean;
+  phoneVerificationEnabled: boolean;
+  emailVerificationEnabled: boolean;
   setNicknameDialogOpen: (open: boolean) => void;
   handleVerifyPhone: () => void;
   handleVerifyEmail: () => void;
@@ -65,6 +67,8 @@ export default function EditBasicInfo({
   isVerifyingPhone,
   emailVerified,
   isVerifyingEmail,
+  phoneVerificationEnabled,
+  emailVerificationEnabled,
   setNicknameDialogOpen,
   handleVerifyPhone,
   handleVerifyEmail,
@@ -86,11 +90,13 @@ export default function EditBasicInfo({
     verifying,
     onVerify,
     onChangeRequest,
+    enabled,
   }: {
     verified: boolean;
     verifying: boolean;
     onVerify: () => void;
     onChangeRequest?: () => void;
+    enabled: boolean;
   }) => {
     const btnBaseSx = {
       borderRadius: "10px",
@@ -158,20 +164,44 @@ export default function EditBasicInfo({
       );
     }
     return (
-      <Button
-        size="small"
-        variant="contained"
-        startIcon={<VerifiedUserIcon fontSize="small" />}
-        onClick={onVerify}
-        sx={{
-          ...btnBaseSx,
-          "&:hover": {
-            boxShadow: `0 0 10px ${alpha(theme.palette.primary.main, 0.45)}`,
-          },
-        }}
-      >
-        {t("profile.sections.identity.verification.verify")}
-      </Button>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+        {enabled ? (
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<VerifiedUserIcon fontSize="small" />}
+            onClick={onVerify}
+            sx={{
+              ...btnBaseSx,
+              "&:hover": {
+                boxShadow: `0 0 10px ${alpha(theme.palette.primary.main, 0.45)}`,
+              },
+            }}
+          >
+            {t("profile.sections.identity.verification.verify")}
+          </Button>
+        ) : (
+          <Tooltip
+            title={t(
+              "profile.sections.identity.verification.verificationDisabledTip",
+              "Verificación deshabilitada por administración",
+            )}
+            arrow
+          >
+            <span>
+              <Button
+                size="small"
+                variant="contained"
+                startIcon={<VerifiedUserIcon fontSize="small" />}
+                disabled
+                sx={btnBaseSx}
+              >
+                {t("profile.sections.identity.verification.verify")}
+              </Button>
+            </span>
+          </Tooltip>
+        )}
+      </Box>
     );
   };
 
@@ -337,6 +367,7 @@ export default function EditBasicInfo({
                     verified: emailVerified,
                     verifying: isVerifyingEmail,
                     onVerify: handleVerifyEmail,
+                    enabled: emailVerificationEnabled,
                   })}
                 </Box>
               </Box>
@@ -433,6 +464,7 @@ export default function EditBasicInfo({
                     verifying: isVerifyingPhone,
                     onVerify: handleVerifyPhone,
                     onChangeRequest: phoneVerified ? handleChangePhoneRequest : undefined,
+                    enabled: phoneVerificationEnabled,
                   })}
                 </Box>
               </Box>

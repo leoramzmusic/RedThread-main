@@ -17,6 +17,7 @@ import {
   useMediaQuery,
   LinearProgress,
   Paper,
+  Chip,
 } from "@mui/material";
 import { useTranslation } from "next-i18next/pages";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -25,6 +26,8 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import ReplayIcon from "@mui/icons-material/Replay";
+import LockIcon from "@mui/icons-material/Lock";
+import DescriptionIcon from "@mui/icons-material/Description";
 import { useUI } from "../../context/UIContext";
 
 interface IdentityVerificationDialogProps {
@@ -75,8 +78,6 @@ const DOCUMENT_TYPES = [
   { value: "other", label: "Otro documento oficial / Other", country: "INT" },
 ];
 
-const SELFIE_MAX_SIZE = 5 * 1024 * 1024;
-
 const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
   open,
   onClose,
@@ -88,7 +89,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
   const { drawerWidth } = useUI();
   const isDark = theme.palette.mode === "dark";
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const [page, setPage] = useState<1 | 2>(1);
   const [documentType, setDocumentType] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -104,7 +105,6 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
   const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const selfieInputRef = useRef<HTMLInputElement | null>(null);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -117,7 +117,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
 
   const resetAll = useCallback(() => {
     stopCamera();
-    setStep(1);
+    setPage(1);
     setDocumentType("");
     setSelectedFile(null);
     setPreview(null);
@@ -159,7 +159,7 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
       setCameraError(
         t(
           "identityVerification.cameraError",
-          "No se pudo acceder a la cámara. Revisa los permisos o sube una foto.",
+          "No se pudo acceder a la cámara. Revisa los permisos e inténtalo de nuevo.",
         ),
       );
     } finally {
@@ -193,39 +193,10 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
     );
   }, [stopCamera]);
 
-  const handleSelfieFileSelect = (file: File) => {
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setCameraError(
-        t(
-          "identityVerification.selfieFileType",
-          "Por favor sube una imagen (JPG, PNG, WEBP)",
-        ),
-      );
-      return;
-    }
-    if (file.size > SELFIE_MAX_SIZE) {
-      setCameraError(
-        t(
-          "identityVerification.selfieFileSize",
-          "La foto es demasiado grande. Máximo 5MB",
-        ),
-      );
-      return;
-    }
-
-    setCameraError(null);
-    stopCamera();
-    setSelectedSelfie(file);
-    setSelfiePreview(URL.createObjectURL(file));
-  };
-
   const retakeSelfie = () => {
     if (selfiePreview) URL.revokeObjectURL(selfiePreview);
     setSelectedSelfie(null);
     setSelfiePreview(null);
-    if (selfieInputRef.current) selfieInputRef.current.value = "";
   };
 
   const handleFileSelect = (file: File) => {
@@ -282,13 +253,6 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
     }
   };
 
-  const handleSelfieChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleSelfieFileSelect(file);
-    }
-  };
-
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -310,26 +274,12 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
     }
   };
 
-  const goToStep2 = () => {
+  const handleSubmit = async () => {
     if (!documentType || !selectedFile) {
       setFormError(
         t(
           "identityVerification.alertMissing",
           "Por favor selecciona el tipo de documento y sube un archivo",
-        ),
-      );
-      return;
-    }
-    setFormError(null);
-    setStep(2);
-  };
-
-  const handleSubmit = async () => {
-    if (!documentType || !selectedFile || !selectedSelfie) {
-      setFormError(
-        t(
-          "identityVerification.alertMissingSelfie",
-          "Por favor toma o sube una selfie",
         ),
       );
       return;
@@ -363,45 +313,88 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
   const hasDocument = !!documentType && !!selectedFile;
   const hasSelfie = !!selectedSelfie;
 
-  const renderStep = (number: 1 | 2, label: string, done: boolean) => (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center"
-      }}>
-      {done ? (
-        <CheckCircleIcon color="success" sx={{ fontSize: 24 }} />
-      ) : (
-        <Box
-          sx={{
-            width: 24,
-            height: 24,
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor:
-              step === number ? theme.palette.primary.main : "action.disabled",
-            color: step === number ? "#fff" : "text.primary",
-            fontSize: 13,
-            fontWeight: 700,
-          }}
-        >
-          {number}
-        </Box>
-      )}
-      <Typography
-        variant="body2"
+  const renderPageButton = (
+    number: 1 | 2,
+    label: string,
+    done: boolean,
+    error: boolean,
+  ) => {
+    const active = page === number;
+    const state = error
+      ? "error"
+      : done
+        ? "done"
+        : active
+          ? "active"
+          : "pending";
+    return (
+      <Box
+        role="button"
+        tabIndex={0}
+        aria-current={active ? "step" : undefined}
+        aria-label={`${number} ${label}`}
+        data-state={state}
+        onClick={() => setPage(number)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setPage(number);
+          }
+        }}
         sx={{
-          ml: 1,
-          fontWeight: step === number ? 600 : 400,
-          color: done ? "text.primary" : "text.secondary",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 0.5,
+          cursor: "pointer",
+          borderRadius: 2,
+          px: 0.5,
+          py: 0.25,
+          "&:focus-visible": { outline: `2px solid ${theme.palette.primary.main}` },
         }}
       >
-        {label}
-      </Typography>
-    </Box>
-  );
+        {done && !error ? (
+          <CheckCircleIcon color="success" sx={{ fontSize: 48 }} />
+        ) : (
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: error
+                ? theme.palette.error.main
+                : active
+                  ? theme.palette.primary.main
+                  : "action.disabled",
+              color: error || active ? "#fff" : "text.primary",
+              fontSize: 18,
+              fontWeight: 700,
+            }}
+          >
+            {number}
+          </Box>
+        )}
+        <Typography
+          variant="caption"
+          sx={{
+            fontSize: "14px",
+            textAlign: "center",
+            fontWeight: error || done || active ? 700 : 400,
+            color: error
+              ? "error.main"
+              : done || active
+                ? "text.primary"
+                : "text.secondary",
+          }}
+        >
+          {label}
+        </Typography>
+      </Box>
+    );
+  };
 
   return (
     <Dialog
@@ -445,7 +438,8 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
           display: "flex",
           alignItems: "center",
           gap: 1.5,
-          fontWeight: 700,
+          fontWeight: 800,
+          fontSize: "1.25rem",
         }}
       >
         <VerifiedUserIcon color="primary" />
@@ -453,26 +447,29 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
       </DialogTitle>
       <DialogContent sx={{ px: { xs: 2.5, sm: 3 } }}>
         <Box sx={{ mb: 2 }}>
-          <Alert severity="info" sx={{ mb: 2, fontSize: "0.85rem" }}>
-            {t(
-              "identityVerification.privacyNotice",
-              "Tu documento y tu selfie se usan únicamente para verificar tu identidad y edad. No se mostrarán públicamente ni se compartirán con terceros.",
-            )}
-          </Alert>
-
-          {/* Stepper */}
-          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            {renderStep(1, t("identityVerification.stepDocument", "Documento"), hasDocument)}
-            <Box
-              sx={{
-                flex: 1,
-                height: 2,
-                mx: 2,
-                bgcolor: hasDocument ? "success.main" : "action.disabled",
-                borderRadius: 1,
-              }}
-            />
-            {renderStep(2, t("identityVerification.stepSelfie", "Selfie"), hasSelfie)}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 1,
+              mb: 2,
+              p: 1.5,
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider",
+              bgcolor: "action.hover",
+            }}
+          >
+            <LockIcon sx={{ fontSize: 18, color: "text.secondary", mt: "2px" }} />
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "14px", color: "text.secondary" }}
+            >
+              {t(
+                "identityVerification.privacyNotice",
+                "Tu documento y tu selfie se usan únicamente para verificar tu identidad y edad. No se mostrarán públicamente ni se compartirán con terceros.",
+              )}
+            </Typography>
           </Box>
 
           {formError && (
@@ -481,9 +478,64 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
             </Alert>
           )}
 
-          {step === 1 && (
-            <>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+          {/* Paginador */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              gap: 4,
+              mb: 2,
+            }}
+          >
+            {renderPageButton(1, t("identityVerification.stepDocument", "Documento"), hasDocument, !!formError)}
+            <Box
+              sx={{
+                flex: "0 0 40px",
+                height: 2,
+                mt: "23px",
+                bgcolor: hasDocument ? "success.main" : "action.disabled",
+                borderRadius: 1,
+              }}
+            />
+            {renderPageButton(2, t("identityVerification.stepSelfie", "Selfie"), hasSelfie, !!cameraError)}
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "stretch",
+            }}
+          >
+            {page === 1 && (
+            <Paper
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                p: 2,
+                borderRadius: "12px",
+                border: "1px solid",
+                borderColor: hasDocument ? "success.main" : "divider",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 1.5,
+                }}
+              >
+                <DescriptionIcon color="primary" />
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {t("identityVerification.stepDocument", "Documento")}
+                </Typography>
+                <Box sx={{ flex: 1 }} />
+                {hasDocument && <CheckCircleIcon color="success" />}
+              </Box>
+              <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="identity-doc-type-label">
                   {t("identityVerification.selectDocument", "Tipo de Documento")}
                 </InputLabel>
@@ -650,11 +702,36 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                   </Box>
                 )}
               </Paper>
-            </>
-          )}
+            </Paper>
+            )}
 
-          {step === 2 && (
-            <Box>
+            {page === 2 && (
+            <Paper
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                p: 2,
+                borderRadius: "12px",
+                border: "1px solid",
+                borderColor: hasSelfie ? "success.main" : "divider",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 1.5,
+                }}
+              >
+                <CameraAltIcon color="primary" />
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {t("identityVerification.stepSelfie", "Selfie")}
+                </Typography>
+                <Box sx={{ flex: 1 }} />
+                {hasSelfie && <CheckCircleIcon color="success" />}
+              </Box>
+              <Box>
               {cameraError && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {cameraError}
@@ -754,10 +831,10 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                     <Typography variant="body1" gutterBottom>
                       {t(
                         "identityVerification.selfiePrompt",
-                        "Toma una selfie con tu cámara o sube una foto",
+                        "Tómate una selfie con tu cámara para validar tu identidad",
                       )}
                     </Typography>
-                    <Box sx={{ mt: 2, display: "flex", gap: 1.5, justifyContent: "center" }}>
+                    <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
                       <Button
                         variant="contained"
                         color="primary"
@@ -766,26 +843,9 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                         disabled={cameraStarting}
                         sx={{ textTransform: "none" }}
                       >
-                        {t("identityVerification.startCamera", "Iniciar cámara")}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<CloudUploadIcon />}
-                        onClick={() => selfieInputRef.current?.click()}
-                        sx={{ textTransform: "none" }}
-                      >
-                        {t("identityVerification.uploadSelfie", "Subir foto")}
+                        {t("identityVerification.takePhoto", "Tomar foto")}
                       </Button>
                     </Box>
-                    <input
-                      ref={selfieInputRef}
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      aria-hidden="true"
-                      tabIndex={-1}
-                      onChange={handleSelfieChange}
-                    />
                   </Box>
                 )}
               </Paper>
@@ -799,9 +859,25 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
                 }}>
                 {t(
                   "identityVerification.selfieHint",
-                  "La selfie debe mostrar tu rostro de frente. Máx. 5MB (JPG, PNG, WEBP).",
+                  "La selfie debe mostrar tu rostro de frente para validar tu identidad.",
                 )}
               </Typography>
+              </Box>
+            </Paper>
+            )}
+          </Box>
+
+          {hasDocument && hasSelfie && (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <Chip
+                icon={<CheckCircleIcon />}
+                label={t(
+                  "identityVerification.readyToSubmit",
+                  "Listo para enviar",
+                )}
+                color="success"
+                sx={{ fontWeight: 700 }}
+              />
             </Box>
           )}
 
@@ -841,31 +917,40 @@ const IdentityVerificationDialog: React.FC<IdentityVerificationDialogProps> = ({
         >
           {t("common.cancel", "Cancelar")}
         </Button>
-        {step === 1 ? (
-          <Button
-            onClick={goToStep2}
-            variant="contained"
-            color="primary"
-            disabled={!documentType || !selectedFile || uploading}
-            sx={{ width: { xs: "100%", sm: "auto" } }}
-          >
-            {t("identityVerification.continue", "Continuar")}
-          </Button>
+        {page === 1 ? (
+          <>
+            <Button
+              disabled
+              color="inherit"
+              sx={{ width: { xs: "100%", sm: "auto" } }}
+            >
+              {t("identityVerification.previous", "Anterior")}
+            </Button>
+            <Button
+              onClick={() => setPage(2)}
+              variant="contained"
+              color="primary"
+              disabled={uploading}
+              sx={{ width: { xs: "100%", sm: "auto" } }}
+            >
+              {t("identityVerification.continue", "Siguiente")}
+            </Button>
+          </>
         ) : (
           <>
             <Button
-              onClick={() => setStep(1)}
+              onClick={() => setPage(1)}
               disabled={uploading}
               color="inherit"
               sx={{ width: { xs: "100%", sm: "auto" } }}
             >
-              {t("common.back", "Atrás")}
+              {t("identityVerification.previous", "Anterior")}
             </Button>
             <Button
               onClick={handleSubmit}
               variant="contained"
               color="primary"
-              disabled={!documentType || !selectedFile || !selectedSelfie || uploading}
+              disabled={!documentType || !selectedFile || uploading}
               sx={{ width: { xs: "100%", sm: "auto" } }}
             >
               {t("identityVerification.submit", "Enviar para Verificación")}
