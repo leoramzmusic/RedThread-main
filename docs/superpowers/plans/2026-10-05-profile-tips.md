@@ -1,6 +1,6 @@
 # Profile Tips Submodule Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build a Tips submodule under Módulos Perfiles that centralizes all help modals in /edit with admin CRUD, preview, i18n, and DB-first with hardcoded fallback.
 
@@ -66,7 +66,7 @@
 - Consumes: beanie Document, pydantic BaseModel.
 - Produces: `ProfileTip(tip_key, type, section_key, translations, slides, is_active, order)`, `TipTranslation(title, description, trigger_button_text, ok_label, ko_label)`, `Slide(order, translations, ok_image_url, ko_image_url)`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 def test_profile_tip_import():
@@ -74,12 +74,12 @@ def test_profile_tip_import():
     assert ProfileTip is not None
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/test_profile_tips.py::test_profile_tip_import -v`
 Expected: FAIL with "No module named src.models.profile_tip"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```python
 from beanie import Document, Indexed
@@ -119,12 +119,12 @@ class ProfileTip(Document):
         indexes = ["tip_key", "section_key", "order"]
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_profile_tips.py::test_profile_tip_import -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/models/profile_tip.py backend/tests/test_profile_tips.py
@@ -143,7 +143,7 @@ git commit -m "feat(tips): add ProfileTip model"
 - Consumes: existing Permission enum.
 - Produces: `Permission.VIEW_PROFILE_TIPS`, `Permission.MANAGE_PROFILE_TIPS`, `Permission.EDIT_PROFILE_TIPS`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 def test_tip_permissions_exist():
@@ -153,12 +153,12 @@ def test_tip_permissions_exist():
     assert Permission.EDIT_PROFILE_TIPS is not None
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest backend/tests/test_profile_tips.py::test_tip_permissions_exist -v`
 Expected: FAIL with AttributeError
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Open `backend/src/models/admin_rbac.py`, find Permission enum, add:
 
@@ -168,12 +168,12 @@ MANAGE_PROFILE_TIPS = "manage_profile_tips"
 EDIT_PROFILE_TIPS = "edit_profile_tips"
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest backend/tests/test_profile_tips.py::test_tip_permissions_exist -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/models/admin_rbac.py backend/tests/test_profile_tips.py
@@ -193,7 +193,7 @@ git commit -m "feat(tips): add RBAC permissions for profile tips"
 - Consumes: ProfileTip model, require_employee_permission, get_current_user.
 - Produces: admin `GET /portal-redthread/profile-tips/`, `POST /`, `PATCH /{tip_key}`, `DELETE /{tip_key}`, `PUT /reorder`, `POST /{tip_key}/images`; public `GET /api/profile-tips/{tip_key}` returning only active tips.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 import httpx
@@ -203,12 +203,12 @@ def test_public_tip_endpoint_registered():
     assert any("profile-tips" in p for p in paths)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest backend/tests/test_profile_tips.py::test_public_tip_endpoint_registered -v`
 Expected: FAIL
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```python
 from datetime import datetime
@@ -305,12 +305,12 @@ app.include_router(public_profile_tips_router, prefix="/api/profile-tips")
 
 Check main.py for exact include pattern first — follow existing admin_profile_modules registration.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest backend/tests/test_profile_tips.py -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/api/admin_profile_tips.py backend/src/main.py backend/tests/test_profile_tips.py
@@ -328,7 +328,7 @@ git commit -m "feat(tips): add admin and public profile-tips API"
 - Consumes: ProfileTip model.
 - Produces: 9 tips (photos_visual carousel, safety/goals/pronouns/location/identity drawers, social_style_test stepper, spotify_search dialog stub, nickname dialog stub) with es translations from current i18n defaults.
 
-- [ ] **Step 1: Write the seed script**
+- [x] **Step 1: Write the seed script**
 
 ```python
 import asyncio
@@ -364,12 +364,12 @@ if __name__ == "__main__":
 
 Check `backend/src/main.py` for actual DB init function name — adjust if different.
 
-- [ ] **Step 2: Run seed in dev**
+- [x] **Step 2: Run seed in dev**
 
 Run: `python backend/scripts/seed_profile_tips.py`
 Expected: creates 9 tips, skips existing on rerun.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add backend/scripts/seed_profile_tips.py
@@ -388,7 +388,7 @@ git commit -m "feat(tips): seed initial 9 profile tips"
 - Consumes: apiClient GET `/api/profile-tips/{tip_key}`.
 - Produces: `useProfileTip(tip_key) -> { tip, loading, error }`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { renderHook } from "@testing-library/react";
@@ -399,12 +399,12 @@ test("returns loading initially", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- src/hooks/useProfileTip.test.ts`
 Expected: FAIL with module not found.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```ts
 import { useEffect, useState } from "react";
@@ -445,12 +445,12 @@ export function useProfileTip(tip_key: string) {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- src/hooks/useProfileTip.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/hooks/useProfileTip.ts frontend/src/hooks/useProfileTip.test.ts
@@ -472,23 +472,23 @@ git commit -m "feat(tips): add useProfileTip hook"
 - Consumes: ProfileTipData from hook.
 - Produces: `TipRenderer({tip_key, fallback})` switching on tip.type, each sub-component accepting `{tip, onClose, fallback}`.
 
-- [ ] **Step 1: Write CarouselTip (dynamic VisualTipsSheet)**
+- [x] **Step 1: Write CarouselTip (dynamic VisualTipsSheet)**
 
 Reuse `VisualTipsSheet` layout but accept `tip` prop: if tip?.slides?.length > 0 render slides from tip, else render hardcoded slides. Keep swipe logic identical.
 
-- [ ] **Step 2: Write DrawerTip (generic InfoDrawer)**
+- [x] **Step 2: Write DrawerTip (generic InfoDrawer)**
 
 Props `{title, body, buttonText, onClose}` from tip.translation with fallback to t() keys passed by caller.
 
-- [ ] **Step 3: Write StepperTip wrapper**
+- [x] **Step 3: Write StepperTip wrapper**
 
 Render existing `SocialStyleTest` when open; title from tip.translation.title with fallback.
 
-- [ ] **Step 4: Write DialogTip stub**
+- [x] **Step 4: Write DialogTip stub**
 
 Simple MUI Dialog with title + description + close button. Marked optional v1.
 
-- [ ] **Step 5: Write TipRenderer switch**
+- [x] **Step 5: Write TipRenderer switch**
 
 ```tsx
 export default function TipRenderer({ tip, onClose, fallback }: any) {
@@ -502,7 +502,7 @@ export default function TipRenderer({ tip, onClose, fallback }: any) {
 }
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add frontend/src/components/profile/TipRenderer.tsx frontend/src/components/profile/tips/
@@ -523,24 +523,24 @@ git commit -m "feat(tips): add TipRenderer and typed components"
 - Consumes: useProfileTip, TipRenderer.
 - Produces: same UX as today when DB empty; dynamic content when tip active.
 
-- [ ] **Step 1: PhotosSection visual tips uses DB first**
+- [x] **Step 1: PhotosSection visual tips uses DB first**
 
 In `MediaManager.tsx` where `showTips` opens `VisualTipsSheet`, fetch `useProfileTip("photos_visual")`, pass `tip` to `VisualTipsSheet`. In `VisualTipsSheet.tsx` add optional `tip` prop: if tip has slides use them, else hardcoded slides.
 
-- [ ] **Step 2: InfoDrawers accept tips map**
+- [x] **Step 2: InfoDrawers accept tips map**
 
 Add optional prop `tips?: Record<string, ProfileTipData>` to InfoDrawers; each drawer uses `tips?.safety?.translation?.title ?? t(...)` pattern. Wire callers in ProfileEdit to fetch 5 drawers (or fetch lazily per open).
 
-- [ ] **Step 3: PersonalitySection stepper title from DB**
+- [x] **Step 3: PersonalitySection stepper title from DB**
 
 Fetch `useProfileTip("social_style_test")`, pass title override to SocialStyleTest or show above it. Keep quiz logic unchanged.
 
-- [ ] **Step 4: Verify no regression**
+- [x] **Step 4: Verify no regression**
 
 Run: `npm test -- src/components/profile`
 Expected: PASS. Manual check /profile/@me/edit opens all modals as before.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/components/profile/MediaManager.tsx frontend/src/components/profile/VisualTipsSheet.tsx frontend/src/components/profile/edit/InfoDrawers.tsx frontend/src/components/profile/edit/sections/PersonalitySection.tsx
@@ -562,27 +562,27 @@ git commit -m "feat(tips): integrate DB-first tips in edit with fallback"
 - Consumes: adminApiClient `/portal-redthread/profile-tips/` endpoints.
 - Produces: admin list with drag reorder, editor with translations grid + slides + upload, live preview via TipRenderer.
 
-- [ ] **Step 1: Add adminApi endpoints**
+- [x] **Step 1: Add adminApi endpoints**
 
 Follow existing pattern in adminApi.ts (check file first). Add `listTips, getTip, createTip, updateTip, deleteTip, reorderTips, uploadTipImage`.
 
-- [ ] **Step 2: Build list page with reorder**
+- [x] **Step 2: Build list page with reorder**
 
 Copy structure from `modulos.tsx`: DndContext list, is_active toggle (local draft + Guardar), Nuevo tip button, Snackbar feedback.
 
-- [ ] **Step 3: Build TipForm editor**
+- [x] **Step 3: Build TipForm editor**
 
 Tabs: General (key/type/section/active/order), Traducciones (es/en + expandable for 21 langs), Slides (add/remove/reorder + ok/ko upload + labels). Upload via POST multipart to `/{tip_key}/images`, store returned URL.
 
-- [ ] **Step 4: Build TipPreview**
+- [x] **Step 4: Build TipPreview**
 
 Render `<TipRenderer tip={draftTip} />` in a phone-frame Box. Updates live as form changes.
 
-- [ ] **Step 5: Add sidebar entry**
+- [x] **Step 5: Add sidebar entry**
 
 In AdminSidebar perfiles children add `{ id: 'perfiles-tips', label: 'Tips', icon: <HelpIcon />, path: '/portal-redthread/perfiles/tips' }`. Check icon imports.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add frontend/src/pages/portal-redthread/perfiles/tips.tsx frontend/src/components/admin/TipForm.tsx frontend/src/components/admin/TipPreview.tsx frontend/src/components/layout/AdminSidebar.tsx frontend/src/services/adminApi.ts

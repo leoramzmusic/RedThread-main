@@ -1,6 +1,6 @@
 # Módulos Perfiles Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Admin-manageable profile sections (visibility, rename, reorder, create, delete) wired into the real user profile render.
 
@@ -33,7 +33,7 @@
 - Consumes: `Permission`, `ROLE_PERMISSIONS`, Beanie `Document`.
 - Produces: `ProfileModule` (key, nombre, descripcion, icono, orden, visible, origen, requiere_premium), `Permission.VIEW_PROFILE_MODULES/MANAGE_VISIBILITY_MODULES/MANAGE_PROFILE_MODULES`, seed function `seed_profile_modules()`.
 
-- [ ] **Step 1: Append the three permissions to the `Permission` enum**
+- [x] **Step 1: Append the three permissions to the `Permission` enum**
 
 ```python
     # Profile Modules
@@ -42,7 +42,7 @@
     MANAGE_PROFILE_MODULES = "manage_profile_modules"
 ```
 
-- [ ] **Step 2: Extend `ROLE_PERMISSIONS`**
+- [x] **Step 2: Extend `ROLE_PERMISSIONS`**
 
 ```python
     AdminRole.MODERATOR: [
@@ -62,7 +62,7 @@
 
 Super_admin gets all automatically. Marketing/finance get none.
 
-- [ ] **Step 3: Create `backend/src/models/profile_module.py`**
+- [x] **Step 3: Create `backend/src/models/profile_module.py`**
 
 ```python
 from beanie import Document
@@ -88,9 +88,9 @@ class ProfileModule(Document):
         indexes = ["key", "orden"]
 ```
 
-- [ ] **Step 4: Write the seed with the 16 current sections (orden 0-15, all visible, origen core except section-music → integracion)**
+- [x] **Step 4: Write the seed with the 16 current sections (orden 0-15, all visible, origen core except section-music → integracion)**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/models/admin_rbac.py backend/src/models/profile_module.py backend/src/scripts/seed_profile_modules.py
@@ -110,7 +110,7 @@ git commit -m "feat(backend): profile modules model, permissions and seed"
 - Consumes: `ProfileModule`, the three permissions, `require_employee_permission`, `log_employee_action`, `AdminAction`.
 - Produces: routes `GET/POST /portal-redthread/profile-modules`, `PATCH /{key}`, `PATCH /{key}/visibilidad`, `PUT /reorden`, `DELETE /{key}`, public `GET /api/profile-modules`.
 
-- [ ] **Step 1: Write the failing test for the integrity rule**
+- [x] **Step 1: Write the failing test for the integrity rule**
 
 ```python
 def test_cannot_hide_last_core_module(client, admin_token):
@@ -124,12 +124,12 @@ def test_cannot_hide_last_core_module(client, admin_token):
 
 Check `backend/tests/conftest.py` for the existing client/auth fixture names and use them verbatim instead of `client, admin_token`.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest backend/tests/test_profile_modules.py -v`
 Expected: FAIL (module/route does not exist)
 
-- [ ] **Step 3: Implement `admin_profile_modules.py` following `admin_roles.py:15-75`**
+- [x] **Step 3: Implement `admin_profile_modules.py` following `admin_roles.py:15-75`**
 
 Schemas: `ModuleCreate` (key, nombre, descripcion="", icono="tune", orden=0, visible=True, origen="integracion", requiere_premium=False), `ModuleUpdate` (nombre, descripcion, icono — all optional), `VisibilidadUpdate` (visible: bool), `ReordenRequest` (keys: List[str]).
 
@@ -137,7 +137,7 @@ Guards: list/create/update/delete → `manage_profile_modules` except list → `
 
 Integrity rule: before hiding/deleting, count remaining `origen=core AND visible=True`; if zero, raise 400. Delete allowed only when `origen == "integracion"`, else 400. Every mutation calls `log_employee_action(...)` with action_type like `update_profile_module`.
 
-- [ ] **Step 4: Register routers in `main.py`**
+- [x] **Step 4: Register routers in `main.py`**
 
 ```python
 app.include_router(admin_profile_modules.router, prefix="/portal-redthread/profile-modules", tags=["Admin - Profile Modules"])
@@ -146,12 +146,12 @@ app.include_router(admin_profile_modules.public_router, prefix="/api/profile-mod
 
 (Use two routers in the file, or one router mounted twice — two explicit routers is clearer.)
 
-- [ ] **Step 5: Run tests until green**
+- [x] **Step 5: Run tests until green**
 
 Run: `python -m pytest backend/tests/test_profile_modules.py -v`
 Expected: PASS, including 403 cases for a role without permission.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/src/api/admin_profile_modules.py backend/src/main.py backend/tests/test_profile_modules.py
@@ -170,7 +170,7 @@ git commit -m "feat(backend): profile modules admin CRUD and public endpoint"
 - Consumes: existing section components imported in `ProfileEdit.tsx` (MusicSection, PersonalitySection, CognitiveSection, WellnessSection, SocialSection, etc.).
 - Produces: `PROFILE_SECTION_REGISTRY: Record<string, ComponentType<SectionProps>>`, `ProfileSectionKey`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { PROFILE_SECTION_REGISTRY } from './registry';
@@ -184,12 +184,12 @@ test('registry covers every seeded key', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- registry.test.ts` (from `frontend/`)
 Expected: FAIL (module does not exist)
 
-- [ ] **Step 3: Write `registry.ts`**
+- [x] **Step 3: Write `registry.ts`**
 
 ```ts
 // key del backend (profile_modules.key) -> componente de sección.
@@ -206,12 +206,12 @@ export type ProfileSectionKey = keyof typeof PROFILE_SECTION_REGISTRY;
 
 Reuse the exact import paths already present in `ProfileEdit.tsx`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- registry.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/components/profile/sections/registry.ts frontend/src/components/profile/sections/registry.test.ts
@@ -230,7 +230,7 @@ git commit -m "feat(frontend): documented profile section registry"
 - Consumes: `adminApiClient` (`GET/POST/PATCH/PUT/DELETE /portal-redthread/profile-modules`), `@dnd-kit/sortable` + `@dnd-kit/core` (in `frontend/package.json:15-17`), registry keys for display.
 - Produces: page at `/portal-redthread/perfiles/modulos`.
 
-- [ ] **Step 1: Add the sidebar group**
+- [x] **Step 1: Add the sidebar group**
 
 ```tsx
 {
@@ -245,11 +245,11 @@ git commit -m "feat(frontend): documented profile section registry"
 
 `UserIcon` and `PreferencesIcon` are already imported in AdminSidebar.tsx:31,50.
 
-- [ ] **Step 2: Build the page** — table of modules (nombre, key, icono, orden, visible toggle, origen badge) following the visual pattern of `portal-redthread/experiencia/menus.tsx`; create/edit dialog (nombre, descripcion, icono — key editable only on create); delete button only when `origen === 'integracion'` with confirm; drag & drop via `@dnd-kit/sortable` persisting with `PUT /reorden`; on 403 show read-only mode (disable controls, show notice). All copy in Spanish with `t()` fallbacks.
+- [x] **Step 2: Build the page** — table of modules (nombre, key, icono, orden, visible toggle, origen badge) following the visual pattern of `portal-redthread/experiencia/menus.tsx`; create/edit dialog (nombre, descripcion, icono — key editable only on create); delete button only when `origen === 'integracion'` with confirm; drag & drop via `@dnd-kit/sortable` persisting with `PUT /reorden`; on 403 show read-only mode (disable controls, show notice). All copy in Spanish with `t()` fallbacks.
 
-- [ ] **Step 3: Verify manually** — `npm run dev`, visit page as superadmin: toggle, rename, reorder persist after reload.
+- [x] **Step 3: Verify manually** — `npm run dev`, visit page as superadmin: toggle, rename, reorder persist after reload.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add frontend/src/pages/portal-redthread/perfiles/modulos.tsx frontend/src/components/layout/AdminSidebar.tsx
@@ -266,13 +266,13 @@ git commit -m "feat(frontend): admin profile modules page and sidebar entry"
 **Interfaces:**
 - Consumes: `PROFILE_SECTION_REGISTRY`, public `GET /api/profile-modules` via `apiClient` (same client `MusicSection.tsx` uses: `frontend/src/services/api`).
 
-- [ ] **Step 1: Fetch ordered visible keys on mount; on error keep current hardcoded render (fallback)**
+- [x] **Step 1: Fetch ordered visible keys on mount; on error keep current hardcoded render (fallback)**
 
-- [ ] **Step 2: Render sections by mapping keys through the registry in returned order, skipping keys missing from the registry (log a console warning, don't crash)**
+- [x] **Step 2: Render sections by mapping keys through the registry in returned order, skipping keys missing from the registry (log a console warning, don't crash)**
 
-- [ ] **Step 3: Verify manually** — hide `section-music` in admin → disappears from profile edit; stop backend → profile renders as before; `tsc --noEmit` clean.
+- [x] **Step 3: Verify manually** — hide `section-music` in admin → disappears from profile edit; stop backend → profile renders as before; `tsc --noEmit` clean.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add frontend/src/components/profile/ProfileEdit.tsx
@@ -283,5 +283,5 @@ git commit -m "feat(frontend): render profile sections from admin modules with f
 
 ### Task 6: Final verification
 
-- [ ] **Step 1: Run full gates** — `npx tsc --noEmit` (frontend, expect exit 0), `npx eslint src/components/profile/sections/ frontend/src/pages/portal-redthread/perfiles/ --quiet` (expect 0 errors), `python -m pytest backend/tests/test_profile_modules.py` (expect PASS), `npm test -- registry` (expect PASS).
-- [ ] **Step 2: Push** — `git push origin main` (if the push touches `.github/workflows/`, it will be rejected by the OAuth scope — that file is not part of this plan, so this should not happen).
+- [x] **Step 1: Run full gates** — `npx tsc --noEmit` (frontend, expect exit 0), `npx eslint src/components/profile/sections/ frontend/src/pages/portal-redthread/perfiles/ --quiet` (expect 0 errors), `python -m pytest backend/tests/test_profile_modules.py` (expect PASS), `npm test -- registry` (expect PASS).
+- [x] **Step 2: Push** — `git push origin main` (if the push touches `.github/workflows/`, it will be rejected by the OAuth scope — that file is not part of this plan, so this should not happen).
