@@ -682,9 +682,19 @@ async def get_discovery_queue(
 
             # Generate breakdown for UI progress bars (Phase 14)
             breakdown = await compatibility_breakdown(user_profile, candidate, params)
-            # Scale numeric factors to 0-100 for frontend
+            # Scale only the 7 canonical dimension scores to 0-100 for frontend
             breakdown_100 = {
-                k: v * 100 for k, v in breakdown.items() if isinstance(v, (int, float))
+                k: breakdown[k] * 100
+                for k in (
+                    "values",
+                    "relationship_goals",
+                    "neurodiversity",
+                    "responsiveness",
+                    "music",
+                    "love_language",
+                    "communication_style",
+                )
+                if isinstance(breakdown.get(k), (int, float))
             }
 
             # Determine transparency based on mode

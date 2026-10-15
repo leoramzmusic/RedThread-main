@@ -120,22 +120,31 @@ async def compatibility_breakdown(
 ) -> Dict[str, Any]:
     """Full breakdown: 7 numeric blocks + chaos/clamp/label + narrative context."""
     config = await get_active_formula_config()
-    weights = config["blocks"]
-    blocks = await compute_block_scores(user, candidate)
-    base = sum(weights.get(k, 0.0) * v for k, v in blocks.items())
-    chi = compute_chi(
-        config["chaos_factor"],
-        config["chaos_seed"],
-        str(user.id),
-        str(candidate.id),
-        config["version"],
-    )
-    final_score, saturated = clamp_score(base + chi)
 
     from src.care.utils.geo import haversine_distance
 
     distance_km = haversine_distance(user.location, candidate.location)
     location_ctx = calculate_location_context(user, candidate, distance_km)
+
+    identity_compat = calculate_identity_block_compatibility(
+        user, candidate, strict=True
+    )
+    if identity_compat == 0.0:
+        blocks = {k: 0.0 for k in CANONICAL_BLOCKS}
+        chi = 0.0
+        final_score, saturated = 0.0, False
+    else:
+        weights = config["blocks"]
+        blocks = await compute_block_scores(user, candidate)
+        base = sum(weights.get(k, 0.0) * v for k, v in blocks.items())
+        chi = compute_chi(
+            config["chaos_factor"],
+            config["chaos_seed"],
+            str(user.id),
+            str(candidate.id),
+            config["version"],
+        )
+        final_score, saturated = clamp_score(base + chi)
 
     result: Dict[str, Any] = dict(blocks)
     result.update(

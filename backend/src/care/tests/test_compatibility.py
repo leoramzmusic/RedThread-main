@@ -119,6 +119,32 @@ async def test_breakdown_shape_new_keys_only():
 
 
 @pytest.mark.asyncio
+async def test_breakdown_identity_safe_stop():
+    """Breakdown must agree with score: no mutual attraction → all zeros."""
+    user, candidate = _profiles()
+    fixed = {k: 0.5 for k in CANONICAL}
+    with patch("src.care.scoring.compatibility.compute_block_scores",
+               return_value=fixed), \
+         patch("src.care.scoring.compatibility.get_active_formula_config",
+               return_value=NO_FORMULA), \
+         patch("src.care.scoring.compatibility.calculate_identity_block_compatibility",
+               return_value=0.0):
+        score = await compatibility_score(user, candidate)
+        bd = await compatibility_breakdown(user, candidate)
+    assert score == 0.0
+    assert bd["final_score"] == 0.0
+    assert bd["compatibility_label"] == "Muy bajo"
+    assert bd["chaos_applied"] == 0.0
+    assert bd["saturated"] is False
+    for key in CANONICAL:
+        assert bd[key] == 0.0
+    assert "proximity_km" in bd
+    assert "scenario_label" in bd
+    assert "connection_tone" in bd
+    assert "context_advice" in bd
+
+
+@pytest.mark.asyncio
 async def test_real_block_functions_smoke():
     """compute_block_scores returns the 7 canonical keys in 0-1 without DB."""
     user, candidate = _profiles()
