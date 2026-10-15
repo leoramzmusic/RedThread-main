@@ -2,6 +2,9 @@
 import random
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+from src.care.models.care_formula import CAREFormula
+from src.models.algorithm_management import AlgorithmHistory, AlgorithmType
+
 CANONICAL_BLOCKS: Dict[str, float] = {
     "values": 0.36,
     "relationship_goals": 0.18,
@@ -119,3 +122,135 @@ def clamp_score(value: float) -> Tuple[float, bool]:
     if value < 0.0:
         return 0.0, True
     return value, False
+
+
+class FormulaValidationError(Exception):
+    def __init__(self, errors: List[str]):
+        self.errors = errors
+        super().__init__("; ".join(errors))
+
+
+class FormulaNoChangeError(Exception):
+    pass
+
+
+async def get_active_formula() -> Optional[CAREFormula]:
+    return await CAREFormula.find_one({"status": "active"})
+
+
+async def ensure_active_formula() -> CAREFormula:
+    active = await get_active_formula()
+    if active is not None:
+        return active
+    formula = CAREFormula(
+        version=1,
+        status="active",
+        blocks=dict(CANONICAL_BLOCKS),
+        chaos_factor=0.0,
+        chaos_seed=None,
+        min_compatibility=0.0,
+        match_critical=0.15,
+        changelog="Seed inicial canónico",
+        created_by="system",
+    )
+    await CAREFormula.insert(formula)
+    return formula
+
+
+async def insert_new_formula(doc: CAREFormula) -> CAREFormula:
+    await doc.insert()
+    return doc
+
+
+async def insert_history(entry: AlgorithmHistory) -> AlgorithmHistory:
+    await entry.insert()
+    return entry
+
+
+def _config_tuple(formula: CAREFormula) -> Tuple[Dict[str, float], float, Optional[str], float, float]:
+    return (
+        dict(formula.blocks),
+        formula.chaos_factor,
+        formula.chaos_seed,
+        formula.min_compatibility,
+        formula.match_critical,
+    )
+
+
+async def save_new_version(payload: Dict[str, Any], admin_id: str, source: str) -> CAREFormula:
+    errors = validate_formula_dict(payload)
+    if errors:
+        raise FormulaValidationError(errors)
+    active = await ensure_active_formula()
+    if _config_tuple(active) == (
+        dict(payload["blocks"]),
+        float(payload.get("chaos_factor", 0.0)),
+        payload.get("chaos_seed"),
+        float(payload.get("min_compatibility", 0.0)),
+        float(payload.get("match_critical", 0.15)),
+    ):
+        raise FormulaNoChangeError("La fórmula no cambió respecto a la versión activa")
+
+    max_doc = (
+        await CAREFormula.find_all().sort("-version").limit(1).to_list()
+    )
+    next_version = (max_doc[0].version if max_doc else 0) + 1
+
+    active.status = "archived"
+    await active.save()
+
+    new_formula = CAREFormula(
+        version=next_version,
+        status="active",
+        blocks=dict(payload["blocks"]),
+        chaos_factor=float(payload.get("chaos_factor", 0.0)),
+        chaos_seed=payload.get("chaos_seed"),
+        min_compatibility=float(payload.get("min_compatibility", 0.0)),
+        match_critical=float(payload.get("match_critical", 0.15)),
+        changelog=payload["changelog"],
+        created_by=admin_id,
+    )
+    await insert_new_formula(new_formula)
+
+    await insert_history(AlgorithmHistory(
+        algorithm_type=AlgorithmType.COMPATIBILITY,
+        factor_id=str(new_formula.id),
+        action="save_formula",
+        old_value=active.model_dump(mode="json"),
+        new_value={**new_formula.model_dump(mode="json"), "source": source},
+        modified_by=admin_id,
+        comment=f"[{source}] {payload['changelog']}",
+    ))
+    return new_formula
+
+
+async def rollback_to_version(version: int, admin_id: str, source: str = "api") -> CAREFormula:
+    target = await CAREFormula.find_one({"version": version})
+    if target is None:
+        raise LookupError(f"La versión {version} no existe")
+    active = await get_active_formula()
+    if active is not None and active.id == target.id:
+        return target
+    if active is not None:
+        active.status = "archived"
+        await active.save()
+    target.status = "active"
+    await target.save()
+    await insert_history(AlgorithmHistory(
+        algorithm_type=AlgorithmType.COMPATIBILITY,
+        factor_id=str(target.id),
+        action="rollback_formula",
+        old_value=active.model_dump(mode="json") if active else None,
+        new_value={**target.model_dump(mode="json"), "source": source, "target_version": version},
+        modified_by=admin_id,
+        comment=f"[{source}] Rollback a v{version}",
+    ))
+    return target
+
+
+async def list_versions(limit: int = 50) -> List[CAREFormula]:
+    return await CAREFormula.find_all().sort("-version").limit(limit).to_list()
+
+
+async def normalize_payload_blocks(blocks: Dict[str, float], locked: List[str]) -> Dict[str, float]:
+    return normalize_blocks(blocks, set(locked))
