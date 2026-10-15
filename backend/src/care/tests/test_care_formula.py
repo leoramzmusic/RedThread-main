@@ -68,3 +68,9 @@ def test_normalize_raises_if_locked_overflow():
     blocks["values"] = 0.95
     with pytest.raises(ValueError):
         normalize_blocks(blocks, locked={"values", "relationship_goals"})
+
+
+def test_normalize_raises_if_no_free_dimensions():
+    blocks = {k: 0.1 for k in CANONICAL_BLOCKS}
+    with pytest.raises(ValueError):
+        normalize_blocks(blocks, locked=set(CANONICAL_BLOCKS))

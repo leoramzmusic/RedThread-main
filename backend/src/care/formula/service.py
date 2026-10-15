@@ -65,6 +65,8 @@ def normalize_blocks(blocks: Dict[str, float], locked: Set[str]) -> Dict[str, fl
     if locked_sum >= 1.0:
         raise ValueError("Los pesos bloqueados ya suman 1.0 o más; no hay margen para redistribuir")
     free = [k for k in CANONICAL_BLOCKS if k not in locked]
+    if not free:
+        raise ValueError("Todas las dimensiones están bloqueadas; no hay pesos libres para redistribuir")
     free_current = sum(float(blocks[k]) for k in free)
     target_free = 1.0 - locked_sum
     out = {k: float(blocks[k]) for k in locked}
