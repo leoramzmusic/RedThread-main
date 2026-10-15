@@ -14,6 +14,7 @@ _sys.path.insert(0, _os.path.dirname(__file__))
 from profile_tips_i18n import (  # noqa: E402
     PHOTOS_VISUAL_SLIDES_I18N,
     PHOTOS_VISUAL_TITLES,
+    SOCIAL_STYLE_TEST_I18N,
 )
 
 SEEDS = [
@@ -23,7 +24,7 @@ SEEDS = [
     {"tip_key": "pronouns", "type": "drawer", "section_key": "section-pronouns", "order": 3, "translations": {"es": {"title": "¿Por qué son importantes los pronombres?", "description": "Los pronombres permiten darle más profundidad y detalle a tu perfil.", "trigger_button_text": "De acuerdo"}}},
     {"tip_key": "location", "type": "drawer", "section_key": "section-location", "order": 4, "translations": {"es": {"title": "¿Por qué pedimos tu ubicación?", "description": "Tu ubicación nos ayuda a mostrarte personas cercanas. Nunca compartiremos tu ubicación exacta sin tu consentimiento.", "trigger_button_text": "Entendido"}}},
     {"tip_key": "identity", "type": "drawer", "section_key": "section-basic", "order": 5, "translations": {"es": {"title": "¿Por qué pedimos tu identidad?", "description": "Tu identidad nos ayuda a verificar tu perfil y mantener la seguridad de la comunidad.", "trigger_button_text": "Entendido"}}},
-    {"tip_key": "social_style_test", "type": "stepper", "section_key": "section-personality", "order": 6, "translations": {"es": {"title": "Microtest: Estilo Social", "description": "Responde 5 preguntas para descubrir tu estilo social.", "trigger_button_text": "¿No sabes cuál eres?"}}},
+    {"tip_key": "social_style_test", "type": "stepper", "section_key": "section-personality", "order": 6, "translations": SOCIAL_STYLE_TEST_I18N},
     {"tip_key": "spotify_search", "type": "dialog", "section_key": "section-music", "order": 7, "translations": {"es": {"title": "Buscar en Spotify", "description": "", "trigger_button_text": "Buscar"}}},
     {"tip_key": "nickname", "type": "dialog", "section_key": "section-basic", "order": 8, "translations": {"es": {"title": "Cambiar nickname", "description": "", "trigger_button_text": "Editar"}}},
 ]

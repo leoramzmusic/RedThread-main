@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from profile_tips_i18n import (  # noqa: E402
     PHOTOS_VISUAL_SLIDES_I18N,
     PHOTOS_VISUAL_TITLES,
+    SOCIAL_STYLE_TEST_I18N,
 )
 
 
@@ -23,6 +24,32 @@ async def main():
 
     await init_db()
 
+    await _update_photos_visual(ProfileTip, Slide, TipTranslation)
+    await _update_social_style_test(ProfileTip, TipTranslation)
+
+
+async def _update_social_style_test(ProfileTip, TipTranslation):
+    tip = await ProfileTip.find_one({"tip_key": "social_style_test"})
+    if not tip:
+        print("social_style_test not found, nothing to update")
+        return
+    translations = dict(tip.translations or {})
+    for lang, tr in SOCIAL_STYLE_TEST_I18N.items():
+        current = translations.get(lang)
+        if current is not None and not isinstance(current, dict):
+            try:
+                current = current.model_dump()
+            except Exception:
+                current = {}
+        merged = dict(current or {})
+        merged.update(tr)
+        translations[lang] = TipTranslation(**merged)
+    tip.translations = translations
+    await tip.save()
+    print(f"social_style_test updated: {len(translations)} languages")
+
+
+async def _update_photos_visual(ProfileTip, Slide, TipTranslation):
     tip = await ProfileTip.find_one({"tip_key": "photos_visual"})
     if not tip:
         print("photos_visual not found, nothing to update")

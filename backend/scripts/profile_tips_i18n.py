@@ -30,6 +30,32 @@ PHOTOS_VISUAL_TITLES = {
     "am": "የፎቶዎችዎ ምክሮች",
 }
 
+# social_style_test tip (stepper): 21-language title/description/trigger button.
+# The trigger button is what the profile UI shows ("¿No sabes cuál eres?" in ES).
+SOCIAL_STYLE_TEST_I18N = {
+    "es": {"title": "Microtest: Estilo Social", "description": "Responde 5 preguntas para descubrir tu estilo social.", "trigger_button_text": "¿No sabes cuál eres?"},
+    "en": {"title": "Microtest: Social Style", "description": "Answer 5 questions to discover your social style.", "trigger_button_text": "Don't know which one you are?"},
+    "fr": {"title": "Micro-test : Style social", "description": "Répondez à 5 questions pour découvrir votre style social.", "trigger_button_text": "Tu ne sais pas lequel tu es ?"},
+    "de": {"title": "Mikrotest: Sozialstil", "description": "Beantworte 5 Fragen, um deinen sozialen Stil zu entdecken.", "trigger_button_text": "Weißt du nicht, welches du bist?"},
+    "it": {"title": "Microtest: Stile sociale", "description": "Rispondi a 5 domande per scoprire il tuo stile sociale.", "trigger_button_text": "Non sai quale sei?"},
+    "pt": {"title": "Microteste: Estilo Social", "description": "Responda 5 perguntas para descobrir seu estilo social.", "trigger_button_text": "Não sabe qual é o seu?"},
+    "nl": {"title": "Microtest: Sociale stijl", "description": "Beantwoord 5 vragen om je sociale stijl te ontdekken.", "trigger_button_text": "Weet je niet welke je bent?"},
+    "sv": {"title": "Mikrotest: Social stil", "description": "Svara på 5 frågor för att upptäcka din sociala stil.", "trigger_button_text": "Vet du inte vilken du är?"},
+    "ru": {"title": "Микротест: Социальный стиль", "description": "Ответьте на 5 вопросов, чтобы узнать ваш социальный стиль.", "trigger_button_text": "Не знаешь, какой ты?"},
+    "zh": {"title": "微测试：社交风格", "description": "回答 5 个问题，发现你的社交风格。", "trigger_button_text": "不知道你属于哪种？"},
+    "ja": {"title": "マイクロテスト：ソーシャルスタイル", "description": "あなたのソーシャルスタイルを知るために5つの質問に答えてください。", "trigger_button_text": "どのタイプか分からない？"},
+    "ko": {"title": "마이크로테스트: 소셜 스타일", "description": "소셜 스타일을 알아보기 위해 5개의 질문에 답하세요.", "trigger_button_text": "어떤 유형인지 모르겠나요?"},
+    "hi": {"title": "माइक्रोटेस्ट: सामाजिक शैली", "description": "अपनी सामाजिक शैली जानने के लिए 5 प्रश्नों के उत्तर दें।", "trigger_button_text": "पता नहीं तुम कौन सा हो?"},
+    "bn": {"title": "মাইক্রোটেস্ট: সামাজিক স্টাইল", "description": "আপনার সামাজিক স্টাইল জানতে ৫টি প্রশ্নের উত্তর দিন।", "trigger_button_text": "জানেন না আপনি কোন ধরনের?"},
+    "ar": {"title": "اختبار مصغر: النمط الاجتماعي", "description": "أجب على 5 أسئلة لاكتشاف نمطك الاجتماعي.", "trigger_button_text": "لا تعرف أيهما أنت؟"},
+    "sw": {"title": "Microtest: Mtindo wa Kijamii", "description": "Jibu maswali 5 ili kugundua mtindo wako wa kijamii.", "trigger_button_text": "Hujui ni ipi kati yako?"},
+    "ha": {"title": "Ƙaramin gwaji: Halayen al'umma", "description": "Amsa tambayoyi 5 don gano halayen al'ummar ka.", "trigger_button_text": "Ba ka san wane ne ka?"},
+    "tl": {"title": "Microtest: Social na Estilo", "description": "Sagutin ang 5 tanong para alamin ang iyong social na estilo.", "trigger_button_text": "Hindi mo alam kung alin ka?"},
+    "ms": {"title": "Mikrotes: Gaya Sosial", "description": "Jawab 5 soalan untuk mengenali gaya sosial anda.", "trigger_button_text": "Tidak tahu yang mana satu?"},
+    "mi": {"title": "Whakamātau iti: Āhua pāpori", "description": "Whakautu i ngā pātai 5 kia mōhio ki tō āhua pāpori.", "trigger_button_text": "Kāore e mōhio ana ko tēhea koe?"},
+    "am": {"title": "ትንሽ የሙከራ: ማህበራዊ ዘዴ", "description": "ማህበራዊ ዘዴህን ለማወቅ ከ፰ ጥያቄዎች መልስ ይስጡ።", "trigger_button_text": "የትኛው እንደሆንክ አታውቅም?"},
+}
+
 # Each slide: order + per-language title/description/ok_label/ko_label
 PHOTOS_VISUAL_SLIDES_I18N = [
     {
