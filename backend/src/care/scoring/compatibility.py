@@ -32,7 +32,7 @@ async def get_compatibility_weights() -> Dict[str, float]:
         AlgorithmFactor.status == FactorStatus.ACTIVE,
     ).to_list()
 
-    # Defaults based on seed data if DB is empty
+# Defaults based on seed data if DB is empty
     defaults = {
         "Intereses Musicales": 0.14,
         "Metas de Relación": 0.20,
@@ -40,6 +40,7 @@ async def get_compatibility_weights() -> Dict[str, float]:
         "Estilo de Comunicación": 0.15,
         "Valores": 0.36,
         "Neurodiversidad": 0.15,
+        "Actividad": 0.10,
     }
 
     if not factors:
@@ -119,6 +120,11 @@ async def compatibility_score(
     # 9. My Anthem (Emocional)
     anthem_score = calculate_anthem_compatibility(user.anthem, candidate.anthem)
     score += anthem_score * weights.get("Himno", 0.05)
+
+    # 10. Actividad Reciente (Responsiveness)
+    # Factor de actividad basado en last_active (24h ventana)
+    activity_score = calculate_activity_score(user.last_active, candidate.last_active)
+    score += activity_score * weights.get("Actividad", 0.10)
 
     # Extra factors (Communication Style, Love Language - Mixed into blocks)
     ll_score = calculate_love_language_compatibility(
@@ -842,3 +848,44 @@ def calculate_anthem_compatibility(
         return 1.0
 
     return 0.4
+
+
+def calculate_activity_score(
+    user_last_active: Optional[datetime], candidate_last_active: Optional[datetime]
+) -> float:
+    """
+    Calculate activity/responsiveness score based on last_active timestamps.
+    
+    Scoring logic:
+    - 1.0: Both users active within the last 24 hours
+    - 0.75: Both users active within the last 72 hours
+    - 0.5: Both users active within the last week
+    - 0.25: One or both users active within the last month
+    - 0.0: No activity detected in the last month
+    
+    This factor rewards responsive users and helps surface active matches.
+    """
+    from datetime import datetime, timedelta
+    
+    now = datetime.utcnow()
+    
+    # If either user has no last_active data, return neutral score
+    if not user_last_active or not candidate_last_active:
+        return 0.5
+    
+    user_recency = (now - user_last_active).total_seconds() / 86400  # days
+    candidate_recency = (now - candidate_last_active).total_seconds() / 86400  # days
+    
+    # Use the more active user's recency as the basis
+    recency = min(user_recency, candidate_recency)
+    
+    if recency <= 1:  # Within 24 hours
+        return 1.0
+    elif recency <= 3:  # Within 72 hours
+        return 0.75
+    elif recency <= 7:  # Within 7 days
+        return 0.5
+    elif recency <= 30:  # Within 30 days
+        return 0.25
+    else:
+        return 0.0
