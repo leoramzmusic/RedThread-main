@@ -4,6 +4,7 @@ UserProfile data model for CARE Engine.
 Represents a user's profile attributes and preferences for matching.
 """
 
+from datetime import datetime
 from typing import List, Optional, Dict, Tuple
 from pydantic import BaseModel, Field
 
@@ -85,6 +86,9 @@ class UserProfile(BaseModel):
 
     # Emotional Narrative
     anthem: Optional[Dict] = None  # { "title": str, "artist": str, "spotify_id": str }
+
+    # Activity
+    last_active: Optional[datetime] = None
 
     # Preferences
     visibility_preferences: dict = Field(default_factory=dict)

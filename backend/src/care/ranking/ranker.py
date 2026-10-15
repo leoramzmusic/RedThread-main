@@ -94,6 +94,14 @@ async def rank_candidates(
             }
         )
 
+    # Optional min-compatibility gate (active formula threshold; 0.0 = disabled)
+    from src.care.scoring.compatibility import get_active_formula_config
+
+    formula_config = await get_active_formula_config()
+    min_compat = formula_config.get("min_compatibility", 0.0)
+    if min_compat > 0.0:
+        scored = [item for item in scored if item["compat_score"] >= min_compat]
+
     # Group by popularity bucket
     buckets = group_by_bucket(scored)
 

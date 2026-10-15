@@ -10,44 +10,78 @@ Calculates profile-level compatibility based on:
 """
 
 from datetime import datetime
-from typing import Dict, Optional, List
+from typing import Any, Dict, Optional, List
 from src.care.models.user_profile import UserProfile
 from src.care.models.candidate_profile import CandidateProfile
 from src.care.models.system_params import SystemParams
+from src.care.formula.service import (
+    CANONICAL_BLOCKS,
+    clamp_score,
+    compatibility_label,
+    compute_chi,
+)
 from src.data.lifestyle_categories import LIFESTYLE_CATEGORIES
 
 
+DEFAULT_FORMULA_CONFIG = {
+    "version": 0,
+    "blocks": CANONICAL_BLOCKS,
+    "chaos_factor": 0.0,
+    "chaos_seed": None,
+    "min_compatibility": 0.0,
+    "match_critical": 0.15,
+}
+
+
+async def get_active_formula_config() -> Dict:
+    """Active formula config; safe fallback if DB/model unavailable."""
+    try:
+        from src.care.models.care_formula import CAREFormula
+
+        formula = await CAREFormula.find_one(CAREFormula.status == "active")
+        if formula is None:
+            return dict(DEFAULT_FORMULA_CONFIG)
+        return {
+            "version": formula.version,
+            "blocks": dict(formula.blocks),
+            "chaos_factor": formula.chaos_factor,
+            "chaos_seed": formula.chaos_seed,
+            "min_compatibility": formula.min_compatibility,
+            "match_critical": formula.match_critical,
+        }
+    except Exception:
+        return dict(DEFAULT_FORMULA_CONFIG)
+
+
 async def get_compatibility_weights() -> Dict[str, float]:
-    """
-    Fetch active compatibility weights from database.
-    Returns a dictionary of normalized weights (0.0 - 1.0).
-    """
-    from src.models.algorithm_management import (
-        AlgorithmFactor,
-        AlgorithmType,
-        FactorStatus,
-    )
+    """Canonical weights from the active formula (fallback: defaults)."""
+    config = await get_active_formula_config()
+    return config["blocks"]
 
-    factors = await AlgorithmFactor.find(
-        AlgorithmFactor.algorithm_type == AlgorithmType.COMPATIBILITY,
-        AlgorithmFactor.status == FactorStatus.ACTIVE,
-    ).to_list()
 
-# Defaults based on seed data if DB is empty
-    defaults = {
-        "Intereses Musicales": 0.14,
-        "Metas de Relación": 0.20,
-        "Lenguaje del Amor": 0.09,
-        "Estilo de Comunicación": 0.15,
-        "Valores": 0.36,
-        "Neurodiversidad": 0.15,
-        "Actividad": 0.10,
+async def compute_block_scores(
+    user: UserProfile, candidate: CandidateProfile
+) -> Dict[str, float]:
+    """The 7 canonical dimension scores fᵢ in 0–1."""
+    return {
+        "values": calculate_values_compatibility(user.values, candidate.values),
+        "relationship_goals": calculate_intent_compatibility(
+            user.relationship_goals, candidate.relationship_goals
+        ),
+        "neurodiversity": calculate_neuro_compatibility(
+            user.neurodiversity, candidate.neurodiversity
+        ),
+        "responsiveness": calculate_activity_score(
+            user.last_active, candidate.last_active
+        ),
+        "music": calculate_anthem_compatibility(user.anthem, candidate.anthem),
+        "love_language": calculate_love_language_compatibility(
+            user.love_language, candidate.love_language
+        ),
+        "communication_style": calculate_communication_style_compatibility(
+            user.communication_style, candidate.communication_style
+        ),
     }
-
-    if not factors:
-        return defaults
-
-    return {f.name: f.weight / 100.0 for f in factors}
 
 
 async def compatibility_score(
@@ -57,163 +91,66 @@ async def compatibility_score(
     weights: Dict[str, float] = None,
     strict: bool = True,
 ) -> float:
-    """
-    Calculate compatibility score across 9 functional blocks.
-    """
-    if params is None:
-        params = SystemParams()
-
-    if weights is None:
-        weights = await get_compatibility_weights()
-
-    # 1. Identity & Attraction (CRITICAL FILTER + Weight)
+    """CARE_score = Σ wᵢ·fᵢ + χ(t), clamped to [0, 1]. Identity is a hard pre-filter."""
     identity_compat = calculate_identity_block_compatibility(
         user, candidate, strict=strict
     )
     if identity_compat == 0.0:
-        return 0.0  # Safe stop if no mutual attraction
+        return 0.0
 
-    score = 0.0
+    config = await get_active_formula_config()
+    if weights is None:
+        weights = config["blocks"]
 
-    # 1. Interests (Categorized) - Weighted as block
-    interests_score = calculate_interests_compatibility(
-        user.interests, candidate.interests
+    blocks = await compute_block_scores(user, candidate)
+    base = sum(weights.get(k, 0.0) * v for k, v in blocks.items())
+    chi = compute_chi(
+        config["chaos_factor"],
+        config["chaos_seed"],
+        str(user.id),
+        str(candidate.id),
+        config["version"],
     )
-    score += interests_score * weights.get("Intereses", 0.15)
-
-    # 2. Identity Block (Atracción y respeto)
-    score += identity_compat * weights.get("Identidad", 0.15)
-
-    # 3. Relationship Goals (Expectativas)
-    intent_score = calculate_intent_compatibility(
-        user.relationship_goals, candidate.relationship_goals
-    )
-    score += intent_score * weights.get("Metas de Relación", 0.15)
-
-    # 4. Personality Traits (Complementariedad)
-    personality_score = calculate_personality_compatibility(
-        user.personality_traits, candidate.personality_traits
-    )
-    score += personality_score * weights.get("Personalidad", 0.10)
-
-    # 5. Neurodiversity & Health (Cuidado mutuo)
-    neuro_score = calculate_neuro_compatibility(
-        user.neurodiversity, candidate.neurodiversity
-    )
-    score += neuro_score * weights.get("Neurodiversidad", 0.10)
-
-    # 6. Location & Scope (Logístico)
-    # Proximity is handled as a contextual tone, but we add a small logistical weight
-    from src.care.utils.geo import haversine_distance
-
-    distance_km = haversine_distance(user.location, candidate.location)
-    loc_score = calculate_location_logistical_score(user, candidate, distance_km)
-    score += loc_score * weights.get("Ubicación", 0.05)
-
-    # 7. Languages (Comunicación)
-    lang_score = calculate_languages_compatibility(user, candidate)
-    score += lang_score * weights.get("Idiomas", 0.05)
-
-    # 8. Professional & Academic (Contexto - Contextual boost)
-    prof_score = calculate_professional_compatibility(user, candidate)
-    score += prof_score * weights.get("Profesional", 0.05)
-
-    # 9. My Anthem (Emocional)
-    anthem_score = calculate_anthem_compatibility(user.anthem, candidate.anthem)
-    score += anthem_score * weights.get("Himno", 0.05)
-
-    # 10. Actividad Reciente (Responsiveness)
-    # Factor de actividad basado en last_active (24h ventana)
-    activity_score = calculate_activity_score(user.last_active, candidate.last_active)
-    score += activity_score * weights.get("Actividad", 0.10)
-
-    # Extra factors (Communication Style, Love Language - Mixed into blocks)
-    ll_score = calculate_love_language_compatibility(
-        user.love_language, candidate.love_language
-    )
-    cs_score = calculate_communication_style_compatibility(
-        user.communication_style, candidate.communication_style
-    )
-    score += (ll_score * 0.05) + (cs_score * 0.05)
-
-    # Clamp and return
-    return max(0.0, min(1.0, score))
+    score, _ = clamp_score(base + chi)
+    return score
 
 
 async def compatibility_breakdown(
     user: UserProfile, candidate: CandidateProfile, params: SystemParams = None
-) -> Dict[str, float]:
-    """
-    Calculate compatibility breakdown between user and candidate.
-    Returns individual component scores (0-1).
-    """
-    if params is None:
-        params = SystemParams()
-
-    # Interest score
-    interests_score = calculate_interests_compatibility(
-        user.interests, candidate.interests
+) -> Dict[str, Any]:
+    """Full breakdown: 7 numeric blocks + chaos/clamp/label + narrative context."""
+    config = await get_active_formula_config()
+    weights = config["blocks"]
+    blocks = await compute_block_scores(user, candidate)
+    base = sum(weights.get(k, 0.0) * v for k, v in blocks.items())
+    chi = compute_chi(
+        config["chaos_factor"],
+        config["chaos_seed"],
+        str(user.id),
+        str(candidate.id),
+        config["version"],
     )
+    final_score, saturated = clamp_score(base + chi)
 
-    # Values score
-    values_score = calculate_values_compatibility(user.values, candidate.values)
-
-    # Identity & Attraction
-    identity_compat = calculate_sexual_identity_compatibility(user, candidate)
-    identity_ctx = calculate_identity_context(user, candidate)
-
-    # Intent score
-    intent_score = calculate_intent_compatibility(
-        user.relationship_goals, candidate.relationship_goals
-    )
-
-    # Love Language score
-    ll_score = calculate_love_language_compatibility(
-        user.love_language, candidate.love_language
-    )
-
-    # Comm Style score
-    cs_score = calculate_communication_style_compatibility(
-        user.communication_style, candidate.communication_style
-    )
-
-    # Proximity (KM only)
     from src.care.utils.geo import haversine_distance
 
     distance_km = haversine_distance(user.location, candidate.location)
-
-    # Height score
-    height_score = calculate_height_compatibility(user, candidate)
-
-    # Professional score
-    prof_score = calculate_professional_compatibility(user, candidate)
-    prof_ctx = calculate_professional_context(user, candidate)
-
-    # Calculate Location Context (Tone & Scenario - No influence on pure score)
     location_ctx = calculate_location_context(user, candidate, distance_km)
 
-    return {
-        "interests": interests_score,
-        "values": values_score,
-        "identity_compatibility": identity_compat,
-        "identity_context": identity_ctx,
-        "intent": intent_score,
-        "love_language": ll_score,
-        "communication_style": cs_score,
-        "lifestyle": (
-            1.0
-            if user.lifestyle == candidate.lifestyle
-            else 0.5 if (user.lifestyle and candidate.lifestyle) else 0.0
-        ),
-        "proximity_km": distance_km,
-        "height_compatibility": height_score,
-        "professional_compatibility": prof_score,
-        "professional_advice": prof_ctx["advice"],
-        "professional_tone": prof_ctx["tone"],
-        "scenario_label": location_ctx["scenario_label"],
-        "connection_tone": location_ctx["tone"],
-        "context_advice": location_ctx["advice"],
-    }
+    result: Dict[str, Any] = dict(blocks)
+    result.update(
+        {
+            "chaos_applied": chi,
+            "saturated": saturated,
+            "compatibility_label": compatibility_label(final_score),
+            "final_score": final_score,
+            "proximity_km": distance_km,
+            "scenario_label": location_ctx["scenario_label"],
+            "connection_tone": location_ctx["tone"],
+            "context_advice": location_ctx["advice"],
+        }
+    )
+    return result
 
 
 def calculate_location_context(
