@@ -1,8 +1,12 @@
 """Tests for CAREFormula model constants and pure helpers."""
+import random
 import pytest
 from src.care.formula.service import (
     CANONICAL_BLOCKS,
     CANONICAL_LABELS_ES,
+    clamp_score,
+    compatibility_label,
+    compute_chi,
     normalize_blocks,
     validate_formula_dict,
 )
@@ -74,3 +78,44 @@ def test_normalize_raises_if_no_free_dimensions():
     blocks = {k: 0.1 for k in CANONICAL_BLOCKS}
     with pytest.raises(ValueError):
         normalize_blocks(blocks, locked=set(CANONICAL_BLOCKS))
+
+
+def test_label_bands():
+    assert compatibility_label(0.9) == "Alto"
+    assert compatibility_label(0.70) == "Alto"
+    assert compatibility_label(0.55) == "Medio"
+    assert compatibility_label(0.50) == "Medio"
+    assert compatibility_label(0.40) == "Bajo"
+    assert compatibility_label(0.30) == "Bajo"
+    assert compatibility_label(0.29) == "Muy bajo"
+
+
+def test_chi_zero_factor_is_zero_and_skips_rng():
+    assert compute_chi(0.0, "abc", "u1", "c1", 1) == 0.0
+    assert compute_chi(0.0, None, "u1", "c1", 1) == 0.0
+
+
+def test_chi_deterministic_with_seed():
+    a = compute_chi(10.0, "seed-x", "u1", "c1", 3)
+    b = compute_chi(10.0, "seed-x", "u1", "c1", 3)
+    assert a == b
+    assert -0.10 <= a <= 0.10
+
+
+def test_chi_varies_per_pair_and_version():
+    a = compute_chi(10.0, "seed-x", "u1", "c1", 3)
+    b = compute_chi(10.0, "seed-x", "u2", "c2", 3)
+    c = compute_chi(10.0, "seed-x", "u1", "c1", 4)
+    assert a != b or a != c  # con alta probabilidad; semillas distintas
+
+
+def test_chi_unseeded_within_bounds():
+    for _ in range(50):
+        chi = compute_chi(5.0, None, "u", "c", 1)
+        assert -0.05 <= chi <= 0.05
+
+
+def test_clamp_score():
+    assert clamp_score(1.2) == (1.0, True)
+    assert clamp_score(-0.1) == (0.0, True)
+    assert clamp_score(0.5) == (0.5, False)

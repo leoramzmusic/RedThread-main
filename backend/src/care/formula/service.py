@@ -1,5 +1,6 @@
 """CARE formula domain logic (pure helpers + DB wrappers)."""
-from typing import Any, Dict, List, Set
+import random
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 CANONICAL_BLOCKS: Dict[str, float] = {
     "values": 0.36,
@@ -83,3 +84,38 @@ def normalize_blocks(blocks: Dict[str, float], locked: Set[str]) -> Dict[str, fl
     if free and diff != 0:
         out[free[-1]] = round(out[free[-1]] + diff, 10)
     return out
+
+
+def compatibility_label(score: float) -> str:
+    if score >= 0.70:
+        return "Alto"
+    if score >= 0.50:
+        return "Medio"
+    if score >= 0.30:
+        return "Bajo"
+    return "Muy bajo"
+
+
+def compute_chi(
+    factor_pct: float,
+    seed: Optional[str],
+    user_id: str,
+    candidate_id: str,
+    version: int,
+) -> float:
+    """Chaos term χ(t): uniform in [-factor/100, +factor/100]; deterministic if seed set."""
+    if not factor_pct:
+        return 0.0
+    if seed is None:
+        rng = random.Random()
+    else:
+        rng = random.Random(f"{seed}:{user_id}:{candidate_id}:{version}")
+    return rng.uniform(-1.0, 1.0) * (factor_pct / 100.0)
+
+
+def clamp_score(value: float) -> Tuple[float, bool]:
+    if value > 1.0:
+        return 1.0, True
+    if value < 0.0:
+        return 0.0, True
+    return value, False
