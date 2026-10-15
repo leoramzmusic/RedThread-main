@@ -81,7 +81,7 @@ export default function NeurodiversitySelector({
           py: 1,
           px: 1,
           mb: 0.5,
-          borderRadius: 2,
+          borderRadius: 0,
           bgcolor: alpha(categoryColor, 0.05),
           border: "1px solid",
           borderColor: "divider",
@@ -95,8 +95,9 @@ export default function NeurodiversitySelector({
         <Box
           sx={{
             display: "flex",
-            alignItems: "center"
-          }}>
+            alignItems: "center",
+          }}
+        >
           {icon && (
             <Box sx={{ mr: 1.5, color: categoryColor, display: "flex" }}>
               {icon}
@@ -154,7 +155,7 @@ export default function NeurodiversitySelector({
           sx={{
             p: 2,
             mt: 0.5,
-            borderRadius: 3,
+            borderRadius: 0,
             bgcolor: "background.paper",
             borderColor: "divider",
           }}
@@ -165,8 +166,9 @@ export default function NeurodiversitySelector({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 2
-            }}>
+              mb: 2,
+            }}
+          >
             <Controller
               name={privacyName}
               control={control}
@@ -181,9 +183,12 @@ export default function NeurodiversitySelector({
                     />
                   }
                   label={
-                    <Typography variant="caption" sx={{
-                      color: "text.secondary"
-                    }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                      }}
+                    >
                       {t("profile.cognitive.neurodiversity_show")}
                     </Typography>
                   }
@@ -315,8 +320,9 @@ export default function NeurodiversitySelector({
                       display: "flex",
                       gap: 1,
                       mb: 2,
-                      flexWrap: "wrap"
-                    }}>
+                      flexWrap: "wrap",
+                    }}
+                  >
                     {["other", "not_sure", "prefer_not_to_say"].map((val) => {
                       const isSelected = currentValues.includes(val);
                       return (
@@ -408,8 +414,9 @@ export default function NeurodiversitySelector({
                           sx={{
                             display: "flex",
                             flexDirection: "column",
-                            gap: 1.5
-                          }}>
+                            gap: 1.5,
+                          }}
+                        >
                           {filteredValues.map((val: string) => {
                             const isDiagnosed = currentDiags.includes(val);
                             const option = options.find((o) => o.value === val);
@@ -421,7 +428,7 @@ export default function NeurodiversitySelector({
                                 variant="outlined"
                                 sx={{
                                   p: 1.5,
-                                  borderRadius: 2,
+                                  borderRadius: 0,
                                   bgcolor: alpha(categoryColor, 0.02),
                                   borderColor: isDiagnosed
                                     ? alpha(categoryColor, 0.3)
@@ -434,8 +441,9 @@ export default function NeurodiversitySelector({
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "space-between",
-                                    mb: 1
-                                  }}>
+                                    mb: 1,
+                                  }}
+                                >
                                   <Typography
                                     variant="subtitle2"
                                     sx={{ fontWeight: 700 }}
@@ -460,8 +468,9 @@ export default function NeurodiversitySelector({
                                   sx={{
                                     display: "flex",
                                     alignItems: "center",
-                                    justifyContent: "space-between"
-                                  }}>
+                                    justifyContent: "space-between",
+                                  }}
+                                >
                                   <FormControlLabel
                                     control={
                                       <Checkbox
@@ -531,7 +540,7 @@ export default function NeurodiversitySelector({
             sx={{
               mt: 3,
               p: 2,
-              borderRadius: 2,
+              borderRadius: 0,
               bgcolor: alpha(theme.palette.info.main, 0.05),
               border: "1px dashed",
               borderColor: alpha(theme.palette.info.main, 0.3),
@@ -540,17 +549,21 @@ export default function NeurodiversitySelector({
             <Box
               sx={{
                 display: "flex",
-                gap: 1.5
-              }}>
+                gap: 1.5,
+              }}
+            >
               <InfoOutlined color="info" sx={{ fontSize: 20, mt: 0.2 }} />
               <Typography
                 variant="caption"
                 sx={{
                   color: "text.secondary",
                   fontStyle: "italic",
-                  lineHeight: 1.4
-                }}>
-                {t("profile.cognitive.neurodiversity_self_id_help")}
+                  lineHeight: 1.4,
+                }}
+              >
+                {
+                  "If you have not been professionally diagnosed, this selection is considered self-identification. It will not be used for compatibility or shown publicly without your consent."
+                }
               </Typography>
             </Box>
           </Box>

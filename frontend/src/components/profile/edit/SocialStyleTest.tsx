@@ -165,7 +165,8 @@ export default function SocialStyleTest({
           py: 3,
           boxSizing: "border-box",
           bgcolor: (theme) => alpha(theme.palette.primary.main, 0.02),
-          borderRadius: 4,
+          borderRadius: { xs: "8px", sm: "10px", md: "12px" },
+          boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)",
           mt: 2,
           border: "1px dashed",
           borderColor: "divider",
@@ -178,12 +179,16 @@ export default function SocialStyleTest({
             display: "flex",
             alignItems: "center",
             gap: 1,
-            mb: 3
-          }}>
+            mb: 3,
+          }}
+        >
           <Psychology color="primary" />
-          <Typography variant="h6" sx={{
-            fontWeight: 700
-          }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             {t(
               "profile.personality.microtest.title",
               "Microtest: Estilo Social",
@@ -212,8 +217,9 @@ export default function SocialStyleTest({
                   gutterBottom
                   sx={{
                     fontWeight: 600,
-                    mb: 2
-                  }}>
+                    mb: 2,
+                  }}
+                >
                   {questions[activeStep].text}
                 </Typography>
                 <FormControl component="fieldset" fullWidth>
@@ -230,14 +236,20 @@ export default function SocialStyleTest({
                       sx={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: 1
-                      }}>
+                        gap: 1,
+                      }}
+                    >
                       {questions[activeStep].options.map((opt) => (
                         <Paper
                           key={opt.value}
                           variant="outlined"
                           sx={{
-                            borderRadius: 2,
+                            borderRadius: {
+                              xs: "8px",
+                              sm: "10px",
+                              md: "12px",
+                            },
+                            boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
                             bgcolor:
                               answers[questions[activeStep].id] === opt.value
                                 ? alpha(theme.palette.primary.main, 0.05)
@@ -246,9 +258,10 @@ export default function SocialStyleTest({
                               answers[questions[activeStep].id] === opt.value
                                 ? theme.palette.primary.main
                                 : "divider",
-                            transition: "all 0.2s",
+                            transition: "all 0.2s ease",
                             "&:hover": {
                               bgcolor: alpha(theme.palette.primary.main, 0.02),
+                              boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
                             },
                           }}
                         >
@@ -273,16 +286,18 @@ export default function SocialStyleTest({
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  mt: 4
-                }}>
+                  mt: 4,
+                }}
+              >
                 <Button onClick={handleClose} size="small" color="inherit">
                   {t("profile.personality.microtest.cancel", "Cancelar")}
                 </Button>
                 <Box
                   sx={{
                     display: "flex",
-                    gap: 1
-                  }}>
+                    gap: 1,
+                  }}
+                >
                   <Button
                     disabled={activeStep === 0}
                     onClick={handleBack}
@@ -310,8 +325,9 @@ export default function SocialStyleTest({
             <Box
               sx={{
                 textAlign: "center",
-                py: 2
-              }}>
+                py: 2,
+              }}
+            >
               <CheckCircle
                 color="success"
                 sx={{ fontSize: 48, mb: 1, opacity: 0.8 }}
@@ -321,7 +337,7 @@ export default function SocialStyleTest({
                 color="primary"
                 gutterBottom
                 sx={{
-                  fontWeight: 700
+                  fontWeight: 700,
                 }}
               >
                 {t(
@@ -341,14 +357,20 @@ export default function SocialStyleTest({
                 sx={{
                   p: 2,
                   bgcolor: alpha(theme.palette.primary.main, 0.05),
-                  borderRadius: 3,
+                  borderRadius: { xs: "8px", sm: "10px", md: "12px" },
+                  boxShadow:
+                    "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)",
+                  overflow: "hidden",
                   textAlign: "left",
                   mb: 4,
                 }}
               >
-                <Typography variant="caption" sx={{
-                  color: "text.secondary"
-                }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {t(
                     "profile.personality.microtest.done.expl",
                     "Basado en tus respuestas, este es el estilo que mejor encaja contigo. Puedes aplicarlo ahora o cambiarlo manualmente después.",
@@ -360,8 +382,9 @@ export default function SocialStyleTest({
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  gap: 2
-                }}>
+                  gap: 2,
+                }}
+              >
                 <Button
                   onClick={() => setShowResult(false)}
                   color="inherit"
