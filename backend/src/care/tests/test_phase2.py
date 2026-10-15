@@ -14,8 +14,9 @@ from src.care.scoring.human_adjustment import human_adjustment
 def test_dynamic_score_with_tag_affinity():
     """Test dynamic scoring with tag affinity from interaction history."""
     candidate = CandidateProfile(
-        id=uuid4(),
+        id=str(uuid4()),
         age=28,
+        gender="male",
         location=(19.4, -99.1),
         photo_tags=["playa", "música"],
         bio_tags=["viajes"],
@@ -25,7 +26,7 @@ def test_dynamic_score_with_tag_affinity():
 
     # User has liked profiles with "playa" and "música" tags
     interaction_log = InteractionLog(
-        user_id=uuid4(),
+        user_id=str(uuid4()),
         candidate_id=candidate.id,
         aggregate_features=AggregateFeatures(
             liked_tags={"playa": 5, "música": 3, "viajes": 2}
@@ -41,8 +42,9 @@ def test_dynamic_score_with_tag_affinity():
 def test_human_adjustment_vanity_penalty():
     """Test that high popularity + low responsiveness gets penalized."""
     candidate = CandidateProfile(
-        id=uuid4(),
+        id=str(uuid4()),
         age=28,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=150),  # High
         responsiveness_score=0.1,  # Low
@@ -58,8 +60,9 @@ def test_human_adjustment_vanity_penalty():
 def test_human_adjustment_diversity_boost():
     """Test that low-exposure profiles get boosted."""
     candidate = CandidateProfile(
-        id=uuid4(),
+        id=str(uuid4()),
         age=28,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=5),  # Very low
         responsiveness_score=0.8,
@@ -75,8 +78,9 @@ def test_human_adjustment_diversity_boost():
 def test_human_adjustment_ghosting_penalty():
     """Test that high ghosting rate gets penalized."""
     candidate = CandidateProfile(
-        id=uuid4(),
+        id=str(uuid4()),
         age=28,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=50),
         responsiveness_score=0.5,

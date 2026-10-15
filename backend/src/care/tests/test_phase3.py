@@ -72,8 +72,9 @@ def test_high_pop_limiting():
             {
                 "candidate_id": f"high_{i}",
                 "candidate": CandidateProfile(
-                    id=uuid4(),
+                    id=str(uuid4()),
                     age=28,
+                    gender="male",
                     location=(19.4, -99.1),
                     popularity_signals=PopularitySignals(likes_received=150 + i),
                 ),
@@ -87,8 +88,9 @@ def test_high_pop_limiting():
             {
                 "candidate_id": f"normal_{i}",
                 "candidate": CandidateProfile(
-                    id=uuid4(),
+                    id=str(uuid4()),
                     age=28,
+                    gender="male",
                     location=(19.4, -99.1),
                     popularity_signals=PopularitySignals(likes_received=50 + i),
                 ),
@@ -113,8 +115,9 @@ def test_metric_gaming_detection():
     """Test detection of suspicious gaming behavior."""
     # Collector profile: high likes, low responsiveness
     collector = CandidateProfile(
-        id=uuid4(),
+        id=str(uuid4()),
         age=28,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=250),
         responsiveness_score=0.1,
@@ -125,8 +128,9 @@ def test_metric_gaming_detection():
 
     # Normal profile
     normal = CandidateProfile(
-        id=uuid4(),
+        id=str(uuid4()),
         age=28,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=50),
         responsiveness_score=0.7,

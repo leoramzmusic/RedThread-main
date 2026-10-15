@@ -13,6 +13,7 @@ def test_popularity_bucketing():
     low_pop = CandidateProfile(
         id=str(uuid4()),
         age=25,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=5),
     )
@@ -20,6 +21,7 @@ def test_popularity_bucketing():
     mid_pop = CandidateProfile(
         id=str(uuid4()),
         age=26,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=50),
     )
@@ -27,6 +29,7 @@ def test_popularity_bucketing():
     high_pop = CandidateProfile(
         id=str(uuid4()),
         age=27,
+        gender="male",
         location=(19.4, -99.1),
         popularity_signals=PopularitySignals(likes_received=150),
     )
@@ -42,6 +45,7 @@ async def test_diversity_quotas():
     user = UserProfile(
         id=str(uuid4()),
         age=28,
+        gender="female",
         preferred_age_range=(25, 35),
         location=(19.4326, -99.1332),
         max_distance_km=50,
@@ -58,6 +62,7 @@ async def test_diversity_quotas():
             CandidateProfile(
                 id=str(uuid4()),
                 age=28,
+                gender="male",
                 location=(19.4, -99.1),
                 interests=["música"],
                 popularity_signals=PopularitySignals(likes_received=5 + i),
@@ -70,6 +75,7 @@ async def test_diversity_quotas():
             CandidateProfile(
                 id=str(uuid4()),
                 age=28,
+                gender="male",
                 location=(19.4, -99.1),
                 interests=["música"],
                 popularity_signals=PopularitySignals(likes_received=50 + i),
@@ -82,6 +88,7 @@ async def test_diversity_quotas():
             CandidateProfile(
                 id=str(uuid4()),
                 age=28,
+                gender="male",
                 location=(19.4, -99.1),
                 interests=["música"],
                 popularity_signals=PopularitySignals(likes_received=150 + i),
@@ -111,6 +118,7 @@ async def test_ranking_returns_top_scores():
     user = UserProfile(
         id=str(uuid4()),
         age=28,
+        gender="female",
         preferred_age_range=(25, 35),
         location=(19.4326, -99.1332),
         max_distance_km=50,
@@ -122,6 +130,7 @@ async def test_ranking_returns_top_scores():
     high_compat = CandidateProfile(
         id=str(uuid4()),
         age=30,
+        gender="male",
         location=(19.4, -99.1),
         interests=["música", "arte", "viajes"],  # 3 shared
         values=["autenticidad", "empatía"],  # 2 shared
@@ -132,6 +141,7 @@ async def test_ranking_returns_top_scores():
     low_compat = CandidateProfile(
         id=str(uuid4()),
         age=30,
+        gender="male",
         location=(19.4, -99.1),
         interests=["deportes"],  # 0 shared
         values=["aventura"],  # 0 shared
