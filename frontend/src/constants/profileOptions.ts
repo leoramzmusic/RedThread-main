@@ -396,6 +396,11 @@ export const ATTRACTION_ORIENTATION_OPTIONS = [
     description: "Atracción por el género opuesto.",
   },
   {
+    value: "homosexual",
+    label: "Homosexual",
+    description: "Atracción por personas del mismo género.",
+  },
+  {
     value: "bisexual",
     label: "Bisexual",
     description: "Atracción por ambos géneros tradicionales.",
@@ -425,7 +430,16 @@ export const ATTRACTION_ORIENTATION_OPTIONS = [
     label: "Sapioerótico/Sapiosexual",
     description: "Atracción por la inteligencia y el mundo interno.",
   },
+  {
+    value: "prefer_not_to_say",
+    label: "Prefiero no decir",
+    description: "Prefiero no especificar mi orientación.",
+  },
 ];
+
+export const supportedOrientations = ATTRACTION_ORIENTATION_OPTIONS.map(
+  (option) => option.value,
+);
 
 export const IDENTITY_COLORS = {
   traditional: "#2196F3", // Azul

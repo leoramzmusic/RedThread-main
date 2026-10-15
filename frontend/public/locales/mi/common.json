@@ -620,6 +620,17 @@
         "text": "Ka āwhina tō tuakiri ki te whakaaro i te pono o tō kōrero whakapapa, ā, ka tiaki i te haumaru o te hapori. Kāore mātou e tukua i tō raraunga kore i tō whakaae.",
         "button": "E mārama ana"
       }
+    },
+    "orientations": {
+      "heterosexual": "Takatahitahi",
+      "homosexual": "Takatāpui",
+      "bisexual": "Takahitua",
+      "pansexual": "Takamaha",
+      "asexual": "Takakore",
+      "queer": "Queer",
+      "demisexual": "Demisexual",
+      "sapioerotico": "Sapioerotic",
+      "prefer_not_to_say": "Kāore e hiahia ana ki te kī"
     }
   },
   "card": {
@@ -996,6 +1007,10 @@
           "label": "Takatahitahi",
           "desc": "Whakapoapoa ki te ira kē."
         },
+        "homosexual": {
+          "label": "Takatāpui",
+          "desc": "Te hiahia ki ngā tāngata o te ira kotahi."
+        },
         "bisexual": {
           "label": "Takahitua",
           "desc": "Whakapoapoa ki ngā ira tuku iho e rua."
@@ -1019,6 +1034,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerotic",
           "desc": "Whakapoapoa ki te māramatanga me te ao o roto."
+        },
+        "prefiero_no_decir": {
+          "label": "Kāore e hiahia ana ki te kī",
+          "desc": "Kāore au e hiahia ana ki te whakapūpū i taku aronga."
         }
       }
     }

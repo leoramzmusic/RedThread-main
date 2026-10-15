@@ -662,6 +662,17 @@
         "text": "Din identitet hjälper oss att verifiera din profil och hålla communityn säker. Vi delar aldrig dina uppgifter utan ditt samtycke.",
         "button": "Jag förstår"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heterosexuell",
+      "homosexual": "Homosexuell",
+      "bisexual": "Bisexuell",
+      "pansexual": "Pansexuell",
+      "asexual": "Asexuell",
+      "queer": "Queer",
+      "demisexual": "Demisexuell",
+      "sapioerotico": "Sapioerotisk/Sapiosexuell",
+      "prefer_not_to_say": "Föredrar att inte säga"
     }
   },
   "card": {
@@ -1038,6 +1049,10 @@
           "label": "Heterosexuell",
           "desc": "Attraktion till motsatt kön."
         },
+        "homosexual": {
+          "label": "Homosexuell",
+          "desc": "Attraktion till personer av samma kön."
+        },
         "bisexual": {
           "label": "Bisexuell",
           "desc": "Attraktion till båda traditionella könen."
@@ -1061,6 +1076,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerotisk/Sapiosexuell",
           "desc": "Attraktion till intelligens och inre värld."
+        },
+        "prefiero_no_decir": {
+          "label": "Föredrar att inte säga",
+          "desc": "Jag vill inte ange min läggning."
         }
       }
     }

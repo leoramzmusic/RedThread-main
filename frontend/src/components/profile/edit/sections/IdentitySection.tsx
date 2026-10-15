@@ -34,7 +34,7 @@ import { SectionWithOptionsProps } from "../types";
 
 // Normalized key for display-only option labels. Stored values and matching
 // logic always use the original Spanish strings; only rendering goes through t().
-const normOptKey = (s: string) =>
+export const normOptKey = (s: string) =>
   s
     .toLowerCase()
     .normalize("NFD")
@@ -474,9 +474,9 @@ export default function IdentitySection({
                             field.onChange(e);
                           }}
                         >
-                          {options.sexual_orientation?.map((o: any) => (
+                          {ATTRACTION_ORIENTATION_OPTIONS.map((o) => (
                             <MenuItem key={o.value} value={o.value}>
-                              {o.label}
+                              {t("profile.orientations." + o.value, o.label)}
                             </MenuItem>
                           ))}
                         </Select>

@@ -284,6 +284,17 @@
         "text": "Ton identité nous aide à vérifier ton profil et à garder la communauté en sécurité. Nous ne partagerons jamais tes données sans ton consentement.",
         "button": "J'ai compris"
       }
+    },
+    "orientations": {
+      "heterosexual": "Hétérosexuel",
+      "homosexual": "Homosexuel",
+      "bisexual": "Bisexuel",
+      "pansexual": "Pansexuel",
+      "asexual": "Asexuel",
+      "queer": "Queer",
+      "demisexual": "Démisexuel",
+      "sapioerotico": "Sapioérotique/Sapiosexuel",
+      "prefer_not_to_say": "Préfère ne pas dire"
     }
   },
   "settings_title": "Paramètres",
@@ -975,6 +986,10 @@
           "label": "Hétérosexuel",
           "desc": "Attirance pour le genre opposé."
         },
+        "homosexual": {
+          "label": "Homosexuel",
+          "desc": "Attirance pour les personnes du même genre."
+        },
         "bisexual": {
           "label": "Bisexuel",
           "desc": "Attirance pour les deux genres traditionnels."
@@ -992,12 +1007,16 @@
           "desc": "Identités et orientations hors norme."
         },
         "demisexual": {
-          "label": "Demisexuel",
+          "label": "Démisexuel",
           "desc": "Attirance sexuelle après un lien émotionnel."
         },
         "sapioerotico_sapiosexual": {
           "label": "Sapioérotique/Sapiosexuel",
           "desc": "Attirance pour l’intelligence et le monde intérieur."
+        },
+        "prefiero_no_decir": {
+          "label": "Préfère ne pas dire",
+          "desc": "Je préfère ne pas préciser mon orientation."
         }
       }
     }

@@ -662,6 +662,17 @@
         "text": "Je identiteit helpt ons je profiel te verifiëren en de community veilig te houden. We delen je gegevens nooit zonder je toestemming.",
         "button": "Begrepen"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heteroseksueel",
+      "homosexual": "Homoseksueel",
+      "bisexual": "Biseksueel",
+      "pansexual": "Panseksueel",
+      "asexual": "Aseksueel",
+      "queer": "Queer",
+      "demisexual": "Demiseksueel",
+      "sapioerotico": "Sapio-erotisch/Sapioseksueel",
+      "prefer_not_to_say": "Zeg ik liever niet"
     }
   },
   "card": {
@@ -1038,6 +1049,10 @@
           "label": "Heteroseksueel",
           "desc": "Aantrekking tot het andere geslacht."
         },
+        "homosexual": {
+          "label": "Homoseksueel",
+          "desc": "Aantrekking tot mensen van hetzelfde geslacht."
+        },
         "bisexual": {
           "label": "Biseksueel",
           "desc": "Aantrekking tot beide traditionele geslachten."
@@ -1061,6 +1076,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapio-erotisch/Sapioseksueel",
           "desc": "Aantrekking door intelligentie en innerlijke wereld."
+        },
+        "prefiero_no_decir": {
+          "label": "Zeg ik liever niet",
+          "desc": "Ik wil mijn geaardheid liever niet opgeven."
         }
       }
     }

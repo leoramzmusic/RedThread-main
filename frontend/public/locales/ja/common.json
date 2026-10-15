@@ -660,6 +660,17 @@
         "text": "本人確認はプロフィールの真正性を確認し、コミュニティの安全を保つために役立ちます。同意なくデータを共有することはありません。",
         "button": "わかりました"
       }
+    },
+    "orientations": {
+      "heterosexual": "異性愛者",
+      "homosexual": "同性愛者",
+      "bisexual": "両性愛者",
+      "pansexual": "全性愛者",
+      "asexual": "無性愛者",
+      "queer": "クィア",
+      "demisexual": "デミセクシュアル",
+      "sapioerotico": "サピオエロティック/サピオセクシュアル",
+      "prefer_not_to_say": "言いたくない"
     }
   },
   "card": {
@@ -1033,19 +1044,23 @@
       },
       "orientOpt": {
         "heterosexual": {
-          "label": "異性愛",
+          "label": "異性愛者",
           "desc": "異性への惹かれ。"
         },
+        "homosexual": {
+          "label": "同性愛者",
+          "desc": "同じ性別への惹かれ。"
+        },
         "bisexual": {
-          "label": "両性愛",
+          "label": "両性愛者",
           "desc": "両方の伝統的性別への惹かれ。"
         },
         "pansexual": {
-          "label": "全性愛",
+          "label": "全性愛者",
           "desc": "性別に関わらず人への惹かれ。"
         },
         "asexual": {
-          "label": "無性愛",
+          "label": "無性愛者",
           "desc": "他者への性的惹かれの欠如。"
         },
         "queer": {
@@ -1059,6 +1074,10 @@
         "sapioerotico_sapiosexual": {
           "label": "サピオエロティック/サピオセクシュアル",
           "desc": "知性と内面世界への惹かれ。"
+        },
+        "prefiero_no_decir": {
+          "label": "言いたくない",
+          "desc": "自分の性的指向を明かしたくない。"
         }
       }
     }

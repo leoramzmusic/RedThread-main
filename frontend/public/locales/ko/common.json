@@ -660,6 +660,17 @@
         "text": "신원 확인은 프로필을 검증하고 커뮤니티를 안전하게 지키는 데 도움이 됩니다. 동의 없이 데이터를 공유하지 않습니다.",
         "button": "알겠어요"
       }
+    },
+    "orientations": {
+      "heterosexual": "이성애자",
+      "homosexual": "동성애자",
+      "bisexual": "양성애자",
+      "pansexual": "범성애자",
+      "asexual": "무성애자",
+      "queer": "퀴어",
+      "demisexual": "데미섹슈얼",
+      "sapioerotico": "사피오에로틱/사피오섹슈얼",
+      "prefer_not_to_say": "선택하지 않음"
     }
   },
   "card": {
@@ -1033,19 +1044,23 @@
       },
       "orientOpt": {
         "heterosexual": {
-          "label": "이성애",
+          "label": "이성애자",
           "desc": "반대 성별에 대한 끌림."
         },
+        "homosexual": {
+          "label": "동성애자",
+          "desc": "같은 성별에 대한 끌림."
+        },
         "bisexual": {
-          "label": "양성애",
+          "label": "양성애자",
           "desc": "두 전통적 성별에 대한 끌림."
         },
         "pansexual": {
-          "label": "범성애",
+          "label": "범성애자",
           "desc": "성별에 관계없이 사람에 대한 끌림."
         },
         "asexual": {
-          "label": "무성애",
+          "label": "무성애자",
           "desc": "타인에 대한 성적 끌림 없음."
         },
         "queer": {
@@ -1059,6 +1074,10 @@
         "sapioerotico_sapiosexual": {
           "label": "사피오에로틱/사피오섹슈얼",
           "desc": "지성과 내면세계에 대한 끌림."
+        },
+        "prefiero_no_decir": {
+          "label": "선택하지 않음",
+          "desc": "제 성적 지향을 밝히고 싶지 않습니다."
         }
       }
     }

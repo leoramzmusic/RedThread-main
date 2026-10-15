@@ -620,6 +620,17 @@
         "text": "Pengenalan diri anda membantu kami mengesahkan profil anda dan mengekalkan keselamatan komuniti. Kami tidak akan berkongsi data anda tanpa persetujuan anda.",
         "button": "Faham"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heteroseksual",
+      "homosexual": "Homoseksual",
+      "bisexual": "Biseksual",
+      "pansexual": "Panseksual",
+      "asexual": "Aseksual",
+      "queer": "Queer",
+      "demisexual": "Demiseksual",
+      "sapioerotico": "Sapioerotik",
+      "prefer_not_to_say": "Tidak mahu menyatakan"
     }
   },
   "card": {
@@ -996,6 +1007,10 @@
           "label": "Heteroseksual",
           "desc": "Tarikan kepada jantina bertentangan."
         },
+        "homosexual": {
+          "label": "Homoseksual",
+          "desc": "Tarikan kepada orang yang sama jantina."
+        },
         "bisexual": {
           "label": "Biseksual",
           "desc": "Tarikan kepada kedua-dua jantina tradisional."
@@ -1019,6 +1034,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerotik",
           "desc": "Tarikan kepada kecerdasan dan dunia dalaman."
+        },
+        "prefiero_no_decir": {
+          "label": "Tidak mahu menyatakan",
+          "desc": "Saya lebih suka tidak menyatakan orientasi saya."
         }
       }
     }

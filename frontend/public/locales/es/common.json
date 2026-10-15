@@ -534,6 +534,17 @@
         "text": "Tu identidad nos ayuda a verificar tu perfil y mantener la seguridad de la comunidad. Nunca compartiremos tus datos sin tu consentimiento.",
         "button": "Entendido"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heterosexual",
+      "homosexual": "Homosexual",
+      "bisexual": "Bisexual",
+      "pansexual": "Pansexual",
+      "asexual": "Asexual",
+      "queer": "Queer",
+      "demisexual": "Demisexual",
+      "sapioerotico": "Sapioerótico/Sapiosexual",
+      "prefer_not_to_say": "Prefiero no decir"
     }
   },
   "settings_title": "Configuración",
@@ -1290,6 +1301,10 @@
           "label": "Heterosexual",
           "desc": "Atracción por el género opuesto."
         },
+        "homosexual": {
+          "label": "Homosexual",
+          "desc": "Atracción por personas del mismo género."
+        },
         "bisexual": {
           "label": "Bisexual",
           "desc": "Atracción por ambos géneros tradicionales."
@@ -1313,6 +1328,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerótico/Sapiosexual",
           "desc": "Atracción por la inteligencia y el mundo interno."
+        },
+        "prefiero_no_decir": {
+          "label": "Prefiero no decir",
+          "desc": "Prefiero no especificar mi orientación."
         }
       },
       "doneClose": "Cerrar",

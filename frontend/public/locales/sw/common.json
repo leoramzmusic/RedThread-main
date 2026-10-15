@@ -621,6 +621,17 @@
         "text": "Utambulisho wako hutusaidia kuthibitisha wasifu wako na kudumisha usalama wa jamii. Hatutashiriki data yako kamwe bila ridhaa yako.",
         "button": "Nimeelewa"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heterosexual",
+      "homosexual": "Homosexual",
+      "bisexual": "Bisexual",
+      "pansexual": "Pansexual",
+      "asexual": "Asexual",
+      "queer": "Queer",
+      "demisexual": "Demisexual",
+      "sapioerotico": "Sapioerotic",
+      "prefer_not_to_say": "Sipendi kusema"
     }
   },
   "card": {
@@ -997,6 +1008,10 @@
           "label": "Heterosexual",
           "desc": "Mvuto kwa jinsia tofauti."
         },
+        "homosexual": {
+          "label": "Homosexual",
+          "desc": "Mvuto kwa watu wa jinsia moja."
+        },
         "bisexual": {
           "label": "Bisexual",
           "desc": "Mvuto kwa jinsia zote mbili za kitamaduni."
@@ -1020,6 +1035,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerotic",
           "desc": "Mvuto kwa akili na ulimwengu wa ndani."
+        },
+        "prefiero_no_decir": {
+          "label": "Sipendi kusema",
+          "desc": "Sipendi kubainisha mwelekeo wangu."
         }
       }
     }

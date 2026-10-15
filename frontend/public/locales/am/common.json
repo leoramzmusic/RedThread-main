@@ -621,6 +621,17 @@
         "text": "ማንነትዎ መገናኛ ገጻችዎን ለማረጋገጥና የማህበረሰቡን ደህንነት ለመጠበቅ ያግዛል። ፈቃድዎ ውጭ መረጃዎን አልንሰርም።",
         "button": "ገባኝ"
       }
+    },
+    "orientations": {
+      "heterosexual": "ሄትሮሴክሹዋል",
+      "homosexual": "ሆሞሴክሹዋል",
+      "bisexual": "ባይሴክሹዋል",
+      "pansexual": "ፓንሴክሹዋል",
+      "asexual": "አሴክሹዋል",
+      "queer": "ኩዊር",
+      "demisexual": "ደሚሴክሹዋል",
+      "sapioerotico": "ሳፒዮኤሮቲክ",
+      "prefer_not_to_say": "መናገር አልፈልግም"
     }
   },
   "card": {
@@ -997,6 +1008,10 @@
           "label": "ሄትሮሴክሹዋል",
           "desc": "ወደ ተቃራኒ ጾታ ስሜት።"
         },
+        "homosexual": {
+          "label": "ሆሞሴክሹዋል",
+          "desc": "የአንድ ጾታ ሰዎች መሳሳብ።"
+        },
         "bisexual": {
           "label": "ባይሴክሹዋል",
           "desc": "ወደ ሁለቱም ባህላዊ ጾታዎች ስሜት።"
@@ -1020,6 +1035,10 @@
         "sapioerotico_sapiosexual": {
           "label": "ሳፒዮኤሮቲክ",
           "desc": "ወደ አእምሮ እና ውስጣዊ ዓለም ስሜት።"
+        },
+        "prefiero_no_decir": {
+          "label": "መናገር አልፈልግም",
+          "desc": "የእኔን ዝንባሌ መግለጽ አልፈልግም።"
         }
       }
     }

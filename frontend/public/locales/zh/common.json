@@ -661,6 +661,17 @@
         "text": "身份验证帮助我们确认你的资料并保障社区安全。未经你同意，我们绝不会分享你的数据。",
         "button": "我知道了"
       }
+    },
+    "orientations": {
+      "heterosexual": "异性恋",
+      "homosexual": "同性恋",
+      "bisexual": "双性恋",
+      "pansexual": "泛性恋",
+      "asexual": "无性恋",
+      "queer": "酷儿",
+      "demisexual": "半性恋",
+      "sapioerotico": "智性恋",
+      "prefer_not_to_say": "不愿透露"
     }
   },
   "card": {
@@ -1037,6 +1048,10 @@
           "label": "异性恋",
           "desc": "对异性的吸引。"
         },
+        "homosexual": {
+          "label": "同性恋",
+          "desc": "对同性别的吸引。"
+        },
         "bisexual": {
           "label": "双性恋",
           "desc": "对两种传统性别的吸引。"
@@ -1060,6 +1075,10 @@
         "sapioerotico_sapiosexual": {
           "label": "智性恋",
           "desc": "被智慧与内心世界吸引。"
+        },
+        "prefiero_no_decir": {
+          "label": "不愿透露",
+          "desc": "我不愿透露自己的性取向。"
         }
       }
     }

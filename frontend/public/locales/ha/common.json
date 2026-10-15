@@ -621,6 +621,17 @@
         "text": "Identiti naka yana taimaka mana tabbatar da bayanan ka kuma kiyaye al'umma cikin tsaro. Ba za mu raba bayananka ba tare da yarda ba.",
         "button": "Na fahimta"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heterosexual",
+      "homosexual": "Homosexual",
+      "bisexual": "Bisexual",
+      "pansexual": "Pansexual",
+      "asexual": "Asexual",
+      "queer": "Queer",
+      "demisexual": "Demisexual",
+      "sapioerotico": "Sapioerotic",
+      "prefer_not_to_say": "Ba na so in faɗa"
     }
   },
   "card": {
@@ -997,6 +1008,10 @@
           "label": "Heterosexual",
           "desc": "Jan hankali ga kishiyar jinsi."
         },
+        "homosexual": {
+          "label": "Homosexual",
+          "desc": "Jan drawa ga mutane na jinsi ɗaya."
+        },
         "bisexual": {
           "label": "Bisexual",
           "desc": "Jan hankali ga jinsunan gargajiya biyu."
@@ -1020,6 +1035,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerotic",
           "desc": "Jan hankali ga hankali da duniyar ciki."
+        },
+        "prefiero_no_decir": {
+          "label": "Ba na so in faɗa",
+          "desc": "Ba na so in bayyana sha'awata."
         }
       }
     }

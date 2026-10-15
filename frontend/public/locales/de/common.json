@@ -662,6 +662,17 @@
         "text": "Deine Identität hilft uns, dein Profil zu überprüfen und die Community sicher zu halten. Wir teilen deine Daten niemals ohne deine Zustimmung.",
         "button": "Verstanden"
       }
+    },
+    "orientations": {
+      "heterosexual": "Heterosexuell",
+      "homosexual": "Homosexuell",
+      "bisexual": "Bisexuell",
+      "pansexual": "Pansexuell",
+      "asexual": "Asexuell",
+      "queer": "Queer",
+      "demisexual": "Demisexuell",
+      "sapioerotico": "Sapioerotisch/Sapiosexuell",
+      "prefer_not_to_say": "Möchte ich nicht sagen"
     }
   },
   "card": {
@@ -1038,6 +1049,10 @@
           "label": "Heterosexuell",
           "desc": "Anziehung zum anderen Geschlecht."
         },
+        "homosexual": {
+          "label": "Homosexuell",
+          "desc": "Anziehung zu Personen desselben Geschlechts."
+        },
         "bisexual": {
           "label": "Bisexuell",
           "desc": "Anziehung zu beiden traditionellen Geschlechtern."
@@ -1061,6 +1076,10 @@
         "sapioerotico_sapiosexual": {
           "label": "Sapioerotisch/Sapiosexuell",
           "desc": "Anziehung durch Intelligenz und Innenwelt."
+        },
+        "prefiero_no_decir": {
+          "label": "Möchte ich nicht sagen",
+          "desc": "Ich möchte meine Orientierung nicht angeben."
         }
       }
     }
