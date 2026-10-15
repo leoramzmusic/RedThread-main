@@ -176,7 +176,23 @@
       "decisionMaking_emotional": "Emocional",
       "decisionMaking_emotional_desc": "Decide según lo que siente, prioriza vínculos, empatía y valores personales.",
       "decisionMaking_intuitive": "Intuitivo",
-      "decisionMaking_intuitive_desc": "Confía en corazonadas, decide rápido, sin necesidad de mucha información."
+      "decisionMaking_intuitive_desc": "Confía en corazonadas, decide rápido, sin necesidad de mucha información.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "¿No sabes cuál eres?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "Neurodiversidad",

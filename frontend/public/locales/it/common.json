@@ -336,7 +336,23 @@
       "decisionMaking_emotional": "Emotivo",
       "decisionMaking_emotional_desc": "Decide sulla base dei sentimenti, dà priorità ai legami, all'empatia e ai valori personali.",
       "decisionMaking_intuitive": "Intuitivo",
-      "decisionMaking_intuitive_desc": "Si fida dell'intuizione, decide rapidamente, senza aver bisogno di molte informazioni."
+      "decisionMaking_intuitive_desc": "Si fida dell'intuizione, decide rapidamente, senza aver bisogno di molte informazioni.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "Non sai quale sei?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "Neurodiversità & Extra",

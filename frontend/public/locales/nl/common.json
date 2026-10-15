@@ -336,7 +336,23 @@
       "decisionMaking_emotional": "Emotioneel",
       "decisionMaking_emotional_desc": "Beslist op basis van gevoelens.",
       "decisionMaking_intuitive": "Intuïtief",
-      "decisionMaking_intuitive_desc": "Vertrouwt op intuïtie."
+      "decisionMaking_intuitive_desc": "Vertrouwt op intuïtie.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "Weet je niet welke je bent?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "Neurodiversiteit & Extras",

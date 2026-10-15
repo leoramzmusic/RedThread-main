@@ -335,7 +335,23 @@
       "decisionMaking_emotional": "감성적",
       "decisionMaking_emotional_desc": "감정에 기반하여 결정하고, 유대, 공감, 개인 가치를 우선시합니다.",
       "decisionMaking_intuitive": "직관적",
-      "decisionMaking_intuitive_desc": "직감을 믿고, 많은 정보 없이 빠르게 결정합니다."
+      "decisionMaking_intuitive_desc": "직감을 믿고, 많은 정보 없이 빠르게 결정합니다.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "어떤 유형인지 모르겠나요?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "신경다양성 & 특별",

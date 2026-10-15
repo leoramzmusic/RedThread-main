@@ -336,7 +336,23 @@
       "decisionMaking_emotional": "Emotionell",
       "decisionMaking_emotional_desc": "Beslutar baserat på känslor.",
       "decisionMaking_intuitive": "Intuitiv",
-      "decisionMaking_intuitive_desc": "Litar på magkänsla."
+      "decisionMaking_intuitive_desc": "Litar på magkänsla.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "Vet du inte vilken du är?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "Neurodiversitet & Extra",

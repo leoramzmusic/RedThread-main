@@ -244,7 +244,23 @@
       "decisionMaking_emotional": "Emotional",
       "decisionMaking_emotional_desc": "Decides based on feelings, prioritizes bonds, empathy, and personal values.",
       "decisionMaking_intuitive": "Intuitive",
-      "decisionMaking_intuitive_desc": "Trusts hunches, decides quickly, without needing much information."
+      "decisionMaking_intuitive_desc": "Trusts hunches, decides quickly, without needing much information.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "Ba ka san wane ne ka?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "Neurodiversity & Extras",

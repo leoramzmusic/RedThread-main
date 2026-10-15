@@ -335,7 +335,23 @@
       "decisionMaking_emotional": "感情的",
       "decisionMaking_emotional_desc": "感情に基づいて決め、絆、共感、個人的価値観を優先します。",
       "decisionMaking_intuitive": "直感的",
-      "decisionMaking_intuitive_desc": "直感を信頼し、多くの情報なしに素早く決断します。"
+      "decisionMaking_intuitive_desc": "直感を信頼し、多くの情報なしに素早く決断します。",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "どのタイプか分からない？",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "神経多様性と特別",

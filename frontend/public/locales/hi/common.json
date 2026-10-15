@@ -335,7 +335,23 @@
       "decisionMaking_emotional": "भावनात्मक",
       "decisionMaking_emotional_desc": "भावनाओं के आधार पर निर्णय लेता है।",
       "decisionMaking_intuitive": "अंतर्ज्ञानी",
-      "decisionMaking_intuitive_desc": "अंतर्ज्ञान पर भरोसा करता है।"
+      "decisionMaking_intuitive_desc": "अंतर्ज्ञान पर भरोसा करता है।",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "पता नहीं तुम कौन सा हो?",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "न्यूरोडाइवर्सिटी और अतिरिक्त",

@@ -336,7 +336,23 @@
       "decisionMaking_emotional": "感性",
       "decisionMaking_emotional_desc": "基于感觉做决定，优先考虑联系、同理心和个人价值观。",
       "decisionMaking_intuitive": "直觉",
-      "decisionMaking_intuitive_desc": "信任直觉，快速决定，不需要太多信息。"
+      "decisionMaking_intuitive_desc": "信任直觉，快速决定，不需要太多信息。",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "不知道你属于哪种？",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "神经多样性与特别",

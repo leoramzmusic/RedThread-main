@@ -335,7 +335,23 @@
       "decisionMaking_emotional": "عاطفي",
       "decisionMaking_emotional_desc": "يقرر بناءً على المشاعر ويعطي الأولوية للروابط والتعاطف.",
       "decisionMaking_intuitive": "حدسي",
-      "decisionMaking_intuitive_desc": "يثق بحدسه ويقرر بسرعة."
+      "decisionMaking_intuitive_desc": "يثق بحدسه ويقرر بسرعة.",
+      "social": {
+        "label": "Estilo social",
+        "test_button": "لا تعرف أيهما أنت؟",
+        "extrovert": {
+          "label": "Extrovertido",
+          "description": "Te recargas con la interacción social, disfrutas estar con gente y compartir ideas en voz alta."
+        },
+        "ambivert": {
+          "label": "Ambivertido",
+          "description": "Te adaptas según el contexto: a veces social, a veces reservado. Un equilibrio flexible."
+        },
+        "introvert": {
+          "label": "Introvertido",
+          "description": "Prefieres espacios tranquilos, te recargas en soledad y piensas antes de hablar."
+        }
+      }
     },
     "cognitive": {
       "title": "التنوع العصبي والإضافات",
