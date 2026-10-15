@@ -691,6 +691,15 @@
       "demisexual": "Демисексуал",
       "sapioerotico": "Сапиоэротик/Сапиосексуал",
       "prefer_not_to_say": "Предпочитаю не говорить"
+    },
+    "health": {
+      "show_public": "Mostrar en perfil público",
+      "info": "Puedes compartir esta información si lo deseas. Nos ayuda a adaptar tu experiencia, pero nunca se mostrará sin tu consentimiento.",
+      "none": "Ninguna",
+      "other": "Otra",
+      "add": "Agregar",
+      "diagnosed": "Diagnosticado por un profesional",
+      "diagnosed_help": "Marca si cuentas con un diagnóstico formal."
     }
   },
   "card": {

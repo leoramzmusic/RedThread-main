@@ -648,6 +648,15 @@
       "demisexual": "ደሚሴክሹዋል",
       "sapioerotico": "ሳፒዮኤሮቲክ",
       "prefer_not_to_say": "መናገር አልፈልግም"
+    },
+    "health": {
+      "show_public": "Mostrar en perfil público",
+      "info": "Puedes compartir esta información si lo deseas. Nos ayuda a adaptar tu experiencia, pero nunca se mostrará sin tu consentimiento.",
+      "none": "Ninguna",
+      "other": "Otra",
+      "add": "Agregar",
+      "diagnosed": "Diagnosticado por un profesional",
+      "diagnosed_help": "Marca si cuentas con un diagnóstico formal."
     }
   },
   "card": {

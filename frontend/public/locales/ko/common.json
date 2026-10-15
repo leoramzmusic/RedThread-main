@@ -687,6 +687,15 @@
       "demisexual": "데미섹슈얼",
       "sapioerotico": "사피오에로틱/사피오섹슈얼",
       "prefer_not_to_say": "선택하지 않음"
+    },
+    "health": {
+      "show_public": "Mostrar en perfil público",
+      "info": "Puedes compartir esta información si lo deseas. Nos ayuda a adaptar tu experiencia, pero nunca se mostrará sin tu consentimiento.",
+      "none": "Ninguna",
+      "other": "Otra",
+      "add": "Agregar",
+      "diagnosed": "Diagnosticado por un profesional",
+      "diagnosed_help": "Marca si cuentas con un diagnóstico formal."
     }
   },
   "card": {
