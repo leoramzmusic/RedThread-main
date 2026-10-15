@@ -101,6 +101,14 @@ import ProfileCompletionWidget from './ProfileCompletionWidget';
 
 
 
+// Sub-módulos que el backend lista en /api/profile-modules/ pero que no son
+// secciones renderizables (son hijos de section-music): se omiten sin warning;
+// las claves realmente desconocidas sí se loguean.
+const PROFILE_SUB_MODULE_KEYS: ReadonlySet<string> = new Set([
+  'section-music-genres',
+  'section-music-spotify',
+]);
+
 interface ProfileEditProps {
   profile: any;
   options: any;
@@ -157,7 +165,9 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         for (const mod of data) {
           const k: unknown = mod?.key;
           if (typeof k !== 'string' || !Object.hasOwn(PROFILE_SECTION_REGISTRY, k)) {
-            console.warn(`[ProfileEdit] Skipping unknown profile module key: ${String(k)}`);
+            if (typeof k !== 'string' || !PROFILE_SUB_MODULE_KEYS.has(k)) {
+              console.warn(`[ProfileEdit] Skipping unknown profile module key: ${String(k)}`);
+            }
             continue;
           }
           const key = k as ProfileSectionKey;

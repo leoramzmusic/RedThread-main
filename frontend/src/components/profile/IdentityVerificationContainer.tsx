@@ -195,40 +195,42 @@ function BirthDatePickerInput({
                         "Selecciona tu fecha de nacimiento",
                       )),
             onClick: fieldsLocked ? onUnlock : openCalendar,
-            InputProps: {
-              readOnly: fieldsLocked,
-              endAdornment: fieldsLocked ? (
-                <InputAdornment position="end">
-                  <Box
-                    component="span"
-                    onClick={onUnlock}
-                    sx={{
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <EditIcon color="action" />
-                  </Box>
-                </InputAdornment>
-              ) : (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    edge="end"
-                    aria-label={t(
-                      "profile.birthdate.openCalendar",
-                      "Abrir calendario",
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openCalendar();
-                    }}
-                  >
-                    <CalendarMonthIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps: {
+              input: {
+                readOnly: fieldsLocked,
+                endAdornment: fieldsLocked ? (
+                  <InputAdornment position="end">
+                    <Box
+                      component="span"
+                      onClick={onUnlock}
+                      sx={{
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <EditIcon color="action" />
+                    </Box>
+                  </InputAdornment>
+                ) : (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      edge="end"
+                      aria-label={t(
+                        "profile.birthdate.openCalendar",
+                        "Abrir calendario",
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openCalendar();
+                      }}
+                    >
+                      <CalendarMonthIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             },
             sx: {
               ...inputSx48(theme),

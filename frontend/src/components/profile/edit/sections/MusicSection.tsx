@@ -440,6 +440,10 @@ export default function MusicSection({
             {showGenres && (
             <Grid size={12}>
               <Accordion
+                // defaultExpanded cambia cuando llegan los hidden modules del
+                // backend; remontar con key evita el warning de MUI sobre
+                // cambiar defaultExpanded en un Accordion uncontrolled montado.
+                key={showSpotify ? 'genres-default-collapsed' : 'genres-default-expanded'}
                 defaultExpanded={!showSpotify}
                 sx={{
                   bgcolor: "transparent",
