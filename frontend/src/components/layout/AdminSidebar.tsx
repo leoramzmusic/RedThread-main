@@ -52,6 +52,9 @@ import {
   Description as DescriptionIcon,
   Gavel as GavelIcon,
   ContactSupport as ContactSupportIcon,
+  Psychology as PsychologyIcon,
+  Functions as FunctionsIcon,
+  Science as ScienceIcon,
 } from '@mui/icons-material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 
@@ -198,9 +201,20 @@ export default function AdminSidebar({
       icon: <VerifiedUserIcon className="rt-shield" />, // Or Psychology if available
       children: [
         { id: 'experiencia-menus', label: 'Menús del Portal', icon: <MenuIcon />, path: '/portal-redthread/experiencia/menus' },
-        { id: 'experiencia-motor', label: 'Motor CARE', icon: <BarChartIcon />, path: '/portal-redthread/experiencia/motor' },
         { id: 'experiencia-icebreakers', label: 'Icebreaker Manager', icon: <SupportIcon />, path: '/portal-redthread/experiencia/icebreakers' },
         { id: 'experiencia-mascota', label: 'Mascota (Yuki)', icon: <PetsIcon />, path: '/portal-redthread/experiencia/mascota' },
+      ],
+    },
+    {
+      id: 'care',
+      label: 'Motor CARE & Compatibilidad',
+      icon: <PsychologyIcon className="rt-pulse" />,
+      children: [
+        { id: 'care-criteria', label: 'Panel de Criterios', icon: <BarChartIcon />, path: '/portal-redthread/care/criteria' },
+        { id: 'care-equation', label: 'Editor de Fórmula', icon: <FunctionsIcon />, path: '/portal-redthread/care/equation' },
+        { id: 'care-interpreter', label: 'CARE Interpreter', icon: <PsychologyIcon />, path: '/portal-redthread/care/interpreter' },
+        { id: 'care-lab', label: 'Laboratorio (A/B)', icon: <ScienceIcon />, path: '/portal-redthread/care/lab' },
+        { id: 'care-audit', label: 'Historial & Auditoría', icon: <HistoryIcon />, path: '/portal-redthread/care/audit' },
       ],
     },
     {
