@@ -292,12 +292,17 @@ async def preview_formula(body: Dict[str, Any], admin: Employee = Depends(admin_
         raise HTTPException(status_code=422, detail=errors)
     tone = body.get("tone", "directo")
 
-    user_a = await User.get(body["user_a_id"])
-    user_b = await User.get(body["user_b_id"])
+    user_a_id = body.get("user_a_id")
+    user_b_id = body.get("user_b_id")
+    if not user_a_id or not user_b_id:
+        raise HTTPException(status_code=422, detail="user_a_id y user_b_id son requeridos")
+
+    user_a = await User.get(user_a_id)
+    user_b = await User.get(user_b_id)
     if not user_a or not user_b:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    profile_a = await Profile.find_one(Profile.user_id == body["user_a_id"])
-    profile_b = await Profile.find_one(Profile.user_id == body["user_b_id"])
+    profile_a = await Profile.find_one(Profile.user_id == user_a_id)
+    profile_b = await Profile.find_one(Profile.user_id == user_b_id)
     if not profile_a or not profile_b:
         raise HTTPException(status_code=404, detail="Perfil no encontrado")
 
@@ -409,6 +414,8 @@ async def save_formula(body: Dict[str, Any], admin: Employee = Depends(admin_req
         raise HTTPException(status_code=409, detail=str(exc))
     except FormulaValidationError as exc:
         raise HTTPException(status_code=422, detail=exc.errors)
+    except KeyError as exc:
+        raise HTTPException(status_code=422, detail=f"formula.{exc.args[0]} es requerido")
     return saved.model_dump(mode="json")
 
 
