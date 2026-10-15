@@ -114,7 +114,11 @@ async def test_diversity_quotas():
 
 @pytest.mark.asyncio
 async def test_ranking_returns_top_scores():
-    """Test that ranking prioritizes higher compatibility scores."""
+    """Test that ranking prioritizes higher compatibility scores.
+
+    Fórmula canónica 7D: 'values' solo cuenta items de
+    LIFESTYLE_CATEGORIES['values_causes']; 'interests' no es dimensión de scoring.
+    """
     user = UserProfile(
         id=str(uuid4()),
         age=28,
@@ -122,34 +126,43 @@ async def test_ranking_returns_top_scores():
         preferred_age_range=(25, 35),
         location=(19.4326, -99.1332),
         max_distance_km=50,
-        interests=["música", "arte", "viajes"],
-        values=["autenticidad", "empatía"],
+        values=["feminismo", "ecologismo", "justicia_social"],
     )
 
-    # High compatibility candidate
+    # Alta compatibilidad: 2 valores canónicos compartidos
     high_compat = CandidateProfile(
         id=str(uuid4()),
         age=30,
         gender="male",
         location=(19.4, -99.1),
-        interests=["música", "arte", "viajes"],  # 3 shared
-        values=["autenticidad", "empatía"],  # 2 shared
+        values=["feminismo", "ecologismo"],
         popularity_signals=PopularitySignals(likes_received=50),
     )
 
-    # Low compatibility candidate
+    # Baja compatibilidad: valores canónicos sin solape con el usuario
     low_compat = CandidateProfile(
         id=str(uuid4()),
         age=30,
         gender="male",
         location=(19.4, -99.1),
-        interests=["deportes"],  # 0 shared
-        values=["aventura"],  # 0 shared
+        values=["paz", "educacion"],
         popularity_signals=PopularitySignals(likes_received=50),
     )
 
     ranked = await rank_candidates(user, [high_compat, low_compat], limit=2)
 
-    # High compatibility should be ranked first
+    # Cálculo a mano (config por defecto: weights de bloques CANONICAL_BLOCKS,
+    # chaos 0.0 => χ=0; SystemParams compat=0.6, dynamic=0.3, human=0.1;
+    # bloques sin datos => neuro=1.0, resto=0.5; dyn=0.5, human_adj=0.05):
+    #   high: f_values = (2 ítems compartidos * 3 + 1 bonus) / 15 = 7/15
+    #         base = 0.36*(7/15) + 0.18*0.5 + 0.15*1.0 + 0.10*0.5
+    #                + 0.11*0.5 + 0.06*0.5 + 0.04*0.5 = 0.563
+    #         total = 0.6*0.563 + 0.3*0.5 + 0.1*0.05 = 0.4928
+    #   low:  f_values = 0/15 (categoría presente pero 0 compartidos)
+    #         base = 0.395; total = 0.6*0.395 + 0.15 + 0.005 = 0.392
+    assert ranked[0]["score"] == pytest.approx(0.4928, abs=1e-3)
+    assert ranked[1]["score"] == pytest.approx(0.392, abs=1e-3)
+
+    # Estructural: ranking ordena de mayor a menor y prioriza al compatible
     assert ranked[0]["score"] > ranked[1]["score"]
     assert ranked[0]["candidate"].id == high_compat.id
