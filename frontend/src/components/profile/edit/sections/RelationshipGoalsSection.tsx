@@ -1,11 +1,14 @@
 import {
   Grid,
-  Paper,
   Typography,
   Box,
   IconButton,
   Tooltip,
   keyframes,
+  alpha,
+  useTheme,
+  useMediaQuery,
+  ButtonBase,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -25,24 +28,12 @@ interface RelationshipGoalsSectionProps extends BaseSectionProps {
   isDiscovery?: boolean;
 }
 
-// Animations
-const pulse = keyframes`
+// One-shot micro-bounce played when an option becomes selected.
+const bounce = keyframes`
   0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  40% { transform: scale(1.25) translateY(-6px); }
+  70% { transform: scale(0.94); }
   100% { transform: scale(1); }
-`;
-
-const float = keyframes`
-  0% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-8px) rotate(-5deg); }
-  75% { transform: translateY(-8px) rotate(5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-`;
-
-const sway = keyframes`
-  0% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
-  100% { transform: rotate(-3deg); }
 `;
 
 export default function RelationshipGoalsSection({
@@ -51,6 +42,10 @@ export default function RelationshipGoalsSection({
   isDiscovery = false,
 }: RelationshipGoalsSectionProps) {
   const { t } = useTranslation("common");
+  const theme = useTheme();
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const accent = theme.palette.primary.main;
+
   // Display-only: option values stay stable; labels/descriptions render translated.
   const goalDesc = (value: string, fallback: string) =>
     t(`profile.intentions_desc.${value}`, fallback);
@@ -91,7 +86,7 @@ export default function RelationshipGoalsSection({
                   gap: 1
                 }}>
                 <Search color="action" fontSize="small" />
-                <Typography variant="h6">
+                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                   {t("profile.fields.goals", "Objetivos de relación")}
                 </Typography>
               </Box>
@@ -130,22 +125,34 @@ export default function RelationshipGoalsSection({
               <Grid container spacing={2}>
                 {INTENTION_OPTIONS.map((option) => {
                   const isSelected = (field.value || []).includes(option.value);
+                  const label = t(
+                    `profile.intentions_map.${option.value}`,
+                    option.label,
+                  );
+                  const description = goalDesc(
+                    option.value,
+                    option.description || "",
+                  );
+                  const selectedBorder = isDiscovery ? "gold" : accent;
+                  const selectedBg = isDiscovery
+                    ? "rgba(255,215,0,0.1)"
+                    : alpha(accent, 0.1);
+
                   return (
                     <Grid
                       key={option.value}
                       size={{
                         xs: 6,
-                        sm: 4,
+                        sm: 6,
                         md: 3
                       }}>
                       <Tooltip
-                        title={goalDesc(option.value, option.description || "")}
+                        title={description}
                         arrow
                         placement="top"
                         enterDelay={500}
                       >
-                        <Paper
-                          elevation={0}
+                        <ButtonBase
                           onClick={() => {
                             const currentValues = field.value || [];
                             if (isSelected) {
@@ -158,27 +165,29 @@ export default function RelationshipGoalsSection({
                               field.onChange([...currentValues, option.value]);
                             }
                           }}
+                          aria-pressed={isSelected}
+                          aria-label={
+                            description ? `${label}. ${description}` : label
+                          }
                           sx={{
                             p: 1.5,
+                            width: "100%",
+                            height: "100%",
+                            minHeight: 120,
                             cursor: "pointer",
                             border: "2px solid",
                             borderColor: isSelected
-                              ? isDiscovery
-                                ? "gold"
-                                : "#3B82F6"
+                              ? selectedBorder
                               : isDiscovery
                                 ? "rgba(255,255,255,0.1)"
                                 : "divider",
                             bgcolor: isSelected
-                              ? isDiscovery
-                                ? "rgba(255,215,0,0.1)"
-                                : "rgba(59,130,246,0.1)"
+                              ? selectedBg
                               : isDiscovery
                                 ? "rgba(255,255,255,0.05)"
                                 : "background.paper",
-                            transition: "all 0.3s ease",
-                            height: "100%",
-                            minHeight: 140,
+                            borderRadius: 3,
+                            transition: "all 0.25s ease",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
@@ -188,15 +197,21 @@ export default function RelationshipGoalsSection({
                             overflow: "visible",
                             "&:hover": {
                               borderColor: isSelected
-                                ? "#3B82F6"
-                                : "text.secondary",
+                                ? selectedBorder
+                                : isDiscovery
+                                  ? "rgba(255,255,255,0.3)"
+                                  : alpha(accent, 0.6),
+                              boxShadow: isDiscovery
+                                ? "none"
+                                : "0 4px 14px rgba(15,23,42,0.12)",
                               "& .emoji-icon": {
-                                transform: "scale(1.3) translateY(-10px)",
-                                animation: `${float} 0.6s ease-in-out infinite`,
+                                transform: reduceMotion
+                                  ? "none"
+                                  : "scale(1.1) translateY(-6px)",
                               },
                             },
                             "&:active": {
-                              transform: "scale(0.96)",
+                              transform: reduceMotion ? "none" : "scale(0.97)",
                             },
                           }}
                         >
@@ -205,17 +220,20 @@ export default function RelationshipGoalsSection({
                             sx={{
                               fontSize: isDiscovery
                                 ? "60px !important"
-                                : "90px !important",
+                                : "72px !important",
                               lineHeight: 1,
                               mb: 1,
                               transition:
-                                "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                              animation: isSelected
-                                ? `${pulse} 1.8s infinite ease-in-out`
-                                : `${sway} ${2.5 + Math.random() * 2}s infinite ease-in-out`,
+                                "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                              animation:
+                                isSelected && !reduceMotion
+                                  ? `${bounce} 0.45s ease`
+                                  : "none",
                               filter: isSelected
-                                ? "drop-shadow(0 12px 24px rgba(59,130,246,0.5))"
-                                : "drop-shadow(0 4px 8px rgba(0,0,0,0.15))",
+                                ? isDiscovery
+                                  ? "drop-shadow(0 12px 24px rgba(255,215,0,0.5))"
+                                  : "drop-shadow(0 10px 20px rgba(59,130,246,0.35))"
+                                : "drop-shadow(0 4px 8px rgba(0,0,0,0.12))",
                               userSelect: "none",
                               display: "flex",
                               alignItems: "center",
@@ -232,21 +250,18 @@ export default function RelationshipGoalsSection({
                               isSelected
                                 ? isDiscovery
                                   ? "gold"
-                                  : "#3B82F6"
+                                  : accent
                                 : isDiscovery
                                   ? "white"
                                   : "text.primary"
                             }
                             sx={{
-                              fontWeight: isSelected ? 700 : 400
+                              fontWeight: isSelected ? 700 : 500
                             }}
                           >
-                            {t(
-                              `profile.intentions_map.${option.value}`,
-                              option.label,
-                            )}
+                            {label}
                           </Typography>
-                        </Paper>
+                        </ButtonBase>
                       </Tooltip>
                     </Grid>
                   );

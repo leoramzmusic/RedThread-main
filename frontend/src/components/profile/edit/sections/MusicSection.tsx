@@ -440,7 +440,7 @@ export default function MusicSection({
             {showGenres && (
             <Grid size={12}>
               <Accordion
-                defaultExpanded={false}
+                defaultExpanded={!showSpotify}
                 sx={{
                   bgcolor: "transparent",
                   backgroundImage: "none",
