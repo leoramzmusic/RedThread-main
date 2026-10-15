@@ -16,6 +16,18 @@ def get_label_field(lang: str) -> str:
     return f"label_{lang}" if lang in SUPPORTED_LANGS else "label_es"
 
 
+def resolve_label(opt: SystemOption, label_field: str) -> str:
+    """Return the localized label, falling back when the translation is empty.
+
+    The ``label_<lang>`` fields always exist with a ``""`` default, so a plain
+    ``getattr(opt, label_field, opt.label)`` never falls back and renders blank
+    options for languages without a seeded translation. Fall back to the
+    default label, then English, then the raw value, so a label is never empty.
+    """
+    localized = getattr(opt, label_field, "") or ""
+    return localized or opt.label or opt.label_en or opt.value
+
+
 @router.get("/{category}")
 async def get_options(category: str, lang: str = "es"):
     """
@@ -36,7 +48,7 @@ async def get_options(category: str, lang: str = "es"):
     label_field = get_label_field(lang)
 
     return [
-        {"value": opt.value, "label": getattr(opt, label_field, opt.label)}
+        {"value": opt.value, "label": resolve_label(opt, label_field)}
         for opt in options
     ]
 
@@ -60,7 +72,7 @@ async def get_all_options(lang: str = "es"):
         if opt.category not in result:
             result[opt.category] = []
         result[opt.category].append(
-            {"value": opt.value, "label": getattr(opt, label_field, opt.label)}
+            {"value": opt.value, "label": resolve_label(opt, label_field)}
         )
 
     return result
@@ -86,6 +98,6 @@ async def get_section_texts(category: str, lang: str = "es"):
     label_field = get_label_field(lang)
 
     return {
-        opt.value: getattr(opt, label_field, opt.label)
+        opt.value: resolve_label(opt, label_field)
         for opt in options
     }
