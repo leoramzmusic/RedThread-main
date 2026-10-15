@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, Fragment } from 'react';
-import type { ReactNode } from 'react';
-import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
+import { useState, useEffect, useRef, Fragment } from "react";
+import type { ReactNode } from "react";
+import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
 import {
   Save as SaveIcon,
   Cancel as CancelIcon,
@@ -10,19 +10,16 @@ import {
   GroupAdd as GroupAddIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  Visibility as VisibilityIcon
-} from '@mui/icons-material';
+  Visibility as VisibilityIcon,
+} from "@mui/icons-material";
 import {
   PointerSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
-  DragEndEvent
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+  DragEndEvent,
+} from "@dnd-kit/core";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
   Box,
   Typography,
@@ -39,74 +36,76 @@ import {
   AccordionDetails,
   Tooltip,
   Portal,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
-} from '@mui/material';
-import { useTranslation } from 'next-i18next/pages';
-import { alpha } from '@mui/material/styles';
-import apiClient from '../../services/api';
-import { PROFILE_SECTION_REGISTRY } from './sections/registry';
-import type { ProfileSectionKey } from './sections/registry';
-import { getPromptsForLanguage, PROMPT_SLUGS, promptCategoryOf } from '../../constants/funPrompts';
-import { useSnackbar } from 'notistack';
-import VerificationCodeDialog from './edit/VerificationCodeDialog';
-import type { VerificationChannel } from './edit/VerificationCodeDialog';
+} from "@mui/material";
+import { useTranslation } from "next-i18next/pages";
+import { alpha } from "@mui/material/styles";
+import apiClient from "../../services/api";
+import { PROFILE_SECTION_REGISTRY } from "./sections/registry";
+import type { ProfileSectionKey } from "./sections/registry";
+import {
+  getPromptsForLanguage,
+  PROMPT_SLUGS,
+  promptCategoryOf,
+} from "../../constants/funPrompts";
+import { useSnackbar } from "notistack";
+import VerificationCodeDialog from "./edit/VerificationCodeDialog";
+import type { VerificationChannel } from "./edit/VerificationCodeDialog";
 
 const maskEmail = (email?: string) => {
-  if (!email || !email.includes('@')) return email || '';
-  const [local, domain] = email.split('@');
+  if (!email || !email.includes("@")) return email || "";
+  const [local, domain] = email.split("@");
   const head = local.slice(0, 1);
   const tail = local.slice(-1);
-  return (local.length > 2 ? head + '***' + tail : head + '***') + '@' + domain;
+  return (local.length > 2 ? head + "***" + tail : head + "***") + "@" + domain;
 };
 
 // Section Components
-import PhotosSection from './edit/sections/PhotosSection';
-import BasicInfoSection from './edit/sections/BasicInfoSection';
-import AboutMeSection from './edit/sections/AboutMeSection';
-import RelationshipGoalsSection from './edit/sections/RelationshipGoalsSection';
-import InterestsSection from './edit/sections/InterestsSection';
-import PronounsSection from './edit/sections/PronounsSection';
-import AdditionalDataSection from './edit/sections/AdditionalDataSection';
+import PhotosSection from "./edit/sections/PhotosSection";
+import BasicInfoSection from "./edit/sections/BasicInfoSection";
+import AboutMeSection from "./edit/sections/AboutMeSection";
+import RelationshipGoalsSection from "./edit/sections/RelationshipGoalsSection";
+import InterestsSection from "./edit/sections/InterestsSection";
+import PronounsSection from "./edit/sections/PronounsSection";
+import AdditionalDataSection from "./edit/sections/AdditionalDataSection";
 
-import LocationSection from './edit/sections/LocationSection';
-import ProfessionalAcademicSection from './edit/sections/ProfessionalAcademicSection';
-import MusicSection from './edit/sections/MusicSection';
-import IdentitySection from './edit/sections/IdentitySection';
-import ProfileControlSection from './edit/sections/ProfileControlSection';
-import SocialSection from './edit/sections/SocialSection';
-import PersonalitySection from './edit/sections/PersonalitySection';
-import CognitiveSection from './edit/sections/CognitiveSection';
-import WellnessSection from './edit/sections/WellnessSection';
+import LocationSection from "./edit/sections/LocationSection";
+import ProfessionalAcademicSection from "./edit/sections/ProfessionalAcademicSection";
+import MusicSection from "./edit/sections/MusicSection";
+import IdentitySection from "./edit/sections/IdentitySection";
+import ProfileControlSection from "./edit/sections/ProfileControlSection";
+import SocialSection from "./edit/sections/SocialSection";
+import PersonalitySection from "./edit/sections/PersonalitySection";
+import CognitiveSection from "./edit/sections/CognitiveSection";
+import WellnessSection from "./edit/sections/WellnessSection";
 
+import CivilStatusSection from "./edit/sections/CivilStatusSection";
 
-
-import CivilStatusSection from './edit/sections/CivilStatusSection';
-
-
-import LanguagesSection from './edit/sections/LanguagesSection';
-import InfoDrawers from './edit/InfoDrawers';
+import LanguagesSection from "./edit/sections/LanguagesSection";
+import InfoDrawers from "./edit/InfoDrawers";
 
 // Types
-import { PromptItem } from './edit/types';
+import { PromptItem } from "./edit/types";
 
 // Scoring
-import { calculateProfileScore, getProfileSuggestions } from '../../utils/profileScoring';
-import ProfileCompletionWidget from './ProfileCompletionWidget';
-
-
+import {
+  calculateProfileScore,
+  getProfileSuggestions,
+} from "../../utils/profileScoring";
+import ProfileCompletionWidget from "./ProfileCompletionWidget";
 
 // Sub-módulos que el backend lista en /api/profile-modules/ pero que no son
 // secciones renderizables (son hijos de section-music): se omiten sin warning;
 // las claves realmente desconocidas sí se loguean.
 const PROFILE_SUB_MODULE_KEYS: ReadonlySet<string> = new Set([
-  'section-music-genres',
-  'section-music-spotify',
+  "section-music-genres",
+  "section-music-spotify",
 ]);
 
 interface ProfileEditProps {
@@ -116,9 +115,14 @@ interface ProfileEditProps {
   onBack: () => void;
 }
 
-export default function ProfileEdit({ profile, options, onSave, onBack }: ProfileEditProps) {
+export default function ProfileEdit({
+  profile,
+  options,
+  onSave,
+  onBack,
+}: ProfileEditProps) {
   const router = useRouter();
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation("common");
   const { enqueueSnackbar } = useSnackbar();
   const [saving, setSaving] = useState(false);
 
@@ -134,10 +138,16 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
 
-
   // Form state
-  const { control, handleSubmit, watch, setValue, reset, formState: { isDirty } } = useForm({
-    defaultValues: profile || {}
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { isDirty },
+  } = useForm({
+    defaultValues: profile || {},
   });
 
   // Update form when profile data changes (e.g. initial load)
@@ -150,13 +160,18 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // Admin-driven section order from GET /api/profile-modules.
   // `null` means "backend unreachable/empty" → render the hardcoded
   // fallback order below, exactly as before.
-  const [moduleOrder, setModuleOrder] = useState<ProfileSectionKey[] | null>(null);
+  const [moduleOrder, setModuleOrder] = useState<ProfileSectionKey[] | null>(
+    null,
+  );
+  // Resolución de los fetches de módulos: el widget de completitud espera a
+  // ambos (orden + ocultas) para no mostrar % intermedios.
+  const [orderSettled, setOrderSettled] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     apiClient
       // Slash final obligatorio: el backend tiene redirect_slashes=False
-      .get('/api/profile-modules/')
+      .get("/api/profile-modules/")
       .then((res) => {
         if (cancelled) return;
         const data = res?.data;
@@ -164,24 +179,36 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         const keys: ProfileSectionKey[] = [];
         for (const mod of data) {
           const k: unknown = mod?.key;
-          if (typeof k !== 'string' || !Object.hasOwn(PROFILE_SECTION_REGISTRY, k)) {
-            if (typeof k !== 'string' || !PROFILE_SUB_MODULE_KEYS.has(k)) {
-              console.warn(`[ProfileEdit] Skipping unknown profile module key: ${String(k)}`);
+          if (
+            typeof k !== "string" ||
+            !Object.hasOwn(PROFILE_SECTION_REGISTRY, k)
+          ) {
+            if (typeof k !== "string" || !PROFILE_SUB_MODULE_KEYS.has(k)) {
+              console.warn(
+                `[ProfileEdit] Skipping unknown profile module key: ${String(k)}`,
+              );
             }
             continue;
           }
           const key = k as ProfileSectionKey;
           if (!keys.includes(key)) keys.push(key);
         }
-        for (const registryKey of Object.keys(PROFILE_SECTION_REGISTRY) as ProfileSectionKey[]) {
+        for (const registryKey of Object.keys(
+          PROFILE_SECTION_REGISTRY,
+        ) as ProfileSectionKey[]) {
           if (!keys.includes(registryKey)) {
-            console.warn(`[ProfileEdit] Profile module missing from backend response: ${registryKey}`);
+            console.warn(
+              `[ProfileEdit] Profile module missing from backend response: ${registryKey}`,
+            );
           }
         }
         if (keys.length > 0) setModuleOrder(keys);
       })
       .catch(() => {
         if (!cancelled) setModuleOrder(null);
+      })
+      .finally(() => {
+        if (!cancelled) setOrderSettled(true);
       });
     return () => {
       cancelled = true;
@@ -191,33 +218,40 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // Section-specific states
   const [expanded, setExpanded] = useState<string | false>(false);
 
-  const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpanded(isExpanded ? panel : false);
-  };
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
 
   const [photos, setPhotos] = useState<string[]>(profile?.photos || []);
 
-  const [lifestyleInterests, setLifestyleInterests] = useState<string[]>(profile?.lifestyle_interests || []);
-  const [smartPhotos, setSmartPhotos] = useState(!!profile?.smart_photos_enabled);
+  const [lifestyleInterests, setLifestyleInterests] = useState<string[]>(
+    profile?.lifestyle_interests || [],
+  );
+  const [smartPhotos, setSmartPhotos] = useState(
+    !!profile?.smart_photos_enabled,
+  );
   const [prompts, setPrompts] = useState<PromptItem[]>(profile?.prompts || []);
   const [promptSelectorOpen, setPromptSelectorOpen] = useState(false);
-  const [promptSearch, setPromptSearch] = useState('');
-  const [promptCat, setPromptCat] = useState<string>('all');
+  const [promptSearch, setPromptSearch] = useState("");
+  const [promptCat, setPromptCat] = useState<string>("all");
   const [stagedPrompts, setStagedPrompts] = useState<string[]>([]);
   // Reset picker staging whenever the dialog opens (sections open it directly).
   useEffect(() => {
     if (promptSelectorOpen) {
       setStagedPrompts([]);
-      setPromptSearch('');
-      setPromptCat('all');
+      setPromptSearch("");
+      setPromptCat("all");
     }
   }, [promptSelectorOpen]);
-  const [citySearch, setCitySearch] = useState(profile?.city || '');
+  const [citySearch, setCitySearch] = useState(profile?.city || "");
 
   // Verification states
   const [verified, setVerified] = useState(profile?.verified || false);
-  const [phone, setPhone] = useState(profile?.phone || '');
-  const [countryCode, setCountryCode] = useState(profile?.country_code || '+52');
+  const [phone, setPhone] = useState(profile?.phone || "");
+  const [countryCode, setCountryCode] = useState(
+    profile?.country_code || "+52",
+  );
   const [phoneVerified, setPhoneVerified] = useState(!!profile?.phone_verified);
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
   const [emailVerified, setEmailVerified] = useState(!!profile?.email_verified);
@@ -230,55 +264,61 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // Sync citySearch when profile changes (e.g. after save)
   useEffect(() => {
     if (profile?.city !== undefined) {
-      setCitySearch(profile.city || '');
+      setCitySearch(profile.city || "");
     }
   }, [profile?.city]);
 
   // Sync phone and countryCode when profile changes
   useEffect(() => {
     if (profile) {
-      if (profile.phone !== undefined) setPhone(profile.phone || '');
-      if (profile.country_code !== undefined) setCountryCode(profile.country_code || '+52');
-      if (profile.phone_verified !== undefined) setPhoneVerified(!!profile.phone_verified);
-      if (profile.email_verified !== undefined) setEmailVerified(!!profile.email_verified);
-      if (profile.smart_photos_enabled !== undefined) setSmartPhotos(!!profile.smart_photos_enabled);
+      if (profile.phone !== undefined) setPhone(profile.phone || "");
+      if (profile.country_code !== undefined)
+        setCountryCode(profile.country_code || "+52");
+      if (profile.phone_verified !== undefined)
+        setPhoneVerified(!!profile.phone_verified);
+      if (profile.email_verified !== undefined)
+        setEmailVerified(!!profile.email_verified);
+      if (profile.smart_photos_enabled !== undefined)
+        setSmartPhotos(!!profile.smart_photos_enabled);
     }
   }, [profile]);
 
   // Dialog states
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
-  const [newNickname, setNewNickname] = useState('');
-  const [nicknameError, setNicknameError] = useState('');
-  const [nicknameSuccess, setNicknameSuccess] = useState('');
+  const [newNickname, setNewNickname] = useState("");
+  const [nicknameError, setNicknameError] = useState("");
+  const [nicknameSuccess, setNicknameSuccess] = useState("");
   const [checkingNickname, setCheckingNickname] = useState(false);
   const [changePhoneDialogOpen, setChangePhoneDialogOpen] = useState(false);
   const [verificationDialog, setVerificationDialog] = useState<{
     channel: VerificationChannel;
     target: string;
   } | null>(null);
-  const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null,
+  );
   const [showActions, setShowActions] = useState(true);
   // Flotantes solo al scrollear (cuando los botones del header ya no se ven)
   const [showSticky, setShowSticky] = useState(false);
   // Solo desktop: alinea los flotantes al borde del contenedor (no al viewport)
   const [offsetRight, setOffsetRight] = useState(24);
-  const [unsavedPreviewDialogOpen, setUnsavedPreviewDialogOpen] = useState(false);
+  const [unsavedPreviewDialogOpen, setUnsavedPreviewDialogOpen] =
+    useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-
-
 
   const handlePreview = () => {
     if (isDirty) {
       setUnsavedPreviewDialogOpen(true);
     } else {
-      router.push('/profile/preview');
+      router.push("/profile/preview");
     }
   };
 
   // Los flotantes aparecen solo cuando el top del form sale del viewport
   useEffect(() => {
     const handleScroll = () => {
-      const container = document.querySelector('.main-container') || formRef.current;
+      const container =
+        document.querySelector(".main-container") || formRef.current;
       if (container) {
         const rect = container.getBoundingClientRect();
         setShowSticky(rect.top < 0);
@@ -287,28 +327,28 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
-    document.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+    document.addEventListener("touchmove", handleScroll, { passive: true });
 
     handleScroll();
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-      document.removeEventListener('touchmove', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      document.removeEventListener("touchmove", handleScroll);
     };
   }, []);
 
   // Watch relationship status for conditional rendering
-  const relationshipStatus = watch('relationship_status');
+  const relationshipStatus = watch("relationship_status");
 
   // Drag-and-drop sensors for prompts
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Drawer drag handlers
@@ -347,21 +387,22 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchmove", handleTouchMove);
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [isDragging, startY]);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const clientY =
+      "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     setStartY(clientY);
     setIsDragging(true);
   };
@@ -388,8 +429,9 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
 
   const handleAddPrompt = (promptText: string) => {
     setPrompts((prev) => {
-      if (prev.length >= 5 || prev.some((p) => p.question === promptText)) return prev;
-      return [...prev, { question: promptText, answer: '' }];
+      if (prev.length >= 5 || prev.some((p) => p.question === promptText))
+        return prev;
+      return [...prev, { question: promptText, answer: "" }];
     });
     setPromptSelectorOpen(false);
   };
@@ -399,7 +441,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       const fresh = stagedPrompts
         .filter((q) => !prev.some((p) => p.question === q))
         .slice(0, room);
-      return [...prev, ...fresh.map((question) => ({ question, answer: '' }))];
+      return [...prev, ...fresh.map((question) => ({ question, answer: "" }))];
     });
     setPromptSelectorOpen(false);
   };
@@ -412,44 +454,51 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const handleNicknameChange = async () => {
     if (!newNickname) return;
     setCheckingNickname(true);
-    setNicknameError('');
-    setNicknameSuccess('');
+    setNicknameError("");
+    setNicknameSuccess("");
 
     try {
-      await apiClient.patch('/profiles/nickname', { nickname: newNickname });
-      setNicknameSuccess('Nickname actualizado correctamente');
+      await apiClient.patch("/profiles/nickname", { nickname: newNickname });
+      setNicknameSuccess("Nickname actualizado correctamente");
       setTimeout(() => {
         setNicknameDialogOpen(false);
-        setNewNickname('');
-        setNicknameSuccess('');
+        setNewNickname("");
+        setNicknameSuccess("");
       }, 2000);
     } catch (err: any) {
-      setNicknameError(err.response?.data?.detail || 'Error al cambiar nickname');
+      setNicknameError(
+        err.response?.data?.detail || "Error al cambiar nickname",
+      );
     } finally {
       setCheckingNickname(false);
     }
   };
 
   // Verification handlers
-  const v = 'profile.sections.identity.verification.';
+  const v = "profile.sections.identity.verification.";
   const verifyTarget = (channel: VerificationChannel) =>
-    channel === 'phone'
-      ? (profile?.phone ? countryCode + ' ' + profile.phone : (countryCode + ' ' + phone).trim())
+    channel === "phone"
+      ? profile?.phone
+        ? countryCode + " " + profile.phone
+        : (countryCode + " " + phone).trim()
       : maskEmail(profile?.email);
 
   const handleVerifyPhone = async () => {
     if (!phoneVerificationEnabled) return;
     setIsVerifyingPhone(true);
     try {
-      await apiClient.post('/profiles/verify-phone');
+      await apiClient.post("/profiles/verify-phone");
       setVerificationError(null);
-      setVerificationDialog({ channel: 'phone', target: verifyTarget('phone') });
+      setVerificationDialog({
+        channel: "phone",
+        target: verifyTarget("phone"),
+      });
     } catch (err: any) {
       enqueueSnackbar(
         err.response?.status === 429
-          ? t(v + 'resendCooldown')
-          : t(v + 'sendFailed'),
-        { variant: 'error' },
+          ? t(v + "resendCooldown")
+          : t(v + "sendFailed"),
+        { variant: "error" },
       );
     } finally {
       setIsVerifyingPhone(false);
@@ -460,15 +509,18 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     if (!emailVerificationEnabled) return;
     setIsVerifyingEmail(true);
     try {
-      await apiClient.post('/profiles/verify-email');
+      await apiClient.post("/profiles/verify-email");
       setVerificationError(null);
-      setVerificationDialog({ channel: 'email', target: verifyTarget('email') });
+      setVerificationDialog({
+        channel: "email",
+        target: verifyTarget("email"),
+      });
     } catch (err: any) {
       enqueueSnackbar(
         err.response?.status === 429
-          ? t(v + 'resendCooldown')
-          : t(v + 'sendFailed'),
-        { variant: 'error' },
+          ? t(v + "resendCooldown")
+          : t(v + "sendFailed"),
+        { variant: "error" },
       );
     } finally {
       setIsVerifyingEmail(false);
@@ -479,26 +531,26 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
     if (!verificationDialog) return false;
     setVerificationError(null);
     try {
-      if (verificationDialog.channel === 'phone') {
-        await apiClient.post('/profiles/confirm-phone', { code });
+      if (verificationDialog.channel === "phone") {
+        await apiClient.post("/profiles/confirm-phone", { code });
         setPhoneVerified(true);
       } else {
-        await apiClient.post('/profiles/confirm-email', { code });
+        await apiClient.post("/profiles/confirm-email", { code });
         setEmailVerified(true);
       }
       enqueueSnackbar(
-        verificationDialog.channel === 'phone'
-          ? t(v + 'phoneVerifiedSuccess')
-          : t(v + 'emailVerifiedSuccess'),
-        { variant: 'success' },
+        verificationDialog.channel === "phone"
+          ? t(v + "phoneVerifiedSuccess")
+          : t(v + "emailVerifiedSuccess"),
+        { variant: "success" },
       );
       setVerificationError(null);
       return true;
     } catch (err: any) {
       setVerificationError(
         err.response?.status === 400
-          ? t(v + 'invalidCode')
-          : t(v + 'genericError'),
+          ? t(v + "invalidCode")
+          : t(v + "genericError"),
       );
       return false;
     }
@@ -507,18 +559,18 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   const handleResendVerification = async () => {
     if (!verificationDialog) return;
     try {
-      await apiClient.post('/profiles/resend-verification', {
+      await apiClient.post("/profiles/resend-verification", {
         channel: verificationDialog.channel,
       });
       setVerificationError(null);
-      enqueueSnackbar(t(v + 'otpSent', { target: verificationDialog.target }), {
-        variant: 'info',
+      enqueueSnackbar(t(v + "otpSent", { target: verificationDialog.target }), {
+        variant: "info",
       });
     } catch (err: any) {
       setVerificationError(
         err.response?.status === 429
-          ? t(v + 'resendCooldown')
-          : t(v + 'resendFailed'),
+          ? t(v + "resendCooldown")
+          : t(v + "resendFailed"),
       );
       throw err;
     }
@@ -545,7 +597,7 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         real_name: data.real_name,
         // display_name: data.display_name, // Managed via User model, included if present
         bio: data.bio,
-        birth_date: data.birth_date === '' ? null : data.birth_date,
+        birth_date: data.birth_date === "" ? null : data.birth_date,
         age: data.age,
         gender: data.gender,
         sexual_orientation: data.sexual_orientation,
@@ -575,21 +627,21 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         auto_preferred_languages: data.auto_preferred_languages,
         preferred_languages: data.preferred_languages,
 
-
-
         // Media (State managed)
         photos: photos,
         // loops: data.loops,
         // instagram_photos: data.instagram_photos,
 
         // Music (State managed logic in component, but data comes from form 'mi_himno')
-        mi_himno: data.mi_himno ? {
-          service: data.mi_himno.service,
-          connected: data.mi_himno.connected,
-          favorite_artists: data.mi_himno.favorite_artists || [],
-          representative_playlist: data.mi_himno.representative_playlist,
-          featured_songs: data.mi_himno.featured_songs || []
-        } : null,
+        mi_himno: data.mi_himno
+          ? {
+              service: data.mi_himno.service,
+              connected: data.mi_himno.connected,
+              favorite_artists: data.mi_himno.favorite_artists || [],
+              representative_playlist: data.mi_himno.representative_playlist,
+              featured_songs: data.mi_himno.featured_songs || [],
+            }
+          : null,
         favorite_songs: data.favorite_songs || [],
         spotify_playlists: data.spotify_playlists || [],
         music_genres: data.music_genres || [],
@@ -598,8 +650,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         location: data.location,
         city: citySearch || data.city,
         location_sharing_enabled: data.location_sharing_enabled,
-        distance_preference_km: data.distance_preference_km || data.search_radius_km || 50,
-        search_radius_km: data.distance_preference_km || data.search_radius_km || 50,
+        distance_preference_km:
+          data.distance_preference_km || data.search_radius_km || 50,
+        search_radius_km:
+          data.distance_preference_km || data.search_radius_km || 50,
 
         // Preferences / Search Settings
         attraction_preferences: data.attraction_preferences,
@@ -647,7 +701,6 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         mbti: data.mbti,
         mood: data.mood,
 
-
         // Personality & Characteristics (New)
         social_style: data.social_style,
         processing_style: data.processing_style,
@@ -665,22 +718,21 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
 
         // Smart Photos
         smart_photos_enabled: smartPhotos,
-
       };
 
-      console.log('Final Payload sending to backend:', payload);
+      console.log("Final Payload sending to backend:", payload);
 
       // Add display_name explicitly if it exists in form data, as it maps to User model
       if (data.display_name) payload.display_name = data.display_name;
 
-      console.log('Sending clean payload:', payload);
+      console.log("Sending clean payload:", payload);
 
       await onSave(payload);
     } catch (err: any) {
-      console.error('Save failed details:', err);
+      console.error("Save failed details:", err);
       if (err.response) {
-        console.error('Backend Status:', err.response.status);
-        console.error('Backend Data:', err.response.data);
+        console.error("Backend Status:", err.response.status);
+        console.error("Backend Data:", err.response.data);
       }
     } finally {
       setSaving(false);
@@ -689,18 +741,17 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
 
   // Prompt picker data: stable slugs, display text via i18n bundle (backend),
   // Spanish source list as fallback. Stored values stay as display text (no migration).
-  const esPrompts = getPromptsForLanguage('es');
+  const esPrompts = getPromptsForLanguage("es");
   const promptText = (slug: string, idx: number) =>
     t(`profile.prompts.${slug}`, esPrompts[idx] ?? slug);
   const selectedQuestions = prompts.map((p) => p.question);
   const promptCandidates = PROMPT_SLUGS.map((slug, idx) => ({
     slug,
     text: promptText(slug, idx),
-  })).filter(
-    ({ text }) => !selectedQuestions.includes(text)
-  );
+  })).filter(({ text }) => !selectedQuestions.includes(text));
   const promptVisible = promptCandidates.filter(({ slug, text }) => {
-    const matchCat = promptCat === 'all' || promptCategoryOf(slug) === promptCat;
+    const matchCat =
+      promptCat === "all" || promptCategoryOf(slug) === promptCat;
     const matchSearch =
       !promptSearch.trim() ||
       text.toLowerCase().includes(promptSearch.trim().toLowerCase());
@@ -718,11 +769,11 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // sectionId is a logical section key (also used by DiscoveryRefinementCard);
   // DOM anchors may differ (fields grouped inside profile sections)
   const SECTION_ANCHOR_MAP: Record<string, string> = {
-    'section-relationship-type': 'section-additional',
-    'section-height': 'section-additional',
-    'section-zodiac': 'section-additional',
-    'section-education': 'section-professional',
-    'section-music-genres': 'section-music',
+    "section-relationship-type": "section-additional",
+    "section-height": "section-additional",
+    "section-zodiac": "section-additional",
+    "section-education": "section-professional",
+    "section-music-genres": "section-music",
   };
   const handleSuggestionClick = (sectionId: string) => {
     const targetId = SECTION_ANCHOR_MAP[sectionId] || sectionId;
@@ -731,11 +782,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       // Offset for sticky header if needed
       const headerOffset = 100;
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
@@ -744,18 +796,24 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // no cuentan para el % de completitud ni se renderizan sus bloques.
   // null = backend sin respuesta → se cuenta todo (comportamiento anterior).
   const [hiddenModules, setHiddenModules] = useState<string[] | null>(null);
+  const [hiddenSettled, setHiddenSettled] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     apiClient
-      .get('/api/profile-modules/hidden')
+      .get("/api/profile-modules/hidden")
       .then((res) => {
         if (cancelled) return;
         const list = res?.data?.hidden;
-        setHiddenModules(Array.isArray(list) ? list.filter((k) => typeof k === 'string') : []);
+        setHiddenModules(
+          Array.isArray(list) ? list.filter((k) => typeof k === "string") : [],
+        );
       })
       .catch(() => {
         if (!cancelled) setHiddenModules(null);
+      })
+      .finally(() => {
+        if (!cancelled) setHiddenSettled(true);
       });
     return () => {
       cancelled = true;
@@ -769,16 +827,23 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           (k) => !moduleOrder.includes(k as ProfileSectionKey),
         )
       : null);
-  const showSpotifyBlock = !hiddenSectionKeys?.includes('section-music-spotify');
-  const showGenresBlock = !hiddenSectionKeys?.includes('section-music-genres');
+  const showSpotifyBlock = !hiddenSectionKeys?.includes(
+    "section-music-spotify",
+  );
+  const showGenresBlock = !hiddenSectionKeys?.includes("section-music-genres");
+  const modulesReady = orderSettled && hiddenSettled;
 
   // Section blocks keyed by registry key. Each block's JSX and props are
   // identical to the hardcoded layout; only the order is module-driven
   // when the backend provides one. 'section-control' is not admin-driven
   // and always renders.
   const sectionBlocks: Record<string, ReactNode> = {
-    'section-photos': (
-      <Grid id="section-photos" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-photos": (
+      <Grid
+        id="section-photos"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <PhotosSection
           profile={profile}
           smartPhotos={smartPhotos}
@@ -786,8 +851,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-basic': (
-      <Grid id="section-basic" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-basic": (
+      <Grid id="section-basic" sx={{ "& > .MuiGrid-item": { p: 0 } }} size={12}>
         <BasicInfoSection
           control={control}
           setValue={setValue}
@@ -813,8 +878,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-location': (
-      <Grid id="section-location" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-location": (
+      <Grid
+        id="section-location"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <LocationSection
           control={control}
           setValue={setValue}
@@ -826,8 +895,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-aboutme': (
-      <Grid id="section-aboutme" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-aboutme": (
+      <Grid
+        id="section-aboutme"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <AboutMeSection
           control={control}
           setInfoDrawerOpen={setInfoDrawerOpen}
@@ -841,8 +914,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-goals': (
-      <Grid id="section-goals" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-goals": (
+      <Grid id="section-goals" sx={{ "& > .MuiGrid-item": { p: 0 } }} size={12}>
         <RelationshipGoalsSection
           control={control}
           setValue={setValue}
@@ -851,16 +924,24 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-interests': (
-      <Grid id="section-interests" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-interests": (
+      <Grid
+        id="section-interests"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <InterestsSection
           lifestyleInterests={lifestyleInterests}
           setLifestyleInterests={setLifestyleInterests}
         />
       </Grid>
     ),
-    'section-pronouns': (
-      <Grid id="section-pronouns" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-pronouns": (
+      <Grid
+        id="section-pronouns"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <PronounsSection
           control={control}
           setValue={setValue}
@@ -870,8 +951,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-additional': (
-      <Grid id="section-additional" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-additional": (
+      <Grid
+        id="section-additional"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <AdditionalDataSection
           control={control}
           setValue={setValue}
@@ -880,11 +965,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-professional': (
+    "section-professional": (
       <Grid
         id="section-professional"
-        sx={{ '& > .MuiGrid-item': { p: 0 } }}
-        size={12}>
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <ProfessionalAcademicSection
           control={control}
           setValue={setValue}
@@ -893,8 +979,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-music': (
-      <Grid id="section-music" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-music": (
+      <Grid id="section-music" sx={{ "& > .MuiGrid-item": { p: 0 } }} size={12}>
         <MusicSection
           control={control}
           watch={watch}
@@ -904,8 +990,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-identity': (
-      <Grid id="section-identity" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-identity": (
+      <Grid
+        id="section-identity"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <IdentitySection
           control={control}
           setValue={setValue}
@@ -914,30 +1004,46 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-personality': (
-      <Grid id="section-personality" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-personality": (
+      <Grid
+        id="section-personality"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <PersonalitySection control={control} setValue={setValue} />
       </Grid>
     ),
-    'section-cognitive': (
-      <Grid id="section-cognitive" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-cognitive": (
+      <Grid
+        id="section-cognitive"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <CognitiveSection control={control} setValue={setValue} />
       </Grid>
     ),
-    'section-wellness': (
-      <Grid id="section-wellness" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-wellness": (
+      <Grid
+        id="section-wellness"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <WellnessSection control={control} setValue={setValue} />
       </Grid>
     ),
-    'section-control': (
+    "section-control": (
       <ProfileControlSection
         control={control}
         setValue={setValue}
         watch={watch}
       />
     ),
-    'section-status': (
-      <Grid id="section-status" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-status": (
+      <Grid
+        id="section-status"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <CivilStatusSection
           control={control}
           setValue={setValue}
@@ -949,8 +1055,12 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         />
       </Grid>
     ),
-    'section-languages': (
-      <Grid id="section-languages" sx={{ '& > .MuiGrid-item': { p: 0 } }} size={12}>
+    "section-languages": (
+      <Grid
+        id="section-languages"
+        sx={{ "& > .MuiGrid-item": { p: 0 } }}
+        size={12}
+      >
         <LanguagesSection
           control={control}
           setValue={setValue}
@@ -965,29 +1075,29 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
   // Hardcoded fallback order — the layout exactly as written before;
   // used whenever the modules endpoint is unreachable or empty.
   const FALLBACK_SECTION_ORDER: string[] = [
-    'section-photos',
-    'section-basic',
-    'section-location',
-    'section-aboutme',
-    'section-goals',
-    'section-interests',
-    'section-pronouns',
-    'section-additional',
-    'section-professional',
-    'section-music',
-    'section-identity',
-    'section-personality',
-    'section-cognitive',
-    'section-wellness',
-    'section-control',
-    'section-status',
-    'section-languages',
+    "section-photos",
+    "section-basic",
+    "section-location",
+    "section-aboutme",
+    "section-goals",
+    "section-interests",
+    "section-pronouns",
+    "section-additional",
+    "section-professional",
+    "section-music",
+    "section-identity",
+    "section-personality",
+    "section-cognitive",
+    "section-wellness",
+    "section-control",
+    "section-status",
+    "section-languages",
   ];
 
   // Keys to render: admin modules order (+ always-on control section) on
   // success, hardcoded fallback otherwise.
   const visibleSectionKeys: string[] = moduleOrder
-    ? [...moduleOrder, 'section-control']
+    ? [...moduleOrder, "section-control"]
     : FALLBACK_SECTION_ORDER;
 
   // Se definen junto a sectionBlocks, más abajo.
@@ -1001,42 +1111,44 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           justifyContent: "space-between",
           alignItems: "center",
           mb: 3,
-          bgcolor: { xs: 'background.paper', md: 'transparent' },
+          bgcolor: { xs: "background.paper", md: "transparent" },
           boxShadow: { xs: 1, md: 0 },
           borderRadius: { xs: 2, md: 0 },
-          p: { xs: 1, md: 0 }
-        }}>
+          p: { xs: 1, md: 0 },
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             gap: 1,
-            minWidth: 0
-          }}>
-          <Tooltip title={t('actions.goBack', 'Regresar')}>
+            minWidth: 0,
+          }}
+        >
+          <Tooltip title={t("actions.goBack", "Regresar")}>
             <Button
               onClick={onBack}
-              aria-label={t('actions.goBack', 'Regresar')}
+              aria-label={t("actions.goBack", "Regresar")}
               sx={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
                 height: { xs: 48, md: 56 },
                 pl: 0,
                 pr: 2,
                 borderRadius: 3,
-                overflow: 'hidden',
-                bgcolor: 'background.paper',
-                color: 'text.primary',
+                overflow: "hidden",
+                bgcolor: "background.paper",
+                color: "text.primary",
                 boxShadow: 1,
-                textTransform: 'none',
+                textTransform: "none",
                 flexShrink: 0,
-                transition: 'box-shadow 0.2s ease, transform 0.1s ease',
-                '&:hover': { boxShadow: 6 },
-                '&:active': { transform: 'scale(0.95)' },
-                '&:focus-visible': {
-                  outline: '2px solid',
-                  outlineColor: 'primary.main',
+                transition: "box-shadow 0.2s ease, transform 0.1s ease",
+                "&:hover": { boxShadow: 6 },
+                "&:active": { transform: "scale(0.95)" },
+                "&:focus-visible": {
+                  outline: "2px solid",
+                  outlineColor: "primary.main",
                   outlineOffset: 2,
                 },
                 // Círculo de fondo: se expande con scaleX (GPU, sin saltos de layout).
@@ -1045,79 +1157,78 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
                 // afecta layout ni deforma (adiós pétalo y cápsula incompleta).
                 // En reposo solo se ve el círculo; en hover el círculo crece
                 // hasta cubrir exacto el rounded-xl del botón.
-                '& .goback-cover': {
-                  position: 'absolute',
+                "& .goback-cover": {
+                  position: "absolute",
                   inset: 0,
                   borderRadius: 3,
-                  bgcolor: 'primary.main',
+                  bgcolor: "primary.main",
                   clipPath: {
-                    xs: 'circle(24px at 24px 50%)',
-                    md: 'circle(28px at 28px 50%)',
+                    xs: "circle(24px at 24px 50%)",
+                    md: "circle(28px at 28px 50%)",
                   },
-                  transition:
-                    'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+                  transition: "clip-path 0.5s cubic-bezier(0.4,0,0.2,1)",
                 },
-                '&:hover .goback-cover': {
+                "&:hover .goback-cover": {
                   clipPath: {
-                    xs: 'circle(150% at 24px 50%)',
-                    md: 'circle(150% at 28px 50%)',
+                    xs: "circle(150% at 24px 50%)",
+                    md: "circle(150% at 28px 50%)",
                   },
                 },
                 // Flecha en reposo (dentro del círculo) y flecha centrada (aparece
                 // en hover): crossfade para que nunca se vea estirada
-                '& .goback-arrow-rest, & .goback-arrow-center': {
-                  position: 'absolute',
+                "& .goback-arrow-rest, & .goback-arrow-center": {
+                  position: "absolute",
                   top: 0,
-                  height: '100%',
-                  display: 'grid',
-                  placeItems: 'center',
+                  height: "100%",
+                  display: "grid",
+                  placeItems: "center",
                   // Misma curva; retardo mínimo para crosffade natural
-                  transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                  transition: "opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
                 },
-                '& .goback-arrow-rest': {
+                "& .goback-arrow-rest": {
                   left: 0,
                   width: { xs: 48, md: 56 },
                   opacity: 1,
                 },
-                '&:hover .goback-arrow-rest': { opacity: 0 },
-                '& .goback-arrow-center': {
+                "&:hover .goback-arrow-rest": { opacity: 0 },
+                "& .goback-arrow-center": {
                   inset: 0,
                   opacity: 0,
-                  transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                  transition: "opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
                 },
-                '&:hover .goback-arrow-center': { opacity: 1 },
-                '& .goback-label': {
-                  ml: { xs: '48px', md: '56px' },
+                "&:hover .goback-arrow-center": { opacity: 1 },
+                "& .goback-label": {
+                  ml: { xs: "48px", md: "56px" },
                   zIndex: 1,
                   fontWeight: 600,
-                  fontSize: { xs: '0.85rem', md: '1rem' },
-                  whiteSpace: 'nowrap',
+                  fontSize: { xs: "0.85rem", md: "1rem" },
+                  whiteSpace: "nowrap",
                   opacity: 1,
-                  transform: 'translateX(0)',
+                  transform: "translateX(0)",
                   // Sale más rápido que el cover para no encimarse con la flecha
                   transition:
-                    'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                    "opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
                 },
                 // En hover el texto se va hacia atrás y la flecha queda centrada
-                '&:hover .goback-label': {
+                "&:hover .goback-label": {
                   opacity: 0,
-                  transform: 'translateX(-20px)',
+                  transform: "translateX(-20px)",
                 },
-                '@media (prefers-reduced-motion: reduce)': {
-                  '& .goback-cover, & .goback-label, & .goback-arrow-rest, & .goback-arrow-center':
-                    { transition: 'none' },
+                "@media (prefers-reduced-motion: reduce)": {
+                  "& .goback-cover, & .goback-label, & .goback-arrow-rest, & .goback-arrow-center":
+                    { transition: "none" },
                 },
               }}
             >
               <Box className="goback-cover" />
               <Box className="goback-arrow-rest">
-                <ArrowBackIcon sx={{ color: 'primary.contrastText' }} />
+                <ArrowBackIcon sx={{ color: "primary.contrastText" }} />
               </Box>
               <Box className="goback-arrow-center" sx={{ zIndex: 2 }}>
-                <ArrowBackIcon sx={{ color: 'primary.contrastText' }} />
+                <ArrowBackIcon sx={{ color: "primary.contrastText" }} />
               </Box>
               <Typography component="span" className="goback-label">
-                {t('actions.goBack', 'Regresar')}
+                {t("actions.goBack", "Regresar")}
               </Typography>
             </Button>
           </Tooltip>
@@ -1126,10 +1237,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         <Box
           className="top-actions-container"
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "center",
             gap: 1,
             flexShrink: 0,
           }}
@@ -1137,174 +1248,184 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           <Button
             className="btn-cancel-anim"
             onClick={onBack}
-            aria-label={t('common.cancel', 'Cancelar')}
-            title={t('common.cancel', 'Cancelar')}
+            aria-label={t("common.cancel", "Cancelar")}
+            title={t("common.cancel", "Cancelar")}
             variant="contained"
             disableElevation
             sx={{
-              position: 'relative',
-              overflow: 'hidden',
+              position: "relative",
+              overflow: "hidden",
               mr: { xs: 0, md: 1 },
-              minWidth: { xs: 40, md: 'auto' },
-              width: { xs: 40, md: 'auto' },
+              minWidth: { xs: 40, md: "auto" },
+              width: { xs: 40, md: "auto" },
               height: { xs: 40, md: 48 },
-              p: { xs: 0, md: '6px 16px' },
+              p: { xs: 0, md: "6px 16px" },
               borderRadius: 3,
-              textTransform: 'none',
+              textTransform: "none",
               fontWeight: 600,
-              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              fontSize: { xs: "0.85rem", md: "0.95rem" },
               bgcolor: (theme) => alpha(theme.palette.error.main, 0.12),
-              color: 'error.dark',
-              transition: 'box-shadow 0.2s ease, transform 0.1s ease',
-              '&:hover': {
-                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                transform: 'scale(1.03)',
+              color: "error.dark",
+              transition: "box-shadow 0.2s ease, transform 0.1s ease",
+              "&:hover": {
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                transform: "scale(1.03)",
               },
-              '&:active': { transform: 'scale(0.95)', transitionDuration: '0.1s' },
-              '&:focus-visible': {
-                outline: '2px solid',
-                outlineColor: 'primary.main',
+              "&:active": {
+                transform: "scale(0.95)",
+                transitionDuration: "0.1s",
+              },
+              "&:focus-visible": {
+                outline: "2px solid",
+                outlineColor: "primary.main",
                 outlineOffset: 2,
               },
-              '& .cov': {
-                position: 'absolute',
+              "& .cov": {
+                position: "absolute",
                 inset: 0,
                 borderRadius: 3,
-                bgcolor: 'error.main',
+                bgcolor: "error.main",
                 clipPath: {
-                  xs: 'circle(16px at 20px 50%)',
-                  md: 'circle(16px at 24px 50%)',
+                  xs: "circle(16px at 20px 50%)",
+                  md: "circle(16px at 24px 50%)",
                 },
-                transition: 'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+                transition: "clip-path 0.5s cubic-bezier(0.4,0,0.2,1)",
               },
-              '&:hover .cov': {
+              "&:hover .cov": {
                 clipPath: {
-                  xs: 'circle(150% at 20px 50%)',
-                  md: 'circle(150% at 24px 50%)',
+                  xs: "circle(150% at 20px 50%)",
+                  md: "circle(150% at 24px 50%)",
                 },
               },
-              '& .ic-rest, & .ic-center': {
-                position: 'absolute',
+              "& .ic-rest, & .ic-center": {
+                position: "absolute",
                 top: 0,
-                height: '100%',
-                display: 'grid',
-                placeItems: 'center',
-                transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                height: "100%",
+                display: "grid",
+                placeItems: "center",
+                transition: "opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
               },
-              '& .ic-rest': {
+              "& .ic-rest": {
                 left: 0,
                 width: { xs: 40, md: 48 },
                 opacity: 1,
               },
-              '&:hover .ic-rest': { opacity: 0 },
-              '& .ic-center': { inset: 0, opacity: 0 },
-              '&:hover .ic-center': { opacity: 1 },
-              '& .lbl': {
-                ml: { xs: 0, md: '48px' },
-                display: { xs: 'none', md: 'inline' },
-                whiteSpace: 'nowrap',
+              "&:hover .ic-rest": { opacity: 0 },
+              "& .ic-center": { inset: 0, opacity: 0 },
+              "&:hover .ic-center": { opacity: 1 },
+              "& .lbl": {
+                ml: { xs: 0, md: "48px" },
+                display: { xs: "none", md: "inline" },
+                whiteSpace: "nowrap",
                 opacity: 1,
-                transform: 'translateX(0)',
+                transform: "translateX(0)",
                 transition:
-                  'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                  "opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
               },
-              '&:hover .lbl': { opacity: 0, transform: 'translateX(-20px)' },
-              '@media (prefers-reduced-motion: reduce)': {
-                '& .cov, & .lbl, & .ic-rest, & .ic-center': { transition: 'none' },
+              "&:hover .lbl": { opacity: 0, transform: "translateX(-20px)" },
+              "@media (prefers-reduced-motion: reduce)": {
+                "& .cov, & .lbl, & .ic-rest, & .ic-center": {
+                  transition: "none",
+                },
               },
             }}
           >
             <Box className="cov" />
             <Box className="ic-rest">
-              <CloseIcon sx={{ color: '#fff', fontSize: 20 }} />
+              <CloseIcon sx={{ color: "#fff", fontSize: 20 }} />
             </Box>
             <Box className="ic-center" sx={{ zIndex: 2 }}>
-              <CloseIcon sx={{ color: '#fff', fontSize: 20 }} />
+              <CloseIcon sx={{ color: "#fff", fontSize: 20 }} />
             </Box>
             <Box component="span" className="lbl">
-              {t('common.cancel', 'Cancelar')}
+              {t("common.cancel", "Cancelar")}
             </Box>
           </Button>
 
           <Button
             type="submit"
             className="btn-save-anim"
-            aria-label={t('common.save', 'Guardar')}
-            title={t('common.save', 'Guardar')}
+            aria-label={t("common.save", "Guardar")}
+            title={t("common.save", "Guardar")}
             disabled={saving}
             variant="contained"
             color="primary"
             sx={{
-              position: 'relative',
-              overflow: 'hidden',
+              position: "relative",
+              overflow: "hidden",
               mr: { xs: 0, md: 1 },
-              minWidth: { xs: 40, md: 'auto' },
-              width: { xs: 40, md: 'auto' },
+              minWidth: { xs: 40, md: "auto" },
+              width: { xs: 40, md: "auto" },
               height: { xs: 40, md: 48 },
-              p: { xs: 0, md: '6px 16px' },
+              p: { xs: 0, md: "6px 16px" },
               borderRadius: 3,
-              textTransform: 'none',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+              textTransform: "none",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
               fontWeight: 600,
-              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              fontSize: { xs: "0.85rem", md: "0.95rem" },
               bgcolor: (theme) => alpha(theme.palette.info.main, 0.12),
-              color: 'info.dark',
-              transition: 'box-shadow 0.2s ease, transform 0.1s ease',
-              '&:hover': {
-                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                transform: 'scale(1.03)',
+              color: "info.dark",
+              transition: "box-shadow 0.2s ease, transform 0.1s ease",
+              "&:hover": {
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                transform: "scale(1.03)",
               },
-              '&:active': { transform: 'scale(0.95)', transitionDuration: '0.1s' },
-              '&:focus-visible': {
-                outline: '2px solid',
-                outlineColor: 'primary.main',
+              "&:active": {
+                transform: "scale(0.95)",
+                transitionDuration: "0.1s",
+              },
+              "&:focus-visible": {
+                outline: "2px solid",
+                outlineColor: "primary.main",
                 outlineOffset: 2,
               },
-              '& .cov': {
-                position: 'absolute',
+              "& .cov": {
+                position: "absolute",
                 inset: 0,
                 borderRadius: 3,
-                bgcolor: 'info.main',
+                bgcolor: "info.main",
                 clipPath: {
-                  xs: 'circle(16px at 20px 50%)',
-                  md: 'circle(16px at 24px 50%)',
+                  xs: "circle(16px at 20px 50%)",
+                  md: "circle(16px at 24px 50%)",
                 },
-                transition: 'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+                transition: "clip-path 0.5s cubic-bezier(0.4,0,0.2,1)",
               },
-              '&:hover .cov': {
+              "&:hover .cov": {
                 clipPath: {
-                  xs: 'circle(150% at 20px 50%)',
-                  md: 'circle(150% at 24px 50%)',
+                  xs: "circle(150% at 20px 50%)",
+                  md: "circle(150% at 24px 50%)",
                 },
               },
-              '& .ic-rest, & .ic-center': {
-                position: 'absolute',
+              "& .ic-rest, & .ic-center": {
+                position: "absolute",
                 top: 0,
-                height: '100%',
-                display: 'grid',
-                placeItems: 'center',
-                transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                height: "100%",
+                display: "grid",
+                placeItems: "center",
+                transition: "opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
               },
-              '& .ic-rest': {
+              "& .ic-rest": {
                 left: 0,
                 width: { xs: 40, md: 48 },
                 opacity: 1,
               },
-              '&:hover .ic-rest': { opacity: 0 },
-              '& .ic-center': { inset: 0, opacity: 0 },
-              '&:hover .ic-center': { opacity: 1 },
-              '& .lbl': {
-                ml: { xs: 0, md: '48px' },
-                display: { xs: 'none', md: 'inline' },
-                whiteSpace: 'nowrap',
+              "&:hover .ic-rest": { opacity: 0 },
+              "& .ic-center": { inset: 0, opacity: 0 },
+              "&:hover .ic-center": { opacity: 1 },
+              "& .lbl": {
+                ml: { xs: 0, md: "48px" },
+                display: { xs: "none", md: "inline" },
+                whiteSpace: "nowrap",
                 opacity: 1,
-                transform: 'translateX(0)',
+                transform: "translateX(0)",
                 transition:
-                  'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                  "opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
               },
-              '&:hover .lbl': { opacity: 0, transform: 'translateX(-20px)' },
-              '@media (prefers-reduced-motion: reduce)': {
-                '& .cov, & .lbl, & .ic-rest, & .ic-center': { transition: 'none' },
+              "&:hover .lbl": { opacity: 0, transform: "translateX(-20px)" },
+              "@media (prefers-reduced-motion: reduce)": {
+                "& .cov, & .lbl, & .ic-rest, & .ic-center": {
+                  transition: "none",
+                },
               },
             }}
           >
@@ -1313,150 +1434,174 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
               {saving ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
-                <SaveIcon sx={{ color: '#fff', fontSize: 20 }} />
+                <SaveIcon sx={{ color: "#fff", fontSize: 20 }} />
               )}
             </Box>
             <Box className="ic-center" sx={{ zIndex: 2 }}>
-              <SaveIcon sx={{ color: '#fff', fontSize: 20 }} />
+              <SaveIcon sx={{ color: "#fff", fontSize: 20 }} />
             </Box>
             <Box component="span" className="lbl">
-              {t('common.save', 'Guardar')}
+              {t("common.save", "Guardar")}
             </Box>
           </Button>
 
           <Button
             className="btn-preview"
             onClick={handlePreview}
-            aria-label={t('profile.preview', 'Vista Previa')}
-            title={t('profile.preview', 'Vista Previa')}
+            aria-label={t("profile.preview", "Vista Previa")}
+            title={t("profile.preview", "Vista Previa")}
             variant="outlined"
             color="inherit"
             sx={{
-              position: 'relative',
-              overflow: 'hidden',
-              minWidth: { xs: 40, md: 'auto' },
-              width: { xs: 40, md: 'auto' },
+              position: "relative",
+              overflow: "hidden",
+              minWidth: { xs: 40, md: "auto" },
+              width: { xs: 40, md: "auto" },
               height: { xs: 40, md: 48 },
-              p: { xs: 0, md: '6px 16px' },
+              p: { xs: 0, md: "6px 16px" },
               borderRadius: 3,
-              textTransform: 'none',
+              textTransform: "none",
               fontWeight: 600,
-              fontSize: { xs: '0.85rem', md: '0.95rem' },
-              color: 'text.secondary',
-              borderColor: 'divider',
-              transition: 'box-shadow 0.2s ease, transform 0.1s ease',
-              '&:hover': {
-                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                transform: 'scale(1.03)',
+              fontSize: { xs: "0.85rem", md: "0.95rem" },
+              color: "text.secondary",
+              borderColor: "divider",
+              transition: "box-shadow 0.2s ease, transform 0.1s ease",
+              "&:hover": {
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                transform: "scale(1.03)",
               },
-              '&:active': { transform: 'scale(0.95)', transitionDuration: '0.1s' },
-              '&:focus-visible': {
-                outline: '2px solid',
-                outlineColor: 'primary.main',
+              "&:active": {
+                transform: "scale(0.95)",
+                transitionDuration: "0.1s",
+              },
+              "&:focus-visible": {
+                outline: "2px solid",
+                outlineColor: "primary.main",
                 outlineOffset: 2,
               },
-              '& .cov': {
-                position: 'absolute',
+              "& .cov": {
+                position: "absolute",
                 inset: 0,
                 borderRadius: 3,
-                bgcolor: 'grey.600',
+                bgcolor: "grey.600",
                 clipPath: {
-                  xs: 'circle(16px at 20px 50%)',
-                  md: 'circle(16px at 24px 50%)',
+                  xs: "circle(16px at 20px 50%)",
+                  md: "circle(16px at 24px 50%)",
                 },
-                transition: 'clip-path 0.5s cubic-bezier(0.4,0,0.2,1)',
+                transition: "clip-path 0.5s cubic-bezier(0.4,0,0.2,1)",
               },
-              '&:hover .cov': {
+              "&:hover .cov": {
                 clipPath: {
-                  xs: 'circle(150% at 20px 50%)',
-                  md: 'circle(150% at 24px 50%)',
+                  xs: "circle(150% at 20px 50%)",
+                  md: "circle(150% at 24px 50%)",
                 },
               },
-              '& .ic-rest, & .ic-center': {
-                position: 'absolute',
+              "& .ic-rest, & .ic-center": {
+                position: "absolute",
                 top: 0,
-                height: '100%',
-                display: 'grid',
-                placeItems: 'center',
-                transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                height: "100%",
+                display: "grid",
+                placeItems: "center",
+                transition: "opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
               },
-              '& .ic-rest': {
+              "& .ic-rest": {
                 left: 0,
                 width: { xs: 40, md: 48 },
                 opacity: 1,
               },
-              '&:hover .ic-rest': { opacity: 0 },
-              '& .ic-center': { inset: 0, opacity: 0 },
-              '&:hover .ic-center': { opacity: 1 },
-              '& .lbl': {
-                ml: { xs: 0, md: '48px' },
-                display: { xs: 'none', md: 'inline' },
-                whiteSpace: 'nowrap',
+              "&:hover .ic-rest": { opacity: 0 },
+              "& .ic-center": { inset: 0, opacity: 0 },
+              "&:hover .ic-center": { opacity: 1 },
+              "& .lbl": {
+                ml: { xs: 0, md: "48px" },
+                display: { xs: "none", md: "inline" },
+                whiteSpace: "nowrap",
                 opacity: 1,
-                transform: 'translateX(0)',
+                transform: "translateX(0)",
                 transition:
-                  'opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s',
+                  "opacity 0.25s ease-out 0.05s, transform 0.3s cubic-bezier(0.4,0,0.2,1) 0.05s",
               },
-              '&:hover .lbl': { opacity: 0, transform: 'translateX(-20px)' },
-              '@media (prefers-reduced-motion: reduce)': {
-                '& .cov, & .lbl, & .ic-rest, & .ic-center': { transition: 'none' },
+              "&:hover .lbl": { opacity: 0, transform: "translateX(-20px)" },
+              "@media (prefers-reduced-motion: reduce)": {
+                "& .cov, & .lbl, & .ic-rest, & .ic-center": {
+                  transition: "none",
+                },
               },
             }}
           >
             <Box className="cov" />
             <Box className="ic-rest">
-              <VisibilityIcon sx={{ color: '#fff', fontSize: 20 }} />
+              <VisibilityIcon sx={{ color: "#fff", fontSize: 20 }} />
             </Box>
             <Box className="ic-center" sx={{ zIndex: 2 }}>
-              <VisibilityIcon sx={{ color: '#fff', fontSize: 20 }} />
+              <VisibilityIcon sx={{ color: "#fff", fontSize: 20 }} />
             </Box>
             <Box component="span" className="lbl">
-              {t('profile.preview', 'Vista Previa')}
+              {t("profile.preview", "Vista Previa")}
             </Box>
           </Button>
         </Box>
       </Box>
 
       {/* Unsaved Changes Dialog for Preview */}
-      <Dialog open={unsavedPreviewDialogOpen} onClose={() => setUnsavedPreviewDialogOpen(false)}>
-        <DialogTitle>{t('actions.unsaved_changes_title', 'Cambios sin guardar')}</DialogTitle>
+      <Dialog
+        open={unsavedPreviewDialogOpen}
+        onClose={() => setUnsavedPreviewDialogOpen(false)}
+      >
+        <DialogTitle>
+          {t("actions.unsaved_changes_title", "Cambios sin guardar")}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t('actions.unsaved_changes_preview_text', 'Estás a punto de ver la vista previa, pero tienes cambios sin guardar. Si continúas, verás la versión anterior.')}
+            {t(
+              "actions.unsaved_changes_preview_text",
+              "Estás a punto de ver la vista previa, pero tienes cambios sin guardar. Si continúas, verás la versión anterior.",
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
-            setUnsavedPreviewDialogOpen(false);
-            router.push('/profile/preview');
-          }} color="secondary">
-            {t('actions.view_without_saving', 'Ver sin guardar')}
+          <Button
+            onClick={() => {
+              setUnsavedPreviewDialogOpen(false);
+              router.push("/profile/preview");
+            }}
+            color="secondary"
+          >
+            {t("actions.view_without_saving", "Ver sin guardar")}
           </Button>
-          <Button onClick={() => {
-            setUnsavedPreviewDialogOpen(false);
-            // Trigger form submit via ref or handle it manually? 
-            // Since this is outside the form submit handler, we need to trigger it.
-            // The submit button inside the form triggers handleSubmit(onSubmit).
-            // We can use formRef.current?.requestSubmit() if available, or just focus on save.
-            // For now, let's just close and let user click save manually or we can trigger it.
-            // A better UX might be just letting them click Save.
-            // But the dialog button says "Save changes".
-            // Triggering form submit programmatically in RHF:
-            handleSubmit(onSubmit)();
-          }} variant="contained" color="success" autoFocus>
-            {t('actions.save_and_preview', 'Guardar cambios')}
+          <Button
+            onClick={() => {
+              setUnsavedPreviewDialogOpen(false);
+              // Trigger form submit via ref or handle it manually?
+              // Since this is outside the form submit handler, we need to trigger it.
+              // The submit button inside the form triggers handleSubmit(onSubmit).
+              // We can use formRef.current?.requestSubmit() if available, or just focus on save.
+              // For now, let's just close and let user click save manually or we can trigger it.
+              // A better UX might be just letting them click Save.
+              // But the dialog button says "Save changes".
+              // Triggering form submit programmatically in RHF:
+              handleSubmit(onSubmit)();
+            }}
+            variant="contained"
+            color="success"
+            autoFocus
+          >
+            {t("actions.save_and_preview", "Guardar cambios")}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Profile Completion Widget */}
-      <Box sx={{
-        mb: 2
-      }}>
+      <Box
+        sx={{
+          mb: 2,
+        }}
+      >
         <ProfileCompletionWidget
           control={control}
           onSuggestionClick={handleSuggestionClick}
           hiddenSections={hiddenSectionKeys}
+          modulesReady={modulesReady}
         />
       </Box>
       {/* Sections Grid — order comes from GET /api/profile-modules
@@ -1488,11 +1633,15 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       </Grid>
 
       {/* Nickname Change Dialog */}
-      <Dialog open={nicknameDialogOpen} onClose={() => setNicknameDialogOpen(false)}>
+      <Dialog
+        open={nicknameDialogOpen}
+        onClose={() => setNicknameDialogOpen(false)}
+      >
         <DialogTitle>Cambiar Nickname</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ mb: 2 }}>
-            Tu nickname es único y se usa para tu URL de perfil. Solo puedes cambiarlo una vez cada 30 días.
+            Tu nickname es único y se usa para tu URL de perfil. Solo puedes
+            cambiarlo una vez cada 30 días.
           </DialogContentText>
           <TextField
             autoFocus
@@ -1502,7 +1651,9 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             value={newNickname}
             onChange={(e) => setNewNickname(e.target.value)}
             error={!!nicknameError}
-            helperText={nicknameError || "Letras, números, . _ - @ (sin espacios)"}
+            helperText={
+              nicknameError || "Letras, números, . _ - @ (sin espacios)"
+            }
           />
           {nicknameSuccess && (
             <Alert severity="success" sx={{ mt: 2 }}>
@@ -1512,26 +1663,34 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setNicknameDialogOpen(false)}>Cancelar</Button>
-          <Button onClick={handleNicknameChange} disabled={checkingNickname || !newNickname}>
-            {checkingNickname ? <CircularProgress size={24} /> : 'Guardar'}
+          <Button
+            onClick={handleNicknameChange}
+            disabled={checkingNickname || !newNickname}
+          >
+            {checkingNickname ? <CircularProgress size={24} /> : "Guardar"}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Change Phone Confirmation Dialog */}
-      <Dialog open={changePhoneDialogOpen} onClose={() => setChangePhoneDialogOpen(false)}>
-        <DialogTitle>{t('profile.sections.identity.verification.changePhoneTitle')}</DialogTitle>
+      <Dialog
+        open={changePhoneDialogOpen}
+        onClose={() => setChangePhoneDialogOpen(false)}
+      >
+        <DialogTitle>
+          {t("profile.sections.identity.verification.changePhoneTitle")}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t('profile.sections.identity.verification.changePhoneBody')}
+            {t("profile.sections.identity.verification.changePhoneBody")}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setChangePhoneDialogOpen(false)}>
-            {t('profile.sections.identity.verification.cancel')}
+            {t("profile.sections.identity.verification.cancel")}
           </Button>
           <Button onClick={confirmChangePhone} color="primary">
-            {t('profile.sections.identity.verification.changeConfirm')}
+            {t("profile.sections.identity.verification.changeConfirm")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1539,8 +1698,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
       {/* Verification Code Dialog */}
       <VerificationCodeDialog
         open={!!verificationDialog}
-        channel={verificationDialog?.channel || 'phone'}
-        target={verificationDialog?.target || ''}
+        channel={verificationDialog?.channel || "phone"}
+        target={verificationDialog?.target || ""}
         error={verificationError}
         onClose={() => setVerificationDialog(null)}
         onConfirm={confirmVerification}
@@ -1559,59 +1718,87 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           paper: {
             sx: {
               m: { xs: 1, sm: 2 },
-              mx: 'auto',
-              width: { xs: '95%', sm: '80%', md: '70%' },
-              maxHeight: '70vh',
-              borderRadius: '12px',
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
+              mx: "auto",
+              width: { xs: "95%", sm: "80%", md: "70%" },
+              maxHeight: "70vh",
+              borderRadius: "12px",
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
               // Clear the sidebar on desktop, clear the navbar on mobile.
-              left: { xs: 0, sm: 0, md: '5%', lg: '8%' },
-              mt: { xs: '12vh', sm: 2 },
+              left: { xs: 0, sm: 0, md: "5%", lg: "8%" },
+              mt: { xs: "12vh", sm: 2 },
             },
-          }
+          },
         }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton
             onClick={() => setPromptSelectorOpen(false)}
             size="small"
             color="error"
-            aria-label={t('profile.prompts.ui.cancel', 'Cancelar')}
+            aria-label={t("profile.prompts.ui.cancel", "Cancelar")}
           >
             <CloseIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flex: 1 }}>
-            {t('profile.prompts.ui.title', 'Selecciona una frase divertida')}
+            {t("profile.prompts.ui.title", "Selecciona una frase divertida")}
           </Typography>
-          <Typography variant="caption" sx={{
-            color: "text.secondary"
-          }}>
-            {t('profile.prompts.ui.counter', '{{n}}/5 seleccionadas', { n: prompts.length + stagedPrompts.length })}
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
+            {t("profile.prompts.ui.counter", "{{n}}/5 seleccionadas", {
+              n: prompts.length + stagedPrompts.length,
+            })}
           </Typography>
         </DialogTitle>
         <DialogContent
           dividers
-          sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, overflowY: 'visible' }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1.5,
+            overflowY: "visible",
+          }}
         >
           <TextField
             fullWidth
             size="small"
             value={promptSearch}
             onChange={(e) => setPromptSearch(e.target.value)}
-            placeholder={t('profile.prompts.ui.search', 'Buscar frases...')}
+            placeholder={t("profile.prompts.ui.search", "Buscar frases...")}
           />
-          <Stack direction="row" spacing={1} useFlexGap sx={{
-            flexWrap: "wrap"
-          }}>
-            {(['all', 'musica', 'viajes', 'comida', 'recuerdos', 'hobbies'] as const).map((cat) => (
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{
+              flexWrap: "wrap",
+            }}
+          >
+            {(
+              [
+                "all",
+                "musica",
+                "viajes",
+                "comida",
+                "recuerdos",
+                "hobbies",
+              ] as const
+            ).map((cat) => (
               <Chip
                 key={cat}
-                label={cat === 'all' ? t('profile.prompts.ui.all', 'Todas') : t(`profile.prompts.cat.${cat}`, cat)}
+                label={
+                  cat === "all"
+                    ? t("profile.prompts.ui.all", "Todas")
+                    : t(`profile.prompts.cat.${cat}`, cat)
+                }
                 clickable
-                color={promptCat === cat ? 'primary' : 'default'}
-                variant={promptCat === cat ? 'filled' : 'outlined'}
+                color={promptCat === cat ? "primary" : "default"}
+                variant={promptCat === cat ? "filled" : "outlined"}
                 onClick={() => setPromptCat(cat)}
                 size="small"
               />
@@ -1621,8 +1808,8 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             spacing={1}
             sx={{
               mt: 0.5,
-              overflowY: 'auto',
-              maxHeight: '38vh',
+              overflowY: "auto",
+              maxHeight: "38vh",
               pr: 0.5,
               pb: 1,
             }}
@@ -1633,9 +1820,13 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
                 sx={{
                   color: "text.secondary",
                   textAlign: "center",
-                  py: 2
-                }}>
-                {t('profile.prompts.ui.noresults', 'Sin resultados para tu búsqueda.')}
+                  py: 2,
+                }}
+              >
+                {t(
+                  "profile.prompts.ui.noresults",
+                  "Sin resultados para tu búsqueda.",
+                )}
               </Typography>
             )}
             {promptVisible.map(({ slug, text }) => {
@@ -1643,17 +1834,18 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
               return (
                 <Button
                   key={slug}
-                  variant={staged ? 'contained' : 'outlined'}
-                  color={staged ? 'primary' : 'inherit'}
+                  variant={staged ? "contained" : "outlined"}
+                  color={staged ? "primary" : "inherit"}
                   onClick={() => toggleStagedPrompt(text)}
                   sx={{
-                    justifyContent: 'flex-start',
-                    textAlign: 'left',
-                    boxShadow: 'none',
-                    '&:hover': { boxShadow: 'none' },
+                    justifyContent: "flex-start",
+                    textAlign: "left",
+                    boxShadow: "none",
+                    "&:hover": { boxShadow: "none" },
                   }}
                 >
-                  {staged ? '✓ ' : ''}{text}
+                  {staged ? "✓ " : ""}
+                  {text}
                 </Button>
               );
             })}
@@ -1661,14 +1853,14 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={() => setPromptSelectorOpen(false)} color="inherit">
-            {t('profile.prompts.ui.cancel', 'Cancelar')}
+            {t("profile.prompts.ui.cancel", "Cancelar")}
           </Button>
           <Button
             onClick={handleSaveStagedPrompts}
             variant="contained"
             disabled={stagedPrompts.length === 0}
           >
-            {t('profile.prompts.ui.save', 'Guardar')}
+            {t("profile.prompts.ui.save", "Guardar")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1678,28 +1870,33 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
           <Box
             className="floating-actions"
             sx={{
-              display: 'flex',
+              display: "flex",
               // Columna vertical en todos los viewports (móvil intacto);
               // fijo para que el scroll y la rotación no lo pierdan
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
               gap: { xs: 2, md: 3 },
-              position: 'fixed',
+              position: "fixed",
               // 4rem móvil / 2rem desktop (valores que ya funcionaban);
               // solo tablets (táctil + ancha + alta) más arriba por la barra
               // del navegador; móviles en horizontal conservan 2rem
-              bottom: { xs: '4rem', md: '2rem' },
-            '@media (pointer: coarse) and (min-width: 600px) and (min-height: 600px)': {
-              // Solo tablets: sube la columna para que vista previa no se corte
-              bottom: '8rem',
-            },
+              bottom: { xs: "4rem", md: "2rem" },
+              "@media (pointer: coarse) and (min-width: 600px) and (min-height: 600px)":
+                {
+                  // Solo tablets: sube la columna para que vista previa no se corte
+                  bottom: "8rem",
+                },
               // Móvil pegados al filo para no tapar las tarjetas; desktop junto
               // al contenedor (posición anterior), calculado por JS
-              right: { xs: 'max(0.5rem, env(safe-area-inset-right))', md: '1rem', lg: `${offsetRight}px` },
-              left: 'auto',
-              top: 'auto',
-              transform: 'none',
+              right: {
+                xs: "max(0.5rem, env(safe-area-inset-right))",
+                md: "1rem",
+                lg: `${offsetRight}px`,
+              },
+              left: "auto",
+              top: "auto",
+              transform: "none",
               m: 0,
               p: 0,
               zIndex: 1000,
@@ -1709,16 +1906,19 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             <IconButton
               className="btn-toggle-actions"
               onClick={() => setShowActions((v) => !v)}
-              aria-label={t('common.toggleActions', 'Mostrar / ocultar acciones')}
+              aria-label={t(
+                "common.toggleActions",
+                "Mostrar / ocultar acciones",
+              )}
               color="inherit"
               sx={{
                 width: { xs: 48, md: 56 },
                 height: { xs: 48, md: 56 },
-                borderRadius: '50%',
-                bgcolor: 'grey.700',
-                color: 'white',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                '&:hover': { bgcolor: 'grey.800' },
+                borderRadius: "50%",
+                bgcolor: "grey.700",
+                color: "white",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                "&:hover": { bgcolor: "grey.800" },
               }}
             >
               {showActions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -1726,10 +1926,10 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
             {showActions && (
               <Box
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                   gap: { xs: 2, md: 3 },
                   m: 0,
                   p: 0,
@@ -1738,16 +1938,16 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
                 <IconButton
                   className="btn-cancel"
                   onClick={onBack}
-                  aria-label={t('common.cancel', 'Cancelar')}
+                  aria-label={t("common.cancel", "Cancelar")}
                   color="error"
                   sx={{
                     width: { xs: 48, md: 56 },
                     height: { xs: 48, md: 56 },
-                    borderRadius: '50%',
-                    bgcolor: 'error.main',
-                    color: 'error.contrastText',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                    '&:hover': { bgcolor: 'error.dark' },
+                    borderRadius: "50%",
+                    bgcolor: "error.main",
+                    color: "error.contrastText",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                    "&:hover": { bgcolor: "error.dark" },
                   }}
                 >
                   <CloseIcon sx={{ fontSize: 24 }} />
@@ -1755,34 +1955,38 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
                 <IconButton
                   className="btn-save"
                   onClick={handleSubmit(onSubmit)}
-                  aria-label={t('common.save', 'Guardar')}
+                  aria-label={t("common.save", "Guardar")}
                   color="primary"
                   disabled={saving}
                   sx={{
                     width: { xs: 48, md: 56 },
                     height: { xs: 48, md: 56 },
-                    borderRadius: '50%',
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
-                    '&:hover': { bgcolor: 'primary.dark' },
+                    borderRadius: "50%",
+                    bgcolor: "primary.main",
+                    color: "primary.contrastText",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.35)",
+                    "&:hover": { bgcolor: "primary.dark" },
                   }}
                 >
-                  {saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon sx={{ fontSize: 24 }} />}
+                  {saving ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <SaveIcon sx={{ fontSize: 24 }} />
+                  )}
                 </IconButton>
                 <IconButton
                   className="btn-preview"
                   onClick={handlePreview}
-                  aria-label={t('profile.preview', 'Vista Previa')}
+                  aria-label={t("profile.preview", "Vista Previa")}
                   color="inherit"
                   sx={{
                     width: { xs: 48, md: 56 },
                     height: { xs: 48, md: 56 },
-                    borderRadius: '50%',
-                    bgcolor: 'grey.600',
-                    color: 'white',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                    '&:hover': { bgcolor: 'grey.700' },
+                    borderRadius: "50%",
+                    bgcolor: "grey.600",
+                    color: "white",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                    "&:hover": { bgcolor: "grey.700" },
                   }}
                 >
                   <VisibilityIcon sx={{ fontSize: 24 }} />
@@ -1809,6 +2013,6 @@ export default function ProfileEdit({ profile, options, onSave, onBack }: Profil
         dragOffsetY={dragOffsetY}
         handleDragStart={handleDragStart}
       />
-    </form >
+    </form>
   );
 }
