@@ -25,7 +25,7 @@ from src.data.lifestyle_categories import LIFESTYLE_CATEGORIES
 
 DEFAULT_FORMULA_CONFIG = {
     "version": 0,
-    "blocks": CANONICAL_BLOCKS,
+    "blocks": dict(CANONICAL_BLOCKS),
     "chaos_factor": 0.0,
     "chaos_seed": None,
     "min_compatibility": 0.0,

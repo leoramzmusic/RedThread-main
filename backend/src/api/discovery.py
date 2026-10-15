@@ -22,6 +22,7 @@ from src.care.adapters import (
 )
 from src.care.utils.explainer import explain_score, get_match_highlights
 from src.care.scoring.compatibility import compatibility_breakdown
+from src.care.formula.service import CANONICAL_BLOCKS
 from src.care.experiments.ab_testing import get_params_for_user, WEIGHT_EXPERIMENT
 from src.care.experiments.safety_guards import (
     ExposureTracker,
@@ -685,15 +686,7 @@ async def get_discovery_queue(
             # Scale only the 7 canonical dimension scores to 0-100 for frontend
             breakdown_100 = {
                 k: breakdown[k] * 100
-                for k in (
-                    "values",
-                    "relationship_goals",
-                    "neurodiversity",
-                    "responsiveness",
-                    "music",
-                    "love_language",
-                    "communication_style",
-                )
+                for k in CANONICAL_BLOCKS
                 if isinstance(breakdown.get(k), (int, float))
             }
 

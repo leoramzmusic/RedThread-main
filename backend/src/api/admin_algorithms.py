@@ -338,10 +338,14 @@ def _build_mock_pairs():
     pairs = []
     for i in range(8):
         values_overlap = ["autenticidad", "empatía"][: (i % 3) + 1]
-        user = UserProfile(id=uuid4(), values=values_overlap,
+        user = UserProfile(id=str(uuid4()), age=28, gender="female",
+                           location=(19.4326, -99.1332),
+                           values=values_overlap,
                            relationship_goals=["serious_relationship"],
                            love_language="quality_time", communication_style="texting")
-        cand = CandidateProfile(id=f"mock-{i}", values=values_overlap if i % 2 == 0 else ["libertad"],
+        cand = CandidateProfile(id=f"mock-{i}", age=30, gender="male",
+                                location=(19.4, -99.1),
+                                values=values_overlap if i % 2 == 0 else ["libertad"],
                                 relationship_goals=["serious_relationship"] if i % 2 == 0 else ["casual_fun"],
                                 love_language="quality_time" if i % 3 else "gifts",
                                 communication_style="texting" if i % 2 else "calls")

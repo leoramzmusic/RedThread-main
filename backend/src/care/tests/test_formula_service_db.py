@@ -103,3 +103,29 @@ async def test_list_versions_orders_desc():
         limit=MagicMock(return_value=MagicMock(to_list=AsyncMock(return_value=["v3", "v2"])))))
     with patch.object(service.CAREFormula, "find_all", MagicMock(return_value=fake_qs)):
         assert await list_versions() == ["v3", "v2"]
+
+
+@pytest.mark.asyncio
+async def test_ensure_active_formula_seeds_canonical_v1():
+    """Sin fórmula activa => inserta el seed canónico v1 como 'system'."""
+    inserted = []
+    with patch.object(service.CAREFormula, "find_one", AsyncMock(return_value=None)), \
+         patch.object(service.CAREFormula, "insert",
+                      AsyncMock(side_effect=lambda doc: inserted.append(doc) or doc)):
+        result = await ensure_active_formula()
+    assert result.version == 1
+    assert len(inserted) == 1
+    seeded = inserted[0]
+    assert seeded.version == 1
+    assert seeded.status == "active"
+    assert seeded.blocks == dict(CANONICAL_BLOCKS)
+    assert seeded.changelog == "Seed inicial canónico"
+    assert seeded.created_by == "system"
+
+
+@pytest.mark.asyncio
+async def test_rollback_missing_version_raises_lookup():
+    """Versión inexistente => LookupError (el endpoint lo mapea a 404)."""
+    with patch.object(service.CAREFormula, "find_one", AsyncMock(return_value=None)):
+        with pytest.raises(LookupError):
+            await rollback_to_version(99, admin_id="adm1")

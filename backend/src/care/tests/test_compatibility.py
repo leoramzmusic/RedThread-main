@@ -152,3 +152,12 @@ async def test_real_block_functions_smoke():
     assert set(blocks) == set(CANONICAL)
     for v in blocks.values():
         assert 0.0 <= v <= 1.0
+
+
+def test_default_formula_config_blocks_do_not_alias_canonical():
+    """DEFAULT_FORMULA_CONFIG['blocks'] no debe compartir el dict con CANONICAL_BLOCKS."""
+    from src.care.formula.service import CANONICAL_BLOCKS as CANONICAL_SERVICE
+    from src.care.scoring.compatibility import DEFAULT_FORMULA_CONFIG
+
+    assert DEFAULT_FORMULA_CONFIG["blocks"] is not CANONICAL_SERVICE
+    assert DEFAULT_FORMULA_CONFIG["blocks"] == CANONICAL_SERVICE

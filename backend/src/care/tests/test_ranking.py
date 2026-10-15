@@ -166,3 +166,83 @@ async def test_ranking_returns_top_scores():
     # Estructural: ranking ordena de mayor a menor y prioriza al compatible
     assert ranked[0]["score"] > ranked[1]["score"]
     assert ranked[0]["candidate"].id == high_compat.id
+
+
+@pytest.mark.asyncio
+async def test_min_compatibility_gate_filters_by_compat_score():
+    """Gate habilitado (min_compatibility > 0) filtra por compat_score.
+
+    Fórmula canónica con chaos 0 => compat = base:
+      high (3 valores compartidos):      f_values = 10/15 -> 0.635
+      mid  (0 valores compartidos):      f_values = 0/15  -> 0.395
+      low  (0 compartidos + neuro unilateral):                 -> 0.350
+    Con min_compatibility=0.45 solo sobrevive high; con 0.0 pasan los 3.
+    """
+    from unittest.mock import AsyncMock, patch
+    from src.care.formula.service import CANONICAL_BLOCKS
+
+    user = UserProfile(
+        id=str(uuid4()),
+        age=28,
+        gender="female",
+        preferred_age_range=(25, 35),
+        location=(19.4326, -99.1332),
+        max_distance_km=50,
+        values=["feminismo", "ecologismo", "justicia_social"],
+    )
+
+    high_compat = CandidateProfile(
+        id=str(uuid4()),
+        age=30,
+        gender="male",
+        location=(19.4, -99.1),
+        values=["feminismo", "ecologismo", "justicia_social"],
+        popularity_signals=PopularitySignals(likes_received=50),
+    )
+    mid_compat = CandidateProfile(
+        id=str(uuid4()),
+        age=30,
+        gender="male",
+        location=(19.4, -99.1),
+        values=["paz", "educacion"],
+        popularity_signals=PopularitySignals(likes_received=50),
+    )
+    low_compat = CandidateProfile(
+        id=str(uuid4()),
+        age=30,
+        gender="male",
+        location=(19.4, -99.1),
+        values=["paz", "educacion"],
+        neurodiversity=["adhd"],
+        popularity_signals=PopularitySignals(likes_received=50),
+    )
+
+    def _cfg(min_compat: float) -> dict:
+        return {
+            "version": 1,
+            "blocks": dict(CANONICAL_BLOCKS),
+            "chaos_factor": 0.0,
+            "chaos_seed": None,
+            "min_compatibility": min_compat,
+            "match_critical": 0.15,
+        }
+
+    candidates = [high_compat, mid_compat, low_compat]
+
+    with patch(
+        "src.care.scoring.compatibility.get_active_formula_config",
+        AsyncMock(return_value=_cfg(0.45)),
+    ):
+        gated = await rank_candidates(user, candidates, limit=3)
+
+    assert [item["candidate"].id for item in gated] == [high_compat.id]
+    assert gated[0]["compat_score"] == pytest.approx(0.635, abs=1e-3)
+
+    with patch(
+        "src.care.scoring.compatibility.get_active_formula_config",
+        AsyncMock(return_value=_cfg(0.0)),
+    ):
+        ungated = await rank_candidates(user, candidates, limit=3)
+
+    assert len(ungated) == 3
+    assert {item["candidate"].id for item in ungated} == {c.id for c in candidates}
