@@ -9,6 +9,7 @@ Calculates profile-level compatibility based on:
 - Geographic proximity
 """
 
+from datetime import datetime
 from typing import Dict, Optional, List
 from src.care.models.user_profile import UserProfile
 from src.care.models.candidate_profile import CandidateProfile
