@@ -4,6 +4,14 @@ Usage (from backend/):
     python scripts/update_tips_i18n.py
 """
 
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
 import asyncio
 import os
 import sys

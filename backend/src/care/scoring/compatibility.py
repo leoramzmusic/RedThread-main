@@ -34,11 +34,12 @@ async def get_compatibility_weights() -> Dict[str, float]:
 
     # Defaults based on seed data if DB is empty
     defaults = {
-        "Intereses Musicales": 0.25,
+        "Intereses Musicales": 0.14,
         "Metas de Relación": 0.20,
-        "Lenguaje del Amor": 0.15,
+        "Lenguaje del Amor": 0.09,
         "Estilo de Comunicación": 0.15,
-        "Valores": 0.25,
+        "Valores": 0.36,
+        "Neurodiversidad": 0.15,
     }
 
     if not factors:
