@@ -29,6 +29,7 @@ from src.models.department import Department
 from src.models.employee_audit import EmployeeAudit
 from src.models.audit_log import AuditLog
 from src.models.algorithm_management import AlgorithmFactor, AlgorithmHistory, ABTest
+from src.care.models.care_formula import CAREFormula
 from src.models.golth import GolthProfile, GolthInterest
 from src.models.appearance import AppearanceResource
 from src.models.appearance_history import AppearanceHistory
@@ -81,6 +82,7 @@ async def init_db():
             AlgorithmFactor,
             AlgorithmHistory,
             ABTest,
+            CAREFormula,
             GolthProfile,
             GolthInterest,
             AppearanceResource,
