@@ -1,151 +1,288 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 import {
-    Box,
-    Container,
-    Typography,
-    Paper,
-    Button,
-    Stack,
-    Grid,
-    Chip,
-    Divider,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
-    Avatar,
-    IconButton,
-} from '@mui/material';
-import AdminLayout from '../../../components/layout/AdminLayout';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import DownloadIcon from '@mui/icons-material/Download';
-import PersonIcon from '@mui/icons-material/Person';
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import PsychologyIcon from "@mui/icons-material/Psychology";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import AdminLayout from "../../../components/layout/AdminLayout";
+import CareScoreBreakdown from "../../../components/care/CareScoreBreakdown";
+import CareNarrativeTrio from "../../../components/care/CareNarrativeTrio";
+import {
+  getActiveFormula,
+  previewFormula,
+  type CareFormula,
+  type FormulaPayload,
+  type NarrativeResult,
+  type PreviewResult,
+} from "../../../services/careFormulaService";
+import {
+  TONE_OPTIONS,
+  previewErrorMessage,
+} from "../../../utils/careEquationModel";
+import {
+  computeContributions,
+  resolveBand,
+} from "../../../utils/careInterpreterModel";
 
-const toneOptions = ['Directo', 'Poético', 'Lúdico', 'Emocional', 'Curioso'];
-
-const sampleBreakdown = [
-    { dimension: 'Valores', score: 36, color: '#ff4d4f' },
-    { dimension: 'Metas', score: 20, color: '#1890ff' },
-    { dimension: 'Neurodiversidad', score: 15, color: '#52c41a' },
-    { dimension: 'Responsiveness', score: 10, color: '#faad14' },
-    { dimension: 'Música', score: 14, color: '#722ed1' },
-    { dimension: 'Lenguaje del amor', score: 9, color: '#eb2f96' },
-];
+const toPayload = (formula: CareFormula): FormulaPayload => ({
+  version: formula.version,
+  blocks: formula.blocks,
+  chaos_factor: formula.chaos_factor,
+  chaos_seed: formula.chaos_seed,
+  min_compatibility: formula.min_compatibility,
+  match_critical: formula.match_critical,
+});
 
 export default function CareInterpreterPage() {
-    const [selectedTone, setSelectedTone] = useState('Directo');
-    const [selectedUser] = useState('usuario_12345');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [formula, setFormula] = useState<CareFormula | null>(null);
+  const [userA, setUserA] = useState("");
+  const [userB, setUserB] = useState("");
+  const [tone, setTone] = useState<NarrativeResult["tone"]>("directo");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewResult, setPreviewResult] = useState<PreviewResult | null>(
+    null,
+  );
 
-    return (
-        <AdminLayout>
-            <Container maxWidth="xl">
-                <Box sx={{ py: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Box sx={{
-                                bgcolor: 'primary.main',
-                                p: 1.5,
-                                borderRadius: 2,
-                                display: 'flex',
-                                mr: 2,
-                                boxShadow: '0 4px 12px rgba(255,77,79,0.3)'
-                            }}>
-                                <PsychologyIcon sx={{ fontSize: 32, color: 'white' }} />
-                            </Box>
-                            <Box>
-                                <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.5px' }}>
-                                    CARE Interpreter
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                                    Explicabilidad del score: desglose de afinidad por dimensión.
-                                </Typography>
-                            </Box>
-                        </Box>
-                        <Button variant="outlined" startIcon={<DownloadIcon />}>
-                            Exportar Reporte
-                        </Button>
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const active = await getActiveFormula();
+        if (!cancelled) setFormula(active);
+      } catch {
+        if (!cancelled) setError("No se pudo cargar la fórmula activa.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handlePreview = async () => {
+    if (!formula || userA.trim() === "" || userB.trim() === "") return;
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const result = await previewFormula({
+        formula: toPayload(formula),
+        user_a_id: userA.trim(),
+        user_b_id: userB.trim(),
+        tone,
+      });
+      setPreviewResult(result);
+    } catch (err) {
+      setPreviewError(previewErrorMessage(err));
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const rows =
+    formula && previewResult
+      ? computeContributions(formula.blocks, previewResult.proposed.breakdown)
+      : [];
+  const compatibilityLabel = previewResult
+    ? resolveBand(
+        previewResult.proposed.breakdown.compatibility_label,
+        previewResult.proposed.score,
+      )
+    : "";
+
+  return (
+    <AdminLayout>
+      <Container maxWidth="xl">
+        <Box sx={{ py: 4 }}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+            <Box
+              sx={{
+                bgcolor: "primary.main",
+                p: 1.5,
+                borderRadius: "8px",
+                display: "flex",
+                mr: 2,
+                boxShadow: "0 4px 12px rgba(255,77,79,0.3)",
+              }}
+            >
+              <PsychologyIcon sx={{ fontSize: 32, color: "white" }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: 800, letterSpacing: "-0.5px" }}
+              >
+                CARE Interpreter
+              </Typography>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                Explicabilidad del score: fᵢ, wᵢ y contribución wᵢ·fᵢ por
+                dimensión.
+              </Typography>
+            </Box>
+          </Box>
+
+          {error && (
+            <Alert
+              severity="error"
+              sx={{ mb: 3 }}
+              data-testid="interpreter-error"
+            >
+              {error}
+            </Alert>
+          )}
+
+          {loading ? (
+            <Box
+              sx={{ display: "flex", justifyContent: "center", py: 8 }}
+              data-testid="interpreter-loading"
+            >
+              <CircularProgress />
+            </Box>
+          ) : formula ? (
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <Paper variant="outlined" sx={{ p: 3 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: 700, mb: 2 }}
+                  >
+                    Par a evaluar
+                  </Typography>
+                  <Stack spacing={2}>
+                    <TextField
+                      data-testid="interpreter-user-a"
+                      label="Usuario A (id)"
+                      size="small"
+                      fullWidth
+                      value={userA}
+                      onChange={(event) => setUserA(event.target.value)}
+                    />
+                    <TextField
+                      data-testid="interpreter-user-b"
+                      label="Usuario B (id)"
+                      size="small"
+                      fullWidth
+                      value={userB}
+                      onChange={(event) => setUserB(event.target.value)}
+                    />
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Tono narrativo
+                      </Typography>
+                      <Stack
+                        direction="row"
+                        sx={{ flexWrap: "wrap", gap: 1, mt: 0.5 }}
+                      >
+                        {TONE_OPTIONS.map((option) => (
+                          <Chip
+                            key={option.value}
+                            data-testid={`interpreter-tone-${option.value}`}
+                            label={option.label}
+                            size="small"
+                            color={
+                              tone === option.value ? "primary" : "default"
+                            }
+                            variant={
+                              tone === option.value ? "filled" : "outlined"
+                            }
+                            onClick={() =>
+                              setTone(option.value as NarrativeResult["tone"])
+                            }
+                          />
+                        ))}
+                      </Stack>
                     </Box>
+                    <Button
+                      data-testid="interpreter-run"
+                      variant="contained"
+                      startIcon={<PlayArrowIcon />}
+                      onClick={handlePreview}
+                      disabled={
+                        previewLoading ||
+                        userA.trim() === "" ||
+                        userB.trim() === ""
+                      }
+                    >
+                      {previewLoading ? "Evaluando..." : "Interpretar par"}
+                    </Button>
+                    {previewLoading && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          py: 1,
+                        }}
+                        data-testid="interpreter-preview-loading"
+                      >
+                        <CircularProgress size={24} />
+                      </Box>
+                    )}
+                    {previewError && (
+                      <Alert
+                        severity="error"
+                        data-testid="interpreter-preview-error"
+                      >
+                        {previewError}
+                      </Alert>
+                    )}
+                  </Stack>
+                </Paper>
+              </Grid>
 
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 700 }}>
-                                Tonos Narrativos
-                            </Typography>
-                            <Stack spacing={1}>
-                                {toneOptions.map(tone => (
-                                    <Paper
-                                        key={tone}
-                                        variant="outlined"
-                                        sx={{
-                                            p: 2,
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            cursor: 'pointer',
-                                            borderColor: selectedTone === tone ? 'primary.main' : 'divider',
-                                            bgcolor: selectedTone === tone ? 'action.selected' : 'background.paper',
-                                            '&:hover': { borderColor: 'primary.light' }
-                                        }}
-                                        onClick={() => setSelectedTone(tone)}
-                                    >
-                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{tone}</Typography>
-                                        <Chip label="24 fragmentos" size="small" />
-                                    </Paper>
-                                ))}
-                            </Stack>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 8 }}>
-                            <Paper variant="outlined" sx={{ p: 4, minHeight: 400 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                                    <Avatar sx={{ bgcolor: 'primary.light' }}>
-                                        <PersonIcon />
-                                    </Avatar>
-                                    <Box>
-                                        <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                                            Score Breakdown
-                                        </Typography>
-                                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                            Usuario: {selectedUser}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-
-                                <Divider sx={{ mb: 3 }} />
-
-                                <Grid container spacing={3}>
-                                    {sampleBreakdown.map((item) => (
-                                        <Grid size={{ xs: 12, sm: 6 }} key={item.dimension}>
-                                            <Paper variant="outlined" sx={{ p: 2 }}>
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                                    <Typography variant="subtitle2">{item.dimension}</Typography>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: item.color }}>
-                                                        {item.score}%
-                                                    </Typography>
-                                                </Box>
-                                                <Box sx={{ height: 8, bgcolor: 'action.hover', borderRadius: 4, overflow: 'hidden' }}>
-                                                    <Box sx={{ height: '100%', width: `${item.score}%`, bgcolor: item.color, borderRadius: 4 }} />
-                                                </Box>
-                                            </Paper>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-
-                                <Divider sx={{ my: 3 }} />
-
-                                <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
-                                    Narrativa Generada
-                                </Typography>
-                                <Paper variant="outlined" sx={{ p: 2, bgcolor: 'action.hover', borderStyle: 'dashed' }}>
-                                    <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
-                                        "Su conexión se basa en valores compartidos ({sampleBreakdown[0].score}%) y metas alineadas ({sampleBreakdown[1].score}%), con una perspectiva neurodiverso que añade profundidad ({sampleBreakdown[2].score}%)."
-                                    </Typography>
-                                </Paper>
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Container>
-        </AdminLayout>
-    );
+              <Grid size={{ xs: 12, md: 8 }}>
+                {previewResult ? (
+                  <Stack spacing={3}>
+                    <CareScoreBreakdown rows={rows} />
+                    <CareNarrativeTrio
+                      evaluation={previewResult.proposed}
+                      compatibilityLabel={compatibilityLabel}
+                      narrative={previewResult.narrative}
+                    />
+                  </Stack>
+                ) : (
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 4,
+                      minHeight: 400,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    data-testid="interpreter-empty"
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Selecciona dos usuarios y ejecuta para ver el desglose y
+                      la narrativa.
+                    </Typography>
+                  </Paper>
+                )}
+              </Grid>
+            </Grid>
+          ) : null}
+        </Box>
+      </Container>
+    </AdminLayout>
+  );
 }
