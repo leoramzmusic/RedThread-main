@@ -97,7 +97,8 @@
     "uniqueInterests": "Mga interes na dala nila para sa iyo",
     "values": "Mga Value at Lifestyle",
     "intentions": "Mga ibinabahaging hangarin",
-    "basicsOnly": "Compatibility batay sa edad, lokasyon, at mga pangunahing kagustuhan."
+    "basicsOnly": "Compatibility batay sa edad, lokasyon, at mga pangunahing kagustuhan.",
+    "title": "Pagkakatugma"
   },
   "quickInterests": {
     "title": "Mabilis na magdagdag ng mga interes",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "ANG NATATANGI KONG ISIP",
     "viewMore": "Tingnan ang higit pang detalye...",
     "vibesWithYourInterests": "KASUNDO SA MGA INTERES MO"
+  },
+  "care": {
+    "interpretation": "Interpretasyon ng CARE"
   }
 }

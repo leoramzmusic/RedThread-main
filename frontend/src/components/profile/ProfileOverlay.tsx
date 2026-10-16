@@ -167,6 +167,44 @@ export default function ProfileOverlay({
       );
     }
 
+    // Slide 1: Compatibility Breakdown (the "why" behind the score)
+    if (activePhotoIndex === 1) {
+      return (
+        <Box
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            px: 2,
+            pb: 6,
+          }}
+        >
+          <Typography
+            variant="overline"
+            color="primary"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: 700 }}
+          >
+            {t("card.analysisTitle", "ANÁLISIS DE SINTONÍA")}
+          </Typography>
+
+          <Box sx={{ mt: 2 }}>
+            <CareBreakdownBars breakdown={profile.affinity_breakdown} />
+          </Box>
+
+          {profile.scenario_label && (
+            <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                {t("card.scenario", "Escenario")}: {profile.scenario_label}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
     // Slide 2: Personality / Questionnaire (Deep Dive)
     if (activePhotoIndex === 2) {
       const prompt = profile.prompts && profile.prompts[0];
@@ -480,40 +518,44 @@ export default function ProfileOverlay({
     );
   }
 
-  // 1: Compatibility Breakdown (the "why" behind the score)
+  // 1: Casual (Interests)
   if (activePhotoIndex === 1) {
     return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          px: 2,
-          pb: 6,
-        }}
-      >
+      <Box>
         <Typography
           variant="overline"
-          color="primary"
-          align="center"
-          gutterBottom
-          sx={{ fontWeight: 700 }}
+          sx={{
+            fontWeight: 800,
+            color: "#FFD700",
+            letterSpacing: 1.5,
+            mb: 1,
+            display: "block",
+          }}
         >
-          {t("card.analysisTitle", "ANÁLISIS DE SINTONÍA")}
+          {t("card.vibesTitle", "VIBRA CON TUS INTERESES")}
         </Typography>
-
-        <Box sx={{ mt: 2 }}>
-          <CareBreakdownBars breakdown={profile.affinity_breakdown} />
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+          {profile.interests.slice(0, 6).map((tag) => (
+            <Chip
+              key={tag}
+              label={tag}
+              sx={{
+                bgcolor: "rgba(0,0,0,0.6)",
+                color: "white",
+                backdropFilter: "blur(4px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            />
+          ))}
+          {profile.lifestyle_interests?.slice(0, 3).map((tag) => (
+            <Chip
+              key={tag}
+              label={tag}
+              variant="outlined"
+              sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)" }}
+            />
+          ))}
         </Box>
-
-        {profile.scenario_label && (
-          <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Typography variant="caption" sx={{ opacity: 0.7 }}>
-              {t("card.scenario", "Escenario")}: {profile.scenario_label}
-            </Typography>
-          </Box>
-        )}
       </Box>
     );
   }

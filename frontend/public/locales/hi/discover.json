@@ -97,7 +97,8 @@
     "uniqueInterests": "वे आपके लिए जो रुचियाँ लाएँगे",
     "values": "मूल्य और जीवन शैली",
     "intentions": "साझा इरादे",
-    "basicsOnly": "आयु, स्थान और बुनियादी पसंद पर आधारित अनुकूलता।"
+    "basicsOnly": "आयु, स्थान और बुनियादी पसंद पर आधारित अनुकूलता।",
+    "title": "अनुकूलता"
   },
   "quickInterests": {
     "title": "जल्दी से रुचियाँ जोड़ें",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "मेरा अनूठा मन",
     "viewMore": "और विवरण देखें...",
     "vibesWithYourInterests": "आपकी रुचियों से मेल खाता है"
+  },
+  "care": {
+    "interpretation": "CARE व्याख्या"
   }
 }

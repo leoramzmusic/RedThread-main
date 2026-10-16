@@ -97,7 +97,8 @@
     "uniqueInterests": "Intressen de tillför dig",
     "values": "Värderingar & livsstil",
     "intentions": "Gemensamma avsikter",
-    "basicsOnly": "Kompatibilitet baserad på ålder, plats och grundläggande preferenser."
+    "basicsOnly": "Kompatibilitet baserad på ålder, plats och grundläggande preferenser.",
+    "title": "Kompatibilitet"
   },
   "quickInterests": {
     "title": "Lägg till intressen snabbt",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "MITT UNIKA SINNE",
     "viewMore": "Se fler detaljer...",
     "vibesWithYourInterests": "MATCHAR DINA INTRESSEN"
+  },
+  "care": {
+    "interpretation": "CARE-tolkning"
   }
 }

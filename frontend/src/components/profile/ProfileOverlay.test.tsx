@@ -33,7 +33,7 @@ describe("ProfileOverlay (breakdown slide)", () => {
   it("renders the 7 canonical dimensions from affinity_breakdown", () => {
     render(
       <I18nextProvider i18n={testI18n}>
-        <ProfileOverlay profile={profile} activePhotoIndex={1} />
+        <ProfileOverlay profile={profile} activePhotoIndex={1} isBlind />
       </I18nextProvider>,
     );
     expect(screen.getByTestId("care-bar-values")).toHaveAttribute(
@@ -47,7 +47,7 @@ describe("ProfileOverlay (breakdown slide)", () => {
   it("does not render legacy breakdown labels", () => {
     render(
       <I18nextProvider i18n={testI18n}>
-        <ProfileOverlay profile={profile} activePhotoIndex={1} />
+        <ProfileOverlay profile={profile} activePhotoIndex={1} isBlind />
       </I18nextProvider>,
     );
     expect(

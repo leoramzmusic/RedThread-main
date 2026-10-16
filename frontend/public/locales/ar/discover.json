@@ -97,7 +97,8 @@
     "uniqueInterests": "اهتمامات يقدمونها لك",
     "values": "القيم ونمط الحياة",
     "intentions": "نوايا مشتركة",
-    "basicsOnly": "توافق مبني على العمر والموقع والتفضيلات الأساسية."
+    "basicsOnly": "توافق مبني على العمر والموقع والتفضيلات الأساسية.",
+    "title": "التوافق"
   },
   "quickInterests": {
     "title": "أضف الاهتمامات بسرعة",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "عقلي الفريد",
     "viewMore": "عرض المزيد من التفاصيل...",
     "vibesWithYourInterests": "ينسجم مع اهتماماتك"
+  },
+  "care": {
+    "interpretation": "تفسير CARE"
   }
 }

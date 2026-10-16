@@ -97,7 +97,8 @@
     "uniqueInterests": "Viungo watakavyokuletea",
     "values": "Maadili na Mtindo wa Maisha",
     "intentions": "Nia zinazoshirikiwa",
-    "basicsOnly": "Ulinganifu unaojengwa na umri, mahali na mapendeleo ya msingi."
+    "basicsOnly": "Ulinganifu unaojengwa na umri, mahali na mapendeleo ya msingi.",
+    "title": "Upatanifu"
   },
   "quickInterests": {
     "title": "Ongeza viungo haraka",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "AKILI YANGU YA KIPEKEE",
     "viewMore": "Angalia maelezo zaidi...",
     "vibesWithYourInterests": "INAVUTIWA NA MAPENZI YAKO"
+  },
+  "care": {
+    "interpretation": "Ufafanuzi wa CARE"
   }
 }

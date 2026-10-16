@@ -97,7 +97,8 @@
     "uniqueInterests": "Interesses die ze je brengen",
     "values": "Waarden & levensstijl",
     "intentions": "Gedeelde intenties",
-    "basicsOnly": "Compatibiliteit op basis van leeftijd, locatie en basisvoorkeuren."
+    "basicsOnly": "Compatibiliteit op basis van leeftijd, locatie en basisvoorkeuren.",
+    "title": "Compatibiliteit"
   },
   "quickInterests": {
     "title": "Voeg snel interesses toe",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "MIJN UNIEKE GEEST",
     "viewMore": "Bekijk meer details...",
     "vibesWithYourInterests": "PAST BIJ JE INTERESSES"
+  },
+  "care": {
+    "interpretation": "CARE-interpretatie"
   }
 }

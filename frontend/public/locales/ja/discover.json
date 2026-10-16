@@ -97,7 +97,8 @@
     "uniqueInterests": "彼らがもたらす興味",
     "values": "価値観とライフスタイル",
     "intentions": "共通の意図",
-    "basicsOnly": "年齢・場所・基本的な好みに基づく互換性。"
+    "basicsOnly": "年齢・場所・基本的な好みに基づく互換性。",
+    "title": "相性"
   },
   "quickInterests": {
     "title": "興味を素早く追加",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "私のユニークなマインド",
     "viewMore": "詳細を見る...",
     "vibesWithYourInterests": "あなたの興味と響き合う"
+  },
+  "care": {
+    "interpretation": "CAREの解釈"
   }
 }

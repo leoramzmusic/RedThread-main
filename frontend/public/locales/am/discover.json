@@ -97,7 +97,8 @@
     "uniqueInterests": "የሚያምጡልዎት ፍላጎቶች",
     "values": "እሴቶችና የሕይወት ዘይቤ",
     "intentions": "የጋራ ዓላማዎች",
-    "basicsOnly": "በዕድል፣ ቦታና መሠረታዊ ምርጫ ላይ የተመሰረተ የአይነት ተመራጭነት።"
+    "basicsOnly": "በዕድል፣ ቦታና መሠረታዊ ምርጫ ላይ የተመሰረተ የአይነት ተመራጭነት።",
+    "title": "ተኳኋኝነት"
   },
   "quickInterests": {
     "title": "ፍላጎቶችን በፍጥነት ያክሉ",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "ልዩ አእምሮዬ",
     "viewMore": "ተጨማሪ ዝርዝሮችን ይመልከቱ...",
     "vibesWithYourInterests": "ከፍላጎቶችዎ ጋር ይጣጣማል"
+  },
+  "care": {
+    "interpretation": "የCARE ትርጓሜ"
   }
 }

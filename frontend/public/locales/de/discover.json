@@ -97,7 +97,8 @@
     "uniqueInterests": "Interessen, die sie dir bringen",
     "values": "Werte & Lebensstil",
     "intentions": "Gemeinsame Absichten",
-    "basicsOnly": "Kompatibilität basierend auf Alter, Standort und grundlegenden Vorlieben."
+    "basicsOnly": "Kompatibilität basierend auf Alter, Standort und grundlegenden Vorlieben.",
+    "title": "Kompatibilität"
   },
   "quickInterests": {
     "title": "Interessen schnell hinzufügen",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "MEIN EINZIGARTIGER GEIST",
     "viewMore": "Mehr Details sehen...",
     "vibesWithYourInterests": "PASST ZU DEINEN INTERESSEN"
+  },
+  "care": {
+    "interpretation": "CARE-Interpretation"
   }
 }

@@ -97,7 +97,8 @@
     "uniqueInterests": "Minat yang akan mereka bawa kepada anda",
     "values": "Nilai & Gaya Hidup",
     "intentions": "Niat yang dikongsi",
-    "basicsOnly": "Keserasian berdasarkan umur, lokasi, dan pilihan asas."
+    "basicsOnly": "Keserasian berdasarkan umur, lokasi, dan pilihan asas.",
+    "title": "Keserasian"
   },
   "quickInterests": {
     "title": "Tambah minat dengan cepat",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "MINDA UNIK SAYA",
     "viewMore": "Lihat butiran lanjut...",
     "vibesWithYourInterests": "SERASI DENGAN MINAT ANDA"
+  },
+  "care": {
+    "interpretation": "Tafsiran CARE"
   }
 }

@@ -97,7 +97,8 @@
     "uniqueInterests": "Gwiyoji da za su kai maka",
     "values": "Kimuna da Salin Rayuwa",
     "intentions": "Manufofin da suka haɗa",
-    "basicsOnly": "Dacewa bisa shekaru, wuri da so-so na asali."
+    "basicsOnly": "Dacewa bisa shekaru, wuri da so-so na asali.",
+    "title": "Daidaituwa"
   },
   "quickInterests": {
     "title": "Sanya gwiya cikin sauri",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "HANKALINA NA MUSAMMAN",
     "viewMore": "Duba ƙarin bayani...",
     "vibesWithYourInterests": "YA YI DAIDAI DA RA'AYINKA"
+  },
+  "care": {
+    "interpretation": "Fassarar CARE"
   }
 }

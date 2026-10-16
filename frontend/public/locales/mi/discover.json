@@ -97,7 +97,8 @@
     "uniqueInterests": "Ngā pānga ka tuku mai rāua ki a koe",
     "values": "Ngā uara me te Aronga Ora",
     "intentions": "Ngā kaupapa e tohu tahi ana",
-    "basicsOnly": "He tūhono nā te tau, te wāhi, me ngā pānga matua."
+    "basicsOnly": "He tūhono nā te tau, te wāhi, me ngā pānga matua.",
+    "title": "Hototahi"
   },
   "quickInterests": {
     "title": "Tāpanuihua i ngā pānga mā tere",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "TŌKU HINENGARO MOTUHAKE",
     "viewMore": "Tirohia ētahi atu taipitopito...",
     "vibesWithYourInterests": "HĀNGAI KI Ō PAHANGA"
+  },
+  "care": {
+    "interpretation": "Whakamārama CARE"
   }
 }

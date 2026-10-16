@@ -18,6 +18,7 @@ const EXPECTED_KEYS = [
   "card.discoveryChip",
   "card.curiousChip",
   "card.veryActiveChip",
+  "card.vibesTitle",
   "card.professionalTitle",
   "card.atCompany",
   "card.emotionalTitle",

@@ -97,7 +97,8 @@
     "uniqueInterests": "그들이 가져다줄 관심사",
     "values": "가치관과 라이프스타일",
     "intentions": "공통된 의도",
-    "basicsOnly": "나이, 위치, 기본 취향 기반의 궁합입니다."
+    "basicsOnly": "나이, 위치, 기본 취향 기반의 궁합입니다.",
+    "title": "궁합"
   },
   "quickInterests": {
     "title": "관심사를 빠르게 추가하세요",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "나만의 특별한 마인드",
     "viewMore": "자세히 보기...",
     "vibesWithYourInterests": "관심사와 통하는 점"
+  },
+  "care": {
+    "interpretation": "CARE 해석"
   }
 }

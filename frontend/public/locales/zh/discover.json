@@ -97,7 +97,8 @@
     "uniqueInterests": "他们带给你的兴趣",
     "values": "价值观与生活方式",
     "intentions": "共同的意向",
-    "basicsOnly": "基于年龄、位置和基本偏好的契合度。"
+    "basicsOnly": "基于年龄、位置和基本偏好的契合度。",
+    "title": "兼容性"
   },
   "quickInterests": {
     "title": "快速添加兴趣",
@@ -321,5 +322,8 @@
     "uniqueMindTitle": "我独特的思维",
     "viewMore": "查看更多详情...",
     "vibesWithYourInterests": "与你的兴趣共鸣"
+  },
+  "care": {
+    "interpretation": "CARE 解读"
   }
 }

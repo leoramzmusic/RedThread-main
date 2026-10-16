@@ -47,7 +47,7 @@ const collectLiteralKeys = (): Set<string> => {
   const keys = new Set<string>();
   for (const rel of DISCOVER_FILES) {
     const src = fs.readFileSync(path.join(process.cwd(), rel), "utf8");
-    for (const m of src.matchAll(/\bt\(\s*'([^']+)'/g)) keys.add(m[1]);
+    for (const m of src.matchAll(/\bt\(\s*['"]([^'"]+)['"]/g)) keys.add(m[1]);
     for (const m of src.matchAll(/i18nKey="([^"]+)"/g)) keys.add(m[1]);
   }
   return keys;
@@ -90,7 +90,7 @@ describe("discover namespace translations parity", () => {
   const allKeys = new Set([...literalKeys, ...dynamicKeys]);
 
   it("finds literal t() keys across the discover files", () => {
-    expect(literalKeys.size).toBeGreaterThan(30);
+    expect(literalKeys.size).toBeGreaterThan(35);
   });
 
   it("covers the dynamic (template-literal) keys", () => {
