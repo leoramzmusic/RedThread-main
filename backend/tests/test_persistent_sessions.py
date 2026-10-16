@@ -13,7 +13,7 @@ import pytest
 import pytest_asyncio
 from beanie import init_beanie
 from fastapi import Response
-from motor.motor_asyncio import AsyncIOMotorClient
+from mongomock_motor import AsyncMongoMockClient
 from starlette.requests import Request
 
 from src.core.config import settings
@@ -32,11 +32,9 @@ CHROME_UA = (
 
 @pytest_asyncio.fixture(autouse=True)
 async def _init_session_model():
-    """Register Session with beanie so class-level field access works
-    (the app does this in init_db at startup; tests have no DB)."""
-    client = AsyncIOMotorClient(
-        "mongodb://localhost:27017", serverSelectionTimeoutMS=100
-    )
+    """Register Session with beanie like init_db does at startup, using an
+    in-memory Mongo so class-level field access works without a real DB."""
+    client = AsyncMongoMockClient()
     await init_beanie(
         database=client["redthread_tests"], document_models=[Session]
     )
