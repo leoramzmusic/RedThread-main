@@ -802,30 +802,30 @@ def calculate_activity_score(
 ) -> float:
     """
     Calculate activity/responsiveness score based on last_active timestamps.
-    
+
     Scoring logic:
     - 1.0: Both users active within the last 24 hours
     - 0.75: Both users active within the last 72 hours
     - 0.5: Both users active within the last week
     - 0.25: One or both users active within the last month
     - 0.0: No activity detected in the last month
-    
+
     This factor rewards responsive users and helps surface active matches.
     """
-    from datetime import datetime, timedelta
-    
+    from datetime import datetime
+
     now = datetime.utcnow()
-    
+
     # If either user has no last_active data, return neutral score
     if not user_last_active or not candidate_last_active:
         return 0.5
-    
+
     user_recency = (now - user_last_active).total_seconds() / 86400  # days
     candidate_recency = (now - candidate_last_active).total_seconds() / 86400  # days
-    
+
     # Use the more active user's recency as the basis
     recency = min(user_recency, candidate_recency)
-    
+
     if recency <= 1:  # Within 24 hours
         return 1.0
     elif recency <= 3:  # Within 72 hours

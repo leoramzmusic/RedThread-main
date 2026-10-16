@@ -1,5 +1,4 @@
 """Tests for CAREFormula model constants and pure helpers."""
-import random
 import pytest
 from src.care.formula.service import (
     CANONICAL_BLOCKS,

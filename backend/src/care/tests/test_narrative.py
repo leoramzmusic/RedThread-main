@@ -1,7 +1,7 @@
 # backend/src/care/tests/test_narrative.py
 """Tests for the CARE narrative generator."""
 import pytest
-from src.care.narrative import VALID_TONES, generate_narrative
+from src.care.narrative import generate_narrative
 
 BASE_BREAKDOWN = {
     "values": 0.9, "relationship_goals": 0.8, "neurodiversity": 0.7,
