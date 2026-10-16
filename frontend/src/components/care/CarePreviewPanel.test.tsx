@@ -120,6 +120,13 @@ describe("CarePreviewPanel", () => {
     );
   });
 
+  it("renders delta bars on the 0-1 scale (a +0.1 delta is not 0%)", () => {
+    render(<CarePreviewPanel {...baseProps} result={result} />);
+    const valuesBar = screen.getByTestId("care-bar-values");
+    expect(valuesBar).toHaveAttribute("data-value", "10");
+    expect(valuesBar).toHaveTextContent("10%");
+  });
+
   it("hides the saturation notice when χ does not change", () => {
     render(
       <CarePreviewPanel

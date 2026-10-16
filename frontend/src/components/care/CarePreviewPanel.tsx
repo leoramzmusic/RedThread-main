@@ -169,7 +169,7 @@ export default function CarePreviewPanel({
                 </Box>
               ))}
             </Box>
-            <CareBreakdownBars breakdown={bars} />
+            <CareBreakdownBars breakdown={bars} valueRange="0-1" />
             <Paper variant="outlined" sx={{ p: 2, bgcolor: "grey.50" }}>
               <Chip
                 data-testid="preview-narrative-label"

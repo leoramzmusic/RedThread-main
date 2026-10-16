@@ -152,9 +152,11 @@ jest.mock("../../../components/care/CareVersionsPanel", () => {
     __esModule: true,
     default: ({
       versions,
+      activeVersion,
       onRollback,
     }: {
       versions: { version: number }[];
+      activeVersion: number | null;
       onRollback: (v: number) => void;
     }) =>
       React.createElement(
@@ -162,6 +164,7 @@ jest.mock("../../../components/care/CareVersionsPanel", () => {
         {
           "data-testid": "versions-stub",
           "data-count": String(versions.length),
+          "data-active": String(activeVersion),
         },
         versions.map((v) =>
           React.createElement("button", {
@@ -489,12 +492,36 @@ describe("CareEquationPage / Guardar + Versiones", () => {
     );
   });
 
-  it("rolls back the chosen version", async () => {
+  it("rolls back the chosen version and refreshes the draft", async () => {
+    const rolled = {
+      ...active,
+      version: 5,
+      status: "active",
+      blocks: {
+        values: 0.3,
+        relationship_goals: 0.28,
+        neurodiversity: 0.15,
+        responsiveness: 0.1,
+        music: 0.07,
+        love_language: 0.06,
+        communication_style: 0.04,
+      },
+    };
     mockListVersions.mockResolvedValueOnce([
       { ...active, version: 2, status: "archived" },
     ]);
+    mockRollback.mockResolvedValueOnce(rolled);
     render(<CareEquationPage />);
+    await screen.findByTestId("blocks-stub");
+    expect(headerBlocks()).toEqual(active.blocks);
     fireEvent.click(await screen.findByTestId("stub-rollback-2"));
     await waitFor(() => expect(mockRollback).toHaveBeenCalledWith(2));
+    await waitFor(() =>
+      expect(screen.getByTestId("versions-stub")).toHaveAttribute(
+        "data-active",
+        "5",
+      ),
+    );
+    expect(headerBlocks()).toEqual(rolled.blocks);
   });
 });

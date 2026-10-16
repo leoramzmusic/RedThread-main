@@ -294,6 +294,7 @@ export default function CareEquationPage() {
   const handleRollback = async (version: number) => {
     try {
       const rolled = await rollbackFormula(version);
+      applyDraft(toEquationDraft(rolled));
       setActiveVersion(rolled.version);
       await reloadVersions();
     } catch {
