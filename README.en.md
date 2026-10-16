@@ -9,7 +9,7 @@
 **Inspired by the legend of the red thread: an invisible bond ties those who are destined to find each other.**
 
 [![CI](https://github.com/leoramzmusic/RedThread-main/actions/workflows/ci.yml/badge.svg)](https://github.com/leoramzmusic/RedThread-main/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: Copyright](https://img.shields.io/badge/license-Copyright-blue.svg)](LICENSE)
 
 </div>
 
@@ -59,4 +59,4 @@ This project is open to collaboration. You can contribute with **code, ideas or 
 
 ## 📜 License
 
-**MIT License** © 2025 Roberto Leonel Pérez Ramírez — see [LICENSE](LICENSE).
+**Copyright © 2026 Roberto Leonel Pérez Ramírez** — All rights reserved. See [LICENSE](LICENSE).

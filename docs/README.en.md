@@ -201,4 +201,4 @@ You can also support the project with a **donation** or by becoming a **sponsor*
 
 ## License
 
-Distributed under the [MIT License](../LICENSE) © 2025 Roberto Leonel Pérez Ramírez. You may use, modify and distribute the code while retaining the license notice.
+Distributed under **Copyright © 2026 Roberto Leonel Pérez Ramírez**. All rights reserved. This software may not be copied, modified, distributed, or used without prior explicit written permission from the author. See [LICENSE](../LICENSE).

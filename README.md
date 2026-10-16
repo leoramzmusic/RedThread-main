@@ -9,7 +9,7 @@
 **Inspirada en la leyenda del hilo rojo: un lazo invisible une a quienes están destinados a encontrarse.**
 
 [![CI](https://github.com/leoramzmusic/RedThread-main/actions/workflows/ci.yml/badge.svg)](https://github.com/leoramzmusic/RedThread-main/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: Copyright](https://img.shields.io/badge/license-Copyright-blue.svg)](LICENSE)
 
 </div>
 
@@ -59,4 +59,4 @@ Este proyecto está abierto a colaboración. Puedes contribuir con **código, id
 
 ## 📜 Licencia
 
-**MIT License** © 2025 Roberto Leonel Pérez Ramírez — ver [LICENSE](LICENSE).
+**Copyright © 2026 Roberto Leonel Pérez Ramírez** — Todos los derechos reservados. Ver [LICENSE](LICENSE).
