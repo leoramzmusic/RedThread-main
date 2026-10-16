@@ -1,217 +1,346 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
-    Box,
-    Container,
-    Typography,
-    Paper,
-    Button,
-    Slider,
-    Switch,
-    FormControlLabel,
-    TextField,
-    Stack,
-    Divider,
-    Grid,
-    Alert,
-    Chip,
-    IconButton,
-    Tooltip,
-} from '@mui/material';
-import AdminLayout from '../../../components/layout/AdminLayout';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import SaveIcon from '@mui/icons-material/Save';
-import ReplayIcon from '@mui/icons-material/Replay';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
+import FunctionsIcon from "@mui/icons-material/Functions";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import ScienceIcon from "@mui/icons-material/Science";
+import AdminLayout from "../../../components/layout/AdminLayout";
+import CareEquationHeader from "../../../components/care/CareEquationHeader";
+import CareFormulaCanvas from "../../../components/care/CareFormulaCanvas";
+import CareEquationBlocks from "../../../components/care/CareEquationBlocks";
+import CareChaosPanel from "../../../components/care/CareChaosPanel";
+import CareThresholdsPanel from "../../../components/care/CareThresholdsPanel";
+import CareFormulaJsonEditor from "../../../components/care/CareFormulaJsonEditor";
+import CareSimulationTable from "../../../components/care/CareSimulationTable";
+import type { CareDimensionKey } from "../../../constants/careDimensions";
+import {
+  getActiveFormula,
+  simulateFormula,
+  validateFormula,
+  type SimulateResult,
+} from "../../../services/careFormulaService";
+import { decodeEquationDraft } from "../../../utils/careCriteriaModel";
+import {
+  clientValidation,
+  detectDegenerate,
+  draftToPayload,
+  parseDraft,
+  serializeDraft,
+  smokeAlerts,
+  toEquationDraft,
+  type EquationDraft,
+} from "../../../utils/careEquationModel";
+
+const SEED_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+const randomSeed = (): string => {
+  let out = "";
+  for (let i = 0; i < 12; i += 1) {
+    out += SEED_CHARS[Math.floor(Math.random() * SEED_CHARS.length)];
+  }
+  return out;
+};
 
 export default function CareEquationPage() {
-    const [chaosFactor, setChaosFactor] = useState(5.0);
-    const [positiveSum, setPositiveSum] = useState(true);
-    const [threshold, setThreshold] = useState(0.15);
-    const [formulaJson, setFormulaJson] = useState('{\n  "version": "2.1",\n  "base_formula": "SUM(product care_factors) + chaos",\n  "normalization": "min_max"\n}');
-    const [isValid, setIsValid] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const router = useRouter();
+  const ready = router.isReady;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [draft, setDraft] = useState<EquationDraft | null>(null);
+  const [focus, setFocus] = useState<CareDimensionKey | null>(null);
+  const [jsonText, setJsonText] = useState("");
+  const [jsonValid, setJsonValid] = useState(true);
+  const [jsonError, setJsonError] = useState<string | null>(null);
+  const [validating, setValidating] = useState(false);
+  const [validateErrors, setValidateErrors] = useState<string[]>([]);
+  const [validateAlerts, setValidateAlerts] = useState<string[]>([]);
+  const [simulating, setSimulating] = useState(false);
+  const [simResult, setSimResult] = useState<SimulateResult | null>(null);
+  const [simError, setSimError] = useState<string | null>(null);
 
-    const handleValidate = () => {
-        try {
-            JSON.parse(formulaJson);
-            setIsValid(true);
-        } catch {
-            setIsValid(false);
-        }
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const active = await getActiveFormula();
+        if (cancelled) return;
+        const decoded = decodeEquationDraft(router.query);
+        const base = toEquationDraft(active);
+        const next: EquationDraft = decoded
+          ? { ...base, blocks: decoded.blocks }
+          : base;
+        setDraft(next);
+        setFocus(decoded?.focus ?? null);
+        setJsonText(serializeDraft(next));
+        setJsonValid(true);
+        setJsonError(null);
+      } catch {
+        if (!cancelled) setError("No se pudo cargar la fórmula activa.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
     };
+  }, [ready, router.query]);
 
-    const handleSave = async () => {
-        setSaving(true);
-        try {
-            await new Promise(r => setTimeout(r, 1000));
-            setLastSaved(new Date().toLocaleString());
-        } finally {
-            setSaving(false);
-        }
-    };
+  const applyDraft = (next: EquationDraft) => {
+    setDraft(next);
+    setJsonText(serializeDraft(next));
+    setJsonValid(true);
+    setJsonError(null);
+  };
 
-    const handleRollback = () => {
-        setFormulaJson('{\n  "version": "2.1",\n  "base_formula": "SUM(product care_factors) + chaos",\n  "normalization": "min_max"\n}');
-        setChaosFactor(5.0);
-        setPositiveSum(true);
-        setThreshold(0.15);
-    };
+  const handleBlockChange = (key: CareDimensionKey, percent: number) => {
+    if (!draft) return;
+    applyDraft({
+      ...draft,
+      blocks: {
+        ...draft.blocks,
+        [key]: Math.max(0, Math.min(1, percent / 100)),
+      },
+    });
+  };
 
-    return (
-        <AdminLayout>
-            <Container maxWidth="xl">
-                <Box sx={{ py: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Box sx={{
-                                bgcolor: 'primary.main',
-                                p: 1.5,
-                                borderRadius: 2,
-                                display: 'flex',
-                                mr: 2,
-                                boxShadow: '0 4px 12px rgba(255,77,79,0.3)'
-                            }}>
-                                <FunctionsIcon sx={{ fontSize: 32, color: 'white' }} />
-                            </Box>
-                            <Box>
-                                <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.5px' }}>
-                                    Editor de Fórmula
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                                    Configura la ecuación base y los parámetros del algoritmo de afinidad.
-                                </Typography>
-                            </Box>
-                        </Box>
-                        <Stack direction="row" spacing={2}>
-                            <Tooltip title="Restaurar valores por defecto">
-                                <Button variant="outlined" startIcon={<ReplayIcon />} onClick={handleRollback}>
-                                    Rollback
-                                </Button>
-                            </Tooltip>
-                            <Button
-                                variant="contained"
-                                startIcon={<SaveIcon />}
-                                onClick={handleSave}
-                                disabled={saving || !isValid}
-                            >
-                                {saving ? 'Guardando...' : 'Validar y Guardar'}
-                            </Button>
-                        </Stack>
-                    </Box>
+  const handleChaosChange = (factor: number) => {
+    if (!draft) return;
+    applyDraft({ ...draft, chaosFactor: factor });
+  };
 
-                    {lastSaved && (
-                        <Alert severity="success" sx={{ mb: 3 }} icon={<CheckCircleIcon />}>
-                            Configuración guardada exitosamente a las {lastSaved}
-                        </Alert>
-                    )}
+  const handleSeedChange = (seed: string | null) => {
+    if (!draft) return;
+    applyDraft({ ...draft, chaosSeed: seed });
+  };
 
-                    <Grid container spacing={4}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
-                                Configuración Base del Algoritmo
-                            </Typography>
-                            <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
-                                <Stack spacing={3}>
-                                    <Box>
-                                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                                            <Typography variant="subtitle2">Factor Caos (Seed Randomness)</Typography>
-                                            <Typography variant="subtitle2" color="primary">{chaosFactor}%</Typography>
-                                        </Box>
-                                        <Slider
-                                            value={chaosFactor}
-                                            onChange={(_, v) => setChaosFactor(v as number)}
-                                            min={0} max={25} step={0.5}
-                                        />
-                                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                            Añade una variación aleatoria controlada para evitar burbujas de filtro y fomentar descubrimientos inesperados ("Serendipity").
-                                        </Typography>
-                                    </Box>
-                                    <Divider />
-                                    <FormControlLabel
-                                        control={<Switch checked={positiveSum} onChange={(_, v) => setPositiveSum(v)} />}
-                                        label={
-                                            <Box>
-                                                <Typography variant="subtitle2">Suma Positiva (Intereses)</Typography>
-                                                <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                                    Solo puntúa afinidades compartidas, no penaliza lo ausente.
-                                                </Typography>
-                                            </Box>
-                                        }
-                                    />
-                                </Stack>
-                            </Paper>
+  const handleGenerateSeed = () => handleSeedChange(randomSeed());
 
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
-                                Pre-Filtros de Seguridad e Identidad
-                            </Typography>
-                            <Paper variant="outlined" sx={{ p: 3 }}>
-                                <Stack spacing={2}>
-                                    <Alert severity="info" icon={<AutoFixHighIcon />}>
-                                        Los filtros de Identidad (Atracción Mutua) se ejecutan ANTES del cálculo de compatibilidad CARE.
-                                    </Alert>
-                                    <Box sx={{ mt: 2 }}>
-                                        <Typography variant="subtitle2" gutterBottom>Umbral de Match Crítico</Typography>
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            type="number"
-                                            value={threshold}
-                                            onChange={(e) => setThreshold(Number(e.target.value))}
-                                            label="Mínimo para visualización"
-                                        />
-                                    </Box>
-                                </Stack>
-                            </Paper>
-                        </Grid>
+  const handleMinChange = (value: number) => {
+    if (!draft) return;
+    applyDraft({ ...draft, minCompatibility: value });
+  };
 
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                                    Editor JSON
-                                </Typography>
-                                <Chip
-                                    label={isValid ? 'JSON Válido' : 'JSON Inválido'}
-                                    color={isValid ? 'success' : 'error'}
-                                    size="small"
-                                    variant="outlined"
-                                />
-                            </Box>
-                            <Paper variant="outlined" sx={{ p: 0, overflow: 'hidden' }}>
-                                <Box sx={{ p: 2, bgcolor: 'action.hover', borderBottom: 1, borderColor: 'divider' }}>
-                                    <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
-                                        /api/v2/care/engine/formula.json
-                                    </Typography>
-                                </Box>
-                                <TextField
-                                    multiline
-                                    fullWidth
-                                    minRows={12}
-                                    value={formulaJson}
-                                    onChange={(e) => { setFormulaJson(e.target.value); setIsValid(true); }}
-                                    onBlur={handleValidate}
-                                    error={!isValid}
-                                    helperText={!isValid ? 'El JSON no es válido. Revisa la sintaxis.' : ''}
-                                    sx={{
-                                        '& .MuiInputBase-root': {
-                                            fontFamily: 'monospace',
-                                            fontSize: '0.875rem',
-                                            borderRadius: 0,
-                                        },
-                                        '& .MuiOutlinedInput-notchedOutline': { border: 'none' }
-                                    }}
-                                />
-                            </Paper>
-                            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                                <Button variant="outlined" onClick={handleValidate}>
-                                    Validar JSON
-                                </Button>
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Container>
-        </AdminLayout>
-    );
+  const handleMatchChange = (value: number) => {
+    if (!draft) return;
+    applyDraft({ ...draft, matchCritical: value });
+  };
+
+  const handleJsonChange = (text: string) => {
+    setJsonText(text);
+    const parsed = parseDraft(text);
+    if (parsed.ok) {
+      setDraft(parsed.draft);
+      setJsonValid(true);
+      setJsonError(null);
+    } else {
+      setJsonValid(false);
+      setJsonError(parsed.error);
+    }
+  };
+
+  const handleValidate = async () => {
+    if (!draft) return;
+    setValidating(true);
+    setValidateErrors([]);
+    setValidateAlerts(detectDegenerate(draft.blocks));
+    const local = clientValidation(draft.blocks);
+    if (local.length > 0) {
+      setValidateErrors(local);
+      setValidating(false);
+      return;
+    }
+    try {
+      const result = await validateFormula(draftToPayload(draft));
+      setValidateErrors(result.errors);
+      if (result.valid) {
+        const sim = await simulateFormula({ formula: draftToPayload(draft) });
+        setValidateAlerts((prev) => [...prev, ...smokeAlerts(sim.ranking)]);
+      }
+    } catch {
+      setValidateErrors(["No se pudo validar contra el servidor."]);
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const handleSimulate = async () => {
+    if (!draft) return;
+    setSimulating(true);
+    setSimError(null);
+    try {
+      const result = await simulateFormula({ formula: draftToPayload(draft) });
+      setSimResult(result);
+    } catch {
+      setSimError("No se pudo simular la fórmula.");
+    } finally {
+      setSimulating(false);
+    }
+  };
+
+  return (
+    <AdminLayout>
+      <Container maxWidth="xl">
+        <Box sx={{ py: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 4,
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box
+                sx={{
+                  bgcolor: "primary.main",
+                  p: 1.5,
+                  borderRadius: "8px",
+                  display: "flex",
+                  mr: 2,
+                  boxShadow: "0 4px 12px rgba(255,77,79,0.3)",
+                }}
+              >
+                <FunctionsIcon sx={{ fontSize: 32, color: "white" }} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, letterSpacing: "-0.5px" }}
+                >
+                  Editor de Fórmula Ψ/M
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  CARE_score = Σ wᵢ·fᵢ + χ(t) — validar, simular y guardar en
+                  versión nueva.
+                </Typography>
+              </Box>
+            </Box>
+            <Stack direction="row" spacing={2}>
+              <Button
+                data-testid="action-validate"
+                variant="outlined"
+                startIcon={<ScienceIcon />}
+                onClick={handleValidate}
+                disabled={validating || loading}
+              >
+                {validating ? "Validando..." : "Validar"}
+              </Button>
+              <Button
+                data-testid="action-simulate"
+                variant="contained"
+                startIcon={<PlayArrowIcon />}
+                onClick={handleSimulate}
+                disabled={simulating || loading}
+              >
+                {simulating ? "Simulando..." : "Simular"}
+              </Button>
+            </Stack>
+          </Box>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }} data-testid="equation-error">
+              {error}
+            </Alert>
+          )}
+
+          {!loading && validateErrors.length > 0 && (
+            <Alert
+              severity="error"
+              sx={{ mb: 2 }}
+              data-testid="validate-errors"
+            >
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {validateErrors.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            </Alert>
+          )}
+
+          {!loading && validateAlerts.length > 0 && (
+            <Alert
+              severity="warning"
+              sx={{ mb: 2 }}
+              data-testid="validate-alerts"
+            >
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {validateAlerts.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            </Alert>
+          )}
+
+          {simError && (
+            <Alert severity="error" sx={{ mb: 2 }} data-testid="simulate-error">
+              {simError}
+            </Alert>
+          )}
+
+          {loading ? (
+            <Box
+              sx={{ display: "flex", justifyContent: "center", py: 8 }}
+              data-testid="equation-loading"
+            >
+              <CircularProgress />
+            </Box>
+          ) : draft ? (
+            <>
+              <CareEquationHeader blocks={draft.blocks} focus={focus} />
+              <Grid container spacing={3} sx={{ mb: 3 }}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <Stack spacing={3}>
+                    <CareEquationBlocks
+                      blocks={draft.blocks}
+                      focus={focus}
+                      onSliderChange={handleBlockChange}
+                    />
+                    <CareFormulaCanvas blocks={draft.blocks} focus={focus} />
+                    <CareChaosPanel
+                      chaosFactor={draft.chaosFactor}
+                      chaosSeed={draft.chaosSeed}
+                      deltaIndicator={simResult ? simResult.mean_delta : null}
+                      onChaosChange={handleChaosChange}
+                      onSeedChange={handleSeedChange}
+                      onGenerateSeed={handleGenerateSeed}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
+                  <CareThresholdsPanel
+                    minCompatibility={draft.minCompatibility}
+                    matchCritical={draft.matchCritical}
+                    onMinChange={handleMinChange}
+                    onMatchChange={handleMatchChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
+                  <CareFormulaJsonEditor
+                    value={jsonText}
+                    valid={jsonValid}
+                    error={jsonError}
+                    onChange={handleJsonChange}
+                  />
+                </Grid>
+              </Grid>
+
+              <CareSimulationTable result={simResult} loading={simulating} />
+            </>
+          ) : null}
+        </Box>
+      </Container>
+    </AdminLayout>
+  );
 }
