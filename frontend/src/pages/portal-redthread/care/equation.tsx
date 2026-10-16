@@ -6,12 +6,18 @@ import {
   Button,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import FunctionsIcon from "@mui/icons-material/Functions";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import SaveIcon from "@mui/icons-material/Save";
 import ScienceIcon from "@mui/icons-material/Science";
 import AdminLayout from "../../../components/layout/AdminLayout";
 import CareEquationHeader from "../../../components/care/CareEquationHeader";
@@ -22,17 +28,25 @@ import CareThresholdsPanel from "../../../components/care/CareThresholdsPanel";
 import CareFormulaJsonEditor from "../../../components/care/CareFormulaJsonEditor";
 import CareSimulationTable from "../../../components/care/CareSimulationTable";
 import CarePreviewPanel from "../../../components/care/CarePreviewPanel";
+import CareVersionsPanel from "../../../components/care/CareVersionsPanel";
 import type { CareDimensionKey } from "../../../constants/careDimensions";
 import {
   getActiveFormula,
+  listFormulaVersions,
   previewFormula,
+  rollbackFormula,
+  saveFormula,
   simulateFormula,
   validateFormula,
+  type CareFormula,
   type NarrativeResult,
   type PreviewResult,
   type SimulateResult,
 } from "../../../services/careFormulaService";
-import { decodeEquationDraft } from "../../../utils/careCriteriaModel";
+import {
+  decodeEquationDraft,
+  saveErrorMessage,
+} from "../../../utils/careCriteriaModel";
 import {
   clientValidation,
   detectDegenerate,
@@ -80,6 +94,13 @@ export default function CareEquationPage() {
   );
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [versions, setVersions] = useState<CareFormula[]>([]);
+  const [versionsLoading, setVersionsLoading] = useState(false);
+  const [activeVersion, setActiveVersion] = useState<number | null>(null);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [changelog, setChangelog] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -100,6 +121,16 @@ export default function CareEquationPage() {
         setJsonText(serializeDraft(next));
         setJsonValid(true);
         setJsonError(null);
+        setActiveVersion(active.version);
+        setVersionsLoading(true);
+        try {
+          const history = await listFormulaVersions(50);
+          if (!cancelled) setVersions(history);
+        } catch {
+          if (!cancelled) setVersions([]);
+        } finally {
+          if (!cancelled) setVersionsLoading(false);
+        }
       } catch {
         if (!cancelled) setError("No se pudo cargar la fórmula activa.");
       } finally {
@@ -222,6 +253,54 @@ export default function CareEquationPage() {
     }
   };
 
+  const reloadVersions = async () => {
+    try {
+      setVersions(await listFormulaVersions(50));
+    } catch {
+      setVersions([]);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!draft) return;
+    if (changelog.trim() === "") {
+      setSaveError("El changelog es obligatorio.");
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const saved = await saveFormula(
+        draftToPayload(draft, {
+          version: activeVersion ?? undefined,
+          changelog: changelog.trim(),
+        }),
+        "equation",
+      );
+      setVersions((prev) => [
+        saved,
+        ...prev.filter((v) => v.version !== saved.version),
+      ]);
+      setActiveVersion(saved.version);
+      setSaveOpen(false);
+      setChangelog("");
+    } catch (err) {
+      setSaveError(saveErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRollback = async (version: number) => {
+    try {
+      const rolled = await rollbackFormula(version);
+      setActiveVersion(rolled.version);
+      await reloadVersions();
+    } catch {
+      setError("No se pudo restaurar la versión.");
+    }
+  };
+
   return (
     <AdminLayout>
       <Container maxWidth="xl">
@@ -278,6 +357,16 @@ export default function CareEquationPage() {
                 disabled={simulating || loading}
               >
                 {simulating ? "Simulando..." : "Simular"}
+              </Button>
+              <Button
+                data-testid="open-save-modal"
+                variant="contained"
+                color="secondary"
+                startIcon={<SaveIcon />}
+                onClick={() => setSaveOpen(true)}
+                disabled={loading}
+              >
+                Guardar
               </Button>
             </Stack>
           </Box>
@@ -385,8 +474,53 @@ export default function CareEquationPage() {
                   onRun={handlePreview}
                 />
               </Box>
+
+              <Box sx={{ mt: 3 }}>
+                <CareVersionsPanel
+                  versions={versions}
+                  activeVersion={activeVersion}
+                  loading={versionsLoading}
+                  onRollback={handleRollback}
+                />
+              </Box>
             </>
           ) : null}
+
+          <Dialog
+            open={saveOpen}
+            onClose={() => setSaveOpen(false)}
+            data-testid="save-modal"
+          >
+            <DialogTitle>Guardar como versión nueva</DialogTitle>
+            <DialogContent>
+              <TextField
+                data-testid="changelog-input"
+                label="Changelog"
+                fullWidth
+                multiline
+                minRows={3}
+                sx={{ mt: 1, minWidth: 360 }}
+                value={changelog}
+                onChange={(event) => setChangelog(event.target.value)}
+              />
+              {saveError && (
+                <Alert severity="error" sx={{ mt: 2 }} data-testid="save-error">
+                  {saveError}
+                </Alert>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setSaveOpen(false)}>Cancelar</Button>
+              <Button
+                data-testid="modal-save"
+                variant="contained"
+                onClick={handleSave}
+                disabled={saving}
+              >
+                {saving ? "Guardando..." : "Guardar"}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Container>
     </AdminLayout>

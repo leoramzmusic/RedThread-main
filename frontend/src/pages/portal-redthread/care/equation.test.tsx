@@ -2,6 +2,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import CareEquationPage from "./equation";
 import {
   getActiveFormula,
+  listFormulaVersions,
+  rollbackFormula,
+  saveFormula,
   simulateFormula,
   validateFormula,
 } from "../../../services/careFormulaService";
@@ -143,16 +146,50 @@ jest.mock("../../../components/care/CareSimulationTable", () => {
       }),
   };
 });
+jest.mock("../../../components/care/CareVersionsPanel", () => {
+  const React = require("react");
+  return {
+    __esModule: true,
+    default: ({
+      versions,
+      onRollback,
+    }: {
+      versions: { version: number }[];
+      onRollback: (v: number) => void;
+    }) =>
+      React.createElement(
+        "div",
+        {
+          "data-testid": "versions-stub",
+          "data-count": String(versions.length),
+        },
+        versions.map((v) =>
+          React.createElement("button", {
+            key: v.version,
+            "data-testid": `stub-rollback-${v.version}`,
+            onClick: () => onRollback(v.version),
+          }),
+        ),
+      ),
+  };
+});
+
 jest.mock("../../../services/careFormulaService", () => ({
   __esModule: true,
   getActiveFormula: jest.fn(),
   validateFormula: jest.fn(),
   simulateFormula: jest.fn(),
+  saveFormula: jest.fn(),
+  listFormulaVersions: jest.fn(),
+  rollbackFormula: jest.fn(),
 }));
 
 const mockGetActive = getActiveFormula as jest.Mock;
 const mockValidate = validateFormula as jest.Mock;
 const mockSimulate = simulateFormula as jest.Mock;
+const mockSave = saveFormula as jest.Mock;
+const mockListVersions = listFormulaVersions as jest.Mock;
+const mockRollback = rollbackFormula as jest.Mock;
 
 const active = {
   version: 3,
@@ -206,6 +243,7 @@ beforeEach(() => {
   mockGetActive.mockResolvedValue(active);
   mockValidate.mockResolvedValue({ valid: true, errors: [] });
   mockSimulate.mockResolvedValue(mockResult);
+  mockListVersions.mockResolvedValue([]);
 });
 
 const headerBlocks = (): Record<string, number> =>
@@ -388,5 +426,75 @@ describe("CareEquationPage / Validar + Simular", () => {
       "data-delta",
       "0.075",
     );
+  });
+});
+
+describe("CareEquationPage / Guardar + Versiones", () => {
+  it("saves with a changelog and prepends the new version", async () => {
+    const saved = { ...active, version: 4, changelog: "nuevo" };
+    mockSave.mockResolvedValueOnce(saved);
+    render(<CareEquationPage />);
+    await screen.findByTestId("versions-stub");
+    fireEvent.click(screen.getByTestId("open-save-modal"));
+    fireEvent.change(
+      screen
+        .getByTestId("changelog-input")
+        .querySelector("textarea") as HTMLTextAreaElement,
+      { target: { value: "ajuste de pesos" } },
+    );
+    fireEvent.click(screen.getByTestId("modal-save"));
+    await waitFor(() =>
+      expect(mockSave).toHaveBeenCalledWith(
+        expect.objectContaining({ blocks: active.blocks }),
+        "equation",
+      ),
+    );
+    expect(await screen.findByTestId("versions-stub")).toHaveAttribute(
+      "data-count",
+      "1",
+    );
+  });
+
+  it("blocks save without a changelog", async () => {
+    render(<CareEquationPage />);
+    await screen.findByTestId("versions-stub");
+    fireEvent.click(screen.getByTestId("open-save-modal"));
+    fireEvent.click(screen.getByTestId("modal-save"));
+    expect(await screen.findByTestId("save-error")).toHaveTextContent(
+      "changelog es obligatorio",
+    );
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
+  it("surfaces a 409 no-change message", async () => {
+    mockSave.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: {
+        status: 409,
+        data: { detail: "No hay cambios respecto a la versión activa." },
+      },
+    });
+    render(<CareEquationPage />);
+    await screen.findByTestId("versions-stub");
+    fireEvent.click(screen.getByTestId("open-save-modal"));
+    fireEvent.change(
+      screen
+        .getByTestId("changelog-input")
+        .querySelector("textarea") as HTMLTextAreaElement,
+      { target: { value: "x" } },
+    );
+    fireEvent.click(screen.getByTestId("modal-save"));
+    expect(await screen.findByTestId("save-error")).toHaveTextContent(
+      "No hay cambios",
+    );
+  });
+
+  it("rolls back the chosen version", async () => {
+    mockListVersions.mockResolvedValueOnce([
+      { ...active, version: 2, status: "archived" },
+    ]);
+    render(<CareEquationPage />);
+    fireEvent.click(await screen.findByTestId("stub-rollback-2"));
+    await waitFor(() => expect(mockRollback).toHaveBeenCalledWith(2));
   });
 });
