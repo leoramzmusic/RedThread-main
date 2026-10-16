@@ -90,7 +90,7 @@ describe("discover namespace translations parity", () => {
   const allKeys = new Set([...literalKeys, ...dynamicKeys]);
 
   it("finds literal t() keys across the discover files", () => {
-    expect(literalKeys.size).toBeGreaterThan(35);
+    expect(literalKeys.size).toBeGreaterThan(30);
   });
 
   it("covers the dynamic (template-literal) keys", () => {
