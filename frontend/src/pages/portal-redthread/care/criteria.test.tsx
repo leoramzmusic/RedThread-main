@@ -3,6 +3,7 @@ import CareCriteriaPage from "./criteria";
 import {
   getActiveFormula,
   normalizeFormulaBlocks,
+  saveFormula,
 } from "../../../services/careFormulaService";
 import { CANONICAL_BLOCK_WEIGHTS } from "../../../constants/careDimensions";
 
@@ -53,10 +54,12 @@ jest.mock("../../../services/careFormulaService", () => ({
   __esModule: true,
   getActiveFormula: jest.fn(),
   normalizeFormulaBlocks: jest.fn(),
+  saveFormula: jest.fn(),
 }));
 
 const mockGetActive = getActiveFormula as jest.Mock;
 const mockNormalize = normalizeFormulaBlocks as jest.Mock;
+const mockSave = saveFormula as jest.Mock;
 
 const active = {
   version: 3,
@@ -77,6 +80,7 @@ beforeEach(() => {
   mockNormalize.mockImplementation(async (blocks: Record<string, number>) => ({
     blocks,
   }));
+  mockSave.mockResolvedValue({ ...active, version: 4 });
 });
 
 describe("CareCriteriaPage", () => {
@@ -148,5 +152,89 @@ describe("CareCriteriaPage", () => {
     expect(arg.query.source).toBe("criteria");
     expect(arg.query.focus).toBe("values");
     expect(JSON.parse(arg.query.w)).toEqual(active.blocks);
+  });
+});
+
+describe("CareCriteriaPage / Aplicar Cambios", () => {
+  const openModal = async () => {
+    render(<CareCriteriaPage />);
+    await screen.findByTestId("kpi-total");
+    fireEvent.click(screen.getByTestId("open-save-modal"));
+    return screen.findByTestId("save-modal");
+  };
+
+  const typeChangelog = (text: string) => {
+    const textarea = screen
+      .getByTestId("changelog-input")
+      .querySelector("textarea") as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: text } });
+  };
+
+  it("disables Aplicar Cambios when the sum is not 100%", async () => {
+    render(<CareCriteriaPage />);
+    await screen.findByTestId("kpi-total");
+    fireEvent.click(screen.getByTestId("stub-slide-values"));
+    expect(screen.getByTestId("open-save-modal")).toBeDisabled();
+  });
+
+  it("shows the sum and 'sin cambios' when nothing changed", async () => {
+    await openModal();
+    expect(screen.getByTestId("modal-sum")).toHaveTextContent("100%");
+    expect(screen.getByText(/Sin cambios respecto a v3/i)).toBeInTheDocument();
+  });
+
+  it("requires a non-empty changelog before enabling Guardar", async () => {
+    await openModal();
+    expect(screen.getByTestId("modal-save")).toBeDisabled();
+    typeChangelog("ajuste de pesos");
+    expect(screen.getByTestId("modal-save")).not.toBeDisabled();
+  });
+
+  it("normalizes then saves with source 'criteria' and the typed changelog", async () => {
+    await openModal();
+    typeChangelog("ajuste de pesos");
+    fireEvent.click(screen.getByTestId("modal-save"));
+    await waitFor(() => expect(mockSave).toHaveBeenCalledTimes(1));
+    expect(mockNormalize).toHaveBeenCalled();
+    const [payload, source] = mockSave.mock.calls[0];
+    expect(source).toBe("criteria");
+    expect(payload.changelog).toBe("ajuste de pesos");
+    expect(payload.blocks).toEqual(active.blocks);
+    expect(payload.chaos_factor).toBe(5);
+    expect(payload.match_critical).toBe(0.15);
+    expect(await screen.findByTestId("criteria-success")).toHaveTextContent(
+      "v4",
+    );
+  });
+
+  it("surfaces a 409 (no change vs active) message and keeps the modal open", async () => {
+    mockSave.mockRejectedValueOnce({
+      response: {
+        status: 409,
+        data: { detail: "La fórmula no cambió respecto a la versión activa" },
+      },
+    });
+    await openModal();
+    typeChangelog("sin cambios");
+    fireEvent.click(screen.getByTestId("modal-save"));
+    expect(await screen.findByTestId("save-error")).toHaveTextContent(
+      "La fórmula no cambió respecto a la versión activa",
+    );
+    expect(screen.getByTestId("save-modal")).toBeInTheDocument();
+  });
+
+  it("surfaces a 422 validation error (array detail)", async () => {
+    mockSave.mockRejectedValueOnce({
+      response: {
+        status: 422,
+        data: { detail: ["La suma de pesos debe ser exactamente 1.0"] },
+      },
+    });
+    await openModal();
+    typeChangelog("roto");
+    fireEvent.click(screen.getByTestId("modal-save"));
+    expect(await screen.findByTestId("save-error")).toHaveTextContent(
+      "La suma de pesos debe ser exactamente 1.0",
+    );
   });
 });

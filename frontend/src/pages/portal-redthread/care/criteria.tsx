@@ -7,12 +7,19 @@ import {
   Chip,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   Paper,
+  Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import SaveIcon from "@mui/icons-material/Save";
 import TuneIcon from "@mui/icons-material/Tune";
 import WarningIcon from "@mui/icons-material/Warning";
 import AdminLayout from "../../../components/layout/AdminLayout";
@@ -21,14 +28,18 @@ import type { CareDimensionKey } from "../../../constants/careDimensions";
 import {
   getActiveFormula,
   normalizeFormulaBlocks,
+  saveFormula,
   type CareFormula,
   type FormulaBlocks,
+  type FormulaPayload,
 } from "../../../services/careFormulaService";
 import {
+  computeDeltas,
   encodeEquationDraft,
   formatActiveVersion,
   formatChaos,
   isBalanced,
+  saveErrorMessage,
   toggleLocked,
   totalPercent,
   withFraction,
@@ -44,6 +55,11 @@ export default function CareCriteriaPage() {
   const [formula, setFormula] = useState<CareFormula | null>(null);
   const [blocks, setBlocks] = useState<FormulaBlocks>({});
   const [locked, setLocked] = useState<string[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [changelog, setChangelog] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -113,6 +129,45 @@ export default function CareCriteriaPage() {
     });
   };
 
+  const handleOpenModal = () => {
+    setSaveError(null);
+    setSaveSuccess(null);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    if (saving) return;
+    setModalOpen(false);
+  };
+
+  const handleSave = async () => {
+    if (!formula) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const { blocks: exact } = await normalizeFormulaBlocks(blocks, locked);
+      const payload: FormulaPayload = {
+        version: formula.version,
+        blocks: exact,
+        chaos_factor: formula.chaos_factor,
+        chaos_seed: formula.chaos_seed,
+        min_compatibility: formula.min_compatibility,
+        match_critical: formula.match_critical,
+        changelog: changelog.trim(),
+      };
+      const saved = await saveFormula(payload, "criteria");
+      setFormula(saved);
+      setBlocks({ ...saved.blocks });
+      setModalOpen(false);
+      setChangelog("");
+      setSaveSuccess(`Versión v${saved.version} guardada.`);
+    } catch (err) {
+      setSaveError(saveErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <AdminLayout>
       <Container maxWidth="xl">
@@ -151,19 +206,40 @@ export default function CareCriteriaPage() {
                 </Typography>
               </Box>
             </Box>
-            <Button
-              variant="outlined"
-              startIcon={<TuneIcon />}
-              onClick={handleNormalizar}
-              disabled={normalizing || loading}
-            >
-              {normalizing ? "Normalizando..." : "Normalizar"}
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                startIcon={<TuneIcon />}
+                onClick={handleNormalizar}
+                disabled={normalizing || loading}
+              >
+                {normalizing ? "Normalizando..." : "Normalizar"}
+              </Button>
+              <Button
+                data-testid="open-save-modal"
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleOpenModal}
+                disabled={!balanced || saving || loading}
+              >
+                Aplicar Cambios
+              </Button>
+            </Stack>
           </Box>
 
           {error && (
             <Alert severity="error" sx={{ mb: 3 }} data-testid="criteria-error">
               {error}
+            </Alert>
+          )}
+
+          {saveSuccess && (
+            <Alert
+              severity="success"
+              sx={{ mb: 3 }}
+              data-testid="criteria-success"
+            >
+              {saveSuccess}
             </Alert>
           )}
 
@@ -258,6 +334,79 @@ export default function CareCriteriaPage() {
               />
             </>
           ) : null}
+
+          <Dialog
+            open={modalOpen}
+            onClose={handleCloseModal}
+            maxWidth="sm"
+            fullWidth
+            data-testid="save-modal"
+          >
+            <DialogTitle>Aplicar cambios</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  data-testid="modal-sum"
+                  sx={{ fontWeight: 700 }}
+                >
+                  Suma: {totalPercent(blocks)}%
+                </Typography>
+
+                {formula &&
+                  (computeDeltas(formula.blocks, blocks).length === 0 ? (
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Sin cambios respecto a v{formula.version}
+                    </Typography>
+                  ) : (
+                    computeDeltas(formula.blocks, blocks).map((delta) => (
+                      <Typography
+                        key={delta.key}
+                        variant="body2"
+                        data-testid={`delta-${delta.key}`}
+                      >
+                        {delta.label}: {delta.deltaPercent > 0 ? "+" : ""}
+                        {delta.deltaPercent}%
+                      </Typography>
+                    ))
+                  ))}
+
+                <TextField
+                  data-testid="changelog-input"
+                  label="Changelog"
+                  required
+                  multiline
+                  minRows={2}
+                  fullWidth
+                  value={changelog}
+                  onChange={(e) => setChangelog(e.target.value)}
+                  helperText="Describe el motivo del cambio (obligatorio)."
+                />
+
+                {saveError && (
+                  <Alert severity="error" data-testid="save-error">
+                    {saveError}
+                  </Alert>
+                )}
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseModal} disabled={saving}>
+                Cancelar
+              </Button>
+              <Button
+                data-testid="modal-save"
+                variant="contained"
+                onClick={handleSave}
+                disabled={changelog.trim().length === 0 || saving}
+              >
+                {saving ? "Guardando..." : "Guardar"}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Container>
     </AdminLayout>
