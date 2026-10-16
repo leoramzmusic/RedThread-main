@@ -21,11 +21,15 @@ import CareChaosPanel from "../../../components/care/CareChaosPanel";
 import CareThresholdsPanel from "../../../components/care/CareThresholdsPanel";
 import CareFormulaJsonEditor from "../../../components/care/CareFormulaJsonEditor";
 import CareSimulationTable from "../../../components/care/CareSimulationTable";
+import CarePreviewPanel from "../../../components/care/CarePreviewPanel";
 import type { CareDimensionKey } from "../../../constants/careDimensions";
 import {
   getActiveFormula,
+  previewFormula,
   simulateFormula,
   validateFormula,
+  type NarrativeResult,
+  type PreviewResult,
   type SimulateResult,
 } from "../../../services/careFormulaService";
 import { decodeEquationDraft } from "../../../utils/careCriteriaModel";
@@ -34,6 +38,7 @@ import {
   detectDegenerate,
   draftToPayload,
   parseDraft,
+  previewErrorMessage,
   serializeDraft,
   smokeAlerts,
   toEquationDraft,
@@ -66,6 +71,15 @@ export default function CareEquationPage() {
   const [simulating, setSimulating] = useState(false);
   const [simResult, setSimResult] = useState<SimulateResult | null>(null);
   const [simError, setSimError] = useState<string | null>(null);
+  const [previewUserA, setPreviewUserA] = useState("");
+  const [previewUserB, setPreviewUserB] = useState("");
+  const [previewTone, setPreviewTone] =
+    useState<NarrativeResult["tone"]>("directo");
+  const [previewResult, setPreviewResult] = useState<PreviewResult | null>(
+    null,
+  );
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -186,6 +200,25 @@ export default function CareEquationPage() {
       setSimError("No se pudo simular la fórmula.");
     } finally {
       setSimulating(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    if (!draft) return;
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const result = await previewFormula({
+        formula: draftToPayload(draft),
+        user_a_id: previewUserA,
+        user_b_id: previewUserB,
+        tone: previewTone,
+      });
+      setPreviewResult(result);
+    } catch (err) {
+      setPreviewError(previewErrorMessage(err));
+    } finally {
+      setPreviewLoading(false);
     }
   };
 
@@ -337,6 +370,21 @@ export default function CareEquationPage() {
               </Grid>
 
               <CareSimulationTable result={simResult} loading={simulating} />
+
+              <Box sx={{ mt: 3 }}>
+                <CarePreviewPanel
+                  userA={previewUserA}
+                  userB={previewUserB}
+                  tone={previewTone}
+                  result={previewResult}
+                  loading={previewLoading}
+                  error={previewError}
+                  onUserAChange={setPreviewUserA}
+                  onUserBChange={setPreviewUserB}
+                  onToneChange={setPreviewTone}
+                  onRun={handlePreview}
+                />
+              </Box>
             </>
           ) : null}
         </Box>
