@@ -8,6 +8,8 @@ import {
   saveFormula,
   rollbackFormula,
   normalizeFormulaBlocks,
+  numericBreakdown,
+  type FormulaBreakdown,
   type FormulaPayload,
 } from "./careFormulaService";
 
@@ -131,5 +133,37 @@ describe("careFormulaService", () => {
       blocks: { values: 0.5, music: 0.5 },
       locked: ["values"],
     });
+  });
+});
+
+describe("numericBreakdown", () => {
+  it("keeps only numeric canonical block keys", () => {
+    const breakdown = {
+      values: 0.36,
+      music: 0.11,
+      saturated: false,
+      compatibility_label: "alta",
+      final_score: 0.42,
+      chaos_applied: 0.2,
+      bogus: 9,
+    } as unknown as FormulaBreakdown;
+    expect(numericBreakdown(breakdown)).toEqual({ values: 0.36, music: 0.11 });
+  });
+
+  it("returns {} for null and undefined", () => {
+    expect(numericBreakdown(null)).toEqual({});
+    expect(numericBreakdown(undefined)).toEqual({});
+  });
+
+  it("does not mutate the input and returns a fresh object", () => {
+    const breakdown = {
+      values: 0.5,
+      music: 0.5,
+      saturated: true,
+    } as unknown as FormulaBreakdown;
+    const snapshot = { ...breakdown };
+    const result = numericBreakdown(breakdown);
+    expect(breakdown).toEqual(snapshot);
+    expect(result).not.toBe(breakdown);
   });
 });

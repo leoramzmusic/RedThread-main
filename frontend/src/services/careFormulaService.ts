@@ -1,4 +1,8 @@
 import { adminApiClient } from "./api";
+import {
+  CARE_DIMENSION_KEYS,
+  type CareDimensionKey,
+} from "../constants/careDimensions";
 
 /**
  * Typed wrapper over the canonical CARE formula endpoints.
@@ -86,6 +90,24 @@ export interface ValidateResult {
   valid: boolean;
   errors: string[];
 }
+
+/**
+ * Narrows the mixed {@link FormulaBreakdown} index signature down to the
+ * numeric CARE block keys, so downstream code needs no unsafe casts.
+ * Keeps only entries whose key is a canonical `CareDimensionKey` and whose
+ * value is a number. Returns `{}` for null/undefined and never mutates input.
+ */
+export const numericBreakdown = (
+  breakdown: FormulaBreakdown | null | undefined,
+): Partial<Record<CareDimensionKey, number>> => {
+  const result: Partial<Record<CareDimensionKey, number>> = {};
+  if (!breakdown) return result;
+  for (const key of CARE_DIMENSION_KEYS) {
+    const value = breakdown[key];
+    if (typeof value === "number") result[key] = value;
+  }
+  return result;
+};
 
 export async function getActiveFormula(): Promise<CareFormula> {
   const { data } = await adminApiClient.get(`${BASE}/active`);

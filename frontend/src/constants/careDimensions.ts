@@ -5,9 +5,19 @@
  * CANONICAL_BLOCKS.
  */
 
+/** Literal union of the 7 canonical CARE block keys. */
+export type CareDimensionKey =
+  | "values"
+  | "relationship_goals"
+  | "neurodiversity"
+  | "responsiveness"
+  | "music"
+  | "love_language"
+  | "communication_style";
+
 export interface CareDimension {
   /** Canonical backend key (block key in the formula payload / breakdown). */
-  key: string;
+  key: CareDimensionKey;
   /** Spanish display label (admin is hardcoded Spanish; see spec decision 11). */
   label: string;
   /** Dirac chip, α through η. */
@@ -51,7 +61,8 @@ export const CARE_DIMENSIONS: CareDimension[] = [
   },
 ];
 
-export const CARE_DIMENSION_KEYS: string[] = CARE_DIMENSIONS.map((d) => d.key);
+export const CARE_DIMENSION_KEYS: readonly CareDimensionKey[] =
+  CARE_DIMENSIONS.map((d) => d.key);
 
 export const CARE_DIMENSION_BY_KEY: Record<string, CareDimension> =
   CARE_DIMENSIONS.reduce<Record<string, CareDimension>>((acc, d) => {
@@ -60,7 +71,7 @@ export const CARE_DIMENSION_BY_KEY: Record<string, CareDimension> =
   }, {});
 
 /** Canonical seed-v1 weights (must match the backend defaults). */
-export const CANONICAL_BLOCK_WEIGHTS: Record<string, number> = {
+export const CANONICAL_BLOCK_WEIGHTS: Record<CareDimensionKey, number> = {
   values: 0.36,
   relationship_goals: 0.18,
   neurodiversity: 0.15,

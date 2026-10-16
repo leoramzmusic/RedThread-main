@@ -3,6 +3,7 @@ import {
   CARE_DIMENSION_KEYS,
   CARE_DIMENSION_BY_KEY,
   CANONICAL_BLOCK_WEIGHTS,
+  CANONICAL_BLOCK_SUM,
 } from "./careDimensions";
 
 describe("careDimensions", () => {
@@ -55,5 +56,17 @@ describe("careDimensions", () => {
     expect(Object.keys(CANONICAL_BLOCK_WEIGHTS).sort()).toEqual(
       [...CARE_DIMENSION_KEYS].sort(),
     );
+  });
+
+  it("CANONICAL_BLOCK_SUM equals the 7 canonical weights summed", () => {
+    expect(CANONICAL_BLOCK_SUM).toBeCloseTo(1, 10);
+    expect(Object.keys(CANONICAL_BLOCK_WEIGHTS)).toHaveLength(
+      CARE_DIMENSION_KEYS.length,
+    );
+    const perKeySum = CARE_DIMENSION_KEYS.reduce(
+      (acc, key) => acc + CANONICAL_BLOCK_WEIGHTS[key],
+      0,
+    );
+    expect(perKeySum).toBeCloseTo(CANONICAL_BLOCK_SUM, 10);
   });
 });

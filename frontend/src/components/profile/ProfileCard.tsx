@@ -24,6 +24,7 @@ import PresenceIndicator from "./PresenceIndicator";
 import { InteractionMode } from "../discovery/InteractionSettingsDialog";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useSmartPhotosTracking } from "../../services/smartPhotos";
+import type { CareDimensionKey } from "../../constants/careDimensions";
 
 export interface Profile {
   user_id: string;
@@ -67,15 +68,7 @@ export interface Profile {
   relationship_goals?: string;
   neurodiversity?: string[];
 
-  affinity_breakdown?: {
-    values?: number;
-    relationship_goals?: number;
-    neurodiversity?: number;
-    responsiveness?: number;
-    music?: number;
-    love_language?: number;
-    communication_style?: number;
-  };
+  affinity_breakdown?: Partial<Record<CareDimensionKey, number>>;
 
   // CARE Engine signals
   activity_score?: number; // 0-1, how active the user is
