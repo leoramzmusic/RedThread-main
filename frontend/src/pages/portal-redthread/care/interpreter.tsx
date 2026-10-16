@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import DownloadIcon from "@mui/icons-material/Download";
 import AdminLayout from "../../../components/layout/AdminLayout";
 import CareScoreBreakdown from "../../../components/care/CareScoreBreakdown";
 import CareNarrativeTrio from "../../../components/care/CareNarrativeTrio";
@@ -30,7 +31,10 @@ import {
   previewErrorMessage,
 } from "../../../utils/careEquationModel";
 import {
+  buildReport,
   computeContributions,
+  downloadJson,
+  reportFilename,
   resolveBand,
 } from "../../../utils/careInterpreterModel";
 
@@ -75,6 +79,17 @@ export default function CareInterpreterPage() {
     };
   }, []);
 
+  const rows =
+    formula && previewResult
+      ? computeContributions(formula.blocks, previewResult.proposed.breakdown)
+      : [];
+  const compatibilityLabel = previewResult
+    ? resolveBand(
+        previewResult.proposed.breakdown.compatibility_label,
+        previewResult.proposed.score,
+      )
+    : "";
+
   const handlePreview = async () => {
     if (!formula || userA.trim() === "" || userB.trim() === "") return;
     setPreviewLoading(true);
@@ -94,46 +109,75 @@ export default function CareInterpreterPage() {
     }
   };
 
-  const rows =
-    formula && previewResult
-      ? computeContributions(formula.blocks, previewResult.proposed.breakdown)
-      : [];
-  const compatibilityLabel = previewResult
-    ? resolveBand(
-        previewResult.proposed.breakdown.compatibility_label,
-        previewResult.proposed.score,
-      )
-    : "";
+  const handleExport = () => {
+    if (!formula || !previewResult) return;
+    const generatedAt = new Date().toISOString();
+    const report = buildReport(
+      {
+        userA: userA.trim(),
+        userB: userB.trim(),
+        formulaVersion: formula.version,
+        breakdown: rows,
+        chi: previewResult.proposed.chi,
+        narrative: previewResult.narrative,
+        tone,
+        compatibilityLabel,
+      },
+      generatedAt,
+    );
+    downloadJson(
+      reportFilename(userA.trim(), userB.trim(), generatedAt),
+      report,
+    );
+  };
 
   return (
     <AdminLayout>
       <Container maxWidth="xl">
         <Box sx={{ py: 4 }}>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-            <Box
-              sx={{
-                bgcolor: "primary.main",
-                p: 1.5,
-                borderRadius: "8px",
-                display: "flex",
-                mr: 2,
-                boxShadow: "0 4px 12px rgba(255,77,79,0.3)",
-              }}
-            >
-              <PsychologyIcon sx={{ fontSize: 32, color: "white" }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h4"
-                sx={{ fontWeight: 800, letterSpacing: "-0.5px" }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 4,
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box
+                sx={{
+                  bgcolor: "primary.main",
+                  p: 1.5,
+                  borderRadius: "8px",
+                  display: "flex",
+                  mr: 2,
+                  boxShadow: "0 4px 12px rgba(255,77,79,0.3)",
+                }}
               >
-                CARE Interpreter
-              </Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                Explicabilidad del score: fᵢ, wᵢ y contribución wᵢ·fᵢ por
-                dimensión.
-              </Typography>
+                <PsychologyIcon sx={{ fontSize: 32, color: "white" }} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, letterSpacing: "-0.5px" }}
+                >
+                  CARE Interpreter
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  Explicabilidad del score: fᵢ, wᵢ y contribución wᵢ·fᵢ por
+                  dimensión.
+                </Typography>
+              </Box>
             </Box>
+            <Button
+              data-testid="interpreter-export"
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleExport}
+              disabled={!previewResult}
+            >
+              Exportar Reporte
+            </Button>
           </Box>
 
           {error && (

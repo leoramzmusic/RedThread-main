@@ -4,6 +4,7 @@ import {
   getActiveFormula,
   previewFormula,
 } from "../../../services/careFormulaService";
+import { downloadJson } from "../../../utils/careInterpreterModel";
 import { CANONICAL_BLOCK_WEIGHTS } from "../../../constants/careDimensions";
 
 jest.mock("next/router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
@@ -38,6 +39,11 @@ jest.mock("../../../components/care/CareNarrativeTrio", () => {
   };
 });
 
+jest.mock("../../../utils/careInterpreterModel", () => {
+  const actual = jest.requireActual("../../../utils/careInterpreterModel");
+  return { ...actual, downloadJson: jest.fn() };
+});
+
 jest.mock("../../../services/careFormulaService", () => ({
   __esModule: true,
   getActiveFormula: jest.fn(),
@@ -46,6 +52,7 @@ jest.mock("../../../services/careFormulaService", () => ({
 
 const mockGetActive = getActiveFormula as jest.Mock;
 const mockPreview = previewFormula as jest.Mock;
+const mockDownload = downloadJson as jest.Mock;
 
 const active = {
   version: 3,
@@ -103,10 +110,20 @@ const setUsers = (a: string, b: string) => {
   );
 };
 
+const originalCreateObjectURL = URL.createObjectURL;
+const originalRevokeObjectURL = URL.revokeObjectURL;
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockGetActive.mockResolvedValue(active);
   mockPreview.mockResolvedValue(previewResponse);
+  URL.createObjectURL = jest.fn(() => "blob:care-report");
+  URL.revokeObjectURL = jest.fn();
+});
+
+afterEach(() => {
+  URL.createObjectURL = originalCreateObjectURL;
+  URL.revokeObjectURL = originalRevokeObjectURL;
 });
 
 describe("CareInterpreterPage / load", () => {
@@ -198,5 +215,38 @@ describe("CareInterpreterPage / preview", () => {
     expect(
       await screen.findByTestId("interpreter-preview-error"),
     ).toHaveTextContent("user_a_id y user_b_id son requeridos");
+  });
+});
+
+describe("CareInterpreterPage / export", () => {
+  it("disables the export until a preview result exists", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-export");
+    expect(screen.getByTestId("interpreter-export")).toBeDisabled();
+  });
+
+  it("downloads the report JSON with the spec fields", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-run");
+    setUsers("u1", "u2");
+    fireEvent.click(screen.getByTestId("interpreter-run"));
+    await screen.findByTestId("trio-stub");
+    fireEvent.click(screen.getByTestId("interpreter-export"));
+    expect(mockDownload).toHaveBeenCalledTimes(1);
+    const [filename, report] = mockDownload.mock.calls[0];
+    expect(filename).toMatch(/^care-report_u1_u2_\d{14}\.json$/);
+    expect(report).toEqual(
+      expect.objectContaining({
+        user_a: "u1",
+        user_b: "u2",
+        formula_version: 3,
+        chi: 0.02,
+        tone: "directo",
+        compatibility_label: "Medio",
+        narrative: previewResponse.narrative,
+      }),
+    );
+    expect(report.breakdown).toHaveLength(7);
+    expect(typeof report.generated_at).toBe("string");
   });
 });
