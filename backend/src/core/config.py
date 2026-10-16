@@ -35,9 +35,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES_MOBILE: int = 60  # Mobile apps
 
     # Refresh Token Expiration (days)
-    REFRESH_TOKEN_EXPIRE_DAYS_WEB: int = 1  # Web without "Remember Me"
-    REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER: int = 30  # Web with "Remember Me"
+    REFRESH_TOKEN_EXPIRE_DAYS_WEB: int = 30  # User portal without "Remember Me"
+    REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER: int = 90  # User portal with "Remember Me"
     REFRESH_TOKEN_EXPIRE_DAYS_MOBILE: int = 90  # Mobile apps
+
+    # Admin Portal Refresh Token Expiration (days)
+    REFRESH_TOKEN_EXPIRE_DAYS_ADMIN: int = 7  # Admin portal without "Remember Me"
+    REFRESH_TOKEN_EXPIRE_DAYS_ADMIN_REMEMBER: int = 30  # Admin portal with "Remember Me"
 
     # Session Management
     MAX_ACTIVE_SESSIONS_PER_USER: int = 5  # Maximum concurrent sessions

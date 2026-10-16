@@ -51,23 +51,42 @@ def create_access_token(
     return encoded_jwt
 
 
+def refresh_token_expire_days(
+    device_type: str = "web", remember_me: bool = False, portal: str = "user"
+) -> int:
+    """Days a refresh token/session lasts, per portal policy.
+
+    User portal: 30 days (90 with remember_me); mobile: 90 days.
+    Admin portal: 7 days (30 with remember_me).
+    """
+    if portal == "admin":
+        if remember_me:
+            return settings.REFRESH_TOKEN_EXPIRE_DAYS_ADMIN_REMEMBER
+        return settings.REFRESH_TOKEN_EXPIRE_DAYS_ADMIN
+    if device_type == "mobile":
+        return settings.REFRESH_TOKEN_EXPIRE_DAYS_MOBILE
+    if remember_me:
+        return settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
+    return settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB
+
+
 def create_refresh_token(
-    data: dict, device_type: str = "web", remember_me: bool = False
+    data: dict,
+    device_type: str = "web",
+    remember_me: bool = False,
+    portal: str = "user",
 ) -> str:
     """Create JWT refresh token with context-specific expiration"""
     to_encode = data.copy()
 
-    # Determine expiration based on device type and remember_me setting
-    if device_type == "mobile":
-        days = settings.REFRESH_TOKEN_EXPIRE_DAYS_MOBILE
-    elif remember_me:
-        days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
-    else:
-        days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB
-
+    days = refresh_token_expire_days(device_type, remember_me, portal)
     expire = datetime.utcnow() + timedelta(days=days)
 
-    to_encode.update({"exp": expire, "type": "refresh"})
+    # jti makes every refresh token unique so rotation always replaces it,
+    # even for tokens issued within the same second (JWT is deterministic).
+    to_encode.update(
+        {"exp": expire, "type": "refresh", "jti": secrets.token_urlsafe(16)}
+    )
     encoded_jwt = jwt.encode(
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )

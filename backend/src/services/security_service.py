@@ -3,6 +3,7 @@ from typing import Optional
 from src.models.session import Session
 from src.models.user import User
 from src.core.config import settings
+from src.core.utils.security import refresh_token_expire_days
 import math
 
 
@@ -109,15 +110,11 @@ def calculate_distance(
     return distance
 
 
-def calculate_session_expiration(device_type: str, remember_me: bool) -> datetime:
+def calculate_session_expiration(
+    device_type: str, remember_me: bool, portal: str = "user"
+) -> datetime:
     """Calculate session expiration datetime based on device type and remember_me setting"""
-    if device_type == "mobile":
-        days = settings.REFRESH_TOKEN_EXPIRE_DAYS_MOBILE
-    elif remember_me:
-        days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
-    else:
-        days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB
-
+    days = refresh_token_expire_days(device_type, remember_me, portal)
     return datetime.utcnow() + timedelta(days=days)
 
 

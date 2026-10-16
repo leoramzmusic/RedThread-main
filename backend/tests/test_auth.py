@@ -100,8 +100,8 @@ class TestJWTTokens:
         exp = datetime.utcfromtimestamp(payload["exp"])
         now = datetime.utcnow()
         days_diff = (exp - now).days
-        # Remember me should be ~30 days
-        assert 29 <= days_diff <= 31
+        # Remember me should be ~90 days (blueprint: 30 normal / 90 remember)
+        assert 89 <= days_diff <= 91
 
     def test_create_refresh_token_mobile(self):
         from src.core.utils.security import create_refresh_token, decode_token
@@ -226,7 +226,7 @@ class TestSessionExpiration:
     def test_web_no_remember(self):
         from src.services.security_service import calculate_session_expiration
         result = calculate_session_expiration("web", False)
-        expected_days = 1  # REFRESH_TOKEN_EXPIRE_DAYS_WEB
+        expected_days = 30  # REFRESH_TOKEN_EXPIRE_DAYS_WEB (blueprint: 30 normal)
         expected = datetime.utcnow() + timedelta(days=expected_days)
         # Allow 1 minute tolerance
         assert abs((result - expected).total_seconds()) < 60
@@ -234,7 +234,7 @@ class TestSessionExpiration:
     def test_web_with_remember(self):
         from src.services.security_service import calculate_session_expiration
         result = calculate_session_expiration("web", True)
-        expected_days = 30  # REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
+        expected_days = 90  # REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
         expected = datetime.utcnow() + timedelta(days=expected_days)
         assert abs((result - expected).total_seconds()) < 60
 

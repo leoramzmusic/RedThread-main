@@ -15,6 +15,7 @@ from src.core.utils.security import (
     decode_token,
     hash_token,
     generate_reset_token,
+    refresh_token_expire_days,
 )
 from datetime import datetime, timedelta
 from src.services.redis_service import redis_service
@@ -345,7 +346,7 @@ async def register(request: RegisterRequest, response: Response):
         httponly=True,
         secure=settings.ENVIRONMENT != "local",
         samesite="lax",
-        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB * 24 * 60 * 60,
+        max_age=refresh_token_expire_days() * 24 * 60 * 60,
         path="/",
     )
 
@@ -432,7 +433,7 @@ async def verify_phone(request: VerifyPhoneRequest, response: Response):
         httponly=True,
         secure=settings.ENVIRONMENT != "local",
         samesite="lax",
-        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB * 24 * 60 * 60,
+        max_age=refresh_token_expire_days() * 24 * 60 * 60,
         path="/",
     )
 
@@ -560,13 +561,8 @@ async def login(request: LoginRequest, request_obj: Request, response: Response)
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
     )
-    # Determine max age for refresh cookie
-    if device_type == "mobile":
-        refresh_days = settings.REFRESH_TOKEN_EXPIRE_DAYS_MOBILE
-    elif request.remember_me:
-        refresh_days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
-    else:
-        refresh_days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB
+    # Determine max age for refresh cookie (portal: user)
+    refresh_days = refresh_token_expire_days(device_type, request.remember_me)
 
     response.set_cookie(
         key="refresh_token",
@@ -667,18 +663,16 @@ async def refresh_token(
         remember_me=session.remember_me,
     )
 
-    # Update session with new refresh token
+    # Update session with new refresh token (sliding expiration: renew on activity)
     session.refresh_token_hash = hash_token(new_refresh_token)
     session.last_activity_at = datetime.utcnow()
+    session.expires_at = calculate_session_expiration(
+        session.device_type, session.remember_me
+    )
     await session.save()
 
-    # Determine max age for refresh cookie based on device type and remember_me
-    if session.device_type == "mobile":
-        refresh_days = settings.REFRESH_TOKEN_EXPIRE_DAYS_MOBILE
-    elif session.remember_me:
-        refresh_days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB_REMEMBER
-    else:
-        refresh_days = settings.REFRESH_TOKEN_EXPIRE_DAYS_WEB
+    # Determine max age for refresh cookie (portal: user)
+    refresh_days = refresh_token_expire_days(session.device_type, session.remember_me)
 
     # Set cookies
     response.set_cookie(

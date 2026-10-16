@@ -26,6 +26,7 @@ from src.core.utils.security import (
     create_refresh_token,
     decode_token,
     hash_token,
+    refresh_token_expire_days,
 )
 from src.core.config import settings
 
@@ -35,6 +36,7 @@ router = APIRouter(prefix="/portal-redthread/auth", tags=["Admin Auth"])
 class AdminLoginRequest(BaseModel):
     email: EmailStr
     password: str
+    remember_me: bool = False
 
 
 class RefreshTokenRequest(BaseModel):
@@ -69,7 +71,9 @@ class EmployeeRegisterRequest(BaseModel):
     is_2fa_enabled: bool = False
 
 
-def _set_admin_cookies(response: Response, access_token: str, refresh_token: str):
+def _set_admin_cookies(
+    response: Response, access_token: str, refresh_token: str, refresh_days: int
+):
     secure = settings.ENVIRONMENT != "local"
     response.set_cookie(
         key="admin_access_token",
@@ -86,7 +90,7 @@ def _set_admin_cookies(response: Response, access_token: str, refresh_token: str
         httponly=True,
         secure=secure,
         samesite="strict",
-        max_age=7 * 24 * 60 * 60,
+        max_age=refresh_days * 24 * 60 * 60,
         path="/",
     )
 
@@ -179,7 +183,10 @@ async def login(request: AdminLoginRequest, response: Response, http_request: Re
         device_type="web",  # Admin portal is web-only for now
     )
     refresh_token = create_refresh_token(
-        {"sub": str(employee.id), "scope": "employee"}, device_type="web"
+        {"sub": str(employee.id), "scope": "employee"},
+        device_type="web",
+        remember_me=request.remember_me,
+        portal="admin",
     )
 
     await employee_service.update_last_login(str(employee.id))
@@ -195,16 +202,21 @@ async def login(request: AdminLoginRequest, response: Response, http_request: Re
         device_name=ua_info["browser"],
         device_os=ua_info["os"],
         ip_address=ip_address,
-        remember_me=False,
+        remember_me=request.remember_me,
         created_at=datetime.utcnow(),
         last_activity_at=datetime.utcnow(),
-        expires_at=calculate_session_expiration(ua_info["device_type"], False),
+        expires_at=calculate_session_expiration(
+            ua_info["device_type"], request.remember_me, portal="admin"
+        ),
         is_active=True,
     )
     await session.insert()
     await enforce_max_sessions(str(employee.id))
 
-    _set_admin_cookies(response, access_token, refresh_token)
+    refresh_days = refresh_token_expire_days(
+        "web", request.remember_me, portal="admin"
+    )
+    _set_admin_cookies(response, access_token, refresh_token, refresh_days)
 
     return AdminAuthResponse(employee=_employee_summary(employee))
 
@@ -243,22 +255,33 @@ async def refresh_token(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Employee not found"
         )
 
+    # Locate the session for rotation (also determines remember_me policy)
+    token_hash = hash_token(refresh_token_val)
+    session = await Session.find_one(
+        Session.refresh_token_hash == token_hash, Session.is_active == True
+    )
+
+    remember_me = session.remember_me if session else False
+
     # Generate new tokens
     access_token = create_access_token(
         {"sub": str(employee.id), "scope": "employee"}, device_type="web"
     )
     new_refresh_token = create_refresh_token(
-        {"sub": str(employee.id), "scope": "employee"}, device_type="web"
+        {"sub": str(employee.id), "scope": "employee"},
+        device_type="web",
+        remember_me=remember_me,
+        portal="admin",
     )
 
     # Update or create session record for this refresh
-    token_hash = hash_token(refresh_token_val)
-    session = await Session.find_one(
-        Session.refresh_token_hash == token_hash, Session.is_active == True
-    )
     if session:
         session.refresh_token_hash = hash_token(new_refresh_token)
         session.last_activity_at = datetime.utcnow()
+        # Sliding expiration: renew while the admin stays active
+        session.expires_at = calculate_session_expiration(
+            session.device_type, session.remember_me, portal="admin"
+        )
         await session.save()
     else:
         user_agent = request.headers.get("user-agent", "Unknown")
@@ -274,13 +297,16 @@ async def refresh_token(
             remember_me=False,
             created_at=datetime.utcnow(),
             last_activity_at=datetime.utcnow(),
-            expires_at=calculate_session_expiration(ua_info["device_type"], False),
+            expires_at=calculate_session_expiration(
+                ua_info["device_type"], False, portal="admin"
+            ),
             is_active=True,
         )
         await session.insert()
         await enforce_max_sessions(str(employee.id))
 
-    _set_admin_cookies(response, access_token, new_refresh_token)
+    refresh_days = refresh_token_expire_days("web", remember_me, portal="admin")
+    _set_admin_cookies(response, access_token, new_refresh_token, refresh_days)
 
     return AdminAuthResponse(employee=_employee_summary(employee))
 
