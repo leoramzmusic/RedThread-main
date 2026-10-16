@@ -1,275 +1,265 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
-    Box,
-    Container,
-    Typography,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Chip,
-    Button,
-    Slider,
-    IconButton,
-    Tooltip,
-    Stack,
-    Divider,
-    Grid,
-    Alert,
-} from '@mui/material';
-import AdminLayout from '../../../components/layout/AdminLayout';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import PeopleIcon from '@mui/icons-material/People';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import EditIcon from '@mui/icons-material/Edit';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import SaveIcon from '@mui/icons-material/Save';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import WarningIcon from '@mui/icons-material/Warning';
-import adminApiClient from '../../../services/adminApi';
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import TuneIcon from "@mui/icons-material/Tune";
+import WarningIcon from "@mui/icons-material/Warning";
+import AdminLayout from "../../../components/layout/AdminLayout";
+import CareCriteriaTable from "../../../components/care/CareCriteriaTable";
+import type { CareDimensionKey } from "../../../constants/careDimensions";
+import {
+  getActiveFormula,
+  normalizeFormulaBlocks,
+  type CareFormula,
+  type FormulaBlocks,
+} from "../../../services/careFormulaService";
+import {
+  encodeEquationDraft,
+  formatActiveVersion,
+  formatChaos,
+  isBalanced,
+  toggleLocked,
+  totalPercent,
+  withFraction,
+} from "../../../utils/careCriteriaModel";
 
-interface Factor {
-    id: string;
-    name: string;
-    description: string;
-    weight: number;
-    status: 'active' | 'inactive' | 'experimental';
-    type: 'compatibility' | 'care';
-    locked?: boolean;
-}
+const EQUATION_PATH = "/portal-redthread/care/equation";
 
 export default function CareCriteriaPage() {
-    const [loading, setLoading] = useState(false);
-    const [saving, setSaving] = useState(false);
-    const [factors, setFactors] = useState<Factor[]>([]);
-    const [totalWeight, setTotalWeight] = useState(0);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [normalizing, setNormalizing] = useState(false);
+  const [formula, setFormula] = useState<CareFormula | null>(null);
+  const [blocks, setBlocks] = useState<FormulaBlocks>({});
+  const [locked, setLocked] = useState<string[]>([]);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        setTotalWeight(factors.reduce((sum, f) => sum + f.weight, 0));
-    }, [factors]);
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const [careRes, compatRes] = await Promise.all([
-                adminApiClient.get('/portal-redthread/experiencia/algoritmos/care/factores'),
-                adminApiClient.get('/portal-redthread/experiencia/algoritmos/compatibilidad/criterios')
-            ]);
-
-            const careFactors = (careRes.data || []).map((f: any) => ({
-                id: f._id || f.id,
-                name: f.name,
-                description: f.description,
-                weight: f.weight,
-                status: f.status,
-                type: 'care' as const,
-                locked: false
-            }));
-
-            const compatFactors = (compatRes.data || []).map((f: any) => ({
-                id: f._id || f.id,
-                name: f.name,
-                description: f.description || '',
-                weight: f.weight,
-                status: f.status,
-                type: 'compatibility' as const,
-                locked: false
-            }));
-
-            setFactors([...compatFactors, ...careFactors]);
-        } catch (error) {
-            console.error("Error fetching engine data:", error);
-        } finally {
-            setLoading(false);
-        }
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const active = await getActiveFormula();
+        if (cancelled) return;
+        setFormula(active);
+        setBlocks({ ...active.blocks });
+      } catch {
+        if (!cancelled) setError("No se pudo cargar la fórmula activa.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
     };
+  }, []);
 
-    const handleSaveWeights = async () => {
-        setSaving(true);
-        try {
-            await new Promise(r => setTimeout(r, 1000));
-            fetchData();
-        } catch (error) {
-            console.error("Error saving factors:", error);
-        } finally {
-            setSaving(false);
-        }
-    };
+  const balanced = isBalanced(blocks);
 
-    const handleWeightChange = (id: string, newValue: number) => {
-        const factor = factors.find(f => f.id === id);
-        if (!factor || factor.locked) return;
-        setFactors(factors.map(f => f.id === id ? { ...f, weight: newValue } : f));
-    };
+  const handleSliderChange = (key: CareDimensionKey, percent: number) => {
+    if (locked.includes(key)) return;
+    setBlocks((prev) => withFraction(prev, key, percent));
+  };
 
-    const toggleLock = (id: string) => {
-        setFactors(factors.map(f => f.id === id ? { ...f, locked: !f.locked } : f));
-    };
+  const handleSliderCommit = async (key: CareDimensionKey, percent: number) => {
+    setError(null);
+    try {
+      const { blocks: normalized } = await normalizeFormulaBlocks(
+        withFraction(blocks, key, percent),
+        locked,
+      );
+      setBlocks(normalized);
+    } catch {
+      setError("No se pudieron normalizar los pesos.");
+    }
+  };
 
-    const isValid = totalWeight === 100;
+  const handleToggleLock = (key: CareDimensionKey) => {
+    setLocked((prev) => toggleLocked(prev, key));
+  };
 
-    return (
-        <AdminLayout>
-            <Container maxWidth="xl">
-                <Box sx={{ py: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Box sx={{
-                                bgcolor: 'primary.main',
-                                p: 1.5,
-                                borderRadius: 2,
-                                display: 'flex',
-                                mr: 2,
-                                boxShadow: '0 4px 12px rgba(255,77,79,0.3)'
-                            }}>
-                                <BarChartIcon sx={{ fontSize: 32, color: 'white' }} />
-                            </Box>
-                            <Box>
-                                <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.5px' }}>
-                                    Panel de Criterios
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                                    Configura los pesos de compatibilidad y autenticidad del motor CARE.
-                                </Typography>
-                            </Box>
-                        </Box>
-                        <Stack direction="row" spacing={2}>
-                            <Button
-                                variant="contained"
-                                startIcon={<SaveIcon />}
-                                onClick={handleSaveWeights}
-                                disabled={saving || !isValid}
-                            >
-                                {saving ? 'Guardando...' : 'Aplicar Cambios'}
-                            </Button>
-                        </Stack>
-                    </Box>
+  const handleNormalizar = async () => {
+    setNormalizing(true);
+    setError(null);
+    try {
+      const { blocks: normalized } = await normalizeFormulaBlocks(
+        blocks,
+        locked,
+      );
+      setBlocks(normalized);
+    } catch {
+      setError("No se pudieron normalizar los pesos (revisa los bloqueos).");
+    } finally {
+      setNormalizing(false);
+    }
+  };
 
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                            <Paper variant="outlined" sx={{
-                                p: 2,
-                                textAlign: 'center',
-                                borderColor: isValid ? 'success.light' : 'warning.light',
-                                borderStyle: 'dashed'
-                            }}>
-                                <Typography variant="overline" sx={{ color: "text.secondary" }}>Total Ponderado</Typography>
-                                <Typography variant="h4" color={isValid ? 'success.main' : 'warning.main'} sx={{ fontWeight: 800 }}>
-                                    {totalWeight}%
-                                </Typography>
-                                <Stack direction="row" spacing={1} sx={{ justifyContent: 'center', mt: 1 }}>
-                                    {isValid ? (
-                                        <Chip icon={<CheckCircleIcon />} label="Válido" size="small" color="success" variant="outlined" />
-                                    ) : (
-                                        <Chip icon={<WarningIcon />} label={totalWeight > 100 ? 'Excede 100%' : 'Incompleto'} size="small" color="warning" variant="outlined" />
-                                    )}
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
-                                <Typography variant="overline" sx={{ color: "text.secondary" }}>Bloques Activos</Typography>
-                                <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                                    {factors.filter(f => f.status === 'active').length}
-                                </Typography>
-                            </Paper>
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
-                                <Typography variant="overline" sx={{ color: "text.secondary" }}>Identidades Detectadas</Typography>
-                                <Typography variant="h4" sx={{ fontWeight: 800 }}>18</Typography>
-                            </Paper>
-                        </Grid>
-                    </Grid>
+  const handleProbar = (key: CareDimensionKey) => {
+    void router.push({
+      pathname: EQUATION_PATH,
+      query: encodeEquationDraft(blocks, key),
+    });
+  };
 
-                    {!isValid && (
-                        <Alert severity="warning" sx={{ mb: 3 }}>
-                            La suma de pesos debe ser exactamente 100%. Actualmente: {totalWeight}%
-                        </Alert>
-                    )}
+  return (
+    <AdminLayout>
+      <Container maxWidth="xl">
+        <Box sx={{ py: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 4,
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box
+                sx={{
+                  bgcolor: "primary.main",
+                  p: 1.5,
+                  borderRadius: "8px",
+                  display: "flex",
+                  mr: 2,
+                  boxShadow: "0 4px 12px rgba(255,77,79,0.3)",
+                }}
+              >
+                <BarChartIcon sx={{ fontSize: 32, color: "white" }} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, letterSpacing: "-0.5px" }}
+                >
+                  Panel de Criterios
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  Pesos canónicos de la matriz CARE M (7 dimensiones, suma
+                  100%).
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="outlined"
+              startIcon={<TuneIcon />}
+              onClick={handleNormalizar}
+              disabled={normalizing || loading}
+            >
+              {normalizing ? "Normalizando..." : "Normalizar"}
+            </Button>
+          </Box>
 
-                    <TableContainer component={Paper} variant="outlined">
-                        <Table>
-                            <TableHead>
-                                <TableRow sx={{ bgcolor: 'action.hover' }}>
-                                    <TableCell width="30%">Bloque Funcional</TableCell>
-                                    <TableCell width="15%">Origen</TableCell>
-                                    <TableCell width="35%">Ponderación (%)</TableCell>
-                                    <TableCell width="10%">Estado</TableCell>
-                                    <TableCell align="right" width="10%">Acciones</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {factors.map((f) => (
-                                    <TableRow key={f.id} hover sx={{ opacity: f.status === 'inactive' ? 0.6 : 1 }}>
-                                        <TableCell>
-                                            <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-                                                <Box sx={{ p: 1, bgcolor: f.type === 'care' ? 'rgba(255,77,79,0.1)' : 'rgba(25,118,210,0.1)', borderRadius: 1.5 }}>
-                                                    {f.type === 'care' ? <PsychologyIcon fontSize="small" color="primary" /> : <PeopleIcon fontSize="small" sx={{ color: 'info.main' }} />}
-                                                </Box>
-                                                <Box>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                                                        {f.name} {f.locked && <LockIcon sx={{ fontSize: 12, ml: 0.5, verticalAlign: 'middle', color: 'primary.main' }} />}
-                                                    </Typography>
-                                                    <Typography variant="caption" sx={{ color: "text.secondary", display: 'block', maxWidth: 250 }}>
-                                                        {f.description}
-                                                    </Typography>
-                                                </Box>
-                                            </Stack>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={f.type === 'care' ? 'CARE Engine' : 'Match Logic'}
-                                                size="small"
-                                                variant="outlined"
-                                                sx={{ fontSize: '0.65rem', fontWeight: 700 }}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                                <Slider
-                                                    value={f.weight}
-                                                    onChange={(_, v) => handleWeightChange(f.id, v as number)}
-                                                    size="small"
-                                                    disabled={f.locked}
-                                                    sx={{ flexGrow: 1 }}
-                                                />
-                                                <Typography variant="body2" sx={{ minWidth: 40, fontWeight: 800 }}>
-                                                    {f.weight}%
-                                                </Typography>
-                                                <Tooltip title={f.locked ? "Desbloquear" : "Bloquear"}>
-                                                    <IconButton size="small" onClick={() => toggleLock(f.id)} color={f.locked ? "primary" : "default"}>
-                                                        {f.locked ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={f.status.toUpperCase()}
-                                                size="small"
-                                                color={f.status === 'active' ? 'success' : f.status === 'experimental' ? 'warning' : 'default'}
-                                                sx={{ fontWeight: 800, fontSize: '0.6rem' }}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <IconButton size="small"><EditIcon fontSize="small" /></IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
-            </Container>
-        </AdminLayout>
-    );
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }} data-testid="criteria-error">
+              {error}
+            </Alert>
+          )}
+
+          {loading ? (
+            <Box
+              sx={{ display: "flex", justifyContent: "center", py: 8 }}
+              data-testid="criteria-loading"
+            >
+              <CircularProgress />
+            </Box>
+          ) : formula ? (
+            <>
+              <Grid container spacing={3} sx={{ mb: 4 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      textAlign: "center",
+                      borderColor: balanced ? "success.light" : "error.light",
+                      borderStyle: "dashed",
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Total Ponderado
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      data-testid="kpi-total"
+                      color={balanced ? "success.main" : "error.main"}
+                      sx={{ fontWeight: 800 }}
+                    >
+                      {totalPercent(blocks)}%
+                    </Typography>
+                    <Chip
+                      data-testid="kpi-total-badge"
+                      icon={balanced ? <CheckCircleIcon /> : <WarningIcon />}
+                      label={balanced ? "Válido" : "Inválido"}
+                      size="small"
+                      color={balanced ? "success" : "error"}
+                      variant="outlined"
+                      sx={{ mt: 1 }}
+                    />
+                  </Paper>
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
+                    <Typography
+                      variant="overline"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Versión Activa
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      data-testid="kpi-version"
+                      sx={{ fontWeight: 800, mt: 1 }}
+                    >
+                      {formatActiveVersion(formula)}
+                    </Typography>
+                  </Paper>
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
+                    <Typography
+                      variant="overline"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Caos Actual
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      data-testid="kpi-chaos"
+                      sx={{ fontWeight: 800, mt: 1 }}
+                    >
+                      {formatChaos(formula.chaos_factor, formula.chaos_seed)}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              <CareCriteriaTable
+                blocks={blocks}
+                locked={locked}
+                onSliderChange={handleSliderChange}
+                onSliderCommit={handleSliderCommit}
+                onToggleLock={handleToggleLock}
+                onProbar={handleProbar}
+              />
+            </>
+          ) : null}
+        </Box>
+      </Container>
+    </AdminLayout>
+  );
 }
