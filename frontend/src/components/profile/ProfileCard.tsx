@@ -68,18 +68,13 @@ export interface Profile {
   neurodiversity?: string[];
 
   affinity_breakdown?: {
-    interests?: number;
     values?: number;
-    intent?: number;
-    lifestyle?: number;
-    proximity?: number;
-    common_interests?: string[];
-    common_lifestyle?: string[];
-    common_intentions?: string[];
-    unique_interests?: string[];
-    unique_lifestyle?: string[];
+    relationship_goals?: number;
+    neurodiversity?: number;
+    responsiveness?: number;
     music?: number;
-    personality?: number;
+    love_language?: number;
+    communication_style?: number;
   };
 
   // CARE Engine signals
@@ -202,7 +197,7 @@ export default function ProfileCard({
   // Smart Photos tracking
   const { handlePhotoClick, handleMatch } = useSmartPhotosTracking(
     profile.user_id,
-    mediaItems
+    mediaItems,
   );
 
   // Taps Logic (State for counting taps)
@@ -621,8 +616,9 @@ export default function ProfileCard({
                 })(),
 
                 fontSize: "0.7rem",
-                lineHeight: 1
-              }}>
+                lineHeight: 1,
+              }}
+            >
               {isOwnProfile ? "100" : Math.round(profile.affinity_score || 0)}%
             </Typography>
           </Box>
@@ -697,8 +693,9 @@ export default function ProfileCard({
             variant="h4"
             sx={{
               fontWeight: 900,
-              color: "#69F0AE"
-            }}>
+              color: "#69F0AE",
+            }}
+          >
             LIKE
           </Typography>
         </Box>
@@ -719,8 +716,9 @@ export default function ProfileCard({
             variant="h4"
             sx={{
               fontWeight: 900,
-              color: "#FF5252"
-            }}>
+              color: "#FF5252",
+            }}
+          >
             NOPE
           </Typography>
         </Box>
@@ -753,8 +751,9 @@ export default function ProfileCard({
             variant="h5"
             sx={{
               fontWeight: 900,
-              color: "#2196F3"
-            }}>
+              color: "#2196F3",
+            }}
+          >
             SUPERLIKE
           </Typography>
         </Box>

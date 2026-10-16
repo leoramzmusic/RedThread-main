@@ -11,9 +11,9 @@ import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import ExploreIcon from "@mui/icons-material/Explore";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import HeightIcon from "@mui/icons-material/Height";
 import { Profile } from "./ProfileCard";
 import { useTranslation } from "next-i18next/pages";
+import CareBreakdownBars from "./CareBreakdownBars";
 
 interface ProfileOverlayProps {
   profile: Profile;
@@ -65,9 +65,13 @@ export default function ProfileOverlay({
               position: "relative",
             }}
           >
-            <Typography variant="h3" color="primary" sx={{
-              fontWeight: 800
-            }}>
+            <Typography
+              variant="h3"
+              color="primary"
+              sx={{
+                fontWeight: 800,
+              }}
+            >
               {Math.round(profile.affinity_score || 0)}%
             </Typography>
             {/* Lock Icon Badge */}
@@ -86,9 +90,13 @@ export default function ProfileOverlay({
             </Box>
           </Box>
 
-          <Typography variant="h5" gutterBottom sx={{
-            fontWeight: 700
-          }}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             {profile.display_name}, {profile.age}
           </Typography>
 
@@ -97,8 +105,9 @@ export default function ProfileOverlay({
             gutterBottom
             sx={{
               color: "text.secondary",
-              mb: 2
-            }}>
+              mb: 2,
+            }}
+          >
             {t(
               "card.potentialConnection",
               "Conexión Potencial • Fotos Ocultas",
@@ -158,126 +167,6 @@ export default function ProfileOverlay({
       );
     }
 
-    // Slide 1: Compatibility Breakdown (The "why" behind the score)
-    if (activePhotoIndex === 1) {
-      const breakdown = profile.affinity_breakdown || {
-        music: 85,
-        lifestyle: 70,
-        personality: 90,
-      }; // Fallback mock
-      return (
-        <Box
-          sx={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            px: 2,
-            pb: 6,
-          }}
-        >
-          <Typography
-            variant="overline"
-            color="primary"
-            align="center"
-            gutterBottom
-            sx={{
-              fontWeight: 700
-            }}
-          >
-            {t("card.analysisTitle", "ANÁLISIS DE SINTONÍA")}
-          </Typography>
-
-          <Stack spacing={3} sx={{ mt: 2 }}>
-            {[
-              {
-                label: t("card.breakdownIntent", "Sintonía de intenciones"),
-                val: breakdown.intent,
-                icon: <FavoriteIcon sx={{ color: "#F06292" }} />,
-              },
-              {
-                label: t("card.breakdownMusic", "Sintonía musical"),
-                val: breakdown.interests,
-                icon: <MusicNoteIcon color="secondary" />,
-              },
-              {
-                label: t("card.breakdownValues", "Valores y visión"),
-                val: breakdown.values,
-                icon: <PsychologyIcon sx={{ color: "#FFD700" }} />,
-              },
-              {
-                label: t("card.breakdownLifestyle", "Estilo de vida"),
-                val: breakdown.lifestyle,
-                icon: <ExploreIcon sx={{ color: "#4CAF50" }} />,
-              },
-              {
-                label: t("card.scenario", "Escenario"),
-                val: profile.scenario_label || "Global",
-                icon: <LocationOnIcon sx={{ color: "#64B5F6" }} />,
-              },
-            ].map((item, i) => (
-              <Box key={i}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 0.5
-                  }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 1
-                    }}>
-                    {item.icon}
-                    <Typography variant="body2" sx={{
-                      fontWeight: 600
-                    }}>
-                      {item.label}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" sx={{
-                    fontWeight: 700
-                  }}>
-                    {typeof item.val === "number"
-                      ? `${Math.round(item.val)}%`
-                      : item.val || "N/A"}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: 6,
-                    bgcolor: "rgba(255,255,255,0.1)",
-                    borderRadius: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width:
-                        typeof item.val === "number"
-                          ? `${Math.round(item.val)}%`
-                          : item.val
-                            ? "100%"
-                            : "0%",
-                      height: "100%",
-                      bgcolor:
-                        typeof item.val === "number"
-                          ? "primary.main"
-                          : item.val
-                            ? "primary.dark"
-                            : "rgba(255,255,255,0.2)",
-                      borderRadius: 1,
-                      transition: "width 1s ease-out",
-                    }}
-                  />
-                </Box>
-              </Box>
-            ))}
-          </Stack>
-        </Box>
-      );
-    }
-
     // Slide 2: Personality / Questionnaire (Deep Dive)
     if (activePhotoIndex === 2) {
       const prompt = profile.prompts && profile.prompts[0];
@@ -298,7 +187,7 @@ export default function ProfileOverlay({
             align="center"
             gutterBottom
             sx={{
-              fontWeight: 700
+              fontWeight: 700,
             }}
           >
             {t("card.personalityTitle", "PERSONALIDAD")}
@@ -319,21 +208,27 @@ export default function ProfileOverlay({
                 sx={{
                   fontWeight: 700,
                   color: "#E1BEE7",
-                  mb: 2
-                }}>
+                  mb: 2,
+                }}
+              >
                 {prompt.question}
               </Typography>
-              <Typography variant="h5" sx={{
-                fontStyle: "italic"
-              }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontStyle: "italic",
+                }}
+              >
                 "{prompt.answer}"
               </Typography>
             </Box>
           ) : (
             <Box sx={{ textAlign: "center", opacity: 0.7 }}>
-              <Typography sx={{
-                fontStyle: "italic"
-              }}>
+              <Typography
+                sx={{
+                  fontStyle: "italic",
+                }}
+              >
                 {t(
                   "card.noPrompt",
                   "Prefiero conversaciones profundas que charlas superficiales...",
@@ -585,43 +480,40 @@ export default function ProfileOverlay({
     );
   }
 
-  // 1: Casual (Interests)
+  // 1: Compatibility Breakdown (the "why" behind the score)
   if (activePhotoIndex === 1) {
     return (
-      <Box>
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          px: 2,
+          pb: 6,
+        }}
+      >
         <Typography
           variant="overline"
-          sx={{
-            fontWeight: 800,
-            color: "#FFD700",
-            letterSpacing: 1.5,
-            mb: 1,
-            display: "block"
-          }}>
-          {t("card.vibesTitle", "VIBRA CON TUS INTERESES")}
+          color="primary"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 700 }}
+        >
+          {t("card.analysisTitle", "ANÁLISIS DE SINTONÍA")}
         </Typography>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-          {profile.interests.slice(0, 6).map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              sx={{
-                bgcolor: "rgba(0,0,0,0.6)",
-                color: "white",
-                backdropFilter: "blur(4px)",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
-            />
-          ))}
-          {profile.lifestyle_interests?.slice(0, 3).map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              variant="outlined"
-              sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)" }}
-            />
-          ))}
+
+        <Box sx={{ mt: 2 }}>
+          <CareBreakdownBars breakdown={profile.affinity_breakdown} />
         </Box>
+
+        {profile.scenario_label && (
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Typography variant="caption" sx={{ opacity: 0.7 }}>
+              {t("card.scenario", "Escenario")}: {profile.scenario_label}
+            </Typography>
+          </Box>
+        )}
       </Box>
     );
   }
@@ -637,17 +529,21 @@ export default function ProfileOverlay({
             color: "#64B5F6",
             letterSpacing: 1.5,
             mb: 1,
-            display: "block"
-          }}>
+            display: "block",
+          }}
+        >
           {t("card.professionalTitle", "ÁMBITO PROFESIONAL Y ACADÉMICO")}
         </Typography>
         <Stack spacing={1.5}>
           {(profile.occupation || profile.work_company) && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <WorkIcon sx={{ color: "#64B5F6" }} />
-              <Typography variant="body1" sx={{
-                fontWeight: 500
-              }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                }}
+              >
                 {profile.occupation}{" "}
                 {profile.work_company
                   ? t("card.atCompany", {
@@ -691,8 +587,9 @@ export default function ProfileOverlay({
             color: "#F06292",
             letterSpacing: 1.5,
             mb: 1,
-            display: "block"
-          }}>
+            display: "block",
+          }}
+        >
           {t("card.emotionalTitle", "MI LADO EMOCIONAL")}
         </Typography>
 
@@ -714,9 +611,12 @@ export default function ProfileOverlay({
               <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>
                 {t("card.myHimno", "Mi Himno")}
               </Typography>
-              <Typography variant="body1" sx={{
-                fontWeight: 700
-              }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {profile.mi_himno.featured_songs[0].title}
               </Typography>
               <Typography variant="caption">
@@ -767,8 +667,9 @@ export default function ProfileOverlay({
             color: "#BA68C8",
             letterSpacing: 1.5,
             mb: 1,
-            display: "block"
-          }}>
+            display: "block",
+          }}
+        >
           {t("card.uniqueMindTitle", "MI MENTE ÚNICA")}
         </Typography>
 
@@ -778,9 +679,11 @@ export default function ProfileOverlay({
               sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}
             >
               <PsychologyIcon sx={{ color: "#BA68C8" }} />
-              <Typography sx={{
-                fontWeight: 600
-              }}>
+              <Typography
+                sx={{
+                  fontWeight: 600,
+                }}
+              >
                 {t("card.neurodiversity", "Neurodiversidad")}
               </Typography>
             </Box>
@@ -814,8 +717,9 @@ export default function ProfileOverlay({
               variant="body1"
               sx={{
                 fontStyle: "italic",
-                mt: 0.5
-              }}>
+                mt: 0.5,
+              }}
+            >
               "{profile.prompts[0].answer}"
             </Typography>
           </Box>
@@ -850,16 +754,18 @@ export default function ProfileOverlay({
             sx={{
               fontWeight: 700,
               color: "#FFAB91",
-              mb: 2
-            }}>
+              mb: 2,
+            }}
+          >
             {prompt.question}
           </Typography>
           <Typography
             variant="h4"
             sx={{
               fontWeight: 300,
-              fontStyle: "italic"
-            }}>
+              fontStyle: "italic",
+            }}
+          >
             "{prompt.answer}"
           </Typography>
         </Box>
@@ -870,9 +776,12 @@ export default function ProfileOverlay({
   // Fallback if index > defined sections
   return (
     <Box>
-      <Typography variant="h5" sx={{
-        fontWeight: 700
-      }}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 700,
+        }}
+      >
         {profile.display_name}
       </Typography>
       <Typography variant="body2" sx={{ opacity: 0.7 }}>
