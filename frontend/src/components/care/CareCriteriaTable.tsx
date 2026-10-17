@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   IconButton,
   Paper,
   Slider,
@@ -29,6 +28,8 @@ export interface CareCriteriaTableProps {
   blocks: FormulaBlocks;
   /** Keys currently locked (excluded from normalization). */
   locked: string[];
+  /** Row to highlight (driven by the diagram hover / handoff focus). */
+  focus?: CareDimensionKey | null;
   /** Slider floor in percent (default 0). */
   minPercent?: number;
   /** Slider ceiling in percent (default 40, per spec). */
@@ -37,6 +38,7 @@ export interface CareCriteriaTableProps {
   onSliderCommit: (key: CareDimensionKey, percent: number) => void;
   onToggleLock: (key: CareDimensionKey) => void;
   onProbar: (key: CareDimensionKey) => void;
+  onBlockHover?: (key: CareDimensionKey | null) => void;
 }
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -49,12 +51,14 @@ const clamp = (value: number, min: number, max: number): number =>
 export default function CareCriteriaTable({
   blocks,
   locked,
+  focus = null,
   minPercent = 0,
   maxPercent = 40,
   onSliderChange,
   onSliderCommit,
   onToggleLock,
   onProbar,
+  onBlockHover,
 }: CareCriteriaTableProps) {
   return (
     <TableContainer component={Paper} variant="outlined">
@@ -77,7 +81,11 @@ export default function CareCriteriaTable({
               <TableRow
                 key={dim.key}
                 hover
+                selected={focus === dim.key}
                 data-testid={`criteria-row-${dim.key}`}
+                data-focus={focus === dim.key ? "true" : "false"}
+                onMouseEnter={() => onBlockHover?.(dim.key)}
+                onMouseLeave={() => onBlockHover?.(null)}
               >
                 <TableCell>
                   <Stack
@@ -151,14 +159,15 @@ export default function CareCriteriaTable({
                   </Tooltip>
                 </TableCell>
                 <TableCell align="right">
-                  <Button
-                    data-testid={`care-probar-${dim.key}`}
-                    size="small"
-                    startIcon={<PlayArrowIcon />}
-                    onClick={() => onProbar(dim.key)}
-                  >
-                    Probar
-                  </Button>
+                  <Tooltip title="Probar (enfocar dimensión)">
+                    <IconButton
+                      data-testid={`care-probar-${dim.key}`}
+                      size="small"
+                      onClick={() => onProbar(dim.key)}
+                    >
+                      <PlayArrowIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             );

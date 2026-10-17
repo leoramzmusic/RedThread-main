@@ -66,4 +66,26 @@ describe("CareCriteriaTable", () => {
     expect(sliderInput("values").disabled).toBe(true);
     expect(sliderInput("music").disabled).toBe(false);
   });
+
+  it("emits onBlockHover on row enter/leave", () => {
+    const onBlockHover = jest.fn();
+    setup({ onBlockHover });
+    const row = screen.getByTestId("criteria-row-values");
+    fireEvent.mouseEnter(row);
+    expect(onBlockHover).toHaveBeenCalledWith("values");
+    fireEvent.mouseLeave(row);
+    expect(onBlockHover).toHaveBeenCalledWith(null);
+  });
+
+  it("marks the focused row when the diagram focuses a dimension", () => {
+    setup({ focus: "music" });
+    expect(screen.getByTestId("criteria-row-music")).toHaveAttribute(
+      "data-focus",
+      "true",
+    );
+    expect(screen.getByTestId("criteria-row-values")).toHaveAttribute(
+      "data-focus",
+      "false",
+    );
+  });
 });

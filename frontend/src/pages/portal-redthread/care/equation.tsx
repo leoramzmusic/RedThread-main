@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
   Alert,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   Dialog,
@@ -14,38 +15,59 @@ import {
   Stack,
   TextField,
   Typography,
+  Paper,
+  Collapse,
+  IconButton,
+  Divider,
 } from "@mui/material";
 import FunctionsIcon from "@mui/icons-material/Functions";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SaveIcon from "@mui/icons-material/Save";
-import ScienceIcon from "@mui/icons-material/Science";
+import TuneIcon from "@mui/icons-material/Tune";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import WarningIcon from "@mui/icons-material/Warning";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CodeIcon from "@mui/icons-material/Code";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutlined";
 import AdminLayout from "../../../components/layout/AdminLayout";
+import { useAppTheme } from "../../../context/ThemeContext";
 import CareEquationHeader from "../../../components/care/CareEquationHeader";
 import CareFormulaCanvas from "../../../components/care/CareFormulaCanvas";
-import CareEquationBlocks from "../../../components/care/CareEquationBlocks";
+import CareCriteriaTable from "../../../components/care/CareCriteriaTable";
 import CareChaosPanel from "../../../components/care/CareChaosPanel";
 import CareThresholdsPanel from "../../../components/care/CareThresholdsPanel";
 import CareFormulaJsonEditor from "../../../components/care/CareFormulaJsonEditor";
 import CareSimulationTable from "../../../components/care/CareSimulationTable";
 import CarePreviewPanel from "../../../components/care/CarePreviewPanel";
 import CareVersionsPanel from "../../../components/care/CareVersionsPanel";
+import type { SearchUser } from "../../../components/common/UserSearchAutocomplete";
 import type { CareDimensionKey } from "../../../constants/careDimensions";
 import {
   getActiveFormula,
   listFormulaVersions,
+  normalizeFormulaBlocks,
   previewFormula,
   rollbackFormula,
   saveFormula,
   simulateFormula,
   validateFormula,
   type CareFormula,
+  type FormulaPayload,
   type NarrativeResult,
   type PreviewResult,
   type SimulateResult,
 } from "../../../services/careFormulaService";
 import {
+  computeDeltas,
   decodeEquationDraft,
+  formatActiveVersion,
+  formatChaos,
+  isBalanced,
   saveErrorMessage,
+  toggleLocked,
+  totalPercent,
+  withFraction,
 } from "../../../utils/careCriteriaModel";
 import {
   clientValidation,
@@ -61,6 +83,16 @@ import {
 
 const SEED_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
+const GLOW_MS = 700;
+
+/** Compact legend for the Ψ/M notation, shown next to the weights panel. */
+const GLOSSARY_ENTRIES: { symbol: string; description: string }[] = [
+  { symbol: "wᵢ", description: "Peso asignado a cada dimensión." },
+  { symbol: "fᵢ", description: "Factor o valor de la dimensión." },
+  { symbol: "Σ", description: "Suma de todos los términos." },
+  { symbol: "χ(t)", description: "Factor de caos dinámico." },
+];
+
 const randomSeed = (): string => {
   let out = "";
   for (let i = 0; i < 12; i += 1) {
@@ -72,21 +104,28 @@ const randomSeed = (): string => {
 export default function CareEquationPage() {
   const router = useRouter();
   const ready = router.isReady;
+  const { mode } = useAppTheme();
+  const isDark = mode === "dark";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<EquationDraft | null>(null);
+  const [activeFormula, setActiveFormula] = useState<CareFormula | null>(null);
   const [focus, setFocus] = useState<CareDimensionKey | null>(null);
+  const [glowKey, setGlowKey] = useState<CareDimensionKey | null>(null);
+  const [pulseToken, setPulseToken] = useState(0);
+  const glowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [locked, setLocked] = useState<string[]>([]);
+  const [normalizing, setNormalizing] = useState(false);
   const [jsonText, setJsonText] = useState("");
   const [jsonValid, setJsonValid] = useState(true);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [jsonOpen, setJsonOpen] = useState(false);
   const [validating, setValidating] = useState(false);
   const [validateErrors, setValidateErrors] = useState<string[]>([]);
   const [validateAlerts, setValidateAlerts] = useState<string[]>([]);
-  const [simulating, setSimulating] = useState(false);
   const [simResult, setSimResult] = useState<SimulateResult | null>(null);
-  const [simError, setSimError] = useState<string | null>(null);
-  const [previewUserA, setPreviewUserA] = useState("");
-  const [previewUserB, setPreviewUserB] = useState("");
+  const [previewUserA, setPreviewUserA] = useState<SearchUser | null>(null);
+  const [previewUserB, setPreviewUserB] = useState<SearchUser | null>(null);
   const [previewTone, setPreviewTone] =
     useState<NarrativeResult["tone"]>("directo");
   const [previewResult, setPreviewResult] = useState<PreviewResult | null>(
@@ -101,6 +140,7 @@ export default function CareEquationPage() {
   const [changelog, setChangelog] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -116,6 +156,7 @@ export default function CareEquationPage() {
         const next: EquationDraft = decoded
           ? { ...base, blocks: decoded.blocks }
           : base;
+        setActiveFormula(active);
         setDraft(next);
         setFocus(decoded?.focus ?? null);
         setJsonText(serializeDraft(next));
@@ -149,15 +190,62 @@ export default function CareEquationPage() {
     setJsonError(null);
   };
 
+  /** Flashes the touched dimension in the diagram node and the formula term. */
+  const flashGlow = (key: CareDimensionKey) => {
+    setGlowKey(key);
+    if (glowTimer.current) clearTimeout(glowTimer.current);
+    glowTimer.current = setTimeout(() => setGlowKey(null), GLOW_MS);
+  };
+
+  useEffect(
+    () => () => {
+      if (glowTimer.current) clearTimeout(glowTimer.current);
+    },
+    [],
+  );
+
   const handleBlockChange = (key: CareDimensionKey, percent: number) => {
-    if (!draft) return;
+    if (!draft || locked.includes(key)) return;
     applyDraft({
       ...draft,
-      blocks: {
-        ...draft.blocks,
-        [key]: Math.max(0, Math.min(1, percent / 100)),
-      },
+      blocks: withFraction(draft.blocks, key, percent),
     });
+    flashGlow(key);
+  };
+
+  const handleBlockCommit = async (key: CareDimensionKey, percent: number) => {
+    if (!draft) return;
+    setError(null);
+    try {
+      const { blocks: normalized } = await normalizeFormulaBlocks(
+        withFraction(draft.blocks, key, percent),
+        locked,
+      );
+      applyDraft({ ...draft, blocks: normalized });
+    } catch {
+      setError("No se pudieron normalizar los pesos.");
+    }
+  };
+
+  const handleToggleLock = (key: CareDimensionKey) => {
+    setLocked((prev) => toggleLocked(prev, key));
+  };
+
+  const handleNormalizar = async () => {
+    if (!draft) return;
+    setNormalizing(true);
+    setError(null);
+    try {
+      const { blocks: normalized } = await normalizeFormulaBlocks(
+        draft.blocks,
+        locked,
+      );
+      applyDraft({ ...draft, blocks: normalized });
+    } catch {
+      setError("No se pudieron normalizar los pesos (revisa los bloqueos).");
+    } finally {
+      setNormalizing(false);
+    }
   };
 
   const handleChaosChange = (factor: number) => {
@@ -195,8 +283,9 @@ export default function CareEquationPage() {
     }
   };
 
-  const handleValidate = async () => {
+  const handleProbar = async () => {
     if (!draft) return;
+    setPulseToken((token) => token + 1);
     setValidating(true);
     setValidateErrors([]);
     setValidateAlerts(detectDegenerate(draft.blocks));
@@ -211,6 +300,7 @@ export default function CareEquationPage() {
       setValidateErrors(result.errors);
       if (result.valid) {
         const sim = await simulateFormula({ formula: draftToPayload(draft) });
+        setSimResult(sim);
         setValidateAlerts((prev) => [...prev, ...smokeAlerts(sim.ranking)]);
       }
     } catch {
@@ -220,29 +310,21 @@ export default function CareEquationPage() {
     }
   };
 
-  const handleSimulate = async () => {
-    if (!draft) return;
-    setSimulating(true);
-    setSimError(null);
-    try {
-      const result = await simulateFormula({ formula: draftToPayload(draft) });
-      setSimResult(result);
-    } catch {
-      setSimError("No se pudo simular la fórmula.");
-    } finally {
-      setSimulating(false);
-    }
-  };
-
   const handlePreview = async () => {
-    if (!draft) return;
+    if (
+      !draft ||
+      !previewUserA ||
+      !previewUserB ||
+      previewUserA.id === previewUserB.id
+    )
+      return;
     setPreviewLoading(true);
     setPreviewError(null);
     try {
       const result = await previewFormula({
         formula: draftToPayload(draft),
-        user_a_id: previewUserA,
-        user_b_id: previewUserB,
+        user_a_id: previewUserA.id,
+        user_b_id: previewUserB.id,
         tone: previewTone,
       });
       setPreviewResult(result);
@@ -261,6 +343,17 @@ export default function CareEquationPage() {
     }
   };
 
+  const handleOpenModal = () => {
+    setSaveError(null);
+    setSaveSuccess(null);
+    setSaveOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    if (saving) return;
+    setSaveOpen(false);
+  };
+
   const handleSave = async () => {
     if (!draft) return;
     if (changelog.trim() === "") {
@@ -270,13 +363,22 @@ export default function CareEquationPage() {
     setSaving(true);
     setSaveError(null);
     try {
-      const saved = await saveFormula(
-        draftToPayload(draft, {
-          version: activeVersion ?? undefined,
-          changelog: changelog.trim(),
-        }),
-        "equation",
+      const { blocks: exact } = await normalizeFormulaBlocks(
+        draft.blocks,
+        locked,
       );
+      const payload: FormulaPayload = {
+        version: activeVersion ?? undefined,
+        blocks: exact,
+        chaos_factor: draft.chaosFactor,
+        chaos_seed: draft.chaosSeed,
+        min_compatibility: draft.minCompatibility,
+        match_critical: draft.matchCritical,
+        changelog: changelog.trim(),
+      };
+      const saved = await saveFormula(payload, "equation");
+      setActiveFormula(saved);
+      applyDraft(toEquationDraft(saved));
       setVersions((prev) => [
         saved,
         ...prev.filter((v) => v.version !== saved.version),
@@ -284,6 +386,7 @@ export default function CareEquationPage() {
       setActiveVersion(saved.version);
       setSaveOpen(false);
       setChangelog("");
+      setSaveSuccess(`Versión v${saved.version} guardada.`);
     } catch (err) {
       setSaveError(saveErrorMessage(err));
     } finally {
@@ -294,6 +397,7 @@ export default function CareEquationPage() {
   const handleRollback = async (version: number) => {
     try {
       const rolled = await rollbackFormula(version);
+      setActiveFormula(rolled);
       applyDraft(toEquationDraft(rolled));
       setActiveVersion(rolled.version);
       await reloadVersions();
@@ -301,6 +405,8 @@ export default function CareEquationPage() {
       setError("No se pudo restaurar la versión.");
     }
   };
+
+  const balanced = draft ? isBalanced(draft.blocks) : false;
 
   return (
     <AdminLayout>
@@ -310,7 +416,7 @@ export default function CareEquationPage() {
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "flex-start",
               mb: 4,
             }}
           >
@@ -319,10 +425,12 @@ export default function CareEquationPage() {
                 sx={{
                   bgcolor: "primary.main",
                   p: 1.5,
-                  borderRadius: "8px",
+                  borderRadius: 2,
                   display: "flex",
                   mr: 2,
-                  boxShadow: "0 4px 12px rgba(255,77,79,0.3)",
+                  boxShadow: "0 4px 12px rgba(230,57,70,0.35)",
+                  transition: "transform 0.2s ease",
+                  "&:hover": { transform: "scale(1.05)" },
                 }}
               >
                 <FunctionsIcon sx={{ fontSize: 32, color: "white" }} />
@@ -335,46 +443,22 @@ export default function CareEquationPage() {
                   Editor de Fórmula Ψ/M
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  CARE_score = Σ wᵢ·fᵢ + χ(t) — validar, simular y guardar en
-                  versión nueva.
+                  Ajusta los pesos, prueba la fórmula y guarda una versión
+                  nueva.
                 </Typography>
               </Box>
             </Box>
-            <Stack direction="row" spacing={2}>
-              <Button
-                data-testid="action-validate"
-                variant="outlined"
-                startIcon={<ScienceIcon />}
-                onClick={handleValidate}
-                disabled={validating || loading}
-              >
-                {validating ? "Validando..." : "Validar"}
-              </Button>
-              <Button
-                data-testid="action-simulate"
-                variant="contained"
-                startIcon={<PlayArrowIcon />}
-                onClick={handleSimulate}
-                disabled={simulating || loading}
-              >
-                {simulating ? "Simulando..." : "Simular"}
-              </Button>
-              <Button
-                data-testid="open-save-modal"
-                variant="contained"
-                color="secondary"
-                startIcon={<SaveIcon />}
-                onClick={() => setSaveOpen(true)}
-                disabled={loading}
-              >
-                Guardar
-              </Button>
-            </Stack>
           </Box>
 
           {error && (
             <Alert severity="error" sx={{ mb: 3 }} data-testid="equation-error">
               {error}
+            </Alert>
+          )}
+
+          {saveSuccess && (
+            <Alert severity="success" sx={{ mb: 3 }} data-testid="save-success">
+              {saveSuccess}
             </Alert>
           )}
 
@@ -406,12 +490,6 @@ export default function CareEquationPage() {
             </Alert>
           )}
 
-          {simError && (
-            <Alert severity="error" sx={{ mb: 2 }} data-testid="simulate-error">
-              {simError}
-            </Alert>
-          )}
-
           {loading ? (
             <Box
               sx={{ display: "flex", justifyContent: "center", py: 8 }}
@@ -419,62 +497,472 @@ export default function CareEquationPage() {
             >
               <CircularProgress />
             </Box>
-          ) : draft ? (
+          ) : draft && activeFormula ? (
             <>
-              <CareEquationHeader blocks={draft.blocks} focus={focus} />
-              <Grid container spacing={3} sx={{ mb: 3 }}>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <Stack spacing={3}>
-                    <CareEquationBlocks
-                      blocks={draft.blocks}
-                      focus={focus}
-                      onSliderChange={handleBlockChange}
+              {/* KPIs de la versión activa */}
+              <Grid container spacing={3} sx={{ mb: 3, alignItems: "stretch" }}>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      textAlign: "center",
+                      height: "100%",
+                      minHeight: 120,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderColor: balanced ? "success.light" : "error.light",
+                      borderStyle: "dashed",
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Total Ponderado
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      data-testid="kpi-total"
+                      color={balanced ? "success.main" : "error.main"}
+                      sx={{ fontWeight: 800 }}
+                    >
+                      {totalPercent(draft.blocks)}%
+                    </Typography>
+                    <Chip
+                      data-testid="kpi-total-badge"
+                      icon={balanced ? <CheckCircleIcon /> : <WarningIcon />}
+                      label={balanced ? "Válido" : "Inválido"}
+                      size="small"
+                      color={balanced ? "success" : "error"}
+                      variant="outlined"
+                      sx={{ mt: 1 }}
                     />
-                    <CareFormulaCanvas blocks={draft.blocks} focus={focus} />
-                    <CareChaosPanel
-                      chaosFactor={draft.chaosFactor}
-                      chaosSeed={draft.chaosSeed}
-                      deltaIndicator={simResult ? simResult.mean_delta : null}
-                      onChaosChange={handleChaosChange}
-                      onSeedChange={handleSeedChange}
-                      onGenerateSeed={handleGenerateSeed}
-                    />
-                  </Stack>
+                  </Paper>
                 </Grid>
-                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                  <CareThresholdsPanel
-                    minCompatibility={draft.minCompatibility}
-                    matchCritical={draft.matchCritical}
-                    onMinChange={handleMinChange}
-                    onMatchChange={handleMatchChange}
-                  />
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      textAlign: "center",
+                      height: "100%",
+                      minHeight: 120,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Versión Activa
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      data-testid="kpi-version"
+                      sx={{ fontWeight: 800, mt: 1 }}
+                    >
+                      {formatActiveVersion(activeFormula)}
+                    </Typography>
+                  </Paper>
                 </Grid>
-                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                  <CareFormulaJsonEditor
-                    value={jsonText}
-                    valid={jsonValid}
-                    error={jsonError}
-                    onChange={handleJsonChange}
-                  />
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      textAlign: "center",
+                      height: "100%",
+                      minHeight: 120,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Caos Actual
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      data-testid="kpi-chaos"
+                      sx={{ fontWeight: 800, mt: 1 }}
+                    >
+                      {formatChaos(
+                        activeFormula.chaos_factor,
+                        activeFormula.chaos_seed,
+                      )}
+                    </Typography>
+                  </Paper>
                 </Grid>
               </Grid>
 
-              <CareSimulationTable result={simResult} loading={simulating} />
+              {/* Ecuación canónica */}
+              <CareEquationHeader
+                blocks={draft.blocks}
+                focus={focus}
+                glow={glowKey}
+              />
 
-              <Box sx={{ mt: 3 }}>
-                <CarePreviewPanel
-                  userA={previewUserA}
-                  userB={previewUserB}
-                  tone={previewTone}
-                  result={previewResult}
-                  loading={previewLoading}
-                  error={previewError}
-                  onUserAChange={setPreviewUserA}
-                  onUserBChange={setPreviewUserB}
-                  onToneChange={setPreviewTone}
-                  onRun={handlePreview}
-                />
-              </Box>
+              {/* Fila principal: diagrama + vista previa | pesos + acciones */}
+              <Grid
+                container
+                spacing={3}
+                sx={{ mb: 3, alignItems: "flex-start" }}
+              >
+                <Grid
+                  size={{ xs: 12, md: 7 }}
+                  sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                >
+                  <CareFormulaCanvas
+                    blocks={draft.blocks}
+                    focus={focus}
+                    onNodeHover={setFocus}
+                    glow={glowKey}
+                    pulseToken={pulseToken}
+                  />
+
+                  {/* Vista previa de fórmula: bloque independiente */}
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                      border: `1px solid ${isDark ? "#333333" : "#CCCCCC"}`,
+                      color: isDark ? "#FFFFFF" : "#222222",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.75,
+                        mb: 1,
+                      }}
+                    >
+                      <HelpOutlineIcon
+                        sx={{
+                          fontSize: 16,
+                          color: isDark ? "#CCCCCC" : "#666666",
+                        }}
+                      />
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: isDark ? "#CCCCCC" : "#666666",
+                          fontWeight: 700,
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        VISTA PREVIA DE FÓRMULA
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 1,
+                        mb: 1.5,
+                      }}
+                    >
+                      <Chip
+                        label={`${Object.values(draft.blocks).filter((v) => v > 0).length} variables activas`}
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label={`Σ pesos ${totalPercent(draft.blocks) / 100}`}
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label={`Caos ${draft.chaosFactor}%`}
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label={`Mín ${draft.minCompatibility}%`}
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label={`Crítico ${draft.matchCritical}%`}
+                        size="small"
+                        variant="outlined"
+                      />
+                    </Box>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: isDark ? "#CCCCCC" : "#666666",
+                        display: "block",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      Los pesos (wᵢ) definen la importancia de cada dimensión;
+                      el factor caos (χ) añade variabilidad controlada. Pasa el
+                      cursor sobre un slider o una fila de la tabla para
+                      resaltar su nodo en el diagrama.
+                    </Typography>
+                  </Paper>
+
+                  {/* Buscador de usuario A/B + preview (Interpreter) */}
+                  <CarePreviewPanel
+                    userA={previewUserA}
+                    userB={previewUserB}
+                    tone={previewTone}
+                    result={previewResult}
+                    isDark={isDark}
+                    loading={previewLoading}
+                    error={previewError}
+                    onUserAChange={setPreviewUserA}
+                    onUserBChange={setPreviewUserB}
+                    onToneChange={setPreviewTone}
+                    onRun={handlePreview}
+                  />
+                </Grid>
+
+                {/* Panel de pesos: tabla + Σ en vivo + acciones */}
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                      border: `1px solid ${isDark ? "#333333" : "#CCCCCC"}`,
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 700, mb: 1.5 }}
+                    >
+                      Pesos canónicos
+                    </Typography>
+                    <CareCriteriaTable
+                      blocks={draft.blocks}
+                      locked={locked}
+                      focus={focus}
+                      onSliderChange={handleBlockChange}
+                      onSliderCommit={handleBlockCommit}
+                      onToggleLock={handleToggleLock}
+                      onProbar={setFocus}
+                      onBlockHover={setFocus}
+                    />
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mt: 2,
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        Σ en vivo
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        data-testid="weights-total"
+                        sx={{
+                          fontWeight: 800,
+                          color: balanced ? "success.main" : "error.main",
+                        }}
+                      >
+                        {totalPercent(draft.blocks)}%
+                      </Typography>
+                    </Box>
+
+                    <Stack
+                      direction="row"
+                      spacing={1.5}
+                      sx={{ mt: 2, flexWrap: "wrap", gap: 1 }}
+                    >
+                      <Button
+                        data-testid="action-normalize"
+                        variant="outlined"
+                        size="small"
+                        startIcon={<TuneIcon />}
+                        onClick={handleNormalizar}
+                        disabled={normalizing || loading}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: "none",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {normalizing ? "Normalizando..." : "Normalizar"}
+                      </Button>
+                      <Button
+                        data-testid="action-probar"
+                        variant="contained"
+                        size="small"
+                        startIcon={<PlayArrowIcon />}
+                        onClick={handleProbar}
+                        disabled={validating || loading}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: "none",
+                          fontWeight: 600,
+                          boxShadow: isDark
+                            ? "0 4px 12px rgba(230,57,70,0.35)"
+                            : "0 4px 12px rgba(230,57,70,0.25)",
+                        }}
+                      >
+                        {validating ? "Probando..." : "Probar fórmula"}
+                      </Button>
+                      <Button
+                        data-testid="open-save-modal"
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        startIcon={<SaveIcon />}
+                        onClick={handleOpenModal}
+                        disabled={!balanced || saving || loading}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: "none",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Aplicar Cambios
+                      </Button>
+                    </Stack>
+                  </Paper>
+
+                  {/* Glosario de símbolos: leyenda compacta del diagrama */}
+                  <Paper
+                    variant="outlined"
+                    data-testid="glossary"
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                      border: `1px solid ${isDark ? "#333333" : "#CCCCCC"}`,
+                      color: isDark ? "#FFFFFF" : "#222222",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: isDark ? "#CCCCCC" : "#666666",
+                        fontWeight: 700,
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      GLOSARIO DE SÍMBOLOS
+                    </Typography>
+                    <Stack spacing={0.75} sx={{ mt: 1 }}>
+                      {GLOSSARY_ENTRIES.map((entry) => (
+                        <Box
+                          key={entry.symbol}
+                          sx={{ display: "flex", alignItems: "baseline" }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 800,
+                              minWidth: 40,
+                              color: isDark ? "#FFFFFF" : "#222222",
+                            }}
+                          >
+                            {entry.symbol}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
+                          >
+                            {entry.description}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              {/* Panel de parámetros técnicos + JSON - plegable */}
+              <Paper
+                variant="outlined"
+                sx={{
+                  mb: 3,
+                  bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                  boxShadow: isDark
+                    ? "0 4px 16px rgba(0,0,0,0.4)"
+                    : "0 4px 16px rgba(26,27,30,0.08), inset 0 1px 0 rgba(255,255,255,0.6)",
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setJsonOpen(!jsonOpen)}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <CodeIcon sx={{ fontSize: 20, color: "text.secondary" }} />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                      Parámetros técnicos y JSON
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "text.secondary", ml: 1 }}
+                    >
+                      (Ver JSON completo)
+                    </Typography>
+                  </Box>
+                  <IconButton size="small">
+                    {jsonOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                </Box>
+                <Collapse in={jsonOpen}>
+                  <Divider />
+                  <Box sx={{ p: 2 }}>
+                    <Grid container spacing={3}>
+                      <Grid size={{ xs: 12, md: 6 }}>
+                        <CareChaosPanel
+                          chaosFactor={draft.chaosFactor}
+                          chaosSeed={draft.chaosSeed}
+                          deltaIndicator={
+                            simResult ? simResult.mean_delta : null
+                          }
+                          onChaosChange={handleChaosChange}
+                          onSeedChange={handleSeedChange}
+                          onGenerateSeed={handleGenerateSeed}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 6 }}>
+                        <CareThresholdsPanel
+                          minCompatibility={draft.minCompatibility}
+                          matchCritical={draft.matchCritical}
+                          onMinChange={handleMinChange}
+                          onMatchChange={handleMatchChange}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12 }}>
+                        <CareFormulaJsonEditor
+                          value={jsonText}
+                          valid={jsonValid}
+                          error={jsonError}
+                          onChange={handleJsonChange}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Collapse>
+              </Paper>
+
+              <CareSimulationTable result={simResult} loading={validating} />
 
               <Box sx={{ mt: 3 }}>
                 <CareVersionsPanel
@@ -489,34 +977,75 @@ export default function CareEquationPage() {
 
           <Dialog
             open={saveOpen}
-            onClose={() => setSaveOpen(false)}
+            onClose={handleCloseModal}
+            maxWidth="sm"
+            fullWidth
             data-testid="save-modal"
           >
-            <DialogTitle>Guardar como versión nueva</DialogTitle>
+            <DialogTitle>Aplicar cambios</DialogTitle>
             <DialogContent>
-              <TextField
-                data-testid="changelog-input"
-                label="Changelog"
-                fullWidth
-                multiline
-                minRows={3}
-                sx={{ mt: 1, minWidth: 360 }}
-                value={changelog}
-                onChange={(event) => setChangelog(event.target.value)}
-              />
-              {saveError && (
-                <Alert severity="error" sx={{ mt: 2 }} data-testid="save-error">
-                  {saveError}
-                </Alert>
-              )}
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  data-testid="modal-sum"
+                  sx={{ fontWeight: 700 }}
+                >
+                  Suma: {draft ? totalPercent(draft.blocks) : 0}%
+                </Typography>
+
+                {activeFormula &&
+                  draft &&
+                  (computeDeltas(activeFormula.blocks, draft.blocks).length ===
+                  0 ? (
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      Sin cambios respecto a v{activeFormula.version}
+                    </Typography>
+                  ) : (
+                    computeDeltas(activeFormula.blocks, draft.blocks).map(
+                      (delta) => (
+                        <Typography
+                          key={delta.key}
+                          variant="body2"
+                          data-testid={`delta-${delta.key}`}
+                        >
+                          {delta.label}: {delta.deltaPercent > 0 ? "+" : ""}
+                          {delta.deltaPercent}%
+                        </Typography>
+                      ),
+                    )
+                  ))}
+
+                <TextField
+                  data-testid="changelog-input"
+                  label="Changelog"
+                  required
+                  multiline
+                  minRows={2}
+                  fullWidth
+                  value={changelog}
+                  onChange={(e) => setChangelog(e.target.value)}
+                  helperText="Describe el motivo del cambio (obligatorio)."
+                />
+
+                {saveError && (
+                  <Alert severity="error" data-testid="save-error">
+                    {saveError}
+                  </Alert>
+                )}
+              </Stack>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setSaveOpen(false)}>Cancelar</Button>
+              <Button onClick={handleCloseModal} disabled={saving}>
+                Cancelar
+              </Button>
               <Button
                 data-testid="modal-save"
                 variant="contained"
                 onClick={handleSave}
-                disabled={saving}
+                disabled={changelog.trim().length === 0 || saving}
               >
                 {saving ? "Guardando..." : "Guardar"}
               </Button>

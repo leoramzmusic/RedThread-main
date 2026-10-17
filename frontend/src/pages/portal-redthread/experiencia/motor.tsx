@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function CareMotorPage() {
-    const router = useRouter();
+  const router = useRouter();
 
-    useEffect(() => {
-        router.replace('/portal-redthread/care/criteria');
-    }, [router]);
+  useEffect(() => {
+    router.replace("/portal-redthread/care/equation");
+  }, [router]);
 
-    return null;
+  return null;
 }

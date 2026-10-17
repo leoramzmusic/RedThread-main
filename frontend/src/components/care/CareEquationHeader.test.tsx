@@ -4,19 +4,24 @@ import {
   CARE_DIMENSIONS,
   CANONICAL_BLOCK_WEIGHTS,
 } from "../../constants/careDimensions";
+import { AppThemeProvider } from "../../context/ThemeContext";
 
 const canonical = { ...CANONICAL_BLOCK_WEIGHTS };
 
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(<AppThemeProvider>{ui}</AppThemeProvider>);
+};
+
 describe("CareEquationHeader", () => {
   it("renders the stylized canonical formula", () => {
-    render(<CareEquationHeader blocks={canonical} />);
+    renderWithTheme(<CareEquationHeader blocks={canonical} />);
     expect(screen.getByTestId("equation-formula")).toHaveTextContent(
       "CARE_score = Σ wᵢ·fᵢ + χ(t)",
     );
   });
 
   it("renders one synced chip per dimension with its percentage", () => {
-    render(<CareEquationHeader blocks={canonical} />);
+    renderWithTheme(<CareEquationHeader blocks={canonical} />);
     CARE_DIMENSIONS.forEach((dim) => {
       expect(screen.getByTestId(`header-chip-${dim.key}`)).toHaveTextContent(
         dim.chip,
@@ -29,7 +34,7 @@ describe("CareEquationHeader", () => {
   });
 
   it("emphasizes the focused chip only", () => {
-    render(<CareEquationHeader blocks={canonical} focus="music" />);
+    renderWithTheme(<CareEquationHeader blocks={canonical} focus="music" />);
     expect(screen.getByTestId("header-chip-music")).toHaveAttribute(
       "data-focus",
       "true",
@@ -40,8 +45,34 @@ describe("CareEquationHeader", () => {
     );
   });
 
+  it("leaves the wᵢ·fᵢ term unhighlighted by default", () => {
+    renderWithTheme(<CareEquationHeader blocks={canonical} />);
+    expect(screen.getByTestId("formula-weights")).toHaveAttribute(
+      "data-highlight",
+      "",
+    );
+  });
+
+  it("highlights the wᵢ·fᵢ term with the focused dimension", () => {
+    renderWithTheme(<CareEquationHeader blocks={canonical} focus="music" />);
+    expect(screen.getByTestId("formula-weights")).toHaveAttribute(
+      "data-highlight",
+      "music",
+    );
+  });
+
+  it("lets the transient glow override focus in the term", () => {
+    renderWithTheme(
+      <CareEquationHeader blocks={canonical} focus="values" glow="music" />,
+    );
+    expect(screen.getByTestId("formula-weights")).toHaveAttribute(
+      "data-highlight",
+      "music",
+    );
+  });
+
   it("renders the read-only pre-filter chips", () => {
-    render(<CareEquationHeader blocks={canonical} />);
+    renderWithTheme(<CareEquationHeader blocks={canonical} />);
     expect(screen.getByTestId("prefilter-attraction")).toHaveTextContent(
       "Atracción mutua",
     );

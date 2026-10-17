@@ -1,9 +1,85 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import CarePreviewPanel from "./CarePreviewPanel";
+import type { SearchUser } from "../common/UserSearchAutocomplete";
 import type {
   EvaluationResult,
   PreviewResult,
 } from "../../services/careFormulaService";
+
+jest.mock("../common/UserSearchAutocomplete", () => {
+  const React = require("react");
+  const USERS: Record<string, SearchUser> = {
+    a: {
+      id: "u1",
+      email: "ana@x.com",
+      display_name: "Ana A",
+      nickname: "ana",
+      photo: null,
+    },
+    b: {
+      id: "u2",
+      email: "beto@x.com",
+      display_name: "Beto B",
+      nickname: "beto",
+      photo: null,
+    },
+  };
+  return {
+    __esModule: true,
+    default: (props: {
+      label?: string;
+      value: SearchUser | null;
+      onChange: (user: SearchUser | null) => void;
+      excludeId?: string | null;
+      isDark?: boolean;
+    }) => {
+      const key = props.label === "Usuario A" ? "a" : "b";
+      return React.createElement(
+        "div",
+        { "data-testid": `search-${key}` },
+        React.createElement(
+          "span",
+          { "data-testid": `search-${key}-value` },
+          props.value?.id ?? "",
+        ),
+        React.createElement(
+          "span",
+          { "data-testid": `search-${key}-exclude` },
+          props.excludeId ?? "",
+        ),
+        React.createElement("button", {
+          "data-testid": `search-${key}-pick`,
+          onClick: () => props.onChange(USERS[key]),
+        }),
+        React.createElement("button", {
+          "data-testid": `search-${key}-pick-a`,
+          onClick: () => props.onChange(USERS.a),
+        }),
+        React.createElement("button", {
+          "data-testid": `search-${key}-clear`,
+          onClick: () => props.onChange(null),
+        }),
+      );
+    },
+  };
+});
+
+const USERS: Record<string, SearchUser> = {
+  a: {
+    id: "u1",
+    email: "ana@x.com",
+    display_name: "Ana A",
+    nickname: "ana",
+    photo: null,
+  },
+  b: {
+    id: "u2",
+    email: "beto@x.com",
+    display_name: "Beto B",
+    nickname: "beto",
+    photo: null,
+  },
+};
 
 const evaluation = (score: number): EvaluationResult => ({
   score,
@@ -25,9 +101,9 @@ const evaluation = (score: number): EvaluationResult => ({
 });
 
 const baseProps = {
-  userA: "",
-  userB: "",
-  tone: "directo",
+  userA: null as SearchUser | null,
+  userB: null as SearchUser | null,
+  tone: "directo" as const,
   result: null,
   onUserAChange: jest.fn(),
   onUserBChange: jest.fn(),
@@ -56,39 +132,64 @@ const result: PreviewResult = {
   },
 };
 
-describe("CarePreviewPanel", () => {
-  it("emits field + tone changes and runs", () => {
+describe("CarePreviewPanel / buscador A/B", () => {
+  it("emits user + tone changes and runs with two different users", () => {
     const onUserAChange = jest.fn();
     const onUserBChange = jest.fn();
+    const onToneChange = jest.fn();
     const onRun = jest.fn();
     render(
       <CarePreviewPanel
         {...baseProps}
-        userA="a"
-        userB="b"
+        userA={USERS.a}
+        userB={USERS.b}
         onUserAChange={onUserAChange}
         onUserBChange={onUserBChange}
+        onToneChange={onToneChange}
         onRun={onRun}
       />,
     );
-    fireEvent.change(
-      screen
-        .getByTestId("preview-user-a")
-        .querySelector("input") as HTMLInputElement,
-      { target: { value: "u1" } },
-    );
-    fireEvent.change(
-      screen
-        .getByTestId("preview-user-b")
-        .querySelector("input") as HTMLInputElement,
-      { target: { value: "u2" } },
-    );
+    fireEvent.click(screen.getByTestId("search-a-pick"));
+    fireEvent.click(screen.getByTestId("search-b-pick"));
+    fireEvent.click(screen.getByTestId("tone-poetico"));
+    expect(onUserAChange).toHaveBeenCalledWith(USERS.a);
+    expect(onUserBChange).toHaveBeenCalledWith(USERS.b);
+    expect(onToneChange).toHaveBeenCalledWith("poetico");
     fireEvent.click(screen.getByTestId("preview-run"));
-    expect(onUserAChange).toHaveBeenCalledWith("u1");
-    expect(onUserBChange).toHaveBeenCalledWith("u2");
     expect(onRun).toHaveBeenCalledTimes(1);
   });
 
+  it("disables Interpretar par until two users are selected", () => {
+    const { rerender } = render(<CarePreviewPanel {...baseProps} />);
+    expect(screen.getByTestId("preview-run")).toBeDisabled();
+    rerender(<CarePreviewPanel {...baseProps} userA={USERS.a} />);
+    expect(screen.getByTestId("preview-run")).toBeDisabled();
+    rerender(
+      <CarePreviewPanel {...baseProps} userA={USERS.a} userB={USERS.b} />,
+    );
+    expect(screen.getByTestId("preview-run")).toBeEnabled();
+  });
+
+  it("disables Interpretar par when both users are the same", () => {
+    render(<CarePreviewPanel {...baseProps} userA={USERS.a} userB={USERS.a} />);
+    expect(screen.getByTestId("preview-run")).toBeDisabled();
+  });
+
+  it("excludes the opposite selection in each searcher", () => {
+    render(<CarePreviewPanel {...baseProps} userA={USERS.a} userB={USERS.b} />);
+    expect(screen.getByTestId("search-a-exclude")).toHaveTextContent("u2");
+    expect(screen.getByTestId("search-b-exclude")).toHaveTextContent("u1");
+  });
+
+  it("labels the run button as Interpretar par", () => {
+    render(<CarePreviewPanel {...baseProps} />);
+    expect(
+      within(screen.getByTestId("preview-run")).getByText("Interpretar par"),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("CarePreviewPanel / resultado", () => {
   it("shows a loading indicator", () => {
     render(<CarePreviewPanel {...baseProps} loading />);
     expect(screen.getByTestId("preview-loading")).toBeInTheDocument();
