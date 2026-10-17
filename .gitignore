@@ -94,6 +94,7 @@ logs/
 .continue/
 .cursor/
 .factory/
+.freebuff/
 .gemini/
 .kiro/
 .impeccable/
