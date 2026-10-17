@@ -1537,3 +1537,456 @@ git commit -m "feat(care-ui): exportar reporte JSON del interpreter"
 **4. Dependency order:** Task 1 (pure model) → Task 2 (presentational, depends only on Task 1) → Task 3 (page; depends on 1–2) → Task 4 (export; depends on 3). Each task ends green with its own commit. Tasks 3 and 4 both touch the page/test (sequential edits), mirroring the equation plan's Task 5 → Tasks 6–7 pattern.
 
 **5. Verification commands:** every task runs `npx jest <files> --ci`; the page tasks also run `npm run typecheck` and `npm run lint` from `frontend/`. Commits are local-only (`feat(care-ui): ...`); never push without an explicit "sube".
+
+---
+
+## Apéndice A — Ajustes post-revisión (diseño aprobado por el usuario el 2026-10-17)
+
+Sustituye los dos inputs de `user_id` del §interpreter.tsx original por el **buscador de usuarios del lab** y aplica el polish visual pedido: alturas uniformes entre el panel de inputs y el de resultados, tokens claro/oscuro exactos y la narrativa en un card con fondo diferenciado. El contrato de test-ids `interpreter-user-a/b` queda **retirado**; el resto (`interpreter-run`, `interpreter-export`, `interpreter-loading/error/empty/preview-*`, `interpreter-tone-*`) no cambia. Los Tasks 1–4 y sus contratos siguen vigentes.
+
+**Notas de coordinación (aplican a T5 y T6):**
+
+- `frontend/src/components/common/UserSearchAutocomplete.tsx` (+ su `.test.tsx`) es trabajo **sin commitear** de otra tanda (lab) presente en el árbol: se **importa y reutiliza tal cual**; jamás se modifica ni se stagea. Lo mismo aplica a `lab.tsx`, `audit.tsx`, `equation.tsx`/`.test.tsx`, `careExperiments.ts`/`.test.ts`, `jest.setup.ts`, `CareEquationBlocks/Header`, `CareFormulaCanvas`: no tocarlos.
+- Cada commit stagea **solo** los archivos listados en su task (nunca `git add -A`).
+- Etiquetas exactas de los buscadores: `"Usuario A"` y `"Usuario B"` (el stub de tests se ancla a esas cadenas; si cambian, el test debe cambiar en el mismo commit).
+- Sin dependencias nuevas; sin i18n (español hardcoded); `borderRadius` siempre px string.
+
+### Task 5: Buscador de usuarios A/B en `interpreter.tsx` (reemplaza inputs de id)
+
+**Files:**
+- Modify: `frontend/src/pages/portal-redthread/care/interpreter.tsx`
+- Modify: `frontend/src/pages/portal-redthread/care/interpreter.test.tsx`
+
+Interfaz consumida (ya existe, NO modificar): `UserSearchAutocomplete` en `frontend/src/components/common/UserSearchAutocomplete.tsx` con props `{ label?, value: SearchUser | null, onChange: (user: SearchUser | null) => void, excludeId?: string | null, placeholder?, isDark? }` y el tipo exportado `SearchUser` (`{ id, email, display_name, nickname, photo }`). Ya muestra chips con avatar + botón de limpieza, busca por nombre/alias/correo (vía `/portal-redthread/usuarios/listado`) y excluye `excludeId` de las opciones. En el lab se usa exactamente así (`lab.tsx:284-305`).
+
+- [ ] **Step 1: imports de la página**
+
+Agrega, después de `import AdminLayout from "../../../components/layout/AdminLayout";`:
+
+```tsx
+import UserSearchAutocomplete, {
+  type SearchUser,
+} from "../../../components/common/UserSearchAutocomplete";
+import { useAppTheme } from "../../../context/ThemeContext";
+```
+
+Y elimina `TextField,` del bloque `import { ... } from "@mui/material";` (ya no se usa).
+
+- [ ] **Step 2: estado — de ids a `SearchUser | null`**
+
+Dentro de `CareInterpreterPage`, al inicio:
+
+```tsx
+export default function CareInterpreterPage() {
+  const { mode } = useAppTheme();
+  const isDark = mode === "dark";
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [formula, setFormula] = useState<CareFormula | null>(null);
+  const [userA, setUserA] = useState<SearchUser | null>(null);
+  const [userB, setUserB] = useState<SearchUser | null>(null);
+  const [tone, setTone] = useState<NarrativeResult["tone"]>("directo");
+```
+
+(el resto del estado — `previewLoading`, `previewError`, `previewResult` — no cambia)
+
+- [ ] **Step 3: `handlePreview` usa `.id` + guard anti mismo perfil**
+
+```tsx
+  const handlePreview = async () => {
+    if (!formula || !userA || !userB || userA.id === userB.id) return;
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const result = await previewFormula({
+        formula: toPayload(formula),
+        user_a_id: userA.id,
+        user_b_id: userB.id,
+        tone,
+      });
+      setPreviewResult(result);
+    } catch (err) {
+      setPreviewError(previewErrorMessage(err));
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+```
+
+- [ ] **Step 4: `handleExport` usa `.id`**
+
+```tsx
+  const handleExport = () => {
+    if (!formula || !previewResult || !userA || !userB) return;
+    const generatedAt = new Date().toISOString();
+    const report = buildReport(
+      {
+        userA: userA.id,
+        userB: userB.id,
+        formulaVersion: formula.version,
+        breakdown: rows,
+        chi: previewResult.proposed.chi,
+        narrative: previewResult.narrative,
+        tone,
+        compatibilityLabel,
+      },
+      generatedAt,
+    );
+    downloadJson(reportFilename(userA.id, userB.id, generatedAt), report);
+  };
+```
+
+(El schema del reporte NO cambia: `user_a`/`user_b` siguen siendo los ids, por decisión del usuario.)
+
+- [ ] **Step 5: UI — reemplaza los dos `TextField`**
+
+En `"Par a evaluar"`, sustituye ambos bloques `<TextField ... />` por:
+
+```tsx
+                    <UserSearchAutocomplete
+                      label="Usuario A"
+                      placeholder="Buscar por nombre, alias o correo"
+                      value={userA}
+                      onChange={setUserA}
+                      excludeId={userB?.id ?? null}
+                      isDark={isDark}
+                    />
+                    <UserSearchAutocomplete
+                      label="Usuario B"
+                      placeholder="Buscar por nombre, alias o correo"
+                      value={userB}
+                      onChange={setUserB}
+                      excludeId={userA?.id ?? null}
+                      isDark={isDark}
+                    />
+```
+
+- [ ] **Step 6: botón Interpretar**
+
+```tsx
+                      disabled={
+                        previewLoading ||
+                        !userA ||
+                        !userB ||
+                        userA.id === userB.id
+                      }
+```
+
+- [ ] **Step 7: tests — stub del buscador + `useAppTheme`**
+
+En `interpreter.test.tsx`, agrega tras el mock de `AdminLayout`:
+
+```tsx
+jest.mock("../../../context/ThemeContext", () => ({
+  useAppTheme: () => ({ mode: "light" }),
+}));
+
+jest.mock("../../../components/common/UserSearchAutocomplete", () => {
+  const React = require("react");
+  const USERS: Record<
+    string,
+    {
+      id: string;
+      email: string | null;
+      display_name: string;
+      nickname: string;
+      photo: string | null;
+    }
+  > = {
+    a: {
+      id: "u1",
+      email: "ana@x.com",
+      display_name: "Ana A",
+      nickname: "ana",
+      photo: null,
+    },
+    b: {
+      id: "u2",
+      email: "beto@x.com",
+      display_name: "Beto B",
+      nickname: "beto",
+      photo: null,
+    },
+  };
+  return {
+    __esModule: true,
+    default: ({
+      label,
+      value,
+      onChange,
+      excludeId,
+    }: {
+      label?: string;
+      value: { id: string } | null;
+      onChange: (user: (typeof USERS)["a"] | null) => void;
+      excludeId?: string | null;
+    }) => {
+      const key = label === "Usuario A" ? "a" : "b";
+      return React.createElement(
+        "div",
+        { "data-testid": `search-${key}` },
+        React.createElement(
+          "span",
+          { "data-testid": `search-${key}-value` },
+          value?.id ?? "",
+        ),
+        React.createElement(
+          "span",
+          { "data-testid": `search-${key}-exclude` },
+          excludeId ?? "",
+        ),
+        React.createElement("button", {
+          "data-testid": `search-${key}-pick`,
+          onClick: () => onChange(USERS[key]),
+        }),
+        React.createElement("button", {
+          "data-testid": `search-${key}-pick-a`,
+          onClick: () => onChange(USERS.a),
+        }),
+      );
+    },
+  };
+});
+```
+
+- [ ] **Step 8: tests — helper `pickUsers` reemplaza `setUsers`**
+
+Elimina el helper `setUsers` (el que dispara `change` sobre `interpreter-user-a/b`) y agrega:
+
+```tsx
+const pickUsers = () => {
+  fireEvent.click(screen.getByTestId("search-a-pick"));
+  fireEvent.click(screen.getByTestId("search-b-pick"));
+};
+```
+
+Actualiza los llamados: el helper local `run()` usa `pickUsers()` en vez de `setUsers("u1", "u2")`; el test de tono y el test de export igual. Las aserciones existentes no cambian (`user_a_id: "u1"`, `user_b_id: "u2"`, filenames `care-report_u1_u2_...`, errores 404/422).
+
+- [ ] **Step 9: tests — 3 casos nuevos**
+
+```tsx
+describe("CareInterpreterPage / user search", () => {
+  it("keeps Interpretar disabled until both users are selected", async () => {
+    render(<CareInterpreterPage />);
+    const runButton = await screen.findByTestId("interpreter-run");
+    expect(runButton).toBeDisabled();
+    fireEvent.click(screen.getByTestId("search-a-pick"));
+    expect(runButton).toBeDisabled();
+    fireEvent.click(screen.getByTestId("search-b-pick"));
+    expect(runButton).toBeEnabled();
+  });
+
+  it("cross-excludes the profile already selected on the other side", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-run");
+    pickUsers();
+    expect(screen.getByTestId("search-a-exclude")).toHaveTextContent("u2");
+    expect(screen.getByTestId("search-b-exclude")).toHaveTextContent("u1");
+  });
+
+  it("blocks running when both sides hold the same profile", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-run");
+    fireEvent.click(screen.getByTestId("search-a-pick"));
+    fireEvent.click(screen.getByTestId("search-b-pick-a"));
+    const runButton = screen.getByTestId("interpreter-run");
+    expect(runButton).toBeDisabled();
+    fireEvent.click(runButton);
+    expect(mockPreview).not.toHaveBeenCalled();
+  });
+});
+```
+
+(El stub expone `search-b-pick-a` justamente para forzar el mismo id y poder verificar el guard, que en la UI real es inalcanzable porque `excludeId` filtra la opción.)
+
+- [ ] **Step 10: correr tests**
+
+Run: `npx jest src/pages/portal-redthread/care/interpreter.test.tsx --ci`
+Expected: PASS (13 tests: 10 existentes + 3 nuevos).
+
+- [ ] **Step 11: full check + commit**
+
+Run: `npm run typecheck`
+Run: `npm run lint`
+Expected: typecheck 0 errores. Lint: 0 errores en los archivos de este task; si aparecen errores preexistentes en archivos WIP del lab (no listados aquí), repórtalos como ruido base ajeno al task.
+
+```bash
+git add frontend/src/pages/portal-redthread/care/interpreter.tsx frontend/src/pages/portal-redthread/care/interpreter.test.tsx
+git commit -m "feat(care-ui): buscador de usuarios A/B en interpreter"
+```
+
+### Task 6: Alturas uniformes + tema claro/oscuro + card de narrativa diferenciado
+
+**Files:**
+- Modify: `frontend/src/pages/portal-redthread/care/interpreter.tsx`
+- Modify: `frontend/src/components/care/CareScoreBreakdown.tsx`
+- Modify: `frontend/src/components/care/CareNarrativeTrio.tsx`
+- Modify: `frontend/src/components/care/CareScoreBreakdown.test.tsx`
+- Modify: `frontend/src/components/care/CareNarrativeTrio.test.tsx`
+
+Depende de T5 (`useAppTheme` + `isDark` ya existen en la página). Tokens exactos: dark panel `#1E1E1E`, borde `#333333`, texto `#FFFFFF`, secundario `#CCCCCC`, card diferenciado `#2A2A2A`, sombra `0 4px 16px rgba(0,0,0,0.4)`; light panel `#F5F5F5`, texto `#222222`, secundario `#666666`, card diferenciado `#FFFFFF`, borde `rgba(26,27,30,0.12)`.
+
+- [ ] **Step 1: página — textos secundarios por modo**
+
+Sustituye las 3 apariciones de `sx={{ color: "text.secondary" }}` (subtítulo del header, caption "Tono narrativo", texto del empty state) por:
+
+```tsx
+sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
+```
+
+- [ ] **Step 2: página — columna izquierda elástica y superficie del panel**
+
+Grid item izquierdo: `<Grid size={{ xs: 12, md: 4 }}>` → `<Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", flexDirection: "column" }}>`.
+
+Paper "Par a evaluar": `<Paper variant="outlined" sx={{ p: 3 }}>` →
+
+```tsx
+<Paper
+  variant="outlined"
+  sx={{
+    p: 3,
+    flex: 1,
+    minHeight: 480,
+    bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+    borderColor: isDark ? "#333333" : "rgba(26,27,30,0.12)",
+    boxShadow: isDark ? "0 4px 16px rgba(0,0,0,0.4)" : undefined,
+    color: isDark ? "#FFFFFF" : "#222222",
+  }}
+>
+```
+
+- [ ] **Step 3: página — columna derecha con la misma altura mínima**
+
+Grid item derecho: `<Grid size={{ xs: 12, md: 8 }}>` → `<Grid size={{ xs: 12, md: 8 }} sx={{ display: "flex", flexDirection: "column" }}>`.
+
+Stack de resultados: `<Stack spacing={3}>` → `<Stack spacing={3} sx={{ flex: 1, minHeight: 480 }}>`.
+
+Paper del empty state: `p: 4` → `p: 3` y la superficie del Paso 2 (mismos tokens), quedando:
+
+```tsx
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 3,
+                      flex: 1,
+                      minHeight: 480,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                      borderColor: isDark ? "#333333" : "rgba(26,27,30,0.12)",
+                      boxShadow: isDark
+                        ? "0 4px 16px rgba(0,0,0,0.4)"
+                        : undefined,
+                      color: isDark ? "#FFFFFF" : "#222222",
+                    }}
+                    data-testid="interpreter-empty"
+                  >
+```
+
+- [ ] **Step 4: `CareNarrativeTrio` — card con fondo diferenciado**
+
+El `<Paper variant="outlined" sx={{ p: 3, bgcolor: "grey.50" }}>` pasa a:
+
+```tsx
+    <Paper
+      variant="outlined"
+      data-testid="narrative-card"
+      sx={{
+        p: 3,
+        bgcolor: (theme) =>
+          theme.palette.mode === "dark" ? "#2A2A2A" : "#FFFFFF",
+        borderColor: (theme) =>
+          theme.palette.mode === "dark" ? "#333333" : "rgba(26,27,30,0.12)",
+      }}
+    >
+```
+
+- [ ] **Step 5: `CareScoreBreakdown` — misma superficie + track de barra legible en dark**
+
+El `<Paper variant="outlined" sx={{ p: 3 }} data-testid="score-breakdown">` pasa a:
+
+```tsx
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 3,
+        bgcolor: (theme) =>
+          theme.palette.mode === "dark" ? "#2A2A2A" : "#FFFFFF",
+        borderColor: (theme) =>
+          theme.palette.mode === "dark" ? "#333333" : "rgba(26,27,30,0.12)",
+      }}
+      data-testid="score-breakdown"
+    >
+```
+
+Y el track de la barra (`bgcolor: "rgba(0,0,0,0.08)"`) pasa a:
+
+```tsx
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,0.12)"
+                    : "rgba(0,0,0,0.08)",
+```
+
+- [ ] **Step 6: tests de superficie (patrón `toHaveStyle` ya usado en `MenusPreview.test.tsx:114`)**
+
+En `CareNarrativeTrio.test.tsx` agrega el import `import { ThemeProvider, createTheme } from "@mui/material/styles";` y:
+
+```tsx
+  it("uses the differentiated card background per mode", () => {
+    const { unmount } = render(
+      <CareNarrativeTrio
+        evaluation={evaluation}
+        compatibilityLabel="Medio"
+        narrative={narrative}
+      />,
+    );
+    expect(screen.getByTestId("narrative-card")).toHaveStyle({
+      backgroundColor: "rgb(255, 255, 255)",
+    });
+    unmount();
+    render(
+      <ThemeProvider theme={createTheme({ palette: { mode: "dark" } })}>
+        <CareNarrativeTrio
+          evaluation={evaluation}
+          compatibilityLabel="Medio"
+          narrative={narrative}
+        />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("narrative-card")).toHaveStyle({
+      backgroundColor: "rgb(42, 42, 42)",
+    });
+  });
+```
+
+En `CareScoreBreakdown.test.tsx` agrega el mismo import de tema y:
+
+```tsx
+  it("uses the differentiated card background in dark mode", () => {
+    render(
+      <ThemeProvider theme={createTheme({ palette: { mode: "dark" } })}>
+        <CareScoreBreakdown rows={rows} />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("score-breakdown")).toHaveStyle({
+      backgroundColor: "rgb(42, 42, 42)",
+    });
+  });
+```
+
+- [ ] **Step 7: tests**
+
+Run: `npx jest src/components/care/CareScoreBreakdown.test.tsx src/components/care/CareNarrativeTrio.test.tsx src/pages/portal-redthread/care/interpreter.test.tsx --ci`
+Expected: PASS (el page test no cambia: los dos componentes están stubbeados allí).
+
+- [ ] **Step 8: full check + commit**
+
+Run: `npm run typecheck`
+Run: `npm run lint`
+
+```bash
+git add frontend/src/pages/portal-redthread/care/interpreter.tsx frontend/src/components/care/CareScoreBreakdown.tsx frontend/src/components/care/CareNarrativeTrio.tsx frontend/src/components/care/CareScoreBreakdown.test.tsx frontend/src/components/care/CareNarrativeTrio.test.tsx
+git commit -m "feat(care-ui): altura uniforme y tema claro/oscuro en interpreter"
+```
