@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CareNarrativeTrio from "./CareNarrativeTrio";
 import type { EvaluationResult } from "../../services/careFormulaService";
 
@@ -73,5 +74,31 @@ describe("CareNarrativeTrio", () => {
       />,
     );
     expect(screen.getByTestId("trio-saturated")).toBeInTheDocument();
+  });
+
+  it("uses the differentiated card background per mode", () => {
+    const { unmount } = render(
+      <CareNarrativeTrio
+        evaluation={evaluation}
+        compatibilityLabel="Medio"
+        narrative={narrative}
+      />,
+    );
+    expect(screen.getByTestId("narrative-card")).toHaveStyle({
+      backgroundColor: "rgb(255, 255, 255)",
+    });
+    unmount();
+    render(
+      <ThemeProvider theme={createTheme({ palette: { mode: "dark" } })}>
+        <CareNarrativeTrio
+          evaluation={evaluation}
+          compatibilityLabel="Medio"
+          narrative={narrative}
+        />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("narrative-card")).toHaveStyle({
+      backgroundColor: "rgb(42, 42, 42)",
+    });
   });
 });

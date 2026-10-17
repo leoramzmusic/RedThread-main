@@ -21,7 +21,17 @@ export default function CareScoreBreakdown({ rows }: CareScoreBreakdownProps) {
     0.0001,
   );
   return (
-    <Paper variant="outlined" sx={{ p: 3 }} data-testid="score-breakdown">
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 3,
+        bgcolor: (theme) =>
+          theme.palette.mode === "dark" ? "#2A2A2A" : "#FFFFFF",
+        borderColor: (theme) =>
+          theme.palette.mode === "dark" ? "#333333" : "rgba(26,27,30,0.12)",
+      }}
+      data-testid="score-breakdown"
+    >
       <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
         Score Breakdown
       </Typography>
@@ -79,7 +89,10 @@ export default function CareScoreBreakdown({ rows }: CareScoreBreakdownProps) {
               sx={{
                 width: "100%",
                 height: 6,
-                bgcolor: "rgba(0,0,0,0.08)",
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,0.12)"
+                    : "rgba(0,0,0,0.08)",
                 borderRadius: "3px",
                 mb: 0.5,
               }}

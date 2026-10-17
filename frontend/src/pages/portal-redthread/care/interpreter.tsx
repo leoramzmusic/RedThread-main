@@ -165,7 +165,10 @@ export default function CareInterpreterPage() {
                 >
                   CARE Interpreter
                 </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
+                >
                   Explicabilidad del score: fᵢ, wᵢ y contribución wᵢ·fᵢ por
                   dimensión.
                 </Typography>
@@ -201,8 +204,24 @@ export default function CareInterpreterPage() {
             </Box>
           ) : formula ? (
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Paper variant="outlined" sx={{ p: 3 }}>
+              <Grid
+                size={{ xs: 12, md: 4 }}
+                sx={{ display: "flex", flexDirection: "column" }}
+              >
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 3,
+                    flex: 1,
+                    minHeight: 480,
+                    bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                    borderColor: isDark ? "#333333" : "rgba(26,27,30,0.12)",
+                    boxShadow: isDark
+                      ? "0 4px 16px rgba(0,0,0,0.4)"
+                      : undefined,
+                    color: isDark ? "#FFFFFF" : "#222222",
+                  }}
+                >
                   <Typography
                     variant="subtitle1"
                     sx={{ fontWeight: 700, mb: 2 }}
@@ -229,7 +248,7 @@ export default function CareInterpreterPage() {
                     <Box>
                       <Typography
                         variant="caption"
-                        sx={{ color: "text.secondary" }}
+                        sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
                       >
                         Tono narrativo
                       </Typography>
@@ -294,9 +313,12 @@ export default function CareInterpreterPage() {
                 </Paper>
               </Grid>
 
-              <Grid size={{ xs: 12, md: 8 }}>
+              <Grid
+                size={{ xs: 12, md: 8 }}
+                sx={{ display: "flex", flexDirection: "column" }}
+              >
                 {previewResult ? (
-                  <Stack spacing={3}>
+                  <Stack spacing={3} sx={{ flex: 1, minHeight: 480 }}>
                     <CareScoreBreakdown rows={rows} />
                     <CareNarrativeTrio
                       evaluation={previewResult.proposed}
@@ -308,17 +330,24 @@ export default function CareInterpreterPage() {
                   <Paper
                     variant="outlined"
                     sx={{
-                      p: 4,
-                      minHeight: 400,
+                      p: 3,
+                      flex: 1,
+                      minHeight: 480,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
+                      borderColor: isDark ? "#333333" : "rgba(26,27,30,0.12)",
+                      boxShadow: isDark
+                        ? "0 4px 16px rgba(0,0,0,0.4)"
+                        : undefined,
+                      color: isDark ? "#FFFFFF" : "#222222",
                     }}
                     data-testid="interpreter-empty"
                   >
                     <Typography
                       variant="body2"
-                      sx={{ color: "text.secondary" }}
+                      sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
                     >
                       Selecciona dos usuarios y ejecuta para ver el desglose y
                       la narrativa.

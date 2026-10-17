@@ -25,7 +25,17 @@ export default function CareNarrativeTrio({
 }: CareNarrativeTrioProps) {
   const saturated = evaluation.breakdown.saturated === true;
   return (
-    <Paper variant="outlined" sx={{ p: 3, bgcolor: "grey.50" }}>
+    <Paper
+      variant="outlined"
+      data-testid="narrative-card"
+      sx={{
+        p: 3,
+        bgcolor: (theme) =>
+          theme.palette.mode === "dark" ? "#2A2A2A" : "#FFFFFF",
+        borderColor: (theme) =>
+          theme.palette.mode === "dark" ? "#333333" : "rgba(26,27,30,0.12)",
+      }}
+    >
       <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
         Trío narrativo
       </Typography>

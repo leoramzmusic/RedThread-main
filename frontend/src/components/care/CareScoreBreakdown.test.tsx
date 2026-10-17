@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CareScoreBreakdown from "./CareScoreBreakdown";
 import { computeContributions } from "../../utils/careInterpreterModel";
 import { CANONICAL_BLOCK_WEIGHTS } from "../../constants/careDimensions";
@@ -46,5 +47,16 @@ describe("CareScoreBreakdown", () => {
     expect(
       screen.getByTestId("breakdown-bar-communication_style"),
     ).toHaveAttribute("data-value", "11");
+  });
+
+  it("uses the differentiated card background in dark mode", () => {
+    render(
+      <ThemeProvider theme={createTheme({ palette: { mode: "dark" } })}>
+        <CareScoreBreakdown rows={rows} />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("score-breakdown")).toHaveStyle({
+      backgroundColor: "rgb(42, 42, 42)",
+    });
   });
 });
