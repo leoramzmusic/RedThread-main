@@ -82,6 +82,10 @@ jest.mock("../../../components/common/UserSearchAutocomplete", () => {
           "data-testid": `search-${key}-pick-a`,
           onClick: () => onChange(USERS.a),
         }),
+        React.createElement("button", {
+          "data-testid": `search-${key}-clear`,
+          onClick: () => onChange(null),
+        }),
       );
     },
   };
@@ -309,6 +313,17 @@ describe("CareInterpreterPage / export", () => {
     );
     expect(report.breakdown).toHaveLength(7);
     expect(typeof report.generated_at).toBe("string");
+  });
+
+  it("disables Export when a selected user is cleared after a preview", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-run");
+    pickUsers();
+    fireEvent.click(screen.getByTestId("interpreter-run"));
+    await screen.findByTestId("trio-stub");
+    expect(screen.getByTestId("interpreter-export")).toBeEnabled();
+    fireEvent.click(screen.getByTestId("search-a-clear"));
+    expect(screen.getByTestId("interpreter-export")).toBeDisabled();
   });
 });
 

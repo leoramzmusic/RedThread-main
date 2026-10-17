@@ -179,7 +179,7 @@ export default function CareInterpreterPage() {
               variant="outlined"
               startIcon={<DownloadIcon />}
               onClick={handleExport}
-              disabled={!previewResult}
+              disabled={!previewResult || !userA || !userB}
             >
               Exportar Reporte
             </Button>
