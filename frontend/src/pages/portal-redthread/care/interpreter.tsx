@@ -9,13 +9,16 @@ import {
   Grid,
   Paper,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DownloadIcon from "@mui/icons-material/Download";
 import AdminLayout from "../../../components/layout/AdminLayout";
+import UserSearchAutocomplete, {
+  type SearchUser,
+} from "../../../components/common/UserSearchAutocomplete";
+import { useAppTheme } from "../../../context/ThemeContext";
 import CareScoreBreakdown from "../../../components/care/CareScoreBreakdown";
 import CareNarrativeTrio from "../../../components/care/CareNarrativeTrio";
 import {
@@ -48,11 +51,13 @@ const toPayload = (formula: CareFormula): FormulaPayload => ({
 });
 
 export default function CareInterpreterPage() {
+  const { mode } = useAppTheme();
+  const isDark = mode === "dark";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formula, setFormula] = useState<CareFormula | null>(null);
-  const [userA, setUserA] = useState("");
-  const [userB, setUserB] = useState("");
+  const [userA, setUserA] = useState<SearchUser | null>(null);
+  const [userB, setUserB] = useState<SearchUser | null>(null);
   const [tone, setTone] = useState<NarrativeResult["tone"]>("directo");
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -91,14 +96,14 @@ export default function CareInterpreterPage() {
     : "";
 
   const handlePreview = async () => {
-    if (!formula || userA.trim() === "" || userB.trim() === "") return;
+    if (!formula || !userA || !userB || userA.id === userB.id) return;
     setPreviewLoading(true);
     setPreviewError(null);
     try {
       const result = await previewFormula({
         formula: toPayload(formula),
-        user_a_id: userA.trim(),
-        user_b_id: userB.trim(),
+        user_a_id: userA.id,
+        user_b_id: userB.id,
         tone,
       });
       setPreviewResult(result);
@@ -110,12 +115,12 @@ export default function CareInterpreterPage() {
   };
 
   const handleExport = () => {
-    if (!formula || !previewResult) return;
+    if (!formula || !previewResult || !userA || !userB) return;
     const generatedAt = new Date().toISOString();
     const report = buildReport(
       {
-        userA: userA.trim(),
-        userB: userB.trim(),
+        userA: userA.id,
+        userB: userB.id,
         formulaVersion: formula.version,
         breakdown: rows,
         chi: previewResult.proposed.chi,
@@ -125,10 +130,7 @@ export default function CareInterpreterPage() {
       },
       generatedAt,
     );
-    downloadJson(
-      reportFilename(userA.trim(), userB.trim(), generatedAt),
-      report,
-    );
+    downloadJson(reportFilename(userA.id, userB.id, generatedAt), report);
   };
 
   return (
@@ -208,21 +210,21 @@ export default function CareInterpreterPage() {
                     Par a evaluar
                   </Typography>
                   <Stack spacing={2}>
-                    <TextField
-                      data-testid="interpreter-user-a"
-                      label="Usuario A (id)"
-                      size="small"
-                      fullWidth
+                    <UserSearchAutocomplete
+                      label="Usuario A"
+                      placeholder="Buscar por nombre, alias o correo"
                       value={userA}
-                      onChange={(event) => setUserA(event.target.value)}
+                      onChange={setUserA}
+                      excludeId={userB?.id ?? null}
+                      isDark={isDark}
                     />
-                    <TextField
-                      data-testid="interpreter-user-b"
-                      label="Usuario B (id)"
-                      size="small"
-                      fullWidth
+                    <UserSearchAutocomplete
+                      label="Usuario B"
+                      placeholder="Buscar por nombre, alias o correo"
                       value={userB}
-                      onChange={(event) => setUserB(event.target.value)}
+                      onChange={setUserB}
+                      excludeId={userA?.id ?? null}
+                      isDark={isDark}
                     />
                     <Box>
                       <Typography
@@ -261,8 +263,9 @@ export default function CareInterpreterPage() {
                       onClick={handlePreview}
                       disabled={
                         previewLoading ||
-                        userA.trim() === "" ||
-                        userB.trim() === ""
+                        !userA ||
+                        !userB ||
+                        userA.id === userB.id
                       }
                     >
                       {previewLoading ? "Evaluando..." : "Interpretar par"}

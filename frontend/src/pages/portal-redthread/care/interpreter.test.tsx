@@ -16,6 +16,77 @@ jest.mock("../../../components/layout/AdminLayout", () => ({
   ),
 }));
 
+jest.mock("../../../context/ThemeContext", () => ({
+  useAppTheme: () => ({ mode: "light" }),
+}));
+
+jest.mock("../../../components/common/UserSearchAutocomplete", () => {
+  const React = require("react");
+  const USERS: Record<
+    string,
+    {
+      id: string;
+      email: string | null;
+      display_name: string;
+      nickname: string;
+      photo: string | null;
+    }
+  > = {
+    a: {
+      id: "u1",
+      email: "ana@x.com",
+      display_name: "Ana A",
+      nickname: "ana",
+      photo: null,
+    },
+    b: {
+      id: "u2",
+      email: "beto@x.com",
+      display_name: "Beto B",
+      nickname: "beto",
+      photo: null,
+    },
+  };
+  return {
+    __esModule: true,
+    default: ({
+      label,
+      value,
+      onChange,
+      excludeId,
+    }: {
+      label?: string;
+      value: { id: string } | null;
+      onChange: (user: (typeof USERS)["a"] | null) => void;
+      excludeId?: string | null;
+    }) => {
+      const key = label === "Usuario A" ? "a" : "b";
+      return React.createElement(
+        "div",
+        { "data-testid": `search-${key}` },
+        React.createElement(
+          "span",
+          { "data-testid": `search-${key}-value` },
+          value?.id ?? "",
+        ),
+        React.createElement(
+          "span",
+          { "data-testid": `search-${key}-exclude` },
+          excludeId ?? "",
+        ),
+        React.createElement("button", {
+          "data-testid": `search-${key}-pick`,
+          onClick: () => onChange(USERS[key]),
+        }),
+        React.createElement("button", {
+          "data-testid": `search-${key}-pick-a`,
+          onClick: () => onChange(USERS.a),
+        }),
+      );
+    },
+  };
+});
+
 jest.mock("../../../components/care/CareScoreBreakdown", () => {
   const React = require("react");
   return {
@@ -95,19 +166,9 @@ const previewResponse = {
   narrative: { tone: "directo", text: "Suben los valores.", label: "Medio" },
 };
 
-const setUsers = (a: string, b: string) => {
-  fireEvent.change(
-    screen
-      .getByTestId("interpreter-user-a")
-      .querySelector("input") as HTMLInputElement,
-    { target: { value: a } },
-  );
-  fireEvent.change(
-    screen
-      .getByTestId("interpreter-user-b")
-      .querySelector("input") as HTMLInputElement,
-    { target: { value: b } },
-  );
+const pickUsers = () => {
+  fireEvent.click(screen.getByTestId("search-a-pick"));
+  fireEvent.click(screen.getByTestId("search-b-pick"));
 };
 
 const originalCreateObjectURL = URL.createObjectURL;
@@ -153,7 +214,7 @@ describe("CareInterpreterPage / preview", () => {
   const run = async () => {
     render(<CareInterpreterPage />);
     await screen.findByTestId("interpreter-run");
-    setUsers("u1", "u2");
+    pickUsers();
     fireEvent.click(screen.getByTestId("interpreter-run"));
   };
 
@@ -174,7 +235,7 @@ describe("CareInterpreterPage / preview", () => {
   it("sends the chosen tone", async () => {
     render(<CareInterpreterPage />);
     await screen.findByTestId("interpreter-run");
-    setUsers("u1", "u2");
+    pickUsers();
     fireEvent.click(screen.getByTestId("interpreter-tone-poetico"));
     fireEvent.click(screen.getByTestId("interpreter-run"));
     await waitFor(() =>
@@ -228,7 +289,7 @@ describe("CareInterpreterPage / export", () => {
   it("downloads the report JSON with the spec fields", async () => {
     render(<CareInterpreterPage />);
     await screen.findByTestId("interpreter-run");
-    setUsers("u1", "u2");
+    pickUsers();
     fireEvent.click(screen.getByTestId("interpreter-run"));
     await screen.findByTestId("trio-stub");
     fireEvent.click(screen.getByTestId("interpreter-export"));
@@ -248,5 +309,36 @@ describe("CareInterpreterPage / export", () => {
     );
     expect(report.breakdown).toHaveLength(7);
     expect(typeof report.generated_at).toBe("string");
+  });
+});
+
+describe("CareInterpreterPage / user search", () => {
+  it("keeps Interpretar disabled until both users are selected", async () => {
+    render(<CareInterpreterPage />);
+    const runButton = await screen.findByTestId("interpreter-run");
+    expect(runButton).toBeDisabled();
+    fireEvent.click(screen.getByTestId("search-a-pick"));
+    expect(runButton).toBeDisabled();
+    fireEvent.click(screen.getByTestId("search-b-pick"));
+    expect(runButton).toBeEnabled();
+  });
+
+  it("cross-excludes the profile already selected on the other side", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-run");
+    pickUsers();
+    expect(screen.getByTestId("search-a-exclude")).toHaveTextContent("u2");
+    expect(screen.getByTestId("search-b-exclude")).toHaveTextContent("u1");
+  });
+
+  it("blocks running when both sides hold the same profile", async () => {
+    render(<CareInterpreterPage />);
+    await screen.findByTestId("interpreter-run");
+    fireEvent.click(screen.getByTestId("search-a-pick"));
+    fireEvent.click(screen.getByTestId("search-b-pick-a"));
+    const runButton = screen.getByTestId("interpreter-run");
+    expect(runButton).toBeDisabled();
+    fireEvent.click(runButton);
+    expect(mockPreview).not.toHaveBeenCalled();
   });
 });
