@@ -16,6 +16,7 @@ from src.models.algorithm_management import (
 from src.services.algorithm_service import AlgorithmService
 from datetime import datetime
 from src.care.formula import service as formula_service
+from src.care.profiles import service as profile_service
 from src.care.formula.service import (
     FormulaNoChangeError,
     FormulaValidationError,
@@ -441,3 +442,67 @@ async def normalize_formula_blocks(body: Dict[str, Any], admin: Employee = Depen
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     return {"blocks": blocks}
+
+
+# --- CARE formula profiles (saved presets) ---
+
+
+@router.get("/formula/profiles")
+async def list_formula_profiles(admin: Employee = Depends(admin_required)):
+    profiles = await profile_service.list_profiles()
+    return [profile.model_dump(mode="json") for profile in profiles]
+
+
+@router.post("/formula/profiles", status_code=201)
+async def create_formula_profile(
+    body: Dict[str, Any], admin: Employee = Depends(admin_required)
+):
+    try:
+        profile = await profile_service.create_profile(
+            body.get("name"),
+            body.get("blocks"),
+            body.get("chaos_factor", 0.0),
+            str(admin.id),
+        )
+    except profile_service.ProfileNameError as exc:
+        raise HTTPException(status_code=422, detail=[str(exc)])
+    except profile_service.ProfileDuplicateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except FormulaValidationError as exc:
+        raise HTTPException(status_code=422, detail=exc.errors)
+    return profile.model_dump(mode="json")
+
+
+@router.put("/formula/profiles/{profile_id}")
+async def update_formula_profile(
+    profile_id: str,
+    body: Dict[str, Any],
+    admin: Employee = Depends(admin_required),
+):
+    try:
+        profile = await profile_service.update_profile(
+            profile_id,
+            name=body.get("name"),
+            blocks=body.get("blocks"),
+            chaos_factor=body.get("chaos_factor"),
+        )
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except profile_service.ProfileNameError as exc:
+        raise HTTPException(status_code=422, detail=[str(exc)])
+    except profile_service.ProfileDuplicateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except FormulaValidationError as exc:
+        raise HTTPException(status_code=422, detail=exc.errors)
+    return profile.model_dump(mode="json")
+
+
+@router.delete("/formula/profiles/{profile_id}")
+async def delete_formula_profile(
+    profile_id: str, admin: Employee = Depends(admin_required)
+):
+    try:
+        await profile_service.delete_profile(profile_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return {"ok": True}
