@@ -19,11 +19,12 @@ import {
   Collapse,
   IconButton,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import FunctionsIcon from "@mui/icons-material/Functions";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SaveIcon from "@mui/icons-material/Save";
-import TuneIcon from "@mui/icons-material/Tune";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -41,6 +42,7 @@ import CareFormulaJsonEditor from "../../../components/care/CareFormulaJsonEdito
 import CareSimulationTable from "../../../components/care/CareSimulationTable";
 import CarePreviewPanel from "../../../components/care/CarePreviewPanel";
 import CareVersionsPanel from "../../../components/care/CareVersionsPanel";
+import CareProfilesPanel from "../../../components/care/CareProfilesPanel";
 import type { SearchUser } from "../../../components/common/UserSearchAutocomplete";
 import type { CareDimensionKey } from "../../../constants/careDimensions";
 import {
@@ -59,6 +61,13 @@ import {
   type SimulateResult,
 } from "../../../services/careFormulaService";
 import {
+  createProfile,
+  deleteProfile,
+  listProfiles,
+  updateProfile,
+} from "../../../services/careProfileService";
+import {
+  clampBlockPercent,
   computeDeltas,
   decodeEquationDraft,
   formatActiveVersion,
@@ -80,10 +89,20 @@ import {
   toEquationDraft,
   type EquationDraft,
 } from "../../../utils/careEquationModel";
+import {
+  BUILTIN_PROFILES,
+  applyProfileToDraft,
+  profileErrorMessage,
+  profileMatchesDraft,
+  toProfileView,
+  type ProfileView,
+} from "../../../utils/careProfileModel";
 
 const SEED_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 const GLOW_MS = 700;
+
+const LIMIT_HINT_MS = 1200;
 
 /** Compact legend for the Ψ/M notation, shown next to the weights panel. */
 const GLOSSARY_ENTRIES: { symbol: string; description: string }[] = [
@@ -115,7 +134,6 @@ export default function CareEquationPage() {
   const [pulseToken, setPulseToken] = useState(0);
   const glowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [locked, setLocked] = useState<string[]>([]);
-  const [normalizing, setNormalizing] = useState(false);
   const [jsonText, setJsonText] = useState("");
   const [jsonValid, setJsonValid] = useState(true);
   const [jsonError, setJsonError] = useState<string | null>(null);
@@ -141,6 +159,22 @@ export default function CareEquationPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [profiles, setProfiles] = useState<ProfileView[]>(BUILTIN_PROFILES);
+  const [profilesLoading, setProfilesLoading] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
+    null,
+  );
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
+  const [profileConfirm, setProfileConfirm] = useState<{
+    kind: "update" | "delete";
+    profile: ProfileView;
+  } | null>(null);
+  const [limitHint, setLimitHint] = useState(false);
+  const limitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -200,15 +234,43 @@ export default function CareEquationPage() {
   useEffect(
     () => () => {
       if (glowTimer.current) clearTimeout(glowTimer.current);
+      if (limitTimer.current) clearTimeout(limitTimer.current);
     },
     [],
   );
 
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    (async () => {
+      setProfilesLoading(true);
+      try {
+        const saved = await listProfiles();
+        if (!cancelled) {
+          setProfiles([...BUILTIN_PROFILES, ...saved.map(toProfileView)]);
+        }
+      } catch {
+        if (!cancelled) setProfiles(BUILTIN_PROFILES);
+      } finally {
+        if (!cancelled) setProfilesLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready]);
+
   const handleBlockChange = (key: CareDimensionKey, percent: number) => {
     if (!draft || locked.includes(key)) return;
+    const clamped = clampBlockPercent(draft.blocks, key, percent);
+    if (percent > clamped) {
+      setLimitHint(true);
+      if (limitTimer.current) clearTimeout(limitTimer.current);
+      limitTimer.current = setTimeout(() => setLimitHint(false), LIMIT_HINT_MS);
+    }
     applyDraft({
       ...draft,
-      blocks: withFraction(draft.blocks, key, percent),
+      blocks: withFraction(draft.blocks, key, clamped),
     });
     flashGlow(key);
   };
@@ -231,20 +293,85 @@ export default function CareEquationPage() {
     setLocked((prev) => toggleLocked(prev, key));
   };
 
-  const handleNormalizar = async () => {
+  const handleSelectProfile = (id: string) => {
     if (!draft) return;
-    setNormalizing(true);
-    setError(null);
+    const profile = profiles.find((item) => item.id === id);
+    if (!profile) return;
+    applyDraft(applyProfileToDraft(draft, profile));
+    setSelectedProfileId(id);
+  };
+
+  const handleReestablecer = () => {
+    if (!draft) return;
+    applyDraft(applyProfileToDraft(draft, BUILTIN_PROFILES[0]));
+    setSelectedProfileId(BUILTIN_PROFILES[0].id);
+  };
+
+  const handleProfileSaveAsOpen = () => {
+    setProfileError(null);
+    setProfileName("");
+    setProfileDialogOpen(true);
+  };
+
+  const handleProfileCreate = async () => {
+    if (!draft) return;
+    setProfileSaving(true);
+    setProfileError(null);
     try {
-      const { blocks: normalized } = await normalizeFormulaBlocks(
-        draft.blocks,
-        locked,
-      );
-      applyDraft({ ...draft, blocks: normalized });
-    } catch {
-      setError("No se pudieron normalizar los pesos (revisa los bloqueos).");
+      const created = await createProfile({
+        name: profileName.trim(),
+        blocks: draft.blocks,
+        chaos_factor: draft.chaosFactor,
+      });
+      const view = toProfileView(created);
+      setProfiles((prev) => [...prev, view]);
+      setSelectedProfileId(view.id);
+      setProfileDialogOpen(false);
+      setProfileSuccess(`Perfil "${view.name}" guardado.`);
+    } catch (err) {
+      setProfileError(profileErrorMessage(err));
     } finally {
-      setNormalizing(false);
+      setProfileSaving(false);
+    }
+  };
+
+  const handleProfileUpdateConfirm = async () => {
+    if (!draft || !profileConfirm || profileConfirm.kind !== "update") return;
+    setProfileSaving(true);
+    setProfileError(null);
+    try {
+      const updated = await updateProfile(profileConfirm.profile.id, {
+        blocks: draft.blocks,
+        chaos_factor: draft.chaosFactor,
+      });
+      const view = toProfileView(updated);
+      setProfiles((prev) =>
+        prev.map((profile) => (profile.id === view.id ? view : profile)),
+      );
+      setProfileConfirm(null);
+      setProfileSuccess(`Perfil "${view.name}" actualizado.`);
+    } catch (err) {
+      setProfileError(profileErrorMessage(err));
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  const handleProfileDeleteConfirm = async () => {
+    if (!profileConfirm || profileConfirm.kind !== "delete") return;
+    const target = profileConfirm.profile;
+    setProfileSaving(true);
+    setProfileError(null);
+    try {
+      await deleteProfile(target.id);
+      setProfiles((prev) => prev.filter((profile) => profile.id !== target.id));
+      if (selectedProfileId === target.id) setSelectedProfileId(null);
+      setProfileConfirm(null);
+      setProfileSuccess(`Perfil "${target.name}" eliminado.`);
+    } catch (err) {
+      setProfileError(profileErrorMessage(err));
+    } finally {
+      setProfileSaving(false);
     }
   };
 
@@ -407,6 +534,11 @@ export default function CareEquationPage() {
   };
 
   const balanced = draft ? isBalanced(draft.blocks) : false;
+  const selectedProfile =
+    profiles.find((profile) => profile.id === selectedProfileId) ?? null;
+  const profileModified =
+    draft !== null &&
+    !profileMatchesDraft(selectedProfile, draft.blocks, draft.chaosFactor);
 
   return (
     <AdminLayout>
@@ -459,6 +591,16 @@ export default function CareEquationPage() {
           {saveSuccess && (
             <Alert severity="success" sx={{ mb: 3 }} data-testid="save-success">
               {saveSuccess}
+            </Alert>
+          )}
+
+          {profileSuccess && (
+            <Alert
+              severity="success"
+              sx={{ mb: 3 }}
+              data-testid="profile-success"
+            >
+              {profileSuccess}
             </Alert>
           )}
 
@@ -740,6 +882,32 @@ export default function CareEquationPage() {
                       border: `1px solid ${isDark ? "#333333" : "#CCCCCC"}`,
                     }}
                   >
+                    <CareProfilesPanel
+                      profiles={profiles}
+                      selectedId={selectedProfileId}
+                      modified={profileModified}
+                      loading={profilesLoading}
+                      onSelect={handleSelectProfile}
+                      onSaveAs={handleProfileSaveAsOpen}
+                      onUpdate={() => {
+                        if (selectedProfile && !selectedProfile.builtin) {
+                          setProfileError(null);
+                          setProfileConfirm({
+                            kind: "update",
+                            profile: selectedProfile,
+                          });
+                        }
+                      }}
+                      onDelete={() => {
+                        if (selectedProfile && !selectedProfile.builtin) {
+                          setProfileError(null);
+                          setProfileConfirm({
+                            kind: "delete",
+                            profile: selectedProfile,
+                          });
+                        }
+                      }}
+                    />
                     <Typography
                       variant="subtitle1"
                       sx={{ fontWeight: 700, mb: 1.5 }}
@@ -768,16 +936,29 @@ export default function CareEquationPage() {
                       <Typography variant="body2" sx={{ fontWeight: 700 }}>
                         Σ en vivo
                       </Typography>
-                      <Typography
-                        variant="body2"
-                        data-testid="weights-total"
-                        sx={{
-                          fontWeight: 800,
-                          color: balanced ? "success.main" : "error.main",
-                        }}
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
-                        {totalPercent(draft.blocks)}%
-                      </Typography>
+                        {limitHint && (
+                          <Chip
+                            data-testid="limit-hint"
+                            label="Límite 100%"
+                            size="small"
+                            color="warning"
+                            variant="outlined"
+                          />
+                        )}
+                        <Typography
+                          variant="body2"
+                          data-testid="weights-total"
+                          sx={{
+                            fontWeight: 800,
+                            color: balanced ? "success.main" : "error.main",
+                          }}
+                        >
+                          {totalPercent(draft.blocks)}%
+                        </Typography>
+                      </Box>
                     </Box>
 
                     <Stack
@@ -785,21 +966,25 @@ export default function CareEquationPage() {
                       spacing={1.5}
                       sx={{ mt: 2, flexWrap: "wrap", gap: 1 }}
                     >
-                      <Button
-                        data-testid="action-normalize"
-                        variant="outlined"
-                        size="small"
-                        startIcon={<TuneIcon />}
-                        onClick={handleNormalizar}
-                        disabled={normalizing || loading}
-                        sx={{
-                          borderRadius: 2,
-                          textTransform: "none",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {normalizing ? "Normalizando..." : "Normalizar"}
-                      </Button>
+                      <Tooltip title="Vuelve al perfil Default">
+                        <span>
+                          <Button
+                            data-testid="action-reestablecer"
+                            variant="outlined"
+                            size="small"
+                            startIcon={<RestartAltIcon />}
+                            onClick={handleReestablecer}
+                            disabled={loading}
+                            sx={{
+                              borderRadius: 2,
+                              textTransform: "none",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Reestablecer
+                          </Button>
+                        </span>
+                      </Tooltip>
                       <Button
                         data-testid="action-probar"
                         variant="contained"
@@ -832,7 +1017,7 @@ export default function CareEquationPage() {
                           fontWeight: 600,
                         }}
                       >
-                        Aplicar Cambios
+                        Guardar
                       </Button>
                     </Stack>
                   </Paper>
@@ -982,7 +1167,7 @@ export default function CareEquationPage() {
             fullWidth
             data-testid="save-modal"
           >
-            <DialogTitle>Aplicar cambios</DialogTitle>
+            <DialogTitle>Guardar cambios</DialogTitle>
             <DialogContent>
               <Stack spacing={2} sx={{ mt: 1 }}>
                 <Typography
@@ -1048,6 +1233,104 @@ export default function CareEquationPage() {
                 disabled={changelog.trim().length === 0 || saving}
               >
                 {saving ? "Guardando..." : "Guardar"}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={profileDialogOpen}
+            onClose={() => {
+              if (!profileSaving) setProfileDialogOpen(false);
+            }}
+            maxWidth="xs"
+            fullWidth
+            data-testid="profile-name-dialog"
+          >
+            <DialogTitle>Guardar como perfil</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <TextField
+                  data-testid="profile-name-input"
+                  label="Nombre del perfil"
+                  required
+                  fullWidth
+                  value={profileName}
+                  onChange={(event) => setProfileName(event.target.value)}
+                  helperText="Entre 1 y 60 caracteres."
+                />
+                {profileError && (
+                  <Alert severity="error" data-testid="profile-name-error">
+                    {profileError}
+                  </Alert>
+                )}
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setProfileDialogOpen(false)}
+                disabled={profileSaving}
+              >
+                Cancelar
+              </Button>
+              <Button
+                data-testid="profile-name-save"
+                variant="contained"
+                onClick={handleProfileCreate}
+                disabled={profileName.trim().length === 0 || profileSaving}
+              >
+                {profileSaving ? "Guardando..." : "Guardar"}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={profileConfirm !== null}
+            onClose={() => {
+              if (!profileSaving) setProfileConfirm(null);
+            }}
+            maxWidth="xs"
+            fullWidth
+            data-testid="profile-confirm-dialog"
+          >
+            <DialogTitle>
+              {profileConfirm?.kind === "delete"
+                ? "Eliminar perfil"
+                : "Actualizar perfil"}
+            </DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <Typography variant="body2">
+                  {profileConfirm?.kind === "delete"
+                    ? `¿Eliminar el perfil "${profileConfirm?.profile.name}"? Esta acción no se puede deshacer.`
+                    : `¿Sobrescribir "${profileConfirm?.profile.name}" con los pesos actuales del editor?`}
+                </Typography>
+                {profileError && (
+                  <Alert severity="error" data-testid="profile-confirm-error">
+                    {profileError}
+                  </Alert>
+                )}
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                data-testid="profile-confirm-cancel"
+                onClick={() => setProfileConfirm(null)}
+                disabled={profileSaving}
+              >
+                Cancelar
+              </Button>
+              <Button
+                data-testid="profile-confirm-accept"
+                variant="contained"
+                color={profileConfirm?.kind === "delete" ? "error" : "primary"}
+                onClick={
+                  profileConfirm?.kind === "delete"
+                    ? handleProfileDeleteConfirm
+                    : handleProfileUpdateConfirm
+                }
+                disabled={profileSaving}
+              >
+                {profileConfirm?.kind === "delete" ? "Eliminar" : "Actualizar"}
               </Button>
             </DialogActions>
           </Dialog>

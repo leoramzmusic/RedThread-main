@@ -16,6 +16,12 @@ import {
   simulateFormula,
   validateFormula,
 } from "../../../services/careFormulaService";
+import {
+  createProfile,
+  deleteProfile,
+  listProfiles,
+  updateProfile,
+} from "../../../services/careProfileService";
 import { CANONICAL_BLOCK_WEIGHTS } from "../../../constants/careDimensions";
 import { AppThemeProvider } from "../../../context/ThemeContext";
 
@@ -169,6 +175,10 @@ jest.mock("../../../components/care/CareCriteriaTable", () => {
           onClick: () => props.onSliderChange("values", 40),
         }),
         React.createElement("button", {
+          "data-testid": "stub-slide-values-30",
+          onClick: () => props.onSliderChange("values", 30),
+        }),
+        React.createElement("button", {
           "data-testid": "stub-commit-values",
           onClick: () => props.onSliderCommit("values", 40),
         }),
@@ -238,6 +248,21 @@ jest.mock("../../../components/care/CareFormulaJsonEditor", () => {
     min_compatibility: 0,
     match_critical: 0.15,
   });
+  const unbalancedJson = JSON.stringify({
+    blocks: {
+      values: 0.44,
+      relationship_goals: 0.18,
+      neurodiversity: 0.15,
+      responsiveness: 0.1,
+      music: 0.07,
+      love_language: 0.06,
+      communication_style: 0.04,
+    },
+    chaos_factor: 0,
+    chaos_seed: null,
+    min_compatibility: 0,
+    match_critical: 0.15,
+  });
   return {
     __esModule: true,
     default: (props: {
@@ -255,6 +280,10 @@ jest.mock("../../../components/care/CareFormulaJsonEditor", () => {
         React.createElement("button", {
           "data-testid": "stub-json-valid",
           onClick: () => props.onChange(validJson),
+        }),
+        React.createElement("button", {
+          "data-testid": "stub-json-unbalanced",
+          onClick: () => props.onChange(unbalancedJson),
         }),
         React.createElement("button", {
           "data-testid": "stub-json-invalid",
@@ -304,6 +333,54 @@ jest.mock("../../../components/care/CareVersionsPanel", () => {
       ),
   };
 });
+jest.mock("../../../components/care/CareProfilesPanel", () => {
+  const React = require("react");
+  return {
+    __esModule: true,
+    default: (props: {
+      profiles: { builtin: boolean }[];
+      selectedId: string | null;
+      modified: boolean;
+      onSelect: (id: string) => void;
+      onSaveAs: () => void;
+      onUpdate: () => void;
+      onDelete: () => void;
+    }) =>
+      React.createElement(
+        "div",
+        {
+          "data-testid": "profiles-stub",
+          "data-selected": props.selectedId ?? "",
+          "data-modified": String(props.modified),
+          "data-count": String(props.profiles.filter((p) => !p.builtin).length),
+        },
+        React.createElement("button", {
+          "data-testid": "stub-profile-select-default",
+          onClick: () => props.onSelect("builtin:default"),
+        }),
+        React.createElement("button", {
+          "data-testid": "stub-profile-select-lowchaos",
+          onClick: () => props.onSelect("builtin:lowchaos"),
+        }),
+        React.createElement("button", {
+          "data-testid": "stub-profile-select-saved",
+          onClick: () => props.onSelect("p1"),
+        }),
+        React.createElement("button", {
+          "data-testid": "stub-profile-save-as",
+          onClick: () => props.onSaveAs(),
+        }),
+        React.createElement("button", {
+          "data-testid": "stub-profile-update",
+          onClick: () => props.onUpdate(),
+        }),
+        React.createElement("button", {
+          "data-testid": "stub-profile-delete",
+          onClick: () => props.onDelete(),
+        }),
+      ),
+  };
+});
 
 jest.mock("../../../services/careFormulaService", () => ({
   __esModule: true,
@@ -317,6 +394,14 @@ jest.mock("../../../services/careFormulaService", () => ({
   rollbackFormula: jest.fn(),
 }));
 
+jest.mock("../../../services/careProfileService", () => ({
+  __esModule: true,
+  listProfiles: jest.fn(),
+  createProfile: jest.fn(),
+  updateProfile: jest.fn(),
+  deleteProfile: jest.fn(),
+}));
+
 const mockGetActive = getActiveFormula as jest.Mock;
 const mockValidate = validateFormula as jest.Mock;
 const mockSimulate = simulateFormula as jest.Mock;
@@ -325,6 +410,10 @@ const mockNormalize = normalizeFormulaBlocks as jest.Mock;
 const mockSave = saveFormula as jest.Mock;
 const mockListVersions = listFormulaVersions as jest.Mock;
 const mockRollback = rollbackFormula as jest.Mock;
+const mockListProfiles = listProfiles as jest.Mock;
+const mockCreateProfile = createProfile as jest.Mock;
+const mockUpdateProfile = updateProfile as jest.Mock;
+const mockDeleteProfile = deleteProfile as jest.Mock;
 
 const active = {
   version: 3,
@@ -422,6 +511,7 @@ beforeEach(() => {
     blocks,
   }));
   mockListVersions.mockResolvedValue([]);
+  mockListProfiles.mockResolvedValue([]);
 });
 
 const headerBlocks = (): Record<string, number> =>
@@ -482,10 +572,10 @@ describe("CareEquationPage / KPIs de cabecera", () => {
     expect(mockGetActive).toHaveBeenCalledTimes(1);
   });
 
-  it("flags the total as invalid and blocks Aplicar when the sum breaks", async () => {
+  it("flags the total as invalid and blocks Guardar when the sum breaks (JSON)", async () => {
     renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("stub-slide-values"));
+    await screen.findByTestId("json-stub");
+    fireEvent.click(screen.getByTestId("stub-json-unbalanced"));
     expect(screen.getByTestId("kpi-total")).toHaveTextContent("104%");
     expect(screen.getByTestId("kpi-total-badge")).toHaveTextContent("Inválido");
     expect(screen.getByTestId("open-save-modal")).toBeDisabled();
@@ -497,10 +587,10 @@ describe("CareEquationPage / bidirectional JSON", () => {
   it("regenerates the JSON when a block slider changes", async () => {
     renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("stub-slide-values"));
+    fireEvent.click(screen.getByTestId("stub-slide-values-30"));
     expect(
       screen.getByTestId("json-stub").getAttribute("data-value"),
-    ).toContain('"values": 0.4');
+    ).toContain('"values": 0.3');
   });
 
   it("regenerates the JSON when the chaos slider changes", async () => {
@@ -560,14 +650,18 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
     );
   });
 
-  it("normalizes via the Normalizar button", async () => {
+  it("restores the Default profile from the Reestablecer button", async () => {
+    mockQuery = {
+      w: JSON.stringify({ ...active.blocks, values: 0.44, music: 0.07 }),
+    };
     renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("action-normalize"));
-    await waitFor(() => expect(mockNormalize).toHaveBeenCalledTimes(1));
-    expect(mockNormalize).toHaveBeenCalledWith(
-      expect.objectContaining({ values: 0.36 }),
-      [],
+    fireEvent.click(screen.getByTestId("action-reestablecer"));
+    expect(headerBlocks()).toEqual(active.blocks);
+    expect(mockNormalize).not.toHaveBeenCalled();
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-selected",
+      "builtin:default",
     );
   });
 
@@ -626,6 +720,37 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
     fireEvent.click(screen.getByTestId("stub-lock-values"));
     fireEvent.click(screen.getByTestId("stub-slide-values"));
     expect(screen.getByTestId("canvas-stub")).toHaveAttribute("data-glow", "");
+  });
+});
+
+describe("CareEquationPage / clamp 100%", () => {
+  it("clamps a raise that would exceed 100% and shows the limit hint", async () => {
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("criteria-table");
+    fireEvent.click(screen.getByTestId("stub-slide-values")); // request 40, no headroom
+    expect(screen.getByTestId("weights-total")).toHaveTextContent("100%");
+    expect(screen.getByTestId("limit-hint")).toBeInTheDocument();
+    expect(screen.getByTestId("open-save-modal")).not.toBeDisabled();
+    expect(headerBlocks().values).toBeCloseTo(0.36);
+  });
+
+  it("allows raising up to the exact 100% headroom", async () => {
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("criteria-table");
+    fireEvent.click(screen.getByTestId("stub-slide-values-30")); // 36 -> 30, sum 94
+    fireEvent.click(screen.getByTestId("stub-slide-values")); // request 40 -> clamped to 36
+    expect(screen.getByTestId("weights-total")).toHaveTextContent("100%");
+    expect(headerBlocks().values).toBeCloseTo(0.36);
+    expect(screen.getByTestId("limit-hint")).toBeInTheDocument();
+  });
+
+  it("lowers without clamping and without the hint", async () => {
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("criteria-table");
+    fireEvent.click(screen.getByTestId("stub-slide-values-30"));
+    expect(screen.getByTestId("weights-total")).toHaveTextContent("94%");
+    expect(screen.queryByTestId("limit-hint")).not.toBeInTheDocument();
+    expect(headerBlocks().values).toBeCloseTo(0.3);
   });
 });
 
@@ -735,8 +860,8 @@ describe("CareEquationPage / Probar fórmula", () => {
 
   it("short-circuits to client validation for an unbalanced sum", async () => {
     renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("stub-slide-values")); // values -> 40% => sum 104%
+    await screen.findByTestId("json-stub");
+    fireEvent.click(screen.getByTestId("stub-json-unbalanced"));
     fireEvent.click(screen.getByTestId("action-probar"));
     expect(await screen.findByTestId("validate-errors")).toHaveTextContent(
       "100%",
@@ -913,5 +1038,155 @@ describe("CareEquationPage / vista previa (buscador A/B)", () => {
     expect(screen.getByTestId("preview-run")).toBeEnabled();
     fireEvent.click(screen.getByTestId("search-a-clear"));
     expect(screen.getByTestId("preview-run")).toBeDisabled();
+  });
+});
+
+describe("CareEquationPage / perfiles", () => {
+  const savedProfile = {
+    id: "p1",
+    name: "Mi perfil",
+    blocks: { ...CANONICAL_BLOCK_WEIGHTS, values: 0.3, music: 0.17 },
+    chaos_factor: 2,
+    created_by: "maria",
+    created_at: "2026-10-17T00:00:00Z",
+    updated_at: "2026-10-17T00:00:00Z",
+  };
+
+  it("loads saved profiles on mount", async () => {
+    mockListProfiles.mockResolvedValueOnce([savedProfile]);
+    renderWithTheme(<CareEquationPage />);
+    const stub = await screen.findByTestId("profiles-stub");
+    await waitFor(() => expect(stub).toHaveAttribute("data-count", "1"));
+  });
+
+  it("falls back to builtins when listing fails", async () => {
+    mockListProfiles.mockRejectedValueOnce(new Error("boom"));
+    renderWithTheme(<CareEquationPage />);
+    const stub = await screen.findByTestId("profiles-stub");
+    await waitFor(() => expect(stub).toHaveAttribute("data-count", "0"));
+    expect(stub).toHaveAttribute("data-selected", "");
+  });
+
+  it("applies the selected profile to the draft", async () => {
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("profiles-stub");
+    fireEvent.click(screen.getByTestId("stub-profile-select-lowchaos"));
+    expect(headerBlocks()).toEqual(CANONICAL_BLOCK_WEIGHTS);
+    expect(
+      screen.getByTestId("json-stub").getAttribute("data-value"),
+    ).toContain('"chaos_factor": 1');
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-selected",
+      "builtin:lowchaos",
+    );
+  });
+
+  it("marks the selection as modified after a manual edit", async () => {
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("profiles-stub");
+    fireEvent.click(screen.getByTestId("stub-profile-select-lowchaos"));
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-modified",
+      "false",
+    );
+    fireEvent.click(screen.getByTestId("stub-slide-values-30"));
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-modified",
+      "true",
+    );
+  });
+
+  it("creates a profile from the save-as flow", async () => {
+    const created = { ...savedProfile, id: "p2", name: "Nuevo" };
+    mockCreateProfile.mockResolvedValueOnce(created);
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("profiles-stub");
+    fireEvent.click(screen.getByTestId("stub-profile-save-as"));
+    const input = screen
+      .getByTestId("profile-name-input")
+      .querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "Nuevo" } });
+    fireEvent.click(screen.getByTestId("profile-name-save"));
+    await waitFor(() => expect(mockCreateProfile).toHaveBeenCalledTimes(1));
+    expect(mockCreateProfile).toHaveBeenCalledWith({
+      name: "Nuevo",
+      blocks: active.blocks,
+      chaos_factor: 5,
+    });
+    expect(await screen.findByTestId("profile-success")).toHaveTextContent(
+      "Nuevo",
+    );
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-count",
+      "1",
+    );
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-selected",
+      "p2",
+    );
+  });
+
+  it("surfaces a duplicate name error in the dialog", async () => {
+    mockCreateProfile.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: {
+        status: 409,
+        data: { detail: "Ya existe un perfil con ese nombre." },
+      },
+    });
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("profiles-stub");
+    fireEvent.click(screen.getByTestId("stub-profile-save-as"));
+    const input = screen
+      .getByTestId("profile-name-input")
+      .querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "Repetido" } });
+    fireEvent.click(screen.getByTestId("profile-name-save"));
+    expect(await screen.findByTestId("profile-name-error")).toHaveTextContent(
+      "Ya existe",
+    );
+  });
+
+  it("updates a saved profile after confirmation", async () => {
+    mockListProfiles.mockResolvedValueOnce([savedProfile]);
+    mockUpdateProfile.mockResolvedValueOnce({
+      ...savedProfile,
+      chaos_factor: 5,
+    });
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("profiles-stub");
+    fireEvent.click(screen.getByTestId("stub-profile-select-saved"));
+    fireEvent.click(screen.getByTestId("stub-profile-update"));
+    fireEvent.click(screen.getByTestId("profile-confirm-accept"));
+    await waitFor(() =>
+      expect(mockUpdateProfile).toHaveBeenCalledWith("p1", {
+        blocks: savedProfile.blocks,
+        chaos_factor: 2,
+      }),
+    );
+    expect(await screen.findByTestId("profile-success")).toHaveTextContent(
+      "actualizado",
+    );
+  });
+
+  it("deletes a saved profile after confirmation and clears selection", async () => {
+    mockListProfiles.mockResolvedValueOnce([savedProfile]);
+    mockDeleteProfile.mockResolvedValueOnce(undefined);
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("profiles-stub");
+    fireEvent.click(screen.getByTestId("stub-profile-select-saved"));
+    fireEvent.click(screen.getByTestId("stub-profile-delete"));
+    fireEvent.click(screen.getByTestId("profile-confirm-accept"));
+    await waitFor(() => expect(mockDeleteProfile).toHaveBeenCalledWith("p1"));
+    await waitFor(() =>
+      expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+        "data-count",
+        "0",
+      ),
+    );
+    expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
+      "data-selected",
+      "",
+    );
   });
 });

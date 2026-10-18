@@ -179,3 +179,19 @@ export function saveErrorMessage(error: unknown): string {
   }
   return "No se pudo guardar la fórmula. Intenta de nuevo.";
 }
+
+/**
+ * Moves one block toward `requestedPercent` without letting the rounded
+ * total exceed 100%. Lowering is always allowed; a raise is capped at the
+ * exact remaining headroom (0 when the total is already 100% or more).
+ */
+export function clampBlockPercent(
+  blocks: FormulaBlocks,
+  key: CareDimensionKey,
+  requestedPercent: number,
+): number {
+  const currentPercent = percentOf(blocks[key]);
+  if (requestedPercent <= currentPercent) return requestedPercent;
+  const headroom = Math.max(0, 100 - totalPercent(blocks));
+  return Math.min(requestedPercent, currentPercent + headroom);
+}

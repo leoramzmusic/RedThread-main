@@ -12,6 +12,7 @@ import {
   encodeEquationDraft,
   decodeEquationDraft,
   saveErrorMessage,
+  clampBlockPercent,
 } from "./careCriteriaModel";
 import { CANONICAL_BLOCK_WEIGHTS } from "../constants/careDimensions";
 
@@ -160,5 +161,31 @@ describe("careCriteriaModel / saveErrorMessage", () => {
     expect(saveErrorMessage(new Error("boom"))).toBe(
       "No se pudo guardar la fórmula. Intenta de nuevo.",
     );
+  });
+});
+
+describe("careCriteriaModel / clampBlockPercent", () => {
+  it("returns the requested percent when lowering", () => {
+    expect(clampBlockPercent(canonical, "values", 20)).toBe(20);
+  });
+
+  it("cannot raise at all when the total is already 100%", () => {
+    expect(clampBlockPercent(canonical, "values", 40)).toBe(36);
+  });
+
+  it("raises at most by the exact headroom to 100%", () => {
+    const lowered = withFraction(canonical, "values", 30); // sum 94
+    expect(clampBlockPercent(lowered, "values", 40)).toBe(36);
+    expect(clampBlockPercent(lowered, "music", 20)).toBe(17);
+  });
+
+  it("passes raises through when they stay under 100%", () => {
+    const lowered = withFraction(canonical, "values", 20); // sum 84
+    expect(clampBlockPercent(lowered, "music", 15)).toBe(15);
+  });
+
+  it("cannot raise when the total already exceeds 100%", () => {
+    const over = withFraction(canonical, "values", 44); // sum 108
+    expect(clampBlockPercent(over, "music", 20)).toBe(11);
   });
 });
