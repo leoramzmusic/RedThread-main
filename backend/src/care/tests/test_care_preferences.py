@@ -227,3 +227,66 @@ async def test_delete_requires_ownership():
     with patch.object(service.CareUserPreference, "get", AsyncMock(return_value=doc)):
         await service.delete_preference(VALID_ID, "u1")
     doc.delete.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_list_all_preferences_paginates_and_filters():
+    doc = _user_pref()
+    query = MagicMock()
+    query.count = AsyncMock(return_value=7)
+    query.sort = MagicMock(return_value=query)
+    query.skip = MagicMock(return_value=query)
+    query.limit = MagicMock(return_value=query)
+    query.to_list = AsyncMock(return_value=[doc])
+
+    with patch.object(service.CareUserPreference, "find",
+                      MagicMock(return_value=query)) as find_mock:
+        result = await service.list_all_preferences(
+            10, 5, dimension="values", user_id="u1"
+        )
+
+    assert result == {
+        "items": [{"id": VALID_ID, "user_id": "u1"}],
+        "total": 7,
+        "limit": 10,
+        "offset": 5,
+    }
+    find_mock.assert_called_with({"dimension": "values", "user_id": "u1"})
+    query.skip.assert_called_with(5)
+    query.limit.assert_called_with(10)
+
+
+@pytest.mark.asyncio
+async def test_get_insights_groups_rounds_and_ranks_top_three():
+    collection = MagicMock()
+    collection.count_documents = AsyncMock(return_value=5)
+    collection.distinct = AsyncMock(return_value=["u1", "u2"])
+
+    dims_cursor = MagicMock()
+    dims_cursor.to_list = AsyncMock(return_value=[
+        {"_id": "values", "count": 3, "avg_score": 85.56},
+        {"_id": "music", "count": 1, "avg_score": 40.0},
+        {"_id": "communication_style", "count": 1, "avg_score": 60.0},
+        {"_id": "love_language", "count": 1, "avg_score": 90.0},
+    ])
+    tags_cursor = MagicMock()
+    tags_cursor.to_list = AsyncMock(return_value=[
+        {"_id": "appearance", "count": 2, "avg_score": 80.0}
+    ])
+    collection.aggregate = MagicMock(side_effect=[dims_cursor, tags_cursor])
+
+    with patch.object(service.CareUserPreference, "get_motor_collection",
+                      MagicMock(return_value=collection)):
+        result = await service.get_insights()
+
+    assert result["total_records"] == 5
+    assert result["unique_users"] == 2
+    assert result["dimensions"][0] == {
+        "dimension": "values", "count": 3, "avg_score": 85.6
+    }
+    assert result["tags"] == [
+        {"tag": "appearance", "count": 2, "avg_score": 80.0}
+    ]
+    assert [row["dimension"] for row in result["top_dimensions"]] == [
+        "love_language", "values", "communication_style"
+    ]

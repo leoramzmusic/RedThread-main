@@ -119,3 +119,84 @@ async def update_preference(
 async def delete_preference(preference_id: str, user_id: str) -> None:
     doc = await _get_owned(preference_id, user_id)
     await doc.delete()
+
+
+async def list_all_preferences(
+    limit: int,
+    offset: int,
+    dimension: Optional[str] = None,
+    user_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    filters: Dict[str, Any] = {}
+    if dimension:
+        filters["dimension"] = dimension
+    if user_id:
+        filters["user_id"] = user_id
+    query = CareUserPreference.find(filters)
+    total = await query.count()
+    items = await query.sort("-updated_at").skip(offset).limit(limit).to_list()
+    return {
+        "items": [doc.model_dump(mode="json") for doc in items],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+async def get_insights() -> Dict[str, Any]:
+    collection = CareUserPreference.get_motor_collection()
+    total = await collection.count_documents({})
+    user_ids = await collection.distinct("user_id")
+
+    dim_cursor = collection.aggregate([
+        {
+            "$group": {
+                "_id": "$dimension",
+                "count": {"$sum": 1},
+                "avg_score": {"$avg": "$score"},
+            }
+        },
+        {"$sort": {"_id": 1}},
+    ])
+    dim_rows = await dim_cursor.to_list(length=None)
+
+    tag_cursor = collection.aggregate([
+        {"$match": {"tag": {"$ne": None}}},
+        {
+            "$group": {
+                "_id": "$tag",
+                "count": {"$sum": 1},
+                "avg_score": {"$avg": "$score"},
+            }
+        },
+        {"$sort": {"_id": 1}},
+    ])
+    tag_rows = await tag_cursor.to_list(length=None)
+
+    dimensions = [
+        {
+            "dimension": row["_id"],
+            "count": row["count"],
+            "avg_score": round(float(row["avg_score"]), 1),
+        }
+        for row in dim_rows
+    ]
+    tags = [
+        {
+            "tag": row["_id"],
+            "count": row["count"],
+            "avg_score": round(float(row["avg_score"]), 1),
+        }
+        for row in tag_rows
+    ]
+    top_dimensions = sorted(
+        dimensions, key=lambda row: (-row["avg_score"], -row["count"])
+    )[:3]
+    return {
+        "generated_at": datetime.utcnow().isoformat(),
+        "total_records": total,
+        "unique_users": len(user_ids),
+        "dimensions": dimensions,
+        "tags": tags,
+        "top_dimensions": top_dimensions,
+    }
