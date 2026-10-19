@@ -121,3 +121,6 @@ frontend/.eslintcache
 
 # Isolated git worktrees (feature work)
 .worktrees/
+
+# Snapshots de preferencias CARE (datos de export, no versionar)
+backend/exports/
