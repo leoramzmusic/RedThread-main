@@ -15,6 +15,7 @@ from src.models.admin_rbac import Permission
 from src.models.role import Role
 from src.models.department import Department
 from src.models.profile_module import ProfileModule
+from src.care.models.care_dimension_map import CareDimensionMap
 
 
 # ─── Catálogo de Departamentos ────────────────────────────────────────────────
@@ -736,6 +737,31 @@ async def ensure_profile_modules_seeded() -> int:
         created += 1
     if created:
         print(f"[seed] ✅ Módulos de perfil creados: {created}")
+    return created
+
+
+CARE_DIMENSION_MAP_SEED: list[dict] = [
+    {"tag": "humor", "care_dimension": "communication_style"},
+    {"tag": "appearance", "care_dimension": "values"},
+    {"tag": "science", "care_dimension": "relationship_goals"},
+    {"tag": "art", "care_dimension": "music"},
+]
+
+
+async def ensure_care_dimension_map_seeded() -> int:
+    """Crea/actualiza el mapa tag -> CARE. Idempotente (upsert por tag)."""
+    created = 0
+    for item in CARE_DIMENSION_MAP_SEED:
+        existing = await CareDimensionMap.find_one({"tag": item["tag"]})
+        if existing:
+            if existing.care_dimension != item["care_dimension"]:
+                existing.care_dimension = item["care_dimension"]
+                await existing.save()
+            continue
+        await CareDimensionMap(**item).insert()
+        created += 1
+    if created:
+        print(f"[seed] Mapa de dimensiones CARE creado: {created}")
     return created
 
 

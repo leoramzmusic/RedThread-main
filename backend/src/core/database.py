@@ -31,6 +31,8 @@ from src.models.audit_log import AuditLog
 from src.models.algorithm_management import AlgorithmFactor, AlgorithmHistory, ABTest
 from src.care.models.care_formula import CAREFormula
 from src.care.models.care_profile import CAREProfile
+from src.care.models.care_dimension_map import CareDimensionMap
+from src.care.models.care_user_preference import CareUserPreference
 from src.models.golth import GolthProfile, GolthInterest
 from src.models.appearance import AppearanceResource
 from src.models.appearance_history import AppearanceHistory
@@ -85,6 +87,8 @@ async def init_db():
             ABTest,
             CAREFormula,
             CAREProfile,
+            CareDimensionMap,
+            CareUserPreference,
             GolthProfile,
             GolthInterest,
             AppearanceResource,
@@ -107,11 +111,13 @@ async def init_db():
         seed_system_data,
         ensure_profile_modules_seeded,
         ensure_integration_defaults,
+        ensure_care_dimension_map_seeded,
     )
 
     await seed_system_data()
     await ensure_profile_modules_seeded()
     await ensure_integration_defaults()
+    await ensure_care_dimension_map_seeded()
 
 
 async def close_db():
