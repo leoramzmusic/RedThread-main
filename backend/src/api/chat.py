@@ -7,7 +7,7 @@ from fastapi import (
     Depends,
 )
 from pydantic import BaseModel
-from typing import Dict, Optional
+from typing import Optional
 from datetime import datetime
 from src.models.user import User
 from src.models.match import Match, MatchStatus
@@ -20,37 +20,12 @@ from src.api.chat_resolvers import resolve_message_source, resolve_ws_send_mode
 from src.services.kafka_service import kafka_service
 from src.services.kafka_topics import KafkaTopic, KafkaEventType
 from src.services.redis_service import redis_service
+from src.services.connection_manager import manager
 import json
 from bson import ObjectId
 
 
 router = APIRouter()
-
-
-# Active WebSocket connections
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
-
-    async def connect(self, user_id: str, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections[user_id] = websocket
-        # await redis_service.set_user_online(user_id)
-
-    def disconnect(self, user_id: str):
-        if user_id in self.active_connections:
-            del self.active_connections[user_id]
-
-    async def send_personal_message(self, user_id: str, message: dict):
-        if user_id in self.active_connections:
-            await self.active_connections[user_id].send_json(message)
-
-    async def broadcast_typing(self, match_id: str, user_id: str, is_typing: bool):
-        # Notify the other user in the match
-        pass
-
-
-manager = ConnectionManager()
 
 
 # Request/Response Models
@@ -360,7 +335,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                         pass
 
     except WebSocketDisconnect:
-        manager.disconnect(user_id)
+        manager.disconnect(user_id, websocket)
         # Last active is already updated atomically during the connection
 
 
