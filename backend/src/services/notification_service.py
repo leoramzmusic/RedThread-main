@@ -1,0 +1,336 @@
+"""Emisión directa de notificaciones (Fase A, enfoque 1a + 2a).
+
+Reglas: agrupación rodante con bump (ventana 24h), cap de 3 actores,
+silencio = filtro al mostrar (el doc se crea igual), DND solo suprime push.
+"""
+
+from datetime import datetime, time, timedelta
+from typing import Any, Dict, List, Optional
+
+from src.models.conversation import Conversation
+from src.models.notification import Notification
+from src.models.profile import Profile
+from src.services.connection_manager import manager
+
+GROUP_WINDOW_HOURS = 24
+MAX_ACTORS = 3
+PREVIEW_MAX = 80
+RETENTION_DAYS = 30
+
+ALL_NOTIF_TYPES = ["like", "match", "message", "system", "survey", "promo"]
+FILTER_TYPES = {
+    "social": ["like", "match"],
+    "messages": ["message"],
+    "system": ["system", "survey", "promo"],
+}
+
+
+def bucket_for(notif_type: str) -> str:
+    if notif_type in ("like", "match"):
+        return "social"
+    if notif_type == "message":
+        return "messages"
+    if notif_type == "promo":
+        return "promos"
+    return "system"
+
+
+def is_muted_type(mutes: Optional[Dict[str, bool]], notif_type: str) -> bool:
+    if not mutes:
+        return False
+    bucket = bucket_for(notif_type)
+    if bucket == "promos":
+        return bool(mutes.get("promos") or mutes.get("system"))
+    return bool(mutes.get(bucket))
+
+
+def _is_dnd_active(dnd: Optional[Dict[str, Any]], now: time) -> bool:
+    if not dnd or not dnd.get("enabled"):
+        return False
+    try:
+        start = time.fromisoformat(dnd.get("start_time", "22:00"))
+        end = time.fromisoformat(dnd.get("end_time", "08:00"))
+    except ValueError:
+        return False
+    if start <= end:
+        return start <= now <= end
+    return now >= start or now <= end  # cruza medianoche
+
+
+def should_push(
+    settings, notif_type: str, metadata: Optional[dict], now: Optional[time] = None
+) -> bool:
+    important = bool((metadata or {}).get("important"))
+    if important:
+        return True
+    if settings is None:
+        return True
+    if not getattr(settings, "notifications_enabled", True):
+        return False
+    if is_muted_type(getattr(settings, "notification_mutes", None), notif_type):
+        return False
+    return not _is_dnd_active(
+        getattr(settings, "do_not_disturb", None), now or datetime.utcnow().time()
+    )
+
+
+def visibility_query(
+    user_id: str, flt: str, mutes: Optional[Dict[str, bool]], master_enabled: bool
+) -> dict:
+    q: dict = {"user_id": user_id}
+    types = FILTER_TYPES.get(flt)
+    if types:
+        q["type"] = {"$in": types}
+    if not master_enabled:
+        q["metadata.important"] = True
+        return q
+    muted = [t for t in ALL_NOTIF_TYPES if is_muted_type(mutes, t)]
+    if muted:
+        q["$or"] = [{"type": {"$nin": muted}}, {"metadata.important": True}]
+    return q
+
+
+def serialize_notification(doc: Notification) -> dict:
+    data = doc.dict()
+    data["id"] = str(doc.id)
+    return data
+
+
+async def actor_snapshot(user_id: str) -> dict:
+    profile = await Profile.find_one({"user_id": user_id})
+    return {
+        "user_id": user_id,
+        "name": profile.display_name if profile else "Usuario",
+        "photo": (profile.photos[0] if profile and profile.photos else None),
+        "nickname": getattr(profile, "nickname", None) if profile else None,
+    }
+
+
+def _group_query(user_id: str, group_key: str, now: datetime) -> dict:
+    return {
+        "user_id": user_id,
+        "group_key": group_key,
+        "updated_at": {"$gte": now - timedelta(hours=GROUP_WINDOW_HOURS)},
+    }
+
+
+async def _push_new_notification(doc: Notification) -> None:
+    from src.models.user_settings import UserSettings
+
+    settings = await UserSettings.find_one({"user_id": doc.user_id})
+    if not should_push(settings, doc.type, doc.metadata):
+        return
+    await manager.send_personal_message(
+        doc.user_id,
+        {"action": "new_notification", "notification": serialize_notification(doc)},
+    )
+
+
+def _add_actor(doc: Notification, actor: dict, lock_actor: bool) -> None:
+    meta = doc.metadata or {}
+    if lock_actor:
+        # Grupos de mensajes: cada evento cuenta; actors = último remitente
+        doc.actor_count += 1
+        doc.actors = [actor]
+        meta = {**meta, "last_actor_id": actor["user_id"]}
+        doc.metadata = meta
+        return
+    seen: List[str] = list(meta.get("actor_ids") or [])
+    if actor["user_id"] in seen:
+        return
+    seen.append(actor["user_id"])
+    doc.actor_count += 1
+    if len(doc.actors) < MAX_ACTORS:
+        doc.actors = doc.actors + [actor]
+    meta = {**meta, "actor_ids": seen, "last_actor_id": actor["user_id"]}
+    doc.metadata = meta
+
+
+async def emit_notification(
+    *,
+    user_id: str,
+    type: str,
+    content: str,
+    related_user_id: Optional[str] = None,
+    group_key: Optional[str] = None,
+    target_type: Optional[str] = None,
+    target_id: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
+    actor: Optional[dict] = None,
+    group_target_type: Optional[str] = None,
+    group_target_id: Optional[str] = None,
+    lock_actor: bool = False,
+) -> Notification:
+    now = datetime.utcnow()
+    if group_key:
+        existing = await Notification.find_one(_group_query(user_id, group_key, now))
+        if existing:
+            existing.content = content
+            existing.updated_at = now
+            existing.is_read = False
+            if related_user_id:
+                existing.related_user_id = related_user_id
+            if metadata:
+                existing.metadata = {**(existing.metadata or {}), **metadata}
+            if group_target_type:
+                existing.target_type = group_target_type
+                existing.target_id = group_target_id
+            if actor:
+                _add_actor(existing, actor, lock_actor)
+            await existing.save()
+            await _push_new_notification(existing)
+            return existing
+    doc = Notification(
+        user_id=user_id,
+        type=type,
+        content=content,
+        related_user_id=related_user_id,
+        group_key=group_key,
+        target_type=target_type,
+        target_id=target_id,
+        metadata=metadata or {},
+        created_at=now,
+        updated_at=now,
+    )
+    if actor:
+        doc.actors = [actor]
+        doc.actor_count = 1
+        doc.metadata = {
+            **(doc.metadata or {}),
+            "actor_ids": [actor["user_id"]],
+            "last_actor_id": actor["user_id"],
+        }
+    await doc.insert()
+    await _push_new_notification(doc)
+    return doc
+
+
+async def emit_like_notification(
+    *,
+    liker_id: str,
+    recipient_id: str,
+    shown_media_id: Optional[str] = None,
+    is_superlike: bool = False,
+) -> Notification:
+    actor = await actor_snapshot(liker_id)
+    nickname = actor.get("nickname") or ""
+    if is_superlike:
+        return await emit_notification(
+            user_id=recipient_id,
+            type="like",
+            content=f"{actor['name']} te envió un Super Like",
+            related_user_id=liker_id,
+            group_key=None,
+            target_type="profile",
+            target_id=liker_id,
+            metadata={
+                "superlike": True,
+                "shown_media_id": shown_media_id,
+                "target_url": f"/profile/{nickname}",
+            },
+            actor=actor,
+        )
+    group_key = f"like:photo:{shown_media_id}" if shown_media_id else "like:profile"
+    return await emit_notification(
+        user_id=recipient_id,
+        type="like",
+        content=(
+            f"A {actor['name']} le gusta tu foto"
+            if shown_media_id
+            else f"A {actor['name']} le gustas"
+        ),
+        related_user_id=liker_id,
+        group_key=group_key,
+        target_type="profile",
+        target_id=liker_id,
+        group_target_type="likes",
+        group_target_id=shown_media_id,
+        metadata={
+            "shown_media_id": shown_media_id,
+            "target_url": f"/profile/{nickname}",
+        },
+        actor=actor,
+    )
+
+
+async def find_conversation_between(
+    user_a_id: str, user_b_id: str
+) -> Optional[Conversation]:
+    return await Conversation.find_one(
+        {"participants": {"$all": [user_a_id, user_b_id]}}
+    )
+
+
+async def emit_match_notification(
+    *, user_a_id: str, user_b_id: str, match_id: str
+) -> List[Notification]:
+    conversation = await find_conversation_between(user_a_id, user_b_id)
+    target_type = "chat" if conversation else "profile"
+    docs = []
+    for me, other in ((user_a_id, user_b_id), (user_b_id, user_a_id)):
+        actor = await actor_snapshot(other)
+        docs.append(
+            await emit_notification(
+                user_id=me,
+                type="match",
+                content=f"¡Nuevo match con {actor['name']}!",
+                related_user_id=other,
+                group_key=None,
+                target_type=target_type,
+                target_id=str(conversation.id) if conversation else other,
+                metadata={"match_id": match_id, "can_reply": True},
+                actor=actor,
+            )
+        )
+    return docs
+
+
+async def notify_new_message(
+    *,
+    sender_id: str,
+    recipient_id: str,
+    conversation,
+    preview: str,
+    can_reply: bool,
+) -> Optional[Notification]:
+    if sender_id == recipient_id:
+        return None
+    muted_by = getattr(conversation, "is_muted_by", None)
+    if callable(muted_by):
+        if muted_by(recipient_id):
+            return None
+    elif recipient_id in (muted_by or []):
+        return None
+    actor = await actor_snapshot(sender_id)
+    short = (preview or "")[:PREVIEW_MAX]
+    conv_id = str(conversation.id)
+    return await emit_notification(
+        user_id=recipient_id,
+        type="message",
+        content=short,
+        related_user_id=sender_id,
+        group_key=f"message:{conv_id}",
+        target_type="chat",
+        target_id=conv_id,
+        metadata={"preview": short, "conversation_id": conv_id, "can_reply": can_reply},
+        actor=actor,
+        lock_actor=True,
+    )
+
+
+async def emit_system_notification(
+    *,
+    user_id: str,
+    content: str,
+    notif_type: str = "system",
+    target_url: Optional[str] = None,
+    important: bool = False,
+) -> Notification:
+    return await emit_notification(
+        user_id=user_id,
+        type=notif_type,
+        content=content,
+        target_type="url" if target_url else None,
+        target_id=target_url,
+        metadata={"important": True} if important else {},
+    )
