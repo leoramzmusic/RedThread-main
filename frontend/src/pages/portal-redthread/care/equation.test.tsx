@@ -10,7 +10,6 @@ import {
   getActiveFormula,
   listFormulaVersions,
   normalizeFormulaBlocks,
-  previewFormula,
   rollbackFormula,
   saveFormula,
   simulateFormula,
@@ -45,72 +44,6 @@ jest.mock("../../../components/layout/AdminLayout", () => ({
     <div>{children}</div>
   ),
 }));
-
-jest.mock("../../../components/common/UserSearchAutocomplete", () => {
-  const React = require("react");
-  const USERS: Record<
-    string,
-    {
-      id: string;
-      email: string | null;
-      display_name: string;
-      nickname: string;
-      photo: string | null;
-    }
-  > = {
-    a: {
-      id: "u1",
-      email: "ana@x.com",
-      display_name: "Ana A",
-      nickname: "ana",
-      photo: null,
-    },
-    b: {
-      id: "u2",
-      email: "beto@x.com",
-      display_name: "Beto B",
-      nickname: "beto",
-      photo: null,
-    },
-  };
-  return {
-    __esModule: true,
-    default: (props: {
-      label?: string;
-      value: { id: string } | null;
-      onChange: (user: (typeof USERS)["a"] | null) => void;
-      excludeId?: string | null;
-    }) => {
-      const key = props.label === "Usuario A" ? "a" : "b";
-      return React.createElement(
-        "div",
-        { "data-testid": `search-${key}` },
-        React.createElement(
-          "span",
-          { "data-testid": `search-${key}-value` },
-          props.value?.id ?? "",
-        ),
-        React.createElement(
-          "span",
-          { "data-testid": `search-${key}-exclude` },
-          props.excludeId ?? "",
-        ),
-        React.createElement("button", {
-          "data-testid": `search-${key}-pick`,
-          onClick: () => props.onChange(USERS[key]),
-        }),
-        React.createElement("button", {
-          "data-testid": `search-${key}-pick-a`,
-          onClick: () => props.onChange(USERS.a),
-        }),
-        React.createElement("button", {
-          "data-testid": `search-${key}-clear`,
-          onClick: () => props.onChange(null),
-        }),
-      );
-    },
-  };
-});
 
 jest.mock("../../../components/care/CareEquationHeader", () => {
   const React = require("react");
@@ -387,7 +320,6 @@ jest.mock("../../../services/careFormulaService", () => ({
   getActiveFormula: jest.fn(),
   validateFormula: jest.fn(),
   simulateFormula: jest.fn(),
-  previewFormula: jest.fn(),
   normalizeFormulaBlocks: jest.fn(),
   saveFormula: jest.fn(),
   listFormulaVersions: jest.fn(),
@@ -405,7 +337,6 @@ jest.mock("../../../services/careProfileService", () => ({
 const mockGetActive = getActiveFormula as jest.Mock;
 const mockValidate = validateFormula as jest.Mock;
 const mockSimulate = simulateFormula as jest.Mock;
-const mockPreview = previewFormula as jest.Mock;
 const mockNormalize = normalizeFormulaBlocks as jest.Mock;
 const mockSave = saveFormula as jest.Mock;
 const mockListVersions = listFormulaVersions as jest.Mock;
@@ -459,46 +390,6 @@ const draftBlocks = {
   music: 0.07,
   love_language: 0.06,
   communication_style: 0.04,
-};
-
-const previewEvaluation = (score: number) => ({
-  score,
-  base: score,
-  chi: 0,
-  breakdown: {
-    values: 0.5,
-    relationship_goals: 0.5,
-    neurodiversity: 0.5,
-    responsiveness: 0.5,
-    music: 0.5,
-    love_language: 0.5,
-    communication_style: 0.5,
-    chaos_applied: 0,
-    saturated: false,
-    compatibility_label: "media",
-    final_score: score,
-  },
-});
-
-const mockPreviewResult = {
-  current: previewEvaluation(0.52),
-  proposed: previewEvaluation(0.58),
-  deltas: {
-    values: 0.1,
-    relationship_goals: -0.05,
-    neurodiversity: 0,
-    responsiveness: 0,
-    music: 0,
-    love_language: 0,
-    communication_style: 0,
-  },
-  chi_current: 0,
-  chi_proposed: 0,
-  narrative: {
-    tone: "directo" as const,
-    text: "Suben los valores compartidos.",
-    label: "Valores compartidos",
-  },
 };
 
 beforeEach(() => {
@@ -980,67 +871,6 @@ describe("CareEquationPage / Aplicar Cambios + Versiones", () => {
   });
 });
 
-describe("CareEquationPage / vista previa (buscador A/B)", () => {
-  it("keeps Interpretar par disabled until two different users are selected", async () => {
-    renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("header-stub");
-    expect(screen.getByTestId("preview-run")).toBeDisabled();
-    fireEvent.click(screen.getByTestId("search-a-pick"));
-    expect(screen.getByTestId("preview-run")).toBeDisabled();
-    fireEvent.click(screen.getByTestId("search-b-pick"));
-    expect(screen.getByTestId("preview-run")).toBeEnabled();
-  });
-
-  it("stays disabled when both searchers point to the same user", async () => {
-    renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("header-stub");
-    fireEvent.click(screen.getByTestId("search-a-pick"));
-    fireEvent.click(screen.getByTestId("search-b-pick-a"));
-    expect(screen.getByTestId("search-a-value")).toHaveTextContent("u1");
-    expect(screen.getByTestId("search-b-value")).toHaveTextContent("u1");
-    expect(screen.getByTestId("preview-run")).toBeDisabled();
-  });
-
-  it("excludes the opposite selection in each searcher", async () => {
-    renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("header-stub");
-    fireEvent.click(screen.getByTestId("search-a-pick"));
-    expect(screen.getByTestId("search-b-exclude")).toHaveTextContent("u1");
-    fireEvent.click(screen.getByTestId("search-b-pick"));
-    expect(screen.getByTestId("search-a-exclude")).toHaveTextContent("u2");
-  });
-
-  it("runs the preview with the selected ids and tone", async () => {
-    mockPreview.mockResolvedValueOnce(mockPreviewResult);
-    renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("header-stub");
-    fireEvent.click(screen.getByTestId("search-a-pick"));
-    fireEvent.click(screen.getByTestId("search-b-pick"));
-    fireEvent.click(screen.getByTestId("tone-poetico"));
-    fireEvent.click(screen.getByTestId("preview-run"));
-    await waitFor(() => expect(mockPreview).toHaveBeenCalledTimes(1));
-    expect(mockPreview).toHaveBeenCalledWith({
-      formula: expect.objectContaining({ blocks: active.blocks }),
-      user_a_id: "u1",
-      user_b_id: "u2",
-      tone: "poetico",
-    });
-    expect(await screen.findByTestId("preview-proposed")).toHaveTextContent(
-      "0.580",
-    );
-  });
-
-  it("clearing a searcher disables Interpretar par again", async () => {
-    renderWithTheme(<CareEquationPage />);
-    await screen.findByTestId("header-stub");
-    fireEvent.click(screen.getByTestId("search-a-pick"));
-    fireEvent.click(screen.getByTestId("search-b-pick"));
-    expect(screen.getByTestId("preview-run")).toBeEnabled();
-    fireEvent.click(screen.getByTestId("search-a-clear"));
-    expect(screen.getByTestId("preview-run")).toBeDisabled();
-  });
-});
-
 describe("CareEquationPage / perfiles", () => {
   const savedProfile = {
     id: "p1",
@@ -1188,5 +1018,14 @@ describe("CareEquationPage / perfiles", () => {
       "data-selected",
       "",
     );
+  });
+});
+
+describe("CareEquationPage / preview removal", () => {
+  it("does not render the old A/B preview anymore", async () => {
+    renderWithTheme(<CareEquationPage />);
+    await screen.findByTestId("header-stub");
+    expect(screen.queryByTestId("preview-run")).not.toBeInTheDocument();
+    expect(screen.queryByText("Interpretar par")).not.toBeInTheDocument();
   });
 });

@@ -40,24 +40,19 @@ import CareChaosPanel from "../../../components/care/CareChaosPanel";
 import CareThresholdsPanel from "../../../components/care/CareThresholdsPanel";
 import CareFormulaJsonEditor from "../../../components/care/CareFormulaJsonEditor";
 import CareSimulationTable from "../../../components/care/CareSimulationTable";
-import CarePreviewPanel from "../../../components/care/CarePreviewPanel";
 import CareVersionsPanel from "../../../components/care/CareVersionsPanel";
 import CareProfilesPanel from "../../../components/care/CareProfilesPanel";
-import type { SearchUser } from "../../../components/common/UserSearchAutocomplete";
 import type { CareDimensionKey } from "../../../constants/careDimensions";
 import {
   getActiveFormula,
   listFormulaVersions,
   normalizeFormulaBlocks,
-  previewFormula,
   rollbackFormula,
   saveFormula,
   simulateFormula,
   validateFormula,
   type CareFormula,
   type FormulaPayload,
-  type NarrativeResult,
-  type PreviewResult,
   type SimulateResult,
 } from "../../../services/careFormulaService";
 import {
@@ -83,7 +78,6 @@ import {
   detectDegenerate,
   draftToPayload,
   parseDraft,
-  previewErrorMessage,
   serializeDraft,
   smokeAlerts,
   toEquationDraft,
@@ -142,15 +136,6 @@ export default function CareEquationPage() {
   const [validateErrors, setValidateErrors] = useState<string[]>([]);
   const [validateAlerts, setValidateAlerts] = useState<string[]>([]);
   const [simResult, setSimResult] = useState<SimulateResult | null>(null);
-  const [previewUserA, setPreviewUserA] = useState<SearchUser | null>(null);
-  const [previewUserB, setPreviewUserB] = useState<SearchUser | null>(null);
-  const [previewTone, setPreviewTone] =
-    useState<NarrativeResult["tone"]>("directo");
-  const [previewResult, setPreviewResult] = useState<PreviewResult | null>(
-    null,
-  );
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState<string | null>(null);
   const [versions, setVersions] = useState<CareFormula[]>([]);
   const [versionsLoading, setVersionsLoading] = useState(false);
   const [activeVersion, setActiveVersion] = useState<number | null>(null);
@@ -434,31 +419,6 @@ export default function CareEquationPage() {
       setValidateErrors(["No se pudo validar contra el servidor."]);
     } finally {
       setValidating(false);
-    }
-  };
-
-  const handlePreview = async () => {
-    if (
-      !draft ||
-      !previewUserA ||
-      !previewUserB ||
-      previewUserA.id === previewUserB.id
-    )
-      return;
-    setPreviewLoading(true);
-    setPreviewError(null);
-    try {
-      const result = await previewFormula({
-        formula: draftToPayload(draft),
-        user_a_id: previewUserA.id,
-        user_b_id: previewUserB.id,
-        tone: previewTone,
-      });
-      setPreviewResult(result);
-    } catch (err) {
-      setPreviewError(previewErrorMessage(err));
-    } finally {
-      setPreviewLoading(false);
     }
   };
 
@@ -754,7 +714,7 @@ export default function CareEquationPage() {
                 glow={glowKey}
               />
 
-              {/* Fila principal: diagrama + vista previa | pesos + acciones */}
+              {/* Fila principal: diagrama | pesos + acciones */}
               <Grid
                 container
                 spacing={3}
@@ -855,21 +815,6 @@ export default function CareEquationPage() {
                       resaltar su nodo en el diagrama.
                     </Typography>
                   </Paper>
-
-                  {/* Buscador de usuario A/B + preview (Interpreter) */}
-                  <CarePreviewPanel
-                    userA={previewUserA}
-                    userB={previewUserB}
-                    tone={previewTone}
-                    result={previewResult}
-                    isDark={isDark}
-                    loading={previewLoading}
-                    error={previewError}
-                    onUserAChange={setPreviewUserA}
-                    onUserBChange={setPreviewUserB}
-                    onToneChange={setPreviewTone}
-                    onRun={handlePreview}
-                  />
                 </Grid>
 
                 {/* Panel de pesos: tabla + Σ en vivo + acciones */}
