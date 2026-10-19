@@ -57,6 +57,9 @@ def test_write_export_creates_both_files_and_overwrites(tmp_path):
     assert json_path.read_text(encoding="utf-8")
     with csv_path.open(encoding="utf-8-sig", newline="") as fh:
         assert len(list(csv.DictReader(fh))) == 2
+    raw_csv = csv_path.read_bytes().decode("utf-8-sig")
+    assert "\r\r\n" not in raw_csv
+    assert len([line for line in raw_csv.splitlines() if line]) == 3
 
     second = export.write_export(RECORDS[:1], date(2026, 10, 19), tmp_path)
     payload = json.loads(json_path.read_text(encoding="utf-8"))

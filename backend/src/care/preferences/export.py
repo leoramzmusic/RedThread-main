@@ -66,7 +66,8 @@ def render_csv(records: List[Dict[str, Any]]) -> str:
 def _atomic_write(path: Path, content: str) -> None:
     tmp = path.with_name(path.name + ".tmp")
     encoding = "utf-8-sig" if path.suffix == ".csv" else "utf-8"
-    tmp.write_text(content, encoding=encoding)
+    with tmp.open("w", encoding=encoding, newline="") as fh:
+        fh.write(content)
     os.replace(tmp, path)
 
 
