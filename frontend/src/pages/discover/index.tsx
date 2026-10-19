@@ -1035,6 +1035,7 @@ export default function Discover() {
   return (
     <Layout>
       <Box
+        id="care-preferences"
         sx={{
           width: "100%",
           maxWidth: 1120,

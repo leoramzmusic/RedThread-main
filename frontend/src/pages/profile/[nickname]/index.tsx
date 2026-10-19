@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Layout from "../../../components/layout/Layout";
 import ProfileView from "../../../components/profile/ProfileView";
+import PreferenceSurveyReminder from "../../../components/care/PreferenceSurveyReminder";
 import apiClient from "../../../services/api";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
@@ -101,8 +102,9 @@ export default function ProfilePage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "400px"
-          }}>
+            minHeight: "400px",
+          }}
+        >
           <CircularProgress />
         </Box>
       </Layout>
@@ -120,14 +122,18 @@ export default function ProfilePage() {
               justifyContent: "center",
               alignItems: "center",
               minHeight: "400px",
-              gap: 2
-            }}>
+              gap: 2,
+            }}
+          >
             <Typography variant="h5" color="error" gutterBottom>
               User Not Found
             </Typography>
-            <Typography variant="body1" sx={{
-              color: "text.secondary"
-            }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               The user {nickname} does not exist or their profile is private.
             </Typography>
             <Button
@@ -145,6 +151,7 @@ export default function ProfilePage() {
   return (
     <Layout>
       <Container maxWidth="md">
+        {isOwner && <PreferenceSurveyReminder />}
         <ProfileView
           profile={profile}
           readOnly={!isOwner}
