@@ -1,69 +1,62 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type HTMLAttributes } from "react";
 import {
   Alert,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Typography,
 } from "@mui/material";
-import PsychologyIcon from "@mui/icons-material/Psychology";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DownloadIcon from "@mui/icons-material/Download";
+import PsychologyIcon from "@mui/icons-material/Psychology";
 import AdminLayout from "../../../components/layout/AdminLayout";
-import UserSearchAutocomplete, {
-  type SearchUser,
-} from "../../../components/common/UserSearchAutocomplete";
+import CarePreferenceInsights from "../../../components/care/CarePreferenceInsights";
 import { useAppTheme } from "../../../context/ThemeContext";
-import CareScoreBreakdown from "../../../components/care/CareScoreBreakdown";
-import CareNarrativeTrio from "../../../components/care/CareNarrativeTrio";
 import {
-  getActiveFormula,
-  previewFormula,
-  type CareFormula,
-  type FormulaPayload,
-  type NarrativeResult,
-  type PreviewResult,
-} from "../../../services/careFormulaService";
+  CARE_DIMENSION_BY_KEY,
+  CARE_DIMENSIONS,
+  type CareDimensionKey,
+} from "../../../constants/careDimensions";
 import {
-  TONE_OPTIONS,
-  previewErrorMessage,
-} from "../../../utils/careEquationModel";
-import {
-  buildReport,
-  computeContributions,
-  downloadJson,
-  reportFilename,
-  resolveBand,
-} from "../../../utils/careInterpreterModel";
+  exportPreferences,
+  getPreferenceInsights,
+  listAllPreferences,
+  type PreferenceExportResult,
+  type PreferenceInsights,
+  type PreferenceListResponse,
+} from "../../../services/carePreferencesAdminService";
+import { downloadJson } from "../../../utils/careInterpreterModel";
 
-const toPayload = (formula: CareFormula): FormulaPayload => ({
-  version: formula.version,
-  blocks: formula.blocks,
-  chaos_factor: formula.chaos_factor,
-  chaos_seed: formula.chaos_seed,
-  min_compatibility: formula.min_compatibility,
-  match_critical: formula.match_critical,
-});
+const dateLabel = (value: string) => {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleString("es-MX");
+};
 
 export default function CareInterpreterPage() {
   const { mode } = useAppTheme();
   const isDark = mode === "dark";
+  const [insights, setInsights] = useState<PreferenceInsights | null>(null);
+  const [dataset, setDataset] = useState<PreferenceListResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formula, setFormula] = useState<CareFormula | null>(null);
-  const [userA, setUserA] = useState<SearchUser | null>(null);
-  const [userB, setUserB] = useState<SearchUser | null>(null);
-  const [tone, setTone] = useState<NarrativeResult["tone"]>("directo");
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState<string | null>(null);
-  const [previewResult, setPreviewResult] = useState<PreviewResult | null>(
-    null,
-  );
+  const [dimension, setDimension] = useState<CareDimensionKey | "">("");
+  const [limit, setLimit] = useState(100);
+  const [exporting, setExporting] = useState(false);
+  const [exportResult, setExportResult] =
+    useState<PreferenceExportResult | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,10 +64,16 @@ export default function CareInterpreterPage() {
       setLoading(true);
       setError(null);
       try {
-        const active = await getActiveFormula();
-        if (!cancelled) setFormula(active);
+        const [nextInsights, nextDataset] = await Promise.all([
+          getPreferenceInsights(),
+          listAllPreferences(dimension ? { limit, dimension } : { limit }),
+        ]);
+        if (!cancelled) {
+          setInsights(nextInsights);
+          setDataset(nextDataset);
+        }
       } catch {
-        if (!cancelled) setError("No se pudo cargar la fórmula activa.");
+        if (!cancelled) setError("No se pudieron cargar las preferencias.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -82,56 +81,23 @@ export default function CareInterpreterPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [dimension, limit]);
 
-  const rows =
-    formula && previewResult
-      ? computeContributions(formula.blocks, previewResult.proposed.breakdown)
-      : [];
-  const compatibilityLabel = previewResult
-    ? resolveBand(
-        previewResult.proposed.breakdown.compatibility_label,
-        previewResult.proposed.score,
-      )
-    : "";
-
-  const handlePreview = async () => {
-    if (!formula || !userA || !userB || userA.id === userB.id) return;
-    setPreviewLoading(true);
-    setPreviewError(null);
+  const handleExport = async () => {
+    setExporting(true);
+    setExportError(null);
     try {
-      const result = await previewFormula({
-        formula: toPayload(formula),
-        user_a_id: userA.id,
-        user_b_id: userB.id,
-        tone,
-      });
-      setPreviewResult(result);
-    } catch (err) {
-      setPreviewError(previewErrorMessage(err));
+      const result = await exportPreferences();
+      setExportResult(result);
+      downloadJson(`preferences-${result.date}.json`, result);
+    } catch {
+      setExportError("No se pudo exportar el dataset.");
     } finally {
-      setPreviewLoading(false);
+      setExporting(false);
     }
   };
 
-  const handleExport = () => {
-    if (!formula || !previewResult || !userA || !userB) return;
-    const generatedAt = new Date().toISOString();
-    const report = buildReport(
-      {
-        userA: userA.id,
-        userB: userB.id,
-        formulaVersion: formula.version,
-        breakdown: rows,
-        chi: previewResult.proposed.chi,
-        narrative: previewResult.narrative,
-        tone,
-        compatibilityLabel,
-      },
-      generatedAt,
-    );
-    downloadJson(reportFilename(userA.id, userB.id, generatedAt), report);
-  };
+  const rows = dataset?.items ?? [];
 
   return (
     <AdminLayout>
@@ -142,7 +108,9 @@ export default function CareInterpreterPage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 4,
+              mb: 3,
+              gap: 2,
+              flexWrap: "wrap",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -163,200 +131,195 @@ export default function CareInterpreterPage() {
                   variant="h4"
                   sx={{ fontWeight: 800, letterSpacing: "-0.5px" }}
                 >
-                  CARE Interpreter
+                  Preferencias & Insights
                 </Typography>
                 <Typography
                   variant="body2"
                   sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
                 >
-                  Explicabilidad del score: fᵢ, wᵢ y contribución wᵢ·fᵢ por
-                  dimensión.
+                  Repositorio de lo que los usuarios valoran y dataset para IA.
                 </Typography>
               </Box>
             </Box>
             <Button
-              data-testid="interpreter-export"
+              data-testid="preferences-export"
               variant="outlined"
               startIcon={<DownloadIcon />}
               onClick={handleExport}
-              disabled={!previewResult || !userA || !userB}
+              disabled={exporting}
             >
-              Exportar Reporte
+              {exporting ? "Exportando..." : "Exportar dataset"}
             </Button>
           </Box>
 
-          {error && (
+          {exportResult && (
+            <Alert
+              severity="success"
+              sx={{ mb: 2, wordBreak: "break-all" }}
+              data-testid="preferences-export-alert"
+            >
+              {exportResult.count} filas exportadas. JSON:{" "}
+              {exportResult.files.json} · CSV: {exportResult.files.csv}
+            </Alert>
+          )}
+          {exportError && (
             <Alert
               severity="error"
-              sx={{ mb: 3 }}
-              data-testid="interpreter-error"
+              sx={{ mb: 2 }}
+              data-testid="preferences-export-error"
             >
-              {error}
+              {exportError}
             </Alert>
           )}
 
           {loading ? (
             <Box
               sx={{ display: "flex", justifyContent: "center", py: 8 }}
-              data-testid="interpreter-loading"
+              data-testid="preferences-loading"
             >
               <CircularProgress />
             </Box>
-          ) : formula ? (
-            <Grid container spacing={3}>
-              <Grid
-                size={{ xs: 12, md: 4 }}
-                sx={{ display: "flex", flexDirection: "column" }}
-              >
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: 3,
-                    flex: 1,
-                    minHeight: 480,
-                    bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
-                    borderColor: isDark ? "#333333" : "rgba(26,27,30,0.12)",
-                    boxShadow: isDark
-                      ? "0 4px 16px rgba(0,0,0,0.4)"
-                      : undefined,
-                    color: isDark ? "#FFFFFF" : "#222222",
-                  }}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 700, mb: 2 }}
-                  >
-                    Par a evaluar
-                  </Typography>
-                  <Stack spacing={2}>
-                    <UserSearchAutocomplete
-                      label="Usuario A"
-                      placeholder="Buscar por nombre, alias o correo"
-                      value={userA}
-                      onChange={setUserA}
-                      excludeId={userB?.id ?? null}
-                      isDark={isDark}
-                    />
-                    <UserSearchAutocomplete
-                      label="Usuario B"
-                      placeholder="Buscar por nombre, alias o correo"
-                      value={userB}
-                      onChange={setUserB}
-                      excludeId={userA?.id ?? null}
-                      isDark={isDark}
-                    />
-                    <Box>
-                      <Typography
-                        variant="caption"
-                        sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
-                      >
-                        Tono narrativo
-                      </Typography>
-                      <Stack
-                        direction="row"
-                        sx={{ flexWrap: "wrap", gap: 1, mt: 0.5 }}
-                      >
-                        {TONE_OPTIONS.map((option) => (
-                          <Chip
-                            key={option.value}
-                            data-testid={`interpreter-tone-${option.value}`}
-                            label={option.label}
-                            size="small"
-                            color={
-                              tone === option.value ? "primary" : "default"
-                            }
-                            variant={
-                              tone === option.value ? "filled" : "outlined"
-                            }
-                            onClick={() =>
-                              setTone(option.value as NarrativeResult["tone"])
-                            }
-                          />
-                        ))}
-                      </Stack>
-                    </Box>
-                    <Button
-                      data-testid="interpreter-run"
-                      variant="contained"
-                      startIcon={<PlayArrowIcon />}
-                      onClick={handlePreview}
-                      disabled={
-                        previewLoading ||
-                        !userA ||
-                        !userB ||
-                        userA.id === userB.id
-                      }
-                    >
-                      {previewLoading ? "Evaluando..." : "Interpretar par"}
-                    </Button>
-                    {previewLoading && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          py: 1,
-                        }}
-                        data-testid="interpreter-preview-loading"
-                      >
-                        <CircularProgress size={24} />
-                      </Box>
-                    )}
-                    {previewError && (
-                      <Alert
-                        severity="error"
-                        data-testid="interpreter-preview-error"
-                      >
-                        {previewError}
-                      </Alert>
-                    )}
-                  </Stack>
-                </Paper>
-              </Grid>
-
-              <Grid
-                size={{ xs: 12, md: 8 }}
-                sx={{ display: "flex", flexDirection: "column" }}
-              >
-                {previewResult ? (
-                  <Stack spacing={3} sx={{ flex: 1, minHeight: 480 }}>
-                    <CareScoreBreakdown rows={rows} />
-                    <CareNarrativeTrio
-                      evaluation={previewResult.proposed}
-                      compatibilityLabel={compatibilityLabel}
-                      narrative={previewResult.narrative}
-                    />
-                  </Stack>
-                ) : (
-                  <Paper
-                    variant="outlined"
-                    sx={{
-                      p: 3,
-                      flex: 1,
-                      minHeight: 480,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      bgcolor: isDark ? "#1E1E1E" : "#F5F5F5",
-                      borderColor: isDark ? "#333333" : "rgba(26,27,30,0.12)",
-                      boxShadow: isDark
-                        ? "0 4px 16px rgba(0,0,0,0.4)"
-                        : undefined,
-                      color: isDark ? "#FFFFFF" : "#222222",
-                    }}
-                    data-testid="interpreter-empty"
-                  >
+          ) : error ? (
+            <Alert severity="error" data-testid="preferences-error">
+              {error}
+            </Alert>
+          ) : (
+            <Stack spacing={3}>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Paper variant="outlined" sx={{ p: 2.5 }}>
+                    <Typography variant="overline" color="text.secondary">
+                      Registros
+                    </Typography>
                     <Typography
-                      variant="body2"
-                      sx={{ color: isDark ? "#CCCCCC" : "#666666" }}
+                      variant="h4"
+                      sx={{ fontWeight: 800 }}
+                      data-testid="preferences-total"
                     >
-                      Selecciona dos usuarios y ejecuta para ver el desglose y
-                      la narrativa.
+                      {insights?.total_records ?? 0}
                     </Typography>
                   </Paper>
-                )}
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Paper variant="outlined" sx={{ p: 2.5 }}>
+                    <Typography variant="overline" color="text.secondary">
+                      Usuarios únicos
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 800 }}
+                      data-testid="preferences-users"
+                    >
+                      {insights?.unique_users ?? 0}
+                    </Typography>
+                  </Paper>
+                </Grid>
               </Grid>
-            </Grid>
-          ) : null}
+
+              <CarePreferenceInsights insights={insights} />
+
+              <Paper variant="outlined">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  sx={{ p: 2, alignItems: { sm: "center" } }}
+                >
+                  <FormControl size="small" sx={{ minWidth: 220 }}>
+                    <InputLabel id="preferences-dimension-label">
+                      Dimensión
+                    </InputLabel>
+                    <Select
+                      labelId="preferences-dimension-label"
+                      label="Dimensión"
+                      SelectDisplayProps={
+                        {
+                          "data-testid": "preferences-filter",
+                        } as HTMLAttributes<HTMLDivElement>
+                      }
+                      value={dimension}
+                      onChange={(event) =>
+                        setDimension(
+                          event.target.value as CareDimensionKey | "",
+                        )
+                      }
+                    >
+                      <MenuItem value="">Todas</MenuItem>
+                      {CARE_DIMENSIONS.map((item) => (
+                        <MenuItem key={item.key} value={item.key}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl size="small" sx={{ minWidth: 140 }}>
+                    <InputLabel id="preferences-limit-label">Límite</InputLabel>
+                    <Select
+                      labelId="preferences-limit-label"
+                      label="Límite"
+                      data-testid="preferences-limit"
+                      value={limit}
+                      onChange={(event) => setLimit(Number(event.target.value))}
+                    >
+                      {[50, 100, 200].map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {value}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <Typography variant="body2" color="text.secondary">
+                    {dataset?.total ?? 0} registros en total
+                  </Typography>
+                </Stack>
+
+                {rows.length === 0 ? (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ p: 3 }}
+                    data-testid="preferences-empty"
+                  >
+                    Aún no hay preferencias registradas.
+                  </Typography>
+                ) : (
+                  <Table size="small" data-testid="preferences-dataset">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Usuario</TableCell>
+                        <TableCell>Dimensión</TableCell>
+                        <TableCell>Tag</TableCell>
+                        <TableCell align="right">Score</TableCell>
+                        <TableCell align="right">Actualizado</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-testid={`preferences-row-${row.id}`}
+                        >
+                          <TableCell sx={{ fontFamily: "monospace" }}>
+                            {row.user_id}
+                          </TableCell>
+                          <TableCell>
+                            {CARE_DIMENSION_BY_KEY[row.dimension]?.label ??
+                              row.dimension}
+                          </TableCell>
+                          <TableCell>{row.tag ?? "—"}</TableCell>
+                          <TableCell align="right">{row.score}</TableCell>
+                          <TableCell align="right">
+                            {dateLabel(row.updated_at)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </Paper>
+            </Stack>
+          )}
         </Box>
       </Container>
     </AdminLayout>

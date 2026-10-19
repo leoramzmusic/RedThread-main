@@ -333,7 +333,7 @@ export default function AdminSidebar({
         },
         {
           id: "care-interpreter",
-          label: "CARE Interpreter",
+          label: "Preferencias & Insights",
           icon: <PsychologyIcon />,
           path: "/portal-redthread/care/interpreter",
         },
