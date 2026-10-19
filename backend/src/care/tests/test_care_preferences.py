@@ -6,7 +6,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import motor.motor_asyncio
 import pytest
 from beanie.odm.settings.document import DocumentSettings
+from fastapi import HTTPException
 
+from src.api import admin_preferences as admin_api
+from src.api import preferences as user_api
 from src.care.models.care_dimension_map import CareDimensionMap
 from src.care.models.care_user_preference import CareUserPreference
 from src.care.preferences import service
@@ -290,3 +293,115 @@ async def test_get_insights_groups_rounds_and_ranks_top_three():
     assert [row["dimension"] for row in result["top_dimensions"]] == [
         "love_language", "values", "communication_style"
     ]
+
+
+class _User:
+    id = "u1"
+
+
+class _Admin:
+    id = "emp1"
+
+
+@pytest.mark.asyncio
+async def test_user_list_and_create_return_dumps():
+    doc = _user_pref()
+    with patch.object(user_api.service, "list_user_preferences",
+                      AsyncMock(return_value=[doc])):
+        listed = await user_api.list_my_preferences(current_user=_User())
+    assert listed == [{"id": VALID_ID, "user_id": "u1"}]
+
+    create_mock = AsyncMock(return_value=doc)
+    with patch.object(user_api.service, "create_preference", create_mock):
+        created = await user_api.create_my_preference(
+            {"dimension": "values", "score": 80, "user_id": "hacker"},
+            current_user=_User(),
+        )
+    assert created == {"id": VALID_ID, "user_id": "u1"}
+    create_mock.assert_awaited_with("u1", "values", 80, None)
+
+
+@pytest.mark.asyncio
+async def test_create_endpoint_maps_validation_and_duplicate():
+    with patch.object(user_api.service, "create_preference",
+                      AsyncMock(side_effect=service.PreferenceValidationError(
+                          ["La dimensión no es válida."]))):
+        with pytest.raises(HTTPException) as exc:
+            await user_api.create_my_preference(
+                {"dimension": "nope", "score": 1}, current_user=_User()
+            )
+    assert exc.value.status_code == 422
+    assert exc.value.detail == ["La dimensión no es válida."]
+
+    with patch.object(user_api.service, "create_preference",
+                      AsyncMock(side_effect=service.PreferenceDuplicateError(
+                          "Ya existe una preferencia para esa dimensión."))):
+        with pytest.raises(HTTPException) as exc:
+            await user_api.create_my_preference(
+                {"dimension": "values", "score": 80}, current_user=_User()
+            )
+    assert exc.value.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_update_and_delete_map_missing_to_404():
+    with patch.object(user_api.service, "update_preference",
+                      AsyncMock(side_effect=LookupError("Preferencia no encontrada."))):
+        with pytest.raises(HTTPException) as exc:
+            await user_api.update_my_preference(
+                VALID_ID, {"score": 10}, current_user=_User()
+            )
+    assert exc.value.status_code == 404
+
+    doc = _user_pref()
+    with patch.object(user_api.service, "update_preference",
+                      AsyncMock(return_value=doc)):
+        assert await user_api.update_my_preference(
+            VALID_ID, {"score": 10}, current_user=_User()
+        ) == {"id": VALID_ID, "user_id": "u1"}
+
+    with patch.object(user_api.service, "delete_preference", AsyncMock()):
+        assert await user_api.delete_my_preference(VALID_ID, current_user=_User()) == {
+            "ok": True
+        }
+
+    with patch.object(user_api.service, "delete_preference",
+                      AsyncMock(side_effect=LookupError("Preferencia no encontrada."))):
+        with pytest.raises(HTTPException) as exc:
+            await user_api.delete_my_preference(VALID_ID, current_user=_User())
+    assert exc.value.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_admin_list_validates_and_delegates():
+    with pytest.raises(HTTPException) as exc:
+        await admin_api.list_all_preferences(admin=_Admin(), limit=0)
+    assert exc.value.status_code == 422
+
+    with pytest.raises(HTTPException) as exc:
+        await admin_api.list_all_preferences(admin=_Admin(), dimension="nope")
+    assert exc.value.status_code == 422
+
+    payload = {"items": [], "total": 0, "limit": 10, "offset": 0}
+    with patch.object(admin_api.service, "list_all_preferences",
+                      AsyncMock(return_value=payload)) as list_mock:
+        result = await admin_api.list_all_preferences(
+            admin=_Admin(), limit=10, offset=0, dimension="values", user_id="u1"
+        )
+    assert result == payload
+    list_mock.assert_awaited_with(
+        limit=10, offset=0, dimension="values", user_id="u1"
+    )
+
+
+@pytest.mark.asyncio
+async def test_admin_insights_and_export_delegate():
+    insights = {"total_records": 0, "unique_users": 0}
+    with patch.object(admin_api.service, "get_insights",
+                      AsyncMock(return_value=insights)):
+        assert await admin_api.preference_insights(admin=_Admin()) == insights
+
+    exported = {"date": "2026-10-19", "count": 1, "files": {}, "records": []}
+    with patch.object(admin_api.export_service, "build_export",
+                      AsyncMock(return_value=exported)):
+        assert await admin_api.export_preferences(admin=_Admin()) == exported

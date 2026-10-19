@@ -142,6 +142,8 @@ from src.api import (
     premium,
     moderation,
     options,
+    preferences,
+    admin_preferences,
     settings as settings_router,
     uploads,
     friends,
@@ -209,6 +211,9 @@ app.include_router(golth.router, prefix="/golth", tags=["Golth"])
 app.include_router(moderation.router, prefix="/moderation", tags=["Moderation"])
 app.include_router(options.router, prefix="/options", tags=["System Options"])
 app.include_router(settings_router.router, prefix="/settings", tags=["Settings"])
+app.include_router(
+    preferences.router, prefix="/preferences", tags=["Preferences"]
+)
 app.include_router(uploads.router, prefix="/uploads", tags=["Uploads"])
 app.include_router(
     notifications.router, prefix="/notifications", tags=["Notifications"]
@@ -296,6 +301,11 @@ app.include_router(
     prefix="/portal-redthread/experiencia/algoritmos",
     tags=["Admin - Algoritmos"],
 )  # New
+app.include_router(
+    admin_preferences.router,
+    prefix="/portal-redthread/experiencia/algoritmos/preferences",
+    tags=["Admin - Preferencias CARE"],
+)
 app.include_router(
     admin_appearance.router,
     prefix="/portal-redthread/apariencia",
