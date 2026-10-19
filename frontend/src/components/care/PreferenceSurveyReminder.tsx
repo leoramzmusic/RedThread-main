@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Alert, Button, Stack } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import { CARE_DIMENSION_KEYS } from "../../constants/careDimensions";
 import { listPreferences } from "../../services/carePreferencesService";
 
 export default function PreferenceSurveyReminder() {
   const [pending, setPending] = useState<number | null>(null);
-  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -27,12 +26,12 @@ export default function PreferenceSurveyReminder() {
     };
   }, []);
 
-  if (dismissed || !pending) return null;
+  if (!pending) return null;
 
   const message =
     pending === 1
-      ? "Tienes 1 pregunta pendiente en tus preferencias, ¿quieres continuar?"
-      : `Tienes ${pending} preguntas pendientes en tus preferencias, ¿quieres continuar?`;
+      ? "Encuesta pendiente: te falta 1 pregunta para completar tus preferencias."
+      : `Encuesta pendiente: te faltan ${pending} preguntas para completar tus preferencias.`;
 
   return (
     <Alert
@@ -40,24 +39,14 @@ export default function PreferenceSurveyReminder() {
       severity="info"
       sx={{ mb: 2 }}
       action={
-        <Stack direction="row" spacing={1}>
-          <Button
-            data-testid="preferences-reminder-cta"
-            component={Link}
-            href="/discover#care-preferences"
-            size="small"
-          >
-            Continuar
-          </Button>
-          <Button
-            data-testid="preferences-reminder-dismiss"
-            size="small"
-            color="inherit"
-            onClick={() => setDismissed(true)}
-          >
-            Ahora no
-          </Button>
-        </Stack>
+        <Button
+          data-testid="preferences-reminder-cta"
+          component={Link}
+          href="/home?encuesta=1"
+          size="small"
+        >
+          Continuar
+        </Button>
       }
     >
       {message}

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import CarePreferenceCards from "./CarePreferenceCards";
+import CarePreferenceSurvey from "./CarePreferenceSurvey";
 import { CARE_DIMENSIONS } from "../../constants/careDimensions";
 import {
   createPreference,
@@ -67,9 +67,9 @@ beforeEach(() => {
   mockDelete.mockResolvedValue(undefined);
 });
 
-describe("CarePreferenceCards", () => {
+describe("CarePreferenceSurvey", () => {
   it("starts at the first pending dimension, one question at a time", async () => {
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     expect(
       await screen.findByTestId("preference-slider-relationship_goals"),
     ).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("CarePreferenceCards", () => {
   });
 
   it("commits the 0-10 answer as a 0-100 preference and unlocks Siguiente", async () => {
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     await screen.findByTestId("preference-slider-relationship_goals");
     expect(screen.getByTestId("survey-next")).toBeDisabled();
     commitSlider("relationship_goals", 9);
@@ -102,7 +102,7 @@ describe("CarePreferenceCards", () => {
   });
 
   it("walks back with Atrás and forward with Siguiente", async () => {
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     await screen.findByTestId("preference-slider-relationship_goals");
     fireEvent.click(screen.getByTestId("survey-prev"));
     expect(screen.getByTestId("survey-progress")).toHaveTextContent(
@@ -123,7 +123,7 @@ describe("CarePreferenceCards", () => {
 
   it("Saltar advances without saving and leaves the question pending", async () => {
     mockList.mockResolvedValue([]);
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     await screen.findByTestId("preference-slider-values");
     fireEvent.click(screen.getByTestId("survey-skip"));
     expect(screen.getByTestId("survey-progress")).toHaveTextContent(
@@ -137,7 +137,7 @@ describe("CarePreferenceCards", () => {
 
   it("shows the pending count at the end and cycles the pending questions", async () => {
     mockList.mockResolvedValue([]);
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     await screen.findByTestId("preference-slider-values");
     for (let index = 0; index < CARE_DIMENSIONS.length; index++) {
       fireEvent.click(screen.getByTestId("survey-skip"));
@@ -154,7 +154,7 @@ describe("CarePreferenceCards", () => {
 
   it("shows the complete summary when every dimension is answered", async () => {
     mockList.mockResolvedValue(allSaved);
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     expect(await screen.findByTestId("survey-end-complete")).toHaveTextContent(
       "Encuesta completa",
     );
@@ -171,7 +171,7 @@ describe("CarePreferenceCards", () => {
   });
 
   it("deletes a saved preference from its question", async () => {
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     await screen.findByTestId("preference-slider-relationship_goals");
     fireEvent.click(screen.getByTestId("survey-prev"));
     fireEvent.click(await screen.findByTestId("preference-delete-values"));
@@ -183,7 +183,7 @@ describe("CarePreferenceCards", () => {
 
   it("shows the error and keeps the value when saving fails", async () => {
     mockCreate.mockRejectedValueOnce({ response: { status: 409 } });
-    render(<CarePreferenceCards />);
+    render(<CarePreferenceSurvey />);
     await screen.findByTestId("preference-slider-relationship_goals");
     commitSlider("relationship_goals", 7);
     expect(
@@ -197,5 +197,22 @@ describe("CarePreferenceCards", () => {
       .querySelector('input[type="range"]') as HTMLInputElement;
     expect(input.value).toBe("7");
     expect(screen.getByTestId("survey-next")).toBeDisabled();
+  });
+
+  it("reports how many questions are pending after loading", async () => {
+    const onPendingChange = jest.fn();
+    render(<CarePreferenceSurvey onPendingChange={onPendingChange} />);
+    await screen.findByTestId("preference-slider-relationship_goals");
+    await waitFor(() => expect(onPendingChange).toHaveBeenLastCalledWith(6));
+  });
+
+  it("reports zero pending questions after saving the last one", async () => {
+    const onPendingChange = jest.fn();
+    mockList.mockResolvedValue(allSaved.slice(0, 6));
+    render(<CarePreferenceSurvey onPendingChange={onPendingChange} />);
+    await screen.findByTestId("preference-slider-communication_style");
+    await waitFor(() => expect(onPendingChange).toHaveBeenLastCalledWith(1));
+    commitSlider("communication_style", 8);
+    await waitFor(() => expect(onPendingChange).toHaveBeenLastCalledWith(0));
   });
 });

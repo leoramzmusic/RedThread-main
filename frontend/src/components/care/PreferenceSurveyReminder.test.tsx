@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import PreferenceSurveyReminder from "./PreferenceSurveyReminder";
 import { CARE_DIMENSIONS } from "../../constants/careDimensions";
 import {
@@ -32,23 +32,26 @@ beforeEach(() => {
 });
 
 describe("PreferenceSurveyReminder", () => {
-  it("shows the pending count with a continue link to Discover", async () => {
+  it("shows the pending survey with a continue link to Home", async () => {
     mockList.mockResolvedValue(saved(3));
     render(<PreferenceSurveyReminder />);
     expect(await screen.findByTestId("preferences-reminder")).toHaveTextContent(
-      "Tienes 4 preguntas pendientes en tus preferencias, ¿quieres continuar?",
+      "Encuesta pendiente: te faltan 4 preguntas para completar tus preferencias.",
     );
     expect(screen.getByTestId("preferences-reminder-cta")).toHaveAttribute(
       "href",
-      "/discover#care-preferences",
+      "/home?encuesta=1",
     );
+    expect(
+      screen.queryByTestId("preferences-reminder-dismiss"),
+    ).not.toBeInTheDocument();
   });
 
   it("uses the singular form for one pending question", async () => {
     mockList.mockResolvedValue(saved(6));
     render(<PreferenceSurveyReminder />);
     expect(await screen.findByTestId("preferences-reminder")).toHaveTextContent(
-      "Tienes 1 pregunta pendiente en tus preferencias, ¿quieres continuar?",
+      "Encuesta pendiente: te falta 1 pregunta para completar tus preferencias.",
     );
   });
 
@@ -72,15 +75,5 @@ describe("PreferenceSurveyReminder", () => {
         screen.queryByTestId("preferences-reminder"),
       ).not.toBeInTheDocument(),
     );
-  });
-
-  it("can be dismissed for the session", async () => {
-    mockList.mockResolvedValue(saved(3));
-    render(<PreferenceSurveyReminder />);
-    await screen.findByTestId("preferences-reminder");
-    fireEvent.click(screen.getByTestId("preferences-reminder-dismiss"));
-    expect(
-      screen.queryByTestId("preferences-reminder"),
-    ).not.toBeInTheDocument();
   });
 });

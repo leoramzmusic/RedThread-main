@@ -45,7 +45,6 @@ import {
   BarChart as BarChartIcon,
 } from "@mui/icons-material";
 import Layout from "../../components/layout/Layout";
-import CarePreferenceCards from "../../components/care/CarePreferenceCards";
 import ProfileCard, { Profile } from "../../components/profile/ProfileCard";
 import apiClient from "../../services/api";
 import { useSelector } from "react-redux";
@@ -1034,18 +1033,6 @@ export default function Discover() {
 
   return (
     <Layout>
-      <Box
-        id="care-preferences"
-        sx={{
-          width: "100%",
-          maxWidth: 1120,
-          mx: "auto",
-          px: { xs: 1, sm: 2 },
-          pt: 1,
-        }}
-      >
-        <CarePreferenceCards />
-      </Box>
       <Box
         ref={containerRef}
         sx={{

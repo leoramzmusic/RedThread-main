@@ -35,6 +35,7 @@ import {
   AutoAwesome as AutoAwesomeIcon,
 } from "@mui/icons-material";
 import Layout from "../../components/layout/Layout";
+import CarePreferenceSurveyBubble from "../../components/care/CarePreferenceSurveyBubble";
 import apiClient from "../../services/api";
 import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import { useTranslation, Trans } from "next-i18next/pages";
@@ -181,8 +182,9 @@ function StatNumber({ value, isDark, className }: StatNumberProps) {
           letterSpacing: "-0.02em",
 
           animation:
-            isPercent && percent >= 100 ? "rtPulse 0.6s ease 3" : undefined
-        }}>
+            isPercent && percent >= 100 ? "rtPulse 0.6s ease 3" : undefined,
+        }}
+      >
         {isPercent ? (
           <AnimatedPercent target={percent} />
         ) : (
@@ -363,8 +365,9 @@ export default function Dashboard() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "80vh"
-          }}>
+            minHeight: "80vh",
+          }}
+        >
           <CircularProgress />
         </Box>
       </Layout>
@@ -451,8 +454,9 @@ export default function Dashboard() {
               alignItems: "center",
               gap: 2,
               mb: 4,
-              flexWrap: "wrap"
-            }}>
+              flexWrap: "wrap",
+            }}
+          >
             <Typography
               variant="h4"
               component="h1"
@@ -715,17 +719,22 @@ export default function Dashboard() {
           <Box component="hr" sx={sectionDivider(isDark)} />
 
           {/* Stats Cards */}
-          <Grid container spacing={3} sx={{
-            mb: 4
-          }}>
+          <Grid
+            container
+            spacing={3}
+            sx={{
+              mb: 4,
+            }}
+          >
             {statBodies.map((stat, idx) => (
               <Grid
                 key={stat.label}
                 size={{
                   xs: 12,
                   sm: 6,
-                  md: 3
-                }}>
+                  md: 3,
+                }}
+              >
                 <Card
                   role="button"
                   tabIndex={0}
@@ -783,8 +792,9 @@ export default function Dashboard() {
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "space-between"
-                      }}>
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <Box>
                         <StatNumber
                           value={stat.value}
@@ -863,22 +873,28 @@ export default function Dashboard() {
               zIndex: 1,
             }}
           >
-            <Grid container spacing={2} sx={{
-              alignItems: "center"
-            }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                alignItems: "center",
+              }}
+            >
               <Grid
                 size={{
                   xs: 12,
-                  md: 6
-                }}>
+                  md: 6,
+                }}
+              >
                 <Typography
                   variant="h5"
                   sx={{
                     mb: 1,
                     ...glassHeading,
                     color: textPrimary(isDark),
-                    fontSize: "1.375rem"
-                  }}>
+                    fontSize: "1.375rem",
+                  }}
+                >
                   {t("dashboard.quickReady")}
                 </Typography>
                 <Typography
@@ -891,15 +907,17 @@ export default function Dashboard() {
               <Grid
                 size={{
                   xs: 12,
-                  md: 6
-                }}>
+                  md: 6,
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
                     gap: 2,
                     justifyContent: { xs: "flex-start", md: "flex-end" },
-                    flexWrap: "wrap"
-                  }}>
+                    flexWrap: "wrap",
+                  }}
+                >
                   <RippleActionButton
                     label={t("dashboard.quickRoulette")}
                     icon={<CasinoIcon sx={{ color: "inherit" }} />}
@@ -933,8 +951,9 @@ export default function Dashboard() {
             <Grid
               size={{
                 xs: 12,
-                md: 6
-              }}>
+                md: 6,
+              }}
+            >
               <Paper
                 elevation={0}
                 sx={{
@@ -952,8 +971,9 @@ export default function Dashboard() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    mb: 2
-                  }}>
+                    mb: 2,
+                  }}
+                >
                   <Typography
                     variant="h6"
                     sx={{
@@ -983,8 +1003,9 @@ export default function Dashboard() {
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "column"
-                    }}>
+                      flexDirection: "column",
+                    }}
+                  >
                     {recentMatches.map((match) => (
                       <Box
                         key={match.match_id}
@@ -1002,14 +1023,16 @@ export default function Dashboard() {
                         <Box
                           sx={{
                             flex: 1,
-                            minWidth: 0
-                          }}>
+                            minWidth: 0,
+                          }}
+                        >
                           <Typography
                             variant="body1"
                             sx={{
                               fontWeight: 600,
-                              color: textPrimary(isDark)
-                            }}>
+                              color: textPrimary(isDark),
+                            }}
+                          >
                             {match.display_name}
                           </Typography>
                           <Typography
@@ -1037,8 +1060,9 @@ export default function Dashboard() {
             <Grid
               size={{
                 xs: 12,
-                md: 6
-              }}>
+                md: 6,
+              }}
+            >
               <Paper
                 elevation={0}
                 sx={{
@@ -1056,8 +1080,9 @@ export default function Dashboard() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    mb: 2
-                  }}>
+                    mb: 2,
+                  }}
+                >
                   <Typography
                     variant="h6"
                     sx={{
@@ -1087,8 +1112,9 @@ export default function Dashboard() {
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "column"
-                    }}>
+                      flexDirection: "column",
+                    }}
+                  >
                     {recentConversations.map((conv) => (
                       <Box
                         key={conv.user_id}
@@ -1106,14 +1132,16 @@ export default function Dashboard() {
                         <Box
                           sx={{
                             flex: 1,
-                            minWidth: 0
-                          }}>
+                            minWidth: 0,
+                          }}
+                        >
                           <Typography
                             variant="body1"
                             sx={{
                               fontWeight: 600,
-                              color: textPrimary(isDark)
-                            }}>
+                              color: textPrimary(isDark),
+                            }}
+                          >
                             {conv.display_name}
                           </Typography>
                           <Typography
@@ -1160,8 +1188,9 @@ export default function Dashboard() {
                     mb: 2,
                     ...glassHeading,
                     color: textPrimary(isDark),
-                    fontSize: "1.125rem"
-                  }}>
+                    fontSize: "1.125rem",
+                  }}
+                >
                   {t("dashboard.suggestions")}
                 </Typography>
                 <Grid container spacing={2}>
@@ -1172,8 +1201,9 @@ export default function Dashboard() {
                         xs: 12,
                         sm: 6,
                         md: 4,
-                        lg: 2.4
-                      }}>
+                        lg: 2.4,
+                      }}
+                    >
                       <Card
                         sx={{
                           ...glassSurface(isDark, {
@@ -1233,8 +1263,9 @@ export default function Dashboard() {
                             variant="body1"
                             sx={{
                               fontWeight: 600,
-                              color: textPrimary(isDark)
-                            }}>
+                              color: textPrimary(isDark),
+                            }}
+                          >
                             {suggestion.display_name}, {suggestion.age}
                           </Typography>
                           <Typography
@@ -1253,8 +1284,9 @@ export default function Dashboard() {
                               display: "flex",
                               gap: 0.5,
                               mt: 1,
-                              flexWrap: "wrap"
-                            }}>
+                              flexWrap: "wrap",
+                            }}
+                          >
                             {suggestion.interests.map((interest, idx) => (
                               <Chip
                                 key={idx}
@@ -1309,12 +1341,17 @@ export default function Dashboard() {
           },
 
           paper: {
-            sx: glassSurface(isDark, { blur: 32, level: "high", elevated: true }),
-          }
+            sx: glassSurface(isDark, {
+              blur: 32,
+              level: "high",
+              elevated: true,
+            }),
+          },
         }}
         slots={{
-          transition: CareTransition
-        }}>
+          transition: CareTransition,
+        }}
+      >
         <DialogTitle
           sx={{
             fontWeight: 700,
@@ -1328,9 +1365,12 @@ export default function Dashboard() {
           dividers
           sx={{ borderColor: hairline(isDark), color: textSecondary(isDark) }}
         >
-          <Typography variant="body1" sx={{
-            marginBottom: "16px"
-          }}>
+          <Typography
+            variant="body1"
+            sx={{
+              marginBottom: "16px",
+            }}
+          >
             <Trans i18nKey="dashboard.modalIntro" />
           </Typography>
           <Box component="ul" sx={{ pl: 3, m: 0 }}>
@@ -1380,6 +1420,7 @@ export default function Dashboard() {
           </Button>
         </DialogActions>
       </Dialog>
+      {user && <CarePreferenceSurveyBubble />}
     </Layout>
   );
 }
