@@ -45,6 +45,7 @@ import {
   BarChart as BarChartIcon,
 } from "@mui/icons-material";
 import Layout from "../../components/layout/Layout";
+import CarePreferenceCards from "../../components/care/CarePreferenceCards";
 import ProfileCard, { Profile } from "../../components/profile/ProfileCard";
 import apiClient from "../../services/api";
 import { useSelector } from "react-redux";
@@ -62,7 +63,10 @@ import {
 } from "../../utils/profileScoring";
 import AsyncLocationSelector from "../../components/common/AsyncLocationSelector";
 import { RADIUS_MARKS, RADIUS_MIN, RADIUS_MAX } from "../../utils/radius";
-import { MODULE_SCORE_FIELDS, SUGGESTION_SECTION_TO_MODULE } from "../../utils/profileScoring";
+import {
+  MODULE_SCORE_FIELDS,
+  SUGGESTION_SECTION_TO_MODULE,
+} from "../../utils/profileScoring";
 
 const LocationMap = dynamic(
   () => import("../../components/common/LocationMap"),
@@ -469,10 +473,7 @@ export default function Discover() {
           getMaxScore(hiddenModules),
         );
         if (completion < 100) {
-          const suggestions = getProfileSuggestions(
-            myProfile,
-            hiddenModules,
-          );
+          const suggestions = getProfileSuggestions(myProfile, hiddenModules);
           if (suggestions.length > 0) {
             const refinementItem = {
               user_id: `refinement-empty-${Date.now()}`,
@@ -803,10 +804,7 @@ export default function Discover() {
 
     if (likesSinceLastCard >= threshold) {
       import("../../utils/profileScoring").then(({ getProfileSuggestions }) => {
-        const suggestions = getProfileSuggestions(
-          myProfile,
-          hiddenModules,
-        );
+        const suggestions = getProfileSuggestions(myProfile, hiddenModules);
         // Filter out recently shown sections to ensure variety
         const filteredSuggestions = suggestions.filter(
           (s) => !recentlyShownSections.includes(s.sectionId),
@@ -1005,17 +1003,22 @@ export default function Discover() {
       <Layout>
         <Container maxWidth="sm" sx={{ mt: 10, textAlign: "center" }}>
           <FavoriteIcon sx={{ fontSize: 80, color: "gold", mb: 2 }} />
-          <Typography variant="h4" gutterBottom sx={{
-            fontWeight: "bold"
-          }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+            }}
+          >
             {t("discoverLocked.title", "Vínculo Confirmado")}
           </Typography>
           <Typography
             variant="body1"
             sx={{
               color: "text.secondary",
-              marginBottom: "16px"
-            }}>
+              marginBottom: "16px",
+            }}
+          >
             {t(
               "discoverLocked.message",
               "Tu vínculo está confirmado. Discover se ha desactivado para respetar tu relación. Golth sigue disponible para explorar afinidades compartidas.",
@@ -1031,6 +1034,17 @@ export default function Discover() {
 
   return (
     <Layout>
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 1120,
+          mx: "auto",
+          px: { xs: 1, sm: 2 },
+          pt: 1,
+        }}
+      >
+        <CarePreferenceCards />
+      </Box>
       <Box
         ref={containerRef}
         sx={{
@@ -1416,8 +1430,9 @@ export default function Discover() {
                 sx={{
                   fontWeight: 700,
                   color: "#FF6B6B",
-                  mb: 2
-                }}>
+                  mb: 2,
+                }}
+              >
                 {t("match.title")}
               </Typography>
               <Typography variant="h5">
@@ -2064,7 +2079,7 @@ export default function Discover() {
                   boxShadow: "none",
                   backgroundImage: "none",
                 },
-              }
+              },
             }}
           >
             <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -2089,7 +2104,7 @@ export default function Discover() {
                   boxShadow: "none",
                   backgroundImage: "none",
                 },
-              }
+              },
             }}
           >
             <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -2134,7 +2149,7 @@ export default function Discover() {
                   m: 0,
                   ml: { xs: 0, md: "250px" }, // Shift right as requested only on desktop
                 },
-              }
+              },
             }}
           >
             <DialogTitle
@@ -2172,8 +2187,9 @@ export default function Discover() {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        mb: 1
-                      }}>
+                        mb: 1,
+                      }}
+                    >
                       <Typography
                         variant="subtitle2"
                         sx={{ color: "text.secondary", fontWeight: 600 }}
@@ -2245,8 +2261,9 @@ export default function Discover() {
                                 sx={{
                                   display: "flex",
                                   alignItems: "center",
-                                  gap: 0.5
-                                }}>
+                                  gap: 0.5,
+                                }}
+                              >
                                 <Typography
                                   variant="caption"
                                   sx={{
@@ -2308,8 +2325,9 @@ export default function Discover() {
                         sx={{
                           color: "primary.main",
                           fontWeight: 700,
-                          fontSize: "0.85rem"
-                        }}>
+                          fontSize: "0.85rem",
+                        }}
+                      >
                         {`${distance} ${t("filters.distance.unit", "km")}`}
                       </Typography>
                     </Box>
@@ -2357,9 +2375,12 @@ export default function Discover() {
                           bgcolor: "action.hover",
                         }}
                       >
-                        <Typography variant="caption" sx={{
-                          color: "text.secondary"
-                        }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                          }}
+                        >
                           {t(
                             "filters.distance.noLocation",
                             "Configura tu ubicación en el perfil para ver el mapa",
@@ -2387,8 +2408,9 @@ export default function Discover() {
                           variant="caption"
                           sx={{
                             fontWeight: 600,
-                            fontSize: "0.65rem"
-                          }}>
+                            fontSize: "0.65rem",
+                          }}
+                        >
                           {t(
                             "filters.distance.currentLocation",
                             "Buscando cerca de: ",
@@ -2404,8 +2426,9 @@ export default function Discover() {
                     sx={{
                       color: "text.secondary",
                       fontSize: "0.75rem",
-                      opacity: 0.8
-                    }}>
+                      opacity: 0.8,
+                    }}
+                  >
                     {t(
                       "filters.distance.syncMessage",
                       "Este ajuste también se guardará en tu perfil.",
@@ -2578,8 +2601,9 @@ export default function Discover() {
                       sx={{
                         fontWeight: 700,
                         color: "primary.main",
-                        fontSize: "0.85rem"
-                      }}>
+                        fontSize: "0.85rem",
+                      }}
+                    >
                       {t(
                         "filters.premium.upsellTitle",
                         "Explora más allá de tu zona",
@@ -2591,8 +2615,9 @@ export default function Discover() {
                         color: "text.secondary",
                         display: "block",
                         mb: 1.5,
-                        fontSize: "0.75rem"
-                      }}>
+                        fontSize: "0.75rem",
+                      }}
+                    >
                       {t(
                         "filters.premium.upsellDesc",
                         "Suscríbete a ReTh Premium o VIP para buscar personas en cualquier estado o país.",
@@ -2659,8 +2684,9 @@ export default function Discover() {
                               variant="caption"
                               sx={{
                                 color: "text.disabled",
-                                fontSize: "0.7rem"
-                              }}>
+                                fontSize: "0.7rem",
+                              }}
+                            >
                               {t(
                                 "filters.highCompatibilityDesc",
                                 "Filtra perfiles con menor afinidad.",
@@ -2761,8 +2787,9 @@ export default function Discover() {
                               variant="caption"
                               sx={{
                                 color: "text.disabled",
-                                fontSize: "0.7rem"
-                              }}>
+                                fontSize: "0.7rem",
+                              }}
+                            >
                               {t(
                                 "filters.online.desc",
                                 "Muestra solo personas activas ahora mismo.",
