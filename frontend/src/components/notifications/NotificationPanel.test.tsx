@@ -19,7 +19,7 @@ const mockCopy: Record<string, string> = {
   "notifications.retry": "Reintentar",
   "notifications.survey.title": "Preferencias CARE",
   "notifications.survey.pending_one":
-    "Te falta 1 pregunta para completar tus preferencias.",
+    "Te falta {{count}} pregunta para completar tus preferencias.",
   "notifications.survey.pending_other":
     "Te faltan {{count}} preguntas para completar tus preferencias.",
   "notifications.actor.fallback": "Alguien",

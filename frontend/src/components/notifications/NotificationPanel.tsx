@@ -83,7 +83,9 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
 
   const surveyCopy =
     counts.survey_pending === 1
-      ? t("notifications.survey.pending_one")
+      ? t("notifications.survey.pending_one", {
+          count: counts.survey_pending,
+        })
       : t("notifications.survey.pending_other", {
           count: counts.survey_pending,
         });
