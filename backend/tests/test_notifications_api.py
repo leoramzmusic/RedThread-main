@@ -1,5 +1,6 @@
 """Tests for notifications API 2.0 (F1): buckets, counts, survey pending, sync."""
 
+from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -65,6 +66,33 @@ async def test_survey_pending_failure_returns_zero():
         new=AsyncMock(side_effect=RuntimeError("db down")),
     ):
         assert await api._survey_pending("u1") == 0
+
+
+@pytest.mark.asyncio
+async def test_backfill_updated_at_copies_created_at():
+    created = datetime(2026, 9, 1, 12, 0, 0)
+    docs = [
+        SimpleNamespace(created_at=created, updated_at=None, save=AsyncMock()),
+        SimpleNamespace(created_at=None, updated_at=None, save=AsyncMock()),
+    ]
+    to_list = AsyncMock(return_value=docs)
+
+    def limit(n):
+        assert n == 500
+        return SimpleNamespace(to_list=to_list)
+
+    chain = SimpleNamespace(limit=limit)
+    with patch.object(api.Notification, "find", return_value=chain) as find:
+        updated = await api._backfill_updated_at("u1")
+    assert updated == 2
+    find.assert_called_once_with(
+        {"user_id": "u1", "updated_at": {"$exists": False}}
+    )
+    assert docs[0].updated_at == created
+    assert isinstance(docs[1].updated_at, datetime)
+    docs[0].save.assert_awaited_once()
+    docs[1].save.assert_awaited_once()
+    to_list.assert_awaited_once()
 
 
 @pytest.mark.asyncio

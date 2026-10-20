@@ -37,6 +37,20 @@ async def _mute_context(user_id: str) -> tuple[Dict[str, bool], bool]:
     return mutes, master
 
 
+async def _backfill_updated_at(user_id: str, limit: int = 500) -> int:
+    docs = (
+        await Notification.find(
+            {"user_id": user_id, "updated_at": {"$exists": False}}
+        )
+        .limit(limit)
+        .to_list()
+    )
+    for doc in docs:
+        doc.updated_at = doc.created_at or datetime.utcnow()
+        await doc.save()
+    return len(docs)
+
+
 def _bucket_types(bucket: str) -> List[str]:
     if bucket == "social":
         return ["like", "match"]
@@ -104,6 +118,7 @@ async def get_notifications(
     uid = str(current_user.id)
 
     if cursor is None:  # Retención lazy solo en la primera página
+        await _backfill_updated_at(uid)
         cutoff = datetime.utcnow() - timedelta(days=ns.RETENTION_DAYS)
         await Notification.find(
             Notification.user_id == uid, Notification.updated_at < cutoff
