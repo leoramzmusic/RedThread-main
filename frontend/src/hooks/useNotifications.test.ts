@@ -4,10 +4,11 @@ import apiClient from "../services/api";
 
 jest.mock("../services/api", () => ({
   __esModule: true,
-  default: { get: jest.fn(), post: jest.fn() },
+  default: { get: jest.fn(), post: jest.fn(), delete: jest.fn() },
 }));
 const get = apiClient.get as jest.Mock;
 const post = apiClient.post as jest.Mock;
+const del = apiClient.delete as jest.Mock;
 
 const counts = {
   count: 2,
@@ -96,6 +97,93 @@ it("refreshes when the notifications-sync event fires", async () => {
   await waitFor(() =>
     expect(get).toHaveBeenCalledWith("/notifications/unread-count"),
   );
+});
+
+it("skips the unread-count request when filter is archived", async () => {
+  get.mockImplementation((url: string) => {
+    if (url === "/notifications/unread-count")
+      return Promise.resolve({ data: counts });
+    return Promise.resolve({
+      data: { items: [{ id: "n1", type: "promo", is_read: false }] },
+    });
+  });
+  const { result } = renderHook(() => useNotifications("archived"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "archived", limit: 50 },
+  });
+  expect(get).not.toHaveBeenCalledWith("/notifications/unread-count");
+  expect(result.current.items).toHaveLength(1);
+});
+
+it.each(["archive", "unarchive", "restore"] as const)(
+  "%s calls the endpoint, removes the item optimistically and refreshes",
+  async (action) => {
+    get.mockImplementation((url: string) =>
+      url === "/notifications/unread-count"
+        ? Promise.resolve({ data: counts })
+        : Promise.resolve({
+            data: { items: [{ id: "n1", type: "like", is_read: false }] },
+          }),
+    );
+    const deferredPost = deferred<unknown>();
+    post.mockReturnValue(deferredPost.promise);
+    const { result } = renderHook(() => useNotifications("all"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.items).toHaveLength(1);
+    get.mockClear();
+
+    let pending!: Promise<void>;
+    await act(async () => {
+      pending = (
+        result.current as unknown as Record<
+          string,
+          (id: string) => Promise<void>
+        >
+      )[action]("n1");
+    });
+    expect(result.current.items).toEqual([]);
+
+    await act(async () => {
+      deferredPost.resolve({ data: {} });
+      await pending;
+    });
+    expect(post).toHaveBeenCalledWith(`/notifications/n1/${action}`);
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "all", limit: 50 },
+    });
+  },
+);
+
+it("removes a notification with delete, optimistically and with refresh", async () => {
+  get.mockImplementation((url: string) =>
+    url === "/notifications/unread-count"
+      ? Promise.resolve({ data: counts })
+      : Promise.resolve({
+          data: { items: [{ id: "n1", type: "like", is_read: false }] },
+        }),
+  );
+  const deferredDelete = deferred<unknown>();
+  del.mockReturnValue(deferredDelete.promise);
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(result.current.items).toHaveLength(1);
+  get.mockClear();
+
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = result.current.remove("n1");
+  });
+  expect(result.current.items).toEqual([]);
+
+  await act(async () => {
+    deferredDelete.resolve({ data: {} });
+    await pending;
+  });
+  expect(del).toHaveBeenCalledWith("/notifications/n1");
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "all", limit: 50 },
+  });
 });
 
 const deferred = <T>() => {

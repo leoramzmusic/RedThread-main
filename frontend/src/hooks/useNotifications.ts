@@ -55,23 +55,25 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
 
   const fetchAll = useCallback(async () => {
     const requestId = ++requestIdRef.current;
+    const isArchived = filterRef.current === "archived";
     setLoading(true);
     setError(false);
     try {
-      const [list, count] = await Promise.all([
-        apiClient.get("/notifications", {
-          params: {
-            filter: filterRef.current,
-            limit: 50,
-            ...(unreadRef.current ? { unread: true } : {}),
-          },
-        }),
-        apiClient.get("/notifications/unread-count"),
-      ]);
+      const listRequest = apiClient.get("/notifications", {
+        params: {
+          filter: filterRef.current,
+          limit: 50,
+          ...(unreadRef.current ? { unread: true } : {}),
+        },
+      });
+      const countRequest = isArchived
+        ? null
+        : apiClient.get("/notifications/unread-count");
+      const [list, count] = await Promise.all([listRequest, countRequest]);
       if (requestId !== requestIdRef.current) return;
       setItems(list.data.items ?? []);
       setNextCursor(list.data.next_cursor ?? null);
-      setCounts({ ...EMPTY_COUNTS, ...(count.data ?? {}) });
+      if (count) setCounts({ ...EMPTY_COUNTS, ...(count.data ?? {}) });
     } catch {
       if (requestId !== requestIdRef.current) return;
       setError(true);
@@ -137,6 +139,52 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     }
   }, [fetchAll]);
 
+  const runWithOptimisticRemoval = useCallback(
+    async (id: string, request: () => Promise<unknown>) => {
+      setItems((prev) => prev.filter((notification) => notification.id !== id));
+      try {
+        await request();
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
+
+  const archive = useCallback(
+    (id: string) =>
+      runWithOptimisticRemoval(id, () =>
+        apiClient.post(`/notifications/${id}/archive`),
+      ),
+    [runWithOptimisticRemoval],
+  );
+
+  const unarchive = useCallback(
+    (id: string) =>
+      runWithOptimisticRemoval(id, () =>
+        apiClient.post(`/notifications/${id}/unarchive`),
+      ),
+    [runWithOptimisticRemoval],
+  );
+
+  const restore = useCallback(
+    (id: string) =>
+      runWithOptimisticRemoval(id, () =>
+        apiClient.post(`/notifications/${id}/restore`),
+      ),
+    [runWithOptimisticRemoval],
+  );
+
+  const remove = useCallback(
+    (id: string) =>
+      runWithOptimisticRemoval(id, () =>
+        apiClient.delete(`/notifications/${id}`),
+      ),
+    [runWithOptimisticRemoval],
+  );
+
   return {
     items,
     counts,
@@ -148,5 +196,9 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     markRead,
     markBucket,
     markAllRead,
+    archive,
+    unarchive,
+    restore,
+    remove,
   };
 }

@@ -13,6 +13,12 @@ const mockCopy: Record<string, string> = {
   "notifications.title": "Notificaciones",
   "notifications.close": "Cerrar",
   "notifications.markAllRead": "Marcar todo como leído",
+  "notifications.menu": "Más opciones",
+  "notifications.archived.title": "Archivadas",
+  "notifications.archived.back": "Volver a la bandeja",
+  "notifications.settings": "Ajustes",
+  "notifications.actions.unarchive": "Restaurar",
+  "notifications.actions.delete": "Borrar",
   "notifications.tabs.all": "Todo",
   "notifications.tabs.likes": "Likes",
   "notifications.tabs.chats": "Chats",
@@ -21,6 +27,7 @@ const mockCopy: Record<string, string> = {
   "notifications.empty.likes": "Sin likes por ahora.",
   "notifications.empty.chats": "Sin mensajes nuevos.",
   "notifications.empty.system": "Sin avisos.",
+  "notifications.empty.archived": "Nada archivado.",
   "notifications.error": "No pudimos cargar tus notificaciones.",
   "notifications.retry": "Reintentar",
   "notifications.survey.title": "Preferencias CARE",
@@ -91,6 +98,10 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   markRead: jest.fn(),
   markBucket: jest.fn(),
   markAllRead: jest.fn(),
+  archive: jest.fn(),
+  unarchive: jest.fn(),
+  remove: jest.fn(),
+  restore: jest.fn(),
   ...overrides,
 });
 
@@ -106,6 +117,24 @@ const useCounts = (partial: Partial<typeof zeroCounts>) => {
   hook = makeHook({ counts: { ...zeroCounts, ...partial } });
   mockedUseNotifications.mockImplementation(() => hook);
 };
+
+const openArchived = async () => {
+  fireEvent.click(screen.getByTestId("notification-menu"));
+  fireEvent.click(screen.getByTestId("notification-menu-archived"));
+  await waitFor(() =>
+    expect(mockedUseNotifications).toHaveBeenLastCalledWith("archived", {
+      unread: false,
+    }),
+  );
+};
+
+const sampleItem = (id: string) => ({
+  id,
+  type: "promo",
+  is_read: false,
+  created_at: "2026-10-19T10:00:00Z",
+  metadata: {},
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -252,18 +281,7 @@ describe("NotificationPanel", () => {
   });
 
   it("closes the panel after clicking an item", async () => {
-    hook = makeHook({
-      items: [
-        {
-          id: "n1",
-          type: "like",
-          is_read: false,
-          created_at: "2026-10-19T10:00:00Z",
-          user: { name: "Ana", photo: null, nickname: "ana" },
-          metadata: {},
-        },
-      ],
-    });
+    hook = makeHook({ items: [sampleItem("n1")] });
     mockedUseNotifications.mockImplementation(() => hook);
     renderPanel();
 
@@ -273,6 +291,12 @@ describe("NotificationPanel", () => {
     expect(hook.markRead).toHaveBeenCalledWith("n1");
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it("wires the close button to onClose", () => {
+    renderPanel();
+    fireEvent.click(screen.getByTestId("notification-close"));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it("only offers mark-all-read in Sistema", async () => {
@@ -287,5 +311,81 @@ describe("NotificationPanel", () => {
     fireEvent.click(await screen.findByTestId("notification-mark-all"));
 
     expect(hook.markAllRead).toHaveBeenCalledTimes(1);
+  });
+
+  describe("⋯ menu", () => {
+    it("navigates to the archived view from the menu", async () => {
+      useCounts({ count: 1, all: 1, system: 1 });
+      renderPanel();
+
+      await openArchived();
+
+      expect(
+        screen.queryByTestId("notification-tab-all"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-tab-system"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-mark-all"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-survey-item"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("goes back to the inbox from the archived view", async () => {
+      useCounts({ count: 1, all: 1, system: 1 });
+      renderPanel();
+      await openArchived();
+
+      fireEvent.click(screen.getByTestId("notification-back"));
+
+      expect(mockedUseNotifications).toHaveBeenLastCalledWith("all", {
+        unread: false,
+      });
+      expect(
+        await screen.findByTestId("notification-tab-all"),
+      ).toBeInTheDocument();
+    });
+
+    it("navigates to the notification settings", async () => {
+      renderPanel();
+
+      fireEvent.click(screen.getByTestId("notification-menu"));
+      fireEvent.click(screen.getByTestId("notification-menu-settings"));
+
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(push).toHaveBeenCalledWith("/settings#notifications");
+    });
+  });
+
+  describe("archived view", () => {
+    it("restores and deletes items through the hook", async () => {
+      hook = makeHook({ items: [sampleItem("a1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      const { unarchive, remove } = hook;
+      renderPanel();
+
+      await openArchived();
+
+      fireEvent.click(await screen.findByTestId("notification-restore-a1"));
+      expect(unarchive).toHaveBeenCalledWith("a1");
+
+      fireEvent.click(screen.getByTestId("notification-delete-a1"));
+      expect(remove).toHaveBeenCalledWith("a1");
+    });
+
+    it("shows the archived empty state without the survey", async () => {
+      useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
+      renderPanel();
+
+      await openArchived();
+
+      expect(await screen.findByText("Nada archivado.")).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-survey-item"),
+      ).not.toBeInTheDocument();
+    });
   });
 });

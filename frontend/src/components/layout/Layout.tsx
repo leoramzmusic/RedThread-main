@@ -22,6 +22,7 @@ import {
   Divider,
   ListItemIcon,
   Drawer,
+  useMediaQuery,
   GlobalStyles,
 } from "@mui/material";
 import {
@@ -37,6 +38,7 @@ import {
   Language as TranslateIcon,
 } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
+import BottomSheet from "../shared/BottomSheet";
 
 // ... (existing imports)
 
@@ -96,6 +98,10 @@ export default function Layout({ children }: LayoutProps) {
   const primary = muiTheme.palette.primary.main;
   const dividerColor = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
   const glassBg = isDark ? "rgba(16,18,32,0.55)" : "rgba(255,255,255,0.72)";
+
+  // Notifications surface tiers (R21): Drawer >= 1024, BottomSheet otherwise
+  const isDesktop = useMediaQuery(muiTheme.breakpoints.up(1024));
+  const isTablet = useMediaQuery(muiTheme.breakpoints.up(768));
 
   const shortcuts = navConfig?.shortcuts ?? {};
   const profileStyle = navConfig?.profile ?? {};
@@ -889,27 +895,47 @@ export default function Layout({ children }: LayoutProps) {
           />
         )}
 
-        {/* Notification Drawer */}
-        <Drawer
-          anchor="right"
-          open={notificationOpen}
-          onClose={() => setNotificationOpen(false)}
-          // Ensure it's below AppBar if needed, or adjust
-          sx={{ zIndex: (theme) => theme.zIndex.drawer }}
-          slotProps={{
-            paper: {
-              sx: {
-                width: 380,
-                mt: { xs: "60px", sm: "72px" },
-                height: { xs: "calc(100% - 60px)", sm: "calc(100% - 72px)" },
-              }, // Match fixed AppBar height
-            },
-          }}
-        >
-          <Suspense fallback={null}>
-            <NotificationPanel onClose={() => setNotificationOpen(false)} />
-          </Suspense>
-        </Drawer>
+        {/* Notifications: glass Drawer (desktop) / BottomSheet (tablet & mobile) */}
+        {isDesktop ? (
+          <Drawer
+            anchor="right"
+            open={notificationOpen}
+            onClose={() => setNotificationOpen(false)}
+            // Ensure it's below AppBar if needed, or adjust
+            sx={{ zIndex: (theme) => theme.zIndex.drawer }}
+            slotProps={{
+              paper: {
+                sx: {
+                  width: 400,
+                  mt: { xs: "60px", sm: "72px" },
+                  height: { xs: "calc(100% - 60px)", sm: "calc(100% - 72px)" },
+                  bgcolor: glassBg,
+                  backdropFilter: "blur(18px)",
+                  borderInlineStart: "1px solid",
+                  borderColor: "divider",
+                }, // Match fixed AppBar height + glass
+              },
+            }}
+          >
+            <Suspense fallback={null}>
+              <NotificationPanel onClose={() => setNotificationOpen(false)} />
+            </Suspense>
+          </Drawer>
+        ) : (
+          <BottomSheet
+            open={notificationOpen}
+            onClose={() => setNotificationOpen(false)}
+            sx={{
+              height: isTablet ? "70dvh" : "100dvh",
+              maxWidth: isTablet ? 640 : "100%",
+              p: 0,
+            }}
+          >
+            <Suspense fallback={null}>
+              <NotificationPanel onClose={() => setNotificationOpen(false)} />
+            </Suspense>
+          </BottomSheet>
+        )}
 
         {/* Page Content */}
         <Box

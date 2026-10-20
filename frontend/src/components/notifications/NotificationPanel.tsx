@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next/pages";
 import {
@@ -12,6 +12,8 @@ import {
   ListItemText,
   IconButton,
   Button,
+  Menu,
+  MenuItem,
   Skeleton,
   Fade,
 } from "@mui/material";
@@ -24,6 +26,10 @@ import {
   Favorite as LikeIcon,
   ChatBubble as ChatIcon,
   Campaign as SystemIcon,
+  MoreVert as MoreIcon,
+  ArrowBack as BackIcon,
+  DeleteOutlined as DeleteIcon,
+  RestoreFromTrashOutlined as RestoreIcon,
 } from "@mui/icons-material";
 import NotificationItem from "./NotificationItem";
 import { useNotifications } from "../../hooks/useNotifications";
@@ -44,7 +50,8 @@ const TABS = [
 export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const [tab, setTab] = useState(0);
+  const [filter, setFilter] = useState<string>("all");
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const {
     items,
     counts,
@@ -54,27 +61,39 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     markRead,
     markBucket,
     markAllRead,
-  } = useNotifications(FILTERS[tab], { unread: tab === 2 });
+    unarchive,
+    remove,
+  } = useNotifications(filter, { unread: filter === "messages" });
   const prefersReducedMotion = usePrefersReducedMotion();
   const seenRef = useRef<Set<string>>(new Set());
 
+  const tabIndex = Math.max(
+    FILTERS.indexOf(filter as (typeof FILTERS)[number]),
+    0,
+  );
+  const isArchived = filter === "archived";
   const tabCounts = [counts.all, counts.social, counts.messages, counts.system];
-  const showSurvey = counts.survey_pending > 0 && (tab === 0 || tab === 3);
+  const showSurvey =
+    !isArchived &&
+    counts.survey_pending > 0 &&
+    (filter === "all" || filter === "system");
   const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
 
-  useEffect(() => {
-    if (loading || tab !== 1) return;
+  React.useEffect(() => {
+    if (loading || filter !== "social") return;
     if (counts.social <= 0 || seenRef.current.has("social")) return;
     seenRef.current.add("social");
     void markBucket("social");
-  }, [tab, loading, counts.social, markBucket]);
+  }, [filter, loading, counts.social, markBucket]);
 
-  useEffect(() => {
-    if (loading || tab !== 3) return;
+  React.useEffect(() => {
+    if (loading || filter !== "system") return;
     if (systemUnread <= 0 || seenRef.current.has("system")) return;
     seenRef.current.add("system");
     void markBucket("system");
-  }, [tab, loading, systemUnread, markBucket]);
+  }, [filter, loading, systemUnread, markBucket]);
+
+  const handleMenuClose = () => setMenuAnchor(null);
 
   const handleSurvey = () => {
     onClose();
@@ -90,10 +109,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           count: counts.survey_pending,
         });
 
+  const emptyKey = isArchived ? "archived" : TABS[tabIndex].key;
+
   return (
     <Box
       sx={{
-        width: 380,
+        width: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -109,11 +130,27 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           borderColor: "divider",
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          {t("notifications.title")}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+          {isArchived && (
+            <IconButton
+              data-testid="notification-back"
+              onClick={() => setFilter("all")}
+              title={t("notifications.archived.title")}
+              aria-label={t("notifications.archived.title")}
+              size="small"
+              sx={{ mr: 0.5 }}
+            >
+              <BackIcon />
+            </IconButton>
+          )}
+          <Typography variant="h6" sx={{ fontWeight: 700 }} noWrap>
+            {isArchived
+              ? t("notifications.archived.title")
+              : t("notifications.title")}
+          </Typography>
+        </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          {tab === 3 && (
+          {filter === "system" && (
             <IconButton
               data-testid="notification-mark-all"
               onClick={() => {
@@ -127,6 +164,18 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               <MarkReadIcon />
             </IconButton>
           )}
+          {!isArchived && (
+            <IconButton
+              data-testid="notification-menu"
+              onClick={(event) => setMenuAnchor(event.currentTarget)}
+              title={t("notifications.menu", "Más opciones")}
+              aria-label={t("notifications.menu", "Más opciones")}
+              size="small"
+              sx={{ mr: 1 }}
+            >
+              <MoreIcon />
+            </IconButton>
+          )}
           <IconButton
             data-testid="notification-close"
             onClick={onClose}
@@ -138,47 +187,79 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         </Box>
       </Box>
 
-      <Tabs
-        value={tab}
-        onChange={(_, value) => setTab(value)}
-        variant="fullWidth"
-        sx={{ borderBottom: "1px solid", borderColor: "divider" }}
+      {!isArchived && (
+        <Tabs
+          value={tabIndex}
+          onChange={(_, value) => setFilter(FILTERS[value])}
+          variant="fullWidth"
+          sx={{ borderBottom: "1px solid", borderColor: "divider" }}
+        >
+          {TABS.map(({ key, icon: Icon }, index) => (
+            <Tab
+              key={key}
+              data-testid={`notification-tab-${key}`}
+              icon={<Icon fontSize="small" />}
+              iconPosition="start"
+              sx={{
+                minWidth: 0,
+                px: 0.5,
+                fontSize: "0.75rem",
+                "& .MuiTab-iconWrapper": { mr: 0.5 },
+              }}
+              label={
+                <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <Box component="span">{t(`notifications.tabs.${key}`)}</Box>
+                  {tabCounts[index] > 0 && (
+                    <Box
+                      component="span"
+                      sx={{
+                        px: "6px",
+                        borderRadius: "10px",
+                        bgcolor: "action.selected",
+                        fontSize: "0.6875rem",
+                        fontWeight: 600,
+                        lineHeight: "16px",
+                      }}
+                    >
+                      {tabCounts[index]}
+                    </Box>
+                  )}
+                </Box>
+              }
+            />
+          ))}
+        </Tabs>
+      )}
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        {TABS.map(({ key, icon: Icon }, index) => (
-          <Tab
-            key={key}
-            data-testid={`notification-tab-${key}`}
-            icon={<Icon fontSize="small" />}
-            iconPosition="start"
-            sx={{
-              minWidth: 0,
-              px: 0.5,
-              fontSize: "0.75rem",
-              "& .MuiTab-iconWrapper": { mr: 0.5 },
-            }}
-            label={
-              <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                <Box component="span">{t(`notifications.tabs.${key}`)}</Box>
-                {tabCounts[index] > 0 && (
-                  <Box
-                    component="span"
-                    sx={{
-                      px: "6px",
-                      borderRadius: "10px",
-                      bgcolor: "action.selected",
-                      fontSize: "0.6875rem",
-                      fontWeight: 600,
-                      lineHeight: "16px",
-                    }}
-                  >
-                    {tabCounts[index]}
-                  </Box>
-                )}
-              </Box>
-            }
-          />
-        ))}
-      </Tabs>
+        <MenuItem
+          data-testid="notification-menu-archived"
+          onClick={() => {
+            handleMenuClose();
+            setFilter("archived");
+          }}
+          sx={{ fontSize: "0.875rem" }}
+        >
+          {t("notifications.archived.title")}
+        </MenuItem>
+        <MenuItem
+          data-testid="notification-menu-settings"
+          onClick={() => {
+            handleMenuClose();
+            onClose();
+            void router.push("/settings#notifications");
+          }}
+          sx={{ fontSize: "0.875rem" }}
+        >
+          {t("notifications.settings", "Ajustes")}
+        </MenuItem>
+      </Menu>
 
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {loading ? (
@@ -215,7 +296,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             </Button>
           </Box>
         ) : (
-          <Fade in appear key={tab} timeout={prefersReducedMotion ? 0 : 200}>
+          <Fade in appear key={filter} timeout={prefersReducedMotion ? 0 : 200}>
             <Box>
               <List disablePadding>
                 {showSurvey && (
@@ -237,14 +318,55 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                     />
                   </ListItemButton>
                 )}
-                {items.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onRead={markRead}
-                    onNavigate={onClose}
-                  />
-                ))}
+                {items.map((notification) =>
+                  isArchived ? (
+                    <Box key={notification.id}>
+                      <NotificationItem
+                        notification={notification}
+                        onRead={markRead}
+                        onNavigate={onClose}
+                      />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 1,
+                          px: 2,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                        }}
+                      >
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<RestoreIcon />}
+                          data-testid={`notification-restore-${notification.id}`}
+                          onClick={() => void unarchive(notification.id)}
+                        >
+                          {t("notifications.actions.unarchive")}
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          variant="outlined"
+                          startIcon={<DeleteIcon />}
+                          data-testid={`notification-delete-${notification.id}`}
+                          onClick={() => void remove(notification.id)}
+                        >
+                          {t("notifications.actions.delete")}
+                        </Button>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <NotificationItem
+                      key={notification.id}
+                      notification={notification}
+                      onRead={markRead}
+                      onNavigate={onClose}
+                    />
+                  ),
+                )}
               </List>
               {!showSurvey && items.length === 0 && (
                 <Box
@@ -261,7 +383,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                     sx={{ fontSize: 60, mb: 2, color: "text.secondary" }}
                   />
                   <Typography variant="body1" color="text.secondary">
-                    {t(`notifications.empty.${TABS[tab].key}`)}
+                    {t(`notifications.empty.${emptyKey}`)}
                   </Typography>
                 </Box>
               )}
