@@ -20,6 +20,37 @@ router = APIRouter()
 MAX_LIMIT = 50
 DEFAULT_LIMIT = 20
 
+SNOOZE_VALUES = ("15m", "1h", "2h", "8h", "1d", "always")
+
+
+class SnoozeRequest(BaseModel):
+    duration: str
+
+
+def _scoped_query(user_id: str, flt: str, mutes: dict, master: bool) -> dict:
+    return {
+        "$and": [
+            ns.visible_filter(user_id),
+            ns.visibility_query(user_id, flt, mutes, master),
+        ]
+    }
+
+
+def _validate_notification_id(notification_id: str) -> None:
+    if not ObjectId.is_valid(notification_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notification not found",
+        )
+
+
+def _require_item(doc) -> None:
+    if doc is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notification not found",
+        )
+
 
 def encode_cursor(updated_at: datetime, doc_id: str) -> str:
     return f"{updated_at.isoformat()}|{doc_id}"
@@ -121,28 +152,31 @@ async def get_notifications(
         await _backfill_updated_at(uid)
         cutoff = datetime.utcnow() - timedelta(days=ns.RETENTION_DAYS)
         await Notification.find(
-            Notification.user_id == uid, Notification.updated_at < cutoff
+            {"user_id": uid, "updated_at": {"$lt": cutoff}}
         ).delete()
 
     mutes, master = await _mute_context(uid)
-    query = ns.visibility_query(uid, filter, mutes, master)
+    if filter == "archived":
+        query = ns.visible_filter(uid, archived_only=True)
+    else:
+        query = _scoped_query(uid, filter, mutes, master)
     if unread:
         query["is_read"] = False
 
     if cursor:
         cur_dt, cur_id = decode_cursor(cursor)
-        query["$and"] = [
+        query.setdefault("$and", []).append(
             {
                 "$or": [
                     {"updated_at": {"$lt": cur_dt}},
                     {"updated_at": cur_dt, "_id": {"$lt": ObjectId(cur_id)}},
                 ]
             }
-        ]
+        )
 
     docs = (
         await Notification.find(query)
-        .sort(-Notification.updated_at, -Notification.id)
+        .sort("-updated_at", "-_id")
         .limit(limit + 1)
         .to_list()
     )
@@ -172,7 +206,7 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
     """Unread counts per bucket (visibility-aware)."""
     uid = str(current_user.id)
     mutes, master = await _mute_context(uid)
-    base = ns.visibility_query(uid, "all", mutes, master)
+    base = _scoped_query(uid, "all", mutes, master)
     base["is_read"] = False
 
     social = await Notification.find(
@@ -285,6 +319,85 @@ async def post_system_notification(
             bool((payload.metadata or {}).get("important")),
         )
     }
+
+
+@router.post("/{notification_id}/archive")
+async def archive_notification(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Archive a notification for the current user."""
+    _validate_notification_id(notification_id)
+    doc = await ns.set_archived(notification_id, str(current_user.id), True)
+    _require_item(doc)
+    return {"ok": True}
+
+
+@router.post("/{notification_id}/unarchive")
+async def unarchive_notification(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Remove a notification from the archive."""
+    _validate_notification_id(notification_id)
+    doc = await ns.set_archived(notification_id, str(current_user.id), False)
+    _require_item(doc)
+    return {"ok": True}
+
+
+@router.delete("/{notification_id}")
+async def delete_notification(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Soft-delete a notification for the current user."""
+    _validate_notification_id(notification_id)
+    doc = await ns.set_deleted(notification_id, str(current_user.id))
+    _require_item(doc)
+    return {"ok": True}
+
+
+@router.post("/{notification_id}/restore")
+async def restore_notification(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Restore a soft-deleted notification."""
+    _validate_notification_id(notification_id)
+    doc = await ns.restore_notification(notification_id, str(current_user.id))
+    _require_item(doc)
+    return {"ok": True}
+
+
+@router.post("/{notification_id}/snooze")
+async def snooze_notification_route(
+    notification_id: str,
+    payload: SnoozeRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Snooze a notification for a preset duration."""
+    _validate_notification_id(notification_id)
+    if payload.duration not in SNOOZE_VALUES:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid duration",
+        )
+    doc = await ns.snooze_notification(
+        notification_id, str(current_user.id), payload.duration
+    )
+    _require_item(doc)
+    return {
+        "snoozed_until": (
+            doc.snoozed_until.isoformat() if doc.snoozed_until else None
+        )
+    }
+
+
+@router.post("/{notification_id}/unsnooze")
+async def unsnooze_notification_route(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Cancel a notification snooze."""
+    _validate_notification_id(notification_id)
+    doc = await ns.unsnooze_notification(notification_id, str(current_user.id))
+    _require_item(doc)
+    return {"ok": True}
 
 
 @router.post("/{notification_id}/read")
