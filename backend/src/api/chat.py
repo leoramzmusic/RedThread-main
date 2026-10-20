@@ -500,6 +500,17 @@ async def get_messages(
         conversation.reset_unread(str(current_user.id))
         await conversation.save()
 
+        try:
+            from src.services.notification_service import (
+                mark_message_notification_read,
+            )
+
+            await mark_message_notification_read(
+                str(current_user.id), conversation_id
+            )
+        except Exception as notif_err:
+            print(f"Notification read sync error: {notif_err}")
+
         # Invalidate dashboard cache (unread count changed to 0)
         await redis_service.invalidar_usuario(["stats", "recent"], str(current_user.id))
 

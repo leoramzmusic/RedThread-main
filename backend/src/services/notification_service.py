@@ -420,3 +420,11 @@ async def emit_system_notification(
         target_id=target_url,
         metadata={"important": True} if important else {},
     )
+
+
+async def mark_message_notification_read(user_id: str, conversation_id: str) -> None:
+    group_key = f"message:{conversation_id}"
+    await Notification.find(
+        {"user_id": user_id, "group_key": group_key, "is_read": False}
+    ).update({"$set": {"is_read": True, "updated_at": datetime.utcnow()}})
+    await manager.send_personal_message(user_id, {"action": "notifications_sync"})

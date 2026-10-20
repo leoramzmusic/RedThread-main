@@ -27,6 +27,7 @@ class UpdateSettingsRequest(BaseModel):
     notifications_enabled: Optional[bool] = None
     notification_frequency: Optional[Dict[str, bool]] = None
     do_not_disturb: Optional[Dict[str, Any]] = None
+    notification_mutes: Optional[Dict[str, bool]] = None
     offline_notifications: Optional[bool] = None
 
     # Seguridad

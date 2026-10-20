@@ -41,6 +41,7 @@ class UserSettings(Document):
             "end_time": "08:00",
         }
     )
+    notification_mutes: Dict[str, bool] = Field(default_factory=dict)
     offline_notifications: bool = True
 
     # 🔒 Seguridad
