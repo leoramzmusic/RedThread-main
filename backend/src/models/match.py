@@ -40,6 +40,10 @@ class Match(Document):
     user_1_interaction: Optional[InteractionType] = None
     user_2_interaction: Optional[InteractionType] = None
 
+    # Media shown when each user gave their like/superlike
+    shown_media_id_1: Optional[str] = None
+    shown_media_id_2: Optional[str] = None
+
     # Match Status
     status: MatchStatus = MatchStatus.PENDING
 

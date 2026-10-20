@@ -6,21 +6,24 @@ from src.models.photo_metric import PhotoMetric
 
 class SmartPhotosService:
     # Scoring coefficients
-    ALPHA = 0.5  # Matches/Views weight
-    BETA = 0.3  # Clicks/Views weight
-    GAMMA = 0.2  # View Time weight (normalized)
+    ALPHA = 0.40  # Matches/Views weight
+    BETA = 0.25  # Clicks/Views weight
+    GAMMA = 0.15  # View Time weight (normalized)
+    DELTA = 0.20  # Likes/Views weight
 
     @staticmethod
     def calculate_score(metric: PhotoMetric) -> float:
         """
         Calculates a weighted score for a photo based on its metrics.
         Score = alpha * MatchRate + beta * ClickRate + gamma * ViewTime
+                + delta * LikeRate
         """
         if metric.views == 0:
             return 0.0
 
         match_rate = metric.matches / metric.views
         click_rate = metric.clicks / metric.views
+        like_rate = getattr(metric, "likes", 0) / metric.views
 
         # Normalize view time: assuming 10s is a very good view time per view
         avg_view_time = metric.view_time / metric.views
@@ -30,8 +33,23 @@ class SmartPhotosService:
             SmartPhotosService.ALPHA * match_rate
             + SmartPhotosService.BETA * click_rate
             + SmartPhotosService.GAMMA * normalized_view_time
+            + SmartPhotosService.DELTA * like_rate
         )
         return score
+
+    @staticmethod
+    async def record_photo_like(user_id: str, media_id: str) -> PhotoMetric:
+        metric = await PhotoMetric.find_one(
+            {"user_id": user_id, "media_id": media_id}
+        )
+        if metric:
+            metric.likes = (metric.likes or 0) + 1
+            await metric.save()
+            return metric
+
+        metric = PhotoMetric(user_id=user_id, media_id=media_id, likes=1)
+        await metric.insert()
+        return metric
 
     @staticmethod
     async def evaluate_user_photos(user_id: str) -> dict:

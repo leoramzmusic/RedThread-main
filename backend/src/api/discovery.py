@@ -45,6 +45,7 @@ class SwipeRequest(BaseModel):
     interaction: InteractionType
     dwell_time_ms: Optional[int] = None
     is_blind_mode: bool = False  # New field for Blind Mode interactions
+    shown_media_id: Optional[str] = None  # Media visible when the swipe happened
 
 
 class DiscoveryProfile(BaseModel):
@@ -863,7 +864,14 @@ async def swipe(request: SwipeRequest, current_user: User = Depends(get_current_
 
     if existing_match:
         # Update existing match
-        if existing_match.user_id_1 == str(current_user.id):
+        is_user_1 = existing_match.user_id_1 == str(current_user.id)
+        previous_interaction = (
+            existing_match.user_1_interaction
+            if is_user_1
+            else existing_match.user_2_interaction
+        )
+        previous_status = existing_match.status
+        if is_user_1:
             # Phase 2: Handle Double Pass for permanent removal
             if (
                 existing_match.user_1_interaction == InteractionType.PASS
@@ -933,6 +941,15 @@ async def swipe(request: SwipeRequest, current_user: User = Depends(get_current_
             existing_match.status = MatchStatus.MATCHED
             existing_match.matched_at = datetime.utcnow()
 
+        if (
+            request.interaction in (InteractionType.LIKE, InteractionType.SUPERLIKE)
+            and request.shown_media_id
+        ):
+            if is_user_1:
+                existing_match.shown_media_id_1 = request.shown_media_id
+            else:
+                existing_match.shown_media_id_2 = request.shown_media_id
+
         await existing_match.save()
         await current_user.save()  # Save user counters
         if existing_match.status == MatchStatus.MATCHED:
@@ -940,6 +957,25 @@ async def swipe(request: SwipeRequest, current_user: User = Depends(get_current_
                 await ensure_match_conversation(existing_match)
             except Exception as conv_err:
                 print(f"Conversation creation error (swipe): {conv_err}")
+
+        try:
+            from src.services.notification_service import (
+                handle_swipe_notifications,
+            )
+
+            await handle_swipe_notifications(
+                swiper_id=str(current_user.id),
+                target_id=request.target_user_id,
+                interaction=request.interaction,
+                is_match=existing_match.status == MatchStatus.MATCHED,
+                match_id=str(existing_match.id),
+                shown_media_id=request.shown_media_id,
+                is_new_like=previous_interaction
+                not in (InteractionType.LIKE, InteractionType.SUPERLIKE),
+                was_matched=previous_status == MatchStatus.MATCHED,
+            )
+        except Exception as notif_err:
+            print(f"Notification error in swipe (existing): {notif_err}")
 
         # Emit Kafka events
         try:
@@ -1004,6 +1040,11 @@ async def swipe(request: SwipeRequest, current_user: User = Depends(get_current_
         user_id_1=str(current_user.id),
         user_id_2=request.target_user_id,
         user_1_interaction=request.interaction,
+        shown_media_id_1=(
+            request.shown_media_id
+            if request.interaction in (InteractionType.LIKE, InteractionType.SUPERLIKE)
+            else None
+        ),
         status=MatchStatus.PENDING,
         affinity_score=score,
         is_superlike=(request.interaction == InteractionType.SUPERLIKE),
@@ -1014,6 +1055,22 @@ async def swipe(request: SwipeRequest, current_user: User = Depends(get_current_
 
     await match.insert()
     await current_user.save()  # Save user counters (superlike)
+
+    try:
+        from src.services.notification_service import handle_swipe_notifications
+
+        await handle_swipe_notifications(
+            swiper_id=str(current_user.id),
+            target_id=request.target_user_id,
+            interaction=request.interaction,
+            is_match=False,
+            match_id=str(match.id),
+            shown_media_id=request.shown_media_id,
+            is_new_like=True,
+            was_matched=False,
+        )
+    except Exception as notif_err:
+        print(f"Notification error in swipe (new): {notif_err}")
 
     # --- FEED TO CARE ENGINE ---
     try:

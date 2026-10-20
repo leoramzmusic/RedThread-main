@@ -1,5 +1,5 @@
-import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
-import { useState, useEffect, useRef } from 'react';
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -16,8 +16,8 @@ import {
   Stack,
   Dialog,
   Snackbar,
-  Button
-} from '@mui/material';
+  Button,
+} from "@mui/material";
 import {
   Favorite as HeartIcon,
   Star as StarIcon,
@@ -27,17 +27,20 @@ import {
   Close as CloseIcon,
   DeleteOutlined as DeleteIcon,
   Visibility as VisibilityIcon,
-  Replay as ReplayIcon
-} from '@mui/icons-material';
-import Layout from '../../components/layout/Layout';
-import ParallaxImage from '../../components/motion/ParallaxImage';
-import apiClient from '../../services/api';
-import ProfileCard, { Profile } from '../../components/profile/ProfileCard';
-import PresenceIndicator, { parseServerDate } from '../../components/profile/PresenceIndicator';
-import { useTranslation } from 'next-i18next/pages';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { useRouter } from 'next/router';
+  Replay as ReplayIcon,
+} from "@mui/icons-material";
+import Layout from "../../components/layout/Layout";
+import ParallaxImage from "../../components/motion/ParallaxImage";
+import apiClient from "../../services/api";
+import ProfileCard, { Profile } from "../../components/profile/ProfileCard";
+import { MediaItem } from "../../types/media";
+import PresenceIndicator, {
+  parseServerDate,
+} from "../../components/profile/PresenceIndicator";
+import { useTranslation } from "next-i18next/pages";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
+import { useRouter } from "next/router";
 
 interface LikeProfile {
   match_id: string;
@@ -69,26 +72,26 @@ const isOnline = (lastSeen?: string): boolean => {
   return Date.now() - seenAt < ONLINE_WINDOW_MS;
 };
 
-type PeriodKey = 'today' | 'week' | 'month';
+type PeriodKey = "today" | "week" | "month";
 
 const PERIOD_LABELS: Record<PeriodKey, string> = {
-  today: 'Likes de hoy',
-  week: 'Likes de esta semana',
-  month: 'Likes de este mes'
+  today: "Likes de hoy",
+  week: "Likes de esta semana",
+  month: "Likes de este mes",
 };
 
 const getPeriodKey = (dateStr?: string): PeriodKey => {
   const ts = parseServerDate(dateStr);
-  if (ts === null) return 'month';
+  if (ts === null) return "month";
   const now = Date.now();
   const startOfToday = (() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d.getTime();
   })();
-  if (ts >= startOfToday) return 'today';
-  if (now - ts < 7 * 24 * 60 * 60 * 1000) return 'week';
-  return 'month';
+  if (ts >= startOfToday) return "today";
+  if (now - ts < 7 * 24 * 60 * 60 * 1000) return "week";
+  return "month";
 };
 
 function CustomTabPanel(props: TabPanelProps) {
@@ -102,17 +105,13 @@ function CustomTabPanel(props: TabPanelProps) {
       aria-labelledby={`likes-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ py: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
   );
 }
 
 export default function LikesPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const router = useRouter();
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -123,12 +122,19 @@ export default function LikesPage() {
   const [topPicks, setTopPicks] = useState<LikeProfile[]>([]);
   const [secondChance, setSecondChance] = useState<LikeProfile[]>([]);
 
-  const [selectedProfile, setSelectedProfile] = useState<LikeProfile | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<LikeProfile | null>(
+    null,
+  );
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const lastVisitRef = useRef<{ userId: string; at: number } | null>(null);
-  const [snackbar, setSnackbar] = useState<{ open: boolean, message: string, severity: 'success' | 'info' | 'error' }>({
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "info" | "error";
+  }>({
     open: false,
-    message: '',
-    severity: 'success'
+    message: "",
+    severity: "success",
   });
   const [matchDialogOpen, setMatchDialogOpen] = useState(false);
 
@@ -140,34 +146,39 @@ export default function LikesPage() {
     setLoading(true);
     setError(null);
     try {
-      console.log('LikesPage: Starting fetch...');
+      console.log("LikesPage: Starting fetch...");
 
-      const [receivedRes, sentRes, topPicksRes, secondChanceRes] = await Promise.all([
-        apiClient.get('/discovery/likes-received'),
-        apiClient.get('/discovery/likes-sent'),
-        apiClient.get('/discovery/top-picks'),
-        apiClient.get('/discovery/second-chance')
-      ]);
+      const [receivedRes, sentRes, topPicksRes, secondChanceRes] =
+        await Promise.all([
+          apiClient.get("/discovery/likes-received"),
+          apiClient.get("/discovery/likes-sent"),
+          apiClient.get("/discovery/top-picks"),
+          apiClient.get("/discovery/second-chance"),
+        ]);
 
       setReceivedLikes(receivedRes.data || []);
       setSentLikes(sentRes.data || []);
       setTopPicks(topPicksRes.data || []);
       setSecondChance(secondChanceRes.data || []);
     } catch (err: any) {
-      console.error('Error fetching likes data:', err);
-      console.error('Error details:', {
+      console.error("Error fetching likes data:", err);
+      console.error("Error details:", {
         message: err.message,
         code: err.code,
         config: err.config,
-        response: err.response
+        response: err.response,
       });
 
-      if (err.code === 'ERR_NETWORK') {
-        setError('Error de conexión con el servidor. Por favor verifica que el backend esté corriendo.');
+      if (err.code === "ERR_NETWORK") {
+        setError(
+          "Error de conexión con el servidor. Por favor verifica que el backend esté corriendo.",
+        );
       } else if (err.response?.status === 404) {
-        setError('Los endpoints de likes no están disponibles. Asegúrate de actualizar el backend.');
+        setError(
+          "Los endpoints de likes no están disponibles. Asegúrate de actualizar el backend.",
+        );
       } else {
-        setError('Error al cargar los likes. Por favor intenta de nuevo.');
+        setError("Error al cargar los likes. Por favor intenta de nuevo.");
       }
     } finally {
       setLoading(false);
@@ -191,32 +202,36 @@ export default function LikesPage() {
     lastVisitRef.current = { userId, at: now };
     apiClient
       .post(`/visits/record?target_user_id=${userId}`)
-      .catch((err) => console.warn('Error recording visit:', err));
+      .catch((err) => console.warn("Error recording visit:", err));
   };
 
   const handleProfileClick = (profile: LikeProfile) => {
     // Allow interaction for received likes, sent likes, top picks, and second chance
     if (tabValue === 0 || tabValue === 1 || tabValue === 2 || tabValue === 3) {
       recordVisit(profile.user_id);
+      setSelectedMedia(null);
       setSelectedProfile(profile);
     }
   };
 
   const handleCloseProfile = () => {
     setSelectedProfile(null);
+    setSelectedMedia(null);
   };
 
   const handleSwipe = async (
-    interaction: 'like' | 'pass' | 'superlike',
-    profileOverride?: LikeProfile
+    interaction: "like" | "pass" | "superlike",
+    profileOverride?: LikeProfile,
+    shownMedia?: MediaItem | null,
   ) => {
     const target = profileOverride || selectedProfile;
     if (!target) return;
 
     try {
-      const response = await apiClient.post('/discovery/swipe', {
+      const response = await apiClient.post("/discovery/swipe", {
         target_user_id: target.user_id,
-        interaction
+        interaction,
+        shown_media_id: shownMedia?._id || shownMedia?.url || null,
       });
 
       if (!profileOverride) handleCloseProfile();
@@ -226,246 +241,311 @@ export default function LikesPage() {
         setSnackbar({
           open: true,
           message: `¡Es un Match con ${target.display_name}! 🎉`,
-          severity: 'success'
+          severity: "success",
         });
       } else {
         setSnackbar({
           open: true,
-          message: interaction === 'pass' ? 'Perfil descartado' : 'Like enviado',
-          severity: 'info'
+          message:
+            interaction === "pass" ? "Perfil descartado" : "Like enviado",
+          severity: "info",
         });
       }
 
       // Remove from list
-      if (tabValue === 0) { // Received likes
-        setReceivedLikes(prev => prev.filter(p => p.user_id !== target.user_id));
-      } else if (tabValue === 2) { // Top picks
-        setTopPicks(prev => prev.filter(p => p.user_id !== target.user_id));
-      } else if (tabValue === 3) { // Second chance
-        setSecondChance(prev => prev.filter(p => p.user_id !== target.user_id));
+      if (tabValue === 0) {
+        // Received likes
+        setReceivedLikes((prev) =>
+          prev.filter((p) => p.user_id !== target.user_id),
+        );
+      } else if (tabValue === 2) {
+        // Top picks
+        setTopPicks((prev) => prev.filter((p) => p.user_id !== target.user_id));
+      } else if (tabValue === 3) {
+        // Second chance
+        setSecondChance((prev) =>
+          prev.filter((p) => p.user_id !== target.user_id),
+        );
       }
-
     } catch (error) {
-      console.error('Error swiping:', error);
-      setSnackbar({ open: true, message: 'Error al procesar la acción', severity: 'error' });
+      console.error("Error swiping:", error);
+      setSnackbar({
+        open: true,
+        message: "Error al procesar la acción",
+        severity: "error",
+      });
     }
+  };
+
+  const cardMedia = (profile: LikeProfile): MediaItem | null => {
+    const url = profile.photos?.[0];
+    if (!url) return null;
+    return {
+      _id: "",
+      user_id: profile.user_id,
+      type: "photo" as MediaItem["type"],
+      url,
+      order_index: 0,
+      created_at: "",
+    };
   };
 
   const handleRemoveLike = async (profile: LikeProfile) => {
     try {
       await apiClient.delete(`/discovery/likes-sent/${profile.match_id}`);
-      setSentLikes(prev => prev.filter(p => p.match_id !== profile.match_id));
+      setSentLikes((prev) =>
+        prev.filter((p) => p.match_id !== profile.match_id),
+      );
       if (selectedProfile?.match_id === profile.match_id) handleCloseProfile();
-      setSnackbar({ open: true, message: 'Like eliminado', severity: 'info' });
+      setSnackbar({ open: true, message: "Like eliminado", severity: "info" });
     } catch (error: any) {
-      console.error('Error removing like:', error);
+      console.error("Error removing like:", error);
       const detail = error?.response?.data?.detail;
       setSnackbar({
         open: true,
-        message: detail || 'Error al eliminar el like',
-        severity: 'error'
+        message: detail || "Error al eliminar el like",
+        severity: "error",
       });
     }
   };
 
   const handleStartChat = () => {
-    router.push('/chat');
+    router.push("/chat");
   };
 
-  const renderProfileGrid = (profiles: LikeProfile[], type: 'received' | 'sent' | 'top' | 'second') => {
+  const renderProfileGrid = (
+    profiles: LikeProfile[],
+    type: "received" | "sent" | "top" | "second",
+  ) => {
     if (profiles.length === 0) {
       return (
-        <Box sx={{ textAlign: 'center', py: 8, opacity: 0.7 }}>
-          <HeartIcon sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
-          <Typography variant="h6" sx={{
-            color: "text.secondary"
-          }}>
+        <Box sx={{ textAlign: "center", py: 8, opacity: 0.7 }}>
+          <HeartIcon sx={{ fontSize: 60, color: "text.disabled", mb: 2 }} />
+          <Typography
+            variant="h6"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             No hay perfiles para mostrar en esta sección
           </Typography>
         </Box>
       );
     }
 
-    const dateField = type === 'second' ? 'passed_at' : 'liked_at';
-    const buckets: Record<PeriodKey, LikeProfile[]> = { today: [], week: [], month: [] };
+    const dateField = type === "second" ? "passed_at" : "liked_at";
+    const buckets: Record<PeriodKey, LikeProfile[]> = {
+      today: [],
+      week: [],
+      month: [],
+    };
     profiles.forEach((p) => buckets[getPeriodKey(p[dateField])].push(p));
 
     const renderCard = (profile: LikeProfile) => (
-          <Grid
-            key={`${type}-${profile.match_id || profile.user_id}`}
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 4,
-              lg: 3
-            }}>
-            <Card
-              onClick={() => handleProfileClick(profile)}
+      <Grid
+        key={`${type}-${profile.match_id || profile.user_id}`}
+        size={{
+          xs: 12,
+          sm: 6,
+          md: 4,
+          lg: 3,
+        }}
+      >
+        <Card
+          onClick={() => handleProfileClick(profile)}
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            borderRadius: "12px",
+            overflow: "hidden",
+            transition: "transform 0.2s",
+            cursor: "pointer",
+            "&:hover": {
+              transform: "translateY(-4px)",
+              boxShadow: 6,
+            },
+          }}
+        >
+          <Box sx={{ position: "relative", pt: "125%" }}>
+            <ParallaxImage
+              src={profile.photos[0] || "https://via.placeholder.com/400"}
+              alt={profile.display_name}
+              intensity={0.08}
+              drift={4}
+              frameSx={{ position: "absolute", inset: 0 }}
+            />
+            <Box
               sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                transition: 'transform 0.2s',
-                cursor: 'pointer',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 6
-                }
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+                p: 2,
+                pt: 6,
               }}
             >
-              <Box sx={{ position: 'relative', pt: '125%' }}>
-                <ParallaxImage
-                  src={profile.photos[0] || 'https://via.placeholder.com/400'}
-                  alt={profile.display_name}
-                  intensity={0.08}
-                  drift={4}
-                  frameSx={{ position: 'absolute', inset: 0 }}
+              <Typography
+                variant="h6"
+                color="white"
+                sx={{
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                {profile.display_name}, {profile.age}
+                <PresenceIndicator
+                  status={profile.connection_status}
+                  lastSeen={profile.last_seen}
+                  size={8}
                 />
-                <Box sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                  p: 2,
-                  pt: 6
-                }}>
-                  <Typography
-                    variant="h6"
-                    color="white"
-                    sx={{
-                      fontWeight: "bold",
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}>
-                    {profile.display_name}, {profile.age}
-                    <PresenceIndicator
-                      status={profile.connection_status}
-                      lastSeen={profile.last_seen}
-                      size={8}
-                    />
-                  </Typography>
+              </Typography>
 
-                  {profile.affinity_score && (
-                    <Chip
-                      size="small"
-                      icon={<HeartIcon style={{ fontSize: 14 }} />}
-                      label={`${Math.round(profile.affinity_score)}% Match`}
-                      color="secondary"
-                      sx={{ mt: 1, height: 24 }}
-                    />
-                  )}
-                </Box>
+              {profile.affinity_score && (
+                <Chip
+                  size="small"
+                  icon={<HeartIcon style={{ fontSize: 14 }} />}
+                  label={`${Math.round(profile.affinity_score)}% Match`}
+                  color="secondary"
+                  sx={{ mt: 1, height: 24 }}
+                />
+              )}
+            </Box>
 
-                {profile.is_superlike && (
-                  <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
-                    <Chip
-                      icon={<StarIcon style={{ color: '#fff' }} />}
-                      label="Superlike"
-                      color="primary"
-                      sx={{
-                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                        color: 'white',
-                        fontWeight: 'bold'
-                      }}
-                    />
-                  </Box>
-                )}
-              </Box>
-
-              <CardContent sx={{ flexGrow: 1, p: 2 }}>
-                {type === 'top' && profile.bio && (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "text.secondary",
-                      mb: 2,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden'
-                    }}>
-                    {profile.bio}
-                  </Typography>
-                )}
-
-                <Stack
-                  direction="row"
-                  spacing={1}
+            {profile.is_superlike && (
+              <Box sx={{ position: "absolute", top: 10, right: 10 }}>
+                <Chip
+                  icon={<StarIcon style={{ color: "#fff" }} />}
+                  label="Superlike"
+                  color="primary"
                   sx={{
-                    alignItems: "center",
-                    mt: 'auto'
-                  }}>
-                  <TimeIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-                  <Typography variant="caption" sx={{
-                    color: "text.secondary"
-                  }}>
-                    {type === 'received' && profile.liked_at && `Te dio like ${formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true, locale: es })}`}
-                    {type === 'sent' && profile.liked_at && `Le diste like ${formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true, locale: es })}`}
-                    {type === 'top' && 'Recomendado hoy'}
-                    {type === 'second' && profile.passed_at && `Lo descartaste ${formatDistanceToNow(new Date(profile.passed_at), { addSuffix: true, locale: es })}`}
-                  </Typography>
-                </Stack>
+                    background:
+                      "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
 
-                {(type === 'received' || type === 'sent' || type === 'second') && (
-                  <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      startIcon={<VisibilityIcon fontSize="small" />}
-                      onClick={(e) => { e.stopPropagation(); handleProfileClick(profile); }}
-                      sx={{ flex: 1 }}
-                    >
-                      Ver perfil
-                    </Button>
-                    {type === 'received' && (
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="primary"
-                        startIcon={<HeartIcon fontSize="small" />}
-                        onClick={(e) => { e.stopPropagation(); handleSwipe('like', profile); }}
-                        sx={{ flex: 1 }}
-                      >
-                        Responder
-                      </Button>
-                    )}
-                    {type === 'sent' && (
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        color="error"
-                        startIcon={<DeleteIcon fontSize="small" />}
-                        onClick={(e) => { e.stopPropagation(); handleRemoveLike(profile); }}
-                        sx={{ flex: 1 }}
-                      >
-                        Eliminar like
-                      </Button>
-                    )}
-                    {type === 'second' && (
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="primary"
-                        startIcon={<ReplayIcon fontSize="small" />}
-                        onClick={(e) => { e.stopPropagation(); handleSwipe('like', profile); }}
-                        sx={{ flex: 1 }}
-                      >
-                        Reconsiderar
-                      </Button>
-                    )}
-                  </Stack>
+          <CardContent sx={{ flexGrow: 1, p: 2 }}>
+            {type === "top" && profile.bio && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {profile.bio}
+              </Typography>
+            )}
+
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+                mt: "auto",
+              }}
+            >
+              <TimeIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
+                {type === "received" &&
+                  profile.liked_at &&
+                  `Te dio like ${formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true, locale: es })}`}
+                {type === "sent" &&
+                  profile.liked_at &&
+                  `Le diste like ${formatDistanceToNow(new Date(profile.liked_at), { addSuffix: true, locale: es })}`}
+                {type === "top" && "Recomendado hoy"}
+                {type === "second" &&
+                  profile.passed_at &&
+                  `Lo descartaste ${formatDistanceToNow(new Date(profile.passed_at), { addSuffix: true, locale: es })}`}
+              </Typography>
+            </Stack>
+
+            {(type === "received" || type === "sent" || type === "second") && (
+              <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<VisibilityIcon fontSize="small" />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleProfileClick(profile);
+                  }}
+                  sx={{ flex: 1 }}
+                >
+                  Ver perfil
+                </Button>
+                {type === "received" && (
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    startIcon={<HeartIcon fontSize="small" />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSwipe("like", profile, cardMedia(profile));
+                    }}
+                    sx={{ flex: 1 }}
+                  >
+                    Responder
+                  </Button>
                 )}
-              </CardContent>
-            </Card>
-          </Grid>
+                {type === "sent" && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteIcon fontSize="small" />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveLike(profile);
+                    }}
+                    sx={{ flex: 1 }}
+                  >
+                    Eliminar like
+                  </Button>
+                )}
+                {type === "second" && (
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    startIcon={<ReplayIcon fontSize="small" />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSwipe("like", profile, cardMedia(profile));
+                    }}
+                    sx={{ flex: 1 }}
+                  >
+                    Reconsiderar
+                  </Button>
+                )}
+              </Stack>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
     );
 
-    if (type === 'top') {
+    if (type === "top") {
       return (
         <Grid container spacing={3}>
           {profiles.map((p) => renderCard(p))}
@@ -475,14 +555,19 @@ export default function LikesPage() {
 
     return (
       <>
-        {(['today', 'week', 'month'] as PeriodKey[])
+        {(["today", "week", "month"] as PeriodKey[])
           .filter((k) => buckets[k].length > 0)
           .map((k) => (
             <Box key={k} sx={{ mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <Typography variant="h6" sx={{
-                  fontWeight: 700
-                }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                  }}
+                >
                   {PERIOD_LABELS[k]}
                 </Typography>
                 <Chip size="small" label={buckets[k].length} />
@@ -503,13 +588,18 @@ export default function LikesPage() {
           variant="h4"
           sx={{
             fontWeight: "bold",
-            mb: 4
-          }}>
+            mb: 4,
+          }}
+        >
           Likes
         </Typography>
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} aria-label="likes tabs">
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="likes tabs"
+          >
             <Tab
               icon={<HeartIcon />}
               iconPosition="start"
@@ -534,26 +624,28 @@ export default function LikesPage() {
         </Box>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
         )}
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress />
           </Box>
         ) : (
           <>
             <CustomTabPanel value={tabValue} index={0}>
-              {renderProfileGrid(receivedLikes, 'received')}
+              {renderProfileGrid(receivedLikes, "received")}
             </CustomTabPanel>
             <CustomTabPanel value={tabValue} index={1}>
-              {renderProfileGrid(sentLikes, 'sent')}
+              {renderProfileGrid(sentLikes, "sent")}
             </CustomTabPanel>
             <CustomTabPanel value={tabValue} index={2}>
-              {renderProfileGrid(topPicks, 'top')}
+              {renderProfileGrid(topPicks, "top")}
             </CustomTabPanel>
             <CustomTabPanel value={tabValue} index={3}>
-              {renderProfileGrid(secondChance, 'second')}
+              {renderProfileGrid(secondChance, "second")}
             </CustomTabPanel>
           </>
         )}
@@ -566,13 +658,13 @@ export default function LikesPage() {
           slotProps={{
             paper: {
               sx: {
-                borderRadius: '12px',
-                overflow: 'hidden',
+                borderRadius: "12px",
+                overflow: "hidden",
                 maxWidth: 400,
-                width: '100%',
-                m: 2
-              }
-            }
+                width: "100%",
+                m: 2,
+              },
+            },
           }}
         >
           {selectedProfile && (
@@ -580,13 +672,14 @@ export default function LikesPage() {
               profile={{
                 ...selectedProfile,
                 interests: selectedProfile.interests || [],
-                bio: selectedProfile.bio || '',
+                bio: selectedProfile.bio || "",
                 affinity_score: selectedProfile.affinity_score || 0,
-                online_status: isOnline(selectedProfile.last_seen)
+                online_status: isOnline(selectedProfile.last_seen),
               }}
-              onLike={() => handleSwipe('like')}
-              onPass={() => handleSwipe('pass')}
-              onSuperLike={() => handleSwipe('superlike')}
+              onLike={(media) => handleSwipe("like", undefined, media)}
+              onActiveMediaChange={setSelectedMedia}
+              onPass={() => handleSwipe("pass")}
+              onSuperLike={() => handleSwipe("superlike")}
               showActions={true}
               showSwipeControls={tabValue >= 2}
               showDetailsButton={false}
@@ -596,7 +689,9 @@ export default function LikesPage() {
                     <Button
                       variant="contained"
                       startIcon={<HeartIcon />}
-                      onClick={() => handleSwipe('like')}
+                      onClick={() =>
+                        handleSwipe("like", undefined, selectedMedia)
+                      }
                     >
                       Responder
                     </Button>
@@ -617,14 +712,16 @@ export default function LikesPage() {
 
           {/* Management actions (Likes recibidos / enviados) - no swipe controls */}
           {selectedProfile && tabValue <= 1 && (
-            <Box sx={{ display: 'flex', gap: 1.5, p: 2, pt: 0 }}>
+            <Box sx={{ display: "flex", gap: 1.5, p: 2, pt: 0 }}>
               {tabValue === 0 ? (
                 <>
                   <Button
                     fullWidth
                     variant="contained"
                     startIcon={<HeartIcon />}
-                    onClick={() => handleSwipe('like')}
+                    onClick={() =>
+                      handleSwipe("like", undefined, selectedMedia)
+                    }
                   >
                     Responder
                   </Button>
@@ -633,7 +730,7 @@ export default function LikesPage() {
                     variant="outlined"
                     color="inherit"
                     startIcon={<CloseIcon />}
-                    onClick={() => handleSwipe('pass')}
+                    onClick={() => handleSwipe("pass")}
                   >
                     Ignorar
                   </Button>
@@ -661,25 +758,40 @@ export default function LikesPage() {
           fullWidth
           slotProps={{
             paper: {
-              sx: { borderRadius: '12px', textAlign: 'center', p: 2 }
-            }
+              sx: { borderRadius: "12px", textAlign: "center", p: 2 },
+            },
           }}
         >
-          <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Avatar sx={{ width: 80, height: 80, bgcolor: 'secondary.main', mb: 2 }}>
+          <Box
+            sx={{
+              py: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              sx={{ width: 80, height: 80, bgcolor: "secondary.main", mb: 2 }}
+            >
               <HeartIcon sx={{ fontSize: 40 }} />
             </Avatar>
-            <Typography variant="h4" gutterBottom color="secondary" sx={{
-              fontWeight: "bold"
-            }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              color="secondary"
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
               ¡Es un Match!
             </Typography>
             <Typography
               variant="body1"
               sx={{
                 color: "text.secondary",
-                mb: 4
-              }}>
+                mb: 4,
+              }}
+            >
               Tú y esa persona se gustan. ¡Es hora de conversar!
             </Typography>
             <Button
@@ -693,10 +805,7 @@ export default function LikesPage() {
             >
               Ir al Chat
             </Button>
-            <Button
-              onClick={() => setMatchDialogOpen(false)}
-              sx={{ mt: 2 }}
-            >
+            <Button onClick={() => setMatchDialogOpen(false)} sx={{ mt: 2 }}>
               Seguir explorando
             </Button>
           </Box>
@@ -707,7 +816,7 @@ export default function LikesPage() {
           autoHideDuration={6000}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         >
-          <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
+          <Alert severity={snackbar.severity} sx={{ width: "100%" }}>
             {snackbar.message}
           </Alert>
         </Snackbar>
@@ -716,11 +825,10 @@ export default function LikesPage() {
   );
 }
 
-
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ["common"])),
     },
   };
 }

@@ -46,6 +46,7 @@ import {
 } from "@mui/icons-material";
 import Layout from "../../components/layout/Layout";
 import ProfileCard, { Profile } from "../../components/profile/ProfileCard";
+import { MediaItem } from "../../types/media";
 import apiClient from "../../services/api";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -593,6 +594,7 @@ export default function Discover() {
   const handleSwipe = async (
     interaction: "like" | "pass" | "superlike",
     explicitProfile?: Profile,
+    shownMedia?: MediaItem | null,
   ) => {
     const targetProfile = explicitProfile ?? queue[0];
     if (!targetProfile) return;
@@ -621,6 +623,7 @@ export default function Discover() {
         target_user_id: targetProfile.user_id,
         interaction,
         dwell_time_ms: dwellTime, // CARE: Send dwell time
+        shown_media_id: shownMedia?._id || shownMedia?.url || null,
       });
 
       if (response.data.is_match) {
@@ -631,7 +634,9 @@ export default function Discover() {
         if (currentUser?.user_id) {
           smartPhotosTracker.setCurrentUser(currentUser.user_id);
           smartPhotosTracker.trackMatch(
-            targetProfile.photos?.[0] ?? targetProfile.user_id,
+            shownMedia?._id ||
+              targetProfile.photos?.[0] ||
+              targetProfile.user_id,
             targetProfile.user_id,
           );
         }
@@ -726,6 +731,7 @@ export default function Discover() {
   const handleProfileAction = (
     profileId: string,
     action: "like" | "pass" | "superlike",
+    shownMedia?: MediaItem | null,
   ) => {
     // Find profile in queue
     const profile = queue.find((p) => p.user_id === profileId);
@@ -733,7 +739,7 @@ export default function Discover() {
 
     // Perform action on the CLICKED profile (handleSwipe removes it from the
     // queue by user_id and records history itself)
-    handleSwipe(action, profile);
+    handleSwipe(action, profile, shownMedia);
   };
 
   const handleToggleBoost = async () => {
@@ -1609,7 +1615,9 @@ export default function Discover() {
                       <StackLayout
                         profiles={queue}
                         currentIndex={0}
-                        onLike={() => handleSwipe("like")}
+                        onLike={(media) =>
+                          handleSwipe("like", undefined, media)
+                        }
                         onPass={() => handleSwipe("pass")}
                         onSuperLike={() => handleSwipe("superlike")}
                         onUndo={history.length > 0 ? handleUndo : undefined}
@@ -1626,7 +1634,7 @@ export default function Discover() {
                   {layoutMode === "sticker_book" && (
                     <StickerBookLayout
                       profiles={queue}
-                      onProfileAction={(id, act) => {
+                      onProfileAction={(id, act, media) => {
                         const profile = queue.find((p) => p.user_id === id);
                         if ((profile as any)?.isRefinement) {
                           setQueue((prev) =>
@@ -1634,7 +1642,7 @@ export default function Discover() {
                           );
                           return;
                         }
-                        handleProfileAction(id, act);
+                        handleProfileAction(id, act, media);
                       }}
                       isPremium={isPremium}
                       isBlind={discoveryMode === "blind"}
@@ -1646,7 +1654,7 @@ export default function Discover() {
                   {layoutMode === "carousel" && (
                     <CarouselLayout
                       profiles={queue}
-                      onProfileAction={(id, act) => {
+                      onProfileAction={(id, act, media) => {
                         const profile = queue.find((p) => p.user_id === id);
                         if ((profile as any)?.isRefinement) {
                           setQueue((prev) =>
@@ -1654,7 +1662,7 @@ export default function Discover() {
                           );
                           return;
                         }
-                        handleProfileAction(id, act);
+                        handleProfileAction(id, act, media);
                       }}
                       isPremium={isPremium}
                       isBlind={discoveryMode === "blind"}
@@ -1666,7 +1674,7 @@ export default function Discover() {
                   {layoutMode === "grid" && (
                     <GridLayout
                       profiles={queue}
-                      onProfileAction={(id, act) => {
+                      onProfileAction={(id, act, media) => {
                         const profile = queue.find((p) => p.user_id === id);
                         if ((profile as any)?.isRefinement) {
                           setQueue((prev) =>
@@ -1674,7 +1682,7 @@ export default function Discover() {
                           );
                           return;
                         }
-                        handleProfileAction(id, act);
+                        handleProfileAction(id, act, media);
                       }}
                       isPremium={isPremium}
                       isBlind={discoveryMode === "blind"}
@@ -1999,8 +2007,8 @@ export default function Discover() {
             }
             isCurious={isCurious}
             interactionMode={interactionMode}
-            onLike={() => {
-              handleSwipe("like");
+            onLike={(media) => {
+              handleSwipe("like", undefined, media);
               setSelectedProfileDetail(null);
             }}
             onPass={() => {

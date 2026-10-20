@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import re
 from src.models.user import User
 from src.models.profile import Profile
+from src.models.match import Match
 from src.api.auth import get_current_user, get_current_user_optional
 from src.core.utils.nickname_validator import validate_nickname
 from src.models.profile_visit import ProfileVisit
@@ -12,6 +13,21 @@ from src.models.user_settings import UserSettings
 
 
 router = APIRouter()
+
+
+def _interaction_state(match, me: str):
+    if not match:
+        return None, None
+    interaction = (
+        match.user_1_interaction
+        if match.user_id_1 == me
+        else match.user_2_interaction
+    )
+    status = match.status
+    return (
+        interaction.value if hasattr(interaction, "value") else interaction,
+        status.value if hasattr(status, "value") else status,
+    )
 
 
 # Request/Response Models
@@ -279,7 +295,7 @@ async def get_user_by_nickname(
                 print(f"[DEBUG] Failed to record profile visit for {user.id}: {e}")
 
     # Return flattened public information (exclude real_name, email, phone)
-    return {
+    result = {
         "user_id": str(user.id),
         "nickname": user.nickname,
         "display_name": user.display_name,
@@ -312,4 +328,28 @@ async def get_user_by_nickname(
         "relationship_goals": profile.relationship_goals,
         "work_company": profile.work_company,
         "school": profile.school,
+        "my_interaction": None,
+        "match_status": None,
     }
+
+    if current_user and str(current_user.id) != str(user.id):
+        match = await Match.find_one(
+            {
+                "$or": [
+                    {
+                        "user_id_1": str(current_user.id),
+                        "user_id_2": str(user.id),
+                    },
+                    {
+                        "user_id_1": str(user.id),
+                        "user_id_2": str(current_user.id),
+                    },
+                ]
+            }
+        )
+        (
+            result["my_interaction"],
+            result["match_status"],
+        ) = _interaction_state(match, str(current_user.id))
+
+    return result

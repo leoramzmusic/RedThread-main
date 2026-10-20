@@ -14,6 +14,7 @@ class PhotoMetric(Document):
     views: int = 0
     clicks: int = 0
     matches: int = 0
+    likes: int = 0
     view_time: float = 0.0  # Total cumulative view time in seconds
     conversions: int = 0
 

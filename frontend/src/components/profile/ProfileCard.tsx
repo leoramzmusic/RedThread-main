@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "next-i18next/pages";
 import {
   Card,
@@ -111,7 +111,8 @@ export interface Profile {
 
 interface ProfileCardProps {
   profile: Profile;
-  onLike?: () => void;
+  onLike?: (media?: MediaItem | null) => void;
+  onActiveMediaChange?: (media: MediaItem | null) => void;
   onPass?: () => void;
   onSuperLike?: () => void;
   onUndo?: () => void;
@@ -133,6 +134,7 @@ interface ProfileCardProps {
 export default function ProfileCard({
   profile,
   onLike,
+  onActiveMediaChange,
   onPass,
   onSuperLike,
   onUndo,
@@ -172,6 +174,31 @@ export default function ProfileCard({
 
   // In Blind Mode, we have 3 fixed slides: 0:Identity, 1:Compatibility, 2:Personality
   const maxSlides = effectiveIsBlind ? 3 : photos.length;
+
+  const activeMedia = useMemo<MediaItem | null>(() => {
+    if (effectiveIsBlind) return null;
+    if (mediaItems[activePhotoIndex]) return mediaItems[activePhotoIndex];
+    const fallbackUrl = profile.photos?.[activePhotoIndex];
+    if (!fallbackUrl) return null;
+    return {
+      _id: "",
+      user_id: profile.user_id,
+      type: "photo" as MediaItem["type"],
+      url: fallbackUrl,
+      order_index: activePhotoIndex,
+      created_at: "",
+    };
+  }, [
+    effectiveIsBlind,
+    mediaItems,
+    activePhotoIndex,
+    profile.photos,
+    profile.user_id,
+  ]);
+
+  useEffect(() => {
+    onActiveMediaChange?.(activeMedia);
+  }, [activeMedia, onActiveMediaChange]);
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -241,7 +268,7 @@ export default function ProfileCard({
 
     const timer = setTimeout(() => {
       if (tapCount === 2 && onLike) {
-        onLike();
+        onLike(activeMedia);
       } else if (tapCount === 3 && onPass) {
         onPass();
       } else if (tapCount >= 4 && onSuperLike) {
@@ -251,7 +278,7 @@ export default function ProfileCard({
     }, 450); // Wait slightly longer than tap threshold
 
     return () => clearTimeout(timer);
-  }, [tapCount, interactionMode, onLike, onPass, onSuperLike]);
+  }, [tapCount, interactionMode, onLike, onPass, onSuperLike, activeMedia]);
 
   // Keyboard Logic
   useEffect(() => {
@@ -264,7 +291,7 @@ export default function ProfileCard({
 
       switch (e.key) {
         case "ArrowRight":
-          onLike?.();
+          onLike?.(activeMedia);
           break;
         case "ArrowLeft":
           onPass?.();
@@ -280,7 +307,7 @@ export default function ProfileCard({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [interactionMode, onLike, onPass, onSuperLike]);
+  }, [interactionMode, onLike, onPass, onSuperLike, activeMedia]);
 
   // Drag Logic
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
@@ -333,7 +360,7 @@ export default function ProfileCard({
         if (typeof window !== "undefined" && window.navigator.vibrate) {
           window.navigator.vibrate(10);
         }
-        onLike();
+        onLike(activeMedia);
       } else if (dragPosition.x < -threshold && onPass) {
         onPass();
       }
@@ -659,7 +686,7 @@ export default function ProfileCard({
         {/* Action Buttons - Refined Solid Container */}
         {showActions && showSwipeControls && (
           <ProfileActions
-            onLike={onLike}
+            onLike={() => onLike?.(activeMedia)}
             onPass={onPass}
             onSuperLike={onSuperLike}
             onUndo={onUndo}
