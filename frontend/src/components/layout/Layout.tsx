@@ -1,4 +1,12 @@
-import { ReactNode, useState, useEffect, useRef, lazy, Suspense } from "react";
+import {
+  ReactNode,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import { useRouter } from "next/router";
 import {
   AppBar,
@@ -45,8 +53,7 @@ import MorphToggleIcon from "../motion/MorphToggleIcon";
 import { isIconStyleId, IconStyleId } from "../motion/iconStyles";
 import { supportedLanguages } from "../../config/languages";
 import { persistLangLocal } from "../../utils/landingLanguage";
-import { CARE_DIMENSION_KEYS } from "../../constants/careDimensions";
-import { listPreferences } from "../../services/carePreferencesService";
+import { applyNotificationSocketEvent } from "../../hooks/notificationSync";
 
 const NotificationPanel = lazy(
   () => import("../notifications/NotificationPanel"),
@@ -129,8 +136,8 @@ export default function Layout({ children }: LayoutProps) {
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [surveyPendingCount, setSurveyPendingCount] = useState(0);
   const ws = useRef<WebSocket | null>(null);
+  const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Language menu state
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
@@ -142,57 +149,46 @@ export default function Layout({ children }: LayoutProps) {
     return `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${url}`;
   };
 
-  // Fetch initial unread count
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!isAuthenticated) return;
+  const fetchUnreadCount = useCallback(async () => {
+    if (!isAuthenticated) return;
 
-      try {
-        // Fetch unread notifications
-        const unreadResponse = await apiClient.get(
-          "/notifications/unread-count",
-        );
-        setUnreadCount(unreadResponse.data.count);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
-
-    fetchNotifications();
-  }, [isAuthenticated]);
-
-  // Pending CARE survey questions (feeds the bell badge and notification item)
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setSurveyPendingCount(0);
-      return;
+    try {
+      const response = await apiClient.get("/notifications/unread-count");
+      setUnreadCount(response.data.count);
+      window.dispatchEvent(new CustomEvent("notifications-sync"));
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
     }
-
-    let cancelled = false;
-    (async () => {
-      try {
-        const items = await listPreferences();
-        if (cancelled) return;
-        const answered = new Set(items.map((item) => item.dimension));
-        setSurveyPendingCount(
-          CARE_DIMENSION_KEYS.filter((key) => !answered.has(key)).length,
-        );
-      } catch {
-        if (!cancelled) setSurveyPendingCount(0);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
   }, [isAuthenticated]);
+
+  const scheduleFetch = useCallback(() => {
+    if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
+    fetchTimeoutRef.current = setTimeout(() => {
+      fetchTimeoutRef.current = null;
+      void fetchUnreadCount();
+    }, 500);
+  }, [fetchUnreadCount]);
+
+  // Fetch the badge count on mount and whenever auth changes
+  useEffect(() => {
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+      fetchTimeoutRef.current = null;
+    }
+    void fetchUnreadCount();
+  }, [fetchUnreadCount]);
+
+  // Clear a pending debounce when the layout unmounts
+  useEffect(
+    () => () => {
+      if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
+    },
+    [],
+  );
 
   // Keep the bell in sync when the survey is answered from the Home bubble
   useEffect(() => {
-    const handlePreferencesChanged = (event: Event) => {
-      const count = (event as CustomEvent<number>).detail;
-      if (typeof count === "number") setSurveyPendingCount(count);
-    };
+    const handlePreferencesChanged = () => scheduleFetch();
     window.addEventListener(
       "care-preferences-changed",
       handlePreferencesChanged,
@@ -203,7 +199,18 @@ export default function Layout({ children }: LayoutProps) {
         handlePreferencesChanged,
       );
     };
-  }, []);
+  }, [scheduleFetch]);
+
+  // Refresh counts when the tab becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") scheduleFetch();
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [scheduleFetch]);
 
   // Refetch navbar config when auth state changes
   useEffect(() => {
@@ -231,12 +238,7 @@ export default function Layout({ children }: LayoutProps) {
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
-      // Handle new notification events
-      if (data.action === "new_notification" || data.action === "new_message") {
-        setUnreadCount((prev) => prev + 1);
-        // Optional: Play sound or show toast
-      }
+      applyNotificationSocketEvent(data, scheduleFetch);
     };
 
     ws.current.onclose = () => {
@@ -249,7 +251,7 @@ export default function Layout({ children }: LayoutProps) {
         ws.current.close();
       }
     };
-  }, [isAuthenticated, user?.user_id]);
+  }, [isAuthenticated, user?.user_id, scheduleFetch]);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -603,10 +605,8 @@ export default function Layout({ children }: LayoutProps) {
                           styleId={styleOf("notifications")}
                           motion="bell"
                           basicHover="bell"
-                          active={unreadCount > 0 || surveyPendingCount > 0}
-                          badgeContent={
-                            unreadCount + (surveyPendingCount > 0 ? 1 : 0)
-                          }
+                          active={unreadCount > 0}
+                          badgeContent={unreadCount}
                           onClick={() => setNotificationOpen(true)}
                         >
                           <NotificationsIcon
