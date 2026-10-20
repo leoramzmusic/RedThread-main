@@ -1,6 +1,4 @@
-import React from "react";
-import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next/pages";
+import React, { useState } from "react";
 import {
   ListItem,
   ListItemAvatar,
@@ -9,24 +7,29 @@ import {
   Typography,
   Box,
   IconButton,
+  TextField,
 } from "@mui/material";
 import {
-  Favorite as LikeIcon,
-  Visibility as ViewIcon,
-  PersonAdd as MatchIcon,
-  EmojiEvents as RewardIcon,
-  Info as SystemIcon,
-  Chat as MessageIcon,
-  Circle as UnreadIcon,
+  ChatBubbleOutlined,
+  CampaignOutlined,
+  FavoriteBorder,
+  Send,
+  SettingsOutlined,
 } from "@mui/icons-material";
-import { formatDistanceToNow } from "date-fns";
-import { dateFnsLocale } from "../../utils/dateLocale";
+import { useTranslation } from "next-i18next/pages";
+import { liquidColors, motionTokens } from "../../theme/liquidGlass";
+import { buildNotificationText, formatRelativeTime } from "./notificationText";
 import type { AppNotification } from "../../hooks/useNotifications";
 
 interface NotificationItemProps {
   notification: AppNotification;
+  bumped?: boolean;
   onRead: (id: string) => void;
-  onNavigate?: () => void;
+  onNavigate?: (notification: AppNotification) => void;
+  onQuickReply?: (notification: AppNotification, message: string) => void;
+  onArchive?: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onSnooze?: (id: string) => void;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -37,140 +40,107 @@ const resolveUrl = (url?: string | null) => {
   return `${API_URL}${url}`;
 };
 
+const iconFor = (type: string) => {
+  if (type === "like")
+    return (
+      <FavoriteBorder sx={{ color: liquidColors.primaryLight, fontSize: 16 }} />
+    );
+  if (type === "message")
+    return (
+      <ChatBubbleOutlined sx={{ color: liquidColors.accent, fontSize: 16 }} />
+    );
+  if (type === "promo")
+    return (
+      <CampaignOutlined sx={{ color: liquidColors.accentGold, fontSize: 16 }} />
+    );
+  if (type === "match")
+    return (
+      <FavoriteBorder sx={{ color: liquidColors.accentViolet, fontSize: 16 }} />
+    );
+  return <SettingsOutlined sx={{ color: "text.secondary", fontSize: 16 }} />;
+};
+
 export default function NotificationItem({
   notification,
+  bumped = false,
   onRead,
   onNavigate,
+  onQuickReply,
 }: NotificationItemProps) {
-  const router = useRouter();
   const { t, i18n } = useTranslation("common");
-  const metadata = notification.metadata || {};
-  const name =
-    notification.user?.name ??
-    notification.actors?.[0]?.name ??
-    t("notifications.actor.fallback");
-  const mediaThumb =
-    metadata.shown_media_thumbnail_url || metadata.shown_media_url;
-  const initial = name ? name.trim().charAt(0).toUpperCase() : undefined;
+  const [reply, setReply] = useState("");
+  const [expanded, setExpanded] = useState(false);
+  const { title, body } = buildNotificationText(notification, t, i18n.language);
+  const thumb =
+    notification.metadata?.shown_media_thumbnail_url ||
+    notification.metadata?.shown_media_url;
+  const canReply =
+    notification.type === "message" && !!notification.metadata?.can_reply;
+  const displayName =
+    notification.user?.name ?? notification.actors?.[0]?.name ?? "";
+  const initial = displayName.trim().charAt(0).toUpperCase();
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "like":
-        return <LikeIcon sx={{ color: "#FF4081", fontSize: 16 }} />;
-      case "view":
-        return <ViewIcon sx={{ color: "#4CAF50", fontSize: 16 }} />;
-      case "match":
-        return <MatchIcon sx={{ color: "#E91E63", fontSize: 16 }} />;
-      case "reward":
-        return <RewardIcon sx={{ color: "#FFD700", fontSize: 16 }} />;
-      case "message":
-        return <MessageIcon sx={{ color: "#2196F3", fontSize: 16 }} />;
-      default:
-        return <SystemIcon sx={{ color: "#9E9E9E", fontSize: 16 }} />;
-    }
-  };
-
-  const getTitle = () => {
-    switch (notification.type) {
-      case "like":
-        return metadata.superlike
-          ? t("notifications.like.superlike", { name })
-          : t("notifications.like.single", { name });
-      case "match":
-        return t("notifications.match.single", { name });
-      case "message":
-        return metadata.preview || t("notifications.message.single", { name });
-      default:
-        return notification.content || t("notifications.system.fallback");
-    }
-  };
-
-  const handleClick = () => {
-    if (!notification.is_read) {
-      void onRead(notification.id);
-    }
-    onNavigate?.();
-
-    switch (notification.type) {
-      case "like":
-        router.push("/likes");
-        return;
-      case "match": {
-        if (notification.target_type === "chat" && notification.target_id) {
-          router.push(`/chat?conversation=${notification.target_id}`);
-          return;
-        }
-        if (notification.target_type === "profile") {
-          const nickname =
-            notification.user?.nickname ?? notification.actors?.[0]?.nickname;
-          if (nickname) {
-            router.push(`/profile/${nickname}`);
-            return;
-          }
-        }
-        router.push("/likes");
-        return;
-      }
-      case "message":
-        if (notification.target_id) {
-          router.push(`/chat?conversation=${notification.target_id}`);
-        }
-        return;
-      default: {
-        const url = notification.target_id || metadata.target_url;
-        if (!url) return;
-        if (url.startsWith("/")) {
-          router.push(url);
-        } else {
-          window.location.assign(url);
-        }
-      }
-    }
+  const handleClick = async () => {
+    if (!notification.is_read) await onRead(notification.id);
+    onNavigate?.(notification);
   };
 
   return (
     <ListItem
-      alignItems="flex-start"
       data-testid={`notification-item-${notification.id}`}
+      alignItems="flex-start"
       sx={{
-        bgcolor: notification.is_read ? "transparent" : "action.hover",
+        cursor: "pointer",
+        bgcolor: notification.is_read ? "transparent" : "rgba(230,57,70,0.07)",
         borderBottom: "1px solid",
         borderColor: "divider",
-        cursor: "pointer",
-        transition: "background-color 0.2s",
-        "&:hover": {
-          bgcolor: "action.selected",
+        borderInlineStart: notification.is_read
+          ? "3px solid transparent"
+          : `3px solid ${liquidColors.primary}`,
+        transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
+        "&:hover": { bgcolor: "action.selected" },
+        animation: bumped
+          ? `notification-bump ${motionTokens.durations.macro}ms ${motionTokens.easing}`
+          : "none",
+        "@keyframes notification-bump": {
+          "0%": { backgroundColor: "rgba(230,57,70,0.22)" },
+          "100%": { backgroundColor: "rgba(230,57,70,0.07)" },
+        },
+        "@media (prefers-reduced-motion: reduce)": {
+          animation: "none",
+          transition: "none",
         },
       }}
       onClick={handleClick}
     >
       <ListItemAvatar sx={{ minWidth: 64 }}>
         <Box sx={{ position: "relative", width: 56, height: 56 }}>
-          {mediaThumb ? (
+          {thumb ? (
             <Box
+              data-testid="notification-thumb"
               component="img"
-              src={resolveUrl(mediaThumb)}
+              src={resolveUrl(thumb)}
               alt=""
               sx={{
                 width: 56,
                 height: 56,
-                borderRadius: "8px",
+                borderRadius: "12px",
                 objectFit: "cover",
                 display: "block",
               }}
             />
           ) : (
             <Avatar
-              alt={name}
+              alt={displayName}
               src={resolveUrl(notification.user?.photo)}
               sx={{ width: 56, height: 56 }}
             >
               {initial}
             </Avatar>
           )}
-          {mediaThumb && notification.user?.photo && (
+          {thumb && notification.user?.photo && (
             <Avatar
-              alt={name}
+              alt={displayName}
               src={resolveUrl(notification.user.photo)}
               sx={{
                 position: "absolute",
@@ -197,43 +167,101 @@ export default function NotificationItem({
               boxShadow: 1,
             }}
           >
-            {getIcon(notification.type)}
+            {iconFor(notification.type)}
           </Box>
         </Box>
       </ListItemAvatar>
       <ListItemText
         primary={
           <Typography
-            variant="subtitle2"
             component="span"
+            variant="subtitle2"
             sx={{
               fontWeight: notification.is_read ? 400 : 600,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}
           >
-            {getTitle()}
+            {title}
           </Typography>
         }
         secondary={
-          <Typography
-            variant="caption"
-            sx={{
-              display: "block",
-              color: "text.secondary",
-              mt: 0.5,
-            }}
-          >
-            {formatDistanceToNow(new Date(notification.created_at), {
-              addSuffix: true,
-              locale: dateFnsLocale(i18n.language),
-            })}
-          </Typography>
+          <Box component="span">
+            {body && (
+              <Typography
+                component="span"
+                variant="body2"
+                sx={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: expanded ? "unset" : 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {body}
+              </Typography>
+            )}
+            {notification.type === "promo" && (
+              <Typography
+                component="span"
+                variant="caption"
+                sx={{
+                  color: "primary.main",
+                  cursor: "pointer",
+                  display: "block",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((v) => !v);
+                }}
+              >
+                {expanded
+                  ? t("notifications.expand.less")
+                  : t("notifications.expand.more")}
+              </Typography>
+            )}
+            <Typography
+              variant="caption"
+              sx={{ display: "block", color: "text.secondary", mt: 0.5 }}
+            >
+              {formatRelativeTime(
+                notification.updated_at || notification.created_at,
+                i18n.language,
+              )}
+            </Typography>
+            {canReply && (
+              <Box
+                data-testid="notification-quick-reply"
+                sx={{ display: "flex", gap: 1, mt: 1 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <TextField
+                  size="small"
+                  fullWidth
+                  placeholder={t("notifications.quickReply.placeholder")}
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                />
+                <IconButton
+                  aria-label={t("notifications.quickReply.send")}
+                  disabled={!reply.trim()}
+                  onClick={() => {
+                    onQuickReply?.(notification, reply.trim());
+                    setReply("");
+                  }}
+                >
+                  <Send fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
+          </Box>
         }
+        slotProps={{
+          secondary: { component: "span" },
+        }}
       />
-      {!notification.is_read && (
-        <IconButton size="small" edge="end" disabled>
-          <UnreadIcon sx={{ fontSize: 10, color: "primary.main" }} />
-        </IconButton>
-      )}
     </ListItem>
   );
 }

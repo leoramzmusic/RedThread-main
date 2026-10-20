@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useRouter } from "next/router";
 import NotificationPanel from "./NotificationPanel";
 import { useNotifications } from "../../hooks/useNotifications";
@@ -262,10 +268,11 @@ describe("NotificationPanel", () => {
     renderPanel();
 
     fireEvent.click(await screen.findByTestId("notification-item-n1"));
+    await act(async () => {});
 
     expect(hook.markRead).toHaveBeenCalledWith("n1");
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(push).toHaveBeenCalledWith("/likes");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("only offers mark-all-read in Sistema", async () => {

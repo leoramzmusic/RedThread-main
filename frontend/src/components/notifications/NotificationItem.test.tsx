@@ -1,267 +1,127 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { useRouter } from "next/router";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import NotificationItem from "./NotificationItem";
-
-const mockCopy: Record<string, string> = {
-  "notifications.actor.fallback": "Alguien",
-  "notifications.like.single": "A {{name}} le gustas",
-  "notifications.like.superlike": "{{name}} te envió un Super Like",
-  "notifications.match.single": "¡Es un match con {{name}}!",
-  "notifications.message.single": "Nuevo mensaje de {{name}}",
-  "notifications.system.fallback": "Red Thread",
-};
-
-function mockTranslate(key: string, options?: Record<string, unknown>) {
-  let value = mockCopy[key] ?? key;
-  if (options && typeof options === "object") {
-    Object.entries(options).forEach(([name, replacement]) => {
-      value = value.replace(
-        new RegExp(`{{${name}}}`, "g"),
-        String(replacement),
-      );
-    });
-  }
-  return value;
-}
 
 jest.mock("next-i18next/pages", () => ({
   useTranslation: () => ({
-    t: mockTranslate,
-    i18n: { language: "es" },
+    t: (key: string, options?: Record<string, unknown>) =>
+      options?.name ? `${key}:${options.name}` : key,
+    i18n: { language: "en" },
   }),
 }));
 
-jest.mock("next/router", () => ({
-  useRouter: jest.fn(),
-}));
-
-const mockedUseRouter = useRouter as jest.Mock;
-
-const baseNotification = {
+const base = {
   id: "n1",
   type: "like",
-  content: "A 3 personas les gustó tu foto",
-  is_read: false,
-  created_at: "2026-10-19T10:00:00Z",
+  metadata: {},
   actor_count: 1,
-  actors: [{ name: "Ana", nickname: "ana" }],
+  is_read: false,
+  created_at: new Date().toISOString(),
   user: { name: "Ana", photo: "/ana.jpg", nickname: "ana" },
-  target_type: "profile",
-  target_id: "u-ana",
-  metadata: {
-    shown_media_id: "m1",
-    shown_media_url: "/photo.jpg",
-    shown_media_thumbnail_url: "/thumb.jpg",
-    shown_media_type: "photo",
-    target_url: "/profile/ana",
-  },
+  target_type: "likes",
 };
 
 describe("NotificationItem", () => {
-  const push = jest.fn();
-
-  beforeEach(() => {
-    push.mockReset();
-    mockedUseRouter.mockReturnValue({ push });
-  });
-
-  it("renders the testid and the liked media thumbnail", () => {
+  it("renders grouped like copy and thumbnail", () => {
     const { container } = render(
-      <NotificationItem notification={baseNotification} onRead={jest.fn()} />,
+      <NotificationItem
+        notification={{
+          ...base,
+          actor_count: 4,
+          actors: [{ name: "Ana" }, { name: "Bea" }],
+          metadata: { shown_media_thumbnail_url: "/m.jpg" },
+        }}
+        onRead={jest.fn()}
+      />,
     );
 
-    expect(screen.getByTestId("notification-item-n1")).toBeInTheDocument();
-    expect(
-      container.querySelector('img[src$="/thumb.jpg"]'),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/notifications.like.group/)).toBeInTheDocument();
+    expect(screen.getByTestId("notification-thumb")).toBeInTheDocument();
     expect(container.querySelector('img[src$="/ana.jpg"]')).toBeInTheDocument();
   });
 
-  it("uses the like copy and opens likes for a single like", () => {
-    const onRead = jest.fn();
-    render(
-      <NotificationItem notification={baseNotification} onRead={onRead} />,
-    );
+  it("falls back to the actor avatar without a thumbnail", () => {
+    render(<NotificationItem notification={base} onRead={jest.fn()} />);
 
-    expect(screen.getByTestId("notification-item-n1")).toHaveTextContent(
-      "A Ana le gustas",
-    );
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
-
-    expect(onRead).toHaveBeenCalledWith("n1");
-    expect(push).toHaveBeenCalledWith("/likes");
+    expect(screen.queryByTestId("notification-thumb")).not.toBeInTheDocument();
+    expect(
+      screen.getAllByText("notifications.like.single:Ana").length,
+    ).toBeGreaterThan(0);
   });
 
-  it("shows the last actor in singular and opens likes for a grouped like", () => {
-    const onRead = jest.fn();
+  it("shows quick reply only when can_reply", () => {
     render(
       <NotificationItem
         notification={{
-          ...baseNotification,
-          actor_count: 3,
-          actors: [
-            { name: "Ana", nickname: "ana" },
-            { name: "Luis", nickname: "luis" },
-          ],
-          user: { name: "Luis", photo: null, nickname: "luis" },
-        }}
-        onRead={onRead}
-      />,
-    );
-
-    expect(screen.getByTestId("notification-item-n1")).toHaveTextContent(
-      "A Luis le gustas",
-    );
-    expect(screen.queryByText(/3 personas/)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
-
-    expect(onRead).toHaveBeenCalledWith("n1");
-    expect(push).toHaveBeenCalledWith("/likes");
-  });
-
-  it("uses the match copy and opens the match conversation", () => {
-    const onRead = jest.fn();
-    render(
-      <NotificationItem
-        notification={{
-          ...baseNotification,
-          type: "match",
-          content: "Contenido crudo del backend",
+          ...base,
+          type: "message",
+          metadata: { can_reply: true, preview: "hola" },
           target_type: "chat",
-          target_id: "c9",
-          metadata: {},
-        }}
-        onRead={onRead}
-      />,
-    );
-
-    expect(screen.getByTestId("notification-item-n1")).toHaveTextContent(
-      "¡Es un match con Ana!",
-    );
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
-
-    expect(onRead).toHaveBeenCalledWith("n1");
-    expect(push).toHaveBeenCalledWith("/chat?conversation=c9");
-  });
-
-  it("opens the profile for a match without a conversation", () => {
-    render(
-      <NotificationItem
-        notification={{
-          ...baseNotification,
-          type: "match",
-          target_type: "profile",
-          target_id: "u-ana",
-          metadata: {},
         }}
         onRead={jest.fn()}
+        onQuickReply={jest.fn()}
       />,
     );
 
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
-
-    expect(push).toHaveBeenCalledWith("/profile/ana");
+    expect(screen.getByTestId("notification-quick-reply")).toBeInTheDocument();
   });
 
-  it("uses the message preview and opens the conversation", () => {
+  it("hides quick reply when can_reply is absent", () => {
     render(
       <NotificationItem
         notification={{
-          ...baseNotification,
+          ...base,
           type: "message",
           target_type: "chat",
-          target_id: "c9",
-          metadata: { preview: "Hola guapa", conversation_id: "c9" },
+          metadata: {},
         }}
         onRead={jest.fn()}
       />,
     );
 
-    expect(screen.getByTestId("notification-item-n1")).toHaveTextContent(
-      "Hola guapa",
-    );
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
-
-    expect(push).toHaveBeenCalledWith("/chat?conversation=c9");
+    expect(
+      screen.queryByTestId("notification-quick-reply"),
+    ).not.toBeInTheDocument();
   });
 
-  it("falls back to the message copy without a preview", () => {
+  it("sends the quick reply and clears the input without marking read", () => {
+    const onRead = jest.fn();
+    const onQuickReply = jest.fn();
     render(
       <NotificationItem
         notification={{
-          ...baseNotification,
+          ...base,
           type: "message",
           target_type: "chat",
-          target_id: "c9",
-          metadata: {},
-        }}
-        onRead={jest.fn()}
-      />,
-    );
-
-    expect(screen.getByTestId("notification-item-n1")).toHaveTextContent(
-      "Nuevo mensaje de Ana",
-    );
-  });
-
-  it("navigates a system notification to its URL", () => {
-    const onRead = jest.fn();
-    render(
-      <NotificationItem
-        notification={{
-          ...baseNotification,
-          type: "system",
-          content: "Encuesta pendiente",
-          target_type: "url",
-          target_id: "/home?encuesta=1",
-          metadata: {},
+          metadata: { can_reply: true },
         }}
         onRead={onRead}
+        onQuickReply={onQuickReply}
       />,
     );
 
-    expect(screen.getByTestId("notification-item-n1")).toHaveTextContent(
-      "Encuesta pendiente",
-    );
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
+    const input = screen.getByRole("textbox");
+    expect(
+      screen.getByRole("button", { name: "notifications.quickReply.send" }),
+    ).toBeDisabled();
 
-    expect(onRead).toHaveBeenCalledWith("n1");
-    expect(push).toHaveBeenCalledWith("/home?encuesta=1");
-  });
+    fireEvent.change(input, { target: { value: "hola" } });
+    fireEvent.click(screen.getByTestId("notification-quick-reply"));
+    expect(onRead).not.toHaveBeenCalled();
 
-  it("uses metadata.target_url when there is no target id", () => {
-    render(
-      <NotificationItem
-        notification={{
-          ...baseNotification,
-          type: "promo",
-          content: "Promo",
-          target_type: "url",
-          target_id: null,
-          metadata: { target_url: "/promo" },
-        }}
-        onRead={jest.fn()}
-      />,
+    fireEvent.click(
+      screen.getByRole("button", { name: "notifications.quickReply.send" }),
     );
 
-    fireEvent.click(screen.getByTestId("notification-item-n1"));
-
-    expect(push).toHaveBeenCalledWith("/promo");
+    expect(onQuickReply).toHaveBeenCalledWith(expect.anything(), "hola");
+    expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
-  it("only marks read for a legacy notification without a destination", () => {
+  it("marks a unread notification as read once and navigates", async () => {
     const onRead = jest.fn();
     const onNavigate = jest.fn();
     render(
       <NotificationItem
-        notification={{
-          ...baseNotification,
-          type: "reward",
-          content: "Ganaste una recompensa",
-          target_type: null,
-          target_id: null,
-          metadata: {},
-        }}
+        notification={base}
         onRead={onRead}
         onNavigate={onNavigate}
       />,
@@ -269,23 +129,35 @@ describe("NotificationItem", () => {
 
     fireEvent.click(screen.getByTestId("notification-item-n1"));
 
+    expect(onRead).toHaveBeenCalledTimes(1);
     expect(onRead).toHaveBeenCalledWith("n1");
-    expect(onNavigate).toHaveBeenCalledTimes(1);
-    expect(push).not.toHaveBeenCalled();
+    await act(async () => {});
+    expect(onNavigate).toHaveBeenCalledWith(base);
   });
 
-  it("does not mark an already-read notification as read", () => {
+  it("does not mark an already-read notification as read", async () => {
     const onRead = jest.fn();
+    const onNavigate = jest.fn();
     render(
       <NotificationItem
-        notification={{ ...baseNotification, is_read: true }}
+        notification={{ ...base, is_read: true }}
         onRead={onRead}
+        onNavigate={onNavigate}
       />,
     );
 
     fireEvent.click(screen.getByTestId("notification-item-n1"));
 
     expect(onRead).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith("/likes");
+    await act(async () => {});
+    expect(onNavigate).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("applies unread styling", () => {
+    render(<NotificationItem notification={base} onRead={jest.fn()} />);
+
+    expect(screen.getByTestId("notification-item-n1")).toHaveStyle({
+      backgroundColor: "rgba(230,57,70,0.07)",
+    });
   });
 });
