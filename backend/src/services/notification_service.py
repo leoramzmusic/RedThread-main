@@ -428,3 +428,124 @@ async def mark_message_notification_read(user_id: str, conversation_id: str) -> 
         {"user_id": user_id, "group_key": group_key, "is_read": False}
     ).update({"$set": {"is_read": True, "updated_at": datetime.utcnow()}})
     await manager.send_personal_message(user_id, {"action": "notifications_sync"})
+
+
+SNOOZE_DURATIONS = {
+    "15m": timedelta(minutes=15),
+    "1h": timedelta(hours=1),
+    "2h": timedelta(hours=2),
+    "8h": timedelta(hours=8),
+    "1d": timedelta(days=1),
+}
+
+
+def visible_filter(
+    user_id: str, archived_only: bool = False, now: Optional[datetime] = None
+) -> dict:
+    now = now or datetime.utcnow()
+    return {
+        "user_id": user_id,
+        "deleted_at": None,
+        "archived_at": {"$ne": None} if archived_only else None,
+        "$or": [{"snoozed_until": None}, {"snoozed_until": {"$lte": now}}],
+    }
+
+
+async def _owned(notification_id: str, user_id: str) -> Optional[Notification]:
+    doc = await Notification.get(notification_id)
+    if doc is None or doc.user_id != user_id:
+        return None
+    return doc
+
+
+async def _push_action(user_id: str, action: str, **extra: Any) -> None:
+    await manager.send_personal_message(user_id, {"action": action, **extra})
+
+
+async def set_archived(
+    notification_id: str, user_id: str, archived: bool
+) -> Optional[Notification]:
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    doc.archived_at = datetime.utcnow() if archived else None
+    await doc.save()
+    await _push_action(
+        user_id,
+        "notification_archived" if archived else "notification_unarchived",
+        id=notification_id,
+    )
+    return doc
+
+
+async def set_deleted(notification_id: str, user_id: str) -> Optional[Notification]:
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    doc.deleted_at = datetime.utcnow()
+    await doc.save()
+    await _push_action(user_id, "notification_deleted", id=notification_id)
+    return doc
+
+
+async def restore_notification(
+    notification_id: str, user_id: str
+) -> Optional[Notification]:
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    doc.deleted_at = None
+    await doc.save()
+    await _push_action(user_id, "notification_restored", id=notification_id)
+    return doc
+
+
+async def _apply_always_mute(doc: Notification) -> None:
+    from src.models.user_settings import UserSettings
+
+    settings = await UserSettings.find_one({"user_id": doc.user_id})
+    if settings is None:
+        return
+    mutes = dict(settings.notification_mutes or {})
+    mutes[bucket_for(doc.type)] = True
+    settings.notification_mutes = mutes
+    await settings.save()
+
+
+async def snooze_notification(
+    notification_id: str, user_id: str, duration: str
+) -> Optional[Notification]:
+    if duration not in (*SNOOZE_DURATIONS.keys(), "always"):
+        raise ValueError(f"Invalid snooze duration: {duration}")
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    if duration == "always":
+        await _apply_always_mute(doc)
+        doc.is_read = True
+        doc.snoozed_until = None
+    else:
+        doc.snoozed_until = datetime.utcnow() + SNOOZE_DURATIONS[duration]
+    await doc.save()
+    await _push_action(
+        user_id,
+        "notification_snoozed",
+        id=notification_id,
+        duration=duration,
+        until=doc.snoozed_until.isoformat() if doc.snoozed_until else None,
+    )
+    await _push_action(user_id, "notifications_sync")
+    return doc
+
+
+async def unsnooze_notification(
+    notification_id: str, user_id: str
+) -> Optional[Notification]:
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    doc.snoozed_until = None
+    await doc.save()
+    await _push_action(user_id, "notifications_sync")
+    await _push_action(user_id, "notification_unsnoozed", id=notification_id)
+    return doc
