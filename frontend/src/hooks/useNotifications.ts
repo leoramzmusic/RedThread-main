@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
 
 export interface NotificationCounts {
@@ -49,33 +49,42 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [error, setError] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
 
+  const filterRef = useRef(filter);
+  const unreadRef = useRef(unread);
+  const requestIdRef = useRef(0);
+
   const fetchAll = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(false);
     try {
       const [list, count] = await Promise.all([
         apiClient.get("/notifications", {
           params: {
-            filter,
+            filter: filterRef.current,
             limit: 50,
-            ...(unread ? { unread: true } : {}),
+            ...(unreadRef.current ? { unread: true } : {}),
           },
         }),
         apiClient.get("/notifications/unread-count"),
       ]);
+      if (requestId !== requestIdRef.current) return;
       setItems(list.data.items ?? []);
       setNextCursor(list.data.next_cursor ?? null);
       setCounts({ ...EMPTY_COUNTS, ...(count.data ?? {}) });
     } catch {
+      if (requestId !== requestIdRef.current) return;
       setError(true);
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
-  }, [filter, unread]);
+  }, []);
 
   useEffect(() => {
+    filterRef.current = filter;
+    unreadRef.current = unread;
     void fetchAll();
-  }, [fetchAll]);
+  }, [filter, unread, fetchAll]);
 
   useEffect(() => {
     const onSync = () => {

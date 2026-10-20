@@ -97,3 +97,139 @@ it("refreshes when the notifications-sync event fires", async () => {
     expect(get).toHaveBeenCalledWith("/notifications/unread-count"),
   );
 });
+
+const deferred = <T>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+};
+
+it("discards an older filter response that resolves after the latest one", async () => {
+  const allList = deferred<any>();
+  const socialList = deferred<any>();
+  const allItems = [{ id: "a1", type: "like", is_read: false }];
+  const socialItems = [{ id: "s1", type: "match", is_read: false }];
+  const allCounts = {
+    count: 9,
+    all: 9,
+    social: 9,
+    messages: 0,
+    system: 0,
+    survey_pending: 0,
+  };
+  const socialCounts = {
+    count: 1,
+    all: 1,
+    social: 1,
+    messages: 0,
+    system: 0,
+    survey_pending: 0,
+  };
+  let countCalls = 0;
+
+  get.mockImplementation(
+    (url: string, config?: { params?: { filter?: string } }) => {
+      if (url === "/notifications/unread-count") {
+        countCalls += 1;
+        return Promise.resolve({
+          data: countCalls === 1 ? allCounts : socialCounts,
+        });
+      }
+      return config?.params?.filter === "social"
+        ? socialList.promise
+        : allList.promise;
+    },
+  );
+
+  const { result, rerender } = renderHook(
+    ({ filter }: { filter: string }) => useNotifications(filter),
+    { initialProps: { filter: "all" } },
+  );
+
+  await waitFor(() =>
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "all", limit: 50 },
+    }),
+  );
+
+  rerender({ filter: "social" });
+  await waitFor(() =>
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "social", limit: 50 },
+    }),
+  );
+
+  await act(async () => {
+    socialList.resolve({
+      data: { items: socialItems, next_cursor: "social-cur" },
+    });
+  });
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(result.current.items).toEqual(socialItems);
+  expect(result.current.nextCursor).toBe("social-cur");
+  expect(result.current.counts.all).toBe(1);
+
+  await act(async () => {
+    allList.resolve({ data: { items: allItems, next_cursor: "all-cur" } });
+  });
+
+  expect(result.current.items).toEqual(socialItems);
+  expect(result.current.nextCursor).toBe("social-cur");
+  expect(result.current.counts.all).toBe(1);
+  expect(result.current.unreadCount).toBe(1);
+  expect(result.current.loading).toBe(false);
+});
+
+it("keeps loading when an older response resolves before the latest one", async () => {
+  const allList = deferred<any>();
+  const socialList = deferred<any>();
+  const allItems = [{ id: "a1", type: "like", is_read: false }];
+  const socialItems = [{ id: "s1", type: "match", is_read: false }];
+
+  get.mockImplementation(
+    (url: string, config?: { params?: { filter?: string } }) => {
+      if (url === "/notifications/unread-count")
+        return Promise.resolve({ data: counts });
+      return config?.params?.filter === "social"
+        ? socialList.promise
+        : allList.promise;
+    },
+  );
+
+  const { result, rerender } = renderHook(
+    ({ filter }: { filter: string }) => useNotifications(filter),
+    { initialProps: { filter: "all" } },
+  );
+
+  await waitFor(() =>
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "all", limit: 50 },
+    }),
+  );
+
+  rerender({ filter: "social" });
+  await waitFor(() =>
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "social", limit: 50 },
+    }),
+  );
+
+  await act(async () => {
+    allList.resolve({ data: { items: allItems, next_cursor: "all-cur" } });
+  });
+
+  expect(result.current.items).toEqual([]);
+  expect(result.current.nextCursor).toBeNull();
+  expect(result.current.loading).toBe(true);
+
+  await act(async () => {
+    socialList.resolve({
+      data: { items: socialItems, next_cursor: "social-cur" },
+    });
+  });
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(result.current.items).toEqual(socialItems);
+  expect(result.current.nextCursor).toBe("social-cur");
+});
