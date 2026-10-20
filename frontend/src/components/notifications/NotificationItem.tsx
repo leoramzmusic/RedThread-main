@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next/pages";
 import {
   ListItem,
   ListItemAvatar,
@@ -19,16 +20,18 @@ import {
   Circle as UnreadIcon,
 } from "@mui/icons-material";
 import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
+import { dateFnsLocale } from "../../utils/dateLocale";
+import type { AppNotification } from "../../hooks/useNotifications";
 
 interface NotificationItemProps {
-  notification: any;
+  notification: AppNotification;
   onRead: (id: string) => void;
+  onNavigate?: () => void;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-const resolveUrl = (url?: string) => {
+const resolveUrl = (url?: string | null) => {
   if (!url) return undefined;
   if (url.startsWith("http") || url.startsWith("blob:")) return url;
   return `${API_URL}${url}`;
@@ -37,14 +40,18 @@ const resolveUrl = (url?: string) => {
 export default function NotificationItem({
   notification,
   onRead,
+  onNavigate,
 }: NotificationItemProps) {
   const router = useRouter();
+  const { t, i18n } = useTranslation("common");
   const metadata = notification.metadata || {};
-  const actorCount = notification.actor_count || 1;
-  const isGroupLike = notification.type === "like" && actorCount > 1;
+  const name =
+    notification.user?.name ??
+    notification.actors?.[0]?.name ??
+    t("notifications.actor.fallback");
   const mediaThumb =
     metadata.shown_media_thumbnail_url || metadata.shown_media_url;
-  const mediaLabel = metadata.shown_media_type === "video" ? "video" : "foto";
+  const initial = name ? name.trim().charAt(0).toUpperCase() : undefined;
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -64,85 +71,67 @@ export default function NotificationItem({
   };
 
   const getTitle = () => {
-    const userName = notification.user?.name || "Alguien";
     switch (notification.type) {
       case "like":
-        if (isGroupLike) {
-          const target = metadata.shown_media_id
-            ? `tu ${mediaLabel}`
-            : "tu perfil";
-          return `A ${actorCount} personas les gustó ${target}`;
-        }
-        return notification.content || `A ${userName} le gustas`;
-      case "view":
-        return `${userName} vio tu perfil`;
+        return metadata.superlike
+          ? t("notifications.like.superlike", { name })
+          : t("notifications.like.single", { name });
       case "match":
-        return (
-          notification.content || `¡Tienes un nuevo match con ${userName}!`
-        );
-      case "reward":
-        return "¡Ganaste una recompensa!";
+        return t("notifications.match.single", { name });
       case "message":
-        return `Mensaje de ${userName}`;
+        return metadata.preview || t("notifications.message.single", { name });
       default:
-        return notification.content || "Notificación del sistema";
+        return notification.content || t("notifications.system.fallback");
     }
-  };
-
-  const getSubtitle = () => {
-    if (isGroupLike) {
-      const names = (notification.actors || [])
-        .map((actor: any) => actor.name)
-        .filter(Boolean)
-        .slice(0, 3);
-      if (names.length > 0) {
-        return `Incluye a ${names.join(", ")}${actorCount > names.length ? ` y ${actorCount - names.length} más` : ""}`;
-      }
-      return "Toca para ver quiénes dieron like";
-    }
-    if (notification.type === "like") {
-      return metadata.shown_media_id
-        ? `Le gustó tu ${mediaLabel}`
-        : "Le gustas";
-    }
-    if (notification.type === "message") {
-      return notification.content;
-    }
-    return null;
   };
 
   const handleClick = () => {
     if (!notification.is_read) {
-      onRead(notification.id);
+      void onRead(notification.id);
     }
+    onNavigate?.();
 
-    if (isGroupLike || notification.target_type === "likes") {
-      router.push("/likes");
-      return;
-    }
-    if (notification.target_type === "chat") {
-      router.push("/chat");
-      return;
-    }
-    if (metadata.target_url) {
-      router.push(metadata.target_url);
-      return;
-    }
-    if (notification.target_type === "profile") {
-      const nickname = notification.actors?.[0]?.nickname;
-      if (nickname) router.push(`/profile/${nickname}`);
-      return;
-    }
-    if (notification.target_type === "url" && notification.target_id) {
-      router.push(notification.target_id);
+    switch (notification.type) {
+      case "like":
+        router.push("/likes");
+        return;
+      case "match": {
+        if (notification.target_type === "chat" && notification.target_id) {
+          router.push(`/chat?conversation=${notification.target_id}`);
+          return;
+        }
+        if (notification.target_type === "profile") {
+          const nickname =
+            notification.user?.nickname ?? notification.actors?.[0]?.nickname;
+          if (nickname) {
+            router.push(`/profile/${nickname}`);
+            return;
+          }
+        }
+        router.push("/likes");
+        return;
+      }
+      case "message":
+        if (notification.target_id) {
+          router.push(`/chat?conversation=${notification.target_id}`);
+        }
+        return;
+      default: {
+        const url = notification.target_id || metadata.target_url;
+        if (!url) return;
+        if (url.startsWith("/")) {
+          router.push(url);
+        } else {
+          window.location.assign(url);
+        }
+      }
     }
   };
-
-  const subtitle = getSubtitle();
 
   return (
     <ListItem
       alignItems="flex-start"
+      data-testid={`notification-item-${notification.id}`}
       sx={{
         bgcolor: notification.is_read ? "transparent" : "action.hover",
         borderBottom: "1px solid",
@@ -165,26 +154,28 @@ export default function NotificationItem({
               sx={{
                 width: 56,
                 height: 56,
-                borderRadius: 2,
+                borderRadius: "8px",
                 objectFit: "cover",
                 display: "block",
               }}
             />
           ) : (
             <Avatar
-              alt={notification.user?.name}
+              alt={name}
               src={resolveUrl(notification.user?.photo)}
               sx={{ width: 56, height: 56 }}
-            />
+            >
+              {initial}
+            </Avatar>
           )}
           {mediaThumb && notification.user?.photo && (
             <Avatar
-              alt={notification.user?.name}
+              alt={name}
               src={resolveUrl(notification.user.photo)}
               sx={{
                 position: "absolute",
-                left: -4,
-                bottom: -4,
+                left: "-4px",
+                bottom: "-4px",
                 width: 24,
                 height: 24,
                 border: "2px solid",
@@ -195,8 +186,8 @@ export default function NotificationItem({
           <Box
             sx={{
               position: "absolute",
-              bottom: -2,
-              right: -2,
+              bottom: "-2px",
+              right: "-2px",
               bgcolor: "background.paper",
               borderRadius: "50%",
               p: 0.5,
@@ -223,33 +214,19 @@ export default function NotificationItem({
           </Typography>
         }
         secondary={
-          <React.Fragment>
-            {subtitle && (
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: "text.primary",
-                  display: "inline",
-                }}
-              >
-                {subtitle}
-              </Typography>
-            )}
-            <Typography
-              variant="caption"
-              sx={{
-                display: "block",
-                color: "text.secondary",
-                mt: 0.5,
-              }}
-            >
-              {formatDistanceToNow(new Date(notification.created_at), {
-                addSuffix: true,
-                locale: es,
-              })}
-            </Typography>
-          </React.Fragment>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              color: "text.secondary",
+              mt: 0.5,
+            }}
+          >
+            {formatDistanceToNow(new Date(notification.created_at), {
+              addSuffix: true,
+              locale: dateFnsLocale(i18n.language),
+            })}
+          </Typography>
         }
       />
       {!notification.is_read && (

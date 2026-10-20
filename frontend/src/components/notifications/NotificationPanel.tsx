@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next/pages";
 import {
   Box,
   Typography,
@@ -8,92 +10,83 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  CircularProgress,
   IconButton,
   Button,
-  Divider,
-  Badge,
+  Skeleton,
+  Fade,
 } from "@mui/material";
 import {
   Assignment as SurveyIcon,
   Close as CloseIcon,
   DoneAll as MarkReadIcon,
   NotificationsOff as EmptyIcon,
+  Inbox as InboxIcon,
+  Favorite as LikeIcon,
+  ChatBubble as ChatIcon,
+  Campaign as SystemIcon,
 } from "@mui/icons-material";
-import apiClient from "../../services/api";
 import NotificationItem from "./NotificationItem";
+import { useNotifications } from "../../hooks/useNotifications";
+import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 
 interface NotificationPanelProps {
   onClose: () => void;
-  onUpdateUnreadCount: (count: number) => void;
-  surveyPendingCount: number;
-  onOpenSurvey: () => void;
 }
 
-export default function NotificationPanel({
-  onClose,
-  onUpdateUnreadCount,
-  surveyPendingCount,
-  onOpenSurvey,
-}: NotificationPanelProps) {
+const FILTERS = ["all", "social", "messages", "system"] as const;
+const TABS = [
+  { key: "all", icon: InboxIcon },
+  { key: "likes", icon: LikeIcon },
+  { key: "chats", icon: ChatIcon },
+  { key: "system", icon: SystemIcon },
+] as const;
+
+export default function NotificationPanel({ onClose }: NotificationPanelProps) {
+  const router = useRouter();
+  const { t } = useTranslation("common");
   const [tab, setTab] = useState(0);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    items,
+    counts,
+    loading,
+    error,
+    refresh,
+    markRead,
+    markBucket,
+    markAllRead,
+  } = useNotifications(FILTERS[tab], { unread: tab === 2 });
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const seenRef = useRef<Set<string>>(new Set());
 
-  const fetchNotifications = async () => {
-    setLoading(true);
-    try {
-      // Map tabs to types: 0=All, 1=Matches, 2=Requests, 3=System
-      let type = null;
-      if (tab === 1) type = "match";
-      if (tab === 2) type = "request"; // or 'friend_request'
-      if (tab === 3) type = "system";
-
-      const params = type ? { type } : {};
-      const response = await apiClient.get("/notifications", { params });
-      setNotifications(response.data);
-
-      // Update unread count (global)
-      const unreadResponse = await apiClient.get("/notifications/unread-count");
-      onUpdateUnreadCount(unreadResponse.data.count);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const tabCounts = [counts.all, counts.social, counts.messages, counts.system];
+  const showSurvey = counts.survey_pending > 0 && (tab === 0 || tab === 3);
+  const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
 
   useEffect(() => {
-    fetchNotifications();
-  }, [tab]);
+    if (loading || tab !== 1) return;
+    if (counts.social <= 0 || seenRef.current.has("social")) return;
+    seenRef.current.add("social");
+    void markBucket("social");
+  }, [tab, loading, counts.social, markBucket]);
 
-  const handleMarkAsRead = async (id: string) => {
-    try {
-      await apiClient.post(`/notifications/${id}/read`);
-      // Optimistic update
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-      );
-      // Update count
-      const unreadResponse = await apiClient.get("/notifications/unread-count");
-      onUpdateUnreadCount(unreadResponse.data.count);
-    } catch (error) {
-      console.error("Error marking as read:", error);
-    }
+  useEffect(() => {
+    if (loading || tab !== 3) return;
+    if (systemUnread <= 0 || seenRef.current.has("system")) return;
+    seenRef.current.add("system");
+    void markBucket("system");
+  }, [tab, loading, systemUnread, markBucket]);
+
+  const handleSurvey = () => {
+    onClose();
+    void router.push("/home?encuesta=1");
   };
 
-  const handleMarkAllRead = async () => {
-    try {
-      await apiClient.post("/notifications/read-all");
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-      onUpdateUnreadCount(0);
-    } catch (error) {
-      console.error("Error marking all as read:", error);
-    }
-  };
-
-  const showSurvey = surveyPendingCount > 0 && (tab === 0 || tab === 3);
-  const hasContent = showSurvey || notifications.length > 0;
+  const surveyCopy =
+    counts.survey_pending === 1
+      ? t("notifications.survey.pending_one")
+      : t("notifications.survey.pending_other", {
+          count: counts.survey_pending,
+        });
 
   return (
     <Box
@@ -104,7 +97,6 @@ export default function NotificationPanel({
         flexDirection: "column",
       }}
     >
-      {/* Header */}
       <Box
         sx={{
           p: 2,
@@ -115,103 +107,164 @@ export default function NotificationPanel({
           borderColor: "divider",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 700,
-          }}
-        >
-          Notificaciones
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          {t("notifications.title")}
         </Typography>
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {tab === 3 && (
+            <IconButton
+              data-testid="notification-mark-all"
+              onClick={() => {
+                void markAllRead();
+              }}
+              title={t("notifications.markAllRead")}
+              aria-label={t("notifications.markAllRead")}
+              size="small"
+              sx={{ mr: 1 }}
+            >
+              <MarkReadIcon />
+            </IconButton>
+          )}
           <IconButton
-            onClick={handleMarkAllRead}
-            title="Marcar todo como leído"
+            data-testid="notification-close"
+            onClick={onClose}
+            aria-label={t("notifications.close")}
             size="small"
-            sx={{ mr: 1 }}
           >
-            <MarkReadIcon />
-          </IconButton>
-          <IconButton onClick={onClose} size="small">
             <CloseIcon />
           </IconButton>
         </Box>
       </Box>
 
-      {/* Tabs */}
       <Tabs
         value={tab}
-        onChange={(_, v) => setTab(v)}
+        onChange={(_, value) => setTab(value)}
         variant="fullWidth"
         sx={{ borderBottom: "1px solid", borderColor: "divider" }}
       >
-        <Tab label="Todo" />
-        <Tab label="Matches" />
-        <Tab label="Solicitudes" />
-        <Tab label="Sistema" />
+        {TABS.map(({ key, icon: Icon }, index) => (
+          <Tab
+            key={key}
+            data-testid={`notification-tab-${key}`}
+            icon={<Icon fontSize="small" />}
+            iconPosition="start"
+            sx={{
+              minWidth: 0,
+              px: 0.5,
+              fontSize: "0.75rem",
+              "& .MuiTab-iconWrapper": { mr: 0.5 },
+            }}
+            label={
+              <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <Box component="span">{t(`notifications.tabs.${key}`)}</Box>
+                {tabCounts[index] > 0 && (
+                  <Box
+                    component="span"
+                    sx={{
+                      px: "6px",
+                      borderRadius: "10px",
+                      bgcolor: "action.selected",
+                      fontSize: "0.6875rem",
+                      fontWeight: 600,
+                      lineHeight: "16px",
+                    }}
+                  >
+                    {tabCounts[index]}
+                  </Box>
+                )}
+              </Box>
+            }
+          />
+        ))}
       </Tabs>
 
-      {/* Content */}
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-            <CircularProgress size={30} />
-          </Box>
-        ) : hasContent ? (
-          <List disablePadding>
-            {showSurvey && (
-              <ListItemButton
-                data-testid="notification-survey-item"
-                onClick={onOpenSurvey}
-                sx={{
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                  bgcolor: "action.hover",
-                }}
+          <Box>
+            {[0, 1, 2].map((row) => (
+              <Box
+                key={row}
+                data-testid="notification-skeleton"
+                sx={{ display: "flex", gap: 1.5, p: 2 }}
               >
-                <ListItemIcon>
-                  <SurveyIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Encuesta pendiente"
-                  secondary={
-                    surveyPendingCount === 1
-                      ? "Te falta 1 pregunta para completar tus preferencias."
-                      : `Te faltan ${surveyPendingCount} preguntas para completar tus preferencias.`
-                  }
-                />
-              </ListItemButton>
-            )}
-            {notifications.map((notif) => (
-              <NotificationItem
-                key={notif.id}
-                notification={notif}
-                onRead={handleMarkAsRead}
-              />
+                <Skeleton variant="circular" width={56} height={56} />
+                <Box sx={{ flex: 1 }}>
+                  <Skeleton width="60%" />
+                  <Skeleton width="90%" />
+                  <Skeleton width="30%" />
+                </Box>
+              </Box>
             ))}
-          </List>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              p: 4,
-              opacity: 0.6,
-            }}
-          >
-            <EmptyIcon sx={{ fontSize: 60, mb: 2, color: "text.secondary" }} />
-            <Typography
-              variant="body1"
-              sx={{
-                color: "text.secondary",
+          </Box>
+        ) : error ? (
+          <Box sx={{ p: 4, textAlign: "center" }}>
+            <Typography variant="body2" color="text.secondary">
+              {t("notifications.error")}
+            </Typography>
+            <Button
+              sx={{ mt: 2 }}
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                void refresh();
               }}
             >
-              No tienes notificaciones
-            </Typography>
+              {t("notifications.retry")}
+            </Button>
           </Box>
+        ) : (
+          <Fade in appear key={tab} timeout={prefersReducedMotion ? 0 : 200}>
+            <Box>
+              <List disablePadding>
+                {showSurvey && (
+                  <ListItemButton
+                    data-testid="notification-survey-item"
+                    onClick={handleSurvey}
+                    sx={{
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
+                      bgcolor: "action.hover",
+                    }}
+                  >
+                    <ListItemIcon>
+                      <SurveyIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={t("notifications.survey.title")}
+                      secondary={surveyCopy}
+                    />
+                  </ListItemButton>
+                )}
+                {items.map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onRead={markRead}
+                    onNavigate={onClose}
+                  />
+                ))}
+              </List>
+              {!showSurvey && items.length === 0 && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    p: 4,
+                    opacity: 0.6,
+                  }}
+                >
+                  <EmptyIcon
+                    sx={{ fontSize: 60, mb: 2, color: "text.secondary" }}
+                  />
+                  <Typography variant="body1" color="text.secondary">
+                    {t(`notifications.empty.${TABS[tab].key}`)}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Fade>
         )}
       </Box>
     </Box>

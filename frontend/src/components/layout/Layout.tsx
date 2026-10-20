@@ -907,15 +907,7 @@ export default function Layout({ children }: LayoutProps) {
           }}
         >
           <Suspense fallback={null}>
-            <NotificationPanel
-              onClose={() => setNotificationOpen(false)}
-              onUpdateUnreadCount={setUnreadCount}
-              surveyPendingCount={surveyPendingCount}
-              onOpenSurvey={() => {
-                setNotificationOpen(false);
-                router.push("/home?encuesta=1");
-              }}
-            />
+            <NotificationPanel onClose={() => setNotificationOpen(false)} />
           </Suspense>
         </Drawer>
 
