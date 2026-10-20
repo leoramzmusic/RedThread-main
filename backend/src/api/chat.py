@@ -148,6 +148,22 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     conversation.increment_unread(receiver_id)
                     await conversation.save()
 
+                    # Notificacion viva (best-effort)
+                    try:
+                        from src.services.notification_service import (
+                            notify_new_message,
+                        )
+
+                        await notify_new_message(
+                            sender_id=user_id,
+                            recipient_id=receiver_id,
+                            conversation=conversation,
+                            preview=content,
+                            can_reply=True,
+                        )
+                    except Exception as notif_err:
+                        print(f"Notification emit error (ws chat): {notif_err}")
+
                     await redis_service.invalidar_usuario(["stats", "recent"], user_id)
                     await redis_service.invalidar_usuario(
                         ["stats", "recent"], receiver_id
@@ -224,6 +240,28 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     created_at=datetime.utcnow(),
                 )
                 await message.insert()
+
+                # Notificacion viva (best-effort). Legacy match sin conversation:
+                # se omite para no inventar ids inexistentes.
+                try:
+                    from src.services.notification_service import (
+                        find_conversation_between,
+                        notify_new_message,
+                    )
+
+                    conversation = await find_conversation_between(
+                        user_id, receiver_id
+                    )
+                    if conversation is not None:
+                        await notify_new_message(
+                            sender_id=user_id,
+                            recipient_id=receiver_id,
+                            conversation=conversation,
+                            preview=content,
+                            can_reply=match.status != MatchStatus.BLOCKED,
+                        )
+                except Exception as notif_err:
+                    print(f"Notification emit error (ws chat legacy): {notif_err}")
 
                 # Invalidate dashboard cache for both users (new unread message)
                 await redis_service.invalidar_usuario(["stats", "recent"], user_id)
@@ -615,6 +653,20 @@ async def send_message(
         conversation.last_message_sender_id = str(current_user.id)
         conversation.increment_unread(receiver_id)
         await conversation.save()
+
+        # Notificacion viva (best-effort)
+        try:
+            from src.services.notification_service import notify_new_message
+
+            await notify_new_message(
+                sender_id=str(current_user.id),
+                recipient_id=receiver_id,
+                conversation=conversation,
+                preview=request.content,
+                can_reply=True,
+            )
+        except Exception as notif_err:
+            print(f"Notification emit error (chat send): {notif_err}")
 
         # Invalidate dashboard cache for both users (new message)
         await redis_service.invalidar_usuario(["stats", "recent"], str(current_user.id))
