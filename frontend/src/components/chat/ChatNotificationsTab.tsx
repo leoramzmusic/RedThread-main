@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { List, Box, Typography } from "@mui/material";
+import { useTranslation } from "next-i18next/pages";
 import { useNotifications } from "../../hooks/useNotifications";
 import NotificationItem from "../notifications/NotificationItem";
 
@@ -10,6 +11,7 @@ interface ChatNotificationsTabProps {
 export default function ChatNotificationsTab({
   onUnreadCountChange,
 }: ChatNotificationsTabProps) {
+  const { t } = useTranslation("common");
   const { items, loading, unreadCount, markRead } = useNotifications("all");
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function ChatNotificationsTab({
     return (
       <Box sx={{ p: 4, textAlign: "center" }}>
         <Typography sx={{ color: "text.secondary" }}>
-          No tienes notificaciones nuevas
+          {t("notifications.empty.all")}
         </Typography>
       </Box>
     );

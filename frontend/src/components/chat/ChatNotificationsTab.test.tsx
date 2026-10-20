@@ -62,3 +62,18 @@ it("marks the notification read when clicked", async () => {
     expect(mockPost).toHaveBeenCalledWith("/notifications/n1/read"),
   );
 });
+
+it("uses the translated empty state when there are no notifications", async () => {
+  mockGet.mockImplementation((url: string) => {
+    if (url === "/notifications/unread-count") {
+      return Promise.resolve({ data: { count: 0 } });
+    }
+    return Promise.resolve({ data: { items: [], next_cursor: null } });
+  });
+
+  render(<ChatNotificationsTab />);
+
+  expect(
+    await screen.findByText("notifications.empty.all"),
+  ).toBeInTheDocument();
+});
