@@ -125,6 +125,20 @@ async def test_read_bucket_rejects_messages():
 
 
 @pytest.mark.asyncio
+async def test_read_all_uses_dict_query_and_emits():
+    chain = SimpleNamespace(update=AsyncMock(return_value=None))
+    with patch.object(
+        api.Notification, "find", return_value=chain
+    ) as find, patch.object(
+        api.manager, "send_personal_message", new=AsyncMock()
+    ) as push:
+        out = await api.mark_all_as_read(SimpleNamespace(id="u1"))
+    assert out == {"message": "All marked as read"}
+    find.assert_called_once_with({"user_id": "u1", "is_read": False})
+    push.assert_awaited_once_with("u1", {"action": "notifications_read_all"})
+
+
+@pytest.mark.asyncio
 async def test_mark_message_notification_read_updates_and_syncs():
     chain = SimpleNamespace(update=AsyncMock(return_value=None))
     with patch.object(ns.Notification, "find", return_value=chain), patch.object(

@@ -259,9 +259,9 @@ async def read_bucket(
 async def mark_all_as_read(current_user: User = Depends(get_current_user)):
     """Mark all notifications as read."""
     uid = str(current_user.id)
-    await Notification.find(
-        Notification.user_id == uid, Notification.is_read == False
-    ).update({"$set": {"is_read": True}})
+    await Notification.find({"user_id": uid, "is_read": False}).update(
+        {"$set": {"is_read": True}}
+    )
     await manager.send_personal_message(uid, {"action": "notifications_read_all"})
     return {"message": "All marked as read"}
 
