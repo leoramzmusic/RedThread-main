@@ -1110,23 +1110,26 @@
     "error": "Hindi namin ma-load ang iyong mga abiso.",
     "tabs": {
       "all": "Lahat",
-      "likes": "Mga Like",
-      "chats": "Mga Chat",
+      "likes": "Mga Gusto",
+      "chats": "Mga Usapan",
       "system": "Sistema"
     },
     "empty": {
       "all": "Wala ka nang hindi pa nababasa.",
-      "likes": "Wala pang like.",
+      "likes": "Wala pang gusto.",
       "chats": "Walang bagong mensahe.",
-      "system": "Walang mga anunsyo."
+      "system": "Walang mga anunsyo.",
+      "archived": "Walang nakatabi."
     },
     "like": {
-      "single": "Gusto ka ni {{name}}",
+      "single": "Nagustuhan ni {{name}} ang larawan mo",
       "superlike": "Nagpadala si {{name}} ng Super Like sa iyo",
-      "group": "{{names}} at {{count}} pang iba"
+      "group_one": "Nagustuhan nina {{names}} at {{count}} pang iba ang larawan mo",
+      "group_other": "Nagustuhan nina {{names}} at {{count}} pang iba ang larawan mo",
+      "groupAll": "Nagustuhan nina {{names}} ang larawan mo"
     },
     "match": {
-      "single": "May match ka kay {{name}}!"
+      "single": "May tugma ka kay {{name}}!"
     },
     "message": {
       "single": "Bagong mensahe mula kay {{name}}"
@@ -1139,9 +1142,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Balita"
+    },
     "actor": {
       "fallback": "Isang tao",
       "more": "at {{count}} pang iba"
+    },
+    "actions": {
+      "archive": "Itabi",
+      "unarchive": "Ibalik",
+      "delete": "Tanggalin",
+      "snooze": "Ipagpaliban",
+      "undo": "Bawiin",
+      "markRead": "Tandaan bilang nabasa"
+    },
+    "snooze": {
+      "title": "Ipagpaliban ang mga abiso",
+      "15m": "15 minuto",
+      "1h": "1 oras",
+      "2h": "2 oras",
+      "8h": "8 oras",
+      "1d": "1 araw",
+      "always": "Palagi (patahimikin ang ganitong uri)"
+    },
+    "archived": {
+      "title": "Mga nakatabi",
+      "open": "Tingnan ang mga nakatabi"
+    },
+    "undo": {
+      "archived": "Naitabi ang abiso",
+      "deleted": "Naalis ang abiso",
+      "snoozed": "Naipagpaliban ang abiso"
+    },
+    "quickReply": {
+      "placeholder": "Sumagot…",
+      "send": "Ipadala"
+    },
+    "expand": {
+      "more": "Ipakita ang higit pa",
+      "less": "Ipakita ang mas kaunti"
     }
   }
 }

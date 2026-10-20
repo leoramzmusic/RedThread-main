@@ -1119,23 +1119,26 @@
     "error": "Nous n'avons pas pu charger vos notifications.",
     "tabs": {
       "all": "Tout",
-      "likes": "Likes",
-      "chats": "Chats",
+      "likes": "J'aime",
+      "chats": "Discussions",
       "system": "Système"
     },
     "empty": {
       "all": "Vous êtes à jour.",
-      "likes": "Aucun like pour l'instant.",
+      "likes": "Personne n'a encore aimé.",
       "chats": "Aucun nouveau message.",
-      "system": "Aucune annonce."
+      "system": "Aucune annonce.",
+      "archived": "Rien d'archivé."
     },
     "like": {
-      "single": "{{name}} vous aime",
+      "single": "{{name}} a aimé votre photo",
       "superlike": "{{name}} vous a envoyé un Super Like",
-      "group": "{{names}} et {{count}} de plus"
+      "group_one": "{{names}} et {{count}} autre ont aimé votre photo",
+      "group_other": "{{names}} et {{count}} autres ont aimé votre photo",
+      "groupAll": "{{names}} ont aimé votre photo"
     },
     "match": {
-      "single": "C'est un match avec {{name}} !"
+      "single": "C'est une correspondance avec {{name}} !"
     },
     "message": {
       "single": "Nouveau message de {{name}}"
@@ -1148,9 +1151,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Nouveauté"
+    },
     "actor": {
       "fallback": "Quelqu'un",
       "more": "et {{count}} de plus"
+    },
+    "actions": {
+      "archive": "Archiver",
+      "unarchive": "Restaurer",
+      "delete": "Supprimer",
+      "snooze": "Reporter",
+      "undo": "Annuler",
+      "markRead": "Marquer comme lu"
+    },
+    "snooze": {
+      "title": "Reporter les notifications",
+      "15m": "15 minutes",
+      "1h": "1 heure",
+      "2h": "2 heures",
+      "8h": "8 heures",
+      "1d": "1 jour",
+      "always": "Toujours (masquer ce type)"
+    },
+    "archived": {
+      "title": "Archivées",
+      "open": "Voir les archivées"
+    },
+    "undo": {
+      "archived": "Notification archivée",
+      "deleted": "Notification supprimée",
+      "snoozed": "Notification reportée"
+    },
+    "quickReply": {
+      "placeholder": "Répondre…",
+      "send": "Envoyer"
+    },
+    "expand": {
+      "more": "Afficher plus",
+      "less": "Afficher moins"
     }
   }
 }

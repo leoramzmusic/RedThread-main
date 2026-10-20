@@ -1159,15 +1159,18 @@
       "all": "Du har sett allt.",
       "likes": "Inga gilla-markeringar än.",
       "chats": "Inga nya meddelanden.",
-      "system": "Inga tillkännagivanden."
+      "system": "Inga tillkännagivanden.",
+      "archived": "Inget arkiverat."
     },
     "like": {
-      "single": "{{name}} gillar dig",
+      "single": "{{name}} gillade ditt foto",
       "superlike": "{{name}} skickade en Super Like till dig",
-      "group": "{{names}} och {{count}} till"
+      "group_one": "{{names}} och {{count}} till gillade ditt foto",
+      "group_other": "{{names}} och {{count}} till gillade ditt foto",
+      "groupAll": "{{names}} gillade ditt foto"
     },
     "match": {
-      "single": "Det är en match med {{name}}!"
+      "single": "Det är en matchning med {{name}}!"
     },
     "message": {
       "single": "Nytt meddelande från {{name}}"
@@ -1180,9 +1183,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Nyhet"
+    },
     "actor": {
       "fallback": "Någon",
       "more": "och {{count}} till"
+    },
+    "actions": {
+      "archive": "Arkivera",
+      "unarchive": "Återställ",
+      "delete": "Radera",
+      "snooze": "Skjut upp",
+      "undo": "Ångra",
+      "markRead": "Markera som läst"
+    },
+    "snooze": {
+      "title": "Skjut upp aviseringar",
+      "15m": "15 minuter",
+      "1h": "1 timme",
+      "2h": "2 timmar",
+      "8h": "8 timmar",
+      "1d": "1 dag",
+      "always": "Alltid (tysta den här typen)"
+    },
+    "archived": {
+      "title": "Arkiverade",
+      "open": "Visa arkiverade"
+    },
+    "undo": {
+      "archived": "Avisering arkiverad",
+      "deleted": "Avisering raderad",
+      "snoozed": "Avisering uppskjuten"
+    },
+    "quickReply": {
+      "placeholder": "Svara…",
+      "send": "Skicka"
+    },
+    "expand": {
+      "more": "Visa mer",
+      "less": "Visa mindre"
     }
   }
 }

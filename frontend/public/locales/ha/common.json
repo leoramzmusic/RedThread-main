@@ -1110,20 +1110,23 @@
     "error": "Ba mu iya loda sanarwarka ba.",
     "tabs": {
       "all": "Duka",
-      "likes": "Likes",
+      "likes": "So",
       "chats": "Hira",
       "system": "Tsari"
     },
     "empty": {
       "all": "Kun gama duka.",
-      "likes": "Babu likes har yanzu.",
+      "likes": "Babu wanda ya so ka har yanzu.",
       "chats": "Babu sabon saƙo.",
-      "system": "Babu sanarwa."
+      "system": "Babu sanarwa.",
+      "archived": "Babu abin da aka ajiye."
     },
     "like": {
-      "single": "{{name}} yana son ku",
+      "single": "{{name}} ya son hotonka",
       "superlike": "{{name}} ya aiko muku da Super Like",
-      "group": "{{names}} da wasu {{count}}"
+      "group_one": "{{names}} da wasu {{count}} sun son hotonka",
+      "group_other": "{{names}} da wasu {{count}} sun son hotonka",
+      "groupAll": "{{names}} sun son hotonka"
     },
     "match": {
       "single": "An yi daidaito da {{name}}!"
@@ -1139,9 +1142,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Sabuntawa"
+    },
     "actor": {
       "fallback": "Wani",
       "more": "da wasu {{count}}"
+    },
+    "actions": {
+      "archive": "Ajiye",
+      "unarchive": "Mayar da shi",
+      "delete": "Share",
+      "snooze": "Dage",
+      "undo": "Soke",
+      "markRead": "Yi alama an karanta"
+    },
+    "snooze": {
+      "title": "Dage sanarwa",
+      "15m": "Minti 15",
+      "1h": "Sa'a 1",
+      "2h": "Sa'o'i 2",
+      "8h": "Sa'o'i 8",
+      "1d": "Rana 1",
+      "always": "Koyaushe (kashe wannan nau'in)"
+    },
+    "archived": {
+      "title": "Abubuwan da aka ajiye",
+      "open": "Duba abubuwan da aka ajiye"
+    },
+    "undo": {
+      "archived": "An ajiye sanarwa",
+      "deleted": "An share sanarwa",
+      "snoozed": "An dage sanarwa"
+    },
+    "quickReply": {
+      "placeholder": "Amsa…",
+      "send": "Aika"
+    },
+    "expand": {
+      "more": "Nuna ƙari",
+      "less": "Nuna kaɗan"
     }
   }
 }

@@ -1117,12 +1117,15 @@
       "all": "Anda sudah membaca semua.",
       "likes": "Belum ada suka.",
       "chats": "Tiada mesej baharu.",
-      "system": "Tiada pengumuman."
+      "system": "Tiada pengumuman.",
+      "archived": "Tiada apa-apa diarkibkan."
     },
     "like": {
-      "single": "{{name}} menyukai anda",
+      "single": "{{name}} menyukai foto anda",
       "superlike": "{{name}} menghantar Super Like kepada anda",
-      "group": "{{names}} dan {{count}} lagi"
+      "group_one": "{{names}} dan {{count}} lagi menyukai foto anda",
+      "group_other": "{{names}} dan {{count}} lagi menyukai foto anda",
+      "groupAll": "{{names}} menyukai foto anda"
     },
     "match": {
       "single": "Ia satu padanan dengan {{name}}!"
@@ -1138,9 +1141,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Kemas kini"
+    },
     "actor": {
       "fallback": "Seseorang",
       "more": "dan {{count}} lagi"
+    },
+    "actions": {
+      "archive": "Arkib",
+      "unarchive": "Pulihkan",
+      "delete": "Padam",
+      "snooze": "Tunda",
+      "undo": "Buat asal",
+      "markRead": "Tandakan sebagai dibaca"
+    },
+    "snooze": {
+      "title": "Tunda pemberitahuan",
+      "15m": "15 minit",
+      "1h": "1 jam",
+      "2h": "2 jam",
+      "8h": "8 jam",
+      "1d": "1 hari",
+      "always": "Sentiasa (senyapkan jenis ini)"
+    },
+    "archived": {
+      "title": "Diarkibkan",
+      "open": "Lihat diarkibkan"
+    },
+    "undo": {
+      "archived": "Pemberitahuan diarkibkan",
+      "deleted": "Pemberitahuan dipadamkan",
+      "snoozed": "Pemberitahuan ditunda"
+    },
+    "quickReply": {
+      "placeholder": "Balas…",
+      "send": "Hantar"
+    },
+    "expand": {
+      "more": "Tunjuk lebih banyak",
+      "less": "Tunjuk lebih sedikit"
     }
   }
 }

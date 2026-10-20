@@ -1118,12 +1118,15 @@
       "all": "ሁሉንም አይተዋል።",
       "likes": "እስካሁን ውዴታ የለም።",
       "chats": "አዲስ መልእክት የለም።",
-      "system": "ማስታወቂያ የለም።"
+      "system": "ማስታወቂያ የለም።",
+      "archived": "ምንም የተመዘገበ የለም።"
     },
     "like": {
-      "single": "{{name}} ይወድድዎታል",
+      "single": "{{name}} ፎቶዎን ወድዷታል",
       "superlike": "{{name}} Super Like ልኳልዎት",
-      "group": "{{names}} እና {{count}} ሌሎች"
+      "group_one": "{{names}} እና {{count}} ተጨማሪ ሰዎች ፎቶዎን ወድደዋል",
+      "group_other": "{{names}} እና {{count}} ተጨማሪ ሰዎች ፎቶዎን ወድደዋል",
+      "groupAll": "{{names}} ፎቶዎን ወድደዋል"
     },
     "match": {
       "single": "ከ{{name}} ጋር ተጣምረዋል!"
@@ -1139,9 +1142,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "ዝመና"
+    },
     "actor": {
       "fallback": "አንድ ሰው",
       "more": "እና {{count}} ሌሎች"
+    },
+    "actions": {
+      "archive": "ማህደር",
+      "unarchive": "ወደነበረበት መልስ",
+      "delete": "ሰርዝ",
+      "snooze": "አቁም",
+      "undo": "ቀልብስ",
+      "markRead": "እንደተነበበ ምልክት አድርግ"
+    },
+    "snooze": {
+      "title": "ማሳወቂያዎችን አቁም",
+      "15m": "15 ደቂቃ",
+      "1h": "1 ሰዓት",
+      "2h": "2 ሰዓት",
+      "8h": "8 ሰዓት",
+      "1d": "1 ቀን",
+      "always": "ሁልጊዜ (ይህን አይነት ድምጸ-ከል አድርግ)"
+    },
+    "archived": {
+      "title": "የተመዘገቡ",
+      "open": "የተመዘገቡትን ተመልከት"
+    },
+    "undo": {
+      "archived": "ማሳወቂያ ተመዝግቧል",
+      "deleted": "ማሳወቂያ ተሰርዟል",
+      "snoozed": "ማሳወቂያ ቆሟል"
+    },
+    "quickReply": {
+      "placeholder": "መልስ…",
+      "send": "ላክ"
+    },
+    "expand": {
+      "more": "ተጨማሪ አሳይ",
+      "less": "ያነሰ አሳይ"
     }
   }
 }

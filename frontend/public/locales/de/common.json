@@ -1151,23 +1151,26 @@
     "error": "Deine Benachrichtigungen konnten nicht geladen werden.",
     "tabs": {
       "all": "Alle",
-      "likes": "Likes",
-      "chats": "Chats",
+      "likes": "Gefällt mir",
+      "chats": "Unterhaltungen",
       "system": "System"
     },
     "empty": {
       "all": "Du bist auf dem neuesten Stand.",
-      "likes": "Noch keine Likes.",
+      "likes": "Noch keine Gefällt-mir-Angaben.",
       "chats": "Keine neuen Nachrichten.",
-      "system": "Keine Ankündigungen."
+      "system": "Keine Ankündigungen.",
+      "archived": "Nichts archiviert."
     },
     "like": {
-      "single": "{{name}} mag dich",
+      "single": "{{name}} mag dein Foto",
       "superlike": "{{name}} hat dir einen Super Like geschickt",
-      "group": "{{names}} und {{count}} weitere"
+      "group_one": "{{names}} und {{count}} weitere Person mögen dein Foto",
+      "group_other": "{{names}} und {{count}} weitere Personen mögen dein Foto",
+      "groupAll": "{{names}} mögen dein Foto"
     },
     "match": {
-      "single": "Es ist ein Match mit {{name}}!"
+      "single": "Ihr passt zusammen, {{name}} und du!"
     },
     "message": {
       "single": "Neue Nachricht von {{name}}"
@@ -1180,9 +1183,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Neuigkeit"
+    },
     "actor": {
       "fallback": "Jemand",
       "more": "und {{count}} weitere"
+    },
+    "actions": {
+      "archive": "Archivieren",
+      "unarchive": "Wiederherstellen",
+      "delete": "Löschen",
+      "snooze": "Zurückstellen",
+      "undo": "Rückgängig",
+      "markRead": "Als gelesen markieren"
+    },
+    "snooze": {
+      "title": "Benachrichtigungen zurückstellen",
+      "15m": "15 Minuten",
+      "1h": "1 Stunde",
+      "2h": "2 Stunden",
+      "8h": "8 Stunden",
+      "1d": "1 Tag",
+      "always": "Immer (diesen Typ stummschalten)"
+    },
+    "archived": {
+      "title": "Archiviert",
+      "open": "Archivierte anzeigen"
+    },
+    "undo": {
+      "archived": "Benachrichtigung archiviert",
+      "deleted": "Benachrichtigung gelöscht",
+      "snoozed": "Benachrichtigung zurückgestellt"
+    },
+    "quickReply": {
+      "placeholder": "Antworten…",
+      "send": "Senden"
+    },
+    "expand": {
+      "more": "Mehr anzeigen",
+      "less": "Weniger anzeigen"
     }
   }
 }

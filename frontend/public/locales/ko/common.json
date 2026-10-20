@@ -1157,15 +1157,18 @@
       "all": "모두 확인했습니다.",
       "likes": "아직 좋아요가 없습니다.",
       "chats": "새 메시지가 없습니다.",
-      "system": "새 공지가 없습니다."
+      "system": "새 공지가 없습니다.",
+      "archived": "보관된 알림이 없습니다."
     },
     "like": {
-      "single": "{{name}}님이 회원님을 좋아합니다",
+      "single": "{{name}}님이 회원님의 사진을 좋아합니다",
       "superlike": "{{name}}님이 회원님에게 Super Like를 보냈습니다",
-      "group": "{{names}} 외 {{count}}명"
+      "group_one": "{{names}}님 외 {{count}}명이 회원님의 사진을 좋아합니다",
+      "group_other": "{{names}}님 외 {{count}}명이 회원님의 사진을 좋아합니다",
+      "groupAll": "{{names}}님이 회원님의 사진을 좋아합니다"
     },
     "match": {
-      "single": "{{name}}님과 매칭되었습니다!"
+      "single": "{{name}}님과 서로 좋아요를 눌렀습니다!"
     },
     "message": {
       "single": "{{name}}님의 새 메시지"
@@ -1178,9 +1181,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "업데이트"
+    },
     "actor": {
       "fallback": "누군가",
       "more": "외 {{count}}명"
+    },
+    "actions": {
+      "archive": "보관",
+      "unarchive": "복원",
+      "delete": "삭제",
+      "snooze": "미루기",
+      "undo": "실행 취소",
+      "markRead": "읽음으로 표시"
+    },
+    "snooze": {
+      "title": "알림 미루기",
+      "15m": "15분",
+      "1h": "1시간",
+      "2h": "2시간",
+      "8h": "8시간",
+      "1d": "1일",
+      "always": "항상(이 유형 음소거)"
+    },
+    "archived": {
+      "title": "보관됨",
+      "open": "보관된 알림 보기"
+    },
+    "undo": {
+      "archived": "알림이 보관되었습니다",
+      "deleted": "알림이 삭제되었습니다",
+      "snoozed": "알림이 미뤄졌습니다"
+    },
+    "quickReply": {
+      "placeholder": "답장…",
+      "send": "보내기"
+    },
+    "expand": {
+      "more": "더 보기",
+      "less": "접기"
     }
   }
 }

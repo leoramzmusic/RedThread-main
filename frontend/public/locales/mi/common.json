@@ -1117,12 +1117,15 @@
       "all": "Kua kitea katoatia e koe.",
       "likes": "Kāore anō he manako.",
       "chats": "Kāore he karere hōu.",
-      "system": "Kāore he pānui."
+      "system": "Kāore he pānui.",
+      "archived": "Kāore he mea kua puritia."
     },
     "like": {
-      "single": "E manako ana a {{name}} ki a koe",
+      "single": "I manako a {{name}} ki tō whakaahua",
       "superlike": "Kua tukuna e {{name}} he Super Like ki a koe",
-      "group": "{{names}} me ētahi atu {{count}}"
+      "group_one": "I manako a {{names}} me ētahi atu {{count}} ki tō whakaahua",
+      "group_other": "I manako a {{names}} me ētahi atu {{count}} ki tō whakaahua",
+      "groupAll": "I manako a {{names}} ki tō whakaahua"
     },
     "match": {
       "single": "He hononga tēnei ki a {{name}}!"
@@ -1138,9 +1141,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Whakahōu"
+    },
     "actor": {
       "fallback": "Tētahi",
       "more": "me ētahi atu {{count}}"
+    },
+    "actions": {
+      "archive": "Purua",
+      "unarchive": "Whakahokia",
+      "delete": "Mukua",
+      "snooze": "Tārewa",
+      "undo": "Whakakore",
+      "markRead": "Tohua kua pānuitia"
+    },
+    "snooze": {
+      "title": "Tārewa ngā whakamōhiotanga",
+      "15m": "15 meneti",
+      "1h": "1 haora",
+      "2h": "2 haora",
+      "8h": "8 haora",
+      "1d": "1 rā",
+      "always": "I ngā wā katoa (mukua tēnei momo)"
+    },
+    "archived": {
+      "title": "Kua puritia",
+      "open": "Tirohia ngā mea kua puritia"
+    },
+    "undo": {
+      "archived": "Kua puritia te whakamōhiotanga",
+      "deleted": "Kua mukua te whakamōhiotanga",
+      "snoozed": "Kua tārewa te whakamōhiotanga"
+    },
+    "quickReply": {
+      "placeholder": "Whakautu…",
+      "send": "Tukua"
+    },
+    "expand": {
+      "more": "Whakaatu ētahi atu",
+      "less": "Whakaatu iti ake"
     }
   }
 }

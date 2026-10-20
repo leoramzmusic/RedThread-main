@@ -1412,12 +1412,15 @@
       "all": "You're all caught up.",
       "likes": "No likes yet.",
       "chats": "No new messages.",
-      "system": "No announcements."
+      "system": "No announcements.",
+      "archived": "Nothing archived."
     },
     "like": {
-      "single": "{{name}} likes you",
+      "single": "{{name}} liked your photo",
       "superlike": "{{name}} sent you a Super Like",
-      "group": "{{names}} and {{count}} more"
+      "group_one": "{{names}} and {{count}} more liked your photo",
+      "group_other": "{{names}} and {{count}} more liked your photo",
+      "groupAll": "{{names}} liked your photo"
     },
     "match": {
       "single": "It's a match with {{name}}!"
@@ -1433,9 +1436,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Update"
+    },
     "actor": {
       "fallback": "Someone",
       "more": "and {{count}} more"
+    },
+    "actions": {
+      "archive": "Archive",
+      "unarchive": "Restore",
+      "delete": "Delete",
+      "snooze": "Snooze",
+      "undo": "Undo",
+      "markRead": "Mark as read"
+    },
+    "snooze": {
+      "title": "Snooze notifications",
+      "15m": "15 minutes",
+      "1h": "1 hour",
+      "2h": "2 hours",
+      "8h": "8 hours",
+      "1d": "1 day",
+      "always": "Always (mute this type)"
+    },
+    "archived": {
+      "title": "Archived",
+      "open": "View archived"
+    },
+    "undo": {
+      "archived": "Notification archived",
+      "deleted": "Notification deleted",
+      "snoozed": "Notification snoozed"
+    },
+    "quickReply": {
+      "placeholder": "Reply.",
+      "send": "Send"
+    },
+    "expand": {
+      "more": "Show more",
+      "less": "Show less"
     }
   }
 }

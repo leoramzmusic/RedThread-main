@@ -1151,23 +1151,26 @@
     "error": "Non è stato possibile caricare le tue notifiche.",
     "tabs": {
       "all": "Tutte",
-      "likes": "Like",
-      "chats": "Chat",
+      "likes": "Mi piace",
+      "chats": "Conversazioni",
       "system": "Sistema"
     },
     "empty": {
       "all": "Sei al passo.",
-      "likes": "Nessun like per ora.",
+      "likes": "Nessun Mi piace per ora.",
       "chats": "Nessun nuovo messaggio.",
-      "system": "Nessun avviso."
+      "system": "Nessun avviso.",
+      "archived": "Niente di archiviato."
     },
     "like": {
-      "single": "A {{name}} piaci",
+      "single": "A {{name}} è piaciuta la tua foto",
       "superlike": "{{name}} ti ha inviato un Super Like",
-      "group": "{{names}} e altri {{count}}"
+      "group_one": "A {{names}} e a {{count}} altra persona è piaciuta la tua foto",
+      "group_other": "A {{names}} e ad altre {{count}} persone è piaciuta la tua foto",
+      "groupAll": "A {{names}} è piaciuta la tua foto"
     },
     "match": {
-      "single": "È un match con {{name}}!"
+      "single": "È una corrispondenza con {{name}}!"
     },
     "message": {
       "single": "Nuovo messaggio da {{name}}"
@@ -1180,9 +1183,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Novità"
+    },
     "actor": {
       "fallback": "Qualcuno",
       "more": "e altri {{count}}"
+    },
+    "actions": {
+      "archive": "Archivia",
+      "unarchive": "Ripristina",
+      "delete": "Elimina",
+      "snooze": "Posticipa",
+      "undo": "Annulla",
+      "markRead": "Segna come letto"
+    },
+    "snooze": {
+      "title": "Posticipa notifiche",
+      "15m": "15 minuti",
+      "1h": "1 ora",
+      "2h": "2 ore",
+      "8h": "8 ore",
+      "1d": "1 giorno",
+      "always": "Sempre (silenzia questo tipo)"
+    },
+    "archived": {
+      "title": "Archiviate",
+      "open": "Visualizza archiviate"
+    },
+    "undo": {
+      "archived": "Notifica archiviata",
+      "deleted": "Notifica eliminata",
+      "snoozed": "Notifica posticipata"
+    },
+    "quickReply": {
+      "placeholder": "Rispondi…",
+      "send": "Invia"
+    },
+    "expand": {
+      "more": "Mostra di più",
+      "less": "Mostra di meno"
     }
   }
 }

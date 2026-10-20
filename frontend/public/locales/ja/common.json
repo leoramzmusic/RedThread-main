@@ -1157,15 +1157,18 @@
       "all": "すべて確認済みです。",
       "likes": "まだいいねはありません。",
       "chats": "新しいメッセージはありません。",
-      "system": "お知らせはありません。"
+      "system": "お知らせはありません。",
+      "archived": "アーカイブはありません。"
     },
     "like": {
-      "single": "{{name}}さんがあなたにいいねしました",
+      "single": "{{name}}さんがあなたの写真にいいねしました",
       "superlike": "{{name}}さんがあなたに Super Like を送りました",
-      "group": "{{names}}、ほか {{count}} 人"
+      "group_one": "{{names}}さん、ほか {{count}} 人があなたの写真にいいねしました",
+      "group_other": "{{names}}さん、ほか {{count}} 人があなたの写真にいいねしました",
+      "groupAll": "{{names}}さんがあなたの写真にいいねしました"
     },
     "match": {
-      "single": "{{name}}さんとマッチしました！"
+      "single": "{{name}}さんとお互いにいいねしました！"
     },
     "message": {
       "single": "{{name}}さんからの新着メッセージ"
@@ -1178,9 +1181,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "更新"
+    },
     "actor": {
       "fallback": "誰か",
       "more": "ほか {{count}} 人"
+    },
+    "actions": {
+      "archive": "アーカイブ",
+      "unarchive": "復元",
+      "delete": "削除",
+      "snooze": "スヌーズ",
+      "undo": "元に戻す",
+      "markRead": "既読にする"
+    },
+    "snooze": {
+      "title": "通知をスヌーズ",
+      "15m": "15 分",
+      "1h": "1 時間",
+      "2h": "2 時間",
+      "8h": "8 時間",
+      "1d": "1 日",
+      "always": "常に（この種類をミュート）"
+    },
+    "archived": {
+      "title": "アーカイブ済み",
+      "open": "アーカイブを表示"
+    },
+    "undo": {
+      "archived": "通知をアーカイブしました",
+      "deleted": "通知を削除しました",
+      "snoozed": "通知をスヌーズしました"
+    },
+    "quickReply": {
+      "placeholder": "返信…",
+      "send": "送信"
+    },
+    "expand": {
+      "more": "さらに表示",
+      "less": "表示を減らす"
     }
   }
 }

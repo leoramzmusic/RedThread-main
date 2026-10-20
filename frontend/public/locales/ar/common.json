@@ -1162,12 +1162,18 @@
       "all": "لقد اطّلعت على كل شيء.",
       "likes": "لا توجد إعجابات بعد.",
       "chats": "لا توجد رسائل جديدة.",
-      "system": "لا توجد إعلانات."
+      "system": "لا توجد إعلانات.",
+      "archived": "لا يوجد شيء مؤرشف."
     },
     "like": {
-      "single": "{{name}} معجب بك",
+      "single": "أعجب {{name}} بصورتك",
       "superlike": "{{name}} أرسل لك Super Like",
-      "group": "{{names}} و{{count}} آخرين"
+      "group_one": "أعجب {{names}} و{{count}} آخر بصورتك",
+      "group_two": "أعجب {{names}} و{{count}} آخرين بصورتك",
+      "group_few": "أعجب {{names}} و{{count}} آخرين بصورتك",
+      "group_many": "أعجب {{names}} و{{count}} آخرين بصورتك",
+      "group_other": "أعجب {{names}} و{{count}} آخرين بصورتك",
+      "groupAll": "أعجب {{names}} بصورتك"
     },
     "match": {
       "single": "إنه تطابق مع {{name}}!"
@@ -1187,9 +1193,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "تحديث"
+    },
     "actor": {
       "fallback": "شخص ما",
       "more": "و{{count}} آخرين"
+    },
+    "actions": {
+      "archive": "أرشفة",
+      "unarchive": "استعادة",
+      "delete": "حذف",
+      "snooze": "تأجيل",
+      "undo": "تراجع",
+      "markRead": "تحديد كمقروء"
+    },
+    "snooze": {
+      "title": "تأجيل الإشعارات",
+      "15m": "15 دقيقة",
+      "1h": "ساعة واحدة",
+      "2h": "ساعتان",
+      "8h": "8 ساعات",
+      "1d": "يوم واحد",
+      "always": "دائمًا (كتم هذا النوع)"
+    },
+    "archived": {
+      "title": "المؤرشفة",
+      "open": "عرض المؤرشفة"
+    },
+    "undo": {
+      "archived": "تمت أرشفة الإشعار",
+      "deleted": "تم حذف الإشعار",
+      "snoozed": "تم تأجيل الإشعار"
+    },
+    "quickReply": {
+      "placeholder": "رد…",
+      "send": "إرسال"
+    },
+    "expand": {
+      "more": "عرض المزيد",
+      "less": "عرض أقل"
     }
   }
 }

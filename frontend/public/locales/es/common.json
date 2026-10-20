@@ -1476,12 +1476,15 @@
       "all": "Estás al día.",
       "likes": "Sin likes por ahora.",
       "chats": "Sin mensajes nuevos.",
-      "system": "Sin avisos."
+      "system": "Sin avisos.",
+      "archived": "Nada archivado."
     },
     "like": {
-      "single": "A {{name}} le gustas",
+      "single": "A {{name}} le gustó tu foto",
       "superlike": "{{name}} te envió un Super Like",
-      "group": "{{names}} y {{count}} más"
+      "group_one": "A {{names}} y {{count}} más les gustó tu foto",
+      "group_other": "A {{names}} y {{count}} más les gustó tu foto",
+      "groupAll": "A {{names}} les gustó tu foto"
     },
     "match": {
       "single": "¡Es un match con {{name}}!"
@@ -1491,15 +1494,52 @@
     },
     "survey": {
       "title": "Preferencias CARE",
-      "pending_one": "Te falta 1 pregunta para completar tus preferencias.",
-      "pending_other": "Te faltan {{count}} preguntas para completar tus preferencias."
+      "pending_one": "Te queda 1 pregunta.",
+      "pending_other": "Te quedan {{count}} preguntas."
     },
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Novedad"
+    },
     "actor": {
       "fallback": "Alguien",
       "more": "y {{count}} más"
+    },
+    "actions": {
+      "archive": "Archivar",
+      "unarchive": "Restaurar",
+      "delete": "Borrar",
+      "snooze": "Posponer",
+      "undo": "Deshacer",
+      "markRead": "Marcar como leído"
+    },
+    "snooze": {
+      "title": "Posponer notificaciones",
+      "15m": "15 minutos",
+      "1h": "1 hora",
+      "2h": "2 horas",
+      "8h": "8 horas",
+      "1d": "1 día",
+      "always": "Siempre (silenciar este tipo)"
+    },
+    "archived": {
+      "title": "Archivadas",
+      "open": "Ver archivadas"
+    },
+    "undo": {
+      "archived": "Notificación archivada",
+      "deleted": "Notificación borrada",
+      "snoozed": "Notificación pospuesta"
+    },
+    "quickReply": {
+      "placeholder": "Responder.",
+      "send": "Enviar"
+    },
+    "expand": {
+      "more": "Ver más",
+      "less": "Ver menos"
     }
   }
 }

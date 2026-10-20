@@ -1127,15 +1127,18 @@
       "all": "Você está em dia.",
       "likes": "Nenhuma curtida ainda.",
       "chats": "Nenhuma mensagem nova.",
-      "system": "Nenhum aviso."
+      "system": "Nenhum aviso.",
+      "archived": "Nada arquivado."
     },
     "like": {
-      "single": "{{name}} curtiu você",
+      "single": "{{name}} curtiu sua foto",
       "superlike": "{{name}} enviou um Super Like",
-      "group": "{{names}} e mais {{count}}"
+      "group_one": "{{names}} e mais {{count}} curtiram sua foto",
+      "group_other": "{{names}} e mais {{count}} curtiram sua foto",
+      "groupAll": "{{names}} curtiram sua foto"
     },
     "match": {
-      "single": "É um match com {{name}}!"
+      "single": "É uma conexão com {{name}}!"
     },
     "message": {
       "single": "Nova mensagem de {{name}}"
@@ -1148,9 +1151,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Novidade"
+    },
     "actor": {
       "fallback": "Alguém",
       "more": "e mais {{count}}"
+    },
+    "actions": {
+      "archive": "Arquivar",
+      "unarchive": "Restaurar",
+      "delete": "Excluir",
+      "snooze": "Adiar",
+      "undo": "Desfazer",
+      "markRead": "Marcar como lida"
+    },
+    "snooze": {
+      "title": "Adiar notificações",
+      "15m": "15 minutos",
+      "1h": "1 hora",
+      "2h": "2 horas",
+      "8h": "8 horas",
+      "1d": "1 dia",
+      "always": "Sempre (silenciar este tipo)"
+    },
+    "archived": {
+      "title": "Arquivadas",
+      "open": "Ver arquivadas"
+    },
+    "undo": {
+      "archived": "Notificação arquivada",
+      "deleted": "Notificação excluída",
+      "snoozed": "Notificação adiada"
+    },
+    "quickReply": {
+      "placeholder": "Responder…",
+      "send": "Enviar"
+    },
+    "expand": {
+      "more": "Ver mais",
+      "less": "Ver menos"
     }
   }
 }

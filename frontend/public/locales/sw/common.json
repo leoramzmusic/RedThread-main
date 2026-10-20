@@ -1118,15 +1118,18 @@
       "all": "Umesoma kila kitu.",
       "likes": "Hakuna mipendo bado.",
       "chats": "Hakuna ujumbe mpya.",
-      "system": "Hakuna matangazo."
+      "system": "Hakuna matangazo.",
+      "archived": "Hakuna kilichohifadhiwa."
     },
     "like": {
-      "single": "{{name}} anakupenda",
+      "single": "{{name}} amependa picha yako",
       "superlike": "{{name}} amekutumia Super Like",
-      "group": "{{names}} na wengine {{count}}"
+      "group_one": "{{names}} na wengine {{count}} wamependa picha yako",
+      "group_other": "{{names}} na wengine {{count}} wamependa picha yako",
+      "groupAll": "{{names}} wamependa picha yako"
     },
     "match": {
-      "single": "Ni mechi na {{name}}!"
+      "single": "Mmefanana na {{name}}!"
     },
     "message": {
       "single": "Ujumbe mpya kutoka kwa {{name}}"
@@ -1139,9 +1142,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Sasisho"
+    },
     "actor": {
       "fallback": "Mtu fulani",
       "more": "na wengine {{count}}"
+    },
+    "actions": {
+      "archive": "Hifadhi",
+      "unarchive": "Rejesha",
+      "delete": "Futa",
+      "snooze": "Ahirisha",
+      "undo": "Tendua",
+      "markRead": "Weka kama imesomwa"
+    },
+    "snooze": {
+      "title": "Ahirisha arifa",
+      "15m": "Dakika 15",
+      "1h": "Saa 1",
+      "2h": "Saa 2",
+      "8h": "Saa 8",
+      "1d": "Siku 1",
+      "always": "Kila wakati (nyamazisha aina hii)"
+    },
+    "archived": {
+      "title": "Zilizohifadhiwa",
+      "open": "Tazama zilizohifadhiwa"
+    },
+    "undo": {
+      "archived": "Arifa imehifadhiwa",
+      "deleted": "Arifa imefutwa",
+      "snoozed": "Arifa imeahirishwa"
+    },
+    "quickReply": {
+      "placeholder": "Jibu…",
+      "send": "Tuma"
+    },
+    "expand": {
+      "more": "Onyesha zaidi",
+      "less": "Onyesha kidogo"
     }
   }
 }

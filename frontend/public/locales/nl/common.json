@@ -1151,23 +1151,26 @@
     "error": "We konden je meldingen niet laden.",
     "tabs": {
       "all": "Alles",
-      "likes": "Likes",
-      "chats": "Chats",
+      "likes": "Vind-ik-leuks",
+      "chats": "Gesprekken",
       "system": "Systeem"
     },
     "empty": {
       "all": "Je bent helemaal bij.",
-      "likes": "Nog geen likes.",
+      "likes": "Nog geen vind-ik-leuks.",
       "chats": "Geen nieuwe berichten.",
-      "system": "Geen aankondigingen."
+      "system": "Geen aankondigingen.",
+      "archived": "Niets gearchiveerd."
     },
     "like": {
-      "single": "{{name}} vindt je leuk",
+      "single": "{{name}} vindt je foto leuk",
       "superlike": "{{name}} heeft je een Super Like gestuurd",
-      "group": "{{names}} en {{count}} anderen"
+      "group_one": "{{names}} en {{count}} ander vinden je foto leuk",
+      "group_other": "{{names}} en {{count}} anderen vinden je foto leuk",
+      "groupAll": "{{names}} vinden je foto leuk"
     },
     "match": {
-      "single": "Het is een match met {{name}}!"
+      "single": "Het is een wederzijdse klik met {{name}}!"
     },
     "message": {
       "single": "Nieuw bericht van {{name}}"
@@ -1180,9 +1183,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "Nieuws"
+    },
     "actor": {
       "fallback": "Iemand",
       "more": "en {{count}} anderen"
+    },
+    "actions": {
+      "archive": "Archiveren",
+      "unarchive": "Herstellen",
+      "delete": "Verwijderen",
+      "snooze": "Uitstellen",
+      "undo": "Ongedaan maken",
+      "markRead": "Als gelezen markeren"
+    },
+    "snooze": {
+      "title": "Meldingen uitstellen",
+      "15m": "15 minuten",
+      "1h": "1 uur",
+      "2h": "2 uur",
+      "8h": "8 uur",
+      "1d": "1 dag",
+      "always": "Altijd (dit type dempen)"
+    },
+    "archived": {
+      "title": "Gearchiveerd",
+      "open": "Bekijk gearchiveerde"
+    },
+    "undo": {
+      "archived": "Melding gearchiveerd",
+      "deleted": "Melding verwijderd",
+      "snoozed": "Melding uitgesteld"
+    },
+    "quickReply": {
+      "placeholder": "Antwoorden…",
+      "send": "Verzenden"
+    },
+    "expand": {
+      "more": "Meer tonen",
+      "less": "Minder tonen"
     }
   }
 }

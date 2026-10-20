@@ -1158,12 +1158,15 @@
       "all": "你已全部看完。",
       "likes": "暂无喜欢。",
       "chats": "没有新消息。",
-      "system": "暂无公告。"
+      "system": "暂无公告。",
+      "archived": "没有已归档的通知。"
     },
     "like": {
-      "single": "{{name}} 喜欢你",
+      "single": "{{name}} 赞了你的照片",
       "superlike": "{{name}} 给你发了一个 Super Like",
-      "group": "{{names}} 以及另外 {{count}} 人"
+      "group_one": "{{names}} 和另外 {{count}} 人赞了你的照片",
+      "group_other": "{{names}} 和另外 {{count}} 人赞了你的照片",
+      "groupAll": "{{names}} 赞了你的照片"
     },
     "match": {
       "single": "你和 {{name}} 匹配成功！"
@@ -1179,9 +1182,46 @@
     "system": {
       "fallback": "Red Thread"
     },
+    "promo": {
+      "title": "更新"
+    },
     "actor": {
       "fallback": "某人",
       "more": "以及另外 {{count}} 人"
+    },
+    "actions": {
+      "archive": "归档",
+      "unarchive": "恢复",
+      "delete": "删除",
+      "snooze": "稍后提醒",
+      "undo": "撤销",
+      "markRead": "标为已读"
+    },
+    "snooze": {
+      "title": "稍后提醒通知",
+      "15m": "15 分钟",
+      "1h": "1 小时",
+      "2h": "2 小时",
+      "8h": "8 小时",
+      "1d": "1 天",
+      "always": "始终（静音此类型）"
+    },
+    "archived": {
+      "title": "已归档",
+      "open": "查看已归档"
+    },
+    "undo": {
+      "archived": "通知已归档",
+      "deleted": "通知已删除",
+      "snoozed": "通知已稍后提醒"
+    },
+    "quickReply": {
+      "placeholder": "回复…",
+      "send": "发送"
+    },
+    "expand": {
+      "more": "显示更多",
+      "less": "显示更少"
     }
   }
 }
