@@ -105,4 +105,5 @@ async def test_unsnooze_clears_field():
     ), patch.object(ns.manager, "send_personal_message", new=AsyncMock()) as push:
         await ns.unsnooze_notification("n1", "u1")
     assert doc.snoozed_until is None
-    assert push.await_args.args[1]["action"] == "notification_unsnoozed"
+    actions = [c.args[1]["action"] for c in push.await_args_list]
+    assert actions == ["notification_unsnoozed", "notifications_sync"]

@@ -546,6 +546,6 @@ async def unsnooze_notification(
         return None
     doc.snoozed_until = None
     await doc.save()
-    await _push_action(user_id, "notifications_sync")
     await _push_action(user_id, "notification_unsnoozed", id=notification_id)
+    await _push_action(user_id, "notifications_sync")
     return doc
