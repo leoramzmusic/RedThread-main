@@ -1,6 +1,6 @@
-import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
-import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
-import { useRouter } from 'next/router';
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
+import { useRouter } from "next/router";
 import {
   Box,
   Grid,
@@ -35,31 +35,36 @@ import {
   Chip,
   Stack,
   useTheme,
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ReportIcon from '@mui/icons-material/Report';
-import BlockIcon from '@mui/icons-material/Block';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import MicIcon from '@mui/icons-material/Mic';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import PeopleIcon from '@mui/icons-material/People';
-const EmojiPicker = lazy(() => import('@emoji-mart/react'));
-const emojiDataPromise = import('@emoji-mart/data').then(m => m.default);
-import Layout from '../../components/layout/Layout';
-import ChatMessage, { Message } from '../../components/chat/ChatMessage';
-import NotificationsList from '../../components/chat/NotificationsList';
-import apiClient from '../../services/api';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
-import { formatDistanceToNow, differenceInMinutes, differenceInDays } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { useTranslation } from 'next-i18next/pages';
-import PlanAvatar from '../../components/subscription/PlanAvatar';
-import IcebreakerButton from '../../components/chat/IcebreakerButton';
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ReportIcon from "@mui/icons-material/Report";
+import BlockIcon from "@mui/icons-material/Block";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from "@mui/icons-material/Download";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import MicIcon from "@mui/icons-material/Mic";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import PeopleIcon from "@mui/icons-material/People";
+const EmojiPicker = lazy(() => import("@emoji-mart/react"));
+const emojiDataPromise = import("@emoji-mart/data").then((m) => m.default);
+import Layout from "../../components/layout/Layout";
+import ChatMessage, { Message } from "../../components/chat/ChatMessage";
+import ChatNotificationsTab from "../../components/chat/ChatNotificationsTab";
+import { resolveDeepLinkedConversation } from "../../utils/chatDeepLink";
+import apiClient from "../../services/api";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import {
+  formatDistanceToNow,
+  differenceInMinutes,
+  differenceInDays,
+} from "date-fns";
+import { es } from "date-fns/locale";
+import { useTranslation } from "next-i18next/pages";
+import PlanAvatar from "../../components/subscription/PlanAvatar";
+import IcebreakerButton from "../../components/chat/IcebreakerButton";
 
 interface Conversation {
   conversation_id: string;
@@ -71,10 +76,10 @@ interface Conversation {
   is_online: boolean;
   last_active?: string;
   show_online_status?: boolean;
-  status: 'matched' | 'blocked' | 'unmatched';
+  status: "matched" | "blocked" | "unmatched";
   blocked_by?: string;
   // New Fields
-  type: 'match' | 'friend' | 'partner';
+  type: "match" | "friend" | "partner";
   emotional_status?: string; // e.g., "passionate", "flirty", "friendly"
   theme_color?: string;
   subscription_tier?: string;
@@ -82,41 +87,47 @@ interface Conversation {
 
 export default function Chat() {
   const router = useRouter();
-  const { t } = useTranslation('common');
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { t } = useTranslation("common");
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const theme = useTheme();
 
   const getOnlineStatusText = (conv: Conversation) => {
-    if (conv.show_online_status === false) return '';
-    if (conv.is_online) return t('chat.online', 'En línea');
+    if (conv.show_online_status === false) return "";
+    if (conv.is_online) return t("chat.online", "En línea");
 
-    if (!conv.last_active) return t('chat.offline', 'Desconectado');
+    if (!conv.last_active) return t("chat.offline", "Desconectado");
 
     const lastActive = new Date(conv.last_active);
     const now = new Date();
     const diffMins = differenceInMinutes(now, lastActive);
     const diffDays = differenceInDays(now, lastActive);
 
-    if (diffMins < 1) return t('chat.online', 'En línea');
-    if (diffDays >= 7) return t('chat.offline', 'Desconectado');
+    if (diffMins < 1) return t("chat.online", "En línea");
+    if (diffDays >= 7) return t("chat.offline", "Desconectado");
 
-    return `${t('chat.last_seen', 'Última vez')} ${formatDistanceToNow(lastActive, { addSuffix: true, locale: es })}`;
+    return `${t("chat.last_seen", "Última vez")} ${formatDistanceToNow(lastActive, { addSuffix: true, locale: es })}`;
   };
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<
+    string | null
+  >(null);
   const [activeTab, setActiveTab] = useState(0); // 0: Messages, 1: Notifications
-  const [messageFilter, setMessageFilter] = useState<'match' | 'friend'>('match'); // Sub-tab for messages
+  const [messageFilter, setMessageFilter] = useState<"match" | "friend">(
+    "match",
+  ); // Sub-tab for messages
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [reportReason, setReportReason] = useState('');
-  const [reportDescription, setReportDescription] = useState('');
+  const [reportReason, setReportReason] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [emojiData, setEmojiData] = useState<any>(null);
@@ -125,15 +136,18 @@ export default function Chat() {
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
 
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [confirmDialogTitle, setConfirmDialogTitle] = useState('');
-  const [confirmDialogMessage, setConfirmDialogMessage] = useState('');
-  const [confirmAction, setConfirmAction] = useState<() => Promise<void> | void>(() => { });
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("");
+  const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState<
+    () => Promise<void> | void
+  >(() => {});
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertColor>("success");
 
-  const showSnackbar = (message: string, severity: AlertColor = 'success') => {
+  const showSnackbar = (message: string, severity: AlertColor = "success") => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
@@ -147,18 +161,20 @@ export default function Chat() {
   const handleReportSubmit = async () => {
     if (!activeConversation || !reportReason) return;
     try {
-      await apiClient.post('/moderation/report', {
+      await apiClient.post("/moderation/report", {
         reported_user_id: activeConversation.other_user_id,
         reason: reportReason,
-        description: reportDescription
+        description: reportDescription,
       });
-      showSnackbar(t('common.report_success', 'Reporte enviado correctamente.'));
+      showSnackbar(
+        t("common.report_success", "Reporte enviado correctamente."),
+      );
       setReportDialogOpen(false);
-      setReportReason('');
-      setReportDescription('');
+      setReportReason("");
+      setReportDescription("");
     } catch (error) {
       console.error("Error reporting user:", error);
-      showSnackbar(t('common.error', 'Ocurrió un error.'), 'error');
+      showSnackbar(t("common.error", "Ocurrió un error."), "error");
     }
   };
 
@@ -170,18 +186,23 @@ export default function Chat() {
   const handleBlock = () => {
     setAnchorEl(null);
     if (activeConversation) {
-      setConfirmDialogTitle(t('common.block_user', 'Bloquear Usuario'));
-      setConfirmDialogMessage(t('common.block_confirm', "¿Estás seguro de que quieres bloquear a este usuario? No podrás ver su perfil ni recibir mensajes."));
+      setConfirmDialogTitle(t("common.block_user", "Bloquear Usuario"));
+      setConfirmDialogMessage(
+        t(
+          "common.block_confirm",
+          "¿Estás seguro de que quieres bloquear a este usuario? No podrás ver su perfil ni recibir mensajes.",
+        ),
+      );
       setConfirmAction(() => async () => {
         try {
-          await apiClient.post('/moderation/block', {
-            blocked_user_id: activeConversation.other_user_id
+          await apiClient.post("/moderation/block", {
+            blocked_user_id: activeConversation.other_user_id,
           });
-          showSnackbar(t('common.block_success', "Usuario bloqueado."));
+          showSnackbar(t("common.block_success", "Usuario bloqueado."));
           fetchConversations();
         } catch (error) {
           console.error("Error blocking user:", error);
-          showSnackbar(t('common.error', 'Ocurrió un error.'), 'error');
+          showSnackbar(t("common.error", "Ocurrió un error."), "error");
         }
       });
       setConfirmDialogOpen(true);
@@ -192,14 +213,14 @@ export default function Chat() {
     setAnchorEl(null);
     if (activeConversation) {
       try {
-        await apiClient.post('/moderation/unblock', {
-          blocked_user_id: activeConversation.other_user_id
+        await apiClient.post("/moderation/unblock", {
+          blocked_user_id: activeConversation.other_user_id,
         });
-        showSnackbar(t('common.unblock_success', "Usuario desbloqueado."));
+        showSnackbar(t("common.unblock_success", "Usuario desbloqueado."));
         fetchConversations();
       } catch (error) {
         console.error("Error unblocking user:", error);
-        showSnackbar(t('common.error', 'Ocurrió un error.'), 'error');
+        showSnackbar(t("common.error", "Ocurrió un error."), "error");
       }
     }
   };
@@ -207,11 +228,18 @@ export default function Chat() {
   const handleClearChat = () => {
     setAnchorEl(null);
     if (activeConversation) {
-      setConfirmDialogTitle(t('chat.clear_chat', 'Vaciar Chat'));
-      setConfirmDialogMessage(t('chat.clear_confirm', "¿Vaciar chat? Esto solo borrará tu copia de los mensajes."));
+      setConfirmDialogTitle(t("chat.clear_chat", "Vaciar Chat"));
+      setConfirmDialogMessage(
+        t(
+          "chat.clear_confirm",
+          "¿Vaciar chat? Esto solo borrará tu copia de los mensajes.",
+        ),
+      );
       setConfirmAction(() => async () => {
         try {
-          await apiClient.post(`/chat/clear/${activeConversation.conversation_id}`);
+          await apiClient.post(
+            `/chat/clear/${activeConversation.conversation_id}`,
+          );
           setMessages([]);
         } catch (error) {
           console.error("Error clearing chat:", error);
@@ -224,15 +252,18 @@ export default function Chat() {
   const handleExportChat = () => {
     if (!messages.length) return;
 
-    const content = messages.map(m =>
-      `[${new Date(m.created_at).toLocaleString()}] ${m.sender_id === user?.user_id ? 'You' : activeConversation?.display_name}: ${m.content}`
-    ).join('\n');
+    const content = messages
+      .map(
+        (m) =>
+          `[${new Date(m.created_at).toLocaleString()}] ${m.sender_id === user?.user_id ? "You" : activeConversation?.display_name}: ${m.content}`,
+      )
+      .join("\n");
 
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `chat_${activeConversation?.display_name}_${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `chat_${activeConversation?.display_name}_${new Date().toISOString().split("T")[0]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     setAnchorEl(null);
@@ -242,19 +273,21 @@ export default function Chat() {
 
   const fetchConversations = async () => {
     try {
-      const response = await apiClient.get('/chat/conversations');
+      const response = await apiClient.get("/chat/conversations");
       setConversations(response.data);
     } catch (err) {
-      console.error('Failed to load conversations', err);
+      console.error("Failed to load conversations", err);
     }
   };
 
   const fetchSuggestions = async (targetUserId: string) => {
     try {
-      const response = await apiClient.get(`/chat/suggestions?target_user_id=${targetUserId}`);
+      const response = await apiClient.get(
+        `/chat/suggestions?target_user_id=${targetUserId}`,
+      );
       setSuggestions(response.data);
     } catch (err) {
-      console.error('Failed to load suggestions', err);
+      console.error("Failed to load suggestions", err);
       setSuggestions([]);
     }
   };
@@ -264,24 +297,28 @@ export default function Chat() {
 
   useEffect(() => {
     if (!isAuthenticated || !user?.user_id) {
-      if (!isAuthenticated) router.push('/auth/login');
+      if (!isAuthenticated) router.push("/auth/login");
       return;
     }
 
     fetchConversations();
 
     // Initialize WebSocket
-    const wsUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace('http', 'ws') + `/chat/ws/${user.user_id}`;
+    const wsUrl =
+      (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(
+        "http",
+        "ws",
+      ) + `/chat/ws/${user.user_id}`;
     const newSocket = new WebSocket(wsUrl);
 
     newSocket.onopen = () => {
-      console.log('Connected to chat server');
+      console.log("Connected to chat server");
     };
 
     newSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.action === 'new_message') {
+      if (data.action === "new_message") {
         const msgConvId = data.message.conversation_id ?? data.message.match_id;
         if (msgConvId === activeConversationIdRef.current) {
           setMessages((prev) => [...prev, data.message]);
@@ -289,25 +326,33 @@ export default function Chat() {
         } else {
           fetchConversations();
         }
-      } else if (data.action === 'message_sent') {
-        setMessages(prev => prev.map(m =>
-          m.id === data.temp_id ? { ...m, id: data.message_id, isSending: false } : m
-        ));
-      } else if (data.action === 'message_read') {
-        setMessages(prev => prev.map(m =>
-          m.id === data.message_id ? { ...m, is_read: true } : m
-        ));
-        setConversations(prev => prev.map(c => {
-          if (c.conversation_id === activeConversationIdRef.current) {
-            return { ...c, unread_count: Math.max(0, c.unread_count - 1) };
-          }
-          return c;
-        }));
+      } else if (data.action === "message_sent") {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === data.temp_id
+              ? { ...m, id: data.message_id, isSending: false }
+              : m,
+          ),
+        );
+      } else if (data.action === "message_read") {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === data.message_id ? { ...m, is_read: true } : m,
+          ),
+        );
+        setConversations((prev) =>
+          prev.map((c) => {
+            if (c.conversation_id === activeConversationIdRef.current) {
+              return { ...c, unread_count: Math.max(0, c.unread_count - 1) };
+            }
+            return c;
+          }),
+        );
       }
     };
 
     newSocket.onclose = () => {
-      console.log('Disconnected from chat server');
+      console.log("Disconnected from chat server");
     };
 
     setSocket(newSocket);
@@ -320,12 +365,32 @@ export default function Chat() {
   useEffect(() => {
     if (activeConversationId) {
       fetchMessages(activeConversationId);
-      const conv = conversations.find(c => c.conversation_id === activeConversationId);
+      const conv = conversations.find(
+        (c) => c.conversation_id === activeConversationId,
+      );
       if (conv) {
         fetchSuggestions(conv.other_user_id);
       }
     }
   }, [activeConversationId]);
+
+  const appliedDeepLinkRef = useRef<string | null>(null);
+
+  // Deep-link ?conversation= (campanita / quick reply)
+  useEffect(() => {
+    const queryValue = router.query.conversation;
+    const queryKey = Array.isArray(queryValue) ? queryValue[0] : queryValue;
+    if (!queryKey || appliedDeepLinkRef.current === queryKey) return;
+
+    const target = resolveDeepLinkedConversation(queryValue, conversations);
+    if (!target) return;
+
+    appliedDeepLinkRef.current = queryKey;
+    setActiveTab(0);
+    if (target !== activeConversationId) {
+      setActiveConversationId(target);
+    }
+  }, [activeConversationId, conversations, router.query.conversation]);
 
   const fetchMessages = async (conversationId: string) => {
     try {
@@ -333,7 +398,7 @@ export default function Chat() {
       setMessages(response.data.reverse()); // API returns newest first
       scrollToBottom();
     } catch (err) {
-      console.error('Failed to load messages', err);
+      console.error("Failed to load messages", err);
     }
   };
 
@@ -346,46 +411,46 @@ export default function Chat() {
     const tempId = Date.now().toString();
 
     const messageData = {
-      action: 'send_message',
+      action: "send_message",
       conversation_id: activeConversationId,
       content: msgContent,
-      message_type: 'text',
-      temp_id: tempId
+      message_type: "text",
+      temp_id: tempId,
     };
 
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(messageData));
     } else {
-      console.error('WebSocket not connected');
+      console.error("WebSocket not connected");
       // Fallback to REST?
     }
 
     // Optimistic update
     const tempMsg: Message = {
       id: tempId,
-      sender_id: user?.user_id || '',
+      sender_id: user?.user_id || "",
       content: msgContent,
-      message_type: 'text',
+      message_type: "text",
       created_at: new Date().toISOString(),
       is_read: false,
-      isSending: true
+      isSending: true,
     };
 
     setMessages((prev) => [...prev, tempMsg]);
-    setNewMessage('');
+    setNewMessage("");
     setShowEmojiPicker(false);
     scrollToBottom();
   };
 
   const onEmojiSelect = (emoji: any) => {
-    setNewMessage(prev => prev + emoji.native);
+    setNewMessage((prev) => prev + emoji.native);
   };
 
   const startRecording = () => {
     setIsRecording(true);
     setRecordingTime(0);
     recordingInterval.current = setInterval(() => {
-      setRecordingTime(prev => prev + 1);
+      setRecordingTime((prev) => prev + 1);
     }, 1000);
   };
 
@@ -396,46 +461,59 @@ export default function Chat() {
     setIsRecording(false);
     // Here we would handle the actual audio file if backend supported it
     // For now, just a UI feedback
-    showSnackbar(t('chat.voice_message_sent', 'Nota de voz enviada (Simulación)'));
+    showSnackbar(
+      t("chat.voice_message_sent", "Nota de voz enviada (Simulación)"),
+    );
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const activeConversation = useMemo(
-    () => conversations.find(c => c.conversation_id === activeConversationId),
-    [conversations, activeConversationId]
+    () => conversations.find((c) => c.conversation_id === activeConversationId),
+    [conversations, activeConversationId],
   );
 
   const filteredConversations = useMemo(() => {
-    return conversations.filter(c => {
-      if (messageFilter === 'match') return c.type === 'match' || !c.type;
-      if (messageFilter === 'friend') return c.type === 'friend' || c.type === 'partner';
+    return conversations.filter((c) => {
+      if (messageFilter === "match") return c.type === "match" || !c.type;
+      if (messageFilter === "friend")
+        return c.type === "friend" || c.type === "partner";
       return true;
     });
   }, [conversations, messageFilter]);
 
   const totalUnread = useMemo(
     () => conversations.reduce((sum, c) => sum + c.unread_count, 0),
-    [conversations]
+    [conversations],
   );
 
   // Dynamic Theme Color
-  const activeThemeColor = activeConversation?.theme_color || theme.palette.primary.main;
+  const activeThemeColor =
+    activeConversation?.theme_color || theme.palette.primary.main;
 
   return (
     <Layout>
-      <Grid container spacing={2} sx={{ height: 'calc(100vh - 100px)' }}>
+      <Grid container spacing={2} sx={{ height: "calc(100vh - 100px)" }}>
         {/* Conversation List */}
         <Grid
-          sx={{ height: '100%' }}
+          sx={{ height: "100%" }}
           size={{
             xs: 12,
-            md: 4
-          }}>
-          <Paper sx={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            md: 4,
+          }}
+        >
+          <Paper
+            sx={{
+              height: "100%",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: 4,
+            }}
+          >
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs
                 value={activeTab}
                 onChange={(e, v) => setActiveTab(v)}
@@ -443,50 +521,57 @@ export default function Chat() {
                 textColor="primary"
                 indicatorColor="primary"
               >
-                <Tab label={
-                  <Badge
-                    badgeContent={totalUnread}
-                    color="error"
-                  >
-                    {t('chat.messages', 'Mensajes')}
-                  </Badge>
-                } />
-                <Tab label={
-                  <Badge badgeContent={unreadNotifications} color="error">
-                    {t('chat.notifications', 'Notificaciones')}
-                  </Badge>
-                } />
+                <Tab
+                  label={
+                    <Badge badgeContent={totalUnread} color="error">
+                      {t("chat.messages", "Mensajes")}
+                    </Badge>
+                  }
+                />
+                <Tab
+                  label={
+                    <Badge badgeContent={unreadNotifications} color="error">
+                      {t("chat.notifications", "Notificaciones")}
+                    </Badge>
+                  }
+                />
               </Tabs>
             </Box>
 
             {activeTab === 0 ? (
               <>
                 {/* Sub-tabs for Matches vs Friends */}
-                <Box sx={{ px: 2, py: 1, display: 'flex', gap: 1 }}>
+                <Box sx={{ px: 2, py: 1, display: "flex", gap: 1 }}>
                   <Chip
                     icon={<FavoriteIcon />}
                     label="Matches 💘"
-                    onClick={() => setMessageFilter('match')}
-                    color={messageFilter === 'match' ? 'primary' : 'default'}
-                    variant={messageFilter === 'match' ? 'filled' : 'outlined'}
+                    onClick={() => setMessageFilter("match")}
+                    color={messageFilter === "match" ? "primary" : "default"}
+                    variant={messageFilter === "match" ? "filled" : "outlined"}
                     sx={{ flex: 1 }}
                   />
                   <Chip
                     icon={<PeopleIcon />}
                     label="Amigos 👥"
-                    onClick={() => setMessageFilter('friend')}
-                    color={messageFilter === 'friend' ? 'secondary' : 'default'}
-                    variant={messageFilter === 'friend' ? 'filled' : 'outlined'}
+                    onClick={() => setMessageFilter("friend")}
+                    color={messageFilter === "friend" ? "secondary" : "default"}
+                    variant={messageFilter === "friend" ? "filled" : "outlined"}
                     sx={{ flex: 1 }}
                   />
                 </Box>
                 <Divider />
 
-                <List sx={{ flexGrow: 1, overflowY: 'auto' }}>
+                <List sx={{ flexGrow: 1, overflowY: "auto" }}>
                   {filteredConversations.length === 0 && (
-                    <Box sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        textAlign: "center",
+                        color: "text.secondary",
+                      }}
+                    >
                       <Typography variant="body2">
-                        {messageFilter === 'match'
+                        {messageFilter === "match"
                           ? "No tienes matches aún. ¡Ve a Discover!"
                           : "No tienes amigos conectados aún."}
                       </Typography>
@@ -496,19 +581,28 @@ export default function Chat() {
                     <ListItem key={conv.conversation_id} disablePadding>
                       <ListItemButton
                         selected={activeConversationId === conv.conversation_id}
-                        onClick={() => setActiveConversationId(conv.conversation_id)}
+                        onClick={() =>
+                          setActiveConversationId(conv.conversation_id)
+                        }
                         sx={{
-                          bgcolor: conv.status === 'blocked' ? 'action.disabledBackground' : undefined,
-                          opacity: conv.status === 'blocked' ? 0.7 : 1,
-                          borderLeft: activeConversationId === conv.conversation_id ? `4px solid ${conv.theme_color || theme.palette.primary.main}` : 'none'
+                          bgcolor:
+                            conv.status === "blocked"
+                              ? "action.disabledBackground"
+                              : undefined,
+                          opacity: conv.status === "blocked" ? 0.7 : 1,
+                          borderLeft:
+                            activeConversationId === conv.conversation_id
+                              ? `4px solid ${conv.theme_color || theme.palette.primary.main}`
+                              : "none",
                         }}
                       >
                         <ListItemAvatar>
                           <Box
                             sx={{
                               position: "relative",
-                              display: "inline-block"
-                            }}>
+                              display: "inline-block",
+                            }}
+                          >
                             <PlanAvatar
                               tier={conv.subscription_tier}
                               size={40}
@@ -519,8 +613,18 @@ export default function Chat() {
                               <Badge
                                 color="success"
                                 variant="dot"
-                                invisible={!conv.is_online && (!conv.last_active || differenceInMinutes(new Date(), new Date(conv.last_active)) >= 1)}
-                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                invisible={
+                                  !conv.is_online &&
+                                  (!conv.last_active ||
+                                    differenceInMinutes(
+                                      new Date(),
+                                      new Date(conv.last_active),
+                                    ) >= 1)
+                                }
+                                anchorOrigin={{
+                                  vertical: "bottom",
+                                  horizontal: "right",
+                                }}
                               >
                                 {/* Badge needs a child, but PlanAvatar already renders the avatar. 
                                       We might need to wrap PlanAvatar with Badge or vice versa. 
@@ -533,27 +637,42 @@ export default function Chat() {
                         <ListItemText
                           primary={conv.display_name}
                           secondary={
-                            <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Box
+                              component="span"
+                              sx={{ display: "flex", flexDirection: "column" }}
+                            >
                               <Typography
                                 variant="body2"
                                 component="span"
                                 noWrap
                                 sx={{
                                   color: "text.primary",
-                                  fontWeight: conv.unread_count > 0 ? 700 : 400
-                                }}>
-                                {conv.last_message_content || t('chat.start_chatting', 'Comienza a chatear...')}
+                                  fontWeight: conv.unread_count > 0 ? 700 : 400,
+                                }}
+                              >
+                                {conv.last_message_content ||
+                                  t(
+                                    "chat.start_chatting",
+                                    "Comienza a chatear...",
+                                  )}
                               </Typography>
-                              <Typography variant="caption" component="span" sx={{
-                                color: "text.secondary"
-                              }}>
+                              <Typography
+                                variant="caption"
+                                component="span"
+                                sx={{
+                                  color: "text.secondary",
+                                }}
+                              >
                                 {getOnlineStatusText(conv)}
                               </Typography>
                             </Box>
                           }
                         />
                         {conv.unread_count > 0 && (
-                          <Badge badgeContent={conv.unread_count} color="primary" />
+                          <Badge
+                            badgeContent={conv.unread_count}
+                            color="primary"
+                          />
                         )}
                       </ListItemButton>
                     </ListItem>
@@ -561,40 +680,59 @@ export default function Chat() {
                 </List>
               </>
             ) : (
-              <NotificationsList onUnreadCountChange={setUnreadNotifications} />
+              <ChatNotificationsTab
+                onUnreadCountChange={setUnreadNotifications}
+              />
             )}
           </Paper>
         </Grid>
 
         {/* Chat Window */}
         <Grid
-          sx={{ height: '100%', display: { xs: activeConversationId ? 'block' : 'none', md: 'block' } }}
+          sx={{
+            height: "100%",
+            display: {
+              xs: activeConversationId ? "block" : "none",
+              md: "block",
+            },
+          }}
           size={{
             xs: 12,
-            md: 8
-          }}>
-          <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
+            md: 8,
+          }}
+        >
+          <Paper
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              borderRadius: 4,
+            }}
+          >
             {activeConversationId ? (
               <>
                 {/* Header */}
-                <Box sx={{
-                  p: 2,
-                  borderBottom: '1px solid #eee',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'space-between',
-                  borderTopLeftRadius: 16,
-                  borderTopRightRadius: 16,
-                  bgcolor: activeThemeColor, // Dynamic Header Color
-                  color: '#fff'
-                }}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderBottom: "1px solid #eee",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    justifyContent: "space-between",
+                    borderTopLeftRadius: 16,
+                    borderTopRightRadius: 16,
+                    bgcolor: activeThemeColor, // Dynamic Header Color
+                    color: "#fff",
+                  }}
+                >
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 2
-                    }}>
+                      gap: 2,
+                    }}
+                  >
                     <PlanAvatar
                       tier={activeConversation?.subscription_tier}
                       size={40}
@@ -606,23 +744,30 @@ export default function Chat() {
                         variant="subtitle1"
                         sx={{
                           fontWeight: 700,
-                          color: "inherit"
-                        }}>
+                          color: "inherit",
+                        }}
+                      >
                         {activeConversation?.display_name}
                       </Typography>
                       <Typography
                         variant="caption"
                         sx={{
                           color: "inherit",
-                          opacity: 0.8
-                        }}>
-                        {activeConversation && getOnlineStatusText(activeConversation)}
-                        {activeConversation?.emotional_status && ` • ${activeConversation.emotional_status}`}
+                          opacity: 0.8,
+                        }}
+                      >
+                        {activeConversation &&
+                          getOnlineStatusText(activeConversation)}
+                        {activeConversation?.emotional_status &&
+                          ` • ${activeConversation.emotional_status}`}
                       </Typography>
                     </Box>
                   </Box>
                   <Box>
-                    <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ color: 'inherit' }}>
+                    <IconButton
+                      onClick={(e) => setAnchorEl(e.currentTarget)}
+                      sx={{ color: "inherit" }}
+                    >
                       <MoreVertIcon />
                     </IconButton>
                     <Menu
@@ -631,37 +776,65 @@ export default function Chat() {
                       onClose={() => setAnchorEl(null)}
                     >
                       <MenuItem onClick={handleReportOpen}>
-                        <ListItemIcon><ReportIcon fontSize="small" color="warning" /></ListItemIcon>
-                        <ListItemText>{t('common.report', 'Reportar')}</ListItemText>
+                        <ListItemIcon>
+                          <ReportIcon fontSize="small" color="warning" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          {t("common.report", "Reportar")}
+                        </ListItemText>
                       </MenuItem>
 
-                      {activeConversation?.status === 'blocked' && activeConversation.blocked_by === user?.user_id ? (
+                      {activeConversation?.status === "blocked" &&
+                      activeConversation.blocked_by === user?.user_id ? (
                         <MenuItem onClick={handleUnblock}>
-                          <ListItemIcon><LockOpenIcon fontSize="small" color="primary" /></ListItemIcon>
-                          <ListItemText>{t('common.unblock', 'Desbloquear')}</ListItemText>
+                          <ListItemIcon>
+                            <LockOpenIcon fontSize="small" color="primary" />
+                          </ListItemIcon>
+                          <ListItemText>
+                            {t("common.unblock", "Desbloquear")}
+                          </ListItemText>
                         </MenuItem>
                       ) : (
                         <MenuItem onClick={handleBlock}>
-                          <ListItemIcon><BlockIcon fontSize="small" color="error" /></ListItemIcon>
-                          <ListItemText>{t('common.block', 'Bloquear')}</ListItemText>
+                          <ListItemIcon>
+                            <BlockIcon fontSize="small" color="error" />
+                          </ListItemIcon>
+                          <ListItemText>
+                            {t("common.block", "Bloquear")}
+                          </ListItemText>
                         </MenuItem>
                       )}
 
                       <MenuItem onClick={handleClearChat}>
-                        <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
-                        <ListItemText>{t('chat.clear_chat', 'Vaciar Chat')}</ListItemText>
+                        <ListItemIcon>
+                          <DeleteIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          {t("chat.clear_chat", "Vaciar Chat")}
+                        </ListItemText>
                       </MenuItem>
 
                       <MenuItem onClick={handleExportChat}>
-                        <ListItemIcon><DownloadIcon fontSize="small" /></ListItemIcon>
-                        <ListItemText>{t('chat.export_chat', 'Exportar Chat')}</ListItemText>
+                        <ListItemIcon>
+                          <DownloadIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          {t("chat.export_chat", "Exportar Chat")}
+                        </ListItemText>
                       </MenuItem>
                     </Menu>
                   </Box>
                 </Box>
 
                 {/* Messages */}
-                <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2, bgcolor: 'background.default' }}>
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    overflowY: "auto",
+                    p: 2,
+                    bgcolor: "background.default",
+                  }}
+                >
                   {messages.map((msg) => (
                     <ChatMessage
                       key={msg.id}
@@ -670,7 +843,7 @@ export default function Chat() {
                       senderName={activeConversation?.display_name}
                       senderPhoto={activeConversation?.photo}
                       senderTier={activeConversation?.subscription_tier}
-                    // Pass theme color to message bubbles if supported
+                      // Pass theme color to message bubbles if supported
                     />
                   ))}
                   <div ref={messagesEndRef} />
@@ -678,7 +851,15 @@ export default function Chat() {
 
                 {/* Smart Suggestions */}
                 {suggestions.length > 0 && (
-                  <Box sx={{ px: 2, py: 1, display: 'flex', gap: 1, overflowX: 'auto' }}>
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 1,
+                      display: "flex",
+                      gap: 1,
+                      overflowX: "auto",
+                    }}
+                  >
                     {suggestions.map((suggestion, index) => (
                       <Chip
                         key={index}
@@ -694,20 +875,49 @@ export default function Chat() {
                 )}
 
                 {/* Input */}
-                {activeConversation?.status === 'blocked' ? (
-                  <Box sx={{ p: 2, borderTop: '1px solid #eee', textAlign: 'center', bgcolor: 'action.disabledBackground', borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}>
-                    <Typography sx={{
-                      color: "text.secondary"
-                    }}>
+                {activeConversation?.status === "blocked" ? (
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderTop: "1px solid #eee",
+                      textAlign: "center",
+                      bgcolor: "action.disabledBackground",
+                      borderBottomLeftRadius: 16,
+                      borderBottomRightRadius: 16,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: "text.secondary",
+                      }}
+                    >
                       {activeConversation.blocked_by === user?.user_id
-                        ? t('chat.you_blocked', 'Has bloqueado a este usuario.')
-                        : t('chat.user_blocked', 'Este usuario no está disponible.')}
+                        ? t("chat.you_blocked", "Has bloqueado a este usuario.")
+                        : t(
+                            "chat.user_blocked",
+                            "Este usuario no está disponible.",
+                          )}
                     </Typography>
                   </Box>
                 ) : (
-                  <Box sx={{ p: 2, borderTop: '1px solid #eee', borderBottomLeftRadius: 16, borderBottomRightRadius: 16, position: 'relative' }}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderTop: "1px solid #eee",
+                      borderBottomLeftRadius: 16,
+                      borderBottomRightRadius: 16,
+                      position: "relative",
+                    }}
+                  >
                     {showEmojiPicker && emojiData && (
-                      <Box sx={{ position: 'absolute', bottom: '80px', left: '20px', zIndex: 10 }}>
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          bottom: "80px",
+                          left: "20px",
+                          zIndex: 10,
+                        }}
+                      >
                         <Suspense fallback={null}>
                           <EmojiPicker
                             data={emojiData}
@@ -719,43 +929,68 @@ export default function Chat() {
                       </Box>
                     )}
 
-                    <Box component="form" onSubmit={(e) => handleSendMessage(e)} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <Box
+                      component="form"
+                      onSubmit={(e) => handleSendMessage(e)}
+                      sx={{ display: "flex", gap: 1, alignItems: "center" }}
+                    >
                       <IcebreakerButton
                         conversationId={activeConversation!.conversation_id}
                         otherUserId={activeConversation!.other_user_id}
                         onSend={(text) => handleSendMessage(undefined, text)}
                         color={activeThemeColor}
                       />
-                      <IconButton onClick={async () => {
-                        if (!emojiData) {
-                          setEmojiData(await emojiDataPromise);
-                        }
-                        setShowEmojiPicker(!showEmojiPicker);
-                      }}>
+                      <IconButton
+                        onClick={async () => {
+                          if (!emojiData) {
+                            setEmojiData(await emojiDataPromise);
+                          }
+                          setShowEmojiPicker(!showEmojiPicker);
+                        }}
+                      >
                         <EmojiEmotionsIcon color="action" />
                       </IconButton>
 
                       <TextField
                         fullWidth
-                        placeholder={isRecording ? t('chat.recording', 'Grabando... 00:{{seconds}}', { seconds: recordingTime.toString().padStart(2, '0') }) : t('chat.message_placeholder', 'Mensaje')}
+                        placeholder={
+                          isRecording
+                            ? t(
+                                "chat.recording",
+                                "Grabando... 00:{{seconds}}",
+                                {
+                                  seconds: recordingTime
+                                    .toString()
+                                    .padStart(2, "0"),
+                                },
+                              )
+                            : t("chat.message_placeholder", "Mensaje")
+                        }
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         size="small"
                         autoComplete="off"
                         disabled={isRecording}
                         sx={{
-                          '& .MuiOutlinedInput-root': {
-                            bgcolor: isRecording ? 'error.light' : 'background.paper',
-                            color: isRecording ? 'error.contrastText' : 'text.primary',
-                            '&.Mui-focused fieldset': {
-                              borderColor: activeThemeColor // Dynamic Focus Color
-                            }
-                          }
+                          "& .MuiOutlinedInput-root": {
+                            bgcolor: isRecording
+                              ? "error.light"
+                              : "background.paper",
+                            color: isRecording
+                              ? "error.contrastText"
+                              : "text.primary",
+                            "&.Mui-focused fieldset": {
+                              borderColor: activeThemeColor, // Dynamic Focus Color
+                            },
+                          },
                         }}
                       />
 
                       {newMessage.trim() ? (
-                        <IconButton type="submit" sx={{ color: activeThemeColor }}>
+                        <IconButton
+                          type="submit"
+                          sx={{ color: activeThemeColor }}
+                        >
                           <SendIcon />
                         </IconButton>
                       ) : (
@@ -766,7 +1001,11 @@ export default function Chat() {
                           onMouseLeave={stopRecording}
                           onTouchStart={startRecording}
                           onTouchEnd={stopRecording}
-                          sx={{ color: isRecording ? 'error.main' : activeThemeColor }}
+                          sx={{
+                            color: isRecording
+                              ? "error.main"
+                              : activeThemeColor,
+                          }}
                         >
                           <MicIcon />
                         </IconButton>
@@ -776,10 +1015,24 @@ export default function Chat() {
                 )}
               </>
             ) : (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <Typography sx={{
-                  color: "text.secondary"
-                }}>{t('chat.select_conversation', 'Selecciona una conversación para comenzar')}</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <Typography
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
+                  {t(
+                    "chat.select_conversation",
+                    "Selecciona una conversación para comenzar",
+                  )}
+                </Typography>
               </Box>
             )}
           </Paper>
@@ -787,20 +1040,27 @@ export default function Chat() {
       </Grid>
 
       {/* Report Dialog */}
-      <Dialog open={reportDialogOpen} onClose={() => setReportDialogOpen(false)}>
-        <DialogTitle>{t('common.report_user', 'Reportar Usuario')}</DialogTitle>
+      <Dialog
+        open={reportDialogOpen}
+        onClose={() => setReportDialogOpen(false)}
+      >
+        <DialogTitle>{t("common.report_user", "Reportar Usuario")}</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel>{t('common.reason', 'Razón')}</InputLabel>
+            <InputLabel>{t("common.reason", "Razón")}</InputLabel>
             <Select
               value={reportReason}
-              label={t('common.reason', 'Razón')}
+              label={t("common.reason", "Razón")}
               onChange={(e) => setReportReason(e.target.value)}
             >
-              <MenuItem value="harassment">{t('report.harassment', 'Acoso')}</MenuItem>
-              <MenuItem value="fraud">{t('report.fraud', 'Fraude')}</MenuItem>
-              <MenuItem value="inappropriate_content">{t('report.inappropriate', 'Contenido Inapropiado')}</MenuItem>
-              <MenuItem value="other">{t('report.other', 'Otro')}</MenuItem>
+              <MenuItem value="harassment">
+                {t("report.harassment", "Acoso")}
+              </MenuItem>
+              <MenuItem value="fraud">{t("report.fraud", "Fraude")}</MenuItem>
+              <MenuItem value="inappropriate_content">
+                {t("report.inappropriate", "Contenido Inapropiado")}
+              </MenuItem>
+              <MenuItem value="other">{t("report.other", "Otro")}</MenuItem>
             </Select>
           </FormControl>
           <TextField
@@ -808,36 +1068,60 @@ export default function Chat() {
             multiline
             rows={4}
             margin="dense"
-            label={t('common.description', 'Descripción (opcional)')}
+            label={t("common.description", "Descripción (opcional)")}
             value={reportDescription}
             onChange={(e) => setReportDescription(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setReportDialogOpen(false)}>{t('common.cancel', 'Cancelar')}</Button>
-          <Button onClick={handleReportSubmit} variant="contained" color="primary">
-            {t('common.submit', 'Enviar')}
+          <Button onClick={() => setReportDialogOpen(false)}>
+            {t("common.cancel", "Cancelar")}
+          </Button>
+          <Button
+            onClick={handleReportSubmit}
+            variant="contained"
+            color="primary"
+          >
+            {t("common.submit", "Enviar")}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Confirmation Dialog */}
-      <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
         <DialogTitle>{confirmDialogTitle}</DialogTitle>
         <DialogContent>
           <Typography>{confirmDialogMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmDialogOpen(false)}>{t('common.cancel', 'Cancelar')}</Button>
-          <Button onClick={handleConfirmAction} variant="contained" color="primary" autoFocus>
-            {t('common.confirm', 'Confirmar')}
+          <Button onClick={() => setConfirmDialogOpen(false)}>
+            {t("common.cancel", "Cancelar")}
+          </Button>
+          <Button
+            onClick={handleConfirmAction}
+            variant="contained"
+            color="primary"
+            autoFocus
+          >
+            {t("common.confirm", "Confirmar")}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Snackbar for notifications */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
-        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
@@ -845,11 +1129,10 @@ export default function Chat() {
   );
 }
 
-
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ["common"])),
     },
   };
 }
