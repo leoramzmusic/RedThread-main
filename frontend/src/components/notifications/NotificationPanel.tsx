@@ -135,8 +135,8 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             <IconButton
               data-testid="notification-back"
               onClick={() => setFilter("all")}
-              title={t("notifications.archived.title")}
-              aria-label={t("notifications.archived.title")}
+              title={t("notifications.archived.back")}
+              aria-label={t("notifications.archived.back")}
               size="small"
               sx={{ mr: 0.5 }}
             >
