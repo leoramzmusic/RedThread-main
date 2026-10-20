@@ -1175,7 +1175,7 @@
     },
     "survey": {
       "title": "CARE の好み",
-      "pending_one": "好みを完成させるには、あと 1 問あります。",
+      "pending_one": "好みを完成させるには、あと {{count}} 問あります。",
       "pending_other": "好みを完成させるには、あと {{count}} 問あります。"
     },
     "system": {

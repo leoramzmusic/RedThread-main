@@ -1136,7 +1136,7 @@
     },
     "survey": {
       "title": "የCARE ምርጫዎች",
-      "pending_one": "ምርጫዎችዎን ለማጠናቀቅ 1 ጥያቄ ቀርቷል።",
+      "pending_one": "ምርጫዎችዎን ለማጠናቀቅ {{count}} ቀርቷል።",
       "pending_other": "ምርጫዎችዎን ለማጠናቀቅ {{count}} ጥያቄዎች ቀርተዋል።"
     },
     "system": {

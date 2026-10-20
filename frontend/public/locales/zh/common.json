@@ -1176,7 +1176,7 @@
     },
     "survey": {
       "title": "CARE 偏好",
-      "pending_one": "你还剩 1 个问题即可完成偏好设置。",
+      "pending_one": "你还剩 {{count}} 个问题即可完成偏好设置。",
       "pending_other": "你还剩 {{count}} 个问题即可完成偏好设置。"
     },
     "system": {

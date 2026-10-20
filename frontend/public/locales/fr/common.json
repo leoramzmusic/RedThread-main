@@ -1145,7 +1145,7 @@
     },
     "survey": {
       "title": "Préférences CARE",
-      "pending_one": "Il vous reste 1 question pour compléter vos préférences.",
+      "pending_one": "Encore {{count}} à compléter pour vos préférences.",
       "pending_other": "Il vous reste {{count}} questions pour compléter vos préférences."
     },
     "system": {

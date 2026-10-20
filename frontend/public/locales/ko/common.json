@@ -1175,7 +1175,7 @@
     },
     "survey": {
       "title": "CARE 선호도",
-      "pending_one": "선호도를 완성하려면 1개의 질문이 남았습니다.",
+      "pending_one": "선호도를 완성하려면 {{count}}개의 질문이 남았습니다.",
       "pending_other": "선호도를 완성하려면 {{count}}개의 질문이 남았습니다."
     },
     "system": {

@@ -1135,7 +1135,7 @@
     },
     "survey": {
       "title": "Ngā Manakohanga CARE",
-      "pending_one": "Kotahi tonu te pātai e toe ana hei whakaoti i ō manakohanga.",
+      "pending_one": "E toe ana {{count}} pātai hei whakaoti i ō manakohanga.",
       "pending_other": "E {{count}} ngā pātai e toe ana hei whakaoti i ō manakohanga."
     },
     "system": {

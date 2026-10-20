@@ -1494,7 +1494,7 @@
     },
     "survey": {
       "title": "Preferencias CARE",
-      "pending_one": "Te queda 1 pregunta.",
+      "pending_one": "Te queda {{count}} pregunta por responder.",
       "pending_other": "Te quedan {{count}} preguntas."
     },
     "system": {
@@ -1534,7 +1534,7 @@
       "snoozed": "Notificación pospuesta"
     },
     "quickReply": {
-      "placeholder": "Responder.",
+      "placeholder": "Responder…",
       "send": "Enviar"
     },
     "expand": {

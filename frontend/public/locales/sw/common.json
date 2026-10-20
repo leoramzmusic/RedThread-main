@@ -1136,7 +1136,7 @@
     },
     "survey": {
       "title": "Mapendeleo ya CARE",
-      "pending_one": "Umebakiza swali 1 ili kukamilisha mapendeleo yako.",
+      "pending_one": "Umebakiza {{count}} swali ili kukamilisha mapendeleo yako.",
       "pending_other": "Umebakiza maswali {{count}} ili kukamilisha mapendeleo yako."
     },
     "system": {

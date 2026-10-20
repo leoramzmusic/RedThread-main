@@ -1177,7 +1177,7 @@
     },
     "survey": {
       "title": "CARE-Präferenzen",
-      "pending_one": "Dir fehlt noch 1 Frage, um deine Präferenzen zu vervollständigen.",
+      "pending_one": "Dir fehlt noch {{count}} Frage, um deine Präferenzen zu vervollständigen.",
       "pending_other": "Dir fehlen noch {{count}} Fragen, um deine Präferenzen zu vervollständigen."
     },
     "system": {

@@ -1136,7 +1136,7 @@
     },
     "survey": {
       "title": "Mga kagustuhan sa CARE",
-      "pending_one": "May 1 tanong ka pang natitira para makumpleto ang iyong mga kagustuhan.",
+      "pending_one": "May {{count}} tanong ka pang natitira para makumpleto ang iyong mga kagustuhan.",
       "pending_other": "May {{count}} tanong ka pang natitira para makumpleto ang iyong mga kagustuhan."
     },
     "system": {

@@ -1135,7 +1135,7 @@
     },
     "survey": {
       "title": "Keutamaan CARE",
-      "pending_one": "Anda mempunyai 1 soalan lagi untuk melengkapkan keutamaan anda.",
+      "pending_one": "Anda mempunyai {{count}} soalan lagi untuk melengkapkan keutamaan anda.",
       "pending_other": "Anda mempunyai {{count}} soalan lagi untuk melengkapkan keutamaan anda."
     },
     "system": {

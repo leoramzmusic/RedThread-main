@@ -1177,7 +1177,7 @@
     },
     "survey": {
       "title": "Preferenze CARE",
-      "pending_one": "Ti manca 1 domanda per completare le tue preferenze.",
+      "pending_one": "Ti manca {{count}} domanda per completare le tue preferenze.",
       "pending_other": "Ti mancano {{count}} domande per completare le tue preferenze."
     },
     "system": {

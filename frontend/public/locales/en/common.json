@@ -1430,7 +1430,7 @@
     },
     "survey": {
       "title": "CARE preferences",
-      "pending_one": "You have 1 question left to complete your preferences.",
+      "pending_one": "You have {{count}} question left to complete your preferences.",
       "pending_other": "You have {{count}} questions left to complete your preferences."
     },
     "system": {
@@ -1470,7 +1470,7 @@
       "snoozed": "Notification snoozed"
     },
     "quickReply": {
-      "placeholder": "Reply.",
+      "placeholder": "Reply…",
       "send": "Send"
     },
     "expand": {

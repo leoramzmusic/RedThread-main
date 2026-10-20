@@ -1177,7 +1177,7 @@
     },
     "survey": {
       "title": "CARE-preferenser",
-      "pending_one": "Du har 1 fråga kvar för att slutföra dina preferenser.",
+      "pending_one": "Du har {{count}} fråga kvar för att slutföra dina preferenser.",
       "pending_other": "Du har {{count}} frågor kvar för att slutföra dina preferenser."
     },
     "system": {

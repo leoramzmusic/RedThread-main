@@ -1136,7 +1136,7 @@
     },
     "survey": {
       "title": "Zaɓin CARE",
-      "pending_one": "Kuna da tambaya 1 da ta rage don kammala zaɓinku.",
+      "pending_one": "Kuna da {{count}} tambaya da ta rage don kammala zaɓinku.",
       "pending_other": "Kuna da tambayoyi {{count}} da suka rage don kammala zaɓinku."
     },
     "system": {
