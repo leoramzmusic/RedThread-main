@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Campanita estilo Facebook/LinkedIn: notificaciones sociales (like con foto, match), de mensajes y sistema, con agrupación 24h, click-through, quick reply, badge confiable, sincronía multi-pestaña y silencios por bucket.
+**Goal:** F1 de la campanita: bandeja unificada Todo/Likes/Chats/Sistema con notificaciones sociales (like con foto, match), mensajes y sistema, counts por bucket, click-through, visto por tab, i18n y badge confiable multi-pestaña. F2 añade grupos visibles/prioridad/paginación/quick reply; F3 silencios/snooze/swipe.
 
-**Architecture:** Emisión directa en la fuente del evento vía `notification_service` (Kafka queda como canal paralelo). Documento-grupo materializado con bump atómico (ventana 24h). Lectura por cursor desde documentos ya agrupados. `ConnectionManager` multi-conexión para fan-out de pushes WS.
+**Architecture:** Emisión directa en la fuente del evento vía `notification_service` (Kafka queda como canal paralelo). Documento-grupo materializado con bump atómico (ventana 24h) y lectura por cursor; F1 muestra al último actor en singular. `ConnectionManager` multi-conexión para fan-out de pushes WS. Sin agregador/`InboxState`.
 
 **Tech Stack:** FastAPI + Beanie (MongoDB), pytest, Next.js/React + MUI, jest/RTL, date-fns.
 
@@ -23,7 +23,721 @@
 
 ---
 
-### Task 1: ConnectionManager multi-conexión
+## ENMIENDA F1 (2026-10-19) — LEER ANTES DE EJECUTAR
+
+**Estado:** T1 (`de85553`) y T2 (`d5515e7`) **DONE**. T4, T5, T6 y T8 del plan
+siguen vigentes tal cual. **T3, T7 y T10 quedan reemplazadas** por T3-F1, T7-F1
+y T10-F1 de esta enmienda; **T9 se difiere a F2** y **T11 a F3**. El spec
+vinculante es `docs/superpowers/specs/2026-10-19-notification-center-design.md`
+con la enmienda aprobada.
+
+Decisiones que cambian respecto al plan original:
+
+- Los docs de notificación son la fuente única. No hay `/notifications/inbox`
+  ni `InboxState`; no se publica `push.like` por Kafka.
+- Tabs UI: Todo / Likes / Chats / Sistema (filtros API `all|social|messages|
+  system`).
+- `unread-count` devuelve counts por bucket + `survey_pending`; badge = `count`.
+- `read-bucket` marca social/system; Chats se marca al abrir conversación.
+- Like click → `/likes`; match/message → chat; system/survey/promo → URL.
+- i18n 21 idiomas en `common.json` bajo `notifications.*`; copy de eventos desde
+  `type/actors/metadata`; `content` solo fallback/legacy/admin.
+- Encuesta CARE = ítem sintético; `survey_pending` se calcula en backend.
+- F1 sin grupos visibles, sin “Cargar más”, sin quick reply, sin swipe/snooze.
+
+Orden de ejecución F1: **T3-F1 → T4 → T5 → T6 → T7A → T7-F1 → T8 → T10-F1**.
+
+> **Aviso de worktree (2026-10-20):** hay cambios sin commitear del workstream
+> `docs/superpowers/plans/2026-10-19-profile-like-media-attribution.md` en
+> `notification_service.py`, `NotificationItem.tsx`, `discovery.py`,
+> `smart_photos.py` y tests asociados. No revertirlos. Antes de T4/T5, correr
+> sus tests y verificar qué ya está implementado; no duplicar. Al commitear,
+> usar `git add -p` y stagear solo los hunks de la tarea: un `git add` del
+> archivo completo arrastraría ese trabajo ajeno. El test existente “single
+> like → profile” contradice la decisión F1 **like → `/likes`** y debe
+> actualizarse en T7-F1. El thumbnail de media se conserva; el copy agregado de
+> grupos del test existente es F2: en F1 un doc con `actor_count > 1` muestra al
+> último actor en singular. No revertir la attribution de media.
+
+### Task 3-F1: API de bandeja (reemplaza Task 3)
+
+**Files:**
+- Modify (rewrite): `backend/src/api/notifications.py`
+- Modify: `backend/src/models/user_settings.py` (campo `notification_mutes`)
+- Modify: `backend/src/api/settings.py` (`UpdateSettingsRequest`)
+- Modify: `backend/src/services/notification_service.py` (helper de chat)
+- Modify: `backend/src/api/chat.py` (marcar doc al leer mensajes)
+- Test: `backend/tests/test_notifications_api.py`
+
+**Interfaces:**
+- Consumes: `notification_service.visibility_query`, `serialize_notification`,
+  `manager` (T1/T2); `CareUserPreference` + `CARE_DIMENSION_KEYS`.
+- Produces:
+  - `GET /notifications?filter&cursor&limit&unread` →
+    `{items, next_cursor}`.
+  - `GET /notifications/unread-count` →
+    `{count, all, social, messages, system, survey_pending}`.
+  - `POST /notifications/read-bucket` `{bucket: "social"|"system"}` →
+    `{updated}` + WS `notifications_bucket_read`.
+  - `POST /notifications/{id}/read` + WS `notification_read`.
+  - `POST /notifications/read-all` + WS `notifications_read_all`.
+  - `POST /notifications/system` (admin, sin cambios).
+  - `notification_service.mark_message_notification_read(user_id,
+    conversation_id) -> None` + WS `notifications_sync`.
+  - `_bucket_types(bucket) -> list[str]`, `_compose_counts(social, messages,
+    system_docs, survey_pending) -> dict`, `_survey_pending(user_id) -> int`,
+    `_user_payload(profile) -> dict`, `_serialize_item(doc, profile) -> dict`.
+
+- [ ] **Step 1: Escribir tests que fallan** (`backend/tests/test_notifications_api.py`)
+
+Cubre, con mocks de Beanie (`unittest.mock.patch.object` / `AsyncMock`), el
+patrón de la casa:
+
+```python
+from datetime import datetime
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+from src.api import notifications as api
+from src.services import notification_service as ns
+
+
+def test_bucket_types_social():
+    assert api._bucket_types("social") == ["like", "match"]
+
+
+def test_bucket_types_system():
+    assert api._bucket_types("system") == ["system", "survey", "promo"]
+
+
+def test_bucket_types_rejects_messages():
+    with pytest.raises(ValueError):
+        api._bucket_types("messages")
+
+
+def test_compose_counts_includes_survey_once():
+    got = api._compose_counts(social=3, messages=2, system_docs=1, survey_pending=4)
+    assert got == {
+        "count": 7, "all": 7, "social": 3, "messages": 2,
+        "system": 2, "survey_pending": 4,
+    }
+
+
+def test_compose_counts_without_survey():
+    got = api._compose_counts(social=0, messages=0, system_docs=0, survey_pending=0)
+    assert got == {
+        "count": 0, "all": 0, "social": 0, "messages": 0,
+        "system": 0, "survey_pending": 0,
+    }
+
+
+@pytest.mark.asyncio
+async def test_survey_pending_counts_missing_dimensions():
+    prefs = [SimpleNamespace(dimension="a"), SimpleNamespace(dimension="b")]
+    with patch(
+        "src.care.preferences.service.list_user_preferences",
+        new=AsyncMock(return_value=prefs),
+    ), patch(
+        "src.care.preferences.service.CARE_DIMENSION_KEYS", ("a", "b", "c", "d")
+    ):
+        assert await api._survey_pending("u1") == 2
+
+
+@pytest.mark.asyncio
+async def test_survey_pending_failure_returns_zero():
+    with patch(
+        "src.care.preferences.service.list_user_preferences",
+        new=AsyncMock(side_effect=RuntimeError("db down")),
+    ):
+        assert await api._survey_pending("u1") == 0
+
+
+@pytest.mark.asyncio
+async def test_read_bucket_updates_and_emits():
+    result = SimpleNamespace(modified_count=2)
+    chain = SimpleNamespace(update=AsyncMock(return_value=result))
+    with patch.object(api.Notification, "find", return_value=chain), patch.object(
+        api.manager, "send_personal_message", new=AsyncMock()
+    ) as push:
+        out = await api.read_bucket(
+            api.ReadBucketRequest(bucket="social"), SimpleNamespace(id="u1")
+        )
+    assert out == {"updated": 2}
+    api.Notification.find.assert_called_once()
+    push.assert_awaited_once()
+    assert push.await_args.args[1]["action"] == "notifications_bucket_read"
+
+
+@pytest.mark.asyncio
+async def test_read_bucket_rejects_messages():
+    from fastapi import HTTPException
+
+    with pytest.raises(HTTPException) as exc:
+        await api.read_bucket(
+            api.ReadBucketRequest(bucket="messages"), SimpleNamespace(id="u1")
+        )
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_mark_message_notification_read_updates_and_syncs():
+    chain = SimpleNamespace(update=AsyncMock(return_value=None))
+    with patch.object(ns.Notification, "find", return_value=chain), patch.object(
+        ns.manager, "send_personal_message", new=AsyncMock()
+    ) as push:
+        await ns.mark_message_notification_read("u1", "c1")
+    assert chain.update.await_count == 1
+    push.assert_awaited_once_with("u1", {"action": "notifications_sync"})
+```
+
+Además, test del payload de usuario enriquecido (se usa para grupos y
+singulares):
+
+```python
+def test_user_payload_from_profile():
+    profile = SimpleNamespace(
+        display_name="Ana", photos=["/a.jpg"], nickname="ana"
+    )
+    assert api._user_payload(profile) == {
+        "name": "Ana", "photo": "/a.jpg", "nickname": "ana"
+    }
+```
+
+- [ ] **Step 2: Ver fallar**
+
+Run (desde `backend/`): `venv\Scripts\python.exe -m pytest tests/test_notifications_api.py -q`
+Expected: FAIL — helpers/endpoints no existen.
+
+- [ ] **Step 3: Implementar**
+
+1. `backend/src/services/notification_service.py`:
+
+```python
+async def mark_message_notification_read(user_id: str, conversation_id: str) -> None:
+    group_key = f"message:{conversation_id}"
+    await Notification.find(
+        {"user_id": user_id, "group_key": group_key, "is_read": False}
+    ).update({"$set": {"is_read": True, "updated_at": datetime.utcnow()}})
+    await manager.send_personal_message(user_id, {"action": "notifications_sync"})
+```
+
+2. `backend/src/api/notifications.py`:
+   - Mantener `encode_cursor`/`decode_cursor`, `_mute_context`, `POST /system`,
+     `_fan_out_system` del plan original.
+   - `_bucket_types("social"|"system")`; `ValueError` para el resto.
+   - `_compose_counts(...)` según test.
+   - `_survey_pending(user_id)` con import diferido de
+     `src.care.preferences.service`, `try/except Exception: return 0`.
+   - `_user_payload(profile)`:
+     ```python
+     def _user_payload(profile) -> dict:
+         if not profile:
+             return {"name": "Usuario", "photo": None, "nickname": None}
+         return {
+             "name": profile.display_name,
+             "photo": profile.photos[0] if profile.photos else None,
+             "nickname": getattr(profile, "nickname", None),
+         }
+     ```
+   - `_serialize_item(doc, profile)`:
+     ```python
+     def _serialize_item(doc, profile) -> dict:
+         data = ns.serialize_notification(doc)
+         data["user"] = _user_payload(profile)
+         return data
+     ```
+   - `GET /notifications`: añadir `unread: bool = False`; si true,
+     `query["is_read"] = False`. Enriquecer `related_ids` de **todos** los docs
+     con `related_user_id` (no solo `actor_count <= 1`) y construir `user` con
+     `_serialize_item(doc, profile)`.
+   - `GET /unread-count`: tres counts con `Notification.find(query).count()` +
+     `_survey_pending`; devolver `_compose_counts`.
+     `system_docs` incluye [system, survey, promo]; `messages` [message];
+     `social` [like, match]. Aplicar `visibility_query(uid, "all", mutes, master)`.
+   - `POST /read-bucket`: `ReadBucketRequest` con `bucket: str`; validar con
+     `_bucket_types` dentro de `try/except ValueError` y lanzar
+     `HTTPException(status_code=400, detail="bucket must be social or system")`.
+     Luego `Notification.find({"user_id": uid, "type": {"$in": types},
+     "is_read": False}).update({"$set": {"is_read": True}})`; push
+     `{"action": "notifications_bucket_read", "bucket": bucket}`; devolver
+     `{"updated": result.modified_count if result else 0}`.
+   - Declarar `/unread-count`, `/read-all`, `/read-bucket`, `/system` antes de
+     `/{notification_id}/read`.
+   - `read-all` mantiene el push `notifications_read_all`.
+   - `mark_as_read` mantiene ownership + `notification_read`.
+3. `backend/src/api/chat.py`, en el path `source_kind == "conversation"` tras
+   `conversation.save()`:
+
+```python
+        try:
+            from src.services.notification_service import (
+                mark_message_notification_read,
+            )
+
+            await mark_message_notification_read(
+                str(current_user.id), conversation_id
+            )
+        except Exception as notif_err:
+            print(f"Notification read sync error: {notif_err}")
+```
+
+4. Settings:
+   - `backend/src/models/user_settings.py`, junto a `do_not_disturb`:
+     ```python
+     notification_mutes: Dict[str, bool] = Field(default_factory=dict)
+     ```
+   - `backend/src/api/settings.py`, en `UpdateSettingsRequest`:
+     ```python
+     notification_mutes: Optional[Dict[str, bool]] = None
+     ```
+
+- [ ] **Step 4: Correr tests + settings**
+
+Run: `venv\Scripts\python.exe -m pytest tests/test_notifications_api.py tests/test_notification_service.py tests/test_settings_language_source.py -q`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add -p backend/src/api/notifications.py backend/src/services/notification_service.py backend/src/api/chat.py backend/src/models/user_settings.py backend/src/api/settings.py backend/tests/test_notifications_api.py
+git commit -m "feat(notifications): API F1 con counts por bucket, visto y sincronia de chat"
+```
+
+> `notification_service.py` ya tiene cambios sin commitear de media
+> attribution: stagea solo el helper de chat (o pide commitear primero ese
+> workstream). No hacer `git add` del archivo completo sin revisar el diff.
+
+### Task 7A: i18n de notificaciones (21 locales)
+
+**Files:**
+- Modify: `frontend/public/locales/*/common.json` (21 archivos)
+- Test: `frontend/src/components/notifications/notificationLocaleKeys.test.ts`
+
+**Interfaces:**
+- Produces: subárbol `notifications.*` en `common` para panel/items; helper
+  `frontend/src/utils/dateLocale.ts` con `dateFnsLocale(lng)`.
+
+- [ ] **Step 1: Test de paridad que falla**
+
+```typescript
+import fs from "fs";
+import path from "path";
+
+const LOCALES = ["en","es","pt","fr","de","it","ru","sv","nl","zh","hi","bn","ja","ko","ar","sw","ha","am","tl","ms","mi"];
+const read = (lng: string) =>
+  JSON.parse(fs.readFileSync(path.join(process.cwd(), "public", "locales", lng, "common.json"), "utf8"));
+
+const flatten = (obj: any, prefix = ""): string[] =>
+  Object.entries(obj).flatMap(([k, v]) =>
+    v && typeof v === "object" ? flatten(v, `${prefix}${k}.`) : [`${prefix}${k}`],
+  );
+
+describe("notifications locale keys", () => {
+  const en = new Set(flatten(read("en").notifications));
+  it.each(LOCALES)("%s has every en key", (lng) => {
+    const keys = new Set(flatten(read(lng).notifications));
+    expect([...en].filter((key) => !keys.has(key))).toEqual([]);
+  });
+  it("en has core keys", () => {
+    expect(en.has("tabs.likes")).toBe(true);
+    expect(en.has("like.single")).toBe(true);
+    expect(en.has("survey.pending_other")).toBe(true);
+  });
+});
+```
+
+> Las locales con plurales extra (`ar`, `ru`, etc.) pueden tener `_few/_many/_zero`;
+> el test exige que estén todas las claves de `en`, no igualdad exacta.
+
+- [ ] **Step 2: Ver fallar**
+
+Run: `npx jest src/components/notifications/notificationLocaleKeys.test.ts --ci`
+Expected: FAIL — `notifications` no existe.
+
+- [ ] **Step 3: Añadir claves a los 21 `common.json`**
+
+Estructura exacta (EN/ES completos; traducir el resto):
+
+```json
+"notifications": {
+  "title": "Notifications",
+  "close": "Close",
+  "retry": "Retry",
+  "loading": "Loading…",
+  "markAllRead": "Mark all as read",
+  "error": "We couldn't load your notifications.",
+  "tabs": { "all": "All", "likes": "Likes", "chats": "Chats", "system": "System" },
+  "empty": {
+    "all": "You're all caught up.",
+    "likes": "No likes yet.",
+    "chats": "No new messages.",
+    "system": "No announcements."
+  },
+  "like": {
+    "single": "{{name}} likes you",
+    "superlike": "{{name}} sent you a Super Like",
+    "group": "{{names}} and {{count}} more"
+  },
+  "match": { "single": "It's a match with {{name}}!" },
+  "message": { "single": "New message from {{name}}" },
+  "survey": {
+    "title": "CARE preferences",
+    "pending_one": "You have 1 question left to complete your preferences.",
+    "pending_other": "You have {{count}} questions left to complete your preferences."
+  },
+  "system": { "fallback": "Red Thread" },
+  "actor": { "fallback": "Someone", "more": "and {{count}} more" }
+}
+```
+
+Español: “Notificaciones”, “Cerrar”, “Reintentar”, “Cargando…”, “Marcar todo como leído”,
+“No pudimos cargar tus notificaciones.”, tabs “Todo/Likes/Chats/Sistema”,
+vacíos “Estás al día/Sin likes por ahora/Sin mensajes nuevos/Sin avisos”,
+like “A {{name}} le gustas”, superlike “{{name}} te envió un Super Like”,
+match “¡Es un match con {{name}}!”, mensaje “Nuevo mensaje de {{name}}”,
+encuesta “Preferencias CARE” + “Te falta 1 pregunta…”/“Te faltan {{count}}
+preguntas…”.
+
+- [ ] **Step 4: Helper de fecha**
+
+`frontend/src/utils/dateLocale.ts`:
+
+```typescript
+import { enUS, es, pt, fr, de, it, ru, sv, nl, zhCN, hi, bn, ja, ko, ar, sw, ha, am, tl, ms } from "date-fns/locale";
+
+const MAP: Record<string, Locale> = { en: enUS, es, pt, fr, de, it, ru, sv, nl, zh: zhCN, hi, bn, ja, ko, ar, sw, ha, am, tl, ms };
+
+export function dateFnsLocale(lng: string) {
+  return MAP[lng] ?? enUS;
+}
+```
+
+(Importar el tipo `Locale` de `date-fns`; si `tl`/`mi` no existen en la versión
+instalada, omitirlos del import y del MAP. `mi` cae a `enUS`.)
+
+- [ ] **Step 5: Correr y commit**
+
+Run: `npx jest src/components/notifications/notificationLocaleKeys.test.ts --ci`; `npx tsc --noEmit`
+Expected: PASS / limpio.
+
+```bash
+git add frontend/public/locales frontend/src/utils/dateLocale.ts frontend/src/components/notifications/notificationLocaleKeys.test.ts
+git commit -m "feat(notifications-ui): i18n de la bandeja en 21 idiomas"
+```
+
+### Task 7-F1: Hook + panel + item (reemplaza Task 7)
+
+**Files:**
+- Create: `frontend/src/hooks/useNotifications.ts`
+- Create: `frontend/src/hooks/useNotifications.test.ts`
+- Modify (rewrite): `frontend/src/components/notifications/NotificationPanel.tsx`
+- Modify (rewrite): `frontend/src/components/notifications/NotificationItem.tsx`
+- Modify (rewrite): `frontend/src/components/notifications/NotificationPanel.test.tsx`
+- Create: `frontend/src/components/notifications/NotificationItem.test.tsx`
+
+**Interfaces:**
+- Consumes: T3-F1 endpoints; `common` i18n keys (T7A); `dateFnsLocale`.
+- Produces:
+  - `useNotifications(filter, opts?: {unread?: boolean})` →
+    `{items, counts, unreadCount, loading, error, nextCursor, refresh, markRead,
+    markBucket, markAllRead}` (sin `loadMore` en F1). `unreadCount =
+    counts.count` mantiene compatible el tab de chat de T8.
+  - Panel props `{ onClose: () => void }`.
+  - `NotificationItem` props `{ notification, onRead, onNavigate? }`.
+
+- [ ] **Step 1: Tests que fallan**
+
+`useNotifications.test.ts`:
+
+```typescript
+import { renderHook, waitFor, act } from "@testing-library/react";
+import { useNotifications } from "./useNotifications";
+import apiClient from "../services/api";
+
+jest.mock("../services/api", () => ({
+  __esModule: true,
+  default: { get: jest.fn(), post: jest.fn() },
+}));
+const get = apiClient.get as jest.Mock;
+const post = apiClient.post as jest.Mock;
+
+const counts = { count: 2, all: 2, social: 1, messages: 1, system: 0, survey_pending: 0 };
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  get.mockImplementation((url: string) => {
+    if (url === "/notifications/unread-count") return Promise.resolve({ data: counts });
+    return Promise.resolve({ data: { items: [], next_cursor: null } });
+  });
+});
+
+it("fetches the filter and unread flag", async () => {
+  const { result } = renderHook(() => useNotifications("messages", { unread: true }));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "messages", limit: 50, unread: true },
+  });
+});
+
+it("marks a notification read and refreshes counts", async () => {
+  post.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.markRead("n1"));
+  expect(post).toHaveBeenCalledWith("/notifications/n1/read");
+  expect(get).toHaveBeenCalledWith("/notifications/unread-count");
+});
+
+it("marks a bucket seen", async () => {
+  post.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("social"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.markBucket("social"));
+  expect(post).toHaveBeenCalledWith("/notifications/read-bucket", { bucket: "social" });
+});
+```
+
+`NotificationPanel.test.tsx`: mock `useTranslation` (`t` returns readable ES
+strings for the keys used), `next/router`, and `useNotifications`; cover:
+- tabs Todo/Likes/Chats/Sistema con testids y counts;
+- Chats llama el hook con `{unread:true}`;
+- abrir Likes llama `markBucket("social")` una vez; Sistema `markBucket("system")`;
+- encuesta fijada en Todo/Sistema y click navega a `/home?encuesta=1` + `onClose`;
+- empty/error/retry;
+- click de item cierra el panel.
+
+`NotificationItem.test.tsx`: mocks router + `t`; cubre:
+- like single y like agrupado → `/likes` (actualizar el test existente que
+  esperaba `/profile/ana` para un like single);
+- match chat → `/chat?conversation=c9`; message chat;
+- system url → `/home?encuesta=1`; legacy → solo `onRead`;
+- copy i18n de like/match (no usa `content`), con `actor_count > 1` mostrando
+  al último actor en singular (F1);
+- thumbnail `metadata.shown_media_thumbnail_url` (conservar test existente);
+- testids.
+
+- [ ] **Step 2: Ver fallar**
+
+Run: `npx jest src/hooks/useNotifications.test.ts src/components/notifications --ci`
+Expected: FAIL — hook/contrato nuevos no existen.
+
+- [ ] **Step 3: Implementar**
+
+`useNotifications`:
+
+```typescript
+const EMPTY_COUNTS = { count: 0, all: 0, social: 0, messages: 0, system: 0, survey_pending: 0 };
+const [counts, setCounts] = useState(EMPTY_COUNTS);
+const fetchAll = useCallback(async () => {
+  setLoading(true); setError(false);
+  try {
+    const [list, count] = await Promise.all([
+      apiClient.get("/notifications", {
+        params: { filter, limit: 50, ...(opts?.unread ? { unread: true } : {}) },
+      }),
+      apiClient.get("/notifications/unread-count"),
+    ]);
+    setItems(list.data.items ?? []);
+    setNextCursor(list.data.next_cursor ?? null);
+    setCounts(count.data);
+  } catch { setError(true); }
+  finally { setLoading(false); }
+}, [filter, opts?.unread]);
+
+useEffect(() => { fetchAll(); }, [fetchAll]);
+useEffect(() => {
+  const onSync = () => fetchAll();
+  window.addEventListener("notifications-sync", onSync);
+  return () => window.removeEventListener("notifications-sync", onSync);
+}, [fetchAll]);
+
+const markRead = async (id: string) => {
+  setItems((prev) => prev.map((n) => n.id === id ? { ...n, is_read: true } : n));
+  try {
+    await apiClient.post(`/notifications/${id}/read`);
+  } finally {
+    await fetchAll();
+  }
+};
+const markBucket = async (bucket: "social" | "system") => {
+  await apiClient.post("/notifications/read-bucket", { bucket });
+  await fetchAll();
+};
+const markAllRead = async () => {
+  await apiClient.post("/notifications/read-all");
+  await fetchAll();
+};
+const unreadCount = counts?.count ?? 0;
+return {
+  items, counts, unreadCount, loading, error, nextCursor,
+  refresh: fetchAll, markRead, markBucket, markAllRead,
+};
+```
+
+`NotificationPanel`:
+- `const [tab, setTab] = useState<0|1|2|3>(0)`; filter map
+  `["all","social","messages","system"]`; labels `t("notifications.tabs.*")`.
+- `useNotifications(filter, { unread: tab === 2 })`.
+- `seenRef = useRef<Set<string>>(new Set())`; on tab/data ready:
+  - tab 1 y `counts.social > 0` y no visto → `await markBucket("social")`,
+    añadir a seen.
+  - tab 3 y `counts.system - (counts.survey_pending > 0 ? 1 : 0) > 0` y no
+    visto → `markBucket("system")` (la encuesta no debe disparar el bulk).
+- Encuesta: `counts.survey_pending > 0 && (tab === 0 || tab === 3)` → item
+  pinned `notification-survey-item`; click `onClose(); router.push("/home?encuesta=1")`.
+- Tabs con `data-testid="notification-tab-all|likes|chats|system"`, iconos
+  `Inbox`, `Favorite`, `ChatBubble`, `Campaign`, label + pill count.
+- Lista `NotificationItem` con `onRead={markRead}`,
+  `onNavigate={() => onClose()}`.
+- Header close + “Marcar todo leído” solo en Sistema (`markAllRead`).
+- `Fade` keyed por tab (200 ms, respetar `prefers-reduced-motion`); skeleton
+  (3 `Skeleton` rows), error con `Reintentar`, empty por tab.
+- No “Cargar más”, no quick reply, no grupos visibles.
+
+`NotificationItem`:
+- Nombre: `notification.user?.name ?? notification.actors?.[0]?.name ??
+  t("notifications.actor.fallback")`.
+- Copy:
+  ```ts
+  type === "like" ? (metadata.superlike
+      ? t("notifications.like.superlike", { name })
+      : t("notifications.like.single", { name }))
+  : type === "match" ? t("notifications.match.single", { name })
+  : type === "message" ? (metadata.preview || t("notifications.message.single", { name }))
+  : content || t("notifications.system.fallback");
+  ```
+- Grupo F1: usa `user` (related_user_id, último actor) y copy singular; ignora
+  `actor_count` (F2). No renderizar “A N personas…” todavía.
+- Thumbnail: si `metadata.shown_media_thumbnail_url` o `shown_media_url` existe,
+  renderizar `<img>` 56×56 con `resolveUrl` (conservar el trabajo actual); el
+  avatar del actor va como overlay. Sin media, avatar normal.
+- Click: `if (!is_read) void onRead(id); onNavigate?.();` luego (optimista, sin
+  bloquear la navegación; `onNavigate` es opcional para el tab de chat de T8):
+  - like → `/likes`
+  - match: `target_type === "chat"` → `/chat?conversation=${target_id}`;
+    `profile` → `/profile/${nickname}`; fallback `/likes`
+  - message → `/chat?conversation=${target_id}`
+  - url: `const url = target_id || metadata.target_url`; si empieza con `/`
+    → `router.push(url)`, si no → `window.location.assign(url)`
+  - null/legacy → no navegar
+- Avatar con `user.photo`/initial; icono de tipo; dot de no leído; timestamp con
+  `formatDistanceToNow(date, { addSuffix: true, locale: dateFnsLocale(i18n.language) })`.
+- Testid `notification-item-${id}`.
+
+- [ ] **Step 4: Correr tests + typecheck**
+
+Run: `npx jest src/hooks/useNotifications.test.ts src/components/notifications --ci`; `npx tsc --noEmit`
+Expected: PASS / limpio.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add frontend/src/hooks/useNotifications.ts frontend/src/hooks/useNotifications.test.ts frontend/src/components/notifications
+git commit -m "feat(notifications-ui): bandeja F1 con tabs, counts y click-through"
+```
+
+> `NotificationItem.tsx` y su test ya tienen cambios sin commitear de media
+> attribution. Revisar `git diff` y stagear solo los hunks de T7-F1, o commitear
+> primero ese workstream.
+
+### Task 10-F1: Layout y sincronía (reemplaza Task 10)
+
+**Files:**
+- Create: `frontend/src/hooks/notificationSync.ts` + `.test.ts`
+- Modify: `frontend/src/components/layout/Layout.tsx`
+
+**Interfaces:**
+- Consumes: WS actions `new_notification`, `notification_read`,
+  `notifications_read_all`, `notifications_bucket_read`, `notifications_sync`,
+  `new_message`; T3-F1 `unread-count`.
+- Produces: `applyNotificationSocketEvent(data, refetchCounts) -> boolean`
+  (true = acción manejada; **siempre refetch**, nunca cero local, porque
+  `survey_pending` puede seguir contando).
+
+- [ ] **Step 1: Test que falla**
+
+```typescript
+import { applyNotificationSocketEvent } from "./notificationSync";
+
+const ACTIONS = ["new_notification","notification_read","notifications_read_all","notifications_bucket_read","notifications_sync","new_message"];
+
+describe("applyNotificationSocketEvent", () => {
+  it.each(ACTIONS)("refetches counts on %s", (action) => {
+    const refetch = jest.fn();
+    expect(applyNotificationSocketEvent({ action }, refetch)).toBe(true);
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+  it("ignores unknown actions", () => {
+    expect(applyNotificationSocketEvent({ action: "typing" }, jest.fn())).toBe(false);
+  });
+});
+```
+
+- [ ] **Step 2: Ver fallar**
+
+Run: `npx jest src/hooks/notificationSync.test.ts --ci`
+Expected: FAIL — módulo no existe.
+
+- [ ] **Step 3: Implementar**
+
+```typescript
+const HANDLED = new Set([
+  "new_notification", "notification_read", "notifications_read_all",
+  "notifications_bucket_read", "notifications_sync", "new_message",
+]);
+
+export function applyNotificationSocketEvent(
+  data: any, refetchCounts: () => void,
+): boolean {
+  if (!HANDLED.has(data?.action)) return false;
+  refetchCounts();
+  return true;
+}
+```
+
+`Layout.tsx`:
+- Quitar imports/estado/efecto de `listPreferences`, `CARE_DIMENSION_KEYS` y
+  `surveyPendingCount`.
+- `fetchUnreadCount` con `GET /notifications/unread-count` →
+  `setUnreadCount(count)` y, al completar, dispatch
+  `new CustomEvent("notifications-sync")` (una sola vez; el panel no reemite).
+- Fetch inicial al montar/autenticar.
+- Debounce 500 ms con `useRef<ReturnType<typeof setTimeout>>`, limpieza en
+  unmount; el WS y los eventos llaman `scheduleFetch()`.
+- WS onmessage: `applyNotificationSocketEvent(data, scheduleFetch)`; si true,
+  `scheduleFetch()` ya agenda el refetch y `fetchUnreadCount` despacha sync.
+- Listener `care-preferences-changed`: `scheduleFetch()`.
+- `visibilitychange` visible: `scheduleFetch()`.
+- Badge `badgeContent={unreadCount}`, `active={unreadCount > 0}`.
+- Panel `<NotificationPanel onClose={() => setNotificationOpen(false)} />`;
+  quitar `onUpdateUnreadCount`, `surveyPendingCount`, `onOpenSurvey`.
+- Mantener el resto del WS (chat, etc.).
+
+- [ ] **Step 4: Correr tests + typecheck + lint**
+
+Run: `npx jest src/hooks/notificationSync.test.ts --ci`; `npx tsc --noEmit`; `npx eslint src/components/layout/Layout.tsx src/hooks/notificationSync.ts`
+Expected: PASS / 0 errores.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add frontend/src/hooks/notificationSync.ts frontend/src/hooks/notificationSync.test.ts frontend/src/components/layout/Layout.tsx
+git commit -m "feat(notifications-ui): badge F1 sincronizado con counts y WS"
+```
+
+### Tareas diferidas
+
+- **T9 (quick reply):** F2. No ejecutar en F1.
+- **T11 (toggles de silencio):** F3. El backend de `notification_mutes` sí entra
+  en T3-F1 (API/counts), pero sin UI.
+- **Grupos visibles, prioridad, paginación UI:** F2.
+- **Snooze, swipe, archivo/histórico:** F3.
+
+---
+
+### Task 1: ConnectionManager multi-conexión — DONE (`de85553`)
 
 **Files:**
 - Create: `backend/src/services/connection_manager.py`
@@ -188,7 +902,7 @@ git commit -m "feat(chat): ConnectionManager multi-conexion por usuario"
 
 ---
 
-### Task 2: Modelo Notification extendido + notification_service (núcleo de emisión/agrupación)
+### Task 2: Modelo Notification extendido + notification_service (núcleo de emisión/agrupación) — DONE (`d5515e7`)
 
 **Files:**
 - Modify: `backend/src/models/notification.py`
@@ -800,7 +1514,7 @@ git commit -m "feat(notifications): servicio de emision con agrupacion bump 24h"
 
 ---
 
-### Task 3: API de notificaciones 2.0 + `notification_mutes` en settings
+### Task 3: API de notificaciones 2.0 + `notification_mutes` en settings — SUPERSEDED por Task 3-F1
 
 **Files:**
 - Modify: `backend/src/api/notifications.py` (rewrite)
@@ -1634,7 +2348,7 @@ git commit -m "feat(notifications): notificacion viva de mensajes (WS + REST)"
 
 ---
 
-### Task 7: Frontend — hook `useNotifications` + panel 2.0 + item con grupos y click-through
+### Task 7: Frontend — hook `useNotifications` + panel 2.0 + item con grupos y click-through — SUPERSEDED por Task 7-F1
 
 **Files:**
 - Create: `frontend/src/hooks/useNotifications.ts`
@@ -2452,7 +3166,7 @@ git commit -m "feat(chat): deep-link ?conversation y migracion del tab de notifi
 
 ---
 
-### Task 9: Quick reply en items de mensajes
+### Task 9: Quick reply en items de mensajes — DIFERIDA A F2
 
 **Files:**
 - Modify: `frontend/src/components/notifications/NotificationItem.tsx` (añadir bloque reply)
@@ -2627,7 +3341,7 @@ git commit -m "feat(notifications-ui): quick reply en items de mensajes"
 
 ---
 
-### Task 10: Layout — badge sincronizado entre pestañas
+### Task 10: Layout — badge sincronizado entre pestañas — SUPERSEDED por Task 10-F1
 
 **Files:**
 - Create: `frontend/src/hooks/notificationSync.ts` + `frontend/src/hooks/notificationSync.test.ts`
@@ -2760,7 +3474,7 @@ git commit -m "feat(notifications-ui): sincronia de badge entre pestanas"
 
 ---
 
-### Task 11: Ajustes — toggles de silencio
+### Task 11: Ajustes — toggles de silencio — DIFERIDA A F3
 
 **Files:**
 - Modify: `frontend/src/hooks/useSettings.ts` (interface `UserSettings` ~línea 19–31)
