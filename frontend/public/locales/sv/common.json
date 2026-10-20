@@ -1141,5 +1141,48 @@
     "receivedManual": "Dokument mottaget. Namn oläsligt, manuell granskning följer.",
     "uploadErrorMsg": "Fel vid uppladdning. Försök igen.",
     "deletedOk": "✓ Dokument borttaget"
+  },
+  "notifications": {
+    "title": "Aviseringar",
+    "close": "Stäng",
+    "retry": "Försök igen",
+    "loading": "Laddar…",
+    "markAllRead": "Markera alla som lästa",
+    "error": "Vi kunde inte ladda dina aviseringar.",
+    "tabs": {
+      "all": "Alla",
+      "likes": "Gilla-markeringar",
+      "chats": "Chattar",
+      "system": "System"
+    },
+    "empty": {
+      "all": "Du har sett allt.",
+      "likes": "Inga gilla-markeringar än.",
+      "chats": "Inga nya meddelanden.",
+      "system": "Inga tillkännagivanden."
+    },
+    "like": {
+      "single": "{{name}} gillar dig",
+      "superlike": "{{name}} skickade en Super Like till dig",
+      "group": "{{names}} och {{count}} till"
+    },
+    "match": {
+      "single": "Det är en match med {{name}}!"
+    },
+    "message": {
+      "single": "Nytt meddelande från {{name}}"
+    },
+    "survey": {
+      "title": "CARE-preferenser",
+      "pending_one": "Du har 1 fråga kvar för att slutföra dina preferenser.",
+      "pending_other": "Du har {{count}} frågor kvar för att slutföra dina preferenser."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Någon",
+      "more": "och {{count}} till"
+    }
   }
 }

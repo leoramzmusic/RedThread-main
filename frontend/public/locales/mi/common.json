@@ -1099,5 +1099,48 @@
     "receivedManual": "Kua tae te tuhinga. Kāore i pānuitia te ingoa, ka arotake ā-ringatia.",
     "uploadErrorMsg": "Hapa tukuake. Ngana anō.",
     "deletedOk": "✓ Kua mukua te tuhinga"
+  },
+  "notifications": {
+    "title": "Ngā Whakamōhiotanga",
+    "close": "Katia",
+    "retry": "Whakamātauria anō",
+    "loading": "E uta ana…",
+    "markAllRead": "Tohua katoatia kua pānuitia",
+    "error": "Kāore i taea e mātou ō whakamōhiotanga te uta.",
+    "tabs": {
+      "all": "Katoa",
+      "likes": "Ngā Manako",
+      "chats": "Ngā Kōrerorero",
+      "system": "Pūnaha"
+    },
+    "empty": {
+      "all": "Kua kitea katoatia e koe.",
+      "likes": "Kāore anō he manako.",
+      "chats": "Kāore he karere hōu.",
+      "system": "Kāore he pānui."
+    },
+    "like": {
+      "single": "E manako ana a {{name}} ki a koe",
+      "superlike": "Kua tukuna e {{name}} he Super Like ki a koe",
+      "group": "{{names}} me ētahi atu {{count}}"
+    },
+    "match": {
+      "single": "He hononga tēnei ki a {{name}}!"
+    },
+    "message": {
+      "single": "He karere hōu nā {{name}}"
+    },
+    "survey": {
+      "title": "Ngā Manakohanga CARE",
+      "pending_one": "Kotahi tonu te pātai e toe ana hei whakaoti i ō manakohanga.",
+      "pending_other": "E {{count}} ngā pātai e toe ana hei whakaoti i ō manakohanga."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Tētahi",
+      "more": "me ētahi atu {{count}}"
+    }
   }
 }

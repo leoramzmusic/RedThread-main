@@ -1099,5 +1099,48 @@
     "receivedManual": "Dokumen diterima. Nama tidak dapat dibaca, semakan manual akan dibuat.",
     "uploadErrorMsg": "Ralat muat naik. Cuba lagi.",
     "deletedOk": "✓ Dokumen berjaya dipadam"
+  },
+  "notifications": {
+    "title": "Pemberitahuan",
+    "close": "Tutup",
+    "retry": "Cuba semula",
+    "loading": "Memuatkan…",
+    "markAllRead": "Tandakan semua sebagai dibaca",
+    "error": "Kami tidak dapat memuatkan pemberitahuan anda.",
+    "tabs": {
+      "all": "Semua",
+      "likes": "Suka",
+      "chats": "Sembang",
+      "system": "Sistem"
+    },
+    "empty": {
+      "all": "Anda sudah membaca semua.",
+      "likes": "Belum ada suka.",
+      "chats": "Tiada mesej baharu.",
+      "system": "Tiada pengumuman."
+    },
+    "like": {
+      "single": "{{name}} menyukai anda",
+      "superlike": "{{name}} menghantar Super Like kepada anda",
+      "group": "{{names}} dan {{count}} lagi"
+    },
+    "match": {
+      "single": "Ia satu padanan dengan {{name}}!"
+    },
+    "message": {
+      "single": "Mesej baharu daripada {{name}}"
+    },
+    "survey": {
+      "title": "Keutamaan CARE",
+      "pending_one": "Anda mempunyai 1 soalan lagi untuk melengkapkan keutamaan anda.",
+      "pending_other": "Anda mempunyai {{count}} soalan lagi untuk melengkapkan keutamaan anda."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Seseorang",
+      "more": "dan {{count}} lagi"
+    }
   }
 }

@@ -1140,5 +1140,48 @@
     "receivedManual": "已收到证件。无法读取姓名，将人工审核。",
     "uploadErrorMsg": "上传证件出错。请重试。",
     "deletedOk": "✓ 证件已删除"
+  },
+  "notifications": {
+    "title": "通知",
+    "close": "关闭",
+    "retry": "重试",
+    "loading": "加载中…",
+    "markAllRead": "全部标为已读",
+    "error": "无法加载你的通知。",
+    "tabs": {
+      "all": "全部",
+      "likes": "喜欢",
+      "chats": "聊天",
+      "system": "系统"
+    },
+    "empty": {
+      "all": "你已全部看完。",
+      "likes": "暂无喜欢。",
+      "chats": "没有新消息。",
+      "system": "暂无公告。"
+    },
+    "like": {
+      "single": "{{name}} 喜欢你",
+      "superlike": "{{name}} 给你发了一个 Super Like",
+      "group": "{{names}} 以及另外 {{count}} 人"
+    },
+    "match": {
+      "single": "你和 {{name}} 匹配成功！"
+    },
+    "message": {
+      "single": "来自 {{name}} 的新消息"
+    },
+    "survey": {
+      "title": "CARE 偏好",
+      "pending_one": "你还剩 1 个问题即可完成偏好设置。",
+      "pending_other": "你还剩 {{count}} 个问题即可完成偏好设置。"
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "某人",
+      "more": "以及另外 {{count}} 人"
+    }
   }
 }

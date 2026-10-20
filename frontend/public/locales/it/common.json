@@ -1141,5 +1141,48 @@
     "receivedManual": "Documento ricevuto. Nome illeggibile, revisione manuale prevista.",
     "uploadErrorMsg": "Errore di caricamento. Riprova.",
     "deletedOk": "✓ Documento eliminato con successo"
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "close": "Chiudi",
+    "retry": "Riprova",
+    "loading": "Caricamento…",
+    "markAllRead": "Segna tutte come lette",
+    "error": "Non è stato possibile caricare le tue notifiche.",
+    "tabs": {
+      "all": "Tutte",
+      "likes": "Like",
+      "chats": "Chat",
+      "system": "Sistema"
+    },
+    "empty": {
+      "all": "Sei al passo.",
+      "likes": "Nessun like per ora.",
+      "chats": "Nessun nuovo messaggio.",
+      "system": "Nessun avviso."
+    },
+    "like": {
+      "single": "A {{name}} piaci",
+      "superlike": "{{name}} ti ha inviato un Super Like",
+      "group": "{{names}} e altri {{count}}"
+    },
+    "match": {
+      "single": "È un match con {{name}}!"
+    },
+    "message": {
+      "single": "Nuovo messaggio da {{name}}"
+    },
+    "survey": {
+      "title": "Preferenze CARE",
+      "pending_one": "Ti manca 1 domanda per completare le tue preferenze.",
+      "pending_other": "Ti mancano {{count}} domande per completare le tue preferenze."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Qualcuno",
+      "more": "e altri {{count}}"
+    }
   }
 }

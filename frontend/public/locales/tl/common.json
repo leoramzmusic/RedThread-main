@@ -1100,5 +1100,48 @@
     "receivedManual": "Natanggap ang dokumento. Hindi mabasa ang pangalan, manual na susuriin.",
     "uploadErrorMsg": "Error sa pag-upload. Subukan ulit.",
     "deletedOk": "✓ Matagumpay na tinanggal ang dokumento"
+  },
+  "notifications": {
+    "title": "Mga Abiso",
+    "close": "Isara",
+    "retry": "Subukan muli",
+    "loading": "Naglo-load…",
+    "markAllRead": "Markahan lahat bilang nabasa",
+    "error": "Hindi namin ma-load ang iyong mga abiso.",
+    "tabs": {
+      "all": "Lahat",
+      "likes": "Mga Like",
+      "chats": "Mga Chat",
+      "system": "Sistema"
+    },
+    "empty": {
+      "all": "Wala ka nang hindi pa nababasa.",
+      "likes": "Wala pang like.",
+      "chats": "Walang bagong mensahe.",
+      "system": "Walang mga anunsyo."
+    },
+    "like": {
+      "single": "Gusto ka ni {{name}}",
+      "superlike": "Nagpadala si {{name}} ng Super Like sa iyo",
+      "group": "{{names}} at {{count}} pang iba"
+    },
+    "match": {
+      "single": "May match ka kay {{name}}!"
+    },
+    "message": {
+      "single": "Bagong mensahe mula kay {{name}}"
+    },
+    "survey": {
+      "title": "Mga kagustuhan sa CARE",
+      "pending_one": "May 1 tanong ka pang natitira para makumpleto ang iyong mga kagustuhan.",
+      "pending_other": "May {{count}} tanong ka pang natitira para makumpleto ang iyong mga kagustuhan."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Isang tao",
+      "more": "at {{count}} pang iba"
+    }
   }
 }

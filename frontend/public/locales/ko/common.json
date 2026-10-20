@@ -1139,5 +1139,48 @@
     "receivedManual": "서류 접수됨. 이름을 읽을 수 없어 수동 심사합니다.",
     "uploadErrorMsg": "서류 업로드 오류. 다시 시도하세요.",
     "deletedOk": "✓ 서류 삭제됨"
+  },
+  "notifications": {
+    "title": "알림",
+    "close": "닫기",
+    "retry": "다시 시도",
+    "loading": "불러오는 중…",
+    "markAllRead": "모두 읽음으로 표시",
+    "error": "알림을 불러오지 못했습니다.",
+    "tabs": {
+      "all": "전체",
+      "likes": "좋아요",
+      "chats": "채팅",
+      "system": "시스템"
+    },
+    "empty": {
+      "all": "모두 확인했습니다.",
+      "likes": "아직 좋아요가 없습니다.",
+      "chats": "새 메시지가 없습니다.",
+      "system": "새 공지가 없습니다."
+    },
+    "like": {
+      "single": "{{name}}님이 회원님을 좋아합니다",
+      "superlike": "{{name}}님이 회원님에게 Super Like를 보냈습니다",
+      "group": "{{names}} 외 {{count}}명"
+    },
+    "match": {
+      "single": "{{name}}님과 매칭되었습니다!"
+    },
+    "message": {
+      "single": "{{name}}님의 새 메시지"
+    },
+    "survey": {
+      "title": "CARE 선호도",
+      "pending_one": "선호도를 완성하려면 1개의 질문이 남았습니다.",
+      "pending_other": "선호도를 완성하려면 {{count}}개의 질문이 남았습니다."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "누군가",
+      "more": "외 {{count}}명"
+    }
   }
 }

@@ -1100,5 +1100,48 @@
     "receivedManual": "Hati imepokelewa. Jina halikusomeka, ukaguzi wa mwongozo utafuata.",
     "uploadErrorMsg": "Hitilafu ya kupakia. Jaribu tena.",
     "deletedOk": "✓ Hati imefutwa"
+  },
+  "notifications": {
+    "title": "Arifa",
+    "close": "Funga",
+    "retry": "Jaribu tena",
+    "loading": "Inapakia…",
+    "markAllRead": "Weka zote kama zilizosomwa",
+    "error": "Hatukuweza kupakia arifa zako.",
+    "tabs": {
+      "all": "Zote",
+      "likes": "Mipendo",
+      "chats": "Gumzo",
+      "system": "Mfumo"
+    },
+    "empty": {
+      "all": "Umesoma kila kitu.",
+      "likes": "Hakuna mipendo bado.",
+      "chats": "Hakuna ujumbe mpya.",
+      "system": "Hakuna matangazo."
+    },
+    "like": {
+      "single": "{{name}} anakupenda",
+      "superlike": "{{name}} amekutumia Super Like",
+      "group": "{{names}} na wengine {{count}}"
+    },
+    "match": {
+      "single": "Ni mechi na {{name}}!"
+    },
+    "message": {
+      "single": "Ujumbe mpya kutoka kwa {{name}}"
+    },
+    "survey": {
+      "title": "Mapendeleo ya CARE",
+      "pending_one": "Umebakiza swali 1 ili kukamilisha mapendeleo yako.",
+      "pending_other": "Umebakiza maswali {{count}} ili kukamilisha mapendeleo yako."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Mtu fulani",
+      "more": "na wengine {{count}}"
+    }
   }
 }

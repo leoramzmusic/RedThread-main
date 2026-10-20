@@ -1458,5 +1458,48 @@
   },
   "closeNotification": "Cerrar notificación",
   "profilePhotoAlt": "Foto {{n}} de {{name}}",
-  "profileNoPhoto": "Sin foto"
+  "profileNoPhoto": "Sin foto",
+  "notifications": {
+    "title": "Notificaciones",
+    "close": "Cerrar",
+    "retry": "Reintentar",
+    "loading": "Cargando…",
+    "markAllRead": "Marcar todo como leído",
+    "error": "No pudimos cargar tus notificaciones.",
+    "tabs": {
+      "all": "Todo",
+      "likes": "Likes",
+      "chats": "Chats",
+      "system": "Sistema"
+    },
+    "empty": {
+      "all": "Estás al día.",
+      "likes": "Sin likes por ahora.",
+      "chats": "Sin mensajes nuevos.",
+      "system": "Sin avisos."
+    },
+    "like": {
+      "single": "A {{name}} le gustas",
+      "superlike": "{{name}} te envió un Super Like",
+      "group": "{{names}} y {{count}} más"
+    },
+    "match": {
+      "single": "¡Es un match con {{name}}!"
+    },
+    "message": {
+      "single": "Nuevo mensaje de {{name}}"
+    },
+    "survey": {
+      "title": "Preferencias CARE",
+      "pending_one": "Te falta 1 pregunta para completar tus preferencias.",
+      "pending_other": "Te faltan {{count}} preguntas para completar tus preferencias."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Alguien",
+      "more": "y {{count}} más"
+    }
+  }
 }

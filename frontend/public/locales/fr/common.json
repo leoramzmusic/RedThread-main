@@ -1109,5 +1109,48 @@
     "receivedManual": "Document reçu. Nom illisible, révision manuelle prévue.",
     "uploadErrorMsg": "Erreur de téléversement. Réessaie.",
     "deletedOk": "✓ Document supprimé avec succès"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "close": "Fermer",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "markAllRead": "Tout marquer comme lu",
+    "error": "Nous n'avons pas pu charger vos notifications.",
+    "tabs": {
+      "all": "Tout",
+      "likes": "Likes",
+      "chats": "Chats",
+      "system": "Système"
+    },
+    "empty": {
+      "all": "Vous êtes à jour.",
+      "likes": "Aucun like pour l'instant.",
+      "chats": "Aucun nouveau message.",
+      "system": "Aucune annonce."
+    },
+    "like": {
+      "single": "{{name}} vous aime",
+      "superlike": "{{name}} vous a envoyé un Super Like",
+      "group": "{{names}} et {{count}} de plus"
+    },
+    "match": {
+      "single": "C'est un match avec {{name}} !"
+    },
+    "message": {
+      "single": "Nouveau message de {{name}}"
+    },
+    "survey": {
+      "title": "Préférences CARE",
+      "pending_one": "Il vous reste 1 question pour compléter vos préférences.",
+      "pending_other": "Il vous reste {{count}} questions pour compléter vos préférences."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Quelqu'un",
+      "more": "et {{count}} de plus"
+    }
   }
 }

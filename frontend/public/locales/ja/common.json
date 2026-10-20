@@ -1139,5 +1139,48 @@
     "receivedManual": "書類を受領。名前が読めないため手動審査します。",
     "uploadErrorMsg": "アップロードエラー。再試行してください。",
     "deletedOk": "✓ 書類を削除しました"
+  },
+  "notifications": {
+    "title": "通知",
+    "close": "閉じる",
+    "retry": "再試行",
+    "loading": "読み込み中…",
+    "markAllRead": "すべて既読にする",
+    "error": "通知を読み込めませんでした。",
+    "tabs": {
+      "all": "すべて",
+      "likes": "いいね",
+      "chats": "チャット",
+      "system": "システム"
+    },
+    "empty": {
+      "all": "すべて確認済みです。",
+      "likes": "まだいいねはありません。",
+      "chats": "新しいメッセージはありません。",
+      "system": "お知らせはありません。"
+    },
+    "like": {
+      "single": "{{name}}さんがあなたにいいねしました",
+      "superlike": "{{name}}さんがあなたに Super Like を送りました",
+      "group": "{{names}}、ほか {{count}} 人"
+    },
+    "match": {
+      "single": "{{name}}さんとマッチしました！"
+    },
+    "message": {
+      "single": "{{name}}さんからの新着メッセージ"
+    },
+    "survey": {
+      "title": "CARE の好み",
+      "pending_one": "好みを完成させるには、あと 1 問あります。",
+      "pending_other": "好みを完成させるには、あと {{count}} 問あります。"
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "誰か",
+      "more": "ほか {{count}} 人"
+    }
   }
 }

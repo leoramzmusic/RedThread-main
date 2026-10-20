@@ -1100,5 +1100,48 @@
     "receivedManual": "An karɓi takarda. Ba a iya karanta suna ba, za a duba da hannu.",
     "uploadErrorMsg": "Kuskuren ɗorawa. Sake gwadawa.",
     "deletedOk": "✓ An share takarda"
+  },
+  "notifications": {
+    "title": "Sanarwa",
+    "close": "Rufe",
+    "retry": "Sake gwadawa",
+    "loading": "Ana lodawa…",
+    "markAllRead": "Yi duk a matsayin an karanta",
+    "error": "Ba mu iya loda sanarwarka ba.",
+    "tabs": {
+      "all": "Duka",
+      "likes": "Likes",
+      "chats": "Hira",
+      "system": "Tsari"
+    },
+    "empty": {
+      "all": "Kun gama duka.",
+      "likes": "Babu likes har yanzu.",
+      "chats": "Babu sabon saƙo.",
+      "system": "Babu sanarwa."
+    },
+    "like": {
+      "single": "{{name}} yana son ku",
+      "superlike": "{{name}} ya aiko muku da Super Like",
+      "group": "{{names}} da wasu {{count}}"
+    },
+    "match": {
+      "single": "An yi daidaito da {{name}}!"
+    },
+    "message": {
+      "single": "Sabon saƙo daga {{name}}"
+    },
+    "survey": {
+      "title": "Zaɓin CARE",
+      "pending_one": "Kuna da tambaya 1 da ta rage don kammala zaɓinku.",
+      "pending_other": "Kuna da tambayoyi {{count}} da suka rage don kammala zaɓinku."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Wani",
+      "more": "da wasu {{count}}"
+    }
   }
 }

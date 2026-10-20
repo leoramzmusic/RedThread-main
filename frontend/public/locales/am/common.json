@@ -1100,5 +1100,48 @@
     "receivedManual": "ሰነድ ደርሷል። ስም ሊነበብ አልቻለም, በእጅ ይገመገማል።",
     "uploadErrorMsg": "የስቀል ስህተት። እንደገና ሞክር።",
     "deletedOk": "✓ ሰነድ በተሳካ ሁኔታ ተሰርዟል"
+  },
+  "notifications": {
+    "title": "ማሳወቂያዎች",
+    "close": "ዝጋ",
+    "retry": "እንደገና ሞክር",
+    "loading": "በመጫን ላይ…",
+    "markAllRead": "ሁሉንም እንደተነበበ ምልክት አድርግ",
+    "error": "ማሳወቂያዎችዎን ማምጣት አልቻልንም።",
+    "tabs": {
+      "all": "ሁሉም",
+      "likes": "ውዴታዎች",
+      "chats": "ውይይቶች",
+      "system": "ስርዓት"
+    },
+    "empty": {
+      "all": "ሁሉንም አይተዋል።",
+      "likes": "እስካሁን ውዴታ የለም።",
+      "chats": "አዲስ መልእክት የለም።",
+      "system": "ማስታወቂያ የለም።"
+    },
+    "like": {
+      "single": "{{name}} ይወድድዎታል",
+      "superlike": "{{name}} Super Like ልኳልዎት",
+      "group": "{{names}} እና {{count}} ሌሎች"
+    },
+    "match": {
+      "single": "ከ{{name}} ጋር ተጣምረዋል!"
+    },
+    "message": {
+      "single": "አዲስ መልእክት ከ{{name}}"
+    },
+    "survey": {
+      "title": "የCARE ምርጫዎች",
+      "pending_one": "ምርጫዎችዎን ለማጠናቀቅ 1 ጥያቄ ቀርቷል።",
+      "pending_other": "ምርጫዎችዎን ለማጠናቀቅ {{count}} ጥያቄዎች ቀርተዋል።"
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "አንድ ሰው",
+      "more": "እና {{count}} ሌሎች"
+    }
   }
 }

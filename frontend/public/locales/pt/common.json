@@ -1109,5 +1109,48 @@
     "receivedManual": "Documento recebido. Não foi possível ler o nome, será revisto manualmente.",
     "uploadErrorMsg": "Erro ao carregar o documento. Tenta de novo.",
     "deletedOk": "✓ Documento eliminado com sucesso"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "close": "Fechar",
+    "retry": "Tentar novamente",
+    "loading": "Carregando…",
+    "markAllRead": "Marcar todas como lidas",
+    "error": "Não foi possível carregar suas notificações.",
+    "tabs": {
+      "all": "Todas",
+      "likes": "Curtidas",
+      "chats": "Conversas",
+      "system": "Sistema"
+    },
+    "empty": {
+      "all": "Você está em dia.",
+      "likes": "Nenhuma curtida ainda.",
+      "chats": "Nenhuma mensagem nova.",
+      "system": "Nenhum aviso."
+    },
+    "like": {
+      "single": "{{name}} curtiu você",
+      "superlike": "{{name}} enviou um Super Like",
+      "group": "{{names}} e mais {{count}}"
+    },
+    "match": {
+      "single": "É um match com {{name}}!"
+    },
+    "message": {
+      "single": "Nova mensagem de {{name}}"
+    },
+    "survey": {
+      "title": "Preferências CARE",
+      "pending_one": "Falta 1 pergunta para completar suas preferências.",
+      "pending_other": "Faltam {{count}} perguntas para completar suas preferências."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Alguém",
+      "more": "e mais {{count}}"
+    }
   }
 }

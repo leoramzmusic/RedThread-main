@@ -1141,5 +1141,48 @@
     "receivedManual": "Document ontvangen. Naam onleesbaar, handmatige review volgt.",
     "uploadErrorMsg": "Fout bij uploaden. Probeer opnieuw.",
     "deletedOk": "✓ Document succesvol verwijderd"
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "close": "Sluiten",
+    "retry": "Opnieuw proberen",
+    "loading": "Laden…",
+    "markAllRead": "Alles als gelezen markeren",
+    "error": "We konden je meldingen niet laden.",
+    "tabs": {
+      "all": "Alles",
+      "likes": "Likes",
+      "chats": "Chats",
+      "system": "Systeem"
+    },
+    "empty": {
+      "all": "Je bent helemaal bij.",
+      "likes": "Nog geen likes.",
+      "chats": "Geen nieuwe berichten.",
+      "system": "Geen aankondigingen."
+    },
+    "like": {
+      "single": "{{name}} vindt je leuk",
+      "superlike": "{{name}} heeft je een Super Like gestuurd",
+      "group": "{{names}} en {{count}} anderen"
+    },
+    "match": {
+      "single": "Het is een match met {{name}}!"
+    },
+    "message": {
+      "single": "Nieuw bericht van {{name}}"
+    },
+    "survey": {
+      "title": "CARE-voorkeuren",
+      "pending_one": "Je hebt nog 1 vraag om je voorkeuren te voltooien.",
+      "pending_other": "Je hebt nog {{count}} vragen om je voorkeuren te voltooien."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Iemand",
+      "more": "en {{count}} anderen"
+    }
   }
 }

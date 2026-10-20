@@ -1141,5 +1141,48 @@
     "receivedManual": "Dokument erhalten. Name nicht lesbar, manuelle Prüfung folgt.",
     "uploadErrorMsg": "Fehler beim Hochladen. Bitte erneut versuchen.",
     "deletedOk": "✓ Dokument erfolgreich gelöscht"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "close": "Schließen",
+    "retry": "Erneut versuchen",
+    "loading": "Wird geladen…",
+    "markAllRead": "Alle als gelesen markieren",
+    "error": "Deine Benachrichtigungen konnten nicht geladen werden.",
+    "tabs": {
+      "all": "Alle",
+      "likes": "Likes",
+      "chats": "Chats",
+      "system": "System"
+    },
+    "empty": {
+      "all": "Du bist auf dem neuesten Stand.",
+      "likes": "Noch keine Likes.",
+      "chats": "Keine neuen Nachrichten.",
+      "system": "Keine Ankündigungen."
+    },
+    "like": {
+      "single": "{{name}} mag dich",
+      "superlike": "{{name}} hat dir einen Super Like geschickt",
+      "group": "{{names}} und {{count}} weitere"
+    },
+    "match": {
+      "single": "Es ist ein Match mit {{name}}!"
+    },
+    "message": {
+      "single": "Neue Nachricht von {{name}}"
+    },
+    "survey": {
+      "title": "CARE-Präferenzen",
+      "pending_one": "Dir fehlt noch 1 Frage, um deine Präferenzen zu vervollständigen.",
+      "pending_other": "Dir fehlen noch {{count}} Fragen, um deine Präferenzen zu vervollständigen."
+    },
+    "system": {
+      "fallback": "Red Thread"
+    },
+    "actor": {
+      "fallback": "Jemand",
+      "more": "und {{count}} weitere"
+    }
   }
 }
