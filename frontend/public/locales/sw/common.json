@@ -1171,12 +1171,22 @@
     },
     "pause": {
       "title": "Sitisha arifa",
-      "active": "Arifa zimesitishwa hadi {{time}}",
+      "active": "Arifa zimesitishwa: {{remaining}} · hadi {{time}}",
       "resume": "Rejesha arifa",
       "tomorrow": "Hadi kesho",
       "custom": "Maalum",
-      "customTitle": "Chagua wakati wa kurejesha",
-      "confirm": "Sitisha"
+      "schedule": "Panga ratiba za sitisha",
+      "scheduleDays": "Siku",
+      "scheduleStart": "Kutoka",
+      "scheduleEnd": "Kwa",
+      "scheduleSave": "Hifadhi",
+      "scheduleList": "Ratiba zilizopangwa",
+      "scheduleEmpty": "Huna ratiba za sitisha bado",
+      "scheduleDelete": "Futa",
+      "scheduleHint": "Chagua siku na nyakati ambazo hutaki kupokea arifa.",
+      "scheduleTimezone": "Eneo la muda: {{timezone}}",
+      "scheduleSaved": "Ratiba ya sitisha imehifadhiwa",
+      "scheduleRemoved": "Ratiba ya sitisha imeondolewa"
     },
     "archived": {
       "title": "Zilizohifadhiwa",

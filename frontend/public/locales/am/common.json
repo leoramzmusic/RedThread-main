@@ -1171,12 +1171,22 @@
     },
     "pause": {
       "title": "ማሳወቂያዎችን ለጊዜው አቁም",
-      "active": "ማሳወቂያዎች እስከ {{time}} ድረስ ቆመዋል",
+      "active": "ማሳወቂያዎች ቆመዋል: {{remaining}} · እስከ {{time}}",
       "resume": "ማሳወቂያዎችን ቀጥል",
       "tomorrow": "እስከ ነገ",
       "custom": "ብጁ",
-      "customTitle": "መቀጠል ያለበትን ጊዜ ይምረጡ",
-      "confirm": "አቁም"
+      "schedule": "የእርጋት መርሃ ይዘጋ",
+      "scheduleDays": "ቀናት",
+      "scheduleStart": "ከ",
+      "scheduleEnd": "እስከ",
+      "scheduleSave": "አስቀምጥ",
+      "scheduleList": "የተዘጋ እርጋት መርሃዎች",
+      "scheduleEmpty": "እስነስ ተዘጋ የእርጋት መርሃ የለም",
+      "scheduleDelete": "አስጥፋ",
+      "scheduleHint": "ማሳወቂያ እንደማትገቡት ባለት ቀናትና ሰዓት ይምረጡ።",
+      "scheduleTimezone": "የጊዜ ክልል: {{timezone}}",
+      "scheduleSaved": "የእርጋት መርሃ ተቀምጧል",
+      "scheduleRemoved": "የእርጋት መርሃ ተወግዷል"
     },
     "archived": {
       "title": "የተመዘገቡ",

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
+import type { PauseScheduleRule } from "../components/notifications/pauseTime";
 
 export interface NotificationCounts {
   count: number;
@@ -9,6 +10,7 @@ export interface NotificationCounts {
   system: number;
   survey_pending: number;
   paused_until?: string | null;
+  pause_schedule?: PauseScheduleRule[];
 }
 
 export interface NotificationActor {
@@ -50,6 +52,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [error, setError] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
+  const [pauseSchedule, setPauseSchedule] = useState<PauseScheduleRule[]>([]);
 
   const filterRef = useRef(filter);
   const unreadRef = useRef(unread);
@@ -80,6 +83,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
         const data = count.data ?? {};
         setCounts({ ...EMPTY_COUNTS, ...data });
         setPausedUntil(data.paused_until ?? null);
+        setPauseSchedule(data.pause_schedule ?? []);
       }
     } catch {
       if (requestId !== requestIdRef.current) return;
@@ -297,6 +301,31 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     }
   }, []);
 
+  const savePauseSchedule = useCallback(async (rule: PauseScheduleRule) => {
+    try {
+      const response = await apiClient.post(
+        "/notifications/pause/schedule",
+        rule,
+      );
+      setPauseSchedule(response.data?.pause_schedule ?? []);
+      setPausedUntil(response.data?.paused_until ?? null);
+    } catch {
+      setError(true);
+    }
+  }, []);
+
+  const removePauseSchedule = useCallback(async (index: number) => {
+    try {
+      const response = await apiClient.delete(
+        `/notifications/pause/schedule/${index}`,
+      );
+      setPauseSchedule(response.data?.pause_schedule ?? []);
+      setPausedUntil(response.data?.paused_until ?? null);
+    } catch {
+      setError(true);
+    }
+  }, []);
+
   return {
     items,
     counts,
@@ -305,6 +334,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     error,
     nextCursor,
     pausedUntil,
+    pauseSchedule,
     refresh: fetchAll,
     markRead,
     markBucket,
@@ -322,5 +352,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     unsnooze,
     pause,
     resume,
+    savePauseSchedule,
+    removePauseSchedule,
   };
 }

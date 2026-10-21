@@ -1211,12 +1211,22 @@
     },
     "pause": {
       "title": "सूचनाएँ रोकें",
-      "active": "सूचनाएँ {{time}} तक रोकी गई हैं",
+      "active": "सूचनाएँ रुकी हुई हैं: {{remaining}} · {{time}} तक",
       "resume": "सूचनाएँ फिर शुरू करें",
       "tomorrow": "कल तक",
       "custom": "कस्टम",
-      "customTitle": "फिर शुरू करने का समय चुनें",
-      "confirm": "रोकें"
+      "schedule": "विराम शेड्यूल करें",
+      "scheduleDays": "दिन",
+      "scheduleStart": "से",
+      "scheduleEnd": "तक",
+      "scheduleSave": "सहेजें",
+      "scheduleList": "शेड्यूल किए गए विराम",
+      "scheduleEmpty": "आपने अभी तक कोई विराम शेड्यूल नहीं किया है",
+      "scheduleDelete": "हटाएँ",
+      "scheduleHint": "वे दिन और समय चुनें जब आप सूचनाएँ नहीं चाहते।",
+      "scheduleTimezone": "समय क्षेत्र: {{timezone}}",
+      "scheduleSaved": "शेड्यूल किया गया विराम सहेजा गया",
+      "scheduleRemoved": "शेड्यूल किया गया विराम हटाया गया"
     },
     "archived": {
       "title": "संग्रहीत",

@@ -1170,12 +1170,22 @@
     },
     "pause": {
       "title": "Jeda pemberitahuan",
-      "active": "Pemberitahuan dijeda sehingga {{time}}",
+      "active": "Pemberitahuan dijeda: {{remaining}} · sehingga {{time}}",
       "resume": "Sambung semula pemberitahuan",
       "tomorrow": "Sehingga esok",
       "custom": "Tersuai",
-      "customTitle": "Pilih masa untuk menyambung semula",
-      "confirm": "Jeda"
+      "schedule": "Jadualkan jeda",
+      "scheduleDays": "Hari",
+      "scheduleStart": "Dari",
+      "scheduleEnd": " hingga",
+      "scheduleSave": "Simpan",
+      "scheduleList": "Jeda yang dijadualkan",
+      "scheduleEmpty": "Anda belum mempunyai jeda yang dijadualkan",
+      "scheduleDelete": "Padam",
+      "scheduleHint": "Pilih hari dan waktu anda tidak mahu menerima pemberitahuan.",
+      "scheduleTimezone": "Zon waktu: {{timezone}}",
+      "scheduleSaved": "Jeda yang dijadualkan telah disimpan",
+      "scheduleRemoved": "Jeda yang dijadualkan telah dipadam"
     },
     "archived": {
       "title": "Diarkibkan",

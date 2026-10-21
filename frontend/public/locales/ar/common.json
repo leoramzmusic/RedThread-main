@@ -1222,12 +1222,22 @@
     },
     "pause": {
       "title": "إيقاف الإشعارات مؤقتًا",
-      "active": "الإشعارات متوقفة مؤقتًا حتى {{time}}",
+      "active": "الإشعارات متوقفة: {{remaining}} · حتى {{time}}",
       "resume": "استئناف الإشعارات",
       "tomorrow": "حتى الغد",
       "custom": "مخصص",
-      "customTitle": "اختر وقت الاستئناف",
-      "confirm": "إيقاف مؤقت"
+      "schedule": "جدولة الإيقاف",
+      "scheduleDays": "الأيام",
+      "scheduleStart": "من",
+      "scheduleEnd": "إلى",
+      "scheduleSave": "حفظ",
+      "scheduleList": "الإيقافات المجدولة",
+      "scheduleEmpty": "لا توجد لديك إيقافات مجدولة بعد",
+      "scheduleDelete": "حذف",
+      "scheduleHint": "اختر الأيام والأوقات التي لا تريد فيها تلقي الإشعارات.",
+      "scheduleTimezone": "المنطقة الزمنية: {{timezone}}",
+      "scheduleSaved": "تم حفظ الإيقاف المجدول",
+      "scheduleRemoved": "تم حذف الإيقاف المجدول"
     },
     "archived": {
       "title": "المؤرشفة",

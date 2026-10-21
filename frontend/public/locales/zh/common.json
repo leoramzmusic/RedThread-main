@@ -1211,12 +1211,22 @@
     },
     "pause": {
       "title": "暂停通知",
-      "active": "通知已暂停至 {{time}}",
+      "active": "通知已暂停：{{remaining}} · 直到 {{time}}",
       "resume": "恢复通知",
       "tomorrow": "暂停到明天",
       "custom": "自定义",
-      "customTitle": "选择恢复时间",
-      "confirm": "暂停"
+      "schedule": "设置暂停计划",
+      "scheduleDays": "星期",
+      "scheduleStart": "开始",
+      "scheduleEnd": "结束",
+      "scheduleSave": "保存",
+      "scheduleList": "已计划的暂停",
+      "scheduleEmpty": "你还没有设置暂停计划",
+      "scheduleDelete": "删除",
+      "scheduleHint": "选择你不想被打扰的日期和时段。",
+      "scheduleTimezone": "时区：{{timezone}}",
+      "scheduleSaved": "暂停计划已保存",
+      "scheduleRemoved": "暂停计划已删除"
     },
     "archived": {
       "title": "已归档",

@@ -66,12 +66,23 @@ const mockCopy: Record<string, string> = {
   "notifications.snooze.4h": "4 horas",
   "notifications.snooze.1d": "Mañana",
   "notifications.pause.title": "Pausar notificaciones",
-  "notifications.pause.active": "Notificaciones pausadas hasta las {{time}}",
+  "notifications.pause.active":
+    "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
   "notifications.pause.resume": "Reanudar notificaciones",
   "notifications.pause.tomorrow": "Hasta mañana",
   "notifications.pause.custom": "Personalizado",
-  "notifications.pause.customTitle": "Elegir fin de la pausa",
-  "notifications.pause.confirm": "Pausar",
+  "notifications.pause.schedule": "Programar pausas",
+  "notifications.pause.scheduleDays": "Días",
+  "notifications.pause.scheduleStart": "Desde",
+  "notifications.pause.scheduleEnd": "Hasta",
+  "notifications.pause.scheduleSave": "Guardar",
+  "notifications.pause.scheduleList": "Pausas programadas",
+  "notifications.pause.scheduleEmpty": "Todavía no tienes pausas programadas",
+  "notifications.pause.scheduleDelete": "Eliminar",
+  "notifications.pause.scheduleHint": "Elige los días y las horas.",
+  "notifications.pause.scheduleTimezone": "Zona horaria: {{timezone}}",
+  "notifications.pause.scheduleSaved": "Pausa programada guardada",
+  "notifications.pause.scheduleRemoved": "Pausa programada eliminada",
   "notifications.undo.archived": "Notificación archivada",
   "notifications.undo.read": "Notificaciones marcadas como leídas",
   "notifications.undo.deleted": "Notificación borrada",
@@ -153,8 +164,11 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   snooze: jest.fn(),
   unsnooze: jest.fn(),
   pausedUntil: null,
+  pauseSchedule: [],
   pause: jest.fn(),
   resume: jest.fn(),
+  savePauseSchedule: jest.fn(),
+  removePauseSchedule: jest.fn(),
   ...overrides,
 });
 
@@ -458,31 +472,56 @@ describe("NotificationPanel", () => {
 
     expect(
       screen.getByTestId("notification-pause-remaining"),
-    ).toHaveTextContent("1h 30m");
+    ).toHaveTextContent("1 h 30 min");
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-resume"));
 
     expect(hook.resume).toHaveBeenCalledTimes(1);
   });
 
-  it("pauses until a custom time", () => {
+  it("offers the 15m, 30m, 1h, 2h and 8h presets", () => {
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    ["15m", "30m", "1h", "2h", "8h"].forEach((preset) => {
+      expect(
+        screen.getByTestId(`notification-pause-${preset}`),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("schedules a weekly pause from the custom option", () => {
     renderPanel();
 
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-custom"));
-    const input = screen
-      .getByTestId("notification-pause-custom-input")
-      .querySelector("input") as HTMLInputElement;
-    const target = new Date(Date.now() + 2 * 60 * 60 * 1000);
-    target.setSeconds(0, 0);
-    const pad = (value: number) => String(value).padStart(2, "0");
-    const local = `${target.getFullYear()}-${pad(target.getMonth() + 1)}-${pad(
-      target.getDate(),
-    )}T${pad(target.getHours())}:${pad(target.getMinutes())}`;
-    fireEvent.change(input, { target: { value: local } });
-    fireEvent.click(screen.getByTestId("notification-pause-custom-confirm"));
 
-    expect(hook.pause).toHaveBeenCalledWith(undefined, target.toISOString());
+    expect(screen.getByTestId("notification-pause-day-0")).toBeInTheDocument();
+    expect(screen.getByTestId("notification-pause-start")).toBeInTheDocument();
+    expect(screen.getByTestId("notification-pause-end")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+
+    expect(hook.savePauseSchedule).toHaveBeenCalledWith(
+      expect.objectContaining({
+        days: [0, 1, 2, 3, 4],
+        start: "18:00",
+        end: "08:00",
+      }),
+    );
+  });
+
+  it("removes a scheduled pause from the dialog", () => {
+    hook = makeHook({
+      pauseSchedule: [{ days: [0, 1], start: "18:00", end: "08:00" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    fireEvent.click(screen.getByTestId("notification-pause-custom"));
+    fireEvent.click(screen.getByTestId("notification-pause-rule-delete-0"));
+
+    expect(hook.removePauseSchedule).toHaveBeenCalledWith(0);
   });
 
   describe("⋯ menu", () => {

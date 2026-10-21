@@ -1212,12 +1212,22 @@
     },
     "pause": {
       "title": "Sospendi notifiche",
-      "active": "Notifiche sospese fino alle {{time}}",
+      "active": "Notifiche in pausa: {{remaining}} · fino alle {{time}}",
       "resume": "Riprendi notifiche",
       "tomorrow": "Fino a domani",
       "custom": "Personalizzato",
-      "customTitle": "Scegli quando riprendere",
-      "confirm": "Sospendi"
+      "schedule": "Programma le pause",
+      "scheduleDays": "Giorni",
+      "scheduleStart": "Dalle",
+      "scheduleEnd": "Alle",
+      "scheduleSave": "Salva",
+      "scheduleList": "Pause programmate",
+      "scheduleEmpty": "Non hai ancora pause programmate",
+      "scheduleDelete": "Elimina",
+      "scheduleHint": "Scegli i giorni e gli orari in cui non vuoi ricevere avvisi.",
+      "scheduleTimezone": "Fuso orario: {{timezone}}",
+      "scheduleSaved": "Pausa programmata salvata",
+      "scheduleRemoved": "Pausa programmata eliminata"
     },
     "archived": {
       "title": "Archiviate",

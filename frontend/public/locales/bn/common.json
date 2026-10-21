@@ -1171,12 +1171,22 @@
     },
     "pause": {
       "title": "বিজ্ঞপ্তি বিরতি দিন",
-      "active": "বিজ্ঞপ্তি {{time}} পর্যন্ত বিরত আছে",
+      "active": "বিজ্ঞপ্তি বিরত আছে: {{remaining}} · {{time}} পর্যন্ত",
       "resume": "বিজ্ঞপ্তি আবার চালু করুন",
       "tomorrow": "আগামীকাল পর্যন্ত",
       "custom": "কাস্টম",
-      "customTitle": "আবার চালু করার সময় বেছে নিন",
-      "confirm": "বিরতি দিন"
+      "schedule": "বিরতির সময়সূচি",
+      "scheduleDays": "দিন",
+      "scheduleStart": "থেকে",
+      "scheduleEnd": "পর্যন্ত",
+      "scheduleSave": "সংরক্ষণ",
+      "scheduleList": "নির্ধারিত বিরতি",
+      "scheduleEmpty": "আপনার এখনো কোনো নির্ধারিত বিরতি নেই",
+      "scheduleDelete": "মুছুন",
+      "scheduleHint": "যেসব দিন ও সময়ে আপনি বিজ্ঞপ্তি পেতে চান না তা বেছে নিন।",
+      "scheduleTimezone": "সময় অঞ্চল: {{timezone}}",
+      "scheduleSaved": "নির্ধারিত বিরতি সংরক্ষিত",
+      "scheduleRemoved": "নির্ধারিত বিরতি মুছে ফেলা হয়েছে"
     },
     "archived": {
       "title": "সংরক্ষিত",

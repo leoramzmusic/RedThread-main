@@ -1212,12 +1212,22 @@
     },
     "pause": {
       "title": "Pausa aviseringar",
-      "active": "Aviseringar pausade till {{time}}",
+      "active": "Aviseringar pausade: {{remaining}} · till {{time}}",
       "resume": "Återuppta aviseringar",
       "tomorrow": "Till imorgon",
       "custom": "Anpassat",
-      "customTitle": "Välj när aviseringar återupptas",
-      "confirm": "Pausa"
+      "schedule": "Schemalägg pauser",
+      "scheduleDays": "Dagar",
+      "scheduleStart": "Från",
+      "scheduleEnd": "Till",
+      "scheduleSave": "Spara",
+      "scheduleList": "Schemalagda pauser",
+      "scheduleEmpty": "Du har inga schemalagda pauser ännu",
+      "scheduleDelete": "Ta bort",
+      "scheduleHint": "Välj de dagar och tider då du inte vill bli aviserad.",
+      "scheduleTimezone": "Tidszon: {{timezone}}",
+      "scheduleSaved": "Schemalagd paus sparad",
+      "scheduleRemoved": "Schemalagd paus borttagen"
     },
     "archived": {
       "title": "Arkiverade",

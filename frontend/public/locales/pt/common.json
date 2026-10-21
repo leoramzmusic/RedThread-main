@@ -1180,12 +1180,22 @@
     },
     "pause": {
       "title": "Pausar notificações",
-      "active": "Notificações pausadas até às {{time}}",
+      "active": "Notificações pausadas: {{remaining}} · até as {{time}}",
       "resume": "Retomar notificações",
       "tomorrow": "Até amanhã",
       "custom": "Personalizado",
-      "customTitle": "Escolha quando retomar",
-      "confirm": "Pausar"
+      "schedule": "Agendar pausas",
+      "scheduleDays": "Dias",
+      "scheduleStart": "De",
+      "scheduleEnd": "Até",
+      "scheduleSave": "Guardar",
+      "scheduleList": "Pausas agendadas",
+      "scheduleEmpty": "Ainda não tens pausas agendadas",
+      "scheduleDelete": "Eliminar",
+      "scheduleHint": "Escolhe os dias e as horas em que não queres receber alertas.",
+      "scheduleTimezone": "Fuso horário: {{timezone}}",
+      "scheduleSaved": "Pausa agendada guardada",
+      "scheduleRemoved": "Pausa agendada eliminada"
     },
     "archived": {
       "title": "Arquivadas",

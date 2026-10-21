@@ -1170,12 +1170,22 @@
     },
     "pause": {
       "title": "Whakatāroa ngā whakamōhiotanga",
-      "active": "Kua whakatāroa ngā whakamōhiotanga tae noa ki {{time}}",
+      "active": "Kua whakatāroa ngā whakamōhiotanga: {{remaining}} · tae noa ki {{time}}",
       "resume": "Whakaara anō ngā whakamōhiotanga",
       "tomorrow": "Tae noa ki āpōpō",
       "custom": "Ritenga",
-      "customTitle": "Kōwhiria te wā hei whakaara anō",
-      "confirm": "Whakatāroa"
+      "schedule": "Whakarite taua o te wā whakatāro",
+      "scheduleDays": "Ngā rā",
+      "scheduleStart": "Mai",
+      "scheduleEnd": "Ki",
+      "scheduleSave": "Tiaki",
+      "scheduleList": "Ngā wā whakatāro kua whakaritea",
+      "scheduleEmpty": "Kāore anō koe he wā whakatāro kua whakaritea",
+      "scheduleDelete": "Mukua",
+      "scheduleHint": "Ewhiri te ngā rā me te wā kāore ai koe e hiahia whakamōhiotanga.",
+      "scheduleTimezone": "Rohe wā: {{timezone}}",
+      "scheduleSaved": "I tiakina te wā whakatāro",
+      "scheduleRemoved": "I mukua te wā whakatāro"
     },
     "archived": {
       "title": "Kua puritia",

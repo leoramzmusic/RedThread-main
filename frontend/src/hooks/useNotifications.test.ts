@@ -403,6 +403,44 @@ it("resumes notifications", async () => {
   expect(result.current.pausedUntil).toBeNull();
 });
 
+it("saves a recurring pause schedule", async () => {
+  const rule = { days: [0, 1], start: "18:00", end: "08:00" };
+  post.mockResolvedValue({
+    data: { pause_schedule: [rule], paused_until: null },
+  });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.savePauseSchedule(rule));
+
+  expect(post).toHaveBeenCalledWith("/notifications/pause/schedule", rule);
+  expect(result.current.pauseSchedule).toEqual([rule]);
+});
+
+it("removes a scheduled pause", async () => {
+  del.mockResolvedValue({ data: { pause_schedule: [], paused_until: null } });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.removePauseSchedule(1));
+
+  expect(del).toHaveBeenCalledWith("/notifications/pause/schedule/1");
+  expect(result.current.pauseSchedule).toEqual([]);
+});
+
+it("reads the pause schedule from the unread count", async () => {
+  const schedule = [{ days: [0], start: "18:00", end: "08:00" }];
+  get.mockImplementation((url: string) =>
+    url === "/notifications/unread-count"
+      ? Promise.resolve({ data: { ...counts, pause_schedule: schedule } })
+      : Promise.resolve({ data: { items: [], next_cursor: null } }),
+  );
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  expect(result.current.pauseSchedule).toEqual(schedule);
+});
+
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((res) => {

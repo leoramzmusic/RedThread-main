@@ -1171,12 +1171,22 @@
     },
     "pause": {
       "title": "Dakatar da sanarwa",
-      "active": "An dakatar da sanarwa har zuwa {{time}}",
+      "active": "An sanarwa ake tsayar: {{remaining}} · har zuwa {{time}}",
       "resume": "Ci gaba da sanarwa",
       "tomorrow": "Har gobe",
       "custom": "Na musamman",
-      "customTitle": "Zaɓi lokacin da za a ci gaba",
-      "confirm": "Dakatar"
+      "schedule": "Tsara sauran hannin sanarwa",
+      "scheduleDays": "Ranaka",
+      "scheduleStart": "Daga",
+      "scheduleEnd": "Zuwa",
+      "scheduleSave": "Ajiya",
+      "scheduleList": "Saurar da aka tsara",
+      "scheduleEmpty": "Ba ka da sauran hannin sanarwa da aka tsara ba",
+      "scheduleDelete": "Sawa",
+      "scheduleHint": "Zaɓi ranaka da lokaci da ba ka son karɗi sanarwa ba.",
+      "scheduleTimezone": "Wurin lokaci: {{timezone}}",
+      "scheduleSaved": "An ajiye sauran hannin sanarwa",
+      "scheduleRemoved": "An sanya sauran hannin sanarwa"
     },
     "archived": {
       "title": "Abubuwan da aka ajiye",

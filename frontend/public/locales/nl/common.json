@@ -1212,12 +1212,22 @@
     },
     "pause": {
       "title": "Meldingen pauzeren",
-      "active": "Meldingen gepauzeerd tot {{time}}",
+      "active": "Meldingen gepauzeerd: {{remaining}} · tot {{time}}",
       "resume": "Meldingen hervatten",
       "tomorrow": "Tot morgen",
       "custom": "Aangepast",
-      "customTitle": "Kies wanneer je wilt hervatten",
-      "confirm": "Pauzeren"
+      "schedule": "Pauzes plannen",
+      "scheduleDays": "Dagen",
+      "scheduleStart": "Van",
+      "scheduleEnd": "Tot",
+      "scheduleSave": "Opslaan",
+      "scheduleList": "Geplande pauzes",
+      "scheduleEmpty": "Je hebt nog geen geplande pauzes",
+      "scheduleDelete": "Verwijderen",
+      "scheduleHint": "Kies de dagen en uren waarop je geen meldingen wilt ontvangen.",
+      "scheduleTimezone": "Tijdzone: {{timezone}}",
+      "scheduleSaved": "Geplande pauze opgeslagen",
+      "scheduleRemoved": "Geplande pauze verwijderd"
     },
     "archived": {
       "title": "Gearchiveerd",

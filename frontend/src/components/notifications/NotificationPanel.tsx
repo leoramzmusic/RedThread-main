@@ -39,6 +39,7 @@ import {
 import NotificationItem from "./NotificationItem";
 import NotificationSwipeable from "./NotificationSwipeable";
 import PauseMenu from "./PauseMenu";
+import PauseScheduleDialog from "./PauseScheduleDialog";
 import { pauseDeadlineLabel, pauseRemaining } from "./pauseTime";
 import type { SnoozeOption } from "./SnoozeMenu";
 import {
@@ -67,6 +68,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [pauseAnchor, setPauseAnchor] = useState<null | HTMLElement>(null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
   const [clock, setClock] = useState(() => Date.now());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
@@ -97,8 +99,11 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     snooze,
     unsnooze,
     pausedUntil,
+    pauseSchedule,
     pause,
     resume,
+    savePauseSchedule,
+    removePauseSchedule,
   } = useNotifications(filter, { unread: filter === "messages" });
   const prefersReducedMotion = usePrefersReducedMotion();
   const seenRef = useRef<Set<string>>(new Set());
@@ -120,7 +125,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const isPaused = Boolean(pauseRemainingLabel);
   const pauseTime = isPaused ? pauseDeadlineLabel(pausedUntil as string) : "";
   const pauseTooltip = isPaused
-    ? t("notifications.pause.active", { time: pauseTime })
+    ? t("notifications.pause.active", {
+        remaining: pauseRemainingLabel,
+        time: pauseTime,
+      })
     : t("notifications.pause.title");
   const unreadLabel = counts.count > 99 ? "99+" : String(counts.count);
 
@@ -635,6 +643,16 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         onPause={(duration) => void pause(duration)}
         onPauseUntil={(until) => void pause(undefined, until)}
         onResume={() => void resume()}
+        onOpenSchedule={() => setScheduleOpen(true)}
+      />
+
+      <PauseScheduleDialog
+        key={scheduleOpen ? "schedule-open" : "schedule-closed"}
+        open={scheduleOpen}
+        schedule={pauseSchedule}
+        onClose={() => setScheduleOpen(false)}
+        onSave={(rule) => void savePauseSchedule(rule)}
+        onDelete={(index) => void removePauseSchedule(index)}
       />
 
       <Menu

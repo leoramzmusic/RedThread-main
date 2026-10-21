@@ -1210,12 +1210,22 @@
     },
     "pause": {
       "title": "알림 일시중지",
-      "active": "알림이 {{time}}까지 일시중지됨",
+      "active": "알림 일시중지 중: {{remaining}} · {{time}}까지",
       "resume": "알림 다시 시작",
       "tomorrow": "내일까지",
       "custom": "사용자 지정",
-      "customTitle": "다시 시작할 시간 선택",
-      "confirm": "일시중지"
+      "schedule": "일시중지 예약",
+      "scheduleDays": "요일",
+      "scheduleStart": "시작",
+      "scheduleEnd": "종료",
+      "scheduleSave": "저장",
+      "scheduleList": "예약된 일시중지",
+      "scheduleEmpty": "예약된 일시중지가 없습니다",
+      "scheduleDelete": "삭제",
+      "scheduleHint": "알림을 받지 않을 요일과 시간을 선택하세요.",
+      "scheduleTimezone": "시간대: {{timezone}}",
+      "scheduleSaved": "일시중지 예약이 저장되었습니다",
+      "scheduleRemoved": "일시중지 예약이 삭제되었습니다"
     },
     "archived": {
       "title": "보관됨",

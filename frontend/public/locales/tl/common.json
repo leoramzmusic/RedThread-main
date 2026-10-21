@@ -1171,12 +1171,22 @@
     },
     "pause": {
       "title": "I-pause ang mga notification",
-      "active": "Naka-pause ang mga notification hanggang {{time}}",
+      "active": "Naka-pause ang mga notification: {{remaining}} · hanggang {{time}}",
       "resume": "Ipagpatuloy ang mga notification",
       "tomorrow": "Hanggang bukas",
       "custom": "Custom",
-      "customTitle": "Piliin kung kailan ipagpatuloy",
-      "confirm": "I-pause"
+      "schedule": "I-schedule ang mga pause",
+      "scheduleDays": "Mga araw",
+      "scheduleStart": "Mula",
+      "scheduleEnd": "Hanggang",
+      "scheduleSave": "I-save",
+      "scheduleList": "Mga nakatakdang pause",
+      "scheduleEmpty": "Wala ka pang nakatakdang pause",
+      "scheduleDelete": "Burahin",
+      "scheduleHint": "Piliin ang mga araw at oras kung kailan ayaw mong makatanggap ng alert.",
+      "scheduleTimezone": "Time zone: {{timezone}}",
+      "scheduleSaved": "Nai-save ang nakatakdang pause",
+      "scheduleRemoved": "Nabura ang nakatakdang pause"
     },
     "archived": {
       "title": "Mga nakatabi",

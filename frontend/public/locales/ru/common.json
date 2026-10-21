@@ -1218,12 +1218,22 @@
     },
     "pause": {
       "title": "Приостановить уведомления",
-      "active": "Уведомления приостановлены до {{time}}",
+      "active": "Уведомления приостановлены: {{remaining}} · до {{time}}",
       "resume": "Возобновить уведомления",
       "tomorrow": "До завтра",
       "custom": "Настроить",
-      "customTitle": "Выберите время возобновления",
-      "confirm": "Приостановить"
+      "schedule": "Расписание пауз",
+      "scheduleDays": "Дни",
+      "scheduleStart": "С",
+      "scheduleEnd": "До",
+      "scheduleSave": "Сохранить",
+      "scheduleList": "Запланированные паузы",
+      "scheduleEmpty": "У вас пока нет запланированных пауз",
+      "scheduleDelete": "Удалить",
+      "scheduleHint": "Выберите дни и часы, когда вы не хотите получать уведомления.",
+      "scheduleTimezone": "Часовой пояс: {{timezone}}",
+      "scheduleSaved": "Запланированная пауза сохранена",
+      "scheduleRemoved": "Запланированная пауза удалена"
     },
     "archived": {
       "title": "Архив",

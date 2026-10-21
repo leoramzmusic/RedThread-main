@@ -1212,12 +1212,22 @@
     },
     "pause": {
       "title": "Benachrichtigungen pausieren",
-      "active": "Benachrichtigungen pausiert bis {{time}}",
+      "active": "Benachrichtigungen pausiert: {{remaining}} · bis {{time}}",
       "resume": "Benachrichtigungen fortsetzen",
       "tomorrow": "Bis morgen",
       "custom": "Benutzerdefiniert",
-      "customTitle": "Wählen, wann fortgesetzt wird",
-      "confirm": "Pausieren"
+      "schedule": "Pausen planen",
+      "scheduleDays": "Tage",
+      "scheduleStart": "Von",
+      "scheduleEnd": "Bis",
+      "scheduleSave": "Speichern",
+      "scheduleList": "Geplante Pausen",
+      "scheduleEmpty": "Du hast noch keine geplanten Pausen",
+      "scheduleDelete": "Löschen",
+      "scheduleHint": "Wähle die Tage und Zeiten, in denen du keine Benachrichtigungen möchtest.",
+      "scheduleTimezone": "Zeitzone: {{timezone}}",
+      "scheduleSaved": "Geplante Pause gespeichert",
+      "scheduleRemoved": "Geplante Pause gelöscht"
     },
     "archived": {
       "title": "Archiviert",
