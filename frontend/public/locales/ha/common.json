@@ -1175,6 +1175,35 @@
       "resume": "Ci gaba da sanarwa",
       "tomorrow": "Har gobe",
       "custom": "Na musamman",
+      "mode": {
+        "single": "Tsayi dayawa",
+        "recurring": "Maimaitowa"
+      },
+      "ruleName": "Suna sauran",
+      "ruleNamePlaceholder": "Lokacin aiki",
+      "allow": {
+        "title": "Bari sanarwa masu muhimmanci",
+        "chats": "Tsohaye na kai tsaro",
+        "system": "Sanarwa na tsarin",
+        "likes": "Gaisuwa",
+        "recommendations": "Shawara",
+        "comments": "Magamaki"
+      },
+      "preview": {
+        "title": "Hoton tantanin",
+        "range": "Sanarwa za a tsayar daga {{from}} zuwa {{to}}, kuma daga {{start}} zuwa {{end}}.",
+        "days": "Sanarwa za a tsayar a ranar {{days}}, daga {{start}} zuwa {{end}}.",
+        "single": "Sanarwa za a tsayar daga {{from}} zuwa {{to}}.",
+        "allow": "Wadannan za ci gaba: {{items}}."
+      },
+      "rule": {
+        "edit": "Gyauta"
+      },
+      "activePauses": {
+        "title": "Saurar hannin da ke aiki",
+        "until": "Ya tsare a na {{time}}",
+        "none": "Babu sauran hannin da ke aiki"
+      },
       "schedule": "Tsara sauran hannin sanarwa",
       "scheduleDays": "Ranaka",
       "scheduleStart": "Daga",

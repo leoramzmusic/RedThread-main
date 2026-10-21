@@ -1214,6 +1214,35 @@
       "resume": "通知を再開",
       "tomorrow": "明日まで",
       "custom": "カスタム",
+      "mode": {
+        "single": "1回だけの停止",
+        "recurring": "繰り返し"
+      },
+      "ruleName": "停止の名前",
+      "ruleNamePlaceholder": "勤務時間",
+      "allow": {
+        "title": "重要な通知を許可する",
+        "chats": "ダイレクトチャット",
+        "system": "システムメッセージ",
+        "likes": "いいね",
+        "recommendations": "おすすめ",
+        "comments": "コメント"
+      },
+      "preview": {
+        "title": "プレビュー",
+        "range": "通知は {{from}} から {{to}}、および {{start}} から {{end}} の間に停止されます。",
+        "days": "通知は {{days}} の {{start}} から {{end}} の間に停止されます。",
+        "single": "通知は {{from}} から {{to}} の間に停止されます。",
+        "allow": "これらは引き続き届きます: {{items}}。"
+      },
+      "rule": {
+        "edit": "編集"
+      },
+      "activePauses": {
+        "title": "有効な停止",
+        "until": "{{time}} 終了",
+        "none": "有効な停止はありません"
+      },
       "schedule": "一時停止のスケジュール",
       "scheduleDays": "曜日",
       "scheduleStart": "開始",

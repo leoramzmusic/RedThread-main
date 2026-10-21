@@ -1175,6 +1175,35 @@
       "resume": "ማሳወቂያዎችን ቀጥል",
       "tomorrow": "እስከ ነገ",
       "custom": "ብጁ",
+      "mode": {
+        "single": "አንድ ማቆረጫ",
+        "recurring": "የይደገም የሚደገም"
+      },
+      "ruleName": "የማቆረጫ ስም",
+      "ruleNamePlaceholder": "የስራ ሰዓት",
+      "allow": {
+        "title": "በጉዳይ መልእክቶችን ፍቀዳሽ",
+        "chats": "ቀጥተኛ ውይይቶች",
+        "system": "የሲስተም መልእክቶች",
+        "likes": "ፈቆዎች",
+        "recommendations": "ምክሮች",
+        "comments": "አስተያየቶች"
+      },
+      "preview": {
+        "title": "ቅዳሜ",
+        "range": "ማሳወቂያዎች ከ{{from}} እስከ {{to}} እና ከ{{start}} እስከ {{end}} ጠፍተዋል።",
+        "days": "ማሳወቂያዎች በ{{days}} ከ{{start}} እስከ {{end}} ጠፍተዋል።",
+        "single": "ማሳወቂያዎች ከ{{from}} እስከ {{to}} ጠፍተዋል።",
+        "allow": "እነዚህ አሁንም ይጣባሉ: {{items}}።"
+      },
+      "rule": {
+        "edit": "አርትዕ"
+      },
+      "activePauses": {
+        "title": "ንቁ እርጋቶች",
+        "until": "ያልተወሰነው በ{{time}}",
+        "none": "የለም ንቁ እርጋት"
+      },
       "schedule": "የእርጋት መርሃ ይዘጋ",
       "scheduleDays": "ቀናት",
       "scheduleStart": "ከ",

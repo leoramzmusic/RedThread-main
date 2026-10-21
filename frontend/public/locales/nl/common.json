@@ -1216,6 +1216,35 @@
       "resume": "Meldingen hervatten",
       "tomorrow": "Tot morgen",
       "custom": "Aangepast",
+      "mode": {
+        "single": "Eénmalige pauze",
+        "recurring": "Terugkerend"
+      },
+      "ruleName": "Naam van de pauze",
+      "ruleNamePlaceholder": "Werkrooster",
+      "allow": {
+        "title": "Prioritaire meldingen toestaan",
+        "chats": "Directe chats",
+        "system": "Systeemberichten",
+        "likes": "Likes",
+        "recommendations": "Aanbevelingen",
+        "comments": "Reacties"
+      },
+      "preview": {
+        "title": "Voorbeeld",
+        "range": "Meldingen worden gedempt van {{from}} tot {{to}}, van {{start}} tot {{end}}.",
+        "days": "Meldingen worden gedempt op {{days}}, van {{start}} tot {{end}}.",
+        "single": "Meldingen worden gedempt van {{from}} tot {{to}}.",
+        "allow": "Deze komen alsnog binnen: {{items}}."
+      },
+      "rule": {
+        "edit": "Bewerken"
+      },
+      "activePauses": {
+        "title": "Actieve pauzes",
+        "until": "Eindigt om {{time}}",
+        "none": "Geen actieve pauzes"
+      },
       "schedule": "Pauzes plannen",
       "scheduleDays": "Dagen",
       "scheduleStart": "Van",

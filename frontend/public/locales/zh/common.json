@@ -1215,6 +1215,35 @@
       "resume": "恢复通知",
       "tomorrow": "暂停到明天",
       "custom": "自定义",
+      "mode": {
+        "single": "单次暂停",
+        "recurring": "重复"
+      },
+      "ruleName": "暂停名称",
+      "ruleNamePlaceholder": "工作时间",
+      "allow": {
+        "title": "允许优先通知",
+        "chats": "私人聊天",
+        "system": "系统消息",
+        "likes": "喜欢",
+        "recommendations": "推荐",
+        "comments": "评论"
+      },
+      "preview": {
+        "title": "预览",
+        "range": "通知将在 {{from}} 至 {{to}} 期间、以及 {{start}} 至 {{end}} 期间被静音。",
+        "days": "通知将在 {{days}} 的 {{start}} 至 {{end}} 期间被静音。",
+        "single": "通知将在 {{from}} 至 {{to}} 期间被静音。",
+        "allow": "以下仍会送达：{{items}}。"
+      },
+      "rule": {
+        "edit": "编辑"
+      },
+      "activePauses": {
+        "title": "生效中的暂停",
+        "until": "结束于 {{time}}",
+        "none": "没有生效的暂停"
+      },
       "schedule": "设置暂停计划",
       "scheduleDays": "星期",
       "scheduleStart": "开始",

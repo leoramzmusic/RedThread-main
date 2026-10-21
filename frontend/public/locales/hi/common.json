@@ -1215,6 +1215,35 @@
       "resume": "सूचनाएँ फिर शुरू करें",
       "tomorrow": "कल तक",
       "custom": "कस्टम",
+      "mode": {
+        "single": "एकल रुकावट",
+        "recurring": "आवर्ती"
+      },
+      "ruleName": "रुकावट का नाम",
+      "ruleNamePlaceholder": "कार्य समय",
+      "allow": {
+        "title": "प्राथमिक सूचनाएँ अनुमति दें",
+        "chats": "सीधी चैट",
+        "system": "सिस्टम संदेश",
+        "likes": "लाइक",
+        "recommendations": "सुझाव",
+        "comments": "टिप्पणियाँ"
+      },
+      "preview": {
+        "title": "पूर्वावलोकन",
+        "range": "सूचनाएँ {{from}} से {{to}} तक, और {{start}} से {{end}} तक बंद रहेंगी।",
+        "days": "सूचनाएँ {{days}} को {{start}} से {{end}} तक बंद रहेंगी।",
+        "single": "सूचनाएँ {{from}} से {{to}} तक बंद रहेंगी।",
+        "allow": "ये फिर भी आएँगी: {{items}}।"
+      },
+      "rule": {
+        "edit": "संपादित करें"
+      },
+      "activePauses": {
+        "title": "सक्रिय रुकावटें",
+        "until": "{{time}} पर समाप्त",
+        "none": "कोई सक्रिय रुकावट नहीं"
+      },
       "schedule": "विराम शेड्यूल करें",
       "scheduleDays": "दिन",
       "scheduleStart": "से",

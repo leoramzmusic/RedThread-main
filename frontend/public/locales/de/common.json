@@ -1216,6 +1216,35 @@
       "resume": "Benachrichtigungen fortsetzen",
       "tomorrow": "Bis morgen",
       "custom": "Benutzerdefiniert",
+      "mode": {
+        "single": "Einmalige Pause",
+        "recurring": "Wiederkehrend"
+      },
+      "ruleName": "Name der Pause",
+      "ruleNamePlaceholder": "Arbeitszeit",
+      "allow": {
+        "title": "Prioräre Benachrichtigungen zulassen",
+        "chats": "Direkte Chats",
+        "system": "Systemmeldungen",
+        "likes": "Likes",
+        "recommendations": "Empfehlungen",
+        "comments": "Kommentare"
+      },
+      "preview": {
+        "title": "Vorschau",
+        "range": "Benachrichtigungen werden von {{from}} bis {{to}} sowie von {{start}} bis {{end}} stummgeschaltet.",
+        "days": "Benachrichtigungen werden am {{days}} von {{start}} bis {{end}} stummgeschaltet.",
+        "single": "Benachrichtigungen werden von {{from}} bis {{to}} stummgeschaltet.",
+        "allow": "Diese kommen weiterhin durch: {{items}}."
+      },
+      "rule": {
+        "edit": "Bearbeiten"
+      },
+      "activePauses": {
+        "title": "Aktive Pausen",
+        "until": "Endet um {{time}}",
+        "none": "Keine aktiven Pausen"
+      },
       "schedule": "Pausen planen",
       "scheduleDays": "Tage",
       "scheduleStart": "Von",

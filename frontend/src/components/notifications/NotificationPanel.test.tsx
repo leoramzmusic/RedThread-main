@@ -71,6 +71,28 @@ const mockCopy: Record<string, string> = {
   "notifications.pause.resume": "Reanudar notificaciones",
   "notifications.pause.tomorrow": "Hasta mañana",
   "notifications.pause.custom": "Personalizado",
+  "notifications.pause.mode.single": "Pausa única",
+  "notifications.pause.mode.recurring": "Recurrente",
+  "notifications.pause.ruleName": "Nombre de la pausa",
+  "notifications.pause.ruleNamePlaceholder": "Horario laboral",
+  "notifications.pause.allow.title": "Permitir notificaciones prioritarias",
+  "notifications.pause.allow.chats": "Chats directos",
+  "notifications.pause.allow.system": "Mensajes del sistema",
+  "notifications.pause.allow.likes": "Likes",
+  "notifications.pause.allow.recommendations": "Recomendaciones",
+  "notifications.pause.allow.comments": "Comentarios",
+  "notifications.pause.preview.title": "Vista previa",
+  "notifications.pause.preview.range":
+    "Las notificaciones se silenciarán de {{from}} a {{to}}, de {{start}} a {{end}}.",
+  "notifications.pause.preview.days":
+    "Las notificaciones se silenciarán los {{days}}, de {{start}} a {{end}}.",
+  "notifications.pause.preview.single":
+    "Las notificaciones se silenciarán del {{from}} al {{to}}.",
+  "notifications.pause.preview.allow": "Seguirán entrando: {{items}}.",
+  "notifications.pause.rule.edit": "Editar",
+  "notifications.pause.activePauses.title": "Pausas activas",
+  "notifications.pause.activePauses.until": "Termina a las {{time}}",
+  "notifications.pause.activePauses.none": "No hay pausas activas",
   "notifications.pause.schedule": "Programar pausas",
   "notifications.pause.scheduleDays": "Días",
   "notifications.pause.scheduleStart": "Desde",
@@ -175,9 +197,13 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   unsnooze: jest.fn(),
   pausedUntil: null,
   pauseSchedule: [],
+  pauseAllow: [],
+  pauseWindow: null,
+  activePauses: [],
   pause: jest.fn(),
   resume: jest.fn(),
   savePauseSchedule: jest.fn(),
+  savePauseWindow: jest.fn(),
   removePauseSchedule: jest.fn(),
   ...overrides,
 });
@@ -538,16 +564,80 @@ describe("NotificationPanel", () => {
 
   it("removes a scheduled pause from the dialog", () => {
     hook = makeHook({
-      pauseSchedule: [{ days: [0, 1], start: "18:00", end: "08:00" }],
+      pauseSchedule: [
+        {
+          id: "r1",
+          name: "Horario laboral",
+          days: [0, 1],
+          start: "18:00",
+          end: "08:00",
+        },
+      ],
     });
     mockedUseNotifications.mockImplementation(() => hook);
     renderPanel();
 
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-custom"));
-    fireEvent.click(screen.getByTestId("notification-pause-rule-delete-0"));
+    fireEvent.click(screen.getByTestId("notification-pause-rule-delete-r1"));
 
-    expect(hook.removePauseSchedule).toHaveBeenCalledWith(0);
+    expect(hook.removePauseSchedule).toHaveBeenCalledWith("r1");
+  });
+
+  it("shows the active pauses and lists them in a popover", () => {
+    hook = makeHook({
+      activePauses: [
+        {
+          kind: "recurring",
+          id: "r1",
+          name: "Horario laboral",
+          days: [0, 1, 2, 3, 4],
+          start: "18:00",
+          end: "08:00",
+          allow: [],
+        },
+      ],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-active-pauses"));
+
+    expect(
+      screen.getByTestId("notification-active-pause-item"),
+    ).toHaveTextContent("Horario laboral");
+  });
+
+  it("saves a recurring rule with the selected days", () => {
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    fireEvent.click(screen.getByTestId("notification-pause-custom"));
+    fireEvent.click(screen.getByTestId("notification-pause-day-0"));
+    fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+
+    expect(hook.savePauseSchedule).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: null,
+        days: [1, 2, 3, 4],
+        start: "18:00",
+        end: "08:00",
+      }),
+    );
+  });
+
+  it("saves a one-off window with the allowed exceptions", () => {
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    fireEvent.click(screen.getByTestId("notification-pause-custom"));
+    fireEvent.click(screen.getByTestId("notification-pause-mode-single"));
+    fireEvent.click(screen.getByTestId("notification-pause-allow-chats"));
+    fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+
+    expect(hook.savePauseWindow).toHaveBeenCalledWith(
+      expect.objectContaining({ allow: ["message"] }),
+    );
   });
 
   describe("⋯ menu", () => {

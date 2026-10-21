@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
-import type { PauseScheduleRule } from "../components/notifications/pauseTime";
+import type {
+  ActivePause,
+  PauseScheduleRule,
+} from "../components/notifications/pauseTime";
 
 export interface NotificationCounts {
   count: number;
@@ -10,7 +13,11 @@ export interface NotificationCounts {
   system: number;
   survey_pending: number;
   paused_until?: string | null;
+  paused_from?: string | null;
+  pause_allow?: string[];
   pause_schedule?: PauseScheduleRule[];
+  pause_window?: { start: string | null; end: string | null } | null;
+  active_pauses?: ActivePause[];
 }
 
 export interface NotificationActor {
@@ -53,10 +60,25 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
   const [pauseSchedule, setPauseSchedule] = useState<PauseScheduleRule[]>([]);
+  const [pauseAllow, setPauseAllow] = useState<string[]>([]);
+  const [pauseWindow, setPauseWindow] = useState<{
+    start: string | null;
+    end: string | null;
+  } | null>(null);
+  const [activePauses, setActivePauses] = useState<ActivePause[]>([]);
 
   const filterRef = useRef(filter);
   const unreadRef = useRef(unread);
   const requestIdRef = useRef(0);
+
+  const applyPauseState = useCallback((data: Record<string, any> | null) => {
+    if (!data) return;
+    setPausedUntil(data.paused_until ?? null);
+    setPauseSchedule(data.pause_schedule ?? []);
+    setPauseAllow(data.pause_allow ?? []);
+    setPauseWindow(data.pause_window ?? null);
+    setActivePauses(data.active_pauses ?? []);
+  }, []);
 
   const fetchAll = useCallback(async () => {
     const requestId = ++requestIdRef.current;
@@ -82,8 +104,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
       if (count) {
         const data = count.data ?? {};
         setCounts({ ...EMPTY_COUNTS, ...data });
-        setPausedUntil(data.paused_until ?? null);
-        setPauseSchedule(data.pause_schedule ?? []);
+        applyPauseState(data);
       }
     } catch {
       if (requestId !== requestIdRef.current) return;
@@ -281,50 +302,81 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [runWithOptimisticRemoval],
   );
 
-  const pause = useCallback(async (duration?: string, until?: string) => {
-    try {
-      const response = await apiClient.post("/notifications/pause", {
-        ...(until ? { until } : { duration }),
-      });
-      setPausedUntil(response.data?.paused_until ?? null);
-    } catch {
-      setError(true);
-    }
-  }, []);
+  const pause = useCallback(
+    async (duration?: string, until?: string) => {
+      try {
+        const response = await apiClient.post("/notifications/pause", {
+          ...(until ? { until } : { duration }),
+        });
+        applyPauseState(response.data);
+      } catch {
+        setError(true);
+      }
+    },
+    [applyPauseState],
+  );
 
   const resume = useCallback(async () => {
     try {
-      await apiClient.delete("/notifications/pause");
-      setPausedUntil(null);
+      const response = await apiClient.delete("/notifications/pause");
+      applyPauseState(response.data);
     } catch {
       setError(true);
     }
-  }, []);
+  }, [applyPauseState]);
 
-  const savePauseSchedule = useCallback(async (rule: PauseScheduleRule) => {
-    try {
-      const response = await apiClient.post(
-        "/notifications/pause/schedule",
-        rule,
-      );
-      setPauseSchedule(response.data?.pause_schedule ?? []);
-      setPausedUntil(response.data?.paused_until ?? null);
-    } catch {
-      setError(true);
-    }
-  }, []);
+  const savePauseSchedule = useCallback(
+    async (rule: PauseScheduleRule) => {
+      try {
+        const response = await apiClient.post("/notifications/pause/schedule", {
+          mode: "recurring",
+          id: rule.id,
+          name: rule.name,
+          days: rule.days,
+          start: rule.start,
+          end: rule.end,
+          timezone: rule.timezone,
+          utc_offset_minutes: rule.utc_offset_minutes,
+          allow: rule.allow,
+        });
+        applyPauseState(response.data);
+      } catch {
+        setError(true);
+      }
+    },
+    [applyPauseState],
+  );
 
-  const removePauseSchedule = useCallback(async (index: number) => {
-    try {
-      const response = await apiClient.delete(
-        `/notifications/pause/schedule/${index}`,
-      );
-      setPauseSchedule(response.data?.pause_schedule ?? []);
-      setPausedUntil(response.data?.paused_until ?? null);
-    } catch {
-      setError(true);
-    }
-  }, []);
+  const savePauseWindow = useCallback(
+    async (payload: { from: string; to: string; allow: string[] }) => {
+      try {
+        const response = await apiClient.post("/notifications/pause/schedule", {
+          mode: "single",
+          from: payload.from,
+          to: payload.to,
+          allow: payload.allow,
+        });
+        applyPauseState(response.data);
+      } catch {
+        setError(true);
+      }
+    },
+    [applyPauseState],
+  );
+
+  const removePauseSchedule = useCallback(
+    async (id: string) => {
+      try {
+        const response = await apiClient.delete(
+          `/notifications/pause/schedule/${id}`,
+        );
+        applyPauseState(response.data);
+      } catch {
+        setError(true);
+      }
+    },
+    [applyPauseState],
+  );
 
   return {
     items,
@@ -335,6 +387,9 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     nextCursor,
     pausedUntil,
     pauseSchedule,
+    pauseAllow,
+    pauseWindow,
+    activePauses,
     refresh: fetchAll,
     markRead,
     markBucket,
@@ -353,6 +408,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     pause,
     resume,
     savePauseSchedule,
+    savePauseWindow,
     removePauseSchedule,
   };
 }

@@ -1175,6 +1175,35 @@
       "resume": "Ipagpatuloy ang mga notification",
       "tomorrow": "Hanggang bukas",
       "custom": "Custom",
+      "mode": {
+        "single": "Isang pagtigil",
+        "recurring": "Uulit-ulit"
+      },
+      "ruleName": "Pangalan ng pagtigil",
+      "ruleNamePlaceholder": "Oras ng trabaho",
+      "allow": {
+        "title": "Allow ang priority notifications",
+        "chats": "Mga direktang chat",
+        "system": "Mga mensahe ng sistema",
+        "likes": "Mga like",
+        "recommendations": "Mga rekomendasyon",
+        "comments": "Mga komento"
+      },
+      "preview": {
+        "title": "Preview",
+        "range": "Mga notification ang isasilenced mula {{from}} hanggang {{to}}, at mula {{start}} hanggang {{end}}.",
+        "days": "Mga notification ang isasilenced sa {{days}}, mula {{start}} hanggang {{end}}.",
+        "single": "Mga notification ang isasilenced mula {{from}} hanggang {{to}}.",
+        "allow": "Dito mga ito ay makaririn: {{items}}."
+      },
+      "rule": {
+        "edit": "I-edit"
+      },
+      "activePauses": {
+        "title": "Mga aktibong pagtigil",
+        "until": "Tapos na ang {{time}}",
+        "none": "Walang aktibong pagtigil"
+      },
       "schedule": "I-schedule ang mga pause",
       "scheduleDays": "Mga araw",
       "scheduleStart": "Mula",

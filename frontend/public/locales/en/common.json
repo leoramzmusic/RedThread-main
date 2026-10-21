@@ -1469,6 +1469,35 @@
       "resume": "Resume notifications",
       "tomorrow": "Until tomorrow",
       "custom": "Custom",
+      "mode": {
+        "single": "Single pause",
+        "recurring": "Recurring"
+      },
+      "ruleName": "Pause name",
+      "ruleNamePlaceholder": "Work schedule",
+      "allow": {
+        "title": "Allow priority notifications",
+        "chats": "Direct chats",
+        "system": "System messages",
+        "likes": "Likes",
+        "recommendations": "Recommendations",
+        "comments": "Comments"
+      },
+      "preview": {
+        "title": "Preview",
+        "range": "Notifications will be silenced from {{from}} to {{to}}, from {{start}} to {{end}}.",
+        "days": "Notifications will be silenced on {{days}}, from {{start}} to {{end}}.",
+        "single": "Notifications will be silenced from {{from}} to {{to}}.",
+        "allow": "These will still come through: {{items}}."
+      },
+      "rule": {
+        "edit": "Edit"
+      },
+      "activePauses": {
+        "title": "Active pauses",
+        "until": "Ends at {{time}}",
+        "none": "No active pauses"
+      },
       "schedule": "Schedule pauses",
       "scheduleDays": "Days",
       "scheduleStart": "From",

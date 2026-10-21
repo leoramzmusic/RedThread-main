@@ -1216,6 +1216,35 @@
       "resume": "Riprendi notifiche",
       "tomorrow": "Fino a domani",
       "custom": "Personalizzato",
+      "mode": {
+        "single": "Pausa singola",
+        "recurring": "Ricorrente"
+      },
+      "ruleName": "Nome della pausa",
+      "ruleNamePlaceholder": "Orario di lavoro",
+      "allow": {
+        "title": "Consenti le notifiche prioritarie",
+        "chats": "Chat diretti",
+        "system": "Messaggi di sistema",
+        "likes": "Like",
+        "recommendations": "Consigli",
+        "comments": "Commenti"
+      },
+      "preview": {
+        "title": "Anteprima",
+        "range": "Le notifiche verranno silenziate da {{from}} a {{to}}, dalle {{start}} alle {{end}}.",
+        "days": "Le notifiche verranno silenziate {{days}}, dalle {{start}} alle {{end}}.",
+        "single": "Le notifiche verranno silenziate da {{from}} a {{to}}.",
+        "allow": "Entreranno comunque: {{items}}."
+      },
+      "rule": {
+        "edit": "Modifica"
+      },
+      "activePauses": {
+        "title": "Pause attive",
+        "until": "Termina alle {{time}}",
+        "none": "Nessuna pausa attiva"
+      },
       "schedule": "Programma le pause",
       "scheduleDays": "Giorni",
       "scheduleStart": "Dalle",

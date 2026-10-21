@@ -17,6 +17,8 @@ import {
   MenuItem,
   Skeleton,
   Fade,
+  Chip,
+  Popover,
 } from "@mui/material";
 import {
   Assignment as SurveyIcon,
@@ -40,7 +42,11 @@ import NotificationItem from "./NotificationItem";
 import NotificationSwipeable from "./NotificationSwipeable";
 import PauseMenu from "./PauseMenu";
 import PauseScheduleDialog from "./PauseScheduleDialog";
-import { pauseDeadlineLabel, pauseRemaining } from "./pauseTime";
+import {
+  formatDayRange,
+  pauseDeadlineLabel,
+  pauseRemaining,
+} from "./pauseTime";
 import type { SnoozeOption } from "./SnoozeMenu";
 import {
   useNotifications,
@@ -63,11 +69,12 @@ const TABS = [
 
 export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [pauseAnchor, setPauseAnchor] = useState<null | HTMLElement>(null);
+  const [activeAnchor, setActiveAnchor] = useState<null | HTMLElement>(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [clock, setClock] = useState(() => Date.now());
   const [selectionMode, setSelectionMode] = useState(false);
@@ -100,11 +107,16 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     unsnooze,
     pausedUntil,
     pauseSchedule,
+    pauseAllow,
+    pauseWindow,
+    activePauses,
     pause,
     resume,
     savePauseSchedule,
+    savePauseWindow,
     removePauseSchedule,
   } = useNotifications(filter, { unread: filter === "messages" });
+  const appLocale = router.locale || i18n?.language || "es";
   const prefersReducedMotion = usePrefersReducedMotion();
   const seenRef = useRef<Set<string>>(new Set());
 
@@ -495,6 +507,25 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             )}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
+            {!isSpecialView && activePauses.length > 0 && (
+              <Chip
+                data-testid="notification-active-pauses"
+                icon={<PausedIcon sx={{ fontSize: 16 }} />}
+                label={t(
+                  "notifications.pause.activePauses.title",
+                  "Pausas activas",
+                )}
+                onClick={(event) => setActiveAnchor(event.currentTarget)}
+                size="small"
+                sx={{
+                  mr: 0.5,
+                  color: "primary.main",
+                  background: "rgba(255,71,87,0.12)",
+                  border: "1px solid rgba(255,71,87,0.45)",
+                  "& .MuiChip-icon": { color: "primary.main" },
+                }}
+              />
+            )}
             {!isSpecialView && (
               <IconButton
                 data-testid="notification-pause"
@@ -650,14 +681,61 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         onOpenSchedule={() => setScheduleOpen(true)}
       />
 
-      <PauseScheduleDialog
-        key={scheduleOpen ? "schedule-open" : "schedule-closed"}
-        open={scheduleOpen}
-        schedule={pauseSchedule}
-        onClose={() => setScheduleOpen(false)}
-        onSave={(rule) => void savePauseSchedule(rule)}
-        onDelete={(index) => void removePauseSchedule(index)}
-      />
+      {scheduleOpen && (
+        <PauseScheduleDialog
+          open
+          locale={appLocale}
+          schedule={pauseSchedule}
+          singleWindow={pauseWindow}
+          allow={pauseAllow}
+          onClose={() => setScheduleOpen(false)}
+          onSaveSingle={(payload) => void savePauseWindow(payload)}
+          onSaveRule={(payload) => void savePauseSchedule(payload)}
+          onDelete={(id) => void removePauseSchedule(id)}
+        />
+      )}
+
+      {activeAnchor && (
+        <Popover
+          data-testid="notification-active-pauses-popover"
+          open
+          anchorEl={activeAnchor}
+          onClose={() => setActiveAnchor(null)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Box sx={{ p: 1.5, minWidth: 240, maxWidth: 320 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              {t("notifications.pause.activePauses.title", "Pausas activas")}
+            </Typography>
+            {activePauses.map((item, index) => (
+              <Box
+                key={item.id ?? `single-${index}`}
+                data-testid="notification-active-pause-item"
+                sx={{ mb: 1 }}
+              >
+                <Typography variant="body2">
+                  {item.name ||
+                    t("notifications.pause.mode.single", "Pausa única")}
+                </Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                  {item.kind === "recurring"
+                    ? `${formatDayRange(item.days ?? [], appLocale)} · ${item.start} → ${item.end}`
+                    : t(
+                        "notifications.pause.activePauses.until",
+                        "Termina a las {{time}}",
+                        {
+                          time: item.until
+                            ? pauseDeadlineLabel(item.until)
+                            : "—",
+                        },
+                      )}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Popover>
+      )}
 
       <Menu
         anchorEl={menuAnchor}

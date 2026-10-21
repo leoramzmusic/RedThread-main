@@ -1175,6 +1175,35 @@
       "resume": "Rejesha arifa",
       "tomorrow": "Hadi kesho",
       "custom": "Maalum",
+      "mode": {
+        "single": "Kusisitisha moja",
+        "recurring": "Inayorishia"
+      },
+      "ruleName": "Jina la kusisitisha",
+      "ruleNamePlaceholder": "Saa za kazi",
+      "allow": {
+        "title": "Ruhusu taarifa za kipaumbele",
+        "chats": "Mazungumzo ya moja kwa moja",
+        "system": "Ujumbe wa mfumo",
+        "likes": "Vipendeleo",
+        "recommendations": "Mapendekezo",
+        "comments": "Maoni"
+      },
+      "preview": {
+        "title": "Onyesho la awali",
+        "range": "Arifa zitafanywa kuwa kimya kutoka {{from}} hadi {{to}}, na kutoka {{start}} hadi {{end}}.",
+        "days": "Arifa zitafanywa kuwa kimya siku ya {{days}}, kutoka {{start}} hadi {{end}}.",
+        "single": "Arifa zitafanywa kuwa kimya kutoka {{from}} hadi {{to}}.",
+        "allow": "Hizi bado zitaingia: {{items}}."
+      },
+      "rule": {
+        "edit": "Hariri"
+      },
+      "activePauses": {
+        "title": "Vipindi vilivyofanywa",
+        "until": "Inaishia saa {{time}}",
+        "none": "Hakuna vipindi vilivyofanywa"
+      },
       "schedule": "Panga ratiba za sitisha",
       "scheduleDays": "Siku",
       "scheduleStart": "Kutoka",

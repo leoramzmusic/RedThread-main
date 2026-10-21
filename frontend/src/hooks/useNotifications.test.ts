@@ -404,17 +404,69 @@ it("resumes notifications", async () => {
 });
 
 it("saves a recurring pause schedule", async () => {
-  const rule = { days: [0, 1], start: "18:00", end: "08:00" };
+  const rule = {
+    id: "r1",
+    name: "Horario laboral",
+    days: [0, 1],
+    start: "18:00",
+    end: "08:00",
+    allow: ["message"],
+    timezone: "Europe/Madrid",
+    utc_offset_minutes: 120,
+  };
   post.mockResolvedValue({
-    data: { pause_schedule: [rule], paused_until: null },
+    data: { pause_schedule: [rule], paused_until: null, active_pauses: [] },
   });
   const { result } = renderHook(() => useNotifications("all"));
   await waitFor(() => expect(result.current.loading).toBe(false));
 
   await act(() => result.current.savePauseSchedule(rule));
 
-  expect(post).toHaveBeenCalledWith("/notifications/pause/schedule", rule);
+  expect(post).toHaveBeenCalledWith("/notifications/pause/schedule", {
+    mode: "recurring",
+    id: "r1",
+    name: "Horario laboral",
+    days: [0, 1],
+    start: "18:00",
+    end: "08:00",
+    timezone: rule.timezone,
+    utc_offset_minutes: rule.utc_offset_minutes,
+    allow: ["message"],
+  });
   expect(result.current.pauseSchedule).toEqual([rule]);
+});
+
+it("saves a one-off pause window", async () => {
+  post.mockResolvedValue({
+    data: {
+      pause_schedule: [],
+      paused_until: "2030-01-01T20:00:00+00:00",
+      pause_window: {
+        start: "2030-01-01T18:00:00+00:00",
+        end: "2030-01-01T20:00:00+00:00",
+      },
+      pause_allow: ["system"],
+      active_pauses: [],
+    },
+  });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() =>
+    result.current.savePauseWindow({
+      from: "2030-01-01T18:00:00Z",
+      to: "2030-01-01T20:00:00Z",
+      allow: ["system"],
+    }),
+  );
+
+  expect(post).toHaveBeenCalledWith("/notifications/pause/schedule", {
+    mode: "single",
+    from: "2030-01-01T18:00:00Z",
+    to: "2030-01-01T20:00:00Z",
+    allow: ["system"],
+  });
+  expect(result.current.pauseWindow?.end).toBe("2030-01-01T20:00:00+00:00");
 });
 
 it("removes a scheduled pause", async () => {
@@ -422,9 +474,9 @@ it("removes a scheduled pause", async () => {
   const { result } = renderHook(() => useNotifications("all"));
   await waitFor(() => expect(result.current.loading).toBe(false));
 
-  await act(() => result.current.removePauseSchedule(1));
+  await act(() => result.current.removePauseSchedule("r1"));
 
-  expect(del).toHaveBeenCalledWith("/notifications/pause/schedule/1");
+  expect(del).toHaveBeenCalledWith("/notifications/pause/schedule/r1");
   expect(result.current.pauseSchedule).toEqual([]);
 });
 

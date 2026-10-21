@@ -1533,6 +1533,35 @@
       "resume": "Reanudar notificaciones",
       "tomorrow": "Hasta mañana",
       "custom": "Personalizado",
+      "mode": {
+        "single": "Pausa única",
+        "recurring": "Recurrente"
+      },
+      "ruleName": "Nombre de la pausa",
+      "ruleNamePlaceholder": "Horario laboral",
+      "allow": {
+        "title": "Permitir notificaciones prioritarias",
+        "chats": "Chats directos",
+        "system": "Mensajes del sistema",
+        "likes": "Likes",
+        "recommendations": "Recomendaciones",
+        "comments": "Comentarios"
+      },
+      "preview": {
+        "title": "Vista previa",
+        "range": "Las notificaciones se silenciarán de {{from}} a {{to}}, de {{start}} a {{end}}.",
+        "days": "Las notificaciones se silenciarán los {{days}}, de {{start}} a {{end}}.",
+        "single": "Las notificaciones se silenciarán del {{from}} al {{to}}.",
+        "allow": "Seguirán entrando: {{items}}."
+      },
+      "rule": {
+        "edit": "Editar"
+      },
+      "activePauses": {
+        "title": "Pausas activas",
+        "until": "Termina a las {{time}}",
+        "none": "No hay pausas activas"
+      },
       "schedule": "Programar pausas",
       "scheduleDays": "Días",
       "scheduleStart": "Desde",

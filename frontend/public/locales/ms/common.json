@@ -1174,6 +1174,35 @@
       "resume": "Sambung semula pemberitahuan",
       "tomorrow": "Sehingga esok",
       "custom": "Tersuai",
+      "mode": {
+        "single": "Jeda sekali",
+        "recurring": "Berulang"
+      },
+      "ruleName": "Nama jeda",
+      "ruleNamePlaceholder": "Waktu kerja",
+      "allow": {
+        "title": "Benarkan notifikasi keutamaan",
+        "chats": "Sembang terus",
+        "system": "Mesej sistem",
+        "likes": "Suka",
+        "recommendations": "Cadangan",
+        "comments": "Komen"
+      },
+      "preview": {
+        "title": "Pratonton",
+        "range": "Notifikasi akan disenyapkan dari {{from}} hingga {{to}}, dan dari {{start}} hingga {{end}}.",
+        "days": "Notifikasi akan disenyapkan pada {{days}}, dari {{start}} hingga {{end}}.",
+        "single": "Notifikasi akan disenyapkan dari {{from}} hingga {{to}}.",
+        "allow": "Ini masih akan masuk: {{items}}."
+      },
+      "rule": {
+        "edit": "Sunting"
+      },
+      "activePauses": {
+        "title": "Jeda aktif",
+        "until": "Tamat pada {{time}}",
+        "none": "Tiada jeda aktif"
+      },
       "schedule": "Jadualkan jeda",
       "scheduleDays": "Hari",
       "scheduleStart": "Dari",

@@ -1214,6 +1214,35 @@
       "resume": "알림 다시 시작",
       "tomorrow": "내일까지",
       "custom": "사용자 지정",
+      "mode": {
+        "single": "일시 정지",
+        "recurring": "반복"
+      },
+      "ruleName": "정지 이름",
+      "ruleNamePlaceholder": "근무 시간",
+      "allow": {
+        "title": "우선 알림 허용",
+        "chats": "직접 채팅",
+        "system": "시스템 메시지",
+        "likes": "좋아요",
+        "recommendations": "추천",
+        "comments": "댓글"
+      },
+      "preview": {
+        "title": "미리보기",
+        "range": "알림은 {{from}}부터 {{to}}까지, {{start}}부터 {{end}}까지 차단됩니다.",
+        "days": "알림은 {{days}}에 {{start}}부터 {{end}}까지 차단됩니다.",
+        "single": "알림은 {{from}}부터 {{to}}까지 차단됩니다.",
+        "allow": "다음 알림은 계속 도착합니다: {{items}}."
+      },
+      "rule": {
+        "edit": "편집"
+      },
+      "activePauses": {
+        "title": "활성 정지",
+        "until": "{{time}} 종료",
+        "none": "활성 정지 없음"
+      },
       "schedule": "일시중지 예약",
       "scheduleDays": "요일",
       "scheduleStart": "시작",

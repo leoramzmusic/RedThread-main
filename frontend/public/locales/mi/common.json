@@ -1174,6 +1174,35 @@
       "resume": "Whakaara anō ngā whakamōhiotanga",
       "tomorrow": "Tae noa ki āpōpō",
       "custom": "Ritenga",
+      "mode": {
+        "single": "Whakatāro kotahi",
+        "recurring": "Whakatāro nāianei"
+      },
+      "ruleName": "Ingoa o te wā whakatāro",
+      "ruleNamePlaceholder": "Wā mahi",
+      "allow": {
+        "title": "Whakāwhana te whakamōhiotanga matua",
+        "chats": "Kōrerototanga tūtohutanga",
+        "system": "Karere ara pūnaha",
+        "likes": "Ngā whaiāro",
+        "recommendations": "Ngā tohutohu",
+        "comments": "Ngā kōrero"
+      },
+      "preview": {
+        "title": "Te tirohanga",
+        "range": "Ka whakangā hoki ngā whakamōhiotanga mai i {{from}} ki {{to}}, mai i {{start}} ki {{end}}.",
+        "days": "Ka whakangā hoki ngā whakamōhiotanga i {{days}}, mai i {{start}} ki {{end}}.",
+        "single": "Ka whakangā hoki ngā whakamōhiotanga mai i {{from}} ki {{to}}.",
+        "allow": "He māori anō tēnei ka tae mai: {{items}}."
+      },
+      "rule": {
+        "edit": "Whakaputa"
+      },
+      "activePauses": {
+        "title": "Ngā wā whakatāro e rere ana",
+        "until": "Ka mutu i {{time}}",
+        "none": "Kāore he wā whakatāro e rere ana"
+      },
       "schedule": "Whakarite taua o te wā whakatāro",
       "scheduleDays": "Ngā rā",
       "scheduleStart": "Mai",

@@ -1216,6 +1216,35 @@
       "resume": "Återuppta aviseringar",
       "tomorrow": "Till imorgon",
       "custom": "Anpassat",
+      "mode": {
+        "single": "Enstaka paus",
+        "recurring": "Återkommande"
+      },
+      "ruleName": "Pausens namn",
+      "ruleNamePlaceholder": "Arbetstider",
+      "allow": {
+        "title": "Tillåt prioriterade aviseringar",
+        "chats": "Direkta chattar",
+        "system": "Systemmeddelanden",
+        "likes": "Gilla-markeringar",
+        "recommendations": "Rekommendationer",
+        "comments": "Kommentarer"
+      },
+      "preview": {
+        "title": "Förhandsvisning",
+        "range": "Aviseringar dämpas från {{from}} till {{to}}, mellan {{start}} och {{end}}.",
+        "days": "Aviseringar dämpas på {{days}}, mellan {{start}} och {{end}}.",
+        "single": "Aviseringar dämpas från {{from}} till {{to}}.",
+        "allow": "De här kommer ändå igenom: {{items}}."
+      },
+      "rule": {
+        "edit": "Redigera"
+      },
+      "activePauses": {
+        "title": "Aktiva pauser",
+        "until": "Slutar kl. {{time}}",
+        "none": "Inga aktiva pauser"
+      },
       "schedule": "Schemalägg pauser",
       "scheduleDays": "Dagar",
       "scheduleStart": "Från",

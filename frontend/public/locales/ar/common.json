@@ -1226,6 +1226,35 @@
       "resume": "استئناف الإشعارات",
       "tomorrow": "حتى الغد",
       "custom": "مخصص",
+      "mode": {
+        "single": "إيقاف مؤقت واحد",
+        "recurring": "متكرر"
+      },
+      "ruleName": "اسم الإيقاف",
+      "ruleNamePlaceholder": "ساعات العمل",
+      "allow": {
+        "title": "السماح بالإشعارات ذات الأولوية",
+        "chats": "المحادثات المباشرة",
+        "system": "رسائل النظام",
+        "likes": "الإعجابات",
+        "recommendations": "التوصيات",
+        "comments": "التعليقات"
+      },
+      "preview": {
+        "title": "معاينة",
+        "range": "سيتم كتم الإشعارات من {{from}} إلى {{to}}، ومن {{start}} إلى {{end}}.",
+        "days": "سيتم كتم الإشعارات في {{days}}، من {{start}} إلى {{end}}.",
+        "single": "سيتم كتم الإشعارات من {{from}} إلى {{to}}.",
+        "allow": "ستمر هذه الإشعارات: {{items}}."
+      },
+      "rule": {
+        "edit": "تعديل"
+      },
+      "activePauses": {
+        "title": "الإيقافات النشطة",
+        "until": "ينتهي في {{time}}",
+        "none": "لا توجد إيقافات نشطة"
+      },
       "schedule": "جدولة الإيقاف",
       "scheduleDays": "الأيام",
       "scheduleStart": "من",

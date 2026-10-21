@@ -1,5 +1,6 @@
 import {
   describePauseRule,
+  formatDayRange,
   formatRemaining,
   parseInstant,
   pauseDeadlineLabel,
@@ -70,7 +71,15 @@ describe("describePauseRule", () => {
       { days: [0, 2], start: "18:00", end: "08:00" },
       "en",
     );
-    expect(text).toContain("18:00–08:00");
+    expect(text).toContain("18:00 → 08:00");
     expect(text.split(", ")).toHaveLength(2);
+  });
+
+  it("uses a range for contiguous days", () => {
+    expect(formatDayRange([0, 1, 2, 3, 4], "en")).toBe("Mon - Fri");
+  });
+
+  it("keeps every day of the week short", () => {
+    expect(formatDayRange([0, 1, 2, 3, 4, 5, 6], "en")).toBe("Mon");
   });
 });
