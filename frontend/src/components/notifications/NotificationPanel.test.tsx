@@ -31,7 +31,7 @@ const mockCopy: Record<string, string> = {
   "notifications.bulk.delete": "Borrar",
   "notifications.bulk.restore": "Restaurar",
   "notifications.bulk.cancel": "Cancelar selección",
-  "notifications.settings": "Ajustes",
+  "notifications.settings.title": "Ajustes",
   "notifications.actions.unarchive": "Restaurar",
   "notifications.actions.delete": "Borrar",
   "notifications.tabs.all": "Todo",
@@ -440,7 +440,9 @@ describe("NotificationPanel", () => {
       renderPanel();
 
       fireEvent.click(screen.getByTestId("notification-menu"));
-      fireEvent.click(screen.getByTestId("notification-menu-settings"));
+      const settingsItem = screen.getByTestId("notification-menu-settings");
+      expect(settingsItem).toHaveTextContent("Ajustes");
+      fireEvent.click(settingsItem);
 
       expect(onClose).toHaveBeenCalledTimes(1);
       expect(push).toHaveBeenCalledWith("/settings#notifications");

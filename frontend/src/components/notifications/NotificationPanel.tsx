@@ -558,7 +558,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           }}
           sx={{ fontSize: "0.875rem" }}
         >
-          {t("notifications.settings", "Ajustes")}
+          {t("notifications.settings.title", "Ajustes")}
         </MenuItem>
       </Menu>
 
