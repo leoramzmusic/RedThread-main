@@ -7,6 +7,14 @@ export const PAUSE_OPTIONS = ["15m", "30m", "1h", "2h", "8h"] as const;
 
 export type PauseOption = (typeof PAUSE_OPTIONS)[number];
 
+const PAUSE_LABELS: Record<PauseOption, string> = {
+  "15m": "15 minutos",
+  "30m": "30 minutos",
+  "1h": "1 hora",
+  "2h": "2 horas",
+  "8h": "8 horas",
+};
+
 interface PauseMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
@@ -52,7 +60,7 @@ export default function PauseMenu({
       transformOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <ListSubheader component="div">
-        {t("notifications.pause.title")}
+        {t("notifications.pause.title", "Pausar notificaciones")}
       </ListSubheader>
       {paused && (
         <MenuItem
@@ -65,7 +73,7 @@ export default function PauseMenu({
           <ListItemIcon>
             <ResumeIcon fontSize="small" />
           </ListItemIcon>
-          {t("notifications.pause.resume")}
+          {t("notifications.pause.resume", "Reanudar notificaciones")}
         </MenuItem>
       )}
       {PAUSE_OPTIONS.map((option) => (
@@ -74,7 +82,7 @@ export default function PauseMenu({
           data-testid={`notification-pause-${option}`}
           onClick={() => choose(option)}
         >
-          {t(`notifications.snooze.${option}`)}
+          {t(`notifications.snooze.${option}`, PAUSE_LABELS[option])}
         </MenuItem>
       ))}
       <MenuItem
@@ -84,7 +92,7 @@ export default function PauseMenu({
           onPauseUntil(tomorrowMorning());
         }}
       >
-        {t("notifications.pause.tomorrow")}
+        {t("notifications.pause.tomorrow", "Hasta mañana")}
       </MenuItem>
       <MenuItem
         data-testid="notification-pause-custom"
@@ -93,7 +101,7 @@ export default function PauseMenu({
           onOpenSchedule();
         }}
       >
-        {t("notifications.pause.custom")}
+        {t("notifications.pause.custom", "Personalizado")}
       </MenuItem>
     </Menu>
   );

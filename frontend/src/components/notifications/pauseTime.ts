@@ -6,6 +6,14 @@ export interface PauseScheduleRule {
   utc_offset_minutes?: number;
 }
 
+const HAS_TIMEZONE = /(Z|[+-]\d{2}:?\d{2})$/i;
+
+export function parseInstant(value: string): number {
+  const raw = value.trim();
+  const normalized = HAS_TIMEZONE.test(raw) ? raw : `${raw}Z`;
+  return new Date(normalized).getTime();
+}
+
 export function formatRemaining(minutes: number): string {
   if (minutes >= 1440) {
     const days = Math.floor(minutes / 1440);
@@ -25,7 +33,7 @@ export function pauseRemaining(
   now: number = Date.now(),
 ): string | null {
   if (!until) return null;
-  const target = new Date(until).getTime();
+  const target = parseInstant(until);
   if (Number.isNaN(target)) return null;
   const diff = target - now;
   if (diff <= 0) return null;
@@ -33,7 +41,7 @@ export function pauseRemaining(
 }
 
 export function pauseDeadlineLabel(until: string): string {
-  return new Date(until).toLocaleTimeString(undefined, {
+  return new Date(parseInstant(until)).toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",

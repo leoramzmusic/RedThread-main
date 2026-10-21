@@ -7,12 +7,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { DeleteOutlined as DeleteIcon } from "@mui/icons-material";
+import {
+  Close as CloseIcon,
+  DeleteOutlined as DeleteIcon,
+} from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
 import {
   describePauseRule,
@@ -73,21 +77,49 @@ export default function PauseScheduleDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>{t("notifications.pause.schedule")}</DialogTitle>
-      <DialogContent>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            m: { xs: 1, sm: 2 },
+            mx: "auto",
+            width: { xs: "95%", sm: "80%", md: "70%" },
+            maxHeight: "80vh",
+            borderRadius: "12px",
+            display: "flex",
+            flexDirection: "column",
+          },
+        },
+      }}
+    >
+      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          color="error"
+          aria-label={t("notifications.bulk.cancel", "Cancelar")}
+        >
+          <CloseIcon />
+        </IconButton>
+        <Typography variant="h6" component="span" sx={{ flex: 1 }}>
+          {t("notifications.pause.schedule", "Programar pausas")}
+        </Typography>
+      </DialogTitle>
+      <DialogContent dividers>
         <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
-          {t("notifications.pause.scheduleHint")}
+          {t(
+            "notifications.pause.scheduleHint",
+            "Elige los días y las horas en las que no quieres recibir alertas.",
+          )}
         </Typography>
         <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          {t("notifications.pause.scheduleDays")}
+          {t("notifications.pause.scheduleDays", "Días")}
         </Typography>
-        <Stack
-          direction="row"
-          spacing={0.5}
-          useFlexGap
-          sx={{ flexWrap: "wrap", rowGap: 0.5 }}
-        >
+        <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
           {labels.map((label, day) => (
             <Chip
               key={day}
@@ -103,8 +135,8 @@ export default function PauseScheduleDialog({
         <Box
           sx={{
             display: "flex",
-            gap: 1,
-            mt: 2,
+            gap: 2,
+            mt: 3,
             alignItems: "center",
             flexWrap: "wrap",
           }}
@@ -112,32 +144,42 @@ export default function PauseScheduleDialog({
           <TextField
             data-testid="notification-pause-start"
             type="time"
-            label={t("notifications.pause.scheduleStart")}
+            label={t("notifications.pause.scheduleStart", "Desde")}
             value={start}
             onChange={(event) => setStart(event.target.value)}
             slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ width: 140 }}
+            sx={{ width: 160 }}
           />
           <TextField
             data-testid="notification-pause-end"
             type="time"
-            label={t("notifications.pause.scheduleEnd")}
+            label={t("notifications.pause.scheduleEnd", "Hasta")}
             value={end}
             onChange={(event) => setEnd(event.target.value)}
             slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ width: 140 }}
+            sx={{ width: 160 }}
           />
         </Box>
         <Typography variant="caption" sx={{ display: "block", mt: 1 }}>
-          {t("notifications.pause.scheduleTimezone", { timezone })}
+          {t(
+            "notifications.pause.scheduleTimezone",
+            "Zona horaria: {{timezone}}",
+            {
+              timezone,
+            },
+          )}
         </Typography>
 
-        <Typography variant="subtitle2" sx={{ mt: 3, mb: 1 }}>
-          {t("notifications.pause.scheduleList")}
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+          {t("notifications.pause.scheduleList", "Pausas programadas")}
         </Typography>
         {schedule.length === 0 ? (
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {t("notifications.pause.scheduleEmpty")}
+            {t(
+              "notifications.pause.scheduleEmpty",
+              "Todavía no tienes pausas programadas",
+            )}
           </Typography>
         ) : (
           schedule.map((rule, index) => (
@@ -158,8 +200,8 @@ export default function PauseScheduleDialog({
               <IconButton
                 data-testid={`notification-pause-rule-delete-${index}`}
                 onClick={() => onDelete(index)}
-                title={t("notifications.pause.scheduleDelete")}
-                aria-label={t("notifications.pause.scheduleDelete")}
+                title={t("notifications.pause.scheduleDelete", "Eliminar")}
+                aria-label={t("notifications.pause.scheduleDelete", "Eliminar")}
                 size="small"
                 color="error"
               >
@@ -169,12 +211,9 @@ export default function PauseScheduleDialog({
           ))
         )}
       </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={onClose}
-          data-testid="notification-pause-schedule-cancel"
-        >
-          {t("notifications.bulk.cancel")}
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onClose} color="inherit">
+          {t("notifications.bulk.cancel", "Cancelar")}
         </Button>
         <Button
           variant="contained"
@@ -182,7 +221,7 @@ export default function PauseScheduleDialog({
           onClick={save}
           data-testid="notification-pause-schedule-save"
         >
-          {t("notifications.pause.scheduleSave")}
+          {t("notifications.pause.scheduleSave", "Guardar")}
         </Button>
       </DialogActions>
     </Dialog>

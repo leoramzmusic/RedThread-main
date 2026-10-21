@@ -89,10 +89,20 @@ const mockCopy: Record<string, string> = {
   "notifications.undo.snoozed": "Notificación pospuesta",
 };
 
-function mockTranslate(key: string, options?: Record<string, unknown>) {
-  let value = mockCopy[key] ?? key;
-  if (options && typeof options === "object") {
-    Object.entries(options).forEach(([name, replacement]) => {
+function mockTranslate(
+  key: string,
+  defaultValue?: string | Record<string, unknown>,
+  options?: Record<string, unknown>,
+) {
+  const resolvedOptions =
+    options ??
+    (defaultValue && typeof defaultValue === "object"
+      ? defaultValue
+      : undefined);
+  let value =
+    mockCopy[key] ?? (typeof defaultValue === "string" ? defaultValue : key);
+  if (resolvedOptions && typeof resolvedOptions === "object") {
+    Object.entries(resolvedOptions).forEach(([name, replacement]) => {
       value = value.replace(
         new RegExp(`{{${name}}}`, "g"),
         String(replacement),

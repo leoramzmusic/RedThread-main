@@ -125,11 +125,15 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const isPaused = Boolean(pauseRemainingLabel);
   const pauseTime = isPaused ? pauseDeadlineLabel(pausedUntil as string) : "";
   const pauseTooltip = isPaused
-    ? t("notifications.pause.active", {
-        remaining: pauseRemainingLabel,
-        time: pauseTime,
-      })
-    : t("notifications.pause.title");
+    ? t(
+        "notifications.pause.active",
+        "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
+        {
+          remaining: pauseRemainingLabel,
+          time: pauseTime,
+        },
+      )
+    : t("notifications.pause.title", "Pausar notificaciones");
   const unreadLabel = counts.count > 99 ? "99+" : String(counts.count);
 
   React.useEffect(() => {
