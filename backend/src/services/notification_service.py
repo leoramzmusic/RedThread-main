@@ -4,8 +4,9 @@ Reglas: agrupación rodante con bump (ventana 24h), cap de 3 actores,
 silencio = filtro al mostrar (el doc se crea igual), DND solo suprime push.
 """
 
-from datetime import datetime, time, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import date, datetime, time, timedelta, timezone
+from typing import Any, Dict, List, Optional, Tuple
+from uuid import uuid4
 
 try:  # tzdata no está garantizada en Windows; el offset del cliente hace de fallback
     from zoneinfo import ZoneInfo
@@ -25,6 +26,15 @@ PREVIEW_MAX = 80
 RETENTION_DAYS = 30
 PAUSE_SCHEDULE_MAX_RULES = 10
 PAUSE_WEEKDAYS = (0, 1, 2, 3, 4, 5, 6)
+PAUSE_ALLOWED_TYPES = (
+    "message",
+    "system",
+    "survey",
+    "like",
+    "match",
+    "promo",
+    "comment",
+)
 
 ALL_NOTIF_TYPES = ["like", "match", "message", "system", "survey", "promo"]
 FILTER_TYPES = {
@@ -78,12 +88,22 @@ def parse_clock(value: str) -> time:
     return time(hour=hours, minute=minutes)
 
 
+def normalize_pause_allow(allow: Optional[List[str]]) -> List[str]:
+    """Keep only known notification types that may still come through."""
+    return sorted(
+        {str(item) for item in (allow or []) if str(item) in PAUSE_ALLOWED_TYPES}
+    )
+
+
 def normalize_pause_rule(
     days: Optional[List[int]],
     start: str,
     end: str,
     timezone_name: Optional[str] = None,
     utc_offset_minutes: Optional[int] = None,
+    name: Optional[str] = None,
+    allow: Optional[List[str]] = None,
+    rule_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Build a normalized recurring pause rule (weekdays + local time window)."""
     start_t = parse_clock(start)
@@ -92,9 +112,12 @@ def normalize_pause_rule(
     if not day_list:
         raise ValueError("Invalid pause days")
     rule: Dict[str, Any] = {
+        "id": str(rule_id) if rule_id else uuid4().hex,
+        "name": (name or "").strip()[:60],
         "days": day_list,
         "start": start_t.strftime("%H:%M"),
         "end": end_t.strftime("%H:%M"),
+        "allow": normalize_pause_allow(allow),
     }
     if timezone_name:
         rule["timezone"] = str(timezone_name)
@@ -122,10 +145,24 @@ def _rule_timezone(rule: Dict[str, Any]):
     return timezone.utc
 
 
-def pause_rule_end(
+def _naive_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def _to_utc(local_day: date, clock: time, tz) -> datetime:
+    return (
+        datetime.combine(local_day, clock, tzinfo=tz)
+        .astimezone(timezone.utc)
+        .replace(tzinfo=None)
+    )
+
+
+def pause_rule_window(
     rule: Dict[str, Any], now: Optional[datetime] = None
-) -> Optional[datetime]:
-    """End (UTC naive) of the active window of a rule, or None if not active."""
+) -> Optional[Tuple[datetime, datetime]]:
+    """(start, end) in UTC naive of the active window of a rule, or None."""
     try:
         start_t = parse_clock(rule.get("start", ""))
         end_t = parse_clock(rule.get("end", ""))
@@ -135,65 +172,140 @@ def pause_rule_end(
     if not days:
         return None
 
-    now_utc = now or datetime.utcnow()
-    if now_utc.tzinfo is None:
-        now_utc = now_utc.replace(tzinfo=timezone.utc)
+    now_utc = _naive_utc(now or datetime.utcnow())
     tz = _rule_timezone(rule)
-    local = now_utc.astimezone(tz)
+    local = now_utc.replace(tzinfo=timezone.utc).astimezone(tz)
     local_now = local.time()
     weekday = local.weekday()
-
-    def _end_at(day_offset: int) -> datetime:
-        local_end = datetime.combine(
-            local.date() + timedelta(days=day_offset), end_t, tzinfo=tz
-        )
-        return local_end.astimezone(timezone.utc).replace(tzinfo=None)
+    today = local.date()
 
     if start_t < end_t:
         if weekday in days and start_t <= local_now < end_t:
-            return _end_at(0)
+            return _to_utc(today, start_t, tz), _to_utc(today, end_t, tz)
         return None
 
     if weekday in days and local_now >= start_t:
-        return _end_at(1)
+        return _to_utc(today, start_t, tz), _to_utc(
+            today + timedelta(days=1), end_t, tz
+        )
     previous_day = (weekday - 1) % 7
     if previous_day in days and local_now < end_t:
-        return _end_at(0)
+        return _to_utc(today - timedelta(days=1), start_t, tz), _to_utc(
+            today, end_t, tz
+        )
     return None
 
 
-def schedule_pause_end(
+def schedule_pause_windows(
     rules: Optional[List[Dict[str, Any]]], now: Optional[datetime] = None
-) -> Optional[datetime]:
-    """Latest end (UTC naive) among the currently active recurring rules."""
-    best: Optional[datetime] = None
+) -> List[Tuple[Dict[str, Any], datetime, datetime]]:
+    """Active windows of the recurring rules."""
+    windows: List[Tuple[Dict[str, Any], datetime, datetime]] = []
     for rule in rules or []:
-        end = pause_rule_end(rule, now)
-        if end is not None and (best is None or end > best):
-            best = end
-    return best
+        window = pause_rule_window(rule, now)
+        if window is not None:
+            windows.append((rule, window[0], window[1]))
+    return windows
+
+
+def effective_pause_window(
+    settings, now: Optional[datetime] = None
+) -> Optional[Dict[str, Any]]:
+    """The pause that is currently silencing the push channel, if any."""
+    if settings is None:
+        return None
+    reference = _naive_utc(now or datetime.utcnow())
+    candidates: List[Dict[str, Any]] = []
+
+    one_off_end = getattr(settings, "notifications_paused_until", None)
+    if one_off_end is not None:
+        end = _naive_utc(one_off_end)
+        raw_start = getattr(settings, "notifications_paused_from", None)
+        start = _naive_utc(raw_start) if raw_start is not None else None
+        if end > reference and (start is None or start <= reference):
+            candidates.append(
+                {
+                    "kind": "single",
+                    "start": start or reference,
+                    "end": end,
+                    "allow": normalize_pause_allow(
+                        getattr(settings, "notifications_pause_allow", None)
+                    ),
+                    "rule": None,
+                }
+            )
+
+    for rule, start, end in schedule_pause_windows(
+        getattr(settings, "notification_pause_schedule", None), reference
+    ):
+        candidates.append(
+            {
+                "kind": "recurring",
+                "start": start,
+                "end": end,
+                "allow": normalize_pause_allow(rule.get("allow")),
+                "rule": rule,
+            }
+        )
+
+    if not candidates:
+        return None
+    return max(candidates, key=lambda item: item["end"])
 
 
 def effective_pause_until(
     settings, now: Optional[datetime] = None
 ) -> Optional[datetime]:
     """When the push channel stays muted: one-off pause or recurring schedule."""
+    window = effective_pause_window(settings, now)
+    return window["end"] if window else None
+
+
+def active_pauses(
+    settings, now: Optional[datetime] = None
+) -> List[Dict[str, Any]]:
+    """Pauses that are silencing notifications right now (for the UI)."""
     if settings is None:
-        return None
-    reference = now or datetime.utcnow()
-    candidates: List[datetime] = []
-    one_off = getattr(settings, "notifications_paused_until", None)
-    if one_off is not None:
-        if one_off.tzinfo is not None:
-            one_off = one_off.astimezone(timezone.utc).replace(tzinfo=None)
-        if one_off > reference:
-            candidates.append(one_off)
-    scheduled = schedule_pause_end(
+        return []
+    reference = _naive_utc(now or datetime.utcnow())
+    result: List[Dict[str, Any]] = []
+
+    one_off_end = getattr(settings, "notifications_paused_until", None)
+    if one_off_end is not None:
+        end = _naive_utc(one_off_end)
+        raw_start = getattr(settings, "notifications_paused_from", None)
+        start = _naive_utc(raw_start) if raw_start is not None else reference
+        if end > reference and start <= reference:
+            result.append(
+                {
+                    "kind": "single",
+                    "id": None,
+                    "name": "",
+                    "start": start,
+                    "end": end,
+                    "allow": normalize_pause_allow(
+                        getattr(settings, "notifications_pause_allow", None)
+                    ),
+                }
+            )
+
+    for rule, start, end in schedule_pause_windows(
         getattr(settings, "notification_pause_schedule", None), reference
-    )
-    if scheduled is not None:
-        candidates.append(scheduled)
-    return max(candidates) if candidates else None
+    ):
+        result.append(
+            {
+                "kind": "recurring",
+                "id": rule.get("id"),
+                "name": rule.get("name") or "",
+                "days": rule.get("days") or [],
+                "start": rule.get("start"),
+                "end": rule.get("end"),
+                "window_start": start,
+                "window_end": end,
+                "allow": normalize_pause_allow(rule.get("allow")),
+            }
+        )
+    return result
 
 
 def should_push(
@@ -206,8 +318,8 @@ def should_push(
         return True
     if not getattr(settings, "notifications_enabled", True):
         return False
-    paused_until = effective_pause_until(settings)
-    if paused_until is not None and paused_until > datetime.utcnow():
+    window = effective_pause_window(settings)
+    if window is not None and notif_type not in set(window.get("allow") or []):
         return False
     if is_muted_type(getattr(settings, "notification_mutes", None), notif_type):
         return False
@@ -699,6 +811,7 @@ async def pause_notifications(user_id: str, until: datetime) -> datetime:
     settings = await UserSettings.find_one({"user_id": user_id})
     if settings is None:
         settings = UserSettings(user_id=user_id)
+    settings.notifications_paused_from = datetime.utcnow()
     settings.notifications_paused_until = until
     await settings.save()
     await _push_action(user_id, "notifications_paused", until=until.isoformat())
@@ -713,6 +826,7 @@ async def resume_notifications(user_id: str) -> None:
     if settings is None:
         return
     settings.notifications_paused_until = None
+    settings.notifications_paused_from = None
     await settings.save()
     await _push_action(user_id, "notifications_resumed")
     await _push_action(user_id, "notifications_sync")
@@ -727,17 +841,37 @@ async def _settings_document(user_id: str):
     return settings
 
 
+async def set_pause_window(
+    user_id: str,
+    start: datetime,
+    end: datetime,
+    allow: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """Configure a one-off silence window (start → end)."""
+    settings = await _settings_document(user_id)
+    settings.notifications_paused_from = start
+    settings.notifications_paused_until = end
+    if allow is not None:
+        settings.notifications_pause_allow = normalize_pause_allow(allow)
+    await settings.save()
+    await _push_action(user_id, "notifications_sync")
+    return {
+        "paused_from": start,
+        "paused_until": end,
+        "pause_allow": list(settings.notifications_pause_allow or []),
+    }
+
+
 async def upsert_pause_schedule(
     user_id: str, rule: Dict[str, Any]
 ) -> List[Dict[str, Any]]:
-    """Store a recurring pause rule, replacing one with the same days and start."""
+    """Store a recurring pause rule, replacing the one with the same id."""
     settings = await _settings_document(user_id)
     schedule = [dict(item) for item in (settings.notification_pause_schedule or [])]
-    key = (tuple(rule.get("days") or []), rule.get("start"))
+    rule_id = rule.get("id")
     replaced = False
     for index, item in enumerate(schedule):
-        item_key = (tuple(item.get("days") or []), item.get("start"))
-        if item_key == key:
+        if rule_id and item.get("id") == rule_id:
             schedule[index] = dict(rule)
             replaced = True
             break
@@ -750,14 +884,13 @@ async def upsert_pause_schedule(
     return schedule
 
 
-async def remove_pause_schedule(user_id: str, index: int) -> List[Dict[str, Any]]:
-    """Remove a recurring pause rule by position."""
+async def remove_pause_schedule(user_id: str, rule_id: str) -> List[Dict[str, Any]]:
+    """Remove a recurring pause rule by id."""
     settings = await UserSettings.find_one({"user_id": user_id})
     if settings is None:
         return []
     schedule = [dict(item) for item in (settings.notification_pause_schedule or [])]
-    if 0 <= index < len(schedule):
-        schedule.pop(index)
+    schedule = [item for item in schedule if item.get("id") != rule_id]
     settings.notification_pause_schedule = schedule
     await settings.save()
     await _push_action(user_id, "notifications_sync")

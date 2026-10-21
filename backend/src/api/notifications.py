@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.api.auth import get_current_user
 from src.core.middleware.employee_rbac import require_employee_permission
@@ -36,11 +36,19 @@ class PauseRequest(BaseModel):
 
 
 class PauseScheduleRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    mode: str = "recurring"
+    id: Optional[str] = None
+    name: Optional[str] = None
     days: List[int] = Field(default_factory=list)
-    start: str
-    end: str
+    start: Optional[str] = None
+    end: Optional[str] = None
+    from_: Optional[datetime] = Field(default=None, alias="from")
+    to: Optional[datetime] = None
     timezone: Optional[str] = None
     utc_offset_minutes: Optional[int] = None
+    allow: List[str] = Field(default_factory=list)
 
 
 class BulkRequest(BaseModel):
@@ -82,15 +90,48 @@ def decode_cursor(raw: str) -> tuple[datetime, str]:
     return datetime.fromisoformat(iso), doc_id
 
 
-async def _mute_context(
-    user_id: str,
-) -> tuple[Dict[str, bool], bool, Optional[datetime], List[Dict[str, Any]]]:
+async def _notification_settings(user_id: str) -> Dict[str, Any]:
+    """Mutes, pause state and scheduled rules of a user."""
     settings = await UserSettings.find_one({"user_id": user_id})
     mutes = getattr(settings, "notification_mutes", None) or {}
     master = getattr(settings, "notifications_enabled", True)
-    schedule = [dict(item) for item in (getattr(settings, "notification_pause_schedule", None) or [])]
-    paused_until = ns.effective_pause_until(settings)
-    return mutes, master, paused_until, schedule
+    schedule = [
+        dict(item)
+        for item in (getattr(settings, "notification_pause_schedule", None) or [])
+    ]
+    allow = list(getattr(settings, "notifications_pause_allow", None) or [])
+    window = ns.effective_pause_window(settings)
+    raw_from = getattr(settings, "notifications_paused_from", None)
+    raw_until = getattr(settings, "notifications_paused_until", None)
+    return {
+        "mutes": mutes,
+        "master": master,
+        "paused_until": window["end"] if window else None,
+        "paused_from": window["start"] if window else None,
+        "pause_allow": allow,
+        "pause_schedule": schedule,
+        "pause_window": {
+            "start": _iso_utc(raw_from) if raw_from else None,
+            "end": _iso_utc(raw_until) if raw_until else None,
+        },
+        "active_pauses": _serialize_active_pauses(ns.active_pauses(settings)),
+    }
+
+
+def _serialize_active_pauses(pauses: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    serialized: List[Dict[str, Any]] = []
+    for pause in pauses or []:
+        item = dict(pause)
+        if item.get("window_start") is not None:
+            item["window_start"] = _iso_utc(item["window_start"])
+        if item.get("window_end") is not None:
+            item["window_end"] = _iso_utc(item["window_end"])
+        if item.get("start") is not None and not isinstance(item["start"], str):
+            item["start"] = _iso_utc(item["start"])
+        if item.get("end") is not None and not isinstance(item["end"], str):
+            item["end"] = _iso_utc(item["end"])
+        serialized.append(item)
+    return serialized
 
 
 async def _backfill_updated_at(user_id: str, limit: int = 500) -> int:
@@ -180,7 +221,8 @@ async def get_notifications(
             {"user_id": uid, "updated_at": {"$lt": cutoff}}
         ).delete()
 
-    mutes, master, _, _ = await _mute_context(uid)
+    context = await _notification_settings(uid)
+    mutes, master = context["mutes"], context["master"]
     if filter == "archived":
         query = ns.visible_filter(uid, archived_only=True)
     elif filter == "trash":
@@ -232,7 +274,8 @@ async def get_notifications(
 async def get_unread_count(current_user: User = Depends(get_current_user)):
     """Unread counts per bucket (visibility-aware)."""
     uid = str(current_user.id)
-    mutes, master, paused_until, schedule = await _mute_context(uid)
+    context = await _notification_settings(uid)
+    mutes, master = context["mutes"], context["master"]
     base = _scoped_query(uid, "all", mutes, master)
     base["is_read"] = False
 
@@ -254,8 +297,12 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
             system_docs=system_docs,
             survey_pending=survey_pending,
         ),
-        "paused_until": _iso_utc(paused_until),
-        "pause_schedule": schedule,
+        "paused_until": _iso_utc(context["paused_until"]),
+        "paused_from": _iso_utc(context["paused_from"]),
+        "pause_allow": context["pause_allow"],
+        "pause_schedule": context["pause_schedule"],
+        "pause_window": context["pause_window"],
+        "active_pauses": context["active_pauses"],
     }
 
 
@@ -274,6 +321,18 @@ def _iso_utc(value: Optional[datetime]) -> Optional[str]:
     else:
         value = value.astimezone(timezone.utc)
     return value.isoformat()
+
+
+async def _pause_state(user_id: str) -> Dict[str, Any]:
+    context = await _notification_settings(user_id)
+    return {
+        "paused_until": _iso_utc(context["paused_until"]),
+        "paused_from": _iso_utc(context["paused_from"]),
+        "pause_allow": context["pause_allow"],
+        "pause_schedule": context["pause_schedule"],
+        "pause_window": context["pause_window"],
+        "active_pauses": context["active_pauses"],
+    }
 
 
 @router.post("/pause")
@@ -296,7 +355,7 @@ async def pause_notifications_route(
             detail="Pause must end in the future",
         )
     await ns.pause_notifications(str(current_user.id), until)
-    return {"paused_until": _iso_utc(until)}
+    return await _pause_state(str(current_user.id))
 
 
 @router.delete("/pause")
@@ -305,48 +364,54 @@ async def resume_notifications_route(
 ):
     """Resume push notifications immediately."""
     await ns.resume_notifications(str(current_user.id))
-    return {"paused_until": None}
+    return await _pause_state(str(current_user.id))
 
 
 @router.post("/pause/schedule")
 async def create_pause_schedule_route(
     payload: PauseScheduleRequest, current_user: User = Depends(get_current_user)
 ):
-    """Schedule recurring pauses (weekdays + local time window)."""
+    """Configure the silence plan: a one-off window or a recurring rule."""
+    uid = str(current_user.id)
     try:
-        rule = ns.normalize_pause_rule(
-            payload.days,
-            payload.start,
-            payload.end,
-            payload.timezone,
-            payload.utc_offset_minutes,
-        )
+        if payload.mode == "single":
+            if payload.from_ is None or payload.to is None:
+                raise ValueError("Invalid pause window")
+            start = _as_utc_naive(payload.from_)
+            end = _as_utc_naive(payload.to)
+            if end <= start:
+                raise ValueError("Invalid pause window")
+            await ns.set_pause_window(uid, start, end, payload.allow)
+        else:
+            if not payload.start or not payload.end:
+                raise ValueError("Invalid pause time")
+            rule = ns.normalize_pause_rule(
+                payload.days,
+                payload.start,
+                payload.end,
+                payload.timezone,
+                payload.utc_offset_minutes,
+                payload.name,
+                payload.allow,
+                payload.id,
+            )
+            await ns.upsert_pause_schedule(uid, rule)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(exc),
         )
-    schedule = await ns.upsert_pause_schedule(str(current_user.id), rule)
-    settings = await UserSettings.find_one({"user_id": str(current_user.id)})
-    paused_until = ns.effective_pause_until(settings)
-    return {
-        "pause_schedule": schedule,
-        "paused_until": _iso_utc(paused_until),
-    }
+    return await _pause_state(uid)
 
 
-@router.delete("/pause/schedule/{index}")
+@router.delete("/pause/schedule/{rule_id}")
 async def delete_pause_schedule_route(
-    index: int, current_user: User = Depends(get_current_user)
+    rule_id: str, current_user: User = Depends(get_current_user)
 ):
-    """Remove a scheduled pause by position."""
-    schedule = await ns.remove_pause_schedule(str(current_user.id), index)
-    settings = await UserSettings.find_one({"user_id": str(current_user.id)})
-    paused_until = ns.effective_pause_until(settings)
-    return {
-        "pause_schedule": schedule,
-        "paused_until": _iso_utc(paused_until),
-    }
+    """Remove a scheduled pause by id."""
+    uid = str(current_user.id)
+    await ns.remove_pause_schedule(uid, rule_id)
+    return await _pause_state(uid)
 
 
 class ReadBucketRequest(BaseModel):
@@ -390,7 +455,8 @@ async def mark_all_as_read(
     if filter == "all":
         query = {"user_id": uid, "is_read": False}
     else:
-        mutes, master, _, _ = await _mute_context(uid)
+        context = await _notification_settings(uid)
+        mutes, master = context["mutes"], context["master"]
         query = _scoped_query(uid, filter, mutes, master)
         query["is_read"] = False
     result = await Notification.find(query).update({"$set": {"is_read": True}})

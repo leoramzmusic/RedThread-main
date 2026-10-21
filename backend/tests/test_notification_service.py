@@ -324,25 +324,30 @@ class TestPauseSchedule:
 
     def test_active_inside_window(self):
         now = datetime(2026, 10, 19, 19, 0)  # lunes
-        assert ns.pause_rule_end(self.RULE, now) == datetime(2026, 10, 20, 8, 0)
+        start, end = ns.pause_rule_window(self.RULE, now)
+        assert start == datetime(2026, 10, 19, 18, 0)
+        assert end == datetime(2026, 10, 20, 8, 0)
 
     def test_inactive_outside_window(self):
         now = datetime(2026, 10, 19, 12, 0)  # lunes al mediodia
-        assert ns.pause_rule_end(self.RULE, now) is None
+        assert ns.pause_rule_window(self.RULE, now) is None
 
     def test_inactive_on_unselected_day(self):
         now = datetime(2026, 10, 24, 19, 0)  # sábado
-        assert ns.pause_rule_end(self.RULE, now) is None
+        assert ns.pause_rule_window(self.RULE, now) is None
 
     def test_window_from_previous_day(self):
         now = datetime(2026, 10, 20, 2, 0)  # martes de madrugada
-        assert ns.pause_rule_end(self.RULE, now) == datetime(2026, 10, 20, 8, 0)
+        start, end = ns.pause_rule_window(self.RULE, now)
+        assert start == datetime(2026, 10, 19, 18, 0)
+        assert end == datetime(2026, 10, 20, 8, 0)
 
     def test_same_day_window(self):
         rule = {"days": [0], "start": "09:00", "end": "17:00"}
         now = datetime(2026, 10, 19, 10, 0)
-        assert ns.pause_rule_end(rule, now) == datetime(2026, 10, 19, 17, 0)
-        assert ns.pause_rule_end(rule, datetime(2026, 10, 19, 18, 0)) is None
+        start, end = ns.pause_rule_window(rule, now)
+        assert (start, end) == (datetime(2026, 10, 19, 9, 0), datetime(2026, 10, 19, 17, 0))
+        assert ns.pause_rule_window(rule, datetime(2026, 10, 19, 18, 0)) is None
 
     def test_offset_is_applied(self):
         rule = {
@@ -352,21 +357,24 @@ class TestPauseSchedule:
             "utc_offset_minutes": 120,
         }
         # 17:00 UTC son las 19:00 en +02:00 -> dentro de la ventana
-        assert ns.pause_rule_end(rule, datetime(2026, 10, 19, 17, 0)) is not None
+        assert ns.pause_rule_window(rule, datetime(2026, 10, 19, 17, 0)) is not None
         # 15:00 UTC son las 17:00 locales -> fuera
-        assert ns.pause_rule_end(rule, datetime(2026, 10, 19, 15, 0)) is None
+        assert ns.pause_rule_window(rule, datetime(2026, 10, 19, 15, 0)) is None
 
-    def test_schedule_pause_end_takes_latest(self):
+    def test_schedule_windows_lists_active_rules(self):
         rules = [
             {"days": [0], "start": "09:00", "end": "12:00"},
             {"days": [0], "start": "10:00", "end": "18:00"},
         ]
         now = datetime(2026, 10, 19, 10, 30)
-        assert ns.schedule_pause_end(rules, now) == datetime(2026, 10, 19, 18, 0)
+        windows = ns.schedule_pause_windows(rules, now)
+        assert len(windows) == 2
+        assert max(item[2] for item in windows) == datetime(2026, 10, 19, 18, 0)
 
     def test_effective_pause_until_combines_one_off_and_schedule(self):
         settings = SimpleNamespace(
             notifications_paused_until=datetime(2026, 10, 19, 23, 0),
+            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
             notification_pause_schedule=[
                 {"days": [0], "start": "09:00", "end": "18:00"}
             ],
@@ -374,12 +382,31 @@ class TestPauseSchedule:
         now = datetime(2026, 10, 19, 10, 30)
         assert ns.effective_pause_until(settings, now) == datetime(2026, 10, 19, 23, 0)
 
+    def test_allowed_types_pass_through_the_pause(self):
+        settings = SimpleNamespace(
+            notifications_enabled=True,
+            notification_mutes={},
+            do_not_disturb={"enabled": False, "start_time": "22:00", "end_time": "08:00"},
+            notifications_paused_until=datetime(2026, 10, 19, 23, 0),
+            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
+            notifications_pause_allow=["message", "system"],
+            notification_pause_schedule=[],
+        )
+        now = datetime.utcnow()
+        settings.notifications_paused_from = now - timedelta(hours=1)
+        settings.notifications_paused_until = now + timedelta(hours=1)
+        assert ns.should_push(settings, "like", None) is False
+        assert ns.should_push(settings, "message", None) is True
+        assert ns.should_push(settings, "system", None) is True
+
     def test_should_push_blocked_by_schedule(self):
         settings = SimpleNamespace(
             notifications_enabled=True,
             notification_mutes={},
             do_not_disturb={"enabled": False, "start_time": "22:00", "end_time": "08:00"},
             notifications_paused_until=None,
+            notifications_paused_from=None,
+            notifications_pause_allow=[],
             # 00:00 -> 00:00 cubre las 24h de los días indicados
             notification_pause_schedule=[
                 {"days": [0, 1, 2, 3, 4, 5, 6], "start": "00:00", "end": "00:00"}
@@ -388,23 +415,49 @@ class TestPauseSchedule:
         assert ns.should_push(settings, "like", None) is False
         assert ns.should_push(settings, "system", {"important": True}) is True
 
+    def test_active_pauses_lists_window_and_rule(self):
+        settings = SimpleNamespace(
+            notifications_paused_until=datetime(2026, 10, 19, 23, 0),
+            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
+            notifications_pause_allow=["message"],
+            notification_pause_schedule=[
+                {
+                    "id": "r1",
+                    "name": "Horario laboral",
+                    "days": [0],
+                    "start": "09:00",
+                    "end": "18:00",
+                    "allow": [],
+                }
+            ],
+        )
+        now = datetime(2026, 10, 19, 10, 30)
+        pauses = ns.active_pauses(settings, now)
+        kinds = {item["kind"] for item in pauses}
+        assert kinds == {"single", "recurring"}
+        recurring = [item for item in pauses if item["kind"] == "recurring"][0]
+        assert recurring["name"] == "Horario laboral"
+        assert recurring["id"] == "r1"
+
     def test_normalize_pause_rule_validates(self):
         rule = ns.normalize_pause_rule(
-            [5, 0, 0], "18:00", "08:00", "Europe/Madrid", 120
+            [5, 0, 0], "18:00", "08:00", "Europe/Madrid", 120, "Turno", ["message"]
         )
-        assert rule == {
-            "days": [0, 5],
-            "start": "18:00",
-            "end": "08:00",
-            "timezone": "Europe/Madrid",
-            "utc_offset_minutes": 120,
-        }
+        assert rule["days"] == [0, 5]
+        assert rule["start"] == "18:00"
+        assert rule["end"] == "08:00"
+        assert rule["name"] == "Turno"
+        assert rule["allow"] == ["message"]
+        assert rule["id"]
         with pytest.raises(ValueError):
             ns.normalize_pause_rule([], "18:00", "08:00")
         with pytest.raises(ValueError):
             ns.normalize_pause_rule([0], "25:00", "08:00")
         with pytest.raises(ValueError):
             ns.normalize_pause_rule([0], "18:00", "nope")
+
+    def test_normalize_pause_allow_keeps_known_types(self):
+        assert ns.normalize_pause_allow(["message", "nope"]) == ["message"]
 
 
 class TestVisibilityQuery:
