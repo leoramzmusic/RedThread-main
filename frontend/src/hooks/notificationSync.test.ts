@@ -32,8 +32,10 @@ describe("applyNotificationSocketEvent", () => {
   });
 
   it("ignores unknown actions", () => {
-    expect(applyNotificationSocketEvent({ action: "typing" }, jest.fn())).toBe(
+    const refetch = jest.fn();
+    expect(applyNotificationSocketEvent({ action: "typing" }, refetch)).toBe(
       false,
     );
+    expect(refetch).not.toHaveBeenCalled();
   });
 });

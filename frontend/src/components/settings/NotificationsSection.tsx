@@ -38,10 +38,10 @@ export default function NotificationsSection({
     ...(settings?.notification_mutes || {}),
   };
   const muteOptions = [
-    { key: "social", checked: mutes.social },
-    { key: "messages", checked: mutes.messages },
-    { key: "system", checked: mutes.system },
-    { key: "promos", checked: mutes.promos },
+    { key: "social", checked: Boolean(mutes.social) },
+    { key: "messages", checked: Boolean(mutes.messages) },
+    { key: "system", checked: Boolean(mutes.system) },
+    { key: "promos", checked: Boolean(mutes.promos) },
   ];
 
   return (
