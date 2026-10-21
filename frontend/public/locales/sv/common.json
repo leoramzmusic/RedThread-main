@@ -1210,12 +1210,22 @@
       "30m": "30 minuter",
       "4h": "4 timmar"
     },
+    "pause": {
+      "title": "Pausa aviseringar",
+      "active": "Aviseringar pausade till {{time}}",
+      "resume": "Återuppta aviseringar",
+      "tomorrow": "Till imorgon",
+      "custom": "Anpassat",
+      "customTitle": "Välj när aviseringar återupptas",
+      "confirm": "Pausa"
+    },
     "archived": {
       "title": "Arkiverade",
       "open": "Visa arkiverade",
       "back": "Tillbaka"
     },
     "undo": {
+      "read": "Aviseringar markerade som lästa",
       "archived": "Avisering arkiverad",
       "deleted": "Avisering raderad",
       "snoozed": "Avisering uppskjuten"
@@ -1240,6 +1250,7 @@
     "readAll": "Läs alla",
     "selectMode": "Välj aviseringar",
     "bulk": {
+      "markRead": "Markera som lästa",
       "selected": "{{count}} valda",
       "selectAll": "Markera alla",
       "archive": "Arkivera",

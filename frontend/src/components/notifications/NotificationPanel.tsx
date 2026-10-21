@@ -33,9 +33,13 @@ import {
   DeleteOutlined as DeleteIcon,
   RestoreFromTrashOutlined as RestoreIcon,
   SelectAllOutlined as SelectAllIcon,
+  NotificationsPausedOutlined as PausedIcon,
+  ScheduleOutlined as ScheduleIcon,
 } from "@mui/icons-material";
 import NotificationItem from "./NotificationItem";
 import NotificationSwipeable from "./NotificationSwipeable";
+import PauseMenu from "./PauseMenu";
+import { pauseDeadlineLabel, pauseRemaining } from "./pauseTime";
 import type { SnoozeOption } from "./SnoozeMenu";
 import {
   useNotifications,
@@ -62,6 +66,8 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [pauseAnchor, setPauseAnchor] = useState<null | HTMLElement>(null);
+  const [clock, setClock] = useState(() => Date.now());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     () => new Set<string>(),
@@ -87,8 +93,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     bulkUnarchive,
     bulkDelete,
     bulkRestore,
+    bulkMarkRead,
     snooze,
     unsnooze,
+    pausedUntil,
+    pause,
+    resume,
   } = useNotifications(filter, { unread: filter === "messages" });
   const prefersReducedMotion = usePrefersReducedMotion();
   const seenRef = useRef<Set<string>>(new Set());
@@ -106,6 +116,13 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     counts.survey_pending > 0 &&
     (filter === "all" || filter === "system");
   const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
+  const pauseRemainingLabel = pauseRemaining(pausedUntil, clock);
+  const isPaused = Boolean(pauseRemainingLabel);
+  const pauseTime = isPaused ? pauseDeadlineLabel(pausedUntil as string) : "";
+  const pauseTooltip = isPaused
+    ? t("notifications.pause.active", { time: pauseTime })
+    : t("notifications.pause.title");
+  const unreadLabel = counts.count > 99 ? "99+" : String(counts.count);
 
   React.useEffect(() => {
     if (loading || filter !== "social") return;
@@ -150,6 +167,16 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     },
     [],
   );
+
+  React.useEffect(() => {
+    if (!pausedUntil) return;
+    const initial = setTimeout(() => setClock(Date.now()), 0);
+    const timer = setInterval(() => setClock(Date.now()), 30000);
+    return () => {
+      clearTimeout(initial);
+      clearInterval(timer);
+    };
+  }, [pausedUntil]);
 
   React.useEffect(() => {
     setSelectionMode(false);
@@ -252,6 +279,18 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     undoBulk(ids, t("notifications.undo.deleted"), () => bulkRestore(ids));
   };
 
+  const handleBulkMarkRead = () => {
+    const ids = [...selectedIds];
+    if (!ids.length) return;
+    void bulkMarkRead(ids);
+    exitSelection();
+    enqueueSnackbar(t("notifications.undo.read"), {
+      key: `notification-bulk-read-${ids[0] ?? "empty"}`,
+      preventDuplicate: true,
+      autoHideDuration: 5000,
+    });
+  };
+
   const sendQuickReply = async (
     notification: AppNotification,
     content: string,
@@ -349,14 +388,15 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton
-              data-testid="notification-select-all"
-              onClick={selectAll}
-              title={t("notifications.bulk.selectAll")}
-              aria-label={t("notifications.bulk.selectAll")}
+              data-testid="notification-bulk-mark-read"
+              onClick={handleBulkMarkRead}
+              disabled={selectedIds.size === 0}
+              title={t("notifications.bulk.markRead")}
+              aria-label={t("notifications.bulk.markRead")}
               size="small"
               sx={{ mr: 0.5 }}
             >
-              <SelectAllIcon />
+              <MarkReadIcon />
             </IconButton>
             <IconButton
               data-testid="notification-bulk-archive"
@@ -377,8 +417,18 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               aria-label={t("notifications.bulk.delete")}
               size="small"
               color="error"
+              sx={{ mr: 0.5 }}
             >
               <DeleteIcon />
+            </IconButton>
+            <IconButton
+              data-testid="notification-select-all"
+              onClick={selectAll}
+              title={t("notifications.bulk.selectAll")}
+              aria-label={t("notifications.bulk.selectAll")}
+              size="small"
+            >
+              <SelectAllIcon />
             </IconButton>
           </Box>
         </Box>
@@ -413,24 +463,65 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                   ? t("notifications.trash.title")
                   : t("notifications.title")}
             </Typography>
+            {!isSpecialView && counts.count > 0 && (
+              <Typography
+                component="span"
+                data-testid="notification-unread-count"
+                sx={{
+                  ml: 1,
+                  px: 0.7,
+                  py: 0.1,
+                  borderRadius: 2,
+                  bgcolor: "action.selected",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  lineHeight: 1.5,
+                }}
+              >
+                {unreadLabel}
+              </Typography>
+            )}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {!isSpecialView && (
-              <Button
+              <IconButton
+                data-testid="notification-pause"
+                onClick={(event) => setPauseAnchor(event.currentTarget)}
+                title={pauseTooltip}
+                aria-label={pauseTooltip}
+                size="small"
+                color={isPaused ? "primary" : "default"}
+              >
+                {isPaused ? <PausedIcon /> : <ScheduleIcon />}
+              </IconButton>
+            )}
+            {!isSpecialView && isPaused && (
+              <Typography
+                data-testid="notification-pause-remaining"
+                variant="caption"
+                sx={{
+                  color: "primary.main",
+                  fontWeight: 700,
+                  mr: 0.5,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {pauseRemainingLabel}
+              </Typography>
+            )}
+            {!isSpecialView && (
+              <IconButton
                 data-testid="notification-mark-all"
                 onClick={() => {
                   void markAllRead(filter);
                 }}
-                title={t("notifications.readAll")}
+                title={t("notifications.markAllRead")}
+                aria-label={t("notifications.markAllRead")}
                 size="small"
-                sx={{
-                  mr: 0.5,
-                  fontSize: "0.75rem",
-                  whiteSpace: "nowrap",
-                }}
+                sx={{ mr: 0.5 }}
               >
-                {t("notifications.readAll")}
-              </Button>
+                <MarkReadIcon />
+              </IconButton>
             )}
             {!isSpecialView && (
               <IconButton
@@ -439,7 +530,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                 title={t("notifications.menu", "Más opciones")}
                 aria-label={t("notifications.menu", "Más opciones")}
                 size="small"
-                sx={{ mr: 1 }}
+                sx={{ mr: 0.5 }}
               >
                 <MoreIcon />
               </IconButton>
@@ -535,6 +626,16 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           })}
         </Tabs>
       )}
+
+      <PauseMenu
+        anchorEl={pauseAnchor}
+        open={Boolean(pauseAnchor)}
+        paused={isPaused}
+        onClose={() => setPauseAnchor(null)}
+        onPause={(duration) => void pause(duration)}
+        onPauseUntil={(until) => void pause(undefined, until)}
+        onResume={() => void resume()}
+      />
 
       <Menu
         anchorEl={menuAnchor}

@@ -1168,12 +1168,22 @@
       "30m": "30 meneti",
       "4h": "4 haora"
     },
+    "pause": {
+      "title": "Whakatāroa ngā whakamōhiotanga",
+      "active": "Kua whakatāroa ngā whakamōhiotanga tae noa ki {{time}}",
+      "resume": "Whakaara anō ngā whakamōhiotanga",
+      "tomorrow": "Tae noa ki āpōpō",
+      "custom": "Ritenga",
+      "customTitle": "Kōwhiria te wā hei whakaara anō",
+      "confirm": "Whakatāroa"
+    },
     "archived": {
       "title": "Kua puritia",
       "open": "Tirohia ngā mea kua puritia",
       "back": "Hoki"
     },
     "undo": {
+      "read": "I tohua ngā whakamōhiotanga hei kā panuitia",
       "archived": "Kua puritia te whakamōhiotanga",
       "deleted": "Kua mukua te whakamōhiotanga",
       "snoozed": "Kua tārewa te whakamōhiotanga"
@@ -1198,6 +1208,7 @@
     "readAll": "Pānui katoa",
     "selectMode": "Tīpako ngā whakamōhiotanga",
     "bulk": {
+      "markRead": "Tohu mai kā panuitia",
       "selected": "{{count}} kua tīpakohia",
       "selectAll": "Tīpako katoa",
       "archive": "Purua",

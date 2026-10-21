@@ -1209,12 +1209,22 @@
       "30m": "30 分钟",
       "4h": "4 小时"
     },
+    "pause": {
+      "title": "暂停通知",
+      "active": "通知已暂停至 {{time}}",
+      "resume": "恢复通知",
+      "tomorrow": "暂停到明天",
+      "custom": "自定义",
+      "customTitle": "选择恢复时间",
+      "confirm": "暂停"
+    },
     "archived": {
       "title": "已归档",
       "open": "查看已归档",
       "back": "返回"
     },
     "undo": {
+      "read": "通知已标记为已读",
       "archived": "通知已归档",
       "deleted": "通知已删除",
       "snoozed": "通知已稍后提醒"
@@ -1239,6 +1249,7 @@
     "readAll": "全部标为已读",
     "selectMode": "选择通知",
     "bulk": {
+      "markRead": "标记为已读",
       "selected": "已选择 {{count}} 项",
       "selectAll": "全选",
       "archive": "归档",

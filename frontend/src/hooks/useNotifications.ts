@@ -8,6 +8,7 @@ export interface NotificationCounts {
   messages: number;
   system: number;
   survey_pending: number;
+  paused_until?: string | null;
 }
 
 export interface NotificationActor {
@@ -48,6 +49,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [pausedUntil, setPausedUntil] = useState<string | null>(null);
 
   const filterRef = useRef(filter);
   const unreadRef = useRef(unread);
@@ -74,7 +76,11 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
       if (requestId !== requestIdRef.current) return;
       setItems(list.data.items ?? []);
       setNextCursor(list.data.next_cursor ?? null);
-      if (count) setCounts({ ...EMPTY_COUNTS, ...(count.data ?? {}) });
+      if (count) {
+        const data = count.data ?? {};
+        setCounts({ ...EMPTY_COUNTS, ...data });
+        setPausedUntil(data.paused_until ?? null);
+      }
     } catch {
       if (requestId !== requestIdRef.current) return;
       setError(true);
@@ -234,6 +240,27 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [runWithOptimisticBulkRemoval],
   );
 
+  const bulkMarkRead = useCallback(
+    async (ids: string[]) => {
+      const target = new Set(ids);
+      setItems((prev) =>
+        prev.map((notification) =>
+          target.has(notification.id)
+            ? { ...notification, is_read: true }
+            : notification,
+        ),
+      );
+      try {
+        await apiClient.post("/notifications/bulk", { ids, action: "read" });
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
+
   const snooze = useCallback(
     (id: string, duration: string) =>
       runWithOptimisticRemoval(id, () =>
@@ -250,6 +277,26 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [runWithOptimisticRemoval],
   );
 
+  const pause = useCallback(async (duration?: string, until?: string) => {
+    try {
+      const response = await apiClient.post("/notifications/pause", {
+        ...(until ? { until } : { duration }),
+      });
+      setPausedUntil(response.data?.paused_until ?? null);
+    } catch {
+      setError(true);
+    }
+  }, []);
+
+  const resume = useCallback(async () => {
+    try {
+      await apiClient.delete("/notifications/pause");
+      setPausedUntil(null);
+    } catch {
+      setError(true);
+    }
+  }, []);
+
   return {
     items,
     counts,
@@ -257,6 +304,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     loading,
     error,
     nextCursor,
+    pausedUntil,
     refresh: fetchAll,
     markRead,
     markBucket,
@@ -269,7 +317,10 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     bulkUnarchive,
     bulkDelete,
     bulkRestore,
+    bulkMarkRead,
     snooze,
     unsnooze,
+    pause,
+    resume,
   };
 }

@@ -27,6 +27,7 @@ const mockCopy: Record<string, string> = {
   "notifications.trash.title": "Papelera",
   "notifications.bulk.selected": "{{count}} seleccionadas",
   "notifications.bulk.selectAll": "Seleccionar todas",
+  "notifications.bulk.markRead": "Marcar como leídas",
   "notifications.bulk.archive": "Archivar",
   "notifications.bulk.delete": "Borrar",
   "notifications.bulk.restore": "Restaurar",
@@ -64,7 +65,15 @@ const mockCopy: Record<string, string> = {
   "notifications.snooze.1h": "1 hora",
   "notifications.snooze.4h": "4 horas",
   "notifications.snooze.1d": "Mañana",
+  "notifications.pause.title": "Pausar notificaciones",
+  "notifications.pause.active": "Notificaciones pausadas hasta las {{time}}",
+  "notifications.pause.resume": "Reanudar notificaciones",
+  "notifications.pause.tomorrow": "Hasta mañana",
+  "notifications.pause.custom": "Personalizado",
+  "notifications.pause.customTitle": "Elegir fin de la pausa",
+  "notifications.pause.confirm": "Pausar",
   "notifications.undo.archived": "Notificación archivada",
+  "notifications.undo.read": "Notificaciones marcadas como leídas",
   "notifications.undo.deleted": "Notificación borrada",
   "notifications.undo.snoozed": "Notificación pospuesta",
 };
@@ -140,8 +149,12 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   bulkUnarchive: jest.fn(),
   bulkDelete: jest.fn(),
   bulkRestore: jest.fn(),
+  bulkMarkRead: jest.fn(),
   snooze: jest.fn(),
   unsnooze: jest.fn(),
+  pausedUntil: null,
+  pause: jest.fn(),
+  resume: jest.fn(),
   ...overrides,
 });
 
@@ -403,12 +416,12 @@ describe("NotificationPanel", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it("offers Leer todas on every tab and scopes it to that tab", async () => {
+  it("offers mark all on every tab and scopes it to that tab", async () => {
     useCounts({ count: 2, all: 2, social: 1, system: 1 });
     renderPanel();
 
     const readAll = await screen.findByTestId("notification-mark-all");
-    expect(readAll).toHaveTextContent("Leer todas");
+    expect(readAll).toHaveAttribute("title", "Marcar todas como leídas");
     fireEvent.click(readAll);
     expect(hook.markAllRead).toHaveBeenCalledWith("all");
 
@@ -420,6 +433,56 @@ describe("NotificationPanel", () => {
     );
     fireEvent.click(screen.getByTestId("notification-mark-all"));
     expect(hook.markAllRead).toHaveBeenLastCalledWith("messages");
+  });
+
+  it("shows the unread count and the pause menu", () => {
+    useCounts({ count: 12, all: 12, social: 4, system: 8 });
+    renderPanel();
+
+    expect(screen.getByTestId("notification-unread-count")).toHaveTextContent(
+      "12",
+    );
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    expect(screen.getByText("Pausar notificaciones")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("notification-pause-30m"));
+
+    expect(hook.pause).toHaveBeenCalledWith("30m");
+  });
+
+  it("shows the remaining pause time and allows resuming", () => {
+    hook = makeHook({
+      pausedUntil: new Date(Date.now() + 90 * 60000).toISOString(),
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    renderPanel();
+
+    expect(
+      screen.getByTestId("notification-pause-remaining"),
+    ).toHaveTextContent("1h 30m");
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    fireEvent.click(screen.getByTestId("notification-pause-resume"));
+
+    expect(hook.resume).toHaveBeenCalledTimes(1);
+  });
+
+  it("pauses until a custom time", () => {
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    fireEvent.click(screen.getByTestId("notification-pause-custom"));
+    const input = screen
+      .getByTestId("notification-pause-custom-input")
+      .querySelector("input") as HTMLInputElement;
+    const target = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    target.setSeconds(0, 0);
+    const pad = (value: number) => String(value).padStart(2, "0");
+    const local = `${target.getFullYear()}-${pad(target.getMonth() + 1)}-${pad(
+      target.getDate(),
+    )}T${pad(target.getHours())}:${pad(target.getMinutes())}`;
+    fireEvent.change(input, { target: { value: local } });
+    fireEvent.click(screen.getByTestId("notification-pause-custom-confirm"));
+
+    expect(hook.pause).toHaveBeenCalledWith(undefined, target.toISOString());
   });
 
   describe("⋯ menu", () => {
@@ -538,6 +601,21 @@ describe("NotificationPanel", () => {
       expect(hook.bulkDelete).toHaveBeenCalledWith(["n1", "n2"]);
       fireEvent.click(undoAction());
       expect(hook.bulkRestore).toHaveBeenCalledWith(["n1", "n2"]);
+    });
+
+    it("bulk-marks the selection as read", async () => {
+      hook = makeHook({ items: [sampleItem("n1"), sampleItem("n2")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      fireEvent.contextMenu(await screen.findByTestId("notification-item-n1"));
+      fireEvent.click(screen.getByTestId("notification-select-all"));
+      fireEvent.click(screen.getByTestId("notification-bulk-mark-read"));
+
+      expect(hook.bulkMarkRead).toHaveBeenCalledWith(["n1", "n2"]);
+      expect(
+        screen.queryByTestId("notification-selection-toolbar"),
+      ).not.toBeInTheDocument();
     });
 
     it("enters selection mode from the menu", async () => {

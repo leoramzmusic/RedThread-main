@@ -200,6 +200,37 @@ it.each([
   },
 );
 
+it("marks a bulk selection as read without removing the items", async () => {
+  let marked = false;
+  get.mockImplementation((url: string) =>
+    url === "/notifications/unread-count"
+      ? Promise.resolve({ data: counts })
+      : Promise.resolve({
+          data: {
+            items: [
+              { id: "n1", type: "like", is_read: marked },
+              { id: "n2", type: "match", is_read: marked },
+            ],
+          },
+        }),
+  );
+  post.mockImplementation(() => {
+    marked = true;
+    return Promise.resolve({ data: { updated: 2 } });
+  });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.bulkMarkRead(["n1", "n2"]));
+
+  expect(post).toHaveBeenCalledWith("/notifications/bulk", {
+    ids: ["n1", "n2"],
+    action: "read",
+  });
+  expect(result.current.items).toHaveLength(2);
+  expect(result.current.items.every((item) => item.is_read)).toBe(true);
+});
+
 it.each(["archive", "unarchive", "restore"] as const)(
   "%s calls the endpoint, removes the item optimistically and refreshes",
   async (action) => {
@@ -333,6 +364,43 @@ it("unsnoozes a notification and refreshes", async () => {
   expect(get).toHaveBeenCalledWith("/notifications", {
     params: { filter: "all", limit: 50 },
   });
+});
+
+it("pauses notifications with a preset and stores the deadline", async () => {
+  const until = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+  post.mockResolvedValue({ data: { paused_until: until } });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.pause("1h"));
+
+  expect(post).toHaveBeenCalledWith("/notifications/pause", {
+    duration: "1h",
+  });
+  expect(result.current.pausedUntil).toBe(until);
+});
+
+it("pauses until an explicit time", async () => {
+  const until = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  post.mockResolvedValue({ data: { paused_until: until } });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.pause(undefined, until));
+
+  expect(post).toHaveBeenCalledWith("/notifications/pause", { until });
+  expect(result.current.pausedUntil).toBe(until);
+});
+
+it("resumes notifications", async () => {
+  del.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.resume());
+
+  expect(del).toHaveBeenCalledWith("/notifications/pause");
+  expect(result.current.pausedUntil).toBeNull();
 });
 
 const deferred = <T>() => {

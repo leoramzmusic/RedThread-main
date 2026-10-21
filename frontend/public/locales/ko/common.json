@@ -1208,12 +1208,22 @@
       "30m": "30분",
       "4h": "4시간"
     },
+    "pause": {
+      "title": "알림 일시중지",
+      "active": "알림이 {{time}}까지 일시중지됨",
+      "resume": "알림 다시 시작",
+      "tomorrow": "내일까지",
+      "custom": "사용자 지정",
+      "customTitle": "다시 시작할 시간 선택",
+      "confirm": "일시중지"
+    },
     "archived": {
       "title": "보관됨",
       "open": "보관된 알림 보기",
       "back": "뒤로"
     },
     "undo": {
+      "read": "알림을 읽음으로 표시했습니다",
       "archived": "알림이 보관되었습니다",
       "deleted": "알림이 삭제되었습니다",
       "snoozed": "알림이 미뤄졌습니다"
@@ -1238,6 +1248,7 @@
     "readAll": "모두 읽기",
     "selectMode": "알림 선택",
     "bulk": {
+      "markRead": "읽음으로 표시",
       "selected": "{{count}}개 선택됨",
       "selectAll": "모두 선택",
       "archive": "보관",

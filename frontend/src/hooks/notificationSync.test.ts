@@ -16,6 +16,8 @@ const MUTATION_ACTIONS = [
   "notification_restored",
   "notification_snoozed",
   "notification_unsnoozed",
+  "notifications_paused",
+  "notifications_resumed",
 ];
 
 describe("applyNotificationSocketEvent", () => {

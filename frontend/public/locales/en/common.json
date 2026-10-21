@@ -1463,12 +1463,22 @@
       "30m": "30 minutes",
       "4h": "4 hours"
     },
+    "pause": {
+      "title": "Pause notifications",
+      "active": "Notifications paused until {{time}}",
+      "resume": "Resume notifications",
+      "tomorrow": "Until tomorrow",
+      "custom": "Custom",
+      "customTitle": "Choose when to resume",
+      "confirm": "Pause"
+    },
     "archived": {
       "title": "Archived",
       "open": "View archived",
       "back": "Back"
     },
     "undo": {
+      "read": "Notifications marked as read",
       "archived": "Notification archived",
       "deleted": "Notification deleted",
       "snoozed": "Notification snoozed"
@@ -1493,6 +1503,7 @@
     "readAll": "Read all",
     "selectMode": "Select notifications",
     "bulk": {
+      "markRead": "Mark as read",
       "selected": "{{count}} selected",
       "selectAll": "Select all",
       "archive": "Archive",

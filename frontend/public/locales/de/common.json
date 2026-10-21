@@ -1210,12 +1210,22 @@
       "30m": "30 Minuten",
       "4h": "4 Stunden"
     },
+    "pause": {
+      "title": "Benachrichtigungen pausieren",
+      "active": "Benachrichtigungen pausiert bis {{time}}",
+      "resume": "Benachrichtigungen fortsetzen",
+      "tomorrow": "Bis morgen",
+      "custom": "Benutzerdefiniert",
+      "customTitle": "Wählen, wann fortgesetzt wird",
+      "confirm": "Pausieren"
+    },
     "archived": {
       "title": "Archiviert",
       "open": "Archivierte anzeigen",
       "back": "Zurück"
     },
     "undo": {
+      "read": "Benachrichtigungen als gelesen markiert",
       "archived": "Benachrichtigung archiviert",
       "deleted": "Benachrichtigung gelöscht",
       "snoozed": "Benachrichtigung zurückgestellt"
@@ -1240,6 +1250,7 @@
     "readAll": "Alle lesen",
     "selectMode": "Benachrichtigungen auswählen",
     "bulk": {
+      "markRead": "Als gelesen markieren",
       "selected": "{{count}} ausgewählt",
       "selectAll": "Alle auswählen",
       "archive": "Archivieren",

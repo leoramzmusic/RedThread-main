@@ -1210,12 +1210,22 @@
       "30m": "30 minuten",
       "4h": "4 uur"
     },
+    "pause": {
+      "title": "Meldingen pauzeren",
+      "active": "Meldingen gepauzeerd tot {{time}}",
+      "resume": "Meldingen hervatten",
+      "tomorrow": "Tot morgen",
+      "custom": "Aangepast",
+      "customTitle": "Kies wanneer je wilt hervatten",
+      "confirm": "Pauzeren"
+    },
     "archived": {
       "title": "Gearchiveerd",
       "open": "Bekijk gearchiveerde",
       "back": "Terug"
     },
     "undo": {
+      "read": "Meldingen gemarkeerd als gelezen",
       "archived": "Melding gearchiveerd",
       "deleted": "Melding verwijderd",
       "snoozed": "Melding uitgesteld"
@@ -1240,6 +1250,7 @@
     "readAll": "Alles lezen",
     "selectMode": "Meldingen selecteren",
     "bulk": {
+      "markRead": "Markeren als gelezen",
       "selected": "{{count}} geselecteerd",
       "selectAll": "Alles selecteren",
       "archive": "Archiveren",

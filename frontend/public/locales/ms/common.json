@@ -1168,12 +1168,22 @@
       "30m": "30 minit",
       "4h": "4 jam"
     },
+    "pause": {
+      "title": "Jeda pemberitahuan",
+      "active": "Pemberitahuan dijeda sehingga {{time}}",
+      "resume": "Sambung semula pemberitahuan",
+      "tomorrow": "Sehingga esok",
+      "custom": "Tersuai",
+      "customTitle": "Pilih masa untuk menyambung semula",
+      "confirm": "Jeda"
+    },
     "archived": {
       "title": "Diarkibkan",
       "open": "Lihat diarkibkan",
       "back": "Kembali"
     },
     "undo": {
+      "read": "Pemberitahuan ditandakan sebagai dibaca",
       "archived": "Pemberitahuan diarkibkan",
       "deleted": "Pemberitahuan dipadamkan",
       "snoozed": "Pemberitahuan ditunda"
@@ -1198,6 +1208,7 @@
     "readAll": "Baca semua",
     "selectMode": "Pilih pemberitahuan",
     "bulk": {
+      "markRead": "Tandakan sebagai dibaca",
       "selected": "{{count}} dipilih",
       "selectAll": "Pilih semua",
       "archive": "Arkib",

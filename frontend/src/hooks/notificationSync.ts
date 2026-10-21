@@ -11,6 +11,8 @@ const HANDLED = new Set([
   "notification_restored",
   "notification_snoozed",
   "notification_unsnoozed",
+  "notifications_paused",
+  "notifications_resumed",
 ]);
 
 export function applyNotificationSocketEvent(

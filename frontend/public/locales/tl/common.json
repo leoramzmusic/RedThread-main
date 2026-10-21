@@ -1169,12 +1169,22 @@
       "30m": "30 minuto",
       "4h": "4 oras"
     },
+    "pause": {
+      "title": "I-pause ang mga notification",
+      "active": "Naka-pause ang mga notification hanggang {{time}}",
+      "resume": "Ipagpatuloy ang mga notification",
+      "tomorrow": "Hanggang bukas",
+      "custom": "Custom",
+      "customTitle": "Piliin kung kailan ipagpatuloy",
+      "confirm": "I-pause"
+    },
     "archived": {
       "title": "Mga nakatabi",
       "open": "Tingnan ang mga nakatabi",
       "back": "Bumalik"
     },
     "undo": {
+      "read": "Nabasa ang mga notification",
       "archived": "Naitabi ang abiso",
       "deleted": "Naalis ang abiso",
       "snoozed": "Naipagpaliban ang abiso"
@@ -1199,6 +1209,7 @@
     "readAll": "Basahin lahat",
     "selectMode": "Pumili ng mga abiso",
     "bulk": {
+      "markRead": "Markahang bilang nabasa",
       "selected": "{{count}} napili",
       "selectAll": "Piliin lahat",
       "archive": "Itabi",

@@ -1169,12 +1169,22 @@
       "30m": "Dakika 30",
       "4h": "Saa 4"
     },
+    "pause": {
+      "title": "Sitisha arifa",
+      "active": "Arifa zimesitishwa hadi {{time}}",
+      "resume": "Rejesha arifa",
+      "tomorrow": "Hadi kesho",
+      "custom": "Maalum",
+      "customTitle": "Chagua wakati wa kurejesha",
+      "confirm": "Sitisha"
+    },
     "archived": {
       "title": "Zilizohifadhiwa",
       "open": "Tazama zilizohifadhiwa",
       "back": "Rudi"
     },
     "undo": {
+      "read": "Arifa zilizokuwa zilizotumika kuwa zilizokuwa",
       "archived": "Arifa imehifadhiwa",
       "deleted": "Arifa imefutwa",
       "snoozed": "Arifa imeahirishwa"
@@ -1199,6 +1209,7 @@
     "readAll": "Soma zote",
     "selectMode": "Chagua arifa",
     "bulk": {
+      "markRead": "Weka alama kuwa zilizokuwa",
       "selected": "{{count}} zimechaguliwa",
       "selectAll": "Chagua zote",
       "archive": "Hifadhi",

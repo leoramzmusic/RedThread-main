@@ -1169,12 +1169,22 @@
       "30m": "Minti 30",
       "4h": "Sa'o'i 4"
     },
+    "pause": {
+      "title": "Dakatar da sanarwa",
+      "active": "An dakatar da sanarwa har zuwa {{time}}",
+      "resume": "Ci gaba da sanarwa",
+      "tomorrow": "Har gobe",
+      "custom": "Na musamman",
+      "customTitle": "Zaɓi lokacin da za a ci gaba",
+      "confirm": "Dakatar"
+    },
     "archived": {
       "title": "Abubuwan da aka ajiye",
       "open": "Duba abubuwan da aka ajiye",
       "back": "Baya"
     },
     "undo": {
+      "read": "An sanarwa ake ɗauke shi kamar an karanta",
       "archived": "An ajiye sanarwa",
       "deleted": "An share sanarwa",
       "snoozed": "An dage sanarwa"
@@ -1199,6 +1209,7 @@
     "readAll": "Karanta duka",
     "selectMode": "Zaɓi sanarwa",
     "bulk": {
+      "markRead": "Marka kar kamar an karanta",
       "selected": "An zaɓi {{count}}",
       "selectAll": "Zaɓi duka",
       "archive": "Ajiye",
