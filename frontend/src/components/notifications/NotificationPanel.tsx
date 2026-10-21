@@ -29,8 +29,10 @@ import {
   Campaign as SystemIcon,
   MoreVert as MoreIcon,
   ArrowBack as BackIcon,
+  ArchiveOutlined as ArchiveIcon,
   DeleteOutlined as DeleteIcon,
   RestoreFromTrashOutlined as RestoreIcon,
+  SelectAllOutlined as SelectAllIcon,
 } from "@mui/icons-material";
 import NotificationItem from "./NotificationItem";
 import NotificationSwipeable from "./NotificationSwipeable";
@@ -60,6 +62,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set<string>(),
+  );
   const [bumpedIds, setBumpedIds] = useState<Set<string>>(() => new Set());
   const [bumpSeq, setBumpSeq] = useState(0);
   const updatedAtRef = useRef<Map<string, string>>(new Map());
@@ -77,6 +83,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     unarchive,
     remove,
     restore,
+    bulkArchive,
+    bulkUnarchive,
+    bulkDelete,
+    bulkRestore,
     snooze,
     unsnooze,
   } = useNotifications(filter, { unread: filter === "messages" });
@@ -88,9 +98,11 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     0,
   );
   const isArchived = filter === "archived";
+  const isTrash = filter === "trash";
+  const isSpecialView = isArchived || isTrash;
   const tabCounts = [counts.all, counts.social, counts.messages, counts.system];
   const showSurvey =
-    !isArchived &&
+    !isSpecialView &&
     counts.survey_pending > 0 &&
     (filter === "all" || filter === "system");
   const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
@@ -139,6 +151,19 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     [],
   );
 
+  React.useEffect(() => {
+    setSelectionMode(false);
+    setSelectedIds(new Set<string>());
+  }, [filter]);
+
+  React.useEffect(() => {
+    const visible = new Set(items.map((notification) => notification.id));
+    setSelectedIds((prev) => {
+      const next = new Set([...prev].filter((id) => visible.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [items]);
+
   const snackbarOptions = (id: string) => ({
     key: `notification-${id}`,
     preventDuplicate: true,
@@ -148,6 +173,23 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const undo = (id: string, message: string, action: () => Promise<void>) => {
     enqueueSnackbar(message, {
       ...snackbarOptions(id),
+      action: (
+        <Button color="inherit" size="small" onClick={() => void action()}>
+          {t("notifications.actions.undo")}
+        </Button>
+      ),
+    });
+  };
+
+  const undoBulk = (
+    ids: string[],
+    message: string,
+    action: () => Promise<void>,
+  ) => {
+    enqueueSnackbar(message, {
+      key: `notification-bulk-${ids[0] ?? "empty"}`,
+      preventDuplicate: true,
+      autoHideDuration: 5000,
       action: (
         <Button color="inherit" size="small" onClick={() => void action()}>
           {t("notifications.actions.undo")}
@@ -168,11 +210,46 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
 
   const handleSnooze = (id: string, duration: SnoozeOption) => {
     void snooze(id, duration);
-    if (duration === "always") {
-      enqueueSnackbar(t("notifications.undo.snoozed"), snackbarOptions(id));
-      return;
-    }
     undo(id, t("notifications.undo.snoozed"), () => unsnooze(id));
+  };
+
+  const enterSelection = (id: string) => {
+    setSelectionMode(true);
+    setSelectedIds(new Set([id]));
+  };
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const exitSelection = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set<string>());
+  };
+
+  const selectAll = () => {
+    setSelectedIds(new Set(items.map((notification) => notification.id)));
+  };
+
+  const handleBulkArchive = () => {
+    const ids = [...selectedIds];
+    if (!ids.length) return;
+    void bulkArchive(ids);
+    exitSelection();
+    undoBulk(ids, t("notifications.undo.archived"), () => bulkUnarchive(ids));
+  };
+
+  const handleBulkDelete = () => {
+    const ids = [...selectedIds];
+    if (!ids.length) return;
+    void bulkDelete(ids);
+    exitSelection();
+    undoBulk(ids, t("notifications.undo.deleted"), () => bulkRestore(ids));
   };
 
   const sendQuickReply = async (
@@ -223,7 +300,11 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           count: counts.survey_pending,
         });
 
-  const emptyKey = isArchived ? "archived" : TABS[tabIndex].key;
+  const emptyKey = isArchived
+    ? "archived"
+    : isTrash
+      ? "trash"
+      : TABS[tabIndex].key;
 
   return (
     <Box
@@ -234,74 +315,148 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         flexDirection: "column",
       }}
     >
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
-          {isArchived && (
+      {selectionMode ? (
+        <Box
+          data-testid="notification-selection-toolbar"
+          sx={{
+            p: 1.5,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
             <IconButton
-              data-testid="notification-back"
-              onClick={() => setFilter("all")}
-              title={t("notifications.archived.back")}
-              aria-label={t("notifications.archived.back")}
+              data-testid="notification-selection-cancel"
+              onClick={exitSelection}
+              title={t("notifications.bulk.cancel")}
+              aria-label={t("notifications.bulk.cancel")}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, ml: 1 }}
+              noWrap
+            >
+              {t("notifications.bulk.selected", {
+                count: selectedIds.size,
+              })}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              data-testid="notification-select-all"
+              onClick={selectAll}
+              title={t("notifications.bulk.selectAll")}
+              aria-label={t("notifications.bulk.selectAll")}
               size="small"
               sx={{ mr: 0.5 }}
             >
-              <BackIcon />
+              <SelectAllIcon />
             </IconButton>
-          )}
-          <Typography variant="h6" sx={{ fontWeight: 700 }} noWrap>
-            {isArchived
-              ? t("notifications.archived.title")
-              : t("notifications.title")}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {filter === "system" && (
             <IconButton
-              data-testid="notification-mark-all"
-              onClick={() => {
-                void markAllRead();
-              }}
-              title={t("notifications.markAllRead")}
-              aria-label={t("notifications.markAllRead")}
+              data-testid="notification-bulk-archive"
+              onClick={handleBulkArchive}
+              disabled={selectedIds.size === 0}
+              title={t("notifications.bulk.archive")}
+              aria-label={t("notifications.bulk.archive")}
               size="small"
-              sx={{ mr: 1 }}
+              sx={{ mr: 0.5 }}
             >
-              <MarkReadIcon />
+              <ArchiveIcon />
             </IconButton>
-          )}
-          {!isArchived && (
             <IconButton
-              data-testid="notification-menu"
-              onClick={(event) => setMenuAnchor(event.currentTarget)}
-              title={t("notifications.menu", "Más opciones")}
-              aria-label={t("notifications.menu", "Más opciones")}
+              data-testid="notification-bulk-delete"
+              onClick={handleBulkDelete}
+              disabled={selectedIds.size === 0}
+              title={t("notifications.bulk.delete")}
+              aria-label={t("notifications.bulk.delete")}
               size="small"
-              sx={{ mr: 1 }}
+              color="error"
             >
-              <MoreIcon />
+              <DeleteIcon />
             </IconButton>
-          )}
-          <IconButton
-            data-testid="notification-close"
-            onClick={onClose}
-            aria-label={t("notifications.close")}
-            size="small"
-          >
-            <CloseIcon />
-          </IconButton>
+          </Box>
         </Box>
-      </Box>
+      ) : (
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+            {isSpecialView && (
+              <IconButton
+                data-testid="notification-back"
+                onClick={() => setFilter("all")}
+                title={t("notifications.archived.back")}
+                aria-label={t("notifications.archived.back")}
+                size="small"
+                sx={{ mr: 0.5 }}
+              >
+                <BackIcon />
+              </IconButton>
+            )}
+            <Typography variant="h6" sx={{ fontWeight: 700 }} noWrap>
+              {isArchived
+                ? t("notifications.archived.title")
+                : isTrash
+                  ? t("notifications.trash.title")
+                  : t("notifications.title")}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {!isSpecialView && (
+              <Button
+                data-testid="notification-mark-all"
+                onClick={() => {
+                  void markAllRead(filter);
+                }}
+                title={t("notifications.readAll")}
+                size="small"
+                sx={{
+                  mr: 0.5,
+                  fontSize: "0.75rem",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {t("notifications.readAll")}
+              </Button>
+            )}
+            {!isSpecialView && (
+              <IconButton
+                data-testid="notification-menu"
+                onClick={(event) => setMenuAnchor(event.currentTarget)}
+                title={t("notifications.menu", "Más opciones")}
+                aria-label={t("notifications.menu", "Más opciones")}
+                size="small"
+                sx={{ mr: 1 }}
+              >
+                <MoreIcon />
+              </IconButton>
+            )}
+            <IconButton
+              data-testid="notification-close"
+              onClick={onClose}
+              aria-label={t("notifications.close")}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      )}
 
-      {!isArchived && (
+      {!isSpecialView && !selectionMode && (
         <Tabs
           value={tabIndex}
           onChange={(_, value) => setFilter(FILTERS[value])}
@@ -352,6 +507,38 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
+        <MenuItem
+          data-testid="notification-menu-mark-all"
+          onClick={() => {
+            handleMenuClose();
+            void markAllRead("all");
+          }}
+          sx={{ fontSize: "0.875rem" }}
+        >
+          {t("notifications.markAllRead")}
+        </MenuItem>
+        <MenuItem
+          data-testid="notification-menu-select"
+          disabled={items.length === 0}
+          onClick={() => {
+            handleMenuClose();
+            setSelectionMode(true);
+            setSelectedIds(new Set<string>());
+          }}
+          sx={{ fontSize: "0.875rem" }}
+        >
+          {t("notifications.selectMode")}
+        </MenuItem>
+        <MenuItem
+          data-testid="notification-menu-trash"
+          onClick={() => {
+            handleMenuClose();
+            setFilter("trash");
+          }}
+          sx={{ fontSize: "0.875rem" }}
+        >
+          {t("notifications.trash.title")}
+        </MenuItem>
         <MenuItem
           data-testid="notification-menu-archived"
           onClick={() => {
@@ -432,46 +619,105 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                     />
                   </ListItemButton>
                 )}
-                {items.map((notification) =>
-                  isArchived ? (
-                    <Box key={notification.id}>
-                      <NotificationItem
-                        notification={notification}
-                        onRead={markRead}
-                        onNavigate={onClose}
-                      />
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          gap: 1,
-                          px: 2,
-                          py: 1,
-                          borderBottom: "1px solid",
-                          borderColor: "divider",
-                        }}
-                      >
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          startIcon={<RestoreIcon />}
-                          data-testid={`notification-restore-${notification.id}`}
-                          onClick={() => void unarchive(notification.id)}
+                {items.map((notification) => {
+                  if (isArchived) {
+                    return (
+                      <Box key={notification.id}>
+                        <NotificationItem
+                          notification={notification}
+                          onRead={markRead}
+                          onNavigate={onClose}
+                        />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 1,
+                            px: 2,
+                            py: 1,
+                            borderBottom: "1px solid",
+                            borderColor: "divider",
+                          }}
                         >
-                          {t("notifications.actions.unarchive")}
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          variant="outlined"
-                          startIcon={<DeleteIcon />}
-                          data-testid={`notification-delete-${notification.id}`}
-                          onClick={() => void remove(notification.id)}
-                        >
-                          {t("notifications.actions.delete")}
-                        </Button>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<RestoreIcon />}
+                            data-testid={`notification-restore-${notification.id}`}
+                            onClick={() => void unarchive(notification.id)}
+                          >
+                            {t("notifications.actions.unarchive")}
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            data-testid={`notification-delete-${notification.id}`}
+                            onClick={() => void remove(notification.id)}
+                          >
+                            {t("notifications.actions.delete")}
+                          </Button>
+                        </Box>
                       </Box>
-                    </Box>
+                    );
+                  }
+
+                  if (isTrash) {
+                    return (
+                      <Box key={notification.id}>
+                        <NotificationItem
+                          notification={notification}
+                          onRead={markRead}
+                        />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 1,
+                            px: 2,
+                            py: 1,
+                            borderBottom: "1px solid",
+                            borderColor: "divider",
+                          }}
+                        >
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<RestoreIcon />}
+                            data-testid={`notification-trash-restore-${notification.id}`}
+                            onClick={() => void restore(notification.id)}
+                          >
+                            {t("notifications.actions.unarchive")}
+                          </Button>
+                        </Box>
+                      </Box>
+                    );
+                  }
+
+                  const item = (
+                    <NotificationItem
+                      notification={notification}
+                      bumped={bumpedIds.has(notification.id)}
+                      selected={selectedIds.has(notification.id)}
+                      selectionMode={selectionMode}
+                      onToggleSelect={toggleSelection}
+                      onLongPress={enterSelection}
+                      onRead={markRead}
+                      onNavigate={onClose}
+                      onQuickReply={sendQuickReply}
+                      onArchive={handleArchive}
+                      onDelete={handleDelete}
+                      onSnooze={(duration) =>
+                        handleSnooze(notification.id, duration)
+                      }
+                    />
+                  );
+
+                  return selectionMode ? (
+                    <React.Fragment key={notification.id}>
+                      {item}
+                    </React.Fragment>
                   ) : (
                     <NotificationSwipeable
                       key={
@@ -482,37 +728,42 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                       onArchive={() => handleArchive(notification.id)}
                       onDelete={() => handleDelete(notification.id)}
                     >
-                      <NotificationItem
-                        notification={notification}
-                        bumped={bumpedIds.has(notification.id)}
-                        onRead={markRead}
-                        onNavigate={onClose}
-                        onQuickReply={sendQuickReply}
-                        onArchive={handleArchive}
-                        onDelete={handleDelete}
-                        onSnooze={(duration) =>
-                          handleSnooze(notification.id, duration)
-                        }
-                      />
+                      {item}
                     </NotificationSwipeable>
-                  ),
-                )}
+                  );
+                })}
               </List>
               {!showSurvey && items.length === 0 && (
                 <Box
+                  data-testid="notification-empty"
                   sx={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
                     p: 4,
-                    opacity: 0.6,
+                    minHeight: 240,
                   }}
                 >
-                  <EmptyIcon
-                    sx={{ fontSize: 60, mb: 2, color: "text.secondary" }}
-                  />
-                  <Typography variant="body1" color="text.secondary">
+                  <Box
+                    sx={{
+                      width: 96,
+                      height: 96,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor: "action.hover",
+                      mb: 2,
+                    }}
+                  >
+                    <EmptyIcon sx={{ fontSize: 48, color: "text.secondary" }} />
+                  </Box>
+                  <Typography
+                    variant="subtitle1"
+                    color="text.secondary"
+                    sx={{ fontWeight: 600, textAlign: "center" }}
+                  >
                     {t(`notifications.empty.${emptyKey}`)}
                   </Typography>
                 </Box>

@@ -1119,7 +1119,8 @@
       "likes": "Wala pang gusto.",
       "chats": "Walang bagong mensahe.",
       "system": "Walang mga anunsyo.",
-      "archived": "Walang nakatabi."
+      "archived": "Walang nakatabi.",
+      "trash": "Walang laman ang basurahan."
     },
     "like": {
       "single": "Nagustuhan ni {{name}} ang larawan mo",
@@ -1163,12 +1164,15 @@
       "1h": "1 oras",
       "2h": "2 oras",
       "8h": "8 oras",
-      "1d": "1 araw",
-      "always": "Palagi (patahimikin ang ganitong uri)"
+      "1d": "Bukas",
+      "always": "Palagi (patahimikin ang ganitong uri)",
+      "30m": "30 minuto",
+      "4h": "4 oras"
     },
     "archived": {
       "title": "Mga nakatabi",
-      "open": "Tingnan ang mga nakatabi"
+      "open": "Tingnan ang mga nakatabi",
+      "back": "Bumalik"
     },
     "undo": {
       "archived": "Naitabi ang abiso",
@@ -1191,6 +1195,20 @@
         "system": "Sistema",
         "promos": "Mga Promosyon"
       }
+    },
+    "readAll": "Basahin lahat",
+    "selectMode": "Pumili ng mga abiso",
+    "bulk": {
+      "selected": "{{count}} napili",
+      "selectAll": "Piliin lahat",
+      "archive": "Itabi",
+      "delete": "Tanggalin",
+      "restore": "Ibalik",
+      "cancel": "Kanselahin"
+    },
+    "trash": {
+      "title": "Basurahan",
+      "open": "Basurahan"
     }
   }
 }

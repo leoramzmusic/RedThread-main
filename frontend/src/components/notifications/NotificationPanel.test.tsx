@@ -18,10 +18,19 @@ jest.mock("../../services/api", () => ({
 const mockCopy: Record<string, string> = {
   "notifications.title": "Notificaciones",
   "notifications.close": "Cerrar",
-  "notifications.markAllRead": "Marcar todo como leído",
+  "notifications.markAllRead": "Marcar todas como leídas",
+  "notifications.readAll": "Leer todas",
+  "notifications.selectMode": "Seleccionar notificaciones",
   "notifications.menu": "Más opciones",
   "notifications.archived.title": "Archivadas",
-  "notifications.archived.back": "Volver a la bandeja",
+  "notifications.archived.back": "Volver",
+  "notifications.trash.title": "Papelera",
+  "notifications.bulk.selected": "{{count}} seleccionadas",
+  "notifications.bulk.selectAll": "Seleccionar todas",
+  "notifications.bulk.archive": "Archivar",
+  "notifications.bulk.delete": "Borrar",
+  "notifications.bulk.restore": "Restaurar",
+  "notifications.bulk.cancel": "Cancelar selección",
   "notifications.settings": "Ajustes",
   "notifications.actions.unarchive": "Restaurar",
   "notifications.actions.delete": "Borrar",
@@ -34,6 +43,7 @@ const mockCopy: Record<string, string> = {
   "notifications.empty.chats": "Sin mensajes nuevos.",
   "notifications.empty.system": "Sin avisos.",
   "notifications.empty.archived": "Nada archivado.",
+  "notifications.empty.trash": "La papelera está vacía.",
   "notifications.error": "No pudimos cargar tus notificaciones.",
   "notifications.retry": "Reintentar",
   "notifications.survey.title": "Preferencias CARE",
@@ -50,11 +60,10 @@ const mockCopy: Record<string, string> = {
   "notifications.actions.undo": "Deshacer",
   "notifications.snooze.title": "Posponer notificaciones",
   "notifications.snooze.15m": "15 minutos",
+  "notifications.snooze.30m": "30 minutos",
   "notifications.snooze.1h": "1 hora",
-  "notifications.snooze.2h": "2 horas",
-  "notifications.snooze.8h": "8 horas",
-  "notifications.snooze.1d": "1 día",
-  "notifications.snooze.always": "Siempre",
+  "notifications.snooze.4h": "4 horas",
+  "notifications.snooze.1d": "Mañana",
   "notifications.undo.archived": "Notificación archivada",
   "notifications.undo.deleted": "Notificación borrada",
   "notifications.undo.snoozed": "Notificación pospuesta",
@@ -127,6 +136,10 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   unarchive: jest.fn(),
   remove: jest.fn(),
   restore: jest.fn(),
+  bulkArchive: jest.fn(),
+  bulkUnarchive: jest.fn(),
+  bulkDelete: jest.fn(),
+  bulkRestore: jest.fn(),
   snooze: jest.fn(),
   unsnooze: jest.fn(),
   ...overrides,
@@ -150,6 +163,16 @@ const openArchived = async () => {
   fireEvent.click(screen.getByTestId("notification-menu-archived"));
   await waitFor(() =>
     expect(mockedUseNotifications).toHaveBeenLastCalledWith("archived", {
+      unread: false,
+    }),
+  );
+};
+
+const openTrash = async () => {
+  fireEvent.click(screen.getByTestId("notification-menu"));
+  fireEvent.click(screen.getByTestId("notification-menu-trash"));
+  await waitFor(() =>
+    expect(mockedUseNotifications).toHaveBeenLastCalledWith("trash", {
       unread: false,
     }),
   );
@@ -358,18 +381,23 @@ describe("NotificationPanel", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it("only offers mark-all-read in Sistema", async () => {
-    useCounts({ count: 2, all: 2, system: 2 });
+  it("offers Leer todas on every tab and scopes it to that tab", async () => {
+    useCounts({ count: 2, all: 2, social: 1, system: 1 });
     renderPanel();
 
-    expect(
-      screen.queryByTestId("notification-mark-all"),
-    ).not.toBeInTheDocument();
+    const readAll = await screen.findByTestId("notification-mark-all");
+    expect(readAll).toHaveTextContent("Leer todas");
+    fireEvent.click(readAll);
+    expect(hook.markAllRead).toHaveBeenCalledWith("all");
 
-    fireEvent.click(screen.getByTestId("notification-tab-system"));
-    fireEvent.click(await screen.findByTestId("notification-mark-all"));
-
-    expect(hook.markAllRead).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByTestId("notification-tab-chats"));
+    await waitFor(() =>
+      expect(mockedUseNotifications).toHaveBeenLastCalledWith("messages", {
+        unread: true,
+      }),
+    );
+    fireEvent.click(screen.getByTestId("notification-mark-all"));
+    expect(hook.markAllRead).toHaveBeenLastCalledWith("messages");
   });
 
   describe("⋯ menu", () => {
@@ -417,6 +445,132 @@ describe("NotificationPanel", () => {
       expect(onClose).toHaveBeenCalledTimes(1);
       expect(push).toHaveBeenCalledWith("/settings#notifications");
     });
+  });
+
+  describe("selection and bulk actions", () => {
+    it("enters selection mode on long press and toggles items", async () => {
+      hook = makeHook({ items: [sampleItem("n1"), sampleItem("n2")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      const first = await screen.findByTestId("notification-item-n1");
+      fireEvent.contextMenu(first);
+
+      expect(
+        await screen.findByTestId("notification-selection-toolbar"),
+      ).toHaveTextContent("1 seleccionadas");
+      expect(
+        screen.queryByTestId("notification-tab-all"),
+      ).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId("notification-item-n2"));
+      expect(
+        screen.getByTestId("notification-selection-toolbar"),
+      ).toHaveTextContent("2 seleccionadas");
+      expect(hook.markRead).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByTestId("notification-selection-cancel"));
+      expect(
+        screen.queryByTestId("notification-selection-toolbar"),
+      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("notification-tab-all")).toBeInTheDocument();
+    });
+
+    it("selects all and bulk-archives with undo", async () => {
+      hook = makeHook({ items: [sampleItem("n1"), sampleItem("n2")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      fireEvent.contextMenu(await screen.findByTestId("notification-item-n1"));
+      fireEvent.click(screen.getByTestId("notification-select-all"));
+      expect(
+        screen.getByTestId("notification-selection-toolbar"),
+      ).toHaveTextContent("2 seleccionadas");
+
+      fireEvent.click(screen.getByTestId("notification-bulk-archive"));
+
+      expect(hook.bulkArchive).toHaveBeenCalledWith(["n1", "n2"]);
+      expect(
+        screen.queryByTestId("notification-selection-toolbar"),
+      ).not.toBeInTheDocument();
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación archivada",
+        expect.objectContaining({ key: "notification-bulk-n1" }),
+      );
+
+      fireEvent.click(undoAction());
+      expect(hook.bulkUnarchive).toHaveBeenCalledWith(["n1", "n2"]);
+    });
+
+    it("bulk-deletes with undo", async () => {
+      hook = makeHook({ items: [sampleItem("n1"), sampleItem("n2")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      fireEvent.contextMenu(await screen.findByTestId("notification-item-n1"));
+      fireEvent.click(screen.getByTestId("notification-select-all"));
+      fireEvent.click(screen.getByTestId("notification-bulk-delete"));
+
+      expect(hook.bulkDelete).toHaveBeenCalledWith(["n1", "n2"]);
+      fireEvent.click(undoAction());
+      expect(hook.bulkRestore).toHaveBeenCalledWith(["n1", "n2"]);
+    });
+
+    it("enters selection mode from the menu", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+      await screen.findByTestId("notification-item-n1");
+
+      fireEvent.click(screen.getByTestId("notification-menu"));
+      fireEvent.click(screen.getByTestId("notification-menu-select"));
+
+      expect(
+        screen.getByTestId("notification-selection-toolbar"),
+      ).toHaveTextContent("0 seleccionadas");
+    });
+  });
+
+  describe("trash", () => {
+    it("opens the trash and restores items", async () => {
+      hook = makeHook({ items: [sampleItem("d1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openTrash();
+
+      expect(
+        screen.getByRole("heading", { name: "Papelera" }),
+      ).toBeInTheDocument();
+      fireEvent.click(
+        await screen.findByTestId("notification-trash-restore-d1"),
+      );
+      expect(hook.restore).toHaveBeenCalledWith("d1");
+      expect(
+        screen.queryByTestId("notification-tab-all"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-mark-all"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows the trash empty state", async () => {
+      renderPanel();
+      await openTrash();
+
+      expect(
+        await screen.findByText("La papelera está vacía."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("marks everything read globally from the menu", () => {
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-menu"));
+    fireEvent.click(screen.getByTestId("notification-menu-mark-all"));
+
+    expect(hook.markAllRead).toHaveBeenCalledWith("all");
   });
 
   describe("gestures and undo", () => {
@@ -475,24 +629,22 @@ describe("NotificationPanel", () => {
       );
     });
 
-    it("snoozes for always without undo and passes snackbar dedupe options", async () => {
+    it("snoozes until tomorrow and undoes with unsnooze", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
       await screen.findByTestId("notification-item-n1");
       fireEvent.click(screen.getByTestId("notification-snooze-trigger"));
-      fireEvent.click(await screen.findByTestId("snooze-option-always"));
+      fireEvent.click(await screen.findByTestId("snooze-option-1d"));
 
-      expect(hook.snooze).toHaveBeenCalledWith("n1", "always");
-      const options = enqueue.mock.calls[0][1];
-      expect(options).toEqual({
-        autoHideDuration: 5000,
-        key: "notification-n1",
-        preventDuplicate: true,
-      });
-      expect(options.action).toBeUndefined();
-      expect(hook.unsnooze).not.toHaveBeenCalled();
+      expect(hook.snooze).toHaveBeenCalledWith("n1", "1d");
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación pospuesta",
+        expect.objectContaining({ key: "notification-n1" }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.unsnooze).toHaveBeenCalledWith("n1");
     });
 
     it("snoozes from the item menu and undoes with unsnooze", async () => {

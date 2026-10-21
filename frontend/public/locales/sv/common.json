@@ -1160,7 +1160,8 @@
       "likes": "Inga gilla-markeringar än.",
       "chats": "Inga nya meddelanden.",
       "system": "Inga tillkännagivanden.",
-      "archived": "Inget arkiverat."
+      "archived": "Inget arkiverat.",
+      "trash": "Papperskorgen är tom."
     },
     "like": {
       "single": "{{name}} gillade ditt foto",
@@ -1204,12 +1205,15 @@
       "1h": "1 timme",
       "2h": "2 timmar",
       "8h": "8 timmar",
-      "1d": "1 dag",
-      "always": "Alltid (tysta den här typen)"
+      "1d": "Imorgon",
+      "always": "Alltid (tysta den här typen)",
+      "30m": "30 minuter",
+      "4h": "4 timmar"
     },
     "archived": {
       "title": "Arkiverade",
-      "open": "Visa arkiverade"
+      "open": "Visa arkiverade",
+      "back": "Tillbaka"
     },
     "undo": {
       "archived": "Avisering arkiverad",
@@ -1232,6 +1236,20 @@
         "system": "System",
         "promos": "Erbjudanden"
       }
+    },
+    "readAll": "Läs alla",
+    "selectMode": "Välj aviseringar",
+    "bulk": {
+      "selected": "{{count}} valda",
+      "selectAll": "Markera alla",
+      "archive": "Arkivera",
+      "delete": "Radera",
+      "restore": "Återställ",
+      "cancel": "Avbryt"
+    },
+    "trash": {
+      "title": "Papperskorg",
+      "open": "Papperskorg"
     }
   }
 }

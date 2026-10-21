@@ -1119,7 +1119,8 @@
       "likes": "Hakuna mipendo bado.",
       "chats": "Hakuna ujumbe mpya.",
       "system": "Hakuna matangazo.",
-      "archived": "Hakuna kilichohifadhiwa."
+      "archived": "Hakuna kilichohifadhiwa.",
+      "trash": "Takataka haina kitu."
     },
     "like": {
       "single": "{{name}} amependa picha yako",
@@ -1163,12 +1164,15 @@
       "1h": "Saa 1",
       "2h": "Saa 2",
       "8h": "Saa 8",
-      "1d": "Siku 1",
-      "always": "Kila wakati (nyamazisha aina hii)"
+      "1d": "Kesho",
+      "always": "Kila wakati (nyamazisha aina hii)",
+      "30m": "Dakika 30",
+      "4h": "Saa 4"
     },
     "archived": {
       "title": "Zilizohifadhiwa",
-      "open": "Tazama zilizohifadhiwa"
+      "open": "Tazama zilizohifadhiwa",
+      "back": "Rudi"
     },
     "undo": {
       "archived": "Arifa imehifadhiwa",
@@ -1191,6 +1195,20 @@
         "system": "Mfumo",
         "promos": "Matangazo"
       }
+    },
+    "readAll": "Soma zote",
+    "selectMode": "Chagua arifa",
+    "bulk": {
+      "selected": "{{count}} zimechaguliwa",
+      "selectAll": "Chagua zote",
+      "archive": "Hifadhi",
+      "delete": "Futa",
+      "restore": "Rejesha",
+      "cancel": "Ghairi"
+    },
+    "trash": {
+      "title": "Takataka",
+      "open": "Takataka"
     }
   }
 }

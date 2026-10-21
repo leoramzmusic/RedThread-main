@@ -1160,7 +1160,8 @@
       "likes": "Noch keine Gefällt-mir-Angaben.",
       "chats": "Keine neuen Nachrichten.",
       "system": "Keine Ankündigungen.",
-      "archived": "Nichts archiviert."
+      "archived": "Nichts archiviert.",
+      "trash": "Der Papierkorb ist leer."
     },
     "like": {
       "single": "{{name}} mag dein Foto",
@@ -1204,12 +1205,15 @@
       "1h": "1 Stunde",
       "2h": "2 Stunden",
       "8h": "8 Stunden",
-      "1d": "1 Tag",
-      "always": "Immer (diesen Typ stummschalten)"
+      "1d": "Morgen",
+      "always": "Immer (diesen Typ stummschalten)",
+      "30m": "30 Minuten",
+      "4h": "4 Stunden"
     },
     "archived": {
       "title": "Archiviert",
-      "open": "Archivierte anzeigen"
+      "open": "Archivierte anzeigen",
+      "back": "Zurück"
     },
     "undo": {
       "archived": "Benachrichtigung archiviert",
@@ -1232,6 +1236,20 @@
         "system": "System",
         "promos": "Angebote"
       }
+    },
+    "readAll": "Alle lesen",
+    "selectMode": "Benachrichtigungen auswählen",
+    "bulk": {
+      "selected": "{{count}} ausgewählt",
+      "selectAll": "Alle auswählen",
+      "archive": "Archivieren",
+      "delete": "Löschen",
+      "restore": "Wiederherstellen",
+      "cancel": "Abbrechen"
+    },
+    "trash": {
+      "title": "Papierkorb",
+      "open": "Papierkorb"
     }
   }
 }

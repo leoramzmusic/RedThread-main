@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from bson import ObjectId
@@ -253,3 +253,149 @@ async def test_unread_count_uses_scoped_queries():
     assert queries[0]["type"] == {"$in": ["like", "match"]}
     assert queries[1]["type"] == {"$in": ["message"]}
     assert queries[2]["type"] == {"$in": ["system", "survey", "promo"]}
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("duration", ["30m", "4h"])
+async def test_snooze_accepts_new_presets(duration):
+    doc = SimpleNamespace(snoozed_until=None)
+    with patch.object(
+        api.ns, "snooze_notification", new=AsyncMock(return_value=doc)
+    ) as svc:
+        await api.snooze_notification_route(
+            _oid(), api.SnoozeRequest(duration=duration), _user()
+        )
+    assert svc.await_args.args[2] == duration
+
+
+@pytest.mark.asyncio
+async def test_trash_filter_lists_deleted_only():
+    captured = {}
+
+    class Chain:
+        def sort(self, *_a, **_k):
+            return self
+
+        def limit(self, _n):
+            return self
+
+        async def to_list(self):
+            return []
+
+        async def delete(self):
+            return None
+
+    def fake_find(*args, **_kwargs):
+        if len(args) == 1:
+            captured["query"] = args[0]
+        return Chain()
+
+    with patch.object(api.Notification, "find", side_effect=fake_find), patch.object(
+        api, "_mute_context", new=AsyncMock(return_value=({}, False))
+    ), patch.object(api, "_backfill_updated_at", new=AsyncMock()):
+        out = await api.get_notifications(
+            filter="trash",
+            cursor=None,
+            limit=20,
+            unread=False,
+            current_user=_user(),
+        )
+    assert out == {"items": [], "next_cursor": None}
+    assert captured["query"] == {"user_id": "u1", "deleted_at": {"$ne": None}}
+
+
+@pytest.mark.asyncio
+async def test_read_all_all_filter_marks_every_unread():
+    update = AsyncMock(return_value=SimpleNamespace(modified_count=4))
+    find = MagicMock(return_value=SimpleNamespace(update=update))
+    with patch.object(api.Notification, "find", find), patch.object(
+        api.manager, "send_personal_message", new=AsyncMock()
+    ):
+        out = await api.mark_all_as_read(filter="all", current_user=_user())
+    assert out == {"updated": 4}
+    find.assert_called_once_with({"user_id": "u1", "is_read": False})
+    update.assert_awaited_once_with({"$set": {"is_read": True}})
+
+
+@pytest.mark.asyncio
+async def test_read_all_filter_scopes_bucket():
+    update = AsyncMock(return_value=SimpleNamespace(modified_count=2))
+    find = MagicMock(return_value=SimpleNamespace(update=update))
+    with patch.object(api.Notification, "find", find), patch.object(
+        api, "_mute_context", new=AsyncMock(return_value=({}, True))
+    ), patch.object(api.manager, "send_personal_message", new=AsyncMock()):
+        out = await api.mark_all_as_read(filter="social", current_user=_user())
+    assert out == {"updated": 2}
+    query = find.call_args.args[0]
+    assert query["is_read"] is False
+    assert any("deleted_at" in part for part in query["$and"])
+
+
+@pytest.mark.asyncio
+async def test_read_all_rejects_unknown_filter():
+    with pytest.raises(HTTPException) as exc:
+        await api.mark_all_as_read(filter="nope", current_user=_user())
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "action,field,value",
+    [
+        ("archive", "archived_at", "now"),
+        ("unarchive", "archived_at", None),
+        ("delete", "deleted_at", "now"),
+        ("restore", "deleted_at", None),
+    ],
+)
+async def test_bulk_action_updates_owned_ids(action, field, value):
+    ids = [str(ObjectId()), str(ObjectId())]
+    update = AsyncMock(return_value=SimpleNamespace(modified_count=2))
+    find = MagicMock(return_value=SimpleNamespace(update=update))
+    with patch.object(api.Notification, "find", find), patch.object(
+        api.manager, "send_personal_message", new=AsyncMock()
+    ) as push:
+        out = await api.bulk_action(
+            api.BulkRequest(ids=ids, action=action), _user()
+        )
+    assert out == {"updated": 2}
+    query = find.call_args.args[0]
+    assert query["user_id"] == "u1"
+    assert len(query["_id"]["$in"]) == 2
+    changes = update.call_args.args[0]["$set"]
+    if value == "now":
+        assert isinstance(changes[field], datetime)
+    else:
+        assert changes[field] is None
+    assert push.await_args.args[1]["action"] == "notifications_sync"
+
+
+@pytest.mark.asyncio
+async def test_bulk_action_rejects_unknown_action():
+    with pytest.raises(HTTPException) as exc:
+        await api.bulk_action(
+            api.BulkRequest(ids=[_oid()], action="nope"), _user()
+        )
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_bulk_action_ignores_invalid_ids():
+    find = MagicMock()
+    with patch.object(api.Notification, "find", find):
+        out = await api.bulk_action(
+            api.BulkRequest(ids=["bad-id"], action="archive"), _user()
+        )
+    assert out == {"updated": 0}
+    find.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_bulk_action_caps_ids():
+    ids = [str(ObjectId()) for _ in range(150)]
+    update = AsyncMock(return_value=SimpleNamespace(modified_count=100))
+    find = MagicMock(return_value=SimpleNamespace(update=update))
+    with patch.object(api.Notification, "find", find), patch.object(
+        api.manager, "send_personal_message", new=AsyncMock()
+    ):
+        await api.bulk_action(api.BulkRequest(ids=ids, action="archive"), _user())
+    assert len(find.call_args.args[0]["_id"]["$in"]) == 100

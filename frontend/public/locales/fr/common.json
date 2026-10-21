@@ -1128,7 +1128,8 @@
       "likes": "Personne n'a encore aimé.",
       "chats": "Aucun nouveau message.",
       "system": "Aucune annonce.",
-      "archived": "Rien d'archivé."
+      "archived": "Rien d'archivé.",
+      "trash": "La corbeille est vide."
     },
     "like": {
       "single": "{{name}} a aimé votre photo",
@@ -1172,12 +1173,15 @@
       "1h": "1 heure",
       "2h": "2 heures",
       "8h": "8 heures",
-      "1d": "1 jour",
-      "always": "Toujours (masquer ce type)"
+      "1d": "Demain",
+      "always": "Toujours (masquer ce type)",
+      "30m": "30 minutes",
+      "4h": "4 heures"
     },
     "archived": {
       "title": "Archivées",
-      "open": "Voir les archivées"
+      "open": "Voir les archivées",
+      "back": "Retour"
     },
     "undo": {
       "archived": "Notification archivée",
@@ -1200,6 +1204,20 @@
         "system": "Système",
         "promos": "Promotions"
       }
+    },
+    "readAll": "Tout lire",
+    "selectMode": "Sélectionner les notifications",
+    "bulk": {
+      "selected": "{{count}} sélectionnées",
+      "selectAll": "Tout sélectionner",
+      "archive": "Archiver",
+      "delete": "Supprimer",
+      "restore": "Restaurer",
+      "cancel": "Annuler"
+    },
+    "trash": {
+      "title": "Corbeille",
+      "open": "Corbeille"
     }
   }
 }

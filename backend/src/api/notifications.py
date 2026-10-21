@@ -20,11 +20,19 @@ router = APIRouter()
 MAX_LIMIT = 50
 DEFAULT_LIMIT = 20
 
-SNOOZE_VALUES = ("15m", "1h", "2h", "8h", "1d", "always")
+SNOOZE_VALUES = ("15m", "30m", "1h", "2h", "4h", "8h", "1d", "always")
+MAX_BULK = 100
+BULK_ACTIONS = ("archive", "unarchive", "delete", "restore")
+READ_ALL_FILTERS = ("all", "social", "messages", "system")
 
 
 class SnoozeRequest(BaseModel):
     duration: str
+
+
+class BulkRequest(BaseModel):
+    ids: List[str]
+    action: str
 
 
 def _scoped_query(user_id: str, flt: str, mutes: dict, master: bool) -> dict:
@@ -158,6 +166,8 @@ async def get_notifications(
     mutes, master = await _mute_context(uid)
     if filter == "archived":
         query = ns.visible_filter(uid, archived_only=True)
+    elif filter == "trash":
+        query = {"user_id": uid, "deleted_at": {"$ne": None}}
     else:
         query = _scoped_query(uid, filter, mutes, master)
     if unread:
@@ -256,14 +266,62 @@ async def read_bucket(
 
 
 @router.post("/read-all")
-async def mark_all_as_read(current_user: User = Depends(get_current_user)):
-    """Mark all notifications as read."""
+async def mark_all_as_read(
+    filter: str = "all", current_user: User = Depends(get_current_user)
+):
+    """Mark notifications as read, optionally scoped to a bucket."""
+    if filter not in READ_ALL_FILTERS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid filter",
+        )
     uid = str(current_user.id)
-    await Notification.find({"user_id": uid, "is_read": False}).update(
-        {"$set": {"is_read": True}}
-    )
+    if filter == "all":
+        query = {"user_id": uid, "is_read": False}
+    else:
+        mutes, master = await _mute_context(uid)
+        query = _scoped_query(uid, filter, mutes, master)
+        query["is_read"] = False
+    result = await Notification.find(query).update({"$set": {"is_read": True}})
+    updated = result.modified_count if result else 0
     await manager.send_personal_message(uid, {"action": "notifications_read_all"})
-    return {"message": "All marked as read"}
+    return {"updated": updated}
+
+
+@router.post("/bulk")
+async def bulk_action(
+    payload: BulkRequest, current_user: User = Depends(get_current_user)
+):
+    """Apply an action to several owned notifications at once."""
+    if payload.action not in BULK_ACTIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid action",
+        )
+    oids = [ObjectId(nid) for nid in payload.ids if ObjectId.is_valid(nid)]
+    oids = oids[:MAX_BULK]
+    if not oids:
+        return {"updated": 0}
+
+    uid = str(current_user.id)
+    now = datetime.utcnow()
+    query: Dict[str, Any] = {"_id": {"$in": oids}, "user_id": uid}
+    if payload.action == "archive":
+        query["deleted_at"] = None
+        changes = {"archived_at": now}
+    elif payload.action == "unarchive":
+        changes = {"archived_at": None}
+    elif payload.action == "delete":
+        query["deleted_at"] = None
+        changes = {"deleted_at": now}
+    else:
+        query["deleted_at"] = {"$ne": None}
+        changes = {"deleted_at": None}
+
+    result = await Notification.find(query).update({"$set": changes})
+    updated = result.modified_count if result else 0
+    await manager.send_personal_message(uid, {"action": "notifications_sync"})
+    return {"updated": updated}
 
 
 async def _fan_out_system(

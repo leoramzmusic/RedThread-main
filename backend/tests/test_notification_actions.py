@@ -82,6 +82,24 @@ async def test_snooze_rejects_unknown_duration():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "duration,minimum",
+    [
+        ("30m", timedelta(minutes=29)),
+        ("4h", timedelta(hours=3, minutes=59)),
+    ],
+)
+async def test_snooze_supports_new_presets(duration, minimum):
+    doc = _doc()
+    with patch.object(Notification, "get", new=AsyncMock(return_value=doc)), patch.object(
+        Notification, "save", new=AsyncMock()
+    ), patch.object(ns.manager, "send_personal_message", new=AsyncMock()):
+        before = datetime.utcnow()
+        got = await ns.snooze_notification("n1", "u1", duration)
+    assert got.snoozed_until >= before + minimum
+
+
+@pytest.mark.asyncio
 async def test_snooze_always_sets_mute_and_marks_read():
     doc = _doc(type="like")
     settings = SimpleNamespace(notification_mutes={}, save=AsyncMock())

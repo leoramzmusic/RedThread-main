@@ -1119,7 +1119,8 @@
       "likes": "Babu wanda ya so ka har yanzu.",
       "chats": "Babu sabon saƙo.",
       "system": "Babu sanarwa.",
-      "archived": "Babu abin da aka ajiye."
+      "archived": "Babu abin da aka ajiye.",
+      "trash": "Wurin shara ba komai."
     },
     "like": {
       "single": "{{name}} ya son hotonka",
@@ -1163,12 +1164,15 @@
       "1h": "Sa'a 1",
       "2h": "Sa'o'i 2",
       "8h": "Sa'o'i 8",
-      "1d": "Rana 1",
-      "always": "Koyaushe (kashe wannan nau'in)"
+      "1d": "Gobe",
+      "always": "Koyaushe (kashe wannan nau'in)",
+      "30m": "Minti 30",
+      "4h": "Sa'o'i 4"
     },
     "archived": {
       "title": "Abubuwan da aka ajiye",
-      "open": "Duba abubuwan da aka ajiye"
+      "open": "Duba abubuwan da aka ajiye",
+      "back": "Baya"
     },
     "undo": {
       "archived": "An ajiye sanarwa",
@@ -1191,6 +1195,20 @@
         "system": "Tsari",
         "promos": "Tallace-tallace"
       }
+    },
+    "readAll": "Karanta duka",
+    "selectMode": "Zaɓi sanarwa",
+    "bulk": {
+      "selected": "An zaɓi {{count}}",
+      "selectAll": "Zaɓi duka",
+      "archive": "Ajiye",
+      "delete": "Share",
+      "restore": "Mayar da shi",
+      "cancel": "Soke"
+    },
+    "trash": {
+      "title": "Wurin shara",
+      "open": "Wurin shara"
     }
   }
 }

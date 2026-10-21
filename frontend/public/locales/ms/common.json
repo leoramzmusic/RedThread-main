@@ -1118,7 +1118,8 @@
       "likes": "Belum ada suka.",
       "chats": "Tiada mesej baharu.",
       "system": "Tiada pengumuman.",
-      "archived": "Tiada apa-apa diarkibkan."
+      "archived": "Tiada apa-apa diarkibkan.",
+      "trash": "Tong sampah kosong."
     },
     "like": {
       "single": "{{name}} menyukai foto anda",
@@ -1162,12 +1163,15 @@
       "1h": "1 jam",
       "2h": "2 jam",
       "8h": "8 jam",
-      "1d": "1 hari",
-      "always": "Sentiasa (senyapkan jenis ini)"
+      "1d": "Esok",
+      "always": "Sentiasa (senyapkan jenis ini)",
+      "30m": "30 minit",
+      "4h": "4 jam"
     },
     "archived": {
       "title": "Diarkibkan",
-      "open": "Lihat diarkibkan"
+      "open": "Lihat diarkibkan",
+      "back": "Kembali"
     },
     "undo": {
       "archived": "Pemberitahuan diarkibkan",
@@ -1190,6 +1194,20 @@
         "system": "Sistem",
         "promos": "Promosi"
       }
+    },
+    "readAll": "Baca semua",
+    "selectMode": "Pilih pemberitahuan",
+    "bulk": {
+      "selected": "{{count}} dipilih",
+      "selectAll": "Pilih semua",
+      "archive": "Arkib",
+      "delete": "Padam",
+      "restore": "Pulihkan",
+      "cancel": "Batal"
+    },
+    "trash": {
+      "title": "Tong sampah",
+      "open": "Tong sampah"
     }
   }
 }

@@ -245,4 +245,67 @@ describe("NotificationItem", () => {
       expect(screen.queryByTestId("snooze-option-1h")).not.toBeInTheDocument(),
     );
   });
+
+  it("enters selection after a 500ms pointer hold", () => {
+    jest.useFakeTimers();
+    const onLongPress = jest.fn();
+    render(
+      <NotificationItem
+        notification={base}
+        onRead={jest.fn()}
+        onLongPress={onLongPress}
+      />,
+    );
+
+    const item = screen.getByTestId("notification-item-n1");
+    fireEvent.pointerDown(item, {
+      pointerType: "mouse",
+      clientX: 10,
+      clientY: 10,
+      button: 0,
+    });
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(onLongPress).toHaveBeenCalledWith("n1");
+    jest.useRealTimers();
+  });
+
+  it("cancels the long press when the pointer moves or targets a control", () => {
+    jest.useFakeTimers();
+    const onLongPress = jest.fn();
+    render(
+      <NotificationItem
+        notification={base}
+        onRead={jest.fn()}
+        onLongPress={onLongPress}
+        onSnooze={jest.fn()}
+      />,
+    );
+
+    const item = screen.getByTestId("notification-item-n1");
+    fireEvent.touchStart(item, {
+      touches: [{ clientX: 10, clientY: 10 }],
+    });
+    fireEvent.touchMove(item, {
+      touches: [{ clientX: 40, clientY: 10 }],
+    });
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+    expect(onLongPress).not.toHaveBeenCalled();
+
+    fireEvent.pointerDown(screen.getByTestId("notification-snooze-trigger"), {
+      pointerType: "mouse",
+      clientX: 10,
+      clientY: 10,
+      button: 0,
+    });
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+    expect(onLongPress).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
 });

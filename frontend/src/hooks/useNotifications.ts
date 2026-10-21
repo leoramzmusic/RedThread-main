@@ -55,7 +55,8 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
 
   const fetchAll = useCallback(async () => {
     const requestId = ++requestIdRef.current;
-    const isArchived = filterRef.current === "archived";
+    const isSpecialView =
+      filterRef.current === "archived" || filterRef.current === "trash";
     setLoading(true);
     setError(false);
     try {
@@ -66,7 +67,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
           ...(unreadRef.current ? { unread: true } : {}),
         },
       });
-      const countRequest = isArchived
+      const countRequest = isSpecialView
         ? null
         : apiClient.get("/notifications/unread-count");
       const [list, count] = await Promise.all([listRequest, countRequest]);
@@ -129,15 +130,23 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [fetchAll],
   );
 
-  const markAllRead = useCallback(async () => {
-    try {
-      await apiClient.post("/notifications/read-all");
-    } catch {
-      setError(true);
-    } finally {
-      await fetchAll();
-    }
-  }, [fetchAll]);
+  const markAllRead = useCallback(
+    async (scope: string = "all") => {
+      setItems((prev) =>
+        prev.map((notification) => ({ ...notification, is_read: true })),
+      );
+      try {
+        await apiClient.post("/notifications/read-all", null, {
+          params: { filter: scope },
+        });
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
 
   const runWithOptimisticRemoval = useCallback(
     async (id: string, request: () => Promise<unknown>) => {
@@ -185,6 +194,46 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [runWithOptimisticRemoval],
   );
 
+  const runWithOptimisticBulkRemoval = useCallback(
+    async (
+      ids: string[],
+      action: "archive" | "unarchive" | "delete" | "restore",
+    ) => {
+      const target = new Set(ids);
+      setItems((prev) =>
+        prev.filter((notification) => !target.has(notification.id)),
+      );
+      try {
+        await apiClient.post("/notifications/bulk", { ids, action });
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
+
+  const bulkArchive = useCallback(
+    (ids: string[]) => runWithOptimisticBulkRemoval(ids, "archive"),
+    [runWithOptimisticBulkRemoval],
+  );
+
+  const bulkUnarchive = useCallback(
+    (ids: string[]) => runWithOptimisticBulkRemoval(ids, "unarchive"),
+    [runWithOptimisticBulkRemoval],
+  );
+
+  const bulkDelete = useCallback(
+    (ids: string[]) => runWithOptimisticBulkRemoval(ids, "delete"),
+    [runWithOptimisticBulkRemoval],
+  );
+
+  const bulkRestore = useCallback(
+    (ids: string[]) => runWithOptimisticBulkRemoval(ids, "restore"),
+    [runWithOptimisticBulkRemoval],
+  );
+
   const snooze = useCallback(
     (id: string, duration: string) =>
       runWithOptimisticRemoval(id, () =>
@@ -216,6 +265,10 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     unarchive,
     restore,
     remove,
+    bulkArchive,
+    bulkUnarchive,
+    bulkDelete,
+    bulkRestore,
     snooze,
     unsnooze,
   };

@@ -2,14 +2,7 @@ import React from "react";
 import { Menu, MenuItem } from "@mui/material";
 import { useTranslation } from "next-i18next/pages";
 
-export const SNOOZE_OPTIONS = [
-  "15m",
-  "1h",
-  "2h",
-  "8h",
-  "1d",
-  "always",
-] as const;
+export const SNOOZE_OPTIONS = ["15m", "30m", "1h", "4h", "1d"] as const;
 
 export type SnoozeOption = (typeof SNOOZE_OPTIONS)[number];
 

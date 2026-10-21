@@ -1464,7 +1464,7 @@
     "close": "Cerrar",
     "retry": "Reintentar",
     "loading": "Cargando…",
-    "markAllRead": "Marcar todo como leído",
+    "markAllRead": "Marcar todas como leídas",
     "error": "No pudimos cargar tus notificaciones.",
     "tabs": {
       "all": "Todo",
@@ -1477,7 +1477,8 @@
       "likes": "Sin likes por ahora.",
       "chats": "Sin mensajes nuevos.",
       "system": "Sin avisos.",
-      "archived": "Nada archivado."
+      "archived": "Nada archivado.",
+      "trash": "La papelera está vacía."
     },
     "like": {
       "single": "A {{name}} le gustó tu foto",
@@ -1521,12 +1522,15 @@
       "1h": "1 hora",
       "2h": "2 horas",
       "8h": "8 horas",
-      "1d": "1 día",
-      "always": "Siempre (silenciar este tipo)"
+      "1d": "Mañana",
+      "always": "Siempre (silenciar este tipo)",
+      "30m": "30 minutos",
+      "4h": "4 horas"
     },
     "archived": {
       "title": "Archivadas",
-      "open": "Ver archivadas"
+      "open": "Ver archivadas",
+      "back": "Volver"
     },
     "undo": {
       "archived": "Notificación archivada",
@@ -1549,6 +1553,20 @@
         "system": "Sistema",
         "promos": "Promociones"
       }
+    },
+    "readAll": "Leer todas",
+    "selectMode": "Seleccionar notificaciones",
+    "bulk": {
+      "selected": "{{count}} seleccionadas",
+      "selectAll": "Seleccionar todas",
+      "archive": "Archivar",
+      "delete": "Borrar",
+      "restore": "Restaurar",
+      "cancel": "Cancelar"
+    },
+    "trash": {
+      "title": "Papelera",
+      "open": "Papelera"
     }
   }
 }

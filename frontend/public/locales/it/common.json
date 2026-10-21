@@ -1160,7 +1160,8 @@
       "likes": "Nessun Mi piace per ora.",
       "chats": "Nessun nuovo messaggio.",
       "system": "Nessun avviso.",
-      "archived": "Niente di archiviato."
+      "archived": "Niente di archiviato.",
+      "trash": "Il cestino è vuoto."
     },
     "like": {
       "single": "A {{name}} è piaciuta la tua foto",
@@ -1204,12 +1205,15 @@
       "1h": "1 ora",
       "2h": "2 ore",
       "8h": "8 ore",
-      "1d": "1 giorno",
-      "always": "Sempre (silenzia questo tipo)"
+      "1d": "Domani",
+      "always": "Sempre (silenzia questo tipo)",
+      "30m": "30 minuti",
+      "4h": "4 ore"
     },
     "archived": {
       "title": "Archiviate",
-      "open": "Visualizza archiviate"
+      "open": "Visualizza archiviate",
+      "back": "Indietro"
     },
     "undo": {
       "archived": "Notifica archiviata",
@@ -1232,6 +1236,20 @@
         "system": "Sistema",
         "promos": "Promozioni"
       }
+    },
+    "readAll": "Leggi tutte",
+    "selectMode": "Seleziona notifiche",
+    "bulk": {
+      "selected": "{{count}} selezionate",
+      "selectAll": "Seleziona tutte",
+      "archive": "Archivia",
+      "delete": "Elimina",
+      "restore": "Ripristina",
+      "cancel": "Annulla"
+    },
+    "trash": {
+      "title": "Cestino",
+      "open": "Cestino"
     }
   }
 }

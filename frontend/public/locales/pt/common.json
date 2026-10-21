@@ -1128,7 +1128,8 @@
       "likes": "Nenhuma curtida ainda.",
       "chats": "Nenhuma mensagem nova.",
       "system": "Nenhum aviso.",
-      "archived": "Nada arquivado."
+      "archived": "Nada arquivado.",
+      "trash": "A lixeira está vazia."
     },
     "like": {
       "single": "{{name}} curtiu sua foto",
@@ -1172,12 +1173,15 @@
       "1h": "1 hora",
       "2h": "2 horas",
       "8h": "8 horas",
-      "1d": "1 dia",
-      "always": "Sempre (silenciar este tipo)"
+      "1d": "Amanhã",
+      "always": "Sempre (silenciar este tipo)",
+      "30m": "30 minutos",
+      "4h": "4 horas"
     },
     "archived": {
       "title": "Arquivadas",
-      "open": "Ver arquivadas"
+      "open": "Ver arquivadas",
+      "back": "Voltar"
     },
     "undo": {
       "archived": "Notificação arquivada",
@@ -1200,6 +1204,20 @@
         "system": "Sistema",
         "promos": "Promoções"
       }
+    },
+    "readAll": "Ler todas",
+    "selectMode": "Selecionar notificações",
+    "bulk": {
+      "selected": "{{count}} selecionadas",
+      "selectAll": "Selecionar todas",
+      "archive": "Arquivar",
+      "delete": "Excluir",
+      "restore": "Restaurar",
+      "cancel": "Cancelar"
+    },
+    "trash": {
+      "title": "Lixeira",
+      "open": "Lixeira"
     }
   }
 }

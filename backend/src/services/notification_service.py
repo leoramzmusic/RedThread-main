@@ -432,8 +432,10 @@ async def mark_message_notification_read(user_id: str, conversation_id: str) -> 
 
 SNOOZE_DURATIONS = {
     "15m": timedelta(minutes=15),
+    "30m": timedelta(minutes=30),
     "1h": timedelta(hours=1),
     "2h": timedelta(hours=2),
+    "4h": timedelta(hours=4),
     "8h": timedelta(hours=8),
     "1d": timedelta(days=1),
 }

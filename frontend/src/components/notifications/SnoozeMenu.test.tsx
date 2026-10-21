@@ -34,13 +34,25 @@ it("selects the 1h duration", () => {
   expect(onClose).toHaveBeenCalled();
 });
 
-it("selects the always duration", () => {
+it("offers the five presets and omits the legacy always option", () => {
+  const onSelect = jest.fn();
+  renderMenu(onSelect);
+
+  for (const option of ["15m", "30m", "1h", "4h", "1d"]) {
+    expect(screen.getByTestId(`snooze-option-${option}`)).toBeInTheDocument();
+  }
+  expect(screen.queryByTestId("snooze-option-always")).not.toBeInTheDocument();
+  expect(screen.queryByTestId("snooze-option-2h")).not.toBeInTheDocument();
+  expect(screen.queryByTestId("snooze-option-8h")).not.toBeInTheDocument();
+});
+
+it("selects the 30m duration", () => {
   const onSelect = jest.fn();
   const { onClose } = renderMenu(onSelect);
 
-  fireEvent.click(screen.getByTestId("snooze-option-always"));
+  fireEvent.click(screen.getByTestId("snooze-option-30m"));
 
   expect(onSelect).toHaveBeenCalledTimes(1);
-  expect(onSelect).toHaveBeenCalledWith("always");
+  expect(onSelect).toHaveBeenCalledWith("30m");
   expect(onClose).toHaveBeenCalled();
 });

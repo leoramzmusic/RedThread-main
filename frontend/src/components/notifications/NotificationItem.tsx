@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ListItem,
   ListItemAvatar,
@@ -6,6 +6,7 @@ import {
   ListItemText,
   Typography,
   Box,
+  Checkbox,
   IconButton,
   TextField,
 } from "@mui/material";
@@ -29,6 +30,10 @@ import type { AppNotification } from "../../hooks/useNotifications";
 interface NotificationItemProps {
   notification: AppNotification;
   bumped?: boolean;
+  selected?: boolean;
+  selectionMode?: boolean;
+  onToggleSelect?: (id: string) => void;
+  onLongPress?: (id: string) => void;
   onRead: (id: string) => void;
   onNavigate?: (notification: AppNotification) => void;
   onQuickReply?: (
@@ -39,6 +44,11 @@ interface NotificationItemProps {
   onDelete?: (id: string) => void;
   onSnooze?: (duration: SnoozeOption) => void;
 }
+
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_TOLERANCE = 10;
+const INTERACTIVE_TARGET_SELECTOR =
+  "button, a, input, textarea, select, [role='button'], [data-no-swipe]";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -71,6 +81,10 @@ const iconFor = (type: string) => {
 export default function NotificationItem({
   notification,
   bumped = false,
+  selected = false,
+  selectionMode = false,
+  onToggleSelect,
+  onLongPress,
   onRead,
   onNavigate,
   onQuickReply,
@@ -82,6 +96,9 @@ export default function NotificationItem({
   const [reply, setReply] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [snoozeAnchor, setSnoozeAnchor] = useState<HTMLElement | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressOrigin = useRef<{ x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
   const { title, body } = buildNotificationText(notification, t, i18n.language);
   const thumb =
     notification.metadata?.shown_media_thumbnail_url ||
@@ -94,9 +111,81 @@ export default function NotificationItem({
     notification.user?.name ?? notification.actors?.[0]?.name ?? "";
   const initial = displayName.trim().charAt(0).toUpperCase();
 
+  const clearLongPress = () => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    longPressTimer.current = null;
+    longPressOrigin.current = null;
+  };
+
+  useEffect(() => clearLongPress, []);
+
+  const beginLongPress = (x: number, y: number, target: EventTarget | null) => {
+    if (selectionMode || !onLongPress) return;
+    if (
+      target instanceof Element &&
+      target.closest(INTERACTIVE_TARGET_SELECTOR)
+    ) {
+      return;
+    }
+    clearLongPress();
+    longPressOrigin.current = { x, y };
+    longPressTimer.current = setTimeout(() => {
+      longPressTimer.current = null;
+      suppressClick.current = true;
+      onLongPress(notification.id);
+    }, LONG_PRESS_MS);
+  };
+
+  const moveLongPress = (x: number, y: number) => {
+    const origin = longPressOrigin.current;
+    if (!origin) return;
+    if (
+      Math.abs(x - origin.x) > LONG_PRESS_TOLERANCE ||
+      Math.abs(y - origin.y) > LONG_PRESS_TOLERANCE
+    ) {
+      clearLongPress();
+    }
+  };
+
   const handleClick = async () => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+    if (selectionMode) {
+      onToggleSelect?.(notification.id);
+      return;
+    }
     if (!notification.is_read) await onRead(notification.id);
     onNavigate?.(notification);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    beginLongPress(event.clientX, event.clientY, event.target);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    moveLongPress(event.clientX, event.clientY);
+  };
+
+  const handleTouchStart = (event: React.TouchEvent) => {
+    const touch = event.touches[0];
+    if (touch) beginLongPress(touch.clientX, touch.clientY, event.target);
+  };
+
+  const handleTouchMove = (event: React.TouchEvent) => {
+    const touch = event.touches[0];
+    if (touch) moveLongPress(touch.clientX, touch.clientY);
+  };
+
+  const handleContextMenu = (event: React.MouseEvent) => {
+    if (selectionMode || !onLongPress) return;
+    event.preventDefault();
+    clearLongPress();
+    suppressClick.current = true;
+    onLongPress(notification.id);
   };
 
   const openSnoozeMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -107,18 +196,39 @@ export default function NotificationItem({
   return (
     <ListItem
       data-testid={`notification-item-${notification.id}`}
+      data-selected={selected ? "true" : undefined}
+      aria-selected={selectionMode ? selected : undefined}
       alignItems="flex-start"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={clearLongPress}
+      onPointerCancel={clearLongPress}
+      onPointerLeave={clearLongPress}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={clearLongPress}
+      onTouchCancel={clearLongPress}
+      onContextMenu={handleContextMenu}
       sx={{
         position: "relative",
         cursor: "pointer",
-        bgcolor: notification.is_read ? "transparent" : "rgba(230,57,70,0.07)",
+        py: 1.25,
+        pr: 1,
+        touchAction: "pan-y",
+        bgcolor: selected
+          ? "rgba(230,57,70,0.14)"
+          : notification.is_read
+            ? "transparent"
+            : "rgba(230,57,70,0.07)",
         borderBottom: "1px solid",
         borderColor: "divider",
         borderInlineStart: notification.is_read
           ? "3px solid transparent"
           : `3px solid ${liquidColors.primary}`,
         transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
-        "&:hover": { bgcolor: "action.selected" },
+        "&:hover": {
+          bgcolor: selected ? "rgba(230,57,70,0.18)" : "action.selected",
+        },
         "&:hover .notification-hover-actions, &:focus-within .notification-hover-actions":
           {
             opacity: 1,
@@ -141,6 +251,16 @@ export default function NotificationItem({
       }}
       onClick={handleClick}
     >
+      {selectionMode && (
+        <Checkbox
+          data-testid={`notification-select-${notification.id}`}
+          checked={selected}
+          onChange={() => onToggleSelect?.(notification.id)}
+          onClick={(event) => event.stopPropagation()}
+          slotProps={{ input: { "aria-label": t("notifications.selectMode") } }}
+          sx={{ ml: -0.5, alignSelf: "flex-start", p: 0.5 }}
+        />
+      )}
       <ListItemAvatar sx={{ minWidth: 64 }}>
         <Box sx={{ position: "relative", width: 56, height: 56 }}>
           {thumb ? (
@@ -205,7 +325,10 @@ export default function NotificationItem({
             component="span"
             variant="subtitle2"
             sx={{
-              fontWeight: notification.is_read ? 400 : 600,
+              fontWeight: notification.is_read ? 500 : 700,
+              fontSize: "0.9375rem",
+              lineHeight: 1.35,
+              color: "text.primary",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
@@ -226,6 +349,10 @@ export default function NotificationItem({
                   WebkitLineClamp: expanded ? "unset" : 2,
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
+                  mt: 0.25,
+                  color: "text.secondary",
+                  fontSize: "0.8125rem",
+                  lineHeight: 1.45,
                 }}
               >
                 {body}
@@ -252,14 +379,21 @@ export default function NotificationItem({
             )}
             <Typography
               variant="caption"
-              sx={{ display: "block", color: "text.secondary", mt: 0.5 }}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.75,
+                mt: 0.75,
+                color: "text.secondary",
+                fontSize: "0.75rem",
+              }}
             >
               {formatRelativeTime(
                 notification.updated_at || notification.created_at,
                 i18n.language,
               )}
             </Typography>
-            {canReply && (
+            {canReply && !selectionMode && (
               <Box
                 data-testid="notification-quick-reply"
                 sx={{ display: "flex", gap: 1, mt: 1 }}
@@ -290,7 +424,7 @@ export default function NotificationItem({
           secondary: { component: "span" },
         }}
       />
-      {(onArchive || onDelete || onSnooze) && (
+      {!selectionMode && (onArchive || onDelete || onSnooze) && (
         <Box
           data-testid="notification-hover-actions"
           className="notification-hover-actions"
@@ -356,7 +490,7 @@ export default function NotificationItem({
           )}
         </Box>
       )}
-      {onSnooze && (
+      {onSnooze && !selectionMode && (
         <>
           <IconButton
             data-testid="notification-snooze-trigger"

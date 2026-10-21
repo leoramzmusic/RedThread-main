@@ -1118,7 +1118,8 @@
       "likes": "Kāore anō he manako.",
       "chats": "Kāore he karere hōu.",
       "system": "Kāore he pānui.",
-      "archived": "Kāore he mea kua puritia."
+      "archived": "Kāore he mea kua puritia.",
+      "trash": "Kāhore he mea i te pouārai."
     },
     "like": {
       "single": "I manako a {{name}} ki tō whakaahua",
@@ -1162,12 +1163,15 @@
       "1h": "1 haora",
       "2h": "2 haora",
       "8h": "8 haora",
-      "1d": "1 rā",
-      "always": "I ngā wā katoa (mukua tēnei momo)"
+      "1d": "Āpōpō",
+      "always": "I ngā wā katoa (mukua tēnei momo)",
+      "30m": "30 meneti",
+      "4h": "4 haora"
     },
     "archived": {
       "title": "Kua puritia",
-      "open": "Tirohia ngā mea kua puritia"
+      "open": "Tirohia ngā mea kua puritia",
+      "back": "Hoki"
     },
     "undo": {
       "archived": "Kua puritia te whakamōhiotanga",
@@ -1190,6 +1194,20 @@
         "system": "Pūnaha",
         "promos": "Ngā Whakatairanga"
       }
+    },
+    "readAll": "Pānui katoa",
+    "selectMode": "Tīpako ngā whakamōhiotanga",
+    "bulk": {
+      "selected": "{{count}} kua tīpakohia",
+      "selectAll": "Tīpako katoa",
+      "archive": "Purua",
+      "delete": "Mukua",
+      "restore": "Whakahokia",
+      "cancel": "Whakakore"
+    },
+    "trash": {
+      "title": "Pouārai",
+      "open": "Pouārai"
     }
   }
 }

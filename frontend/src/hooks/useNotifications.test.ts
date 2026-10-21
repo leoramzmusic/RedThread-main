@@ -99,6 +99,35 @@ it("refreshes when the notifications-sync event fires", async () => {
   );
 });
 
+it("marks all read with the active filter scope", async () => {
+  let marked = false;
+  get.mockImplementation((url: string) =>
+    url === "/notifications/unread-count"
+      ? Promise.resolve({ data: counts })
+      : Promise.resolve({
+          data: {
+            items: [
+              { id: "n1", type: "like", is_read: marked },
+              { id: "n2", type: "match", is_read: marked },
+            ],
+          },
+        }),
+  );
+  post.mockImplementation(async () => {
+    marked = true;
+    return { data: {} };
+  });
+  const { result } = renderHook(() => useNotifications("social"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.markAllRead("social"));
+
+  expect(post).toHaveBeenCalledWith("/notifications/read-all", null, {
+    params: { filter: "social" },
+  });
+  expect(result.current.items.every((item) => item.is_read)).toBe(true);
+});
+
 it("skips the unread-count request when filter is archived", async () => {
   get.mockImplementation((url: string) => {
     if (url === "/notifications/unread-count")
@@ -115,6 +144,61 @@ it("skips the unread-count request when filter is archived", async () => {
   expect(get).not.toHaveBeenCalledWith("/notifications/unread-count");
   expect(result.current.items).toHaveLength(1);
 });
+
+it("skips the unread-count request when filter is trash", async () => {
+  const { result } = renderHook(() => useNotifications("trash"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "trash", limit: 50 },
+  });
+  expect(get).not.toHaveBeenCalledWith("/notifications/unread-count");
+});
+
+it.each([
+  ["bulkArchive", "archive"],
+  ["bulkUnarchive", "unarchive"],
+  ["bulkRestore", "restore"],
+  ["bulkDelete", "delete"],
+] as const)(
+  "%s posts the ids in bulk, removes them optimistically and refreshes",
+  async (method, action) => {
+    get.mockImplementation((url: string) =>
+      url === "/notifications/unread-count"
+        ? Promise.resolve({ data: counts })
+        : Promise.resolve({
+            data: {
+              items: [
+                { id: "n1", type: "like", is_read: false },
+                { id: "n2", type: "match", is_read: false },
+              ],
+            },
+          }),
+    );
+    const deferredPost = deferred<unknown>();
+    post.mockReturnValue(deferredPost.promise);
+    const { result } = renderHook(() => useNotifications("all"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    get.mockClear();
+
+    let pending!: Promise<void>;
+    await act(async () => {
+      pending = result.current[method](["n1", "n2"]);
+    });
+    expect(result.current.items).toEqual([]);
+
+    await act(async () => {
+      deferredPost.resolve({ data: { updated: 2 } });
+      await pending;
+    });
+    expect(post).toHaveBeenCalledWith("/notifications/bulk", {
+      ids: ["n1", "n2"],
+      action,
+    });
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "all", limit: 50 },
+    });
+  },
+);
 
 it.each(["archive", "unarchive", "restore"] as const)(
   "%s calls the endpoint, removes the item optimistically and refreshes",
@@ -186,7 +270,7 @@ it("removes a notification with delete, optimistically and with refresh", async 
   });
 });
 
-it.each(["1h", "always"] as const)(
+it.each(["30m", "4h", "1d"] as const)(
   "snoozes for %s optimistically, POSTs {duration} and refreshes",
   async (duration) => {
     get.mockImplementation((url: string) =>

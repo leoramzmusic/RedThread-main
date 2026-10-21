@@ -1159,7 +1159,8 @@
       "likes": "暂无喜欢。",
       "chats": "没有新消息。",
       "system": "暂无公告。",
-      "archived": "没有已归档的通知。"
+      "archived": "没有已归档的通知。",
+      "trash": "回收站为空。"
     },
     "like": {
       "single": "{{name}} 赞了你的照片",
@@ -1203,12 +1204,15 @@
       "1h": "1 小时",
       "2h": "2 小时",
       "8h": "8 小时",
-      "1d": "1 天",
-      "always": "始终（静音此类型）"
+      "1d": "明天",
+      "always": "始终（静音此类型）",
+      "30m": "30 分钟",
+      "4h": "4 小时"
     },
     "archived": {
       "title": "已归档",
-      "open": "查看已归档"
+      "open": "查看已归档",
+      "back": "返回"
     },
     "undo": {
       "archived": "通知已归档",
@@ -1231,6 +1235,20 @@
         "system": "系统",
         "promos": "促销"
       }
+    },
+    "readAll": "全部标为已读",
+    "selectMode": "选择通知",
+    "bulk": {
+      "selected": "已选择 {{count}} 项",
+      "selectAll": "全选",
+      "archive": "归档",
+      "delete": "删除",
+      "restore": "恢复",
+      "cancel": "取消"
+    },
+    "trash": {
+      "title": "回收站",
+      "open": "回收站"
     }
   }
 }
