@@ -13,12 +13,14 @@ import {
   ChatBubbleOutlined,
   CampaignOutlined,
   FavoriteBorder,
+  MoreVert,
   Send,
   SettingsOutlined,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
 import { liquidColors, motionTokens } from "../../theme/liquidGlass";
 import { buildNotificationText, formatRelativeTime } from "./notificationText";
+import SnoozeMenu, { type SnoozeOption } from "./SnoozeMenu";
 import type { AppNotification } from "../../hooks/useNotifications";
 
 interface NotificationItemProps {
@@ -29,7 +31,7 @@ interface NotificationItemProps {
   onQuickReply?: (notification: AppNotification, message: string) => void;
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onSnooze?: (id: string) => void;
+  onSnooze?: (duration: SnoozeOption) => void;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -66,10 +68,12 @@ export default function NotificationItem({
   onRead,
   onNavigate,
   onQuickReply,
+  onSnooze,
 }: NotificationItemProps) {
   const { t, i18n } = useTranslation("common");
   const [reply, setReply] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [snoozeAnchor, setSnoozeAnchor] = useState<HTMLElement | null>(null);
   const { title, body } = buildNotificationText(notification, t, i18n.language);
   const thumb =
     notification.metadata?.shown_media_thumbnail_url ||
@@ -262,6 +266,32 @@ export default function NotificationItem({
           secondary: { component: "span" },
         }}
       />
+      {onSnooze && (
+        <>
+          <IconButton
+            data-testid="notification-snooze-trigger"
+            aria-label={t("notifications.actions.snooze")}
+            title={t("notifications.actions.snooze")}
+            size="small"
+            onClick={(event) => {
+              event.stopPropagation();
+              setSnoozeAnchor(event.currentTarget);
+            }}
+            sx={{ alignSelf: "flex-start", ml: 0.5 }}
+          >
+            <MoreVert fontSize="small" />
+          </IconButton>
+          <SnoozeMenu
+            anchorEl={snoozeAnchor}
+            open={Boolean(snoozeAnchor)}
+            onClose={() => setSnoozeAnchor(null)}
+            onSelect={(duration) => {
+              setSnoozeAnchor(null);
+              onSnooze(duration);
+            }}
+          />
+        </>
+      )}
     </ListItem>
   );
 }

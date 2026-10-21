@@ -185,6 +185,22 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [runWithOptimisticRemoval],
   );
 
+  const snooze = useCallback(
+    (id: string, duration: string) =>
+      runWithOptimisticRemoval(id, () =>
+        apiClient.post(`/notifications/${id}/snooze`, { duration }),
+      ),
+    [runWithOptimisticRemoval],
+  );
+
+  const unsnooze = useCallback(
+    (id: string) =>
+      runWithOptimisticRemoval(id, () =>
+        apiClient.post(`/notifications/${id}/unsnooze`),
+      ),
+    [runWithOptimisticRemoval],
+  );
+
   return {
     items,
     counts,
@@ -200,5 +216,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     unarchive,
     restore,
     remove,
+    snooze,
+    unsnooze,
   };
 }

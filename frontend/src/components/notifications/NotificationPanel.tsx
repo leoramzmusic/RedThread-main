@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next/pages";
+import { useSnackbar } from "notistack";
 import {
   Box,
   Typography,
@@ -32,6 +33,8 @@ import {
   RestoreFromTrashOutlined as RestoreIcon,
 } from "@mui/icons-material";
 import NotificationItem from "./NotificationItem";
+import NotificationSwipeable from "./NotificationSwipeable";
+import type { SnoozeOption } from "./SnoozeMenu";
 import { useNotifications } from "../../hooks/useNotifications";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 
@@ -50,8 +53,13 @@ const TABS = [
 export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const router = useRouter();
   const { t } = useTranslation("common");
+  const { enqueueSnackbar } = useSnackbar();
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [bumpedIds, setBumpedIds] = useState<Set<string>>(() => new Set());
+  const [bumpSeq, setBumpSeq] = useState(0);
+  const updatedAtRef = useRef<Map<string, string>>(new Map());
+  const bumpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const {
     items,
     counts,
@@ -61,8 +69,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     markRead,
     markBucket,
     markAllRead,
+    archive,
     unarchive,
     remove,
+    restore,
+    snooze,
+    unsnooze,
   } = useNotifications(filter, { unread: filter === "messages" });
   const prefersReducedMotion = usePrefersReducedMotion();
   const seenRef = useRef<Set<string>>(new Set());
@@ -92,6 +104,58 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     seenRef.current.add("system");
     void markBucket("system");
   }, [filter, loading, systemUnread, markBucket]);
+
+  React.useEffect(() => {
+    const previous = updatedAtRef.current;
+    const changed: string[] = [];
+    items.forEach((notification) => {
+      const stamp = notification.updated_at ?? notification.created_at;
+      const last = previous.get(notification.id);
+      if (last !== undefined && last !== stamp) changed.push(notification.id);
+      previous.set(notification.id, stamp);
+    });
+    if (changed.length === 0) return;
+    setBumpedIds(new Set(changed));
+    setBumpSeq((value) => value + 1);
+    if (bumpTimerRef.current) clearTimeout(bumpTimerRef.current);
+    bumpTimerRef.current = setTimeout(() => {
+      bumpTimerRef.current = null;
+      setBumpedIds(new Set());
+    }, 700);
+  }, [items]);
+
+  React.useEffect(
+    () => () => {
+      if (bumpTimerRef.current) clearTimeout(bumpTimerRef.current);
+    },
+    [],
+  );
+
+  const undo = (message: string, action: () => Promise<void>) => {
+    enqueueSnackbar(message, {
+      autoHideDuration: 5000,
+      action: (
+        <Button color="inherit" size="small" onClick={() => void action()}>
+          {t("notifications.actions.undo")}
+        </Button>
+      ),
+    });
+  };
+
+  const handleArchive = (id: string) => {
+    void archive(id);
+    undo(t("notifications.undo.archived"), () => unarchive(id));
+  };
+
+  const handleDelete = (id: string) => {
+    void remove(id);
+    undo(t("notifications.undo.deleted"), () => restore(id));
+  };
+
+  const handleSnooze = (id: string, duration: SnoozeOption) => {
+    void snooze(id, duration);
+    undo(t("notifications.undo.snoozed"), () => unsnooze(id));
+  };
 
   const handleMenuClose = () => setMenuAnchor(null);
 
@@ -359,12 +423,25 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                       </Box>
                     </Box>
                   ) : (
-                    <NotificationItem
-                      key={notification.id}
-                      notification={notification}
-                      onRead={markRead}
-                      onNavigate={onClose}
-                    />
+                    <NotificationSwipeable
+                      key={
+                        bumpedIds.has(notification.id)
+                          ? `${notification.id}:${bumpSeq}`
+                          : notification.id
+                      }
+                      onArchive={() => handleArchive(notification.id)}
+                      onDelete={() => handleDelete(notification.id)}
+                    >
+                      <NotificationItem
+                        notification={notification}
+                        bumped={bumpedIds.has(notification.id)}
+                        onRead={markRead}
+                        onNavigate={onClose}
+                        onSnooze={(duration) =>
+                          handleSnooze(notification.id, duration)
+                        }
+                      />
+                    </NotificationSwipeable>
                   ),
                 )}
               </List>

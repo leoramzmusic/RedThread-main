@@ -186,6 +186,71 @@ it("removes a notification with delete, optimistically and with refresh", async 
   });
 });
 
+it.each(["1h", "always"] as const)(
+  "snoozes for %s optimistically, POSTs {duration} and refreshes",
+  async (duration) => {
+    get.mockImplementation((url: string) =>
+      url === "/notifications/unread-count"
+        ? Promise.resolve({ data: counts })
+        : Promise.resolve({
+            data: { items: [{ id: "n1", type: "like", is_read: false }] },
+          }),
+    );
+    const deferredPost = deferred<unknown>();
+    post.mockReturnValue(deferredPost.promise);
+    const { result } = renderHook(() => useNotifications("all"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.items).toHaveLength(1);
+    get.mockClear();
+
+    let pending!: Promise<void>;
+    await act(async () => {
+      pending = result.current.snooze("n1", duration);
+    });
+    expect(result.current.items).toEqual([]);
+
+    await act(async () => {
+      deferredPost.resolve({ data: {} });
+      await pending;
+    });
+    expect(post).toHaveBeenCalledWith("/notifications/n1/snooze", {
+      duration,
+    });
+    expect(get).toHaveBeenCalledWith("/notifications", {
+      params: { filter: "all", limit: 50 },
+    });
+  },
+);
+
+it("unsnoozes a notification and refreshes", async () => {
+  get.mockImplementation((url: string) =>
+    url === "/notifications/unread-count"
+      ? Promise.resolve({ data: counts })
+      : Promise.resolve({
+          data: { items: [], next_cursor: null },
+        }),
+  );
+  const deferredPost = deferred<unknown>();
+  post.mockReturnValue(deferredPost.promise);
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  get.mockClear();
+
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = result.current.unsnooze("n1");
+  });
+
+  await act(async () => {
+    deferredPost.resolve({ data: {} });
+    await pending;
+  });
+  expect(post).toHaveBeenCalledWith("/notifications/n1/unsnooze");
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "all", limit: 50 },
+  });
+});
+
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((res) => {

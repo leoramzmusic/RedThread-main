@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import NotificationItem from "./NotificationItem";
 
 jest.mock("next-i18next/pages", () => ({
@@ -159,5 +165,50 @@ describe("NotificationItem", () => {
     expect(screen.getByTestId("notification-item-n1")).toHaveStyle({
       backgroundColor: "rgba(230,57,70,0.07)",
     });
+  });
+
+  it("shows the snooze trigger only when onSnooze is provided", () => {
+    const { rerender } = render(
+      <NotificationItem notification={base} onRead={jest.fn()} />,
+    );
+    expect(
+      screen.queryByTestId("notification-snooze-trigger"),
+    ).not.toBeInTheDocument();
+
+    rerender(
+      <NotificationItem
+        notification={base}
+        onRead={jest.fn()}
+        onSnooze={jest.fn()}
+      />,
+    );
+    expect(
+      screen.getByTestId("notification-snooze-trigger"),
+    ).toBeInTheDocument();
+  });
+
+  it("snoozes from the item menu without marking read or navigating", async () => {
+    const onRead = jest.fn();
+    const onNavigate = jest.fn();
+    const onSnooze = jest.fn();
+    render(
+      <NotificationItem
+        notification={base}
+        onRead={onRead}
+        onNavigate={onNavigate}
+        onSnooze={onSnooze}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("notification-snooze-trigger"));
+    fireEvent.click(await screen.findByTestId("snooze-option-1h"));
+
+    expect(onSnooze).toHaveBeenCalledTimes(1);
+    expect(onSnooze).toHaveBeenCalledWith("1h");
+    expect(onRead).not.toHaveBeenCalled();
+    expect(onNavigate).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.queryByTestId("snooze-option-1h")).not.toBeInTheDocument(),
+    );
   });
 });

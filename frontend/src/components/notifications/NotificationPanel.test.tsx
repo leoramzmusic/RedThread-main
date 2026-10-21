@@ -41,6 +41,17 @@ const mockCopy: Record<string, string> = {
   "notifications.match.single": "¡Es un match con {{name}}!",
   "notifications.message.single": "Nuevo mensaje de {{name}}",
   "notifications.system.fallback": "Red Thread",
+  "notifications.actions.undo": "Deshacer",
+  "notifications.snooze.title": "Posponer notificaciones",
+  "notifications.snooze.15m": "15 minutos",
+  "notifications.snooze.1h": "1 hora",
+  "notifications.snooze.2h": "2 horas",
+  "notifications.snooze.8h": "8 horas",
+  "notifications.snooze.1d": "1 día",
+  "notifications.snooze.always": "Siempre",
+  "notifications.undo.archived": "Notificación archivada",
+  "notifications.undo.deleted": "Notificación borrada",
+  "notifications.undo.snoozed": "Notificación pospuesta",
 };
 
 function mockTranslate(key: string, options?: Record<string, unknown>) {
@@ -75,6 +86,12 @@ jest.mock("../../hooks/useNotifications", () => ({
   useNotifications: jest.fn(),
 }));
 
+let enqueue: jest.Mock;
+
+jest.mock("notistack", () => ({
+  useSnackbar: () => ({ enqueueSnackbar: enqueue }),
+}));
+
 const mockedUseRouter = useRouter as jest.Mock;
 const mockedUseNotifications = useNotifications as jest.Mock;
 
@@ -102,6 +119,8 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   unarchive: jest.fn(),
   remove: jest.fn(),
   restore: jest.fn(),
+  snooze: jest.fn(),
+  unsnooze: jest.fn(),
   ...overrides,
 });
 
@@ -136,11 +155,27 @@ const sampleItem = (id: string) => ({
   metadata: {},
 });
 
+const touchOn = (x: number, y: number) =>
+  ({ touches: [{ clientX: x, clientY: y }] }) as unknown as TouchEventInit;
+
+const swipe = (fromX: number, toX: number) => {
+  const box = screen.getByTestId("notification-swipeable");
+  fireEvent.touchStart(box, touchOn(fromX, 0));
+  fireEvent.touchMove(box, touchOn(toX, 0));
+  fireEvent.touchEnd(box);
+};
+
+const undoAction = () => {
+  const action = enqueue.mock.calls[0][1].action;
+  return render(action).getByText("Deshacer");
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
   push = jest.fn();
   onClose = jest.fn();
   hook = makeHook();
+  enqueue = jest.fn();
   mockedUseRouter.mockReturnValue({ push });
   mockedUseNotifications.mockImplementation(() => hook);
 });
@@ -360,6 +395,95 @@ describe("NotificationPanel", () => {
     });
   });
 
+  describe("gestures and undo", () => {
+    it("archives on a right swipe and undoes with unarchive", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      swipe(0, 90);
+
+      expect(hook.archive).toHaveBeenCalledWith("n1");
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación archivada",
+        expect.objectContaining({ autoHideDuration: 5000 }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.unarchive).toHaveBeenCalledWith("n1");
+    });
+
+    it("deletes on a left swipe and undoes with restore", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      swipe(100, 10);
+
+      expect(hook.remove).toHaveBeenCalledWith("n1");
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación borrada",
+        expect.objectContaining({ autoHideDuration: 5000 }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.restore).toHaveBeenCalledWith("n1");
+    });
+
+    it("snoozes from the item menu and undoes with unsnooze", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      fireEvent.click(screen.getByTestId("notification-snooze-trigger"));
+      fireEvent.click(await screen.findByTestId("snooze-option-1h"));
+
+      expect(hook.snooze).toHaveBeenCalledWith("n1", "1h");
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación pospuesta",
+        expect.objectContaining({ autoHideDuration: 5000 }),
+      );
+      expect(hook.markRead).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+
+      fireEvent.click(undoAction());
+      expect(hook.unsnooze).toHaveBeenCalledWith("n1");
+    });
+  });
+
+  it("bumps an item whose updated_at changed and clears the pulse", async () => {
+    hook = makeHook({
+      items: [{ ...sampleItem("n1"), updated_at: "2026-10-19T10:00:00Z" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    const { rerender } = renderPanel();
+
+    const initial = await screen.findByTestId("notification-item-n1");
+    expect(getComputedStyle(initial).animation).not.toContain(
+      "notification-bump",
+    );
+
+    hook = makeHook({
+      items: [{ ...sampleItem("n1"), updated_at: "2026-10-19T10:05:00Z" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    rerender(<NotificationPanel onClose={onClose} />);
+
+    const bumped = screen.getByTestId("notification-item-n1");
+    expect(bumped).not.toBe(initial);
+    expect(getComputedStyle(bumped).animation).toContain("notification-bump");
+
+    await waitFor(
+      () =>
+        expect(
+          getComputedStyle(screen.getByTestId("notification-item-n1"))
+            .animation,
+        ).not.toContain("notification-bump"),
+      { timeout: 2000 },
+    );
+  });
+
   describe("archived view", () => {
     it("restores and deletes items through the hook", async () => {
       hook = makeHook({ items: [sampleItem("a1")] });
@@ -374,6 +498,12 @@ describe("NotificationPanel", () => {
 
       fireEvent.click(screen.getByTestId("notification-delete-a1"));
       expect(remove).toHaveBeenCalledWith("a1");
+      expect(
+        screen.queryByTestId("notification-swipeable"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-snooze-trigger"),
+      ).not.toBeInTheDocument();
     });
 
     it("shows the archived empty state without the survey", async () => {
