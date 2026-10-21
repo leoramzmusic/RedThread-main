@@ -463,40 +463,76 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           variant="fullWidth"
           sx={{ borderBottom: "1px solid", borderColor: "divider" }}
         >
-          {TABS.map(({ key, icon: Icon }, index) => (
-            <Tab
-              key={key}
-              data-testid={`notification-tab-${key}`}
-              icon={<Icon fontSize="small" />}
-              iconPosition="start"
-              sx={{
-                minWidth: 0,
-                px: 0.5,
-                fontSize: "0.75rem",
-                "& .MuiTab-iconWrapper": { mr: 0.5 },
-              }}
-              label={
-                <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <Box component="span">{t(`notifications.tabs.${key}`)}</Box>
-                  {tabCounts[index] > 0 && (
+          {TABS.map(({ key, icon: Icon }, index) => {
+            const active = tabIndex === index;
+            const count = tabCounts[index];
+            const labelTransition = prefersReducedMotion
+              ? "none"
+              : "max-width 220ms ease, opacity 180ms ease, transform 220ms ease, margin 220ms ease";
+            return (
+              <Tab
+                key={key}
+                data-testid={`notification-tab-${key}`}
+                sx={{
+                  minWidth: 0,
+                  minHeight: 48,
+                  px: 0.25,
+                  fontSize: "0.75rem",
+                }}
+                label={
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      px: active ? 1 : 0.5,
+                      py: 0.5,
+                      borderRadius: "999px",
+                      bgcolor: active ? "action.hover" : "transparent",
+                      transition: prefersReducedMotion
+                        ? "none"
+                        : "background-color 220ms ease, padding 220ms ease",
+                    }}
+                  >
+                    <Icon fontSize="small" />
                     <Box
                       component="span"
+                      data-testid={`notification-tab-label-${key}`}
                       sx={{
-                        px: "6px",
-                        borderRadius: "10px",
-                        bgcolor: "action.selected",
-                        fontSize: "0.6875rem",
-                        fontWeight: 600,
-                        lineHeight: "16px",
+                        display: "inline-block",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        maxWidth: active ? 120 : 0,
+                        ml: active ? "4px" : 0,
+                        opacity: active ? 1 : 0,
+                        transform: active
+                          ? "translateX(0)"
+                          : "translateX(-4px)",
+                        transition: labelTransition,
                       }}
                     >
-                      {tabCounts[index]}
+                      {t(`notifications.tabs.${key}`)}
                     </Box>
-                  )}
-                </Box>
-              }
-            />
-          ))}
+                    {count > 0 && (
+                      <Box
+                        component="span"
+                        sx={{
+                          px: "6px",
+                          ml: "4px",
+                          borderRadius: "10px",
+                          bgcolor: "action.selected",
+                          fontSize: "0.6875rem",
+                          fontWeight: 600,
+                          lineHeight: "16px",
+                        }}
+                      >
+                        {count}
+                      </Box>
+                    )}
+                  </Box>
+                }
+              />
+            );
+          })}
         </Tabs>
       )}
 

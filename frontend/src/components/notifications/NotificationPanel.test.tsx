@@ -259,6 +259,28 @@ describe("NotificationPanel", () => {
     );
   });
 
+  it("only shows the text label of the active tab", () => {
+    renderPanel();
+
+    expect(screen.getByTestId("notification-tab-label-all")).toHaveStyle({
+      opacity: "1",
+      maxWidth: "120px",
+    });
+    expect(screen.getByTestId("notification-tab-label-likes")).toHaveStyle({
+      opacity: "0",
+    });
+
+    fireEvent.click(screen.getByTestId("notification-tab-chats"));
+
+    expect(screen.getByTestId("notification-tab-label-chats")).toHaveStyle({
+      opacity: "1",
+      maxWidth: "120px",
+    });
+    expect(screen.getByTestId("notification-tab-label-all")).toHaveStyle({
+      opacity: "0",
+    });
+  });
+
   it("requests chats with the unread flag", async () => {
     renderPanel();
     expect(mockedUseNotifications).toHaveBeenLastCalledWith("all", {
