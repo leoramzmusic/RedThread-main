@@ -910,7 +910,8 @@ export default function Layout({ children }: LayoutProps) {
                   mt: { xs: "60px", sm: "72px" },
                   height: { xs: "calc(100% - 60px)", sm: "calc(100% - 72px)" },
                   bgcolor: glassBg,
-                  backdropFilter: "blur(18px)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
                   borderInlineStart: "1px solid",
                   borderColor: "divider",
                 }, // Match fixed AppBar height + glass
@@ -929,6 +930,9 @@ export default function Layout({ children }: LayoutProps) {
               height: isTablet ? "70dvh" : "100dvh",
               maxWidth: isTablet ? 640 : "100%",
               p: 0,
+              bgcolor: glassBg,
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
             }}
           >
             <Suspense fallback={null}>
