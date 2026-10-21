@@ -26,11 +26,8 @@ interface PauseMenuProps {
   onOpenSchedule: () => void;
 }
 
-function tomorrowMorning(): string {
-  const target = new Date();
-  target.setDate(target.getDate() + 1);
-  target.setHours(8, 0, 0, 0);
-  return target.toISOString();
+function tomorrow(): string {
+  return new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 }
 
 export default function PauseMenu({
@@ -89,7 +86,7 @@ export default function PauseMenu({
         data-testid="notification-pause-1d"
         onClick={() => {
           onClose();
-          onPauseUntil(tomorrowMorning());
+          onPauseUntil(tomorrow());
         }}
       >
         {t("notifications.pause.tomorrow", "Hasta mañana")}

@@ -500,6 +500,22 @@ describe("NotificationPanel", () => {
     });
   });
 
+  it("pauses for exactly 24 hours with the tomorrow option", () => {
+    const before = Date.now();
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    fireEvent.click(screen.getByTestId("notification-pause-1d"));
+
+    expect(hook.pause).toHaveBeenCalledWith(undefined, expect.any(String));
+    const until = Date.parse(
+      (hook.pause as jest.Mock).mock.calls[0][1] as string,
+    );
+    const delta = until - before;
+    expect(delta).toBeGreaterThanOrEqual(24 * 60 * 60 * 1000 - 1000);
+    expect(delta).toBeLessThanOrEqual(24 * 60 * 60 * 1000 + 1000);
+  });
+
   it("schedules a weekly pause from the custom option", () => {
     renderPanel();
 
