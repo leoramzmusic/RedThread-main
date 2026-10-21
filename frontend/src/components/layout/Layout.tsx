@@ -901,9 +901,13 @@ export default function Layout({ children }: LayoutProps) {
             anchor="right"
             open={notificationOpen}
             onClose={() => setNotificationOpen(false)}
+            elevation={0}
             // Ensure it's below AppBar if needed, or adjust
             sx={{ zIndex: (theme) => theme.zIndex.drawer }}
             slotProps={{
+              backdrop: {
+                sx: { backgroundColor: "transparent" },
+              },
               paper: {
                 sx: {
                   width: 400,
@@ -926,6 +930,7 @@ export default function Layout({ children }: LayoutProps) {
           <BottomSheet
             open={notificationOpen}
             onClose={() => setNotificationOpen(false)}
+            overlaySx={{ bgcolor: "transparent", backdropFilter: "none" }}
             sx={{
               height: isTablet ? "70dvh" : "100dvh",
               maxWidth: isTablet ? 640 : "100%",
