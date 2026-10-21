@@ -137,6 +137,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
 
   const snackbarOptions = (id: string) => ({
     key: `notification-${id}`,
+    preventDuplicate: true,
     autoHideDuration: 5000,
   });
 

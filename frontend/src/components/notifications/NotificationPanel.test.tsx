@@ -430,7 +430,7 @@ describe("NotificationPanel", () => {
       expect(hook.restore).toHaveBeenCalledWith("n1");
     });
 
-    it("archives from the desktop hover action and dedupes by id", async () => {
+    it("archives from the desktop hover action and passes snackbar dedupe options by id", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
@@ -446,11 +446,12 @@ describe("NotificationPanel", () => {
         expect.objectContaining({
           autoHideDuration: 5000,
           key: "notification-n1",
+          preventDuplicate: true,
         }),
       );
     });
 
-    it("snoozes for always without offering undo", async () => {
+    it("snoozes for always without undo and passes snackbar dedupe options", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
@@ -464,6 +465,7 @@ describe("NotificationPanel", () => {
       expect(options).toEqual({
         autoHideDuration: 5000,
         key: "notification-n1",
+        preventDuplicate: true,
       });
       expect(options.action).toBeUndefined();
       expect(hook.unsnooze).not.toHaveBeenCalled();
