@@ -184,8 +184,8 @@ it("does not capture the pointer when the drag starts on an interactive child", 
   const button = screen.getByRole("button", { name: "child" });
 
   fireEvent(button, pointerOn("pointerdown", 0, 0));
-  fireEvent(button, pointerOn("pointermove", 30, 0));
-  fireEvent(button, pointerOn("pointerup", 30, 0));
+  fireEvent(button, pointerOn("pointermove", 90, 0));
+  fireEvent(button, pointerOn("pointerup", 90, 0));
 
   expect(capture).not.toHaveBeenCalled();
   expect(onArchive).not.toHaveBeenCalled();

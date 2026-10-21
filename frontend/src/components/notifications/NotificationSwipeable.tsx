@@ -114,8 +114,12 @@ export default function NotificationSwipeable({
 
   const pointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch" || event.button > 0) return;
+    if (isInteractiveTarget(event.target)) {
+      captureEligible.current = false;
+      return;
+    }
+    captureEligible.current = true;
     activePointer.current = event.pointerId;
-    captureEligible.current = !isInteractiveTarget(event.target);
     start(event.clientX, event.clientY);
   };
 
