@@ -7,6 +7,11 @@ silencio = filtro al mostrar (el doc se crea igual), DND solo suprime push.
 from datetime import datetime, time, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
+try:  # tzdata no está garantizada en Windows; el offset del cliente hace de fallback
+    from zoneinfo import ZoneInfo
+except ImportError:  # pragma: no cover - Python < 3.9
+    ZoneInfo = None  # type: ignore[assignment]
+
 from src.models.conversation import Conversation
 from src.models.media import MediaItem, MediaType
 from src.models.notification import Notification
@@ -18,6 +23,8 @@ GROUP_WINDOW_HOURS = 24
 MAX_ACTORS = 3
 PREVIEW_MAX = 80
 RETENTION_DAYS = 30
+PAUSE_SCHEDULE_MAX_RULES = 10
+PAUSE_WEEKDAYS = (0, 1, 2, 3, 4, 5, 6)
 
 ALL_NOTIF_TYPES = ["like", "match", "message", "system", "survey", "promo"]
 FILTER_TYPES = {
@@ -59,6 +66,136 @@ def _is_dnd_active(dnd: Optional[Dict[str, Any]], now: time) -> bool:
     return now >= start or now <= end  # cruza medianoche
 
 
+def parse_clock(value: str) -> time:
+    try:
+        hours_text, minutes_text = str(value).split(":")
+        hours = int(hours_text)
+        minutes = int(minutes_text)
+    except (AttributeError, ValueError):
+        raise ValueError("Invalid pause time")
+    if not (0 <= hours <= 23 and 0 <= minutes <= 59):
+        raise ValueError("Invalid pause time")
+    return time(hour=hours, minute=minutes)
+
+
+def normalize_pause_rule(
+    days: Optional[List[int]],
+    start: str,
+    end: str,
+    timezone_name: Optional[str] = None,
+    utc_offset_minutes: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Build a normalized recurring pause rule (weekdays + local time window)."""
+    start_t = parse_clock(start)
+    end_t = parse_clock(end)
+    day_list = sorted({int(day) for day in (days or []) if int(day) in PAUSE_WEEKDAYS})
+    if not day_list:
+        raise ValueError("Invalid pause days")
+    rule: Dict[str, Any] = {
+        "days": day_list,
+        "start": start_t.strftime("%H:%M"),
+        "end": end_t.strftime("%H:%M"),
+    }
+    if timezone_name:
+        rule["timezone"] = str(timezone_name)
+    if utc_offset_minutes is not None:
+        try:
+            rule["utc_offset_minutes"] = int(utc_offset_minutes)
+        except (TypeError, ValueError):
+            raise ValueError("Invalid pause offset")
+    return rule
+
+
+def _rule_timezone(rule: Dict[str, Any]):
+    name = rule.get("timezone")
+    if name and ZoneInfo is not None:
+        try:
+            return ZoneInfo(str(name))
+        except Exception:
+            pass
+    offset = rule.get("utc_offset_minutes")
+    if offset is not None:
+        try:
+            return timezone(timedelta(minutes=int(offset)))
+        except (TypeError, ValueError):
+            pass
+    return timezone.utc
+
+
+def pause_rule_end(
+    rule: Dict[str, Any], now: Optional[datetime] = None
+) -> Optional[datetime]:
+    """End (UTC naive) of the active window of a rule, or None if not active."""
+    try:
+        start_t = parse_clock(rule.get("start", ""))
+        end_t = parse_clock(rule.get("end", ""))
+    except ValueError:
+        return None
+    days = {int(day) for day in (rule.get("days") or []) if int(day) in PAUSE_WEEKDAYS}
+    if not days:
+        return None
+
+    now_utc = now or datetime.utcnow()
+    if now_utc.tzinfo is None:
+        now_utc = now_utc.replace(tzinfo=timezone.utc)
+    tz = _rule_timezone(rule)
+    local = now_utc.astimezone(tz)
+    local_now = local.time()
+    weekday = local.weekday()
+
+    def _end_at(day_offset: int) -> datetime:
+        local_end = datetime.combine(
+            local.date() + timedelta(days=day_offset), end_t, tzinfo=tz
+        )
+        return local_end.astimezone(timezone.utc).replace(tzinfo=None)
+
+    if start_t < end_t:
+        if weekday in days and start_t <= local_now < end_t:
+            return _end_at(0)
+        return None
+
+    if weekday in days and local_now >= start_t:
+        return _end_at(1)
+    previous_day = (weekday - 1) % 7
+    if previous_day in days and local_now < end_t:
+        return _end_at(0)
+    return None
+
+
+def schedule_pause_end(
+    rules: Optional[List[Dict[str, Any]]], now: Optional[datetime] = None
+) -> Optional[datetime]:
+    """Latest end (UTC naive) among the currently active recurring rules."""
+    best: Optional[datetime] = None
+    for rule in rules or []:
+        end = pause_rule_end(rule, now)
+        if end is not None and (best is None or end > best):
+            best = end
+    return best
+
+
+def effective_pause_until(
+    settings, now: Optional[datetime] = None
+) -> Optional[datetime]:
+    """When the push channel stays muted: one-off pause or recurring schedule."""
+    if settings is None:
+        return None
+    reference = now or datetime.utcnow()
+    candidates: List[datetime] = []
+    one_off = getattr(settings, "notifications_paused_until", None)
+    if one_off is not None:
+        if one_off.tzinfo is not None:
+            one_off = one_off.astimezone(timezone.utc).replace(tzinfo=None)
+        if one_off > reference:
+            candidates.append(one_off)
+    scheduled = schedule_pause_end(
+        getattr(settings, "notification_pause_schedule", None), reference
+    )
+    if scheduled is not None:
+        candidates.append(scheduled)
+    return max(candidates) if candidates else None
+
+
 def should_push(
     settings, notif_type: str, metadata: Optional[dict], now: Optional[time] = None
 ) -> bool:
@@ -69,12 +206,9 @@ def should_push(
         return True
     if not getattr(settings, "notifications_enabled", True):
         return False
-    paused_until = getattr(settings, "notifications_paused_until", None)
-    if paused_until is not None:
-        if paused_until.tzinfo is not None:
-            paused_until = paused_until.astimezone(timezone.utc).replace(tzinfo=None)
-        if paused_until > datetime.utcnow():
-            return False
+    paused_until = effective_pause_until(settings)
+    if paused_until is not None and paused_until > datetime.utcnow():
+        return False
     if is_muted_type(getattr(settings, "notification_mutes", None), notif_type):
         return False
     return not _is_dnd_active(
@@ -582,3 +716,49 @@ async def resume_notifications(user_id: str) -> None:
     await settings.save()
     await _push_action(user_id, "notifications_resumed")
     await _push_action(user_id, "notifications_sync")
+
+
+async def _settings_document(user_id: str):
+    from src.models.user_settings import UserSettings
+
+    settings = await UserSettings.find_one({"user_id": user_id})
+    if settings is None:
+        settings = UserSettings(user_id=user_id)
+    return settings
+
+
+async def upsert_pause_schedule(
+    user_id: str, rule: Dict[str, Any]
+) -> List[Dict[str, Any]]:
+    """Store a recurring pause rule, replacing one with the same days and start."""
+    settings = await _settings_document(user_id)
+    schedule = [dict(item) for item in (settings.notification_pause_schedule or [])]
+    key = (tuple(rule.get("days") or []), rule.get("start"))
+    replaced = False
+    for index, item in enumerate(schedule):
+        item_key = (tuple(item.get("days") or []), item.get("start"))
+        if item_key == key:
+            schedule[index] = dict(rule)
+            replaced = True
+            break
+    if not replaced:
+        schedule.append(dict(rule))
+    schedule = schedule[-PAUSE_SCHEDULE_MAX_RULES:]
+    settings.notification_pause_schedule = schedule
+    await settings.save()
+    await _push_action(user_id, "notifications_sync")
+    return schedule
+
+
+async def remove_pause_schedule(user_id: str, index: int) -> List[Dict[str, Any]]:
+    """Remove a recurring pause rule by position."""
+    settings = await UserSettings.find_one({"user_id": user_id})
+    if settings is None:
+        return []
+    schedule = [dict(item) for item in (settings.notification_pause_schedule or [])]
+    if 0 <= index < len(schedule):
+        schedule.pop(index)
+    settings.notification_pause_schedule = schedule
+    await settings.save()
+    await _push_action(user_id, "notifications_sync")
+    return schedule
