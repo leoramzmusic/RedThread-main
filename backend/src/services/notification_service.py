@@ -4,7 +4,7 @@ Reglas: agrupación rodante con bump (ventana 24h), cap de 3 actores,
 silencio = filtro al mostrar (el doc se crea igual), DND solo suprime push.
 """
 
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from src.models.conversation import Conversation
@@ -69,6 +69,12 @@ def should_push(
         return True
     if not getattr(settings, "notifications_enabled", True):
         return False
+    paused_until = getattr(settings, "notifications_paused_until", None)
+    if paused_until is not None:
+        if paused_until.tzinfo is not None:
+            paused_until = paused_until.astimezone(timezone.utc).replace(tzinfo=None)
+        if paused_until > datetime.utcnow():
+            return False
     if is_muted_type(getattr(settings, "notification_mutes", None), notif_type):
         return False
     return not _is_dnd_active(
@@ -551,3 +557,28 @@ async def unsnooze_notification(
     await _push_action(user_id, "notification_unsnoozed", id=notification_id)
     await _push_action(user_id, "notifications_sync")
     return doc
+
+
+async def pause_notifications(user_id: str, until: datetime) -> datetime:
+    from src.models.user_settings import UserSettings
+
+    settings = await UserSettings.find_one({"user_id": user_id})
+    if settings is None:
+        settings = UserSettings(user_id=user_id)
+    settings.notifications_paused_until = until
+    await settings.save()
+    await _push_action(user_id, "notifications_paused", until=until.isoformat())
+    await _push_action(user_id, "notifications_sync")
+    return until
+
+
+async def resume_notifications(user_id: str) -> None:
+    from src.models.user_settings import UserSettings
+
+    settings = await UserSettings.find_one({"user_id": user_id})
+    if settings is None:
+        return
+    settings.notifications_paused_until = None
+    await settings.save()
+    await _push_action(user_id, "notifications_resumed")
+    await _push_action(user_id, "notifications_sync")

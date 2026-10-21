@@ -1,6 +1,6 @@
 from beanie import Document
 from pydantic import Field
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 
@@ -42,6 +42,7 @@ class UserSettings(Document):
         }
     )
     notification_mutes: Dict[str, bool] = Field(default_factory=dict)
+    notifications_paused_until: Optional[datetime] = None
     offline_notifications: bool = True
 
     # 🔒 Seguridad

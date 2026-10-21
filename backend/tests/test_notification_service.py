@@ -1,6 +1,6 @@
 """Tests for notification_service: emision, agrupacion bump 24h, silencios."""
 
-from datetime import time
+from datetime import datetime, time, timedelta, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -288,6 +288,27 @@ class TestShouldPush:
         )
         assert ns.should_push(s, "like", None, now=time(23, 30)) is False
         assert ns.should_push(s, "like", None, now=time(12, 0)) is True
+
+    def test_active_pause_blocks_push_except_important(self):
+        s = self.settings(
+            notifications_paused_until=datetime.utcnow() + timedelta(minutes=30)
+        )
+        assert ns.should_push(s, "like", None) is False
+        assert ns.should_push(s, "message", None) is False
+        assert ns.should_push(s, "system", {"important": True}) is True
+
+    def test_expired_pause_allows_push(self):
+        s = self.settings(
+            notifications_paused_until=datetime.utcnow() - timedelta(minutes=1)
+        )
+        assert ns.should_push(s, "like", None) is True
+
+    def test_aware_pause_blocks_push(self):
+        s = self.settings(
+            notifications_paused_until=datetime.now(timezone.utc)
+            + timedelta(minutes=30)
+        )
+        assert ns.should_push(s, "like", None) is False
 
     def test_no_settings_pushes(self):
         assert ns.should_push(None, "like", None) is True

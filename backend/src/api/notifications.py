@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from bson import ObjectId
@@ -22,12 +22,17 @@ DEFAULT_LIMIT = 20
 
 SNOOZE_VALUES = ("15m", "30m", "1h", "2h", "4h", "8h", "1d", "always")
 MAX_BULK = 100
-BULK_ACTIONS = ("archive", "unarchive", "delete", "restore")
+BULK_ACTIONS = ("archive", "unarchive", "delete", "restore", "read")
 READ_ALL_FILTERS = ("all", "social", "messages", "system")
 
 
 class SnoozeRequest(BaseModel):
     duration: str
+
+
+class PauseRequest(BaseModel):
+    duration: Optional[str] = None
+    until: Optional[datetime] = None
 
 
 class BulkRequest(BaseModel):
@@ -69,11 +74,14 @@ def decode_cursor(raw: str) -> tuple[datetime, str]:
     return datetime.fromisoformat(iso), doc_id
 
 
-async def _mute_context(user_id: str) -> tuple[Dict[str, bool], bool]:
+async def _mute_context(
+    user_id: str,
+) -> tuple[Dict[str, bool], bool, Optional[datetime]]:
     settings = await UserSettings.find_one({"user_id": user_id})
     mutes = getattr(settings, "notification_mutes", None) or {}
     master = getattr(settings, "notifications_enabled", True)
-    return mutes, master
+    paused_until = getattr(settings, "notifications_paused_until", None)
+    return mutes, master, paused_until
 
 
 async def _backfill_updated_at(user_id: str, limit: int = 500) -> int:
@@ -163,7 +171,7 @@ async def get_notifications(
             {"user_id": uid, "updated_at": {"$lt": cutoff}}
         ).delete()
 
-    mutes, master = await _mute_context(uid)
+    mutes, master, _ = await _mute_context(uid)
     if filter == "archived":
         query = ns.visible_filter(uid, archived_only=True)
     elif filter == "trash":
@@ -215,7 +223,7 @@ async def get_notifications(
 async def get_unread_count(current_user: User = Depends(get_current_user)):
     """Unread counts per bucket (visibility-aware)."""
     uid = str(current_user.id)
-    mutes, master = await _mute_context(uid)
+    mutes, master, paused_until = await _mute_context(uid)
     base = _scoped_query(uid, "all", mutes, master)
     base["is_read"] = False
 
@@ -230,12 +238,53 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
     ).count()
     survey_pending = await _survey_pending(uid)
 
-    return _compose_counts(
-        social=social,
-        messages=messages,
-        system_docs=system_docs,
-        survey_pending=survey_pending,
-    )
+    return {
+        **_compose_counts(
+            social=social,
+            messages=messages,
+            system_docs=system_docs,
+            survey_pending=survey_pending,
+        ),
+        "paused_until": paused_until.isoformat() if paused_until else None,
+    }
+
+
+def _as_utc_naive(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+@router.post("/pause")
+async def pause_notifications_route(
+    payload: PauseRequest, current_user: User = Depends(get_current_user)
+):
+    """Pause push notifications until a preset or explicit time."""
+    if payload.until is not None:
+        until = _as_utc_naive(payload.until)
+    elif payload.duration in ns.SNOOZE_DURATIONS:
+        until = datetime.utcnow() + ns.SNOOZE_DURATIONS[payload.duration]
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid pause duration",
+        )
+    if until <= datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Pause must end in the future",
+        )
+    await ns.pause_notifications(str(current_user.id), until)
+    return {"paused_until": until.isoformat()}
+
+
+@router.delete("/pause")
+async def resume_notifications_route(
+    current_user: User = Depends(get_current_user),
+):
+    """Resume push notifications immediately."""
+    await ns.resume_notifications(str(current_user.id))
+    return {"paused_until": None}
 
 
 class ReadBucketRequest(BaseModel):
@@ -279,7 +328,7 @@ async def mark_all_as_read(
     if filter == "all":
         query = {"user_id": uid, "is_read": False}
     else:
-        mutes, master = await _mute_context(uid)
+        mutes, master, _ = await _mute_context(uid)
         query = _scoped_query(uid, filter, mutes, master)
         query["is_read"] = False
     result = await Notification.find(query).update({"$set": {"is_read": True}})
@@ -314,6 +363,9 @@ async def bulk_action(
     elif payload.action == "delete":
         query["deleted_at"] = None
         changes = {"deleted_at": now}
+    elif payload.action == "read":
+        query["deleted_at"] = None
+        changes = {"is_read": True}
     else:
         query["deleted_at"] = {"$ne": None}
         changes = {"deleted_at": None}
