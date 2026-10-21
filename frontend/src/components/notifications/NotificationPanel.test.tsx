@@ -93,9 +93,10 @@ jest.mock("../../hooks/useNotifications", () => ({
 }));
 
 let enqueue: jest.Mock;
+let closeSnackbar: jest.Mock;
 
 jest.mock("notistack", () => ({
-  useSnackbar: () => ({ enqueueSnackbar: enqueue }),
+  useSnackbar: () => ({ enqueueSnackbar: enqueue, closeSnackbar }),
 }));
 
 const mockedUseRouter = useRouter as jest.Mock;
@@ -196,6 +197,7 @@ beforeEach(() => {
   onClose = jest.fn();
   hook = makeHook();
   enqueue = jest.fn();
+  closeSnackbar = jest.fn();
   mockPost.mockReset();
   mockPost.mockResolvedValue({ data: {} });
   mockedUseRouter.mockReturnValue({ push });
@@ -544,6 +546,7 @@ describe("NotificationPanel", () => {
       });
       await waitFor(() => expect(hook.markRead).toHaveBeenCalledWith("n1"));
       expect(hook.markRead).toHaveBeenCalledTimes(1);
+      expect(closeSnackbar).toHaveBeenCalledWith("quick-reply-n1");
     });
 
     it("falls back to the legacy match_id contract", async () => {
@@ -574,6 +577,7 @@ describe("NotificationPanel", () => {
 
       expect(mockPost).not.toHaveBeenCalled();
       expect(hook.markRead).not.toHaveBeenCalled();
+      expect(enqueue).not.toHaveBeenCalled();
     });
 
     it("shows an error snackbar with a working retry on failure", async () => {
@@ -691,7 +695,9 @@ describe("NotificationPanel", () => {
 
   describe("archived view", () => {
     it("restores and deletes items through the hook", async () => {
-      hook = makeHook({ items: [sampleItem("a1")] });
+      hook = makeHook({
+        items: [messageItem("a1", { conversation_id: "c1" })],
+      });
       mockedUseNotifications.mockImplementation(() => hook);
       const { unarchive, remove } = hook;
       renderPanel();
@@ -708,6 +714,9 @@ describe("NotificationPanel", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByTestId("notification-snooze-trigger"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-quick-reply"),
       ).not.toBeInTheDocument();
     });
 

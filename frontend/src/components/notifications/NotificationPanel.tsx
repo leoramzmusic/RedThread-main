@@ -57,7 +57,7 @@ const TABS = [
 export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [bumpedIds, setBumpedIds] = useState<Set<string>>(() => new Set());
@@ -187,7 +187,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
       : { match_id: matchId, content };
     try {
       await apiClient.post("/chat/send", payload);
-      await markRead(notification.id);
     } catch {
       enqueueSnackbar(t("notifications.error"), {
         key: `quick-reply-${notification.id}`,
@@ -202,7 +201,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           </Button>
         ),
       });
+      return;
     }
+    await markRead(notification.id);
+    closeSnackbar(`quick-reply-${notification.id}`);
   };
 
   const handleMenuClose = () => setMenuAnchor(null);

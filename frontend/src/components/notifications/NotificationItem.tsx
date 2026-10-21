@@ -87,7 +87,9 @@ export default function NotificationItem({
     notification.metadata?.shown_media_thumbnail_url ||
     notification.metadata?.shown_media_url;
   const canReply =
-    notification.type === "message" && !!notification.metadata?.can_reply;
+    notification.type === "message" &&
+    !!notification.metadata?.can_reply &&
+    !!onQuickReply;
   const displayName =
     notification.user?.name ?? notification.actors?.[0]?.name ?? "";
   const initial = displayName.trim().charAt(0).toUpperCase();
@@ -274,7 +276,7 @@ export default function NotificationItem({
                   aria-label={t("notifications.quickReply.send")}
                   disabled={!reply.trim()}
                   onClick={() => {
-                    onQuickReply?.(notification, reply.trim());
+                    void onQuickReply?.(notification, reply.trim());
                     setReply("");
                   }}
                 >
