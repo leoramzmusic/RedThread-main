@@ -31,7 +31,10 @@ interface NotificationItemProps {
   bumped?: boolean;
   onRead: (id: string) => void;
   onNavigate?: (notification: AppNotification) => void;
-  onQuickReply?: (notification: AppNotification, message: string) => void;
+  onQuickReply?: (
+    notification: AppNotification,
+    message: string,
+  ) => void | Promise<void>;
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
   onSnooze?: (duration: SnoozeOption) => void;

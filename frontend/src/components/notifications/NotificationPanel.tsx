@@ -35,8 +35,12 @@ import {
 import NotificationItem from "./NotificationItem";
 import NotificationSwipeable from "./NotificationSwipeable";
 import type { SnoozeOption } from "./SnoozeMenu";
-import { useNotifications } from "../../hooks/useNotifications";
+import {
+  useNotifications,
+  type AppNotification,
+} from "../../hooks/useNotifications";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import apiClient from "../../services/api";
 
 interface NotificationPanelProps {
   onClose: () => void;
@@ -169,6 +173,36 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
       return;
     }
     undo(id, t("notifications.undo.snoozed"), () => unsnooze(id));
+  };
+
+  const sendQuickReply = async (
+    notification: AppNotification,
+    content: string,
+  ) => {
+    const conversationId = notification.metadata?.conversation_id;
+    const matchId = notification.metadata?.match_id;
+    if (!conversationId && !matchId) return;
+    const payload = conversationId
+      ? { conversation_id: conversationId, content }
+      : { match_id: matchId, content };
+    try {
+      await apiClient.post("/chat/send", payload);
+      await markRead(notification.id);
+    } catch {
+      enqueueSnackbar(t("notifications.error"), {
+        key: `quick-reply-${notification.id}`,
+        variant: "error",
+        action: (
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => void sendQuickReply(notification, content)}
+          >
+            {t("notifications.retry")}
+          </Button>
+        ),
+      });
+    }
   };
 
   const handleMenuClose = () => setMenuAnchor(null);
@@ -451,6 +485,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                         bumped={bumpedIds.has(notification.id)}
                         onRead={markRead}
                         onNavigate={onClose}
+                        onQuickReply={sendQuickReply}
                         onArchive={handleArchive}
                         onDelete={handleDelete}
                         onSnooze={(duration) =>

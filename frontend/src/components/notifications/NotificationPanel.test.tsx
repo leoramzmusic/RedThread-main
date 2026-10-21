@@ -8,6 +8,12 @@ import {
 import { useRouter } from "next/router";
 import NotificationPanel from "./NotificationPanel";
 import { useNotifications } from "../../hooks/useNotifications";
+import apiClient from "../../services/api";
+
+jest.mock("../../services/api", () => ({
+  __esModule: true,
+  default: { get: jest.fn(), post: jest.fn() },
+}));
 
 const mockCopy: Record<string, string> = {
   "notifications.title": "Notificaciones",
@@ -94,6 +100,7 @@ jest.mock("notistack", () => ({
 
 const mockedUseRouter = useRouter as jest.Mock;
 const mockedUseNotifications = useNotifications as jest.Mock;
+const mockPost = apiClient.post as jest.Mock;
 
 const zeroCounts = {
   count: 0,
@@ -155,6 +162,19 @@ const sampleItem = (id: string) => ({
   metadata: {},
 });
 
+const messageItem = (id: string, metadata: Record<string, unknown>) => ({
+  ...sampleItem(id),
+  type: "message",
+  metadata: { can_reply: true, preview: "hola", ...metadata },
+});
+
+const typeAndSend = (text: string) => {
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: text } });
+  fireEvent.click(
+    screen.getByRole("button", { name: "notifications.quickReply.send" }),
+  );
+};
+
 const touchOn = (x: number, y: number) =>
   ({ touches: [{ clientX: x, clientY: y }] }) as unknown as TouchEventInit;
 
@@ -176,6 +196,8 @@ beforeEach(() => {
   onClose = jest.fn();
   hook = makeHook();
   enqueue = jest.fn();
+  mockPost.mockReset();
+  mockPost.mockResolvedValue({ data: {} });
   mockedUseRouter.mockReturnValue({ push });
   mockedUseNotifications.mockImplementation(() => hook);
 });
@@ -490,6 +512,101 @@ describe("NotificationPanel", () => {
 
       fireEvent.click(undoAction());
       expect(hook.unsnooze).toHaveBeenCalledWith("n1");
+    });
+  });
+
+  describe("quick reply", () => {
+    it("posts to chat/send and marks read only after the post resolves", async () => {
+      hook = makeHook({
+        items: [messageItem("n1", { conversation_id: "c1" })],
+      });
+      mockedUseNotifications.mockImplementation(() => hook);
+      let resolvePost!: (value: unknown) => void;
+      mockPost.mockReturnValue(
+        new Promise((resolve) => {
+          resolvePost = resolve;
+        }),
+      );
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      typeAndSend("hola");
+
+      expect(mockPost).toHaveBeenCalledWith("/chat/send", {
+        conversation_id: "c1",
+        content: "hola",
+      });
+      expect(hook.markRead).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+
+      await act(async () => {
+        resolvePost({ data: {} });
+      });
+      await waitFor(() => expect(hook.markRead).toHaveBeenCalledWith("n1"));
+      expect(hook.markRead).toHaveBeenCalledTimes(1);
+    });
+
+    it("falls back to the legacy match_id contract", async () => {
+      hook = makeHook({ items: [messageItem("n1", { match_id: "m1" })] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      typeAndSend("hola");
+
+      await waitFor(() =>
+        expect(mockPost).toHaveBeenCalledWith("/chat/send", {
+          match_id: "m1",
+          content: "hola",
+        }),
+      );
+      await waitFor(() => expect(hook.markRead).toHaveBeenCalledWith("n1"));
+    });
+
+    it("does nothing when the notification has no target", async () => {
+      hook = makeHook({ items: [messageItem("n1", {})] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      typeAndSend("hola");
+      await act(async () => {});
+
+      expect(mockPost).not.toHaveBeenCalled();
+      expect(hook.markRead).not.toHaveBeenCalled();
+    });
+
+    it("shows an error snackbar with a working retry on failure", async () => {
+      hook = makeHook({
+        items: [messageItem("n1", { conversation_id: "c1" })],
+      });
+      mockedUseNotifications.mockImplementation(() => hook);
+      mockPost.mockRejectedValueOnce(new Error("boom"));
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      typeAndSend("hola");
+
+      await waitFor(() =>
+        expect(enqueue).toHaveBeenCalledWith(
+          "No pudimos cargar tus notificaciones.",
+          expect.objectContaining({
+            variant: "error",
+            key: "quick-reply-n1",
+          }),
+        ),
+      );
+      expect(hook.markRead).not.toHaveBeenCalled();
+
+      const action = enqueue.mock.calls[0][1].action;
+      fireEvent.click(render(action).getByText("Reintentar"));
+
+      await waitFor(() => expect(mockPost).toHaveBeenCalledTimes(2));
+      expect(mockPost).toHaveBeenLastCalledWith("/chat/send", {
+        conversation_id: "c1",
+        content: "hola",
+      });
+      await waitFor(() => expect(hook.markRead).toHaveBeenCalledWith("n1"));
     });
   });
 
