@@ -243,7 +243,7 @@ async def test_unread_count_uses_scoped_queries():
         out = await api.get_unread_count(current_user=_user())
 
     assert out["count"] == 0
-    assert out["paused_until"] == paused_until.isoformat()
+    assert out["paused_until"] == f"{paused_until.isoformat()}+00:00"
     assert len(queries) == 3
     for q in queries:
         assert q["is_read"] is False
@@ -268,8 +268,9 @@ async def test_pause_accepts_preset():
         out = await api.pause_notifications_route(
             api.PauseRequest(duration="30m"), _user()
         )
-    until = datetime.fromisoformat(out["paused_until"])
+    until = datetime.fromisoformat(out["paused_until"]).replace(tzinfo=None)
     assert timedelta(minutes=29) < until - before < timedelta(minutes=31)
+    assert out["paused_until"].endswith("+00:00")
     pause.assert_awaited_once_with("u1", until)
 
 
@@ -283,7 +284,7 @@ async def test_pause_accepts_explicit_utc_time():
             api.PauseRequest(until=explicit), _user()
         )
     expected = explicit.replace(tzinfo=None)
-    assert out["paused_until"] == expected.isoformat()
+    assert out["paused_until"] == f"{expected.isoformat()}+00:00"
     pause.assert_awaited_once_with("u1", expected)
 
 

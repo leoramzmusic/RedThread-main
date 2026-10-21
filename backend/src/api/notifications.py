@@ -254,7 +254,7 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
             system_docs=system_docs,
             survey_pending=survey_pending,
         ),
-        "paused_until": paused_until.isoformat() if paused_until else None,
+        "paused_until": _iso_utc(paused_until),
         "pause_schedule": schedule,
     }
 
@@ -263,6 +263,17 @@ def _as_utc_naive(value: datetime) -> datetime:
     if value.tzinfo is None:
         return value
     return value.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def _iso_utc(value: Optional[datetime]) -> Optional[str]:
+    """Serialize a UTC datetime with an explicit offset so clients parse it right."""
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    else:
+        value = value.astimezone(timezone.utc)
+    return value.isoformat()
 
 
 @router.post("/pause")
@@ -285,7 +296,7 @@ async def pause_notifications_route(
             detail="Pause must end in the future",
         )
     await ns.pause_notifications(str(current_user.id), until)
-    return {"paused_until": until.isoformat()}
+    return {"paused_until": _iso_utc(until)}
 
 
 @router.delete("/pause")
@@ -320,7 +331,7 @@ async def create_pause_schedule_route(
     paused_until = ns.effective_pause_until(settings)
     return {
         "pause_schedule": schedule,
-        "paused_until": paused_until.isoformat() if paused_until else None,
+        "paused_until": _iso_utc(paused_until),
     }
 
 
@@ -334,7 +345,7 @@ async def delete_pause_schedule_route(
     paused_until = ns.effective_pause_until(settings)
     return {
         "pause_schedule": schedule,
-        "paused_until": paused_until.isoformat() if paused_until else None,
+        "paused_until": _iso_utc(paused_until),
     }
 
 
