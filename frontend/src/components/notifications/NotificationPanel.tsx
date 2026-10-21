@@ -108,11 +108,15 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   React.useEffect(() => {
     const previous = updatedAtRef.current;
     const changed: string[] = [];
+    const currentIds = new Set(items.map((notification) => notification.id));
     items.forEach((notification) => {
       const stamp = notification.updated_at ?? notification.created_at;
       const last = previous.get(notification.id);
       if (last !== undefined && last !== stamp) changed.push(notification.id);
       previous.set(notification.id, stamp);
+    });
+    previous.forEach((_, id) => {
+      if (!currentIds.has(id)) previous.delete(id);
     });
     if (changed.length === 0) return;
     setBumpedIds(new Set(changed));
@@ -131,9 +135,14 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     [],
   );
 
-  const undo = (message: string, action: () => Promise<void>) => {
+  const snackbarOptions = (id: string) => ({
+    key: `notification-${id}`,
+    autoHideDuration: 5000,
+  });
+
+  const undo = (id: string, message: string, action: () => Promise<void>) => {
     enqueueSnackbar(message, {
-      autoHideDuration: 5000,
+      ...snackbarOptions(id),
       action: (
         <Button color="inherit" size="small" onClick={() => void action()}>
           {t("notifications.actions.undo")}
@@ -144,17 +153,21 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
 
   const handleArchive = (id: string) => {
     void archive(id);
-    undo(t("notifications.undo.archived"), () => unarchive(id));
+    undo(id, t("notifications.undo.archived"), () => unarchive(id));
   };
 
   const handleDelete = (id: string) => {
     void remove(id);
-    undo(t("notifications.undo.deleted"), () => restore(id));
+    undo(id, t("notifications.undo.deleted"), () => restore(id));
   };
 
   const handleSnooze = (id: string, duration: SnoozeOption) => {
     void snooze(id, duration);
-    undo(t("notifications.undo.snoozed"), () => unsnooze(id));
+    if (duration === "always") {
+      enqueueSnackbar(t("notifications.undo.snoozed"), snackbarOptions(id));
+      return;
+    }
+    undo(id, t("notifications.undo.snoozed"), () => unsnooze(id));
   };
 
   const handleMenuClose = () => setMenuAnchor(null);
@@ -437,6 +450,8 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                         bumped={bumpedIds.has(notification.id)}
                         onRead={markRead}
                         onNavigate={onClose}
+                        onArchive={handleArchive}
+                        onDelete={handleDelete}
                         onSnooze={(duration) =>
                           handleSnooze(notification.id, duration)
                         }

@@ -430,6 +430,45 @@ describe("NotificationPanel", () => {
       expect(hook.restore).toHaveBeenCalledWith("n1");
     });
 
+    it("archives from the desktop hover action and dedupes by id", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      fireEvent.click(screen.getByTestId("notification-hover-archive"));
+
+      expect(hook.archive).toHaveBeenCalledWith("n1");
+      expect(hook.markRead).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación archivada",
+        expect.objectContaining({
+          autoHideDuration: 5000,
+          key: "notification-n1",
+        }),
+      );
+    });
+
+    it("snoozes for always without offering undo", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await screen.findByTestId("notification-item-n1");
+      fireEvent.click(screen.getByTestId("notification-snooze-trigger"));
+      fireEvent.click(await screen.findByTestId("snooze-option-always"));
+
+      expect(hook.snooze).toHaveBeenCalledWith("n1", "always");
+      const options = enqueue.mock.calls[0][1];
+      expect(options).toEqual({
+        autoHideDuration: 5000,
+        key: "notification-n1",
+      });
+      expect(options.action).toBeUndefined();
+      expect(hook.unsnooze).not.toHaveBeenCalled();
+    });
+
     it("snoozes from the item menu and undoes with unsnooze", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
@@ -482,6 +521,53 @@ describe("NotificationPanel", () => {
         ).not.toContain("notification-bump"),
       { timeout: 2000 },
     );
+  });
+
+  it("does not bump when a refetch returns unchanged timestamps", async () => {
+    hook = makeHook({
+      items: [{ ...sampleItem("n1"), updated_at: "2026-10-19T10:00:00Z" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    const { rerender } = renderPanel();
+
+    const initial = await screen.findByTestId("notification-item-n1");
+
+    hook = makeHook({
+      items: [{ ...sampleItem("n1"), updated_at: "2026-10-19T10:00:00Z" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    rerender(<NotificationPanel onClose={onClose} />);
+
+    const current = screen.getByTestId("notification-item-n1");
+    expect(current).toBe(initial);
+    expect(getComputedStyle(current).animation).not.toContain(
+      "notification-bump",
+    );
+  });
+
+  it("prunes bump history for items no longer present", async () => {
+    hook = makeHook({
+      items: [{ ...sampleItem("n1"), updated_at: "2026-10-19T10:00:00Z" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    const { rerender } = renderPanel();
+
+    await screen.findByTestId("notification-item-n1");
+
+    hook = makeHook({ items: [sampleItem("n2")] });
+    mockedUseNotifications.mockImplementation(() => hook);
+    rerender(<NotificationPanel onClose={onClose} />);
+    await screen.findByTestId("notification-item-n2");
+
+    hook = makeHook({
+      items: [{ ...sampleItem("n1"), updated_at: "2026-10-19T10:05:00Z" }],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    rerender(<NotificationPanel onClose={onClose} />);
+
+    expect(
+      getComputedStyle(screen.getByTestId("notification-item-n1")).animation,
+    ).not.toContain("notification-bump");
   });
 
   describe("archived view", () => {

@@ -10,10 +10,13 @@ import {
   TextField,
 } from "@mui/material";
 import {
+  ArchiveOutlined,
   ChatBubbleOutlined,
   CampaignOutlined,
+  DeleteOutlined,
   FavoriteBorder,
   MoreVert,
+  ScheduleOutlined,
   Send,
   SettingsOutlined,
 } from "@mui/icons-material";
@@ -68,6 +71,8 @@ export default function NotificationItem({
   onRead,
   onNavigate,
   onQuickReply,
+  onArchive,
+  onDelete,
   onSnooze,
 }: NotificationItemProps) {
   const { t, i18n } = useTranslation("common");
@@ -89,11 +94,17 @@ export default function NotificationItem({
     onNavigate?.(notification);
   };
 
+  const openSnoozeMenu = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setSnoozeAnchor(event.currentTarget);
+  };
+
   return (
     <ListItem
       data-testid={`notification-item-${notification.id}`}
       alignItems="flex-start"
       sx={{
+        position: "relative",
         cursor: "pointer",
         bgcolor: notification.is_read ? "transparent" : "rgba(230,57,70,0.07)",
         borderBottom: "1px solid",
@@ -103,6 +114,14 @@ export default function NotificationItem({
           : `3px solid ${liquidColors.primary}`,
         transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
         "&:hover": { bgcolor: "action.selected" },
+        "&:hover .notification-hover-actions, &:focus-within .notification-hover-actions":
+          {
+            opacity: 1,
+            pointerEvents: "auto",
+          },
+        "@media (hover: none)": {
+          ".notification-hover-actions": { display: "none" },
+        },
         animation: bumped
           ? `notification-bump ${motionTokens.durations.macro}ms ${motionTokens.easing}`
           : "none",
@@ -266,6 +285,72 @@ export default function NotificationItem({
           secondary: { component: "span" },
         }}
       />
+      {(onArchive || onDelete || onSnooze) && (
+        <Box
+          data-testid="notification-hover-actions"
+          className="notification-hover-actions"
+          onClick={(event) => event.stopPropagation()}
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 52,
+            zIndex: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 0.25,
+            p: 0.25,
+            borderRadius: "24px",
+            bgcolor: "background.paper",
+            boxShadow: 1,
+            opacity: 0,
+            pointerEvents: "none",
+            transition: `opacity ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
+          }}
+        >
+          {onArchive && (
+            <IconButton
+              data-testid="notification-hover-archive"
+              aria-label={t("notifications.actions.archive")}
+              title={t("notifications.actions.archive")}
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                onArchive(notification.id);
+              }}
+              sx={{ width: 44, height: 44 }}
+            >
+              <ArchiveOutlined fontSize="small" />
+            </IconButton>
+          )}
+          {onSnooze && (
+            <IconButton
+              data-testid="notification-hover-snooze"
+              aria-label={t("notifications.actions.snooze")}
+              title={t("notifications.actions.snooze")}
+              size="small"
+              onClick={openSnoozeMenu}
+              sx={{ width: 44, height: 44 }}
+            >
+              <ScheduleOutlined fontSize="small" />
+            </IconButton>
+          )}
+          {onDelete && (
+            <IconButton
+              data-testid="notification-hover-delete"
+              aria-label={t("notifications.actions.delete")}
+              title={t("notifications.actions.delete")}
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(notification.id);
+              }}
+              sx={{ width: 44, height: 44 }}
+            >
+              <DeleteOutlined fontSize="small" />
+            </IconButton>
+          )}
+        </Box>
+      )}
       {onSnooze && (
         <>
           <IconButton
@@ -273,11 +358,8 @@ export default function NotificationItem({
             aria-label={t("notifications.actions.snooze")}
             title={t("notifications.actions.snooze")}
             size="small"
-            onClick={(event) => {
-              event.stopPropagation();
-              setSnoozeAnchor(event.currentTarget);
-            }}
-            sx={{ alignSelf: "flex-start", ml: 0.5 }}
+            onClick={openSnoozeMenu}
+            sx={{ width: 44, height: 44, alignSelf: "flex-start", ml: 0.5 }}
           >
             <MoreVert fontSize="small" />
           </IconButton>

@@ -187,6 +187,40 @@ describe("NotificationItem", () => {
     ).toBeInTheDocument();
   });
 
+  it("exposes desktop hover actions without marking read or navigating", async () => {
+    const onRead = jest.fn();
+    const onNavigate = jest.fn();
+    const onArchive = jest.fn();
+    const onDelete = jest.fn();
+    const onSnooze = jest.fn();
+    render(
+      <NotificationItem
+        notification={base}
+        onRead={onRead}
+        onNavigate={onNavigate}
+        onArchive={onArchive}
+        onDelete={onDelete}
+        onSnooze={onSnooze}
+      />,
+    );
+
+    const toolbar = screen.getByTestId("notification-hover-actions");
+    expect(toolbar).toHaveStyle({ opacity: "0" });
+
+    fireEvent.click(screen.getByTestId("notification-hover-archive"));
+    expect(onArchive).toHaveBeenCalledWith("n1");
+
+    fireEvent.click(screen.getByTestId("notification-hover-delete"));
+    expect(onDelete).toHaveBeenCalledWith("n1");
+
+    fireEvent.click(screen.getByTestId("notification-hover-snooze"));
+    fireEvent.click(await screen.findByTestId("snooze-option-1h"));
+    expect(onSnooze).toHaveBeenCalledWith("1h");
+
+    expect(onRead).not.toHaveBeenCalled();
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
   it("snoozes from the item menu without marking read or navigating", async () => {
     const onRead = jest.fn();
     const onNavigate = jest.fn();
