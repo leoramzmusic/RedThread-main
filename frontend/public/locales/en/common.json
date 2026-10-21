@@ -1476,6 +1476,15 @@
     "expand": {
       "more": "Show more",
       "less": "Show less"
+    },
+    "settings": {
+      "title": "Mute by category",
+      "mute": {
+        "social": "Social",
+        "messages": "Messages",
+        "system": "System",
+        "promos": "Promotions"
+      }
     }
   }
 }

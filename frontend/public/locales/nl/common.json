@@ -1223,6 +1223,15 @@
     "expand": {
       "more": "Meer tonen",
       "less": "Minder tonen"
+    },
+    "settings": {
+      "title": "Dempen per categorie",
+      "mute": {
+        "social": "Sociaal",
+        "messages": "Berichten",
+        "system": "Systeem",
+        "promos": "Promoties"
+      }
     }
   }
 }

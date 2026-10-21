@@ -1182,6 +1182,15 @@
     "expand": {
       "more": "Onyesha zaidi",
       "less": "Onyesha kidogo"
+    },
+    "settings": {
+      "title": "Nyamazisha kwa kategoria",
+      "mute": {
+        "social": "Kijamii",
+        "messages": "Ujumbe",
+        "system": "Mfumo",
+        "promos": "Matangazo"
+      }
     }
   }
 }

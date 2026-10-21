@@ -1182,6 +1182,15 @@
     "expand": {
       "more": "Nuna ƙari",
       "less": "Nuna kaɗan"
+    },
+    "settings": {
+      "title": "Kashe ta rukuni",
+      "mute": {
+        "social": "Zamantakewa",
+        "messages": "Saƙonni",
+        "system": "Tsari",
+        "promos": "Tallace-tallace"
+      }
     }
   }
 }

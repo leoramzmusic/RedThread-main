@@ -5,6 +5,12 @@ const HANDLED = new Set([
   "notifications_bucket_read",
   "notifications_sync",
   "new_message",
+  "notification_archived",
+  "notification_unarchived",
+  "notification_deleted",
+  "notification_restored",
+  "notification_snoozed",
+  "notification_unsnoozed",
 ]);
 
 export function applyNotificationSocketEvent(

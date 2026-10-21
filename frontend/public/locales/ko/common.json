@@ -1221,6 +1221,15 @@
     "expand": {
       "more": "더 보기",
       "less": "접기"
+    },
+    "settings": {
+      "title": "카테고리별 음소거",
+      "mute": {
+        "social": "소셜",
+        "messages": "메시지",
+        "system": "시스템",
+        "promos": "프로모션"
+      }
     }
   }
 }

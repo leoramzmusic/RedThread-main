@@ -1182,6 +1182,15 @@
     "expand": {
       "more": "Ipakita ang higit pa",
       "less": "Ipakita ang mas kaunti"
+    },
+    "settings": {
+      "title": "Patahimikin ayon sa kategorya",
+      "mute": {
+        "social": "Sosyal",
+        "messages": "Mga Mensahe",
+        "system": "Sistema",
+        "promos": "Mga Promosyon"
+      }
     }
   }
 }

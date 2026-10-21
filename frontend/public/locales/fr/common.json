@@ -1191,6 +1191,15 @@
     "expand": {
       "more": "Afficher plus",
       "less": "Afficher moins"
+    },
+    "settings": {
+      "title": "Masquer par catégorie",
+      "mute": {
+        "social": "Social",
+        "messages": "Messages",
+        "system": "Système",
+        "promos": "Promotions"
+      }
     }
   }
 }

@@ -1181,6 +1181,15 @@
     "expand": {
       "more": "Whakaatu ētahi atu",
       "less": "Whakaatu iti ake"
+    },
+    "settings": {
+      "title": "Mukua mā te momo",
+      "mute": {
+        "social": "Pāpori",
+        "messages": "Ngā Karere",
+        "system": "Pūnaha",
+        "promos": "Ngā Whakatairanga"
+      }
     }
   }
 }

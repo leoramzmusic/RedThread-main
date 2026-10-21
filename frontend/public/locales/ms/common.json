@@ -1181,6 +1181,15 @@
     "expand": {
       "more": "Tunjuk lebih banyak",
       "less": "Tunjuk lebih sedikit"
+    },
+    "settings": {
+      "title": "Senyapkan mengikut kategori",
+      "mute": {
+        "social": "Sosial",
+        "messages": "Mesej",
+        "system": "Sistem",
+        "promos": "Promosi"
+      }
     }
   }
 }

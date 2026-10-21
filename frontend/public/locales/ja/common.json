@@ -1221,6 +1221,15 @@
     "expand": {
       "more": "さらに表示",
       "less": "表示を減らす"
+    },
+    "settings": {
+      "title": "カテゴリ別にミュート",
+      "mute": {
+        "social": "ソーシャル",
+        "messages": "メッセージ",
+        "system": "システム",
+        "promos": "プロモーション"
+      }
     }
   }
 }

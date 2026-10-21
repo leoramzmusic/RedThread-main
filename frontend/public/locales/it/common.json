@@ -1223,6 +1223,15 @@
     "expand": {
       "more": "Mostra di più",
       "less": "Mostra di meno"
+    },
+    "settings": {
+      "title": "Silenzia per categoria",
+      "mute": {
+        "social": "Social",
+        "messages": "Messaggi",
+        "system": "Sistema",
+        "promos": "Promozioni"
+      }
     }
   }
 }

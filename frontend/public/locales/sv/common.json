@@ -1223,6 +1223,15 @@
     "expand": {
       "more": "Visa mer",
       "less": "Visa mindre"
+    },
+    "settings": {
+      "title": "Tysta per kategori",
+      "mute": {
+        "social": "Socialt",
+        "messages": "Meddelanden",
+        "system": "System",
+        "promos": "Erbjudanden"
+      }
     }
   }
 }

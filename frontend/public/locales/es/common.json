@@ -1540,6 +1540,15 @@
     "expand": {
       "more": "Ver más",
       "less": "Ver menos"
+    },
+    "settings": {
+      "title": "Silenciar por categoría",
+      "mute": {
+        "social": "Social",
+        "messages": "Mensajes",
+        "system": "Sistema",
+        "promos": "Promociones"
+      }
     }
   }
 }

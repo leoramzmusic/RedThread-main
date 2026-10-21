@@ -1222,6 +1222,15 @@
     "expand": {
       "more": "显示更多",
       "less": "显示更少"
+    },
+    "settings": {
+      "title": "按类别静音",
+      "mute": {
+        "social": "社交",
+        "messages": "消息",
+        "system": "系统",
+        "promos": "促销"
+      }
     }
   }
 }
