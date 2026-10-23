@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import CareCriteriaPage from "./criteria";
+import CareCriteriaPage from "../../../pages/portal-redthread/care/criteria";
 
 const mockReplace = jest.fn();
 jest.mock("next/router", () => ({

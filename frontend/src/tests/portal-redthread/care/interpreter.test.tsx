@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import CareInterpreterPage from "./interpreter";
+import CareInterpreterPage from "../../../pages/portal-redthread/care/interpreter";
 import {
   exportPreferences,
   getPreferenceInsights,

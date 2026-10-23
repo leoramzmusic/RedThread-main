@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AdminLogin from "./login";
+import AdminLogin from "../../../pages/portal-redthread/auth/login";
 import adminApiClient from "../../../services/adminApi";
 
 jest.mock("next/router", () => ({

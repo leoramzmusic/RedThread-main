@@ -5,7 +5,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import CareEquationPage from "./equation";
+import CareEquationPage from "../../../pages/portal-redthread/care/equation";
 import {
   getActiveFormula,
   listFormulaVersions,
