@@ -1,7 +1,18 @@
 import React from "react";
-import { ListItemIcon, ListSubheader, Menu, MenuItem } from "@mui/material";
+import {
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import { PlayArrow as ResumeIcon } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
+import {
+  formatDayRange,
+  pauseDeadlineLabel,
+  type ActivePause,
+} from "./pauseTime";
 
 export const PAUSE_OPTIONS = ["15m", "30m", "1h", "2h", "8h"] as const;
 
@@ -19,6 +30,8 @@ interface PauseMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   paused: boolean;
+  activePauses: ActivePause[];
+  locale: string;
   onClose: () => void;
   onPause: (duration: PauseOption) => void;
   onPauseUntil: (until: string) => void;
@@ -34,6 +47,8 @@ export default function PauseMenu({
   anchorEl,
   open,
   paused,
+  activePauses,
+  locale,
   onClose,
   onPause,
   onPauseUntil,
@@ -59,6 +74,47 @@ export default function PauseMenu({
       <ListSubheader component="div">
         {t("notifications.pause.title", "Pausar notificaciones")}
       </ListSubheader>
+      {activePauses.length > 0 && (
+        <>
+          <ListSubheader component="div">
+            {t("notifications.pause.activePauses.title", "Pausas activas")}
+          </ListSubheader>
+          {activePauses.map((pause, index) => (
+            <MenuItem
+              key={pause.id ?? `single-${index}`}
+              data-testid="notification-active-pause-item"
+              disabled
+              sx={{
+                alignItems: "flex-start",
+                opacity: 1,
+                "&.Mui-disabled": { opacity: 1 },
+              }}
+            >
+              <ListItemText
+                primary={
+                  pause.name ||
+                  t("notifications.pause.mode.single", "Pausa única")
+                }
+                secondary={
+                  pause.kind === "recurring"
+                    ? `${formatDayRange(pause.days ?? [], locale)} · ${pause.start} → ${pause.end}`
+                    : t(
+                        "notifications.pause.activePauses.until",
+                        "Termina a las {{time}}",
+                        {
+                          time: pauseDeadlineLabel(pause.until ?? pause.end),
+                        },
+                      )
+                }
+                slotProps={{
+                  primary: { variant: "body2", color: "text.primary" },
+                  secondary: { variant: "caption", color: "text.secondary" },
+                }}
+              />
+            </MenuItem>
+          ))}
+        </>
+      )}
       {paused && (
         <MenuItem
           data-testid="notification-pause-resume"

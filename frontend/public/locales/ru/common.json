@@ -1153,12 +1153,35 @@
     "error": "Не удалось загрузить ваши уведомления.",
     "tabs": {
       "all": "Все",
+      "social": "Social",
+      "messages": "Messages",
       "likes": "Лайки",
       "chats": "Чаты",
       "system": "Система"
     },
+    "sections": {
+      "pinned": "Pinned",
+      "social": "Social",
+      "messages": "Messages",
+      "system": "System"
+    },
+    "priority": {
+      "critical": "Critical",
+      "actionRequired": "Action required",
+      "informational": "Informational",
+      "passive": "Passive",
+      "actionRequiredShort": "Action"
+    },
+    "care": {
+      "pending_one": "{{count}} CARE question pending",
+      "pending_other": "{{count}} CARE questions pending"
+    },
+    "unreadState": "Unread",
+    "filters": "Filter notifications",
     "empty": {
       "all": "Вы всё просмотрели.",
+      "social": "No social updates.",
+      "messages": "No new messages.",
       "likes": "Пока нет лайков.",
       "chats": "Нет новых сообщений.",
       "system": "Нет объявлений.",
@@ -1203,7 +1226,18 @@
       "delete": "Удалить",
       "snooze": "Отложить",
       "undo": "Отменить",
-      "markRead": "Отметить как прочитанное"
+      "markRead": "Отметить как прочитанное",
+      "more": "More actions",
+      "pin": "Pin to top",
+      "unpin": "Unpin",
+      "muteType": "Mute this type",
+      "hideForever": "Don't show again",
+      "dismiss": "Dismiss",
+      "dismissDay": "Dismiss for 24h",
+      "configure": "Configure notifications",
+      "muted": "Type muted",
+      "pinned": "Notification pinned",
+      "unpinned": "Notification unpinned"
     },
     "snooze": {
       "title": "Отложить уведомления",
@@ -1306,6 +1340,11 @@
     "trash": {
       "title": "Корзина",
       "open": "Корзина"
+    },
+    "reminder": {
+      "dismissed": "Reminder hidden for 24 hours",
+      "snoozed": "Reminder snoozed",
+      "muted": "We won't show you this reminder again"
     }
   }
 }

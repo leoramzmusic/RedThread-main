@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { useRouter } from "next/router";
 import NotificationPanel from "./NotificationPanel";
@@ -35,13 +36,43 @@ const mockCopy: Record<string, string> = {
   "notifications.settings.title": "Ajustes",
   "notifications.actions.unarchive": "Restaurar",
   "notifications.actions.delete": "Borrar",
+  "notifications.actions.archive": "Archivar",
+  "notifications.actions.snooze": "Posponer",
+  "notifications.actions.more": "Más acciones",
+  "notifications.actions.markRead": "Marcar como leída",
+  "notifications.actions.pin": "Fijar arriba",
+  "notifications.actions.unpin": "Dejar de fijar",
+  "notifications.actions.muteType": "Silenciar este tipo",
+  "notifications.actions.hideForever": "No volver a mostrar",
+  "notifications.actions.dismiss": "Descartar",
+  "notifications.actions.dismissDay": "Descartar por 24 h",
+  "notifications.actions.configure": "Configurar notificaciones",
+  "notifications.actions.muted": "Tipo silenciado",
+  "notifications.actions.pinned": "Notificación fijada",
+  "notifications.actions.unpinned": "Notificación desfijada",
+  "notifications.reminder.dismissed": "Recordatorio oculto por 24 horas",
+  "notifications.reminder.snoozed": "Recordatorio pospuesto",
+  "notifications.reminder.muted": "No volveremos a mostrarte este recordatorio",
+  "notifications.filters": "Filtrar notificaciones",
   "notifications.tabs.all": "Todo",
-  "notifications.tabs.likes": "Likes",
-  "notifications.tabs.chats": "Chats",
+  "notifications.tabs.social": "Social",
+  "notifications.tabs.messages": "Mensajes",
   "notifications.tabs.system": "Sistema",
+  "notifications.sections.pinned": "Fijadas",
+  "notifications.sections.social": "Social",
+  "notifications.sections.messages": "Mensajes",
+  "notifications.sections.system": "Sistema",
+  "notifications.priority.critical": "Crítica",
+  "notifications.priority.actionRequired": "Acción requerida",
+  "notifications.priority.informational": "Informativa",
+  "notifications.priority.passive": "Pasiva",
+  "notifications.priority.actionRequiredShort": "Acción",
+  "notifications.unreadState": "Sin leer",
+  "notifications.care.pending_one": "Te falta {{count}} pregunta de CARE",
+  "notifications.care.pending_other": "Te faltan {{count}} preguntas de CARE",
   "notifications.empty.all": "Estás al día.",
-  "notifications.empty.likes": "Sin likes por ahora.",
-  "notifications.empty.chats": "Sin mensajes nuevos.",
+  "notifications.empty.social": "Sin novedades sociales.",
+  "notifications.empty.messages": "Sin mensajes nuevos.",
   "notifications.empty.system": "Sin avisos.",
   "notifications.empty.archived": "Nada archivado.",
   "notifications.empty.trash": "La papelera está vacía.",
@@ -195,6 +226,9 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   bulkMarkRead: jest.fn(),
   snooze: jest.fn(),
   unsnooze: jest.fn(),
+  setPinned: jest.fn(),
+  dismissReminder: jest.fn(),
+  restoreReminder: jest.fn(),
   pausedUntil: null,
   pauseSchedule: [],
   pauseAllow: [],
@@ -277,6 +311,18 @@ const undoAction = () => {
   return render(action).getByText("Deshacer");
 };
 
+const enterSelection = () => {
+  fireEvent.click(screen.getByTestId("notification-menu"));
+  fireEvent.click(screen.getByTestId("notification-menu-select"));
+};
+
+const openItemActions = async (id: string) => {
+  const item = await screen.findByTestId(`notification-item-${id}`);
+  fireEvent.click(within(item).getByTestId("notification-actions-trigger"));
+  await screen.findByTestId("notification-action-read");
+  return item;
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
   push = jest.fn();
@@ -288,10 +334,19 @@ beforeEach(() => {
   mockPost.mockResolvedValue({ data: {} });
   mockedUseRouter.mockReturnValue({ push });
   mockedUseNotifications.mockImplementation(() => hook);
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    writable: true,
+    value: jest.fn(() => ({
+      matches: true,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    })),
+  });
 });
 
 describe("NotificationPanel", () => {
-  it("renders the four tabs with their unread counts", () => {
+  it("renders the four filter chips with their unread counts", () => {
     useCounts({
       count: 6,
       all: 6,
@@ -302,46 +357,96 @@ describe("NotificationPanel", () => {
     });
     renderPanel();
 
-    expect(screen.getByTestId("notification-tab-all")).toHaveTextContent(
+    expect(screen.getByTestId("notification-chip-all")).toHaveTextContent(
       "Todo",
     );
-    expect(screen.getByTestId("notification-tab-likes")).toHaveTextContent(
-      "Likes",
+    expect(screen.getByTestId("notification-chip-social")).toHaveTextContent(
+      "Social",
     );
-    expect(screen.getByTestId("notification-tab-chats")).toHaveTextContent(
-      "Chats",
+    expect(screen.getByTestId("notification-chip-messages")).toHaveTextContent(
+      "Mensajes",
     );
-    expect(screen.getByTestId("notification-tab-system")).toHaveTextContent(
+    expect(screen.getByTestId("notification-chip-system")).toHaveTextContent(
       "Sistema",
     );
-    expect(screen.getByTestId("notification-tab-all")).toHaveTextContent("6");
-    expect(screen.getByTestId("notification-tab-likes")).toHaveTextContent("3");
-    expect(screen.getByTestId("notification-tab-chats")).toHaveTextContent("2");
-    expect(screen.getByTestId("notification-tab-system")).toHaveTextContent(
+    expect(screen.getByTestId("notification-chip-all")).toHaveTextContent("6");
+    expect(screen.getByTestId("notification-chip-social")).toHaveTextContent(
+      "3",
+    );
+    expect(screen.getByTestId("notification-chip-messages")).toHaveTextContent(
+      "2",
+    );
+    expect(screen.getByTestId("notification-chip-system")).toHaveTextContent(
       "1",
     );
   });
 
-  it("only shows the text label of the active tab", () => {
+  it("omits zero count badges and keeps collapsed chip names accessible", () => {
     renderPanel();
 
-    expect(screen.getByTestId("notification-tab-label-all")).toHaveStyle({
-      opacity: "1",
-      maxWidth: "120px",
+    const social = screen.getByTestId("notification-chip-social");
+    expect(social).not.toHaveTextContent("0");
+    expect(social).toHaveAccessibleName(/Social/);
+  });
+
+  it("distributes the four filter chips across equal columns", () => {
+    renderPanel();
+
+    expect(screen.getByTestId("notification-filters")).toHaveStyle({
+      display: "grid",
+      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
     });
-    expect(screen.getByTestId("notification-tab-label-likes")).toHaveStyle({
+    ["all", "social", "messages", "system"].forEach((key) => {
+      expect(screen.getByTestId(`notification-chip-${key}`)).toHaveStyle({
+        width: "100%",
+      });
+    });
+  });
+
+  it("only shows the text label of the active chip", () => {
+    renderPanel();
+
+    expect(screen.getByTestId("notification-chip-label-all")).toHaveStyle({
+      opacity: "1",
+      maxWidth: "200px",
+    });
+    expect(screen.getByTestId("notification-chip-label-social")).toHaveStyle({
       opacity: "0",
     });
 
-    fireEvent.click(screen.getByTestId("notification-tab-chats"));
+    fireEvent.click(screen.getByTestId("notification-chip-messages"));
 
-    expect(screen.getByTestId("notification-tab-label-chats")).toHaveStyle({
+    expect(screen.getByTestId("notification-chip-label-messages")).toHaveStyle({
       opacity: "1",
-      maxWidth: "120px",
+      maxWidth: "200px",
     });
-    expect(screen.getByTestId("notification-tab-label-all")).toHaveStyle({
+    expect(screen.getByTestId("notification-chip-label-all")).toHaveStyle({
       opacity: "0",
     });
+  });
+
+  it("marks only the active filter chip as pressed", () => {
+    renderPanel();
+
+    expect(screen.getByTestId("notification-chip-all")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByTestId("notification-chip-social")).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+
+    fireEvent.click(screen.getByTestId("notification-chip-messages"));
+
+    expect(screen.getByTestId("notification-chip-messages")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByTestId("notification-chip-all")).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
   });
 
   it("requests chats with the unread flag", async () => {
@@ -350,7 +455,7 @@ describe("NotificationPanel", () => {
       unread: false,
     });
 
-    fireEvent.click(screen.getByTestId("notification-tab-chats"));
+    fireEvent.click(screen.getByTestId("notification-chip-messages"));
 
     await waitFor(() =>
       expect(mockedUseNotifications).toHaveBeenLastCalledWith("messages", {
@@ -359,24 +464,29 @@ describe("NotificationPanel", () => {
     );
   });
 
-  it("marks social seen once when Likes is opened", async () => {
+  it("marks social seen once when social is opened", async () => {
     useCounts({ count: 3, all: 3, social: 2, messages: 1 });
     renderPanel();
 
-    fireEvent.click(screen.getByTestId("notification-tab-likes"));
+    fireEvent.click(screen.getByTestId("notification-chip-social"));
     await waitFor(() => expect(hook.markBucket).toHaveBeenCalledWith("social"));
 
-    fireEvent.click(screen.getByTestId("notification-tab-all"));
-    fireEvent.click(screen.getByTestId("notification-tab-likes"));
-    await waitFor(() => expect(screen.getByTestId("notification-tab-likes")));
+    fireEvent.click(screen.getByTestId("notification-chip-all"));
+    fireEvent.click(screen.getByTestId("notification-chip-social"));
+    await waitFor(() =>
+      expect(screen.getByTestId("notification-chip-social")).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      ),
+    );
     expect(hook.markBucket).toHaveBeenCalledTimes(1);
   });
 
-  it("marks system seen once when Sistema is opened", async () => {
+  it("marks system seen once when system is opened", async () => {
     useCounts({ count: 3, all: 3, system: 2, survey_pending: 1 });
     renderPanel();
 
-    fireEvent.click(screen.getByTestId("notification-tab-system"));
+    fireEvent.click(screen.getByTestId("notification-chip-system"));
 
     await waitFor(() => expect(hook.markBucket).toHaveBeenCalledWith("system"));
     expect(hook.markBucket).toHaveBeenCalledTimes(1);
@@ -386,13 +496,13 @@ describe("NotificationPanel", () => {
     useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
     renderPanel();
 
-    fireEvent.click(screen.getByTestId("notification-tab-system"));
+    fireEvent.click(screen.getByTestId("notification-chip-system"));
     await screen.findByTestId("notification-survey-item");
 
     expect(hook.markBucket).not.toHaveBeenCalled();
   });
 
-  it("pins the survey on Todo and Sistema, and navigates from it", async () => {
+  it("pins the survey on Todo and system, and navigates from it", async () => {
     useCounts({ count: 2, all: 2, system: 2, survey_pending: 2 });
     renderPanel();
 
@@ -403,14 +513,14 @@ describe("NotificationPanel", () => {
       "Te faltan 2 preguntas",
     );
 
-    fireEvent.click(screen.getByTestId("notification-tab-likes"));
+    fireEvent.click(screen.getByTestId("notification-chip-social"));
     await waitFor(() =>
       expect(
         screen.queryByTestId("notification-survey-item"),
       ).not.toBeInTheDocument(),
     );
 
-    fireEvent.click(screen.getByTestId("notification-tab-system"));
+    fireEvent.click(screen.getByTestId("notification-chip-system"));
     const survey = await screen.findByTestId("notification-survey-item");
     fireEvent.click(survey);
 
@@ -427,12 +537,212 @@ describe("NotificationPanel", () => {
     ).toHaveTextContent("Te falta 1 pregunta");
   });
 
-  it("shows the per-tab empty state", async () => {
+  describe("CARE reminder gestures", () => {
+    it("dismisses for 24 hours on a right swipe and undoes", async () => {
+      useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
+      renderPanel();
+
+      await screen.findByTestId("notification-survey-item");
+      swipe(0, 130);
+
+      expect(hook.dismissReminder).toHaveBeenCalledWith(
+        "care_preferences",
+        "1d",
+      );
+      expect(enqueue).toHaveBeenCalledWith(
+        "Recordatorio oculto por 24 horas",
+        expect.objectContaining({
+          key: "notification-reminder-care_preferences",
+        }),
+      );
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId("notification-survey-item"),
+        ).not.toBeInTheDocument(),
+      );
+
+      fireEvent.click(undoAction());
+      expect(hook.restoreReminder).toHaveBeenCalledWith("care_preferences");
+      expect(
+        await screen.findByTestId("notification-survey-item"),
+      ).toBeInTheDocument();
+    });
+
+    it("hides forever on a long right swipe and undoes", async () => {
+      useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
+      renderPanel();
+
+      await screen.findByTestId("notification-survey-item");
+      swipe(0, 250);
+
+      expect(hook.dismissReminder).toHaveBeenCalledWith("care_preferences");
+      expect(enqueue).toHaveBeenCalledWith(
+        "No volveremos a mostrarte este recordatorio",
+        expect.objectContaining({
+          key: "notification-reminder-care_preferences",
+        }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.restoreReminder).toHaveBeenCalledWith("care_preferences");
+    });
+
+    it("snoozes the reminder from a left swipe", async () => {
+      useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
+      renderPanel();
+
+      await screen.findByTestId("notification-survey-item");
+      swipe(130, 0);
+      fireEvent.click(await screen.findByTestId("snooze-option-1h"));
+
+      expect(hook.dismissReminder).toHaveBeenCalledWith(
+        "care_preferences",
+        "1h",
+      );
+      expect(enqueue).toHaveBeenCalledWith(
+        "Recordatorio pospuesto",
+        expect.objectContaining({
+          key: "notification-reminder-care_preferences",
+        }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.restoreReminder).toHaveBeenCalledWith("care_preferences");
+    });
+
+    it("opens the reminder action menu after a hold and mutes it", async () => {
+      jest.useFakeTimers();
+      try {
+        useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
+        renderPanel();
+
+        const survey = screen.getByTestId("notification-survey-item");
+        fireEvent.pointerDown(survey, {
+          pointerType: "mouse",
+          clientX: 10,
+          clientY: 10,
+          button: 0,
+        });
+        act(() => {
+          jest.advanceTimersByTime(500);
+        });
+
+        expect(
+          screen.getByTestId("notification-action-mute"),
+        ).toHaveTextContent("No volver a mostrar");
+        expect(
+          screen.queryByTestId("notification-action-pin"),
+        ).not.toBeInTheDocument();
+        fireEvent.click(screen.getByTestId("notification-action-mute"));
+
+        expect(hook.dismissReminder).toHaveBeenCalledWith("care_preferences");
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it("dismisses for 24 hours from the reminder action menu", async () => {
+      useCounts({ count: 1, all: 1, system: 1, survey_pending: 1 });
+      renderPanel();
+
+      const survey = await screen.findByTestId("notification-survey-item");
+      fireEvent.contextMenu(survey);
+      fireEvent.click(await screen.findByTestId("notification-action-dismiss"));
+
+      expect(hook.dismissReminder).toHaveBeenCalledWith(
+        "care_preferences",
+        "1d",
+      );
+    });
+  });
+
+  it("shows the per-filter empty state", async () => {
     renderPanel();
     expect(await screen.findByText("Estás al día.")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("notification-tab-chats"));
+    fireEvent.click(screen.getByTestId("notification-chip-messages"));
     expect(await screen.findByText("Sin mensajes nuevos.")).toBeInTheDocument();
+  });
+
+  it("shows the CARE pending count in the header", () => {
+    useCounts({ count: 2, all: 2, system: 2, survey_pending: 2 });
+    renderPanel();
+
+    expect(screen.getByTestId("notification-care-pending")).toHaveTextContent(
+      "Te faltan 2 preguntas de CARE",
+    );
+  });
+
+  it("groups the inbox into collapsible sections and keeps pinned items first", async () => {
+    hook = makeHook({
+      items: [
+        { ...sampleItem("pin1"), pinned_at: "2026-01-01" },
+        { ...sampleItem("social1"), type: "like" },
+        { ...sampleItem("message1"), type: "message" },
+        { ...sampleItem("system1"), type: "promo" },
+      ],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    renderPanel();
+
+    expect(
+      await screen.findByTestId("notification-section-pinned"),
+    ).toHaveTextContent("Fijadas");
+    expect(
+      screen.getByTestId("notification-section-count-pinned"),
+    ).toHaveTextContent("1");
+    expect(screen.getByTestId("notification-section-social")).toHaveTextContent(
+      "Social",
+    );
+    expect(
+      screen.getByTestId("notification-section-count-messages"),
+    ).toHaveTextContent("1");
+    expect(
+      screen.getByTestId("notification-section-count-system"),
+    ).toHaveTextContent("1");
+
+    const systemHeader = screen.getByTestId("notification-section-system");
+    expect(systemHeader).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(systemHeader);
+
+    expect(systemHeader).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.queryByTestId("notification-item-system1"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("notification-item-social1")).toBeInTheDocument();
+  });
+
+  it("applies dense, standard and sparse metrics from the loaded count", async () => {
+    hook = makeHook({
+      items: [sampleItem("n1"), sampleItem("n2")],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    const { rerender } = renderPanel();
+
+    expect(await screen.findByTestId("notification-item-n1")).toHaveAttribute(
+      "data-density",
+      "sparse",
+    );
+
+    hook = makeHook({
+      items: [sampleItem("n1"), sampleItem("n2"), sampleItem("n3")],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    rerender(<NotificationPanel onClose={onClose} />);
+
+    expect(screen.getByTestId("notification-item-n1")).toHaveAttribute(
+      "data-density",
+      "standard",
+    );
+
+    hook = makeHook({
+      items: Array.from({ length: 13 }, (_, index) => sampleItem(`d${index}`)),
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    rerender(<NotificationPanel onClose={onClose} />);
+
+    expect(screen.getByTestId("notification-item-d0")).toHaveAttribute(
+      "data-density",
+      "dense",
+    );
   });
 
   it("shows an error state and retries", async () => {
@@ -466,7 +776,7 @@ describe("NotificationPanel", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it("offers mark all on every tab and scopes it to that tab", async () => {
+  it("keeps mark all visible and scopes it to the active filter", async () => {
     useCounts({ count: 2, all: 2, social: 1, system: 1 });
     renderPanel();
 
@@ -475,7 +785,7 @@ describe("NotificationPanel", () => {
     fireEvent.click(readAll);
     expect(hook.markAllRead).toHaveBeenCalledWith("all");
 
-    fireEvent.click(screen.getByTestId("notification-tab-chats"));
+    fireEvent.click(screen.getByTestId("notification-chip-messages"));
     await waitFor(() =>
       expect(mockedUseNotifications).toHaveBeenLastCalledWith("messages", {
         unread: true,
@@ -584,7 +894,7 @@ describe("NotificationPanel", () => {
     expect(hook.removePauseSchedule).toHaveBeenCalledWith("r1");
   });
 
-  it("shows the active pauses and lists them in a popover", () => {
+  it("lists the active pauses inside the pause menu", () => {
     hook = makeHook({
       activePauses: [
         {
@@ -601,7 +911,7 @@ describe("NotificationPanel", () => {
     mockedUseNotifications.mockImplementation(() => hook);
     renderPanel();
 
-    fireEvent.click(screen.getByTestId("notification-active-pauses"));
+    fireEvent.click(screen.getByTestId("notification-pause"));
 
     expect(
       screen.getByTestId("notification-active-pause-item"),
@@ -648,10 +958,10 @@ describe("NotificationPanel", () => {
       await openArchived();
 
       expect(
-        screen.queryByTestId("notification-tab-all"),
+        screen.queryByTestId("notification-filters"),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByTestId("notification-tab-system"),
+        screen.queryByTestId("notification-chip-all"),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByTestId("notification-mark-all"),
@@ -672,7 +982,7 @@ describe("NotificationPanel", () => {
         unread: false,
       });
       expect(
-        await screen.findByTestId("notification-tab-all"),
+        await screen.findByTestId("notification-chip-all"),
       ).toBeInTheDocument();
     });
 
@@ -690,21 +1000,22 @@ describe("NotificationPanel", () => {
   });
 
   describe("selection and bulk actions", () => {
-    it("enters selection mode on long press and toggles items", async () => {
+    it("enters selection mode from the header menu and toggles items", async () => {
       hook = makeHook({ items: [sampleItem("n1"), sampleItem("n2")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
-      const first = await screen.findByTestId("notification-item-n1");
-      fireEvent.contextMenu(first);
+      await screen.findByTestId("notification-item-n1");
+      enterSelection();
 
       expect(
         await screen.findByTestId("notification-selection-toolbar"),
-      ).toHaveTextContent("1 seleccionadas");
+      ).toHaveTextContent("0 seleccionadas");
       expect(
-        screen.queryByTestId("notification-tab-all"),
+        screen.queryByTestId("notification-filters"),
       ).not.toBeInTheDocument();
 
+      fireEvent.click(screen.getByTestId("notification-item-n1"));
       fireEvent.click(screen.getByTestId("notification-item-n2"));
       expect(
         screen.getByTestId("notification-selection-toolbar"),
@@ -715,7 +1026,8 @@ describe("NotificationPanel", () => {
       expect(
         screen.queryByTestId("notification-selection-toolbar"),
       ).not.toBeInTheDocument();
-      expect(screen.getByTestId("notification-tab-all")).toBeInTheDocument();
+      expect(screen.getByTestId("notification-filters")).toBeInTheDocument();
+      expect(screen.getByTestId("notification-chip-all")).toBeInTheDocument();
     });
 
     it("selects all and bulk-archives with undo", async () => {
@@ -723,7 +1035,8 @@ describe("NotificationPanel", () => {
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
-      fireEvent.contextMenu(await screen.findByTestId("notification-item-n1"));
+      await screen.findByTestId("notification-item-n1");
+      enterSelection();
       fireEvent.click(screen.getByTestId("notification-select-all"));
       expect(
         screen.getByTestId("notification-selection-toolbar"),
@@ -749,7 +1062,8 @@ describe("NotificationPanel", () => {
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
-      fireEvent.contextMenu(await screen.findByTestId("notification-item-n1"));
+      await screen.findByTestId("notification-item-n1");
+      enterSelection();
       fireEvent.click(screen.getByTestId("notification-select-all"));
       fireEvent.click(screen.getByTestId("notification-bulk-delete"));
 
@@ -763,7 +1077,8 @@ describe("NotificationPanel", () => {
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
-      fireEvent.contextMenu(await screen.findByTestId("notification-item-n1"));
+      await screen.findByTestId("notification-item-n1");
+      enterSelection();
       fireEvent.click(screen.getByTestId("notification-select-all"));
       fireEvent.click(screen.getByTestId("notification-bulk-mark-read"));
 
@@ -779,12 +1094,161 @@ describe("NotificationPanel", () => {
       renderPanel();
       await screen.findByTestId("notification-item-n1");
 
-      fireEvent.click(screen.getByTestId("notification-menu"));
-      fireEvent.click(screen.getByTestId("notification-menu-select"));
+      enterSelection();
 
       expect(
         screen.getByTestId("notification-selection-toolbar"),
       ).toHaveTextContent("0 seleccionadas");
+    });
+  });
+
+  describe("action menu", () => {
+    it("opens from a right click and does not enter selection", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      const item = await screen.findByTestId("notification-item-n1");
+      fireEvent.contextMenu(item);
+
+      expect(
+        await screen.findByTestId("notification-action-read"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("notification-selection-toolbar"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("opens after a 500ms hold", async () => {
+      jest.useFakeTimers();
+      try {
+        hook = makeHook({ items: [sampleItem("n1")] });
+        mockedUseNotifications.mockImplementation(() => hook);
+        renderPanel();
+
+        const item = screen.getByTestId("notification-item-n1");
+        fireEvent.pointerDown(item, {
+          pointerType: "mouse",
+          clientX: 10,
+          clientY: 10,
+          button: 0,
+        });
+        act(() => {
+          jest.advanceTimersByTime(500);
+        });
+
+        expect(
+          screen.getByTestId("notification-action-read"),
+        ).toBeInTheDocument();
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it("raises the active row and dims the rest", async () => {
+      hook = makeHook({ items: [sampleItem("n1"), sampleItem("n2")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      const first = await openItemActions("n1");
+      expect(first).toHaveAttribute("data-raised", "true");
+      expect(screen.getByTestId("notification-item-n2")).toHaveAttribute(
+        "data-dimmed",
+        "true",
+      );
+    });
+
+    it("marks as read from the action menu", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-read"));
+      expect(hook.markRead).toHaveBeenCalledWith("n1");
+    });
+
+    it("disables mark as read for an already-read notification", async () => {
+      hook = makeHook({
+        items: [{ ...sampleItem("n1"), is_read: true }],
+      });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      expect(screen.getByTestId("notification-action-read")).toHaveAttribute(
+        "aria-disabled",
+        "true",
+      );
+    });
+
+    it("pins and unpins with undo", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-pin"));
+
+      expect(hook.setPinned).toHaveBeenCalledWith("n1", true);
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación fijada",
+        expect.objectContaining({ key: "notification-pin-n1" }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.setPinned).toHaveBeenCalledWith("n1", false);
+    });
+
+    it("unpins a pinned notification", async () => {
+      hook = makeHook({
+        items: [{ ...sampleItem("n1"), pinned_at: "2026-01-01" }],
+      });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-pin"));
+      expect(hook.setPinned).toHaveBeenCalledWith("n1", false);
+    });
+
+    it("mutes the notification type", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-mute"));
+
+      expect(hook.snooze).toHaveBeenCalledWith("n1", "always");
+      expect(enqueue).toHaveBeenCalledWith(
+        "Tipo silenciado",
+        expect.objectContaining({ key: "notification-mute-n1" }),
+      );
+    });
+
+    it("dismisses from the menu and undoes with restore", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-dismiss"));
+
+      expect(hook.remove).toHaveBeenCalledWith("n1");
+      fireEvent.click(undoAction());
+      expect(hook.restore).toHaveBeenCalledWith("n1");
+    });
+
+    it("opens notification settings from the menu", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-configure"));
+
+      expect(onClose).toHaveBeenCalled();
+      expect(push).toHaveBeenCalledWith("/settings#notifications");
     });
   });
 
@@ -804,7 +1268,7 @@ describe("NotificationPanel", () => {
       );
       expect(hook.restore).toHaveBeenCalledWith("d1");
       expect(
-        screen.queryByTestId("notification-tab-all"),
+        screen.queryByTestId("notification-filters"),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByTestId("notification-mark-all"),
@@ -821,40 +1285,22 @@ describe("NotificationPanel", () => {
     });
   });
 
-  it("marks everything read globally from the menu", () => {
+  it("marks everything read globally from the header", () => {
     renderPanel();
 
-    fireEvent.click(screen.getByTestId("notification-menu"));
-    fireEvent.click(screen.getByTestId("notification-menu-mark-all"));
+    fireEvent.click(screen.getByTestId("notification-mark-all"));
 
     expect(hook.markAllRead).toHaveBeenCalledWith("all");
   });
 
   describe("gestures and undo", () => {
-    it("archives on a right swipe and undoes with unarchive", async () => {
+    it("dismisses on a right swipe and undoes with restore", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
       await screen.findByTestId("notification-item-n1");
-      swipe(0, 90);
-
-      expect(hook.archive).toHaveBeenCalledWith("n1");
-      expect(enqueue).toHaveBeenCalledWith(
-        "Notificación archivada",
-        expect.objectContaining({ autoHideDuration: 5000 }),
-      );
-      fireEvent.click(undoAction());
-      expect(hook.unarchive).toHaveBeenCalledWith("n1");
-    });
-
-    it("deletes on a left swipe and undoes with restore", async () => {
-      hook = makeHook({ items: [sampleItem("n1")] });
-      mockedUseNotifications.mockImplementation(() => hook);
-      renderPanel();
-
-      await screen.findByTestId("notification-item-n1");
-      swipe(100, 10);
+      swipe(0, 130);
 
       expect(hook.remove).toHaveBeenCalledWith("n1");
       expect(enqueue).toHaveBeenCalledWith(
@@ -865,13 +1311,35 @@ describe("NotificationPanel", () => {
       expect(hook.restore).toHaveBeenCalledWith("n1");
     });
 
-    it("archives from the desktop hover action and passes snackbar dedupe options by id", async () => {
+    it("opens the snooze menu on a left swipe and snoozes", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
       await screen.findByTestId("notification-item-n1");
-      fireEvent.click(screen.getByTestId("notification-hover-archive"));
+      swipe(130, 0);
+
+      expect(hook.snooze).not.toHaveBeenCalled();
+      fireEvent.click(await screen.findByTestId("snooze-option-1h"));
+
+      expect(hook.snooze).toHaveBeenCalledWith("n1", "1h");
+      expect(enqueue).toHaveBeenCalledWith(
+        "Notificación pospuesta",
+        expect.objectContaining({ autoHideDuration: 5000 }),
+      );
+      fireEvent.click(undoAction());
+      expect(hook.unsnooze).toHaveBeenCalledWith("n1");
+    });
+
+    it("archives from the single desktop quick action and passes snackbar dedupe options by id", async () => {
+      hook = makeHook({ items: [sampleItem("n1")] });
+      mockedUseNotifications.mockImplementation(() => hook);
+      renderPanel();
+
+      const item = await screen.findByTestId("notification-item-n1");
+      const quickAction = within(item).getByTestId("notification-quick-action");
+      expect(quickAction).toHaveAttribute("data-action", "archive");
+      fireEvent.click(quickAction);
 
       expect(hook.archive).toHaveBeenCalledWith("n1");
       expect(hook.markRead).not.toHaveBeenCalled();
@@ -886,13 +1354,13 @@ describe("NotificationPanel", () => {
       );
     });
 
-    it("snoozes until tomorrow and undoes with unsnooze", async () => {
+    it("snoozes until tomorrow from a left swipe and undoes with unsnooze", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
       await screen.findByTestId("notification-item-n1");
-      fireEvent.click(screen.getByTestId("notification-snooze-trigger"));
+      swipe(130, 0);
       fireEvent.click(await screen.findByTestId("snooze-option-1d"));
 
       expect(hook.snooze).toHaveBeenCalledWith("n1", "1d");
@@ -904,20 +1372,16 @@ describe("NotificationPanel", () => {
       expect(hook.unsnooze).toHaveBeenCalledWith("n1");
     });
 
-    it("snoozes from the item menu and undoes with unsnooze", async () => {
+    it("snoozes from the action menu and undoes with unsnooze", async () => {
       hook = makeHook({ items: [sampleItem("n1")] });
       mockedUseNotifications.mockImplementation(() => hook);
       renderPanel();
 
-      await screen.findByTestId("notification-item-n1");
-      fireEvent.click(screen.getByTestId("notification-snooze-trigger"));
+      await openItemActions("n1");
+      fireEvent.click(screen.getByTestId("notification-action-snooze"));
       fireEvent.click(await screen.findByTestId("snooze-option-1h"));
 
       expect(hook.snooze).toHaveBeenCalledWith("n1", "1h");
-      expect(enqueue).toHaveBeenCalledWith(
-        "Notificación pospuesta",
-        expect.objectContaining({ autoHideDuration: 5000 }),
-      );
       expect(hook.markRead).not.toHaveBeenCalled();
       expect(onClose).not.toHaveBeenCalled();
 
@@ -1122,7 +1586,7 @@ describe("NotificationPanel", () => {
         screen.queryByTestId("notification-swipeable"),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByTestId("notification-snooze-trigger"),
+        screen.queryByTestId("notification-actions-trigger"),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByTestId("notification-quick-reply"),

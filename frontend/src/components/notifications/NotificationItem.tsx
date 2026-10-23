@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useState, type MouseEvent } from "react";
 import {
   ListItem,
   ListItemAvatar,
@@ -12,28 +12,40 @@ import {
 } from "@mui/material";
 import {
   ArchiveOutlined,
-  ChatBubbleOutlined,
+  AssignmentOutlined,
   CampaignOutlined,
-  DeleteOutlined,
+  ChatBubbleOutlined,
+  DoneRounded,
   FavoriteBorder,
   MoreVert,
-  ScheduleOutlined,
+  PushPinOutlined,
+  SecurityOutlined,
   Send,
   SettingsOutlined,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
 import { liquidColors, motionTokens } from "../../theme/liquidGlass";
 import { buildNotificationText, formatRelativeTime } from "./notificationText";
-import SnoozeMenu, { type SnoozeOption } from "./SnoozeMenu";
+import { useHoldToAct } from "./useHoldToAct";
 import type { AppNotification } from "../../hooks/useNotifications";
+import {
+  priorityForNotification,
+  quickActionForNotification,
+  type NotificationPriority,
+} from "./notificationPriority";
+import type { NotificationDensity } from "./notificationDensity";
 
 interface NotificationItemProps {
   notification: AppNotification;
+  density?: Exclude<NotificationDensity, "empty">;
+  variant?: "inbox" | "archived" | "trash";
   bumped?: boolean;
   selected?: boolean;
   selectionMode?: boolean;
+  raised?: boolean;
+  dimmed?: boolean;
   onToggleSelect?: (id: string) => void;
-  onLongPress?: (id: string) => void;
+  onOpenActions?: (id: string, anchor: HTMLElement) => void;
   onRead: (id: string) => void;
   onNavigate?: (notification: AppNotification) => void;
   onQuickReply?: (
@@ -42,15 +54,29 @@ interface NotificationItemProps {
   ) => void | Promise<void>;
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onSnooze?: (duration: SnoozeOption) => void;
+  onSnooze?: (id: string, anchor: HTMLElement) => void;
 }
 
-const LONG_PRESS_MS = 500;
-const LONG_PRESS_TOLERANCE = 10;
-const INTERACTIVE_TARGET_SELECTOR =
-  "button, a, input, textarea, select, [role='button'], [data-no-swipe]";
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+const SIZE: Record<NotificationItemProps["density"] & string, number> = {
+  sparse: 52,
+  standard: 48,
+  dense: 40,
+};
+
+const PADDING: Record<NotificationItemProps["density"] & string, number> = {
+  sparse: 2,
+  standard: 1.75,
+  dense: 1.25,
+};
+
+const PRIORITY_LABEL: Record<NotificationPriority, string> = {
+  P0: "notifications.priority.critical",
+  P1: "notifications.priority.actionRequired",
+  P2: "notifications.priority.informational",
+  P3: "notifications.priority.passive",
+};
 
 const resolveUrl = (url?: string | null) => {
   if (!url) return undefined;
@@ -58,47 +84,62 @@ const resolveUrl = (url?: string | null) => {
   return `${API_URL}${url}`;
 };
 
-const iconFor = (type: string) => {
+function iconFor(type: string, fontSize: number) {
   if (type === "like")
     return (
-      <FavoriteBorder sx={{ color: liquidColors.primaryLight, fontSize: 16 }} />
+      <FavoriteBorder sx={{ color: liquidColors.primaryLight, fontSize }} />
     );
   if (type === "message")
-    return (
-      <ChatBubbleOutlined sx={{ color: liquidColors.accent, fontSize: 16 }} />
-    );
+    return <ChatBubbleOutlined sx={{ color: liquidColors.accent, fontSize }} />;
   if (type === "promo")
     return (
-      <CampaignOutlined sx={{ color: liquidColors.accentGold, fontSize: 16 }} />
+      <CampaignOutlined sx={{ color: liquidColors.accentGold, fontSize }} />
     );
   if (type === "match")
     return (
-      <FavoriteBorder sx={{ color: liquidColors.accentViolet, fontSize: 16 }} />
+      <FavoriteBorder sx={{ color: liquidColors.accentViolet, fontSize }} />
     );
-  return <SettingsOutlined sx={{ color: "text.secondary", fontSize: 16 }} />;
-};
+  if (type === "survey")
+    return (
+      <AssignmentOutlined sx={{ color: liquidColors.primaryLight, fontSize }} />
+    );
+  if (type === "security")
+    return <SecurityOutlined sx={{ color: liquidColors.primary, fontSize }} />;
+  return <SettingsOutlined sx={{ color: "text.secondary", fontSize }} />;
+}
+
+function iconTint(type: string) {
+  if (type === "like" || type === "security") return "rgba(230,57,70,0.12)";
+  if (type === "message") return "rgba(69,123,157,0.14)";
+  if (type === "promo") return "rgba(212,175,55,0.16)";
+  if (type === "match") return "rgba(139,92,246,0.14)";
+  if (type === "survey") return "rgba(230,57,70,0.10)";
+  return "action.hover";
+}
 
 export default function NotificationItem({
   notification,
+  density = "standard",
+  variant = "inbox",
   bumped = false,
   selected = false,
   selectionMode = false,
+  raised = false,
+  dimmed = false,
   onToggleSelect,
-  onLongPress,
+  onOpenActions,
   onRead,
   onNavigate,
   onQuickReply,
   onArchive,
-  onDelete,
-  onSnooze,
 }: NotificationItemProps) {
   const { t, i18n } = useTranslation("common");
   const [reply, setReply] = useState("");
   const [expanded, setExpanded] = useState(false);
-  const [snoozeAnchor, setSnoozeAnchor] = useState<HTMLElement | null>(null);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const longPressOrigin = useRef<{ x: number; y: number } | null>(null);
-  const suppressClick = useRef(false);
+  const { anchorRef, handlers, onClickCapture } = useHoldToAct<HTMLLIElement>({
+    disabled: selectionMode || !onOpenActions,
+    onTrigger: (anchor) => onOpenActions?.(notification.id, anchor),
+  });
   const { title, body } = buildNotificationText(notification, t, i18n.language);
   const thumb =
     notification.metadata?.shown_media_thumbnail_url ||
@@ -110,48 +151,21 @@ export default function NotificationItem({
   const displayName =
     notification.user?.name ?? notification.actors?.[0]?.name ?? "";
   const initial = displayName.trim().charAt(0).toUpperCase();
+  const hasIdentity = Boolean(thumb || notification.user?.photo || displayName);
+  const priority = priorityForNotification(notification);
+  const size = SIZE[density];
+  const densityPadding = PADDING[density];
+  const isDense = density === "dense";
+  const bodyLines = density === "dense" ? 1 : density === "sparse" ? 3 : 2;
 
-  const clearLongPress = () => {
-    if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    longPressTimer.current = null;
-    longPressOrigin.current = null;
-  };
-
-  useEffect(() => clearLongPress, []);
-
-  const beginLongPress = (x: number, y: number, target: EventTarget | null) => {
-    if (selectionMode || !onLongPress) return;
-    if (
-      target instanceof Element &&
-      target.closest(INTERACTIVE_TARGET_SELECTOR)
-    ) {
-      return;
-    }
-    clearLongPress();
-    longPressOrigin.current = { x, y };
-    longPressTimer.current = setTimeout(() => {
-      longPressTimer.current = null;
-      suppressClick.current = true;
-      onLongPress(notification.id);
-    }, LONG_PRESS_MS);
-  };
-
-  const moveLongPress = (x: number, y: number) => {
-    const origin = longPressOrigin.current;
-    if (!origin) return;
-    if (
-      Math.abs(x - origin.x) > LONG_PRESS_TOLERANCE ||
-      Math.abs(y - origin.y) > LONG_PRESS_TOLERANCE
-    ) {
-      clearLongPress();
-    }
-  };
+  const quickAction = quickActionForNotification(notification);
+  const quickActionVisible =
+    !selectionMode &&
+    variant === "inbox" &&
+    ((quickAction === "markRead" && !notification.is_read) ||
+      (quickAction === "archive" && !!onArchive));
 
   const handleClick = async () => {
-    if (suppressClick.current) {
-      suppressClick.current = false;
-      return;
-    }
     if (selectionMode) {
       onToggleSelect?.(notification.id);
       return;
@@ -160,72 +174,68 @@ export default function NotificationItem({
     onNavigate?.(notification);
   };
 
-  const handlePointerDown = (event: React.PointerEvent) => {
-    if (event.pointerType === "touch") return;
-    beginLongPress(event.clientX, event.clientY, event.target);
-  };
-
-  const handlePointerMove = (event: React.PointerEvent) => {
-    if (event.pointerType === "touch") return;
-    moveLongPress(event.clientX, event.clientY);
-  };
-
-  const handleTouchStart = (event: React.TouchEvent) => {
-    const touch = event.touches[0];
-    if (touch) beginLongPress(touch.clientX, touch.clientY, event.target);
-  };
-
-  const handleTouchMove = (event: React.TouchEvent) => {
-    const touch = event.touches[0];
-    if (touch) moveLongPress(touch.clientX, touch.clientY);
-  };
-
-  const handleContextMenu = (event: React.MouseEvent) => {
-    if (selectionMode || !onLongPress) return;
-    event.preventDefault();
-    clearLongPress();
-    suppressClick.current = true;
-    onLongPress(notification.id);
-  };
-
-  const openSnoozeMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleQuickAction = (event: MouseEvent) => {
     event.stopPropagation();
-    setSnoozeAnchor(event.currentTarget);
+    if (quickAction === "markRead") {
+      onRead(notification.id);
+      return;
+    }
+    onArchive?.(notification.id);
   };
 
   return (
     <ListItem
+      ref={anchorRef}
       data-testid={`notification-item-${notification.id}`}
+      data-density={density}
+      data-priority={priority}
+      data-variant={variant}
+      data-unread={notification.is_read ? "false" : "true"}
       data-selected={selected ? "true" : undefined}
+      data-raised={raised ? "true" : undefined}
+      data-dimmed={dimmed ? "true" : undefined}
       aria-selected={selectionMode ? selected : undefined}
+      tabIndex={selectionMode ? -1 : 0}
       alignItems="flex-start"
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={clearLongPress}
-      onPointerCancel={clearLongPress}
-      onPointerLeave={clearLongPress}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={clearLongPress}
-      onTouchCancel={clearLongPress}
-      onContextMenu={handleContextMenu}
+      {...handlers}
+      onClickCapture={onClickCapture}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        void handleClick();
+      }}
       sx={{
         position: "relative",
         cursor: "pointer",
-        py: 1.25,
-        pr: 1,
+        py: densityPadding,
+        pr: 0.5,
+        pl: 1,
+        mx: 1,
+        mb: isDense ? 0.25 : 0.75,
+        borderRadius: density === "dense" ? 14 : density === "sparse" ? 18 : 16,
+        border: "1px solid",
+        borderColor: selected ? "rgba(230,57,70,0.28)" : "divider",
+        borderInlineStart:
+          priority === "P0"
+            ? `3px solid ${liquidColors.primary}`
+            : !notification.is_read
+              ? `3px solid ${liquidColors.primary}`
+              : "3px solid transparent",
         touchAction: "pan-y",
+        WebkitTouchCallout: "none",
+        transform: raised ? "translateY(-2px) scale(1.005)" : "none",
+        boxShadow: raised ? "0 12px 30px rgba(0,0,0,0.28)" : "none",
+        filter: dimmed ? "blur(1.5px)" : "none",
+        opacity: dimmed ? 0.55 : priority === "P3" ? 0.88 : 1,
+        pointerEvents: dimmed ? "none" : undefined,
+        zIndex: raised ? 2 : "auto",
         bgcolor: selected
           ? "rgba(230,57,70,0.14)"
           : notification.is_read
             ? "transparent"
             : "rgba(230,57,70,0.07)",
-        borderBottom: "1px solid",
-        borderColor: "divider",
-        borderInlineStart: notification.is_read
-          ? "3px solid transparent"
-          : `3px solid ${liquidColors.primary}`,
-        transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
+        transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}, transform ${motionTokens.durations.micro}ms ${motionTokens.easing}, box-shadow ${motionTokens.durations.micro}ms ${motionTokens.easing}, filter ${motionTokens.durations.micro}ms ${motionTokens.easing}, opacity ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
         "&:hover": {
           bgcolor: selected ? "rgba(230,57,70,0.18)" : "action.selected",
         },
@@ -261,8 +271,12 @@ export default function NotificationItem({
           sx={{ ml: -0.5, alignSelf: "flex-start", p: 0.5 }}
         />
       )}
-      <ListItemAvatar sx={{ minWidth: 64 }}>
-        <Box sx={{ position: "relative", width: 56, height: 56 }}>
+      <ListItemAvatar sx={{ minWidth: size + 12, mt: 0.25 }}>
+        <Box
+          data-testid="notification-leading"
+          data-size={size}
+          sx={{ position: "relative", width: size, height: size }}
+        >
           {thumb ? (
             <Box
               data-testid="notification-thumb"
@@ -270,21 +284,37 @@ export default function NotificationItem({
               src={resolveUrl(thumb)}
               alt=""
               sx={{
-                width: 56,
-                height: 56,
-                borderRadius: "12px",
+                width: size,
+                height: size,
+                borderRadius: size >= 48 ? "14px" : "12px",
                 objectFit: "cover",
                 display: "block",
               }}
             />
-          ) : (
+          ) : hasIdentity ? (
             <Avatar
               alt={displayName}
               src={resolveUrl(notification.user?.photo)}
-              sx={{ width: 56, height: 56 }}
+              sx={{ width: size, height: size }}
             >
               {initial}
             </Avatar>
+          ) : (
+            <Box
+              data-testid="notification-system-icon"
+              data-icon={notification.type}
+              sx={{
+                width: size,
+                height: size,
+                borderRadius: "50%",
+                bgcolor: iconTint(notification.type),
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {iconFor(notification.type, Math.round(size * 0.44))}
+            </Box>
           )}
           {thumb && notification.user?.photo && (
             <Avatar
@@ -301,42 +331,78 @@ export default function NotificationItem({
               }}
             />
           )}
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: "-2px",
-              right: "-2px",
-              bgcolor: "background.paper",
-              borderRadius: "50%",
-              p: 0.5,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: 1,
-            }}
-          >
-            {iconFor(notification.type)}
-          </Box>
+          {hasIdentity && (
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: "-2px",
+                right: "-2px",
+                bgcolor: "background.paper",
+                borderRadius: "50%",
+                p: 0.5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: 1,
+              }}
+            >
+              {iconFor(notification.type, isDense ? 13 : 16)}
+            </Box>
+          )}
         </Box>
       </ListItemAvatar>
       <ListItemText
         primary={
-          <Typography
+          <Box
             component="span"
-            variant="subtitle2"
             sx={{
-              fontWeight: notification.is_read ? 500 : 700,
-              fontSize: "0.9375rem",
-              lineHeight: 1.35,
-              color: "text.primary",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              gap: 0.75,
+              minWidth: 0,
             }}
           >
-            {title}
-          </Typography>
+            <Typography
+              component="span"
+              variant="subtitle2"
+              sx={{
+                fontWeight: notification.is_read ? 500 : 700,
+                fontSize: isDense ? "0.875rem" : "0.9375rem",
+                lineHeight: 1.35,
+                color: "text.primary",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                minWidth: 0,
+              }}
+            >
+              {title}
+            </Typography>
+            {priority === "P1" && (
+              <Box
+                component="span"
+                data-testid="notification-priority-badge"
+                sx={{
+                  flexShrink: 0,
+                  px: 0.6,
+                  py: 0.1,
+                  borderRadius: "999px",
+                  bgcolor: "rgba(230,57,70,0.14)",
+                  color: liquidColors.primary,
+                  fontSize: "0.625rem",
+                  fontWeight: 700,
+                  lineHeight: 1.5,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {t("notifications.priority.actionRequiredShort", "Action")}
+              </Box>
+            )}
+            <Box component="span" sx={SR_ONLY}>
+              {t(PRIORITY_LABEL[priority])}
+            </Box>
+          </Box>
         }
         secondary={
           <Box component="span">
@@ -346,12 +412,12 @@ export default function NotificationItem({
                 variant="body2"
                 sx={{
                   display: "-webkit-box",
-                  WebkitLineClamp: expanded ? "unset" : 2,
+                  WebkitLineClamp: expanded ? "unset" : bodyLines,
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                   mt: 0.25,
                   color: "text.secondary",
-                  fontSize: "0.8125rem",
+                  fontSize: isDense ? "0.75rem" : "0.8125rem",
                   lineHeight: 1.45,
                 }}
               >
@@ -377,22 +443,53 @@ export default function NotificationItem({
                   : t("notifications.expand.more")}
               </Typography>
             )}
-            <Typography
-              variant="caption"
+            <Box
+              component="span"
               sx={{
                 display: "flex",
                 alignItems: "center",
                 gap: 0.75,
-                mt: 0.75,
+                mt: isDense ? 0.4 : 0.75,
                 color: "text.secondary",
                 fontSize: "0.75rem",
+                minHeight: 18,
               }}
             >
-              {formatRelativeTime(
-                notification.updated_at || notification.created_at,
-                i18n.language,
+              <Typography
+                component="span"
+                variant="caption"
+                sx={{ fontSize: "inherit", color: "inherit" }}
+              >
+                {formatRelativeTime(
+                  notification.updated_at || notification.created_at,
+                  i18n.language,
+                )}
+              </Typography>
+              {!notification.is_read && (
+                <Box
+                  component="span"
+                  data-testid="notification-unread-dot"
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    bgcolor: liquidColors.primary,
+                    flexShrink: 0,
+                  }}
+                />
               )}
-            </Typography>
+              {notification.pinned_at && (
+                <PushPinOutlined
+                  data-testid="notification-pinned"
+                  sx={{ fontSize: 14, color: "primary.main" }}
+                />
+              )}
+              {!notification.is_read && (
+                <Box component="span" sx={SR_ONLY}>
+                  {t("notifications.unreadState", "Unread")}
+                </Box>
+              )}
+            </Box>
             {canReply && !selectionMode && (
               <Box
                 data-testid="notification-quick-reply"
@@ -422,97 +519,91 @@ export default function NotificationItem({
         }
         slotProps={{
           secondary: { component: "span" },
+          primary: { component: "span" },
         }}
       />
-      {!selectionMode && (onArchive || onDelete || onSnooze) && (
+      {quickActionVisible && (
         <Box
           data-testid="notification-hover-actions"
           className="notification-hover-actions"
           onClick={(event) => event.stopPropagation()}
           sx={{
             position: "absolute",
-            top: 8,
-            right: 52,
+            top: isDense ? 2 : 4,
+            right: 50,
             zIndex: 2,
             display: "flex",
             alignItems: "center",
-            gap: 0.25,
-            p: 0.25,
-            borderRadius: "24px",
-            bgcolor: "background.paper",
-            boxShadow: 1,
             opacity: 0,
             pointerEvents: "none",
             transition: `opacity ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
           }}
         >
-          {onArchive && (
-            <IconButton
-              data-testid="notification-hover-archive"
-              aria-label={t("notifications.actions.archive")}
-              title={t("notifications.actions.archive")}
-              size="small"
-              onClick={(event) => {
-                event.stopPropagation();
-                onArchive(notification.id);
-              }}
-              sx={{ width: 44, height: 44 }}
-            >
+          <IconButton
+            data-testid="notification-quick-action"
+            data-action={quickAction}
+            aria-label={
+              quickAction === "markRead"
+                ? t("notifications.actions.markRead")
+                : t("notifications.actions.archive")
+            }
+            title={
+              quickAction === "markRead"
+                ? t("notifications.actions.markRead")
+                : t("notifications.actions.archive")
+            }
+            size="small"
+            onClick={handleQuickAction}
+            sx={{
+              width: 44,
+              height: 44,
+              bgcolor: "background.paper",
+              boxShadow: 1,
+              "&:hover": { bgcolor: "background.paper" },
+            }}
+          >
+            {quickAction === "markRead" ? (
+              <DoneRounded fontSize="small" />
+            ) : (
               <ArchiveOutlined fontSize="small" />
-            </IconButton>
-          )}
-          {onSnooze && (
-            <IconButton
-              data-testid="notification-hover-snooze"
-              aria-label={t("notifications.actions.snooze")}
-              title={t("notifications.actions.snooze")}
-              size="small"
-              onClick={openSnoozeMenu}
-              sx={{ width: 44, height: 44 }}
-            >
-              <ScheduleOutlined fontSize="small" />
-            </IconButton>
-          )}
-          {onDelete && (
-            <IconButton
-              data-testid="notification-hover-delete"
-              aria-label={t("notifications.actions.delete")}
-              title={t("notifications.actions.delete")}
-              size="small"
-              onClick={(event) => {
-                event.stopPropagation();
-                onDelete(notification.id);
-              }}
-              sx={{ width: 44, height: 44 }}
-            >
-              <DeleteOutlined fontSize="small" />
-            </IconButton>
-          )}
+            )}
+          </IconButton>
         </Box>
       )}
-      {onSnooze && !selectionMode && (
-        <>
-          <IconButton
-            data-testid="notification-snooze-trigger"
-            aria-label={t("notifications.actions.snooze")}
-            title={t("notifications.actions.snooze")}
-            size="small"
-            onClick={openSnoozeMenu}
-            sx={{ width: 44, height: 44, alignSelf: "flex-start", ml: 0.5 }}
-          >
-            <MoreVert fontSize="small" />
-          </IconButton>
-          <SnoozeMenu
-            anchorEl={snoozeAnchor}
-            open={Boolean(snoozeAnchor)}
-            onClose={() => setSnoozeAnchor(null)}
-            onSelect={(duration) => {
-              setSnoozeAnchor(null);
-              onSnooze(duration);
-            }}
-          />
-        </>
+      {onOpenActions && !selectionMode && (
+        <IconButton
+          data-testid="notification-actions-trigger"
+          aria-label={t("notifications.actions.more", "Más acciones")}
+          title={t("notifications.actions.more", "Más acciones")}
+          aria-haspopup="menu"
+          size="small"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenActions(notification.id, event.currentTarget);
+          }}
+          sx={{
+            width: 44,
+            height: 44,
+            alignSelf: "flex-start",
+            ml: 0.5,
+            mt: isDense ? -0.5 : -0.75,
+          }}
+        >
+          <MoreVert fontSize="small" />
+        </IconButton>
       )}
     </ListItem>
   );
 }
+
+const SR_ONLY = {
+  position: "absolute",
+  width: "1px",
+  height: "1px",
+  p: 0,
+  m: "-1px",
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+} as const;

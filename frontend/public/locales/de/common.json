@@ -1151,12 +1151,35 @@
     "error": "Deine Benachrichtigungen konnten nicht geladen werden.",
     "tabs": {
       "all": "Alle",
+      "social": "Social",
+      "messages": "Messages",
       "likes": "Gefällt mir",
       "chats": "Unterhaltungen",
       "system": "System"
     },
+    "sections": {
+      "pinned": "Pinned",
+      "social": "Social",
+      "messages": "Messages",
+      "system": "System"
+    },
+    "priority": {
+      "critical": "Critical",
+      "actionRequired": "Action required",
+      "informational": "Informational",
+      "passive": "Passive",
+      "actionRequiredShort": "Action"
+    },
+    "care": {
+      "pending_one": "{{count}} CARE question pending",
+      "pending_other": "{{count}} CARE questions pending"
+    },
+    "unreadState": "Unread",
+    "filters": "Filter notifications",
     "empty": {
       "all": "Du bist auf dem neuesten Stand.",
+      "social": "No social updates.",
+      "messages": "No new messages.",
       "likes": "Noch keine Gefällt-mir-Angaben.",
       "chats": "Keine neuen Nachrichten.",
       "system": "Keine Ankündigungen.",
@@ -1197,7 +1220,18 @@
       "delete": "Löschen",
       "snooze": "Zurückstellen",
       "undo": "Rückgängig",
-      "markRead": "Als gelesen markieren"
+      "markRead": "Als gelesen markieren",
+      "more": "More actions",
+      "pin": "Pin to top",
+      "unpin": "Unpin",
+      "muteType": "Mute this type",
+      "hideForever": "Don't show again",
+      "dismiss": "Dismiss",
+      "dismissDay": "Dismiss for 24h",
+      "configure": "Configure notifications",
+      "muted": "Type muted",
+      "pinned": "Notification pinned",
+      "unpinned": "Notification unpinned"
     },
     "snooze": {
       "title": "Benachrichtigungen zurückstellen",
@@ -1300,6 +1334,11 @@
     "trash": {
       "title": "Papierkorb",
       "open": "Papierkorb"
+    },
+    "reminder": {
+      "dismissed": "Reminder hidden for 24 hours",
+      "snoozed": "Reminder snoozed",
+      "muted": "We won't show you this reminder again"
     }
   }
 }

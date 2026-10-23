@@ -49,13 +49,19 @@ import Sidebar from "./Sidebar";
 import { useTranslation } from "next-i18next/pages";
 import apiClient from "../../services/api";
 import { useUI } from "../../context/UIContext";
-import { alpha, useTheme } from "@mui/material/styles";
+import {
+  alpha,
+  useTheme,
+  type SxProps,
+  type Theme,
+} from "@mui/material/styles";
 import NavLink from "./NavLink";
 import MorphToggleIcon from "../motion/MorphToggleIcon";
 import { isIconStyleId, IconStyleId } from "../motion/iconStyles";
 import { supportedLanguages } from "../../config/languages";
 import { persistLangLocal } from "../../utils/landingLanguage";
 import { applyNotificationSocketEvent } from "../../hooks/notificationSync";
+import { orbisLayer } from "../../styles/glass";
 
 const NotificationPanel = lazy(
   () => import("../notifications/NotificationPanel"),
@@ -138,6 +144,45 @@ export default function Layout({ children }: LayoutProps) {
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [lowPowerPanel, setLowPowerPanel] = useState(false);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const cores =
+        typeof navigator === "undefined"
+          ? undefined
+          : navigator.hardwareConcurrency;
+      setLowPowerPanel(typeof cores === "number" && cores > 0 && cores <= 2);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const panelSurface: SxProps<Theme> = {
+    bgcolor: lowPowerPanel
+      ? isDark
+        ? "rgba(26,27,30,0.96)"
+        : "rgba(255,255,255,0.97)"
+      : isDark
+        ? "rgba(26,27,30,0.55)"
+        : "rgba(255,255,255,0.62)",
+    ...(lowPowerPanel
+      ? {}
+      : {
+          WebkitBackdropFilter: "blur(20px) saturate(160%)",
+          backdropFilter: "blur(20px) saturate(160%)",
+        }),
+    overflow: "hidden",
+    "& > *": { position: "relative", zIndex: 1 },
+    ...(lowPowerPanel
+      ? {}
+      : {
+          "&::before": {
+            content: '""',
+            borderRadius: "inherit",
+            ...orbisLayer(isDark),
+          },
+        }),
+  };
 
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -901,6 +946,7 @@ export default function Layout({ children }: LayoutProps) {
             anchor="right"
             open={notificationOpen}
             onClose={() => setNotificationOpen(false)}
+            transitionDuration={{ enter: 280, exit: 280 }}
             elevation={0}
             // Ensure it's below AppBar if needed, or adjust
             sx={{ zIndex: (theme) => theme.zIndex.drawer }}
@@ -913,9 +959,9 @@ export default function Layout({ children }: LayoutProps) {
                   width: 400,
                   mt: { xs: "60px", sm: "72px" },
                   height: { xs: "calc(100% - 60px)", sm: "calc(100% - 72px)" },
-                  bgcolor: glassBg,
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
+                  ...panelSurface,
+                  borderTopLeftRadius: 28,
+                  borderBottomLeftRadius: 28,
                   borderInlineStart: "1px solid",
                   borderColor: "divider",
                 }, // Match fixed AppBar height + glass
@@ -935,9 +981,7 @@ export default function Layout({ children }: LayoutProps) {
               height: isTablet ? "70dvh" : "100dvh",
               maxWidth: isTablet ? 640 : "100%",
               p: 0,
-              bgcolor: glassBg,
-              backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)",
+              ...panelSurface,
             }}
           >
             <Suspense fallback={null}>

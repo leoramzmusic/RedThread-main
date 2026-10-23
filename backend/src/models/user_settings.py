@@ -42,6 +42,8 @@ class UserSettings(Document):
         }
     )
     notification_mutes: Dict[str, bool] = Field(default_factory=dict)
+    reminder_mutes: List[str] = Field(default_factory=list)
+    reminder_snoozes: Dict[str, datetime] = Field(default_factory=dict)
     notifications_paused_until: Optional[datetime] = None
     notifications_paused_from: Optional[datetime] = None
     notifications_pause_allow: List[str] = Field(default_factory=list)

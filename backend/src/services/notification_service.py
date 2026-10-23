@@ -754,6 +754,22 @@ async def restore_notification(
     return doc
 
 
+async def set_pinned(
+    notification_id: str, user_id: str, pinned: bool
+) -> Optional[Notification]:
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    doc.pinned_at = datetime.utcnow() if pinned else None
+    await doc.save()
+    await _push_action(
+        user_id,
+        "notification_pinned" if pinned else "notification_unpinned",
+        id=notification_id,
+    )
+    return doc
+
+
 async def _apply_always_mute(doc: Notification) -> None:
     from src.models.user_settings import UserSettings
 

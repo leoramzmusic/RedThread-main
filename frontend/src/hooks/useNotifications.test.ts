@@ -392,14 +392,46 @@ it("pauses until an explicit time", async () => {
   expect(result.current.pausedUntil).toBe(until);
 });
 
-it("resumes notifications", async () => {
-  del.mockResolvedValue({ data: {} });
+it("resumes notifications and rehydrates the inbox", async () => {
+  let resumed = false;
+  del.mockImplementation(async () => {
+    resumed = true;
+    return { data: {} };
+  });
+  get.mockImplementation((url: string) => {
+    if (url === "/notifications/unread-count")
+      return Promise.resolve({
+        data: resumed ? { ...counts, count: 1 } : counts,
+      });
+    return Promise.resolve({
+      data: {
+        items: resumed
+          ? [
+              {
+                id: "n1",
+                type: "like",
+                is_read: false,
+                created_at: "2026-01-01T00:00:00Z",
+              },
+            ]
+          : [],
+        next_cursor: null,
+      },
+    });
+  });
   const { result } = renderHook(() => useNotifications("all"));
   await waitFor(() => expect(result.current.loading).toBe(false));
+  get.mockClear();
 
   await act(() => result.current.resume());
 
   expect(del).toHaveBeenCalledWith("/notifications/pause");
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "all", limit: 50 },
+  });
+  expect(get).toHaveBeenCalledWith("/notifications/unread-count");
+  expect(result.current.items.map((item) => item.id)).toEqual(["n1"]);
+  expect(result.current.counts.count).toBe(1);
   expect(result.current.pausedUntil).toBeNull();
 });
 
@@ -627,4 +659,79 @@ it("keeps loading when an older response resolves before the latest one", async 
   await waitFor(() => expect(result.current.loading).toBe(false));
   expect(result.current.items).toEqual(socialItems);
   expect(result.current.nextCursor).toBe("social-cur");
+});
+
+it("sorts pinned notifications first after fetching", async () => {
+  get.mockImplementation((url: string) => {
+    if (url === "/notifications/unread-count")
+      return Promise.resolve({ data: counts });
+    return Promise.resolve({
+      data: {
+        items: [
+          { id: "new", type: "like", is_read: false, pinned_at: null },
+          {
+            id: "pinned",
+            type: "match",
+            is_read: false,
+            pinned_at: "2026-01-01",
+          },
+        ],
+      },
+    });
+  });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(result.current.items.map((item) => item.id)).toEqual([
+    "pinned",
+    "new",
+  ]);
+});
+
+it("pins a notification and refreshes", async () => {
+  post.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.setPinned("n1", true));
+  expect(post).toHaveBeenCalledWith("/notifications/n1/pin");
+  expect(get).toHaveBeenCalledWith("/notifications", {
+    params: { filter: "all", limit: 50 },
+  });
+});
+
+it("unpins a notification", async () => {
+  post.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.setPinned("n1", false));
+  expect(post).toHaveBeenCalledWith("/notifications/n1/unpin");
+});
+
+it("dismisses a reminder permanently", async () => {
+  post.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.dismissReminder("care_preferences"));
+  expect(post).toHaveBeenCalledWith(
+    "/notifications/reminders/care_preferences/dismiss",
+    {},
+  );
+});
+
+it("snoozes a reminder for a duration", async () => {
+  post.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.dismissReminder("care_preferences", "1d"));
+  expect(post).toHaveBeenCalledWith(
+    "/notifications/reminders/care_preferences/dismiss",
+    { duration: "1d" },
+  );
+});
+
+it("restores a reminder", async () => {
+  del.mockResolvedValue({ data: {} });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  await act(() => result.current.restoreReminder("care_preferences"));
+  expect(del).toHaveBeenCalledWith("/notifications/reminders/care_preferences");
 });

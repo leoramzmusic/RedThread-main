@@ -1151,12 +1151,35 @@
     "error": "Non è stato possibile caricare le tue notifiche.",
     "tabs": {
       "all": "Tutte",
+      "social": "Social",
+      "messages": "Messages",
       "likes": "Mi piace",
       "chats": "Conversazioni",
       "system": "Sistema"
     },
+    "sections": {
+      "pinned": "Pinned",
+      "social": "Social",
+      "messages": "Messages",
+      "system": "System"
+    },
+    "priority": {
+      "critical": "Critical",
+      "actionRequired": "Action required",
+      "informational": "Informational",
+      "passive": "Passive",
+      "actionRequiredShort": "Action"
+    },
+    "care": {
+      "pending_one": "{{count}} CARE question pending",
+      "pending_other": "{{count}} CARE questions pending"
+    },
+    "unreadState": "Unread",
+    "filters": "Filter notifications",
     "empty": {
       "all": "Sei al passo.",
+      "social": "No social updates.",
+      "messages": "No new messages.",
       "likes": "Nessun Mi piace per ora.",
       "chats": "Nessun nuovo messaggio.",
       "system": "Nessun avviso.",
@@ -1197,7 +1220,18 @@
       "delete": "Elimina",
       "snooze": "Posticipa",
       "undo": "Annulla",
-      "markRead": "Segna come letto"
+      "markRead": "Segna come letto",
+      "more": "More actions",
+      "pin": "Pin to top",
+      "unpin": "Unpin",
+      "muteType": "Mute this type",
+      "hideForever": "Don't show again",
+      "dismiss": "Dismiss",
+      "dismissDay": "Dismiss for 24h",
+      "configure": "Configure notifications",
+      "muted": "Type muted",
+      "pinned": "Notification pinned",
+      "unpinned": "Notification unpinned"
     },
     "snooze": {
       "title": "Posticipa notifiche",
@@ -1300,6 +1334,11 @@
     "trash": {
       "title": "Cestino",
       "open": "Cestino"
+    },
+    "reminder": {
+      "dismissed": "Reminder hidden for 24 hours",
+      "snoozed": "Reminder snoozed",
+      "muted": "We won't show you this reminder again"
     }
   }
 }

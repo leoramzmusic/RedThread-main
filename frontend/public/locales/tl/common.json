@@ -1110,12 +1110,35 @@
     "error": "Hindi namin ma-load ang iyong mga abiso.",
     "tabs": {
       "all": "Lahat",
+      "social": "Social",
+      "messages": "Messages",
       "likes": "Mga Gusto",
       "chats": "Mga Usapan",
       "system": "Sistema"
     },
+    "sections": {
+      "pinned": "Pinned",
+      "social": "Social",
+      "messages": "Messages",
+      "system": "System"
+    },
+    "priority": {
+      "critical": "Critical",
+      "actionRequired": "Action required",
+      "informational": "Informational",
+      "passive": "Passive",
+      "actionRequiredShort": "Action"
+    },
+    "care": {
+      "pending_one": "{{count}} CARE question pending",
+      "pending_other": "{{count}} CARE questions pending"
+    },
+    "unreadState": "Unread",
+    "filters": "Filter notifications",
     "empty": {
       "all": "Wala ka nang hindi pa nababasa.",
+      "social": "No social updates.",
+      "messages": "No new messages.",
       "likes": "Wala pang gusto.",
       "chats": "Walang bagong mensahe.",
       "system": "Walang mga anunsyo.",
@@ -1156,7 +1179,18 @@
       "delete": "Tanggalin",
       "snooze": "Ipagpaliban",
       "undo": "Bawiin",
-      "markRead": "Tandaan bilang nabasa"
+      "markRead": "Tandaan bilang nabasa",
+      "more": "More actions",
+      "pin": "Pin to top",
+      "unpin": "Unpin",
+      "muteType": "Mute this type",
+      "hideForever": "Don't show again",
+      "dismiss": "Dismiss",
+      "dismissDay": "Dismiss for 24h",
+      "configure": "Configure notifications",
+      "muted": "Type muted",
+      "pinned": "Notification pinned",
+      "unpinned": "Notification unpinned"
     },
     "snooze": {
       "title": "Ipagpaliban ang mga abiso",
@@ -1259,6 +1293,11 @@
     "trash": {
       "title": "Basurahan",
       "open": "Basurahan"
+    },
+    "reminder": {
+      "dismissed": "Reminder hidden for 24 hours",
+      "snoozed": "Reminder snoozed",
+      "muted": "We won't show you this reminder again"
     }
   }
 }

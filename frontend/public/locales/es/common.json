@@ -1468,12 +1468,35 @@
     "error": "No pudimos cargar tus notificaciones.",
     "tabs": {
       "all": "Todo",
+      "social": "Social",
+      "messages": "Mensajes",
       "likes": "Likes",
       "chats": "Chats",
       "system": "Sistema"
     },
+    "sections": {
+      "pinned": "Fijadas",
+      "social": "Social",
+      "messages": "Mensajes",
+      "system": "Sistema"
+    },
+    "priority": {
+      "critical": "Crítica",
+      "actionRequired": "Acción requerida",
+      "informational": "Informativa",
+      "passive": "Pasiva",
+      "actionRequiredShort": "Acción"
+    },
+    "care": {
+      "pending_one": "Te falta {{count}} pregunta de CARE",
+      "pending_other": "Te faltan {{count}} preguntas de CARE"
+    },
+    "unreadState": "Sin leer",
+    "filters": "Filtrar notificaciones",
     "empty": {
       "all": "Estás al día.",
+      "social": "Sin novedades sociales.",
+      "messages": "Sin mensajes nuevos.",
       "likes": "Sin likes por ahora.",
       "chats": "Sin mensajes nuevos.",
       "system": "Sin avisos.",
@@ -1514,7 +1537,18 @@
       "delete": "Borrar",
       "snooze": "Posponer",
       "undo": "Deshacer",
-      "markRead": "Marcar como leído"
+      "markRead": "Marcar como leído",
+      "more": "Más acciones",
+      "pin": "Fijar arriba",
+      "unpin": "Dejar de fijar",
+      "muteType": "Silenciar este tipo",
+      "hideForever": "No volver a mostrar",
+      "dismiss": "Descartar",
+      "dismissDay": "Descartar por 24 h",
+      "configure": "Configurar notificaciones",
+      "muted": "Tipo silenciado",
+      "pinned": "Notificación fijada",
+      "unpinned": "Notificación desfijada"
     },
     "snooze": {
       "title": "Posponer notificaciones",
@@ -1585,6 +1619,11 @@
       "archived": "Notificación archivada",
       "deleted": "Notificación borrada",
       "snoozed": "Notificación pospuesta"
+    },
+    "reminder": {
+      "dismissed": "Recordatorio oculto por 24 horas",
+      "snoozed": "Recordatorio pospuesto",
+      "muted": "No volveremos a mostrarte este recordatorio"
     },
     "quickReply": {
       "placeholder": "Responder…",

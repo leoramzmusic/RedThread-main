@@ -1,6 +1,6 @@
 """Tests for notifications API 2.0 (F1): buckets, counts, survey pending, sync."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -47,16 +47,76 @@ def test_compose_counts_without_survey():
     }
 
 
+def _reminder_settings(mutes=None, snoozes=None):
+    return SimpleNamespace(
+        reminder_mutes=mutes or [],
+        reminder_snoozes=snoozes or {},
+        save=AsyncMock(),
+    )
+
+
 @pytest.mark.asyncio
 async def test_survey_pending_counts_missing_dimensions():
     prefs = [SimpleNamespace(dimension="a"), SimpleNamespace(dimension="b")]
+    settings = _reminder_settings()
     with patch(
         "src.care.preferences.service.list_user_preferences",
         new=AsyncMock(return_value=prefs),
     ), patch(
         "src.care.preferences.service.CARE_DIMENSION_KEYS", ("a", "b", "c", "d")
+    ), patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
     ):
         assert await api._survey_pending("u1") == 2
+
+
+@pytest.mark.asyncio
+async def test_survey_pending_hidden_by_forever_reminder_mute():
+    settings = _reminder_settings(mutes=["care_preferences"])
+    prefs = [SimpleNamespace(dimension="a")]
+    with patch(
+        "src.care.preferences.service.list_user_preferences",
+        new=AsyncMock(return_value=prefs),
+    ), patch(
+        "src.care.preferences.service.CARE_DIMENSION_KEYS", ("a", "b")
+    ), patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ):
+        assert await api._survey_pending("u1") == 0
+
+
+@pytest.mark.asyncio
+async def test_survey_pending_hidden_by_active_reminder_snooze():
+    settings = _reminder_settings(
+        snoozes={"care_preferences": datetime.utcnow() + timedelta(hours=1)}
+    )
+    prefs = [SimpleNamespace(dimension="a")]
+    with patch(
+        "src.care.preferences.service.list_user_preferences",
+        new=AsyncMock(return_value=prefs),
+    ), patch(
+        "src.care.preferences.service.CARE_DIMENSION_KEYS", ("a", "b")
+    ), patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ):
+        assert await api._survey_pending("u1") == 0
+
+
+@pytest.mark.asyncio
+async def test_survey_pending_returns_after_reminder_snooze_expires():
+    settings = _reminder_settings(
+        snoozes={"care_preferences": datetime.utcnow() - timedelta(minutes=1)}
+    )
+    prefs = [SimpleNamespace(dimension="a")]
+    with patch(
+        "src.care.preferences.service.list_user_preferences",
+        new=AsyncMock(return_value=prefs),
+    ), patch(
+        "src.care.preferences.service.CARE_DIMENSION_KEYS", ("a", "b")
+    ), patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ):
+        assert await api._survey_pending("u1") == 1
 
 
 @pytest.mark.asyncio
@@ -66,6 +126,21 @@ async def test_survey_pending_failure_returns_zero():
         new=AsyncMock(side_effect=RuntimeError("db down")),
     ):
         assert await api._survey_pending("u1") == 0
+
+
+def test_pinned_first_keeps_updated_order_within_groups():
+    now = datetime.utcnow()
+    newest = SimpleNamespace(id="newest", pinned_at=None, updated_at=now)
+    pinned = SimpleNamespace(
+        id="pinned", pinned_at=now - timedelta(days=1), updated_at=now - timedelta(days=2)
+    )
+    oldest = SimpleNamespace(
+        id="oldest", pinned_at=None, updated_at=now - timedelta(days=3)
+    )
+
+    ordered = api._pinned_first([newest, pinned, oldest])
+
+    assert [doc.id for doc in ordered] == ["pinned", "newest", "oldest"]
 
 
 @pytest.mark.asyncio

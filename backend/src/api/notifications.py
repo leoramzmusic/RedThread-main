@@ -21,6 +21,8 @@ MAX_LIMIT = 50
 DEFAULT_LIMIT = 20
 
 SNOOZE_VALUES = ("15m", "30m", "1h", "2h", "4h", "8h", "1d", "always")
+REMINDER_KEYS = ("care_preferences",)
+REMINDER_SNOOZE_VALUES = tuple(v for v in SNOOZE_VALUES if v != "always")
 MAX_BULK = 100
 BULK_ACTIONS = ("archive", "unarchive", "delete", "restore", "read")
 READ_ALL_FILTERS = ("all", "social", "messages", "system")
@@ -28,6 +30,10 @@ READ_ALL_FILTERS = ("all", "social", "messages", "system")
 
 class SnoozeRequest(BaseModel):
     duration: str
+
+
+class ReminderDismissRequest(BaseModel):
+    duration: Optional[str] = None
 
 
 class PauseRequest(BaseModel):
@@ -88,6 +94,12 @@ def encode_cursor(updated_at: datetime, doc_id: str) -> str:
 def decode_cursor(raw: str) -> tuple[datetime, str]:
     iso, _, doc_id = raw.partition("|")
     return datetime.fromisoformat(iso), doc_id
+
+
+def _pinned_first(docs: list) -> list:
+    ordered = sorted(docs, key=lambda d: d.updated_at or datetime.min, reverse=True)
+    ordered.sort(key=lambda d: d.pinned_at is not None, reverse=True)
+    return ordered
 
 
 async def _notification_settings(user_id: str) -> Dict[str, Any]:
@@ -173,6 +185,20 @@ def _compose_counts(
 
 async def _survey_pending(user_id: str) -> int:
     try:
+        settings = await UserSettings.find_one({"user_id": user_id})
+        if settings is not None:
+            mutes = getattr(settings, "reminder_mutes", None) or []
+            if "care_preferences" in mutes:
+                return 0
+            until = (getattr(settings, "reminder_snoozes", None) or {}).get(
+                "care_preferences"
+            )
+            if until is not None and until > datetime.utcnow():
+                return 0
+    except Exception:
+        pass
+
+    try:
         from src.care.preferences.service import (
             CARE_DIMENSION_KEYS,
             list_user_preferences,
@@ -252,6 +278,12 @@ async def get_notifications(
     has_more = len(docs) > limit
     docs = docs[:limit]
 
+    next_cursor = None
+    if has_more and docs:
+        last = docs[-1]
+        next_cursor = encode_cursor(last.updated_at, str(last.id))
+
+    docs = _pinned_first(docs)
     related_ids = list({d.related_user_id for d in docs if d.related_user_id})
     profiles = (
         await Profile.find({"user_id": {"$in": related_ids}}).to_list()
@@ -261,11 +293,6 @@ async def get_notifications(
     by_user = {p.user_id: p for p in profiles}
 
     items = [_serialize_item(doc, by_user.get(doc.related_user_id)) for doc in docs]
-
-    next_cursor = None
-    if has_more and docs:
-        last = docs[-1]
-        next_cursor = encode_cursor(last.updated_at, str(last.id))
 
     return {"items": items, "next_cursor": next_cursor}
 
@@ -557,6 +584,113 @@ async def post_system_notification(
             bool((payload.metadata or {}).get("important")),
         )
     }
+
+
+async def _reminder_settings(user_id: str) -> UserSettings:
+    settings = await UserSettings.find_one({"user_id": user_id})
+    if settings is None:
+        settings = UserSettings(user_id=user_id)
+        await settings.insert()
+    return settings
+
+
+def _validate_reminder_key(reminder_key: str) -> None:
+    if reminder_key not in REMINDER_KEYS:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Reminder not found",
+        )
+
+
+@router.post("/reminders/{reminder_key}/dismiss")
+async def dismiss_reminder_route(
+    reminder_key: str,
+    payload: ReminderDismissRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Hide a reminder for a duration or until the user re-enables it."""
+    _validate_reminder_key(reminder_key)
+    if (
+        payload.duration is not None
+        and payload.duration not in REMINDER_SNOOZE_VALUES
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid duration",
+        )
+
+    user_id = str(current_user.id)
+    settings = await _reminder_settings(user_id)
+    mutes = [key for key in (settings.reminder_mutes or []) if key != reminder_key]
+    snoozes = dict(settings.reminder_snoozes or {})
+    snoozes.pop(reminder_key, None)
+
+    if payload.duration is None:
+        mutes.append(reminder_key)
+    else:
+        snoozes[reminder_key] = (
+            datetime.utcnow() + ns.SNOOZE_DURATIONS[payload.duration]
+        )
+
+    settings.reminder_mutes = mutes
+    settings.reminder_snoozes = snoozes
+    settings.updated_at = datetime.utcnow()
+    await settings.save()
+    await manager.send_personal_message(
+        user_id,
+        {
+            "action": "reminder_dismissed",
+            "key": reminder_key,
+            "forever": payload.duration is None,
+        },
+    )
+    await manager.send_personal_message(user_id, {"action": "notifications_sync"})
+    return {"ok": True}
+
+
+@router.delete("/reminders/{reminder_key}")
+async def restore_reminder_route(
+    reminder_key: str, current_user: User = Depends(get_current_user)
+):
+    """Undo a reminder dismissal or snooze."""
+    _validate_reminder_key(reminder_key)
+    user_id = str(current_user.id)
+    settings = await _reminder_settings(user_id)
+    settings.reminder_mutes = [
+        key for key in (settings.reminder_mutes or []) if key != reminder_key
+    ]
+    snoozes = dict(settings.reminder_snoozes or {})
+    snoozes.pop(reminder_key, None)
+    settings.reminder_snoozes = snoozes
+    settings.updated_at = datetime.utcnow()
+    await settings.save()
+    await manager.send_personal_message(
+        user_id, {"action": "reminder_restored", "key": reminder_key}
+    )
+    await manager.send_personal_message(user_id, {"action": "notifications_sync"})
+    return {"ok": True}
+
+
+@router.post("/{notification_id}/pin")
+async def pin_notification_route(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Pin a notification to the top of the inbox."""
+    _validate_notification_id(notification_id)
+    doc = await ns.set_pinned(notification_id, str(current_user.id), True)
+    _require_item(doc)
+    return {"ok": True}
+
+
+@router.post("/{notification_id}/unpin")
+async def unpin_notification_route(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
+    """Remove a notification pin."""
+    _validate_notification_id(notification_id)
+    doc = await ns.set_pinned(notification_id, str(current_user.id), False)
+    _require_item(doc)
+    return {"ok": True}
 
 
 @router.post("/{notification_id}/archive")

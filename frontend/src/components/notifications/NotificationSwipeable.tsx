@@ -1,8 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import DeleteOutline from "@mui/icons-material/DeleteOutlineRounded";
+import ScheduleOutlined from "@mui/icons-material/ScheduleOutlined";
+import Block from "@mui/icons-material/Block";
 import { motionTokens } from "../../theme/liquidGlass";
 
-const THRESHOLD = 72;
+const THRESHOLD = 120;
+const LONG_THRESHOLD = 240;
+const EXIT_MS = 140;
 const MOVE_TOLERANCE = 6;
 const CAPTURE_TOLERANCE = 8;
 const INTERACTIVE_TARGET_SELECTOR =
@@ -10,8 +16,11 @@ const INTERACTIVE_TARGET_SELECTOR =
 
 interface NotificationSwipeableProps {
   children: React.ReactNode;
-  onArchive?: () => void;
-  onDelete?: () => void;
+  disabled?: boolean;
+  allowInteractive?: boolean;
+  onDismiss?: () => void;
+  onDismissForever?: () => void;
+  onSnooze?: (anchor: HTMLElement) => void;
 }
 
 const isInteractiveTarget = (target: EventTarget | null) => {
@@ -19,13 +28,21 @@ const isInteractiveTarget = (target: EventTarget | null) => {
   return target.closest(INTERACTIVE_TARGET_SELECTOR) !== null;
 };
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
 export default function NotificationSwipeable({
   children,
-  onArchive,
-  onDelete,
+  disabled = false,
+  allowInteractive = false,
+  onDismiss,
+  onDismissForever,
+  onSnooze,
 }: NotificationSwipeableProps) {
   const [dx, setDx] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [exiting, setExiting] = useState(false);
   const startX = useRef(0);
   const startY = useRef(0);
   const latestDx = useRef(0);
@@ -36,7 +53,18 @@ export default function NotificationSwipeable({
   const captureEligible = useRef(false);
   const captured = useRef(false);
   const suppressClick = useRef(false);
+  const exitingRef = useRef(false);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticFired = useRef(false);
+  const inputType = useRef<"mouse" | "touch" | "pen">("mouse");
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(
+    () => () => {
+      if (exitTimer.current) clearTimeout(exitTimer.current);
+    },
+    [],
+  );
 
   const releaseCapture = () => {
     const element = containerRef.current;
@@ -60,18 +88,56 @@ export default function NotificationSwipeable({
     movedRef.current = false;
     activePointer.current = null;
     captureEligible.current = false;
+    hapticFired.current = false;
+    exitingRef.current = false;
     suppressClick.current = keepClickSuppression && wasMoved;
     setDx(0);
     setDragging(false);
+    setExiting(false);
   };
 
-  const start = (x: number, y: number) => {
+  const finish = (direction: 1 | -1, action?: () => void) => {
+    if (!action) return;
+    if (prefersReducedMotion() || !containerRef.current) {
+      action();
+      return;
+    }
+    exitingRef.current = true;
+    setExiting(true);
+    const distance = (containerRef.current.offsetWidth || 320) + 48;
+    latestDx.current = direction * distance;
+    setDx(direction * distance);
+    exitTimer.current = setTimeout(() => {
+      exitTimer.current = null;
+      reset();
+      action();
+    }, EXIT_MS);
+  };
+
+  const triggerHaptic = (value: number) => {
+    if (
+      hapticFired.current ||
+      Math.abs(value) < THRESHOLD ||
+      inputType.current === "mouse"
+    ) {
+      return;
+    }
+    hapticFired.current = true;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(12);
+    }
+  };
+
+  const start = (x: number, y: number, type: "mouse" | "touch" | "pen") => {
+    if (disabled || exitingRef.current) return;
+    inputType.current = type;
     startX.current = x;
     startY.current = y;
     latestDx.current = 0;
     draggingRef.current = true;
     locked.current = false;
     movedRef.current = false;
+    hapticFired.current = false;
     suppressClick.current = false;
     setDx(0);
     setDragging(true);
@@ -95,32 +161,47 @@ export default function NotificationSwipeable({
     }
     latestDx.current = deltaX;
     setDx(deltaX);
+    triggerHaptic(deltaX);
   };
 
   const end = () => {
+    if (exitingRef.current) return;
     const value = latestDx.current;
     reset(true);
-    if (value >= THRESHOLD) onArchive?.();
-    else if (value <= -THRESHOLD) onDelete?.();
+    if (disabled) return;
+    if (value >= LONG_THRESHOLD && onDismissForever) {
+      finish(1, onDismissForever);
+    } else if (value >= THRESHOLD) {
+      finish(1, onDismiss);
+    } else if (value <= -THRESHOLD && containerRef.current) {
+      onSnooze?.(containerRef.current);
+    }
   };
 
   const touchStart = (event: React.TouchEvent) => {
-    start(event.touches[0].clientX, event.touches[0].clientY);
+    if (!allowInteractive && isInteractiveTarget(event.target)) return;
+    const touch = event.touches[0];
+    if (touch) start(touch.clientX, touch.clientY, "touch");
   };
 
   const touchMove = (event: React.TouchEvent) => {
-    move(event.touches[0].clientX, event.touches[0].clientY);
+    const touch = event.touches[0];
+    if (touch) move(touch.clientX, touch.clientY);
   };
 
   const pointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch" || event.button > 0) return;
-    if (isInteractiveTarget(event.target)) {
+    if (!allowInteractive && isInteractiveTarget(event.target)) {
       captureEligible.current = false;
       return;
     }
     captureEligible.current = true;
     activePointer.current = event.pointerId;
-    start(event.clientX, event.clientY);
+    start(
+      event.clientX,
+      event.clientY,
+      event.pointerType === "pen" ? "pen" : "mouse",
+    );
   };
 
   const pointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -171,10 +252,23 @@ export default function NotificationSwipeable({
     event.stopPropagation();
   };
 
+  const progress = Math.min(Math.abs(dx) / THRESHOLD, 1);
+  const longProgress = Math.min(
+    Math.max((dx - THRESHOLD) / (LONG_THRESHOLD - THRESHOLD), 0),
+    1,
+  );
+  const isRight = dx > 0;
+  const isForever =
+    isRight && dx >= LONG_THRESHOLD && Boolean(onDismissForever);
+
   return (
     <Box
       ref={containerRef}
       data-testid="notification-swipeable"
+      data-direction={dx > 0 ? "right" : dx < 0 ? "left" : "idle"}
+      data-progress={progress.toFixed(2)}
+      data-armed={progress >= 1}
+      data-forever={isForever}
       sx={{
         position: "relative",
         overflow: "hidden",
@@ -198,20 +292,64 @@ export default function NotificationSwipeable({
           alignItems: "center",
           justifyContent: "space-between",
           px: 2,
-          color: "text.secondary",
+          bgcolor: (theme) =>
+            alpha(
+              isRight
+                ? isForever
+                  ? theme.palette.error.dark
+                  : theme.palette.error.main
+                : theme.palette.info.main,
+              0.12 + 0.78 * progress,
+            ),
+          transition: exiting
+            ? `background-color ${EXIT_MS}ms ${motionTokens.easing}`
+            : `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
+          "@media (prefers-reduced-motion: reduce)": { transition: "none" },
         }}
       >
-        <span aria-hidden="true">↩</span>
-        <span aria-hidden="true">🗑</span>
+        <Box sx={{ position: "relative", width: 32, height: 32 }}>
+          <DeleteOutline
+            data-testid="notification-swipe-dismiss"
+            sx={{
+              position: "absolute",
+              inset: 0,
+              color: "common.white",
+              opacity: isRight ? progress * (1 - longProgress) : 0,
+              transform: `scale(${0.8 + 0.4 * progress})`,
+            }}
+          />
+          <Block
+            data-testid="notification-swipe-forever"
+            sx={{
+              position: "absolute",
+              inset: 0,
+              color: "common.white",
+              opacity: isRight ? longProgress : 0,
+              transform: `scale(${0.8 + 0.4 * longProgress})`,
+            }}
+          />
+        </Box>
+        <ScheduleOutlined
+          data-testid="notification-swipe-snooze"
+          sx={{
+            color: "common.white",
+            opacity: isRight ? 0 : progress,
+            transform: `scale(${0.8 + 0.4 * progress})`,
+          }}
+        />
       </Box>
       <Box
         sx={{
           position: "relative",
           transform: `translateX(${dx}px)`,
-          transition: dragging
-            ? "none"
-            : `transform ${motionTokens.durations.normal}ms ${motionTokens.easing}`,
+          transition: exiting
+            ? `transform ${EXIT_MS}ms cubic-bezier(0.4, 0, 1, 1)`
+            : dragging
+              ? "none"
+              : `transform ${motionTokens.durations.normal}ms ${motionTokens.easing}`,
           bgcolor: "background.paper",
+          userSelect: dragging ? "none" : undefined,
+          willChange: dragging || exiting ? "transform" : undefined,
           "@media (prefers-reduced-motion: reduce)": {
             transition: "none",
           },

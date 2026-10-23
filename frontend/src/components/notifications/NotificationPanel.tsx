@@ -5,20 +5,17 @@ import { useSnackbar } from "notistack";
 import {
   Box,
   Typography,
-  Tabs,
-  Tab,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   IconButton,
   Button,
+  Chip,
   Menu,
   MenuItem,
   Skeleton,
   Fade,
-  Chip,
-  Popover,
 } from "@mui/material";
 import {
   Assignment as SurveyIcon,
@@ -37,33 +34,35 @@ import {
   SelectAllOutlined as SelectAllIcon,
   NotificationsPausedOutlined as PausedIcon,
   ScheduleOutlined as ScheduleIcon,
+  ExpandMoreRounded as ExpandIcon,
 } from "@mui/icons-material";
 import NotificationItem from "./NotificationItem";
 import NotificationSwipeable from "./NotificationSwipeable";
+import NotificationActionsMenu from "./NotificationActionsMenu";
+import SnoozeMenu, { type SnoozeOption } from "./SnoozeMenu";
 import PauseMenu from "./PauseMenu";
 import PauseScheduleDialog from "./PauseScheduleDialog";
-import {
-  formatDayRange,
-  pauseDeadlineLabel,
-  pauseRemaining,
-} from "./pauseTime";
-import type { SnoozeOption } from "./SnoozeMenu";
+import { pauseDeadlineLabel, pauseRemaining } from "./pauseTime";
+import { useHoldToAct } from "./useHoldToAct";
 import {
   useNotifications,
   type AppNotification,
 } from "../../hooks/useNotifications";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import apiClient from "../../services/api";
+import { categoryForType } from "./notificationCategory";
+import { densityForCount } from "./notificationDensity";
 
 interface NotificationPanelProps {
   onClose: () => void;
 }
 
-const FILTERS = ["all", "social", "messages", "system"] as const;
-const TABS = [
+const SECTIONS = ["social", "messages", "system"] as const;
+const REMINDER_KEY = "care_preferences";
+const FILTER_META = [
   { key: "all", icon: InboxIcon },
-  { key: "likes", icon: LikeIcon },
-  { key: "chats", icon: ChatIcon },
+  { key: "social", icon: LikeIcon },
+  { key: "messages", icon: ChatIcon },
   { key: "system", icon: SystemIcon },
 ] as const;
 
@@ -74,7 +73,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [pauseAnchor, setPauseAnchor] = useState<null | HTMLElement>(null);
-  const [activeAnchor, setActiveAnchor] = useState<null | HTMLElement>(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [clock, setClock] = useState(() => Date.now());
   const [selectionMode, setSelectionMode] = useState(false);
@@ -83,6 +81,22 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   );
   const [bumpedIds, setBumpedIds] = useState<Set<string>>(() => new Set());
   const [bumpSeq, setBumpSeq] = useState(0);
+  const [actionTarget, setActionTarget] = useState<null | {
+    anchor: HTMLElement;
+    notification: AppNotification | null;
+    reminderKey?: string;
+  }>(null);
+  const [snoozeTarget, setSnoozeTarget] = useState<null | {
+    anchor: HTMLElement;
+    notificationId?: string;
+    reminderKey?: string;
+  }>(null);
+  const [hiddenReminders, setHiddenReminders] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    () => new Set(),
+  );
   const updatedAtRef = useRef<Map<string, string>>(new Map());
   const bumpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const {
@@ -105,6 +119,9 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     bulkMarkRead,
     snooze,
     unsnooze,
+    setPinned,
+    dismissReminder,
+    restoreReminder,
     pausedUntil,
     pauseSchedule,
     pauseAllow,
@@ -120,17 +137,30 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const seenRef = useRef<Set<string>>(new Set());
 
-  const tabIndex = Math.max(
-    FILTERS.indexOf(filter as (typeof FILTERS)[number]),
-    0,
-  );
   const isArchived = filter === "archived";
   const isTrash = filter === "trash";
   const isSpecialView = isArchived || isTrash;
-  const tabCounts = [counts.all, counts.social, counts.messages, counts.system];
+  const density = densityForCount(items.length);
+  const itemDensity = density === "empty" ? "standard" : density;
+  const pinnedItems =
+    filter === "all"
+      ? items.filter((notification) => Boolean(notification.pinned_at))
+      : [];
+  const sectionGroups =
+    filter === "all"
+      ? SECTIONS.map((key) => ({
+          key,
+          items: items.filter(
+            (notification) =>
+              !notification.pinned_at &&
+              categoryForType(notification.type) === key,
+          ),
+        })).filter((section) => section.items.length > 0)
+      : [];
   const showSurvey =
     !isSpecialView &&
     counts.survey_pending > 0 &&
+    !hiddenReminders.has(REMINDER_KEY) &&
     (filter === "all" || filter === "system");
   const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
   const pauseRemainingLabel = pauseRemaining(pausedUntil, clock);
@@ -264,9 +294,131 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     undo(id, t("notifications.undo.snoozed"), () => unsnooze(id));
   };
 
-  const enterSelection = (id: string) => {
-    setSelectionMode(true);
-    setSelectedIds(new Set([id]));
+  const handleMuteNotification = (id: string) => {
+    void snooze(id, "always");
+    enqueueSnackbar(t("notifications.actions.muted"), {
+      key: `notification-mute-${id}`,
+      preventDuplicate: true,
+      autoHideDuration: 5000,
+    });
+  };
+
+  const handleTogglePin = (notification: AppNotification) => {
+    const pinned = Boolean(notification.pinned_at);
+    void setPinned(notification.id, !pinned);
+    enqueueSnackbar(
+      pinned
+        ? t("notifications.actions.unpinned")
+        : t("notifications.actions.pinned"),
+      {
+        key: `notification-pin-${notification.id}`,
+        preventDuplicate: true,
+        autoHideDuration: 5000,
+        action: (
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => void setPinned(notification.id, pinned)}
+          >
+            {t("notifications.actions.undo")}
+          </Button>
+        ),
+      },
+    );
+  };
+
+  const hideReminder = (
+    duration: SnoozeOption | undefined,
+    message: string,
+  ) => {
+    const key = REMINDER_KEY;
+    setHiddenReminders((prev) => new Set(prev).add(key));
+    if (duration) void dismissReminder(key, duration);
+    else void dismissReminder(key);
+    undo(`reminder-${key}`, message, async () => {
+      setHiddenReminders((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+      await restoreReminder(key);
+    });
+  };
+
+  const handleReminderDismiss = (duration?: SnoozeOption) => {
+    hideReminder(
+      duration,
+      duration
+        ? t("notifications.reminder.dismissed")
+        : t("notifications.reminder.muted"),
+    );
+  };
+
+  const handleReminderSnooze = (duration: SnoozeOption) => {
+    hideReminder(duration, t("notifications.reminder.snoozed"));
+  };
+
+  const handleSnoozeSelect = (duration: SnoozeOption) => {
+    if (!snoozeTarget) return;
+    const { notificationId, reminderKey } = snoozeTarget;
+    setSnoozeTarget(null);
+    if (reminderKey) {
+      handleReminderSnooze(duration);
+      return;
+    }
+    if (notificationId) handleSnooze(notificationId, duration);
+  };
+
+  const openItemActions = (id: string, anchor: HTMLElement) => {
+    const notification = items.find((entry) => entry.id === id) ?? null;
+    setActionTarget({ anchor, notification });
+  };
+
+  const openReminderActions = (anchor: HTMLElement) => {
+    setActionTarget({
+      anchor,
+      notification: null,
+      reminderKey: REMINDER_KEY,
+    });
+  };
+
+  const {
+    anchorRef: surveyAnchorRef,
+    handlers: surveyHandlers,
+    onClickCapture: surveyClickCapture,
+  } = useHoldToAct<HTMLDivElement>({
+    disabled: !showSurvey,
+    allowInteractive: true,
+    onTrigger: openReminderActions,
+  });
+
+  const openActionSnooze = () => {
+    if (!actionTarget) return;
+    setSnoozeTarget({
+      anchor: actionTarget.anchor,
+      notificationId: actionTarget.notification?.id,
+      reminderKey: actionTarget.reminderKey,
+    });
+  };
+
+  const muteActionTarget = () => {
+    if (!actionTarget) return;
+    if (actionTarget.reminderKey) handleReminderDismiss();
+    else if (actionTarget.notification) {
+      handleMuteNotification(actionTarget.notification.id);
+    }
+  };
+
+  const dismissActionTarget = () => {
+    if (!actionTarget) return;
+    if (actionTarget.reminderKey) handleReminderDismiss("1d");
+    else if (actionTarget.notification)
+      handleDelete(actionTarget.notification.id);
+  };
+
+  const openNotificationSettings = () => {
+    onClose();
+    void router.push("/settings#notifications");
   };
 
   const toggleSelection = (id: string) => {
@@ -363,11 +515,129 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           count: counts.survey_pending,
         });
 
-  const emptyKey = isArchived
-    ? "archived"
-    : isTrash
-      ? "trash"
-      : TABS[tabIndex].key;
+  const carePendingLabel =
+    counts.survey_pending === 1
+      ? t("notifications.care.pending_one", {
+          count: counts.survey_pending,
+        })
+      : t("notifications.care.pending_other", {
+          count: counts.survey_pending,
+        });
+
+  const emptyKey = isArchived ? "archived" : isTrash ? "trash" : filter;
+
+  const toggleSection = (key: string) => {
+    setCollapsedSections((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const renderSectionHeader = (key: string, count: number) => {
+    const collapsed = collapsedSections.has(key);
+    return (
+      <ListItemButton
+        data-testid={`notification-section-${key}`}
+        aria-expanded={!collapsed}
+        onClick={() => toggleSection(key)}
+        sx={{
+          position: "sticky",
+          top: 0,
+          zIndex: 3,
+          minHeight: 44,
+          px: 2,
+          py: 0.75,
+          gap: 1,
+          bgcolor: "background.paper",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Typography
+          component="span"
+          variant="overline"
+          sx={{
+            fontWeight: 800,
+            letterSpacing: "0.08em",
+            color: "text.secondary",
+            lineHeight: 1.2,
+          }}
+        >
+          {t(`notifications.sections.${key}`)}
+        </Typography>
+        <Box
+          component="span"
+          data-testid={`notification-section-count-${key}`}
+          sx={{
+            px: 0.7,
+            borderRadius: "999px",
+            bgcolor: "action.selected",
+            fontSize: "0.6875rem",
+            fontWeight: 700,
+            lineHeight: "18px",
+            color: "text.secondary",
+          }}
+        >
+          {count}
+        </Box>
+        <ExpandIcon
+          sx={{
+            ml: "auto",
+            fontSize: 20,
+            color: "text.secondary",
+            transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
+            transition: prefersReducedMotion ? "none" : "transform 140ms ease",
+          }}
+        />
+      </ListItemButton>
+    );
+  };
+
+  const renderInboxNotification = (notification: AppNotification) => {
+    const raised = actionTarget?.notification?.id === notification.id;
+    const dimmed = Boolean(actionTarget) && !raised;
+    const item = (
+      <NotificationItem
+        notification={notification}
+        density={itemDensity}
+        bumped={bumpedIds.has(notification.id)}
+        selected={selectedIds.has(notification.id)}
+        selectionMode={selectionMode}
+        raised={raised}
+        dimmed={dimmed}
+        onToggleSelect={toggleSelection}
+        onOpenActions={openItemActions}
+        onRead={markRead}
+        onNavigate={onClose}
+        onQuickReply={sendQuickReply}
+        onArchive={handleArchive}
+      />
+    );
+
+    return selectionMode ? (
+      <React.Fragment key={notification.id}>{item}</React.Fragment>
+    ) : (
+      <NotificationSwipeable
+        key={
+          bumpedIds.has(notification.id)
+            ? `${notification.id}:${bumpSeq}`
+            : notification.id
+        }
+        disabled={Boolean(actionTarget)}
+        onDismiss={() => handleDelete(notification.id)}
+        onSnooze={(anchor) =>
+          setSnoozeTarget({
+            anchor,
+            notificationId: notification.id,
+          })
+        }
+      >
+        {item}
+      </NotificationSwipeable>
+    );
+  };
 
   return (
     <Box
@@ -457,76 +727,125 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           </Box>
         </Box>
       ) : (
-        <Box
-          sx={{
-            p: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
-            {isSpecialView && (
-              <IconButton
-                data-testid="notification-back"
-                onClick={() => setFilter("all")}
-                title={t("notifications.archived.back")}
-                aria-label={t("notifications.archived.back")}
-                size="small"
-                sx={{ mr: 0.5 }}
-              >
-                <BackIcon />
-              </IconButton>
-            )}
-            <Typography variant="h6" sx={{ fontWeight: 700 }} noWrap>
-              {isArchived
-                ? t("notifications.archived.title")
-                : isTrash
-                  ? t("notifications.trash.title")
-                  : t("notifications.title")}
-            </Typography>
-            {!isSpecialView && counts.count > 0 && (
-              <Typography
-                component="span"
-                data-testid="notification-unread-count"
-                sx={{
-                  ml: 1,
-                  px: 0.7,
-                  py: 0.1,
-                  borderRadius: 2,
-                  bgcolor: "action.selected",
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  lineHeight: 1.5,
-                }}
-              >
-                {unreadLabel}
+        <Box data-testid="notification-header">
+          <Box
+            sx={{
+              px: 2,
+              pt: 1.25,
+              pb: isSpecialView ? 1.25 : 0.5,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 1,
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+              {isSpecialView && (
+                <IconButton
+                  data-testid="notification-back"
+                  onClick={() => setFilter("all")}
+                  title={t("notifications.archived.back")}
+                  aria-label={t("notifications.archived.back")}
+                  size="small"
+                  sx={{ mr: 0.5 }}
+                >
+                  <BackIcon />
+                </IconButton>
+              )}
+              <Typography variant="h6" sx={{ fontWeight: 700 }} noWrap>
+                {isArchived
+                  ? t("notifications.archived.title")
+                  : isTrash
+                    ? t("notifications.trash.title")
+                    : t("notifications.title")}
               </Typography>
-            )}
+            </Box>
+            <IconButton
+              data-testid="notification-close"
+              onClick={onClose}
+              aria-label={t("notifications.close")}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            {!isSpecialView && activePauses.length > 0 && (
-              <Chip
-                data-testid="notification-active-pauses"
-                icon={<PausedIcon sx={{ fontSize: 16 }} />}
-                label={t(
-                  "notifications.pause.activePauses.title",
-                  "Pausas activas",
-                )}
-                onClick={(event) => setActiveAnchor(event.currentTarget)}
-                size="small"
-                sx={{
-                  mr: 0.5,
-                  color: "primary.main",
-                  background: "rgba(255,71,87,0.12)",
-                  border: "1px solid rgba(255,71,87,0.45)",
-                  "& .MuiChip-icon": { color: "primary.main" },
-                }}
-              />
-            )}
-            {!isSpecialView && (
+
+          {!isSpecialView && (
+            <Box
+              sx={{
+                px: 2,
+                pb: 0.75,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                minHeight: 28,
+                flexWrap: "wrap",
+              }}
+            >
+              {counts.count > 0 && (
+                <Box
+                  component="span"
+                  data-testid="notification-unread-count"
+                  aria-live="polite"
+                  sx={{
+                    px: 0.85,
+                    py: 0.15,
+                    borderRadius: "999px",
+                    bgcolor: "rgba(230,57,70,0.12)",
+                    color: "primary.main",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {unreadLabel}
+                </Box>
+              )}
+              {counts.survey_pending > 0 && (
+                <Box
+                  component="span"
+                  data-testid="notification-care-pending"
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    color: "text.secondary",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  <SurveyIcon sx={{ fontSize: 15, color: "primary.main" }} />
+                  {carePendingLabel}
+                </Box>
+              )}
+              {isPaused && (
+                <Typography
+                  data-testid="notification-pause-remaining"
+                  variant="caption"
+                  sx={{
+                    color: "primary.main",
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                    ml: "auto",
+                  }}
+                >
+                  {pauseRemainingLabel}
+                </Typography>
+              )}
+            </Box>
+          )}
+
+          {!isSpecialView && (
+            <Box
+              sx={{
+                px: 1.5,
+                pb: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: 0.5,
+              }}
+            >
               <IconButton
                 data-testid="notification-pause"
                 onClick={(event) => setPauseAnchor(event.currentTarget)}
@@ -537,22 +856,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               >
                 {isPaused ? <PausedIcon /> : <ScheduleIcon />}
               </IconButton>
-            )}
-            {!isSpecialView && isPaused && (
-              <Typography
-                data-testid="notification-pause-remaining"
-                variant="caption"
-                sx={{
-                  color: "primary.main",
-                  fontWeight: 700,
-                  mr: 0.5,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {pauseRemainingLabel}
-              </Typography>
-            )}
-            {!isSpecialView && (
               <IconButton
                 data-testid="notification-mark-all"
                 onClick={() => {
@@ -561,102 +864,99 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                 title={t("notifications.markAllRead")}
                 aria-label={t("notifications.markAllRead")}
                 size="small"
-                sx={{ mr: 0.5 }}
               >
                 <MarkReadIcon />
               </IconButton>
-            )}
-            {!isSpecialView && (
               <IconButton
                 data-testid="notification-menu"
                 onClick={(event) => setMenuAnchor(event.currentTarget)}
                 title={t("notifications.menu", "Más opciones")}
                 aria-label={t("notifications.menu", "Más opciones")}
                 size="small"
-                sx={{ mr: 0.5 }}
               >
                 <MoreIcon />
               </IconButton>
-            )}
-            <IconButton
-              data-testid="notification-close"
-              onClick={onClose}
-              aria-label={t("notifications.close")}
-              size="small"
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
+            </Box>
+          )}
         </Box>
       )}
 
       {!isSpecialView && !selectionMode && (
-        <Tabs
-          value={tabIndex}
-          onChange={(_, value) => setFilter(FILTERS[value])}
-          variant="fullWidth"
-          sx={{ borderBottom: "1px solid", borderColor: "divider" }}
+        <Box
+          data-testid="notification-filters"
+          role="group"
+          aria-label={t("notifications.filters", "Filtrar notificaciones")}
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            gap: 0.5,
+            px: { xs: 1.5, sm: 2 },
+            py: 1,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
         >
-          {TABS.map(({ key, icon: Icon }, index) => {
-            const active = tabIndex === index;
-            const count = tabCounts[index];
-            const labelTransition = prefersReducedMotion
-              ? "none"
-              : "max-width 220ms ease, opacity 180ms ease, transform 220ms ease, margin 220ms ease";
+          {FILTER_META.map(({ key, icon: Icon }) => {
+            const active = filter === key;
+            const count = counts[key];
+            const label = t(`notifications.tabs.${key}`);
             return (
-              <Tab
+              <Chip
                 key={key}
-                data-testid={`notification-tab-${key}`}
-                sx={{
-                  minWidth: 0,
-                  minHeight: 48,
-                  px: 0.25,
-                  fontSize: "0.75rem",
-                }}
+                data-testid={`notification-chip-${key}`}
+                clickable
+                aria-pressed={active}
+                title={label}
+                onClick={() => setFilter(key)}
+                icon={<Icon sx={{ fontSize: 17 }} />}
                 label={
                   <Box
+                    component="span"
                     sx={{
                       display: "inline-flex",
                       alignItems: "center",
-                      px: active ? 1 : 0.5,
-                      py: 0.5,
-                      borderRadius: "999px",
-                      bgcolor: active ? "action.hover" : "transparent",
-                      transition: prefersReducedMotion
-                        ? "none"
-                        : "background-color 220ms ease, padding 220ms ease",
+                      justifyContent: "center",
+                      maxWidth: "100%",
+                      minWidth: 0,
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    <Icon fontSize="small" />
                     <Box
                       component="span"
-                      data-testid={`notification-tab-label-${key}`}
+                      data-testid={`notification-chip-label-${key}`}
                       sx={{
                         display: "inline-block",
-                        overflow: "hidden",
-                        whiteSpace: "nowrap",
-                        maxWidth: active ? 120 : 0,
-                        ml: active ? "4px" : 0,
+                        maxWidth: active ? 200 : 0,
+                        minWidth: 0,
                         opacity: active ? 1 : 0,
-                        transform: active
-                          ? "translateX(0)"
-                          : "translateX(-4px)",
-                        transition: labelTransition,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        transition: prefersReducedMotion
+                          ? "none"
+                          : "max-width 280ms cubic-bezier(0.2, 0, 0, 1), opacity 280ms cubic-bezier(0.2, 0, 0, 1)",
                       }}
                     >
-                      {t(`notifications.tabs.${key}`)}
+                      {label}
                     </Box>
                     {count > 0 && (
                       <Box
                         component="span"
                         sx={{
-                          px: "6px",
-                          ml: "4px",
+                          flexShrink: 0,
+                          ml: active ? 0.5 : 0,
+                          px: "5px",
                           borderRadius: "10px",
-                          bgcolor: "action.selected",
+                          bgcolor: active
+                            ? "rgba(255,255,255,0.22)"
+                            : "action.selected",
                           fontSize: "0.6875rem",
-                          fontWeight: 600,
+                          fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
                           lineHeight: "16px",
+                          transition: prefersReducedMotion
+                            ? "none"
+                            : "margin-left 280ms cubic-bezier(0.2, 0, 0, 1)",
                         }}
                       >
                         {count}
@@ -664,16 +964,49 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                     )}
                   </Box>
                 }
+                sx={{
+                  width: "100%",
+                  maxWidth: "100%",
+                  height: 44,
+                  minWidth: 0,
+                  justifyContent: "center",
+                  borderRadius: "999px",
+                  fontSize: "0.8125rem",
+                  fontWeight: active ? 700 : 600,
+                  pl: active ? 0.75 : 0.5,
+                  pr: active ? 0.75 : 0.5,
+                  bgcolor: active ? "primary.main" : "action.hover",
+                  color: active ? "primary.contrastText" : "text.secondary",
+                  transition: prefersReducedMotion
+                    ? "none"
+                    : "background-color 280ms cubic-bezier(0.2, 0, 0, 1), color 280ms cubic-bezier(0.2, 0, 0, 1), padding 280ms cubic-bezier(0.2, 0, 0, 1)",
+                  "&:hover": {
+                    bgcolor: active ? "primary.dark" : "action.selected",
+                  },
+                  "& .MuiChip-icon": {
+                    flexShrink: 0,
+                    ml: active ? 0.25 : 0,
+                    mr: active ? 0.25 : 0,
+                    color: active ? "inherit" : "text.secondary",
+                  },
+                  "& .MuiChip-label": {
+                    minWidth: 0,
+                    px: 0,
+                    overflow: "hidden",
+                  },
+                }}
               />
             );
           })}
-        </Tabs>
+        </Box>
       )}
 
       <PauseMenu
         anchorEl={pauseAnchor}
         open={Boolean(pauseAnchor)}
         paused={isPaused}
+        activePauses={activePauses}
+        locale={appLocale}
         onClose={() => setPauseAnchor(null)}
         onPause={(duration) => void pause(duration)}
         onPauseUntil={(until) => void pause(undefined, until)}
@@ -695,48 +1028,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         />
       )}
 
-      {activeAnchor && (
-        <Popover
-          data-testid="notification-active-pauses-popover"
-          open
-          anchorEl={activeAnchor}
-          onClose={() => setActiveAnchor(null)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-        >
-          <Box sx={{ p: 1.5, minWidth: 240, maxWidth: 320 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              {t("notifications.pause.activePauses.title", "Pausas activas")}
-            </Typography>
-            {activePauses.map((item, index) => (
-              <Box
-                key={item.id ?? `single-${index}`}
-                data-testid="notification-active-pause-item"
-                sx={{ mb: 1 }}
-              >
-                <Typography variant="body2">
-                  {item.name ||
-                    t("notifications.pause.mode.single", "Pausa única")}
-                </Typography>
-                <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                  {item.kind === "recurring"
-                    ? `${formatDayRange(item.days ?? [], appLocale)} · ${item.start} → ${item.end}`
-                    : t(
-                        "notifications.pause.activePauses.until",
-                        "Termina a las {{time}}",
-                        {
-                          time: item.until
-                            ? pauseDeadlineLabel(item.until)
-                            : "—",
-                        },
-                      )}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        </Popover>
-      )}
-
       <Menu
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
@@ -744,16 +1035,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem
-          data-testid="notification-menu-mark-all"
-          onClick={() => {
-            handleMenuClose();
-            void markAllRead("all");
-          }}
-          sx={{ fontSize: "0.875rem" }}
-        >
-          {t("notifications.markAllRead")}
-        </MenuItem>
         <MenuItem
           data-testid="notification-menu-select"
           disabled={items.length === 0}
@@ -790,14 +1071,42 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           data-testid="notification-menu-settings"
           onClick={() => {
             handleMenuClose();
-            onClose();
-            void router.push("/settings#notifications");
+            openNotificationSettings();
           }}
           sx={{ fontSize: "0.875rem" }}
         >
           {t("notifications.settings.title", "Ajustes")}
         </MenuItem>
       </Menu>
+
+      <NotificationActionsMenu
+        anchorEl={actionTarget?.anchor ?? null}
+        open={Boolean(actionTarget)}
+        notification={actionTarget?.notification ?? null}
+        reminder={Boolean(actionTarget?.reminderKey)}
+        onClose={() => setActionTarget(null)}
+        onMarkRead={() => {
+          if (actionTarget?.notification) {
+            void markRead(actionTarget.notification.id);
+          }
+        }}
+        onSnooze={openActionSnooze}
+        onTogglePin={() => {
+          if (actionTarget?.notification) {
+            handleTogglePin(actionTarget.notification);
+          }
+        }}
+        onMute={muteActionTarget}
+        onDismiss={dismissActionTarget}
+        onConfigure={openNotificationSettings}
+      />
+
+      <SnoozeMenu
+        anchorEl={snoozeTarget?.anchor ?? null}
+        open={Boolean(snoozeTarget)}
+        onClose={() => setSnoozeTarget(null)}
+        onSelect={handleSnoozeSelect}
+      />
 
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {loading ? (
@@ -834,141 +1143,140 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             </Button>
           </Box>
         ) : (
-          <Fade in appear key={filter} timeout={prefersReducedMotion ? 0 : 200}>
+          <Fade in appear key={filter} timeout={prefersReducedMotion ? 0 : 280}>
             <Box>
               <List disablePadding>
                 {showSurvey && (
-                  <ListItemButton
-                    data-testid="notification-survey-item"
-                    onClick={handleSurvey}
-                    sx={{
-                      borderBottom: "1px solid",
-                      borderColor: "divider",
-                      bgcolor: "action.hover",
-                    }}
+                  <NotificationSwipeable
+                    key="care-reminder"
+                    allowInteractive
+                    onDismiss={() => handleReminderDismiss("1d")}
+                    onDismissForever={() => handleReminderDismiss()}
+                    onSnooze={(anchor) =>
+                      setSnoozeTarget({ anchor, reminderKey: REMINDER_KEY })
+                    }
                   >
-                    <ListItemIcon>
-                      <SurveyIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={t("notifications.survey.title")}
-                      secondary={surveyCopy}
-                    />
-                  </ListItemButton>
-                )}
-                {items.map((notification) => {
-                  if (isArchived) {
-                    return (
-                      <Box key={notification.id}>
-                        <NotificationItem
-                          notification={notification}
-                          onRead={markRead}
-                          onNavigate={onClose}
-                        />
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            gap: 1,
-                            px: 2,
-                            py: 1,
-                            borderBottom: "1px solid",
-                            borderColor: "divider",
-                          }}
-                        >
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<RestoreIcon />}
-                            data-testid={`notification-restore-${notification.id}`}
-                            onClick={() => void unarchive(notification.id)}
-                          >
-                            {t("notifications.actions.unarchive")}
-                          </Button>
-                          <Button
-                            size="small"
-                            color="error"
-                            variant="outlined"
-                            startIcon={<DeleteIcon />}
-                            data-testid={`notification-delete-${notification.id}`}
-                            onClick={() => void remove(notification.id)}
-                          >
-                            {t("notifications.actions.delete")}
-                          </Button>
-                        </Box>
-                      </Box>
-                    );
-                  }
-
-                  if (isTrash) {
-                    return (
-                      <Box key={notification.id}>
-                        <NotificationItem
-                          notification={notification}
-                          onRead={markRead}
-                        />
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            gap: 1,
-                            px: 2,
-                            py: 1,
-                            borderBottom: "1px solid",
-                            borderColor: "divider",
-                          }}
-                        >
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<RestoreIcon />}
-                            data-testid={`notification-trash-restore-${notification.id}`}
-                            onClick={() => void restore(notification.id)}
-                          >
-                            {t("notifications.actions.unarchive")}
-                          </Button>
-                        </Box>
-                      </Box>
-                    );
-                  }
-
-                  const item = (
-                    <NotificationItem
-                      notification={notification}
-                      bumped={bumpedIds.has(notification.id)}
-                      selected={selectedIds.has(notification.id)}
-                      selectionMode={selectionMode}
-                      onToggleSelect={toggleSelection}
-                      onLongPress={enterSelection}
-                      onRead={markRead}
-                      onNavigate={onClose}
-                      onQuickReply={sendQuickReply}
-                      onArchive={handleArchive}
-                      onDelete={handleDelete}
-                      onSnooze={(duration) =>
-                        handleSnooze(notification.id, duration)
-                      }
-                    />
-                  );
-
-                  return selectionMode ? (
-                    <React.Fragment key={notification.id}>
-                      {item}
-                    </React.Fragment>
-                  ) : (
-                    <NotificationSwipeable
-                      key={
-                        bumpedIds.has(notification.id)
-                          ? `${notification.id}:${bumpSeq}`
-                          : notification.id
-                      }
-                      onArchive={() => handleArchive(notification.id)}
-                      onDelete={() => handleDelete(notification.id)}
+                    <ListItemButton
+                      ref={surveyAnchorRef}
+                      data-testid="notification-survey-item"
+                      onClick={handleSurvey}
+                      onClickCapture={surveyClickCapture}
+                      {...surveyHandlers}
+                      sx={{
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                        bgcolor: "action.hover",
+                      }}
                     >
-                      {item}
-                    </NotificationSwipeable>
-                  );
-                })}
+                      <ListItemIcon>
+                        <SurveyIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={t("notifications.survey.title")}
+                        secondary={surveyCopy}
+                      />
+                    </ListItemButton>
+                  </NotificationSwipeable>
+                )}
+                {isArchived &&
+                  items.map((notification) => (
+                    <Box key={notification.id}>
+                      <NotificationItem
+                        notification={notification}
+                        density={itemDensity}
+                        variant="archived"
+                        onRead={markRead}
+                        onNavigate={onClose}
+                      />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 1,
+                          px: 2,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                        }}
+                      >
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<RestoreIcon />}
+                          data-testid={`notification-restore-${notification.id}`}
+                          onClick={() => void unarchive(notification.id)}
+                        >
+                          {t("notifications.actions.unarchive")}
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          variant="outlined"
+                          startIcon={<DeleteIcon />}
+                          data-testid={`notification-delete-${notification.id}`}
+                          onClick={() => void remove(notification.id)}
+                        >
+                          {t("notifications.actions.delete")}
+                        </Button>
+                      </Box>
+                    </Box>
+                  ))}
+
+                {isTrash &&
+                  items.map((notification) => (
+                    <Box key={notification.id}>
+                      <NotificationItem
+                        notification={notification}
+                        density={itemDensity}
+                        variant="trash"
+                        onRead={markRead}
+                      />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 1,
+                          px: 2,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                        }}
+                      >
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<RestoreIcon />}
+                          data-testid={`notification-trash-restore-${notification.id}`}
+                          onClick={() => void restore(notification.id)}
+                        >
+                          {t("notifications.actions.unarchive")}
+                        </Button>
+                      </Box>
+                    </Box>
+                  ))}
+
+                {!isSpecialView && filter === "all" && (
+                  <>
+                    {pinnedItems.length > 0 && (
+                      <>
+                        {renderSectionHeader("pinned", pinnedItems.length)}
+                        {!collapsedSections.has("pinned") &&
+                          pinnedItems.map(renderInboxNotification)}
+                      </>
+                    )}
+                    {sectionGroups.map((section) => (
+                      <React.Fragment key={section.key}>
+                        {renderSectionHeader(section.key, section.items.length)}
+                        {!collapsedSections.has(section.key) &&
+                          section.items.map(renderInboxNotification)}
+                      </React.Fragment>
+                    ))}
+                  </>
+                )}
+
+                {!isSpecialView &&
+                  filter !== "all" &&
+                  items.map(renderInboxNotification)}
               </List>
               {!showSurvey && items.length === 0 && (
                 <Box

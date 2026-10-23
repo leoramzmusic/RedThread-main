@@ -612,3 +612,111 @@ async def test_bulk_action_caps_ids():
     ):
         await api.bulk_action(api.BulkRequest(ids=ids, action="archive"), _user())
     assert len(find.call_args.args[0]["_id"]["$in"]) == 100
+
+
+def _reminder_settings(mutes=None, snoozes=None):
+    return SimpleNamespace(
+        reminder_mutes=list(mutes or []),
+        reminder_snoozes=dict(snoozes or {}),
+        save=AsyncMock(),
+    )
+
+
+@pytest.mark.asyncio
+async def test_dismiss_reminder_forever_mutes_and_clears_snooze():
+    settings = _reminder_settings(snoozes={"care_preferences": datetime.utcnow()})
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(api.manager, "send_personal_message", new=AsyncMock()) as push:
+        out = await api.dismiss_reminder_route(
+            "care_preferences", api.ReminderDismissRequest(), _user()
+        )
+    assert out == {"ok": True}
+    assert settings.reminder_mutes == ["care_preferences"]
+    assert "care_preferences" not in settings.reminder_snoozes
+    settings.save.assert_awaited_once()
+    assert push.await_args.args[1]["action"] == "notifications_sync"
+
+
+@pytest.mark.asyncio
+async def test_dismiss_reminder_sets_until_from_duration():
+    settings = _reminder_settings()
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(api.manager, "send_personal_message", new=AsyncMock()):
+        out = await api.dismiss_reminder_route(
+            "care_preferences",
+            api.ReminderDismissRequest(duration="1d"),
+            _user(),
+        )
+    assert out["ok"] is True
+    until = settings.reminder_snoozes["care_preferences"]
+    assert until > datetime.utcnow() + timedelta(hours=23)
+    assert settings.reminder_mutes == []
+
+
+@pytest.mark.asyncio
+async def test_dismiss_reminder_rejects_unknown_key():
+    with pytest.raises(HTTPException) as exc:
+        await api.dismiss_reminder_route(
+            "unknown", api.ReminderDismissRequest(), _user()
+        )
+    assert exc.value.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_dismiss_reminder_rejects_bad_duration():
+    with pytest.raises(HTTPException) as exc:
+        await api.dismiss_reminder_route(
+            "care_preferences",
+            api.ReminderDismissRequest(duration="3d"),
+            _user(),
+        )
+    assert exc.value.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_restore_reminder_clears_state():
+    settings = _reminder_settings(
+        mutes=["care_preferences"],
+        snoozes={"care_preferences": datetime.utcnow() + timedelta(hours=1)},
+    )
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(api.manager, "send_personal_message", new=AsyncMock()):
+        out = await api.restore_reminder_route("care_preferences", _user())
+    assert out == {"ok": True}
+    assert settings.reminder_mutes == []
+    assert settings.reminder_snoozes == {}
+    settings.save.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_pin_notification_calls_service():
+    nid = _oid()
+    with patch.object(
+        api.ns, "set_pinned", new=AsyncMock(return_value=object())
+    ) as svc:
+        out = await api.pin_notification_route(nid, _user())
+    assert out == {"ok": True}
+    svc.assert_awaited_once_with(nid, "u1", True)
+
+
+@pytest.mark.asyncio
+async def test_unpin_notification_calls_service():
+    nid = _oid()
+    with patch.object(
+        api.ns, "set_pinned", new=AsyncMock(return_value=object())
+    ) as svc:
+        out = await api.unpin_notification_route(nid, _user())
+    assert out == {"ok": True}
+    svc.assert_awaited_once_with(nid, "u1", False)
+
+
+@pytest.mark.asyncio
+async def test_pin_missing_raises_404():
+    nid = _oid()
+    with patch.object(api.ns, "set_pinned", new=AsyncMock(return_value=None)):
+        with pytest.raises(HTTPException) as exc:
+            await api.pin_notification_route(nid, _user())
+    assert exc.value.status_code == 404

@@ -116,6 +116,35 @@ async def test_snooze_always_sets_mute_and_marks_read():
 
 
 @pytest.mark.asyncio
+async def test_set_pinned_sets_timestamp_and_pushes():
+    doc = _doc()
+    with patch.object(Notification, "get", new=AsyncMock(return_value=doc)), patch.object(
+        Notification, "save", new=AsyncMock()
+    ), patch.object(ns.manager, "send_personal_message", new=AsyncMock()) as push:
+        got = await ns.set_pinned("n1", "u1", True)
+    assert got is doc and doc.pinned_at is not None
+    assert push.await_args.args[1]["action"] == "notification_pinned"
+
+
+@pytest.mark.asyncio
+async def test_set_pinned_false_clears_timestamp():
+    doc = _doc(pinned_at=datetime.utcnow())
+    with patch.object(Notification, "get", new=AsyncMock(return_value=doc)), patch.object(
+        Notification, "save", new=AsyncMock()
+    ), patch.object(ns.manager, "send_personal_message", new=AsyncMock()) as push:
+        got = await ns.set_pinned("n1", "u1", False)
+    assert got is doc and doc.pinned_at is None
+    assert push.await_args.args[1]["action"] == "notification_unpinned"
+
+
+@pytest.mark.asyncio
+async def test_set_pinned_rejects_foreign_user():
+    doc = _doc(user_id="other")
+    with patch.object(Notification, "get", new=AsyncMock(return_value=doc)):
+        assert await ns.set_pinned("n1", "u1", True) is None
+
+
+@pytest.mark.asyncio
 async def test_unsnooze_clears_field():
     doc = _doc(snoozed_until=datetime.utcnow() + timedelta(hours=1))
     with patch.object(Notification, "get", new=AsyncMock(return_value=doc)), patch.object(

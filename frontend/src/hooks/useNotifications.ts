@@ -39,8 +39,14 @@ export interface AppNotification {
   user?: NotificationActor | null;
   target_type?: string | null;
   target_id?: string | null;
+  pinned_at?: string | null;
   metadata?: Record<string, any> | null;
 }
+
+const sortPinned = (items: AppNotification[]) =>
+  [...items].sort(
+    (a, b) => Number(Boolean(b.pinned_at)) - Number(Boolean(a.pinned_at)),
+  );
 
 const EMPTY_COUNTS: NotificationCounts = {
   count: 0,
@@ -99,7 +105,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
         : apiClient.get("/notifications/unread-count");
       const [list, count] = await Promise.all([listRequest, countRequest]);
       if (requestId !== requestIdRef.current) return;
-      setItems(list.data.items ?? []);
+      setItems(sortPinned(list.data.items ?? []));
       setNextCursor(list.data.next_cursor ?? null);
       if (count) {
         const data = count.data ?? {};
@@ -302,6 +308,61 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [runWithOptimisticRemoval],
   );
 
+  const setPinned = useCallback(
+    async (id: string, pinned: boolean) => {
+      setItems((prev) =>
+        sortPinned(
+          prev.map((notification) =>
+            notification.id === id
+              ? {
+                  ...notification,
+                  pinned_at: pinned ? new Date().toISOString() : null,
+                }
+              : notification,
+          ),
+        ),
+      );
+      try {
+        await apiClient.post(
+          `/notifications/${id}/${pinned ? "pin" : "unpin"}`,
+        );
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
+
+  const dismissReminder = useCallback(
+    async (key: string, duration?: string) => {
+      try {
+        await apiClient.post(`/notifications/reminders/${key}/dismiss`, {
+          ...(duration ? { duration } : {}),
+        });
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
+
+  const restoreReminder = useCallback(
+    async (key: string) => {
+      try {
+        await apiClient.delete(`/notifications/reminders/${key}`);
+      } catch {
+        setError(true);
+      } finally {
+        await fetchAll();
+      }
+    },
+    [fetchAll],
+  );
+
   const pause = useCallback(
     async (duration?: string, until?: string) => {
       try {
@@ -320,10 +381,11 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     try {
       const response = await apiClient.delete("/notifications/pause");
       applyPauseState(response.data);
+      await fetchAll();
     } catch {
       setError(true);
     }
-  }, [applyPauseState]);
+  }, [applyPauseState, fetchAll]);
 
   const savePauseSchedule = useCallback(
     async (rule: PauseScheduleRule) => {
@@ -405,6 +467,9 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     bulkMarkRead,
     snooze,
     unsnooze,
+    setPinned,
+    dismissReminder,
+    restoreReminder,
     pause,
     resume,
     savePauseSchedule,

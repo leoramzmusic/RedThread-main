@@ -23,6 +23,7 @@ class Notification(Document):
     archived_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
     snoozed_until: Optional[datetime] = None
+    pinned_at: Optional[datetime] = None
 
     class Settings:
         name = "notifications"
@@ -31,4 +32,5 @@ class Notification(Document):
             [("user_id", 1), ("is_read", 1)],
             [("user_id", 1), ("group_key", 1), ("updated_at", -1)],
             [("user_id", 1), ("archived_at", 1), ("updated_at", -1)],
+            [("user_id", 1), ("pinned_at", -1), ("updated_at", -1)],
         ]

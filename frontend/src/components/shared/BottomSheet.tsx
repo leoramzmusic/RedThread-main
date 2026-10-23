@@ -10,7 +10,7 @@ interface BottomSheetProps {
 }
 
 const CLOSE_THRESHOLD_PX = 100;
-const TRANSITION_MS = 300;
+const TRANSITION_MS = 280;
 
 /**
  * Bottom sheet with animated entry AND exit, plus drag-to-close
