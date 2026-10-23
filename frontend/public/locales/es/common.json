@@ -1562,6 +1562,12 @@
       "4h": "4 horas"
     },
     "pause": {
+      "dnd": "No molestar",
+      "activeFor": "Activo durante: {{remaining}}",
+      "shortcut": "Rutina rápida",
+      "summaryTitle": "Resumen de No molestar",
+      "whileAway": "Mientras no molestabas llegaron {{count}} notificaciones",
+      "viewAll": "Ver todas",
       "title": "Pausar notificaciones",
       "active": "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
       "resume": "Reanudar notificaciones",

@@ -126,9 +126,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     pauseSchedule,
     pauseAllow,
     pauseWindow,
-    activePauses,
+    pauseShortcutId,
     pause,
     resume,
+    applyPauseShortcut,
     savePauseSchedule,
     savePauseWindow,
     removePauseSchedule,
@@ -176,7 +177,8 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         },
       )
     : t("notifications.pause.title", "Pausar notificaciones");
-  const unreadLabel = counts.count > 99 ? "99+" : String(counts.count);
+  const pauseShortcut =
+    pauseSchedule.find((rule) => rule.id === pauseShortcutId) ?? null;
 
   React.useEffect(() => {
     if (loading || filter !== "social") return;
@@ -515,15 +517,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           count: counts.survey_pending,
         });
 
-  const carePendingLabel =
-    counts.survey_pending === 1
-      ? t("notifications.care.pending_one", {
-          count: counts.survey_pending,
-        })
-      : t("notifications.care.pending_other", {
-          count: counts.survey_pending,
-        });
-
   const emptyKey = isArchived ? "archived" : isTrash ? "trash" : filter;
 
   const toggleSection = (key: string) => {
@@ -734,7 +727,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               pt: 1.25,
               pb: isSpecialView ? 1.25 : 0.5,
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
               justifyContent: "space-between",
               gap: 1,
             }}
@@ -752,13 +745,40 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                   <BackIcon />
                 </IconButton>
               )}
-              <Typography variant="h6" sx={{ fontWeight: 700 }} noWrap>
-                {isArchived
-                  ? t("notifications.archived.title")
-                  : isTrash
-                    ? t("notifications.trash.title")
-                    : t("notifications.title")}
-              </Typography>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography
+                  data-testid="notification-title"
+                  variant="h6"
+                  sx={{ fontWeight: 700 }}
+                  noWrap
+                >
+                  {isArchived
+                    ? t("notifications.archived.title")
+                    : isTrash
+                      ? t("notifications.trash.title")
+                      : isPaused
+                        ? t("notifications.pause.dnd", "No molestar")
+                        : t("notifications.title")}
+                </Typography>
+                {!isSpecialView && isPaused && (
+                  <Typography
+                    data-testid="notification-pause-remaining"
+                    variant="caption"
+                    sx={{
+                      display: "block",
+                      color: "primary.main",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {t(
+                      "notifications.pause.activeFor",
+                      "Activo durante: {{remaining}}",
+                      { remaining: pauseRemainingLabel },
+                    )}
+                  </Typography>
+                )}
+              </Box>
             </Box>
             <IconButton
               data-testid="notification-close"
@@ -769,71 +789,6 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
               <CloseIcon />
             </IconButton>
           </Box>
-
-          {!isSpecialView && (
-            <Box
-              sx={{
-                px: 2,
-                pb: 0.75,
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minHeight: 28,
-                flexWrap: "wrap",
-              }}
-            >
-              {counts.count > 0 && (
-                <Box
-                  component="span"
-                  data-testid="notification-unread-count"
-                  aria-live="polite"
-                  sx={{
-                    px: 0.85,
-                    py: 0.15,
-                    borderRadius: "999px",
-                    bgcolor: "rgba(230,57,70,0.12)",
-                    color: "primary.main",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {unreadLabel}
-                </Box>
-              )}
-              {counts.survey_pending > 0 && (
-                <Box
-                  component="span"
-                  data-testid="notification-care-pending"
-                  sx={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: "text.secondary",
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  <SurveyIcon sx={{ fontSize: 15, color: "primary.main" }} />
-                  {carePendingLabel}
-                </Box>
-              )}
-              {isPaused && (
-                <Typography
-                  data-testid="notification-pause-remaining"
-                  variant="caption"
-                  sx={{
-                    color: "primary.main",
-                    fontWeight: 700,
-                    whiteSpace: "nowrap",
-                    ml: "auto",
-                  }}
-                >
-                  {pauseRemainingLabel}
-                </Typography>
-              )}
-            </Box>
-          )}
 
           {!isSpecialView && (
             <Box
@@ -1005,12 +960,15 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         anchorEl={pauseAnchor}
         open={Boolean(pauseAnchor)}
         paused={isPaused}
-        activePauses={activePauses}
+        shortcut={pauseShortcut}
         locale={appLocale}
         onClose={() => setPauseAnchor(null)}
         onPause={(duration) => void pause(duration)}
         onPauseUntil={(until) => void pause(undefined, until)}
         onResume={() => void resume()}
+        onApplyShortcut={() => {
+          if (pauseShortcut?.id) void applyPauseShortcut(pauseShortcut.id);
+        }}
         onOpenSchedule={() => setScheduleOpen(true)}
       />
 

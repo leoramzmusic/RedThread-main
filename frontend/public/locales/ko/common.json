@@ -1243,6 +1243,12 @@
       "4h": "4시간"
     },
     "pause": {
+      "dnd": "방해 금지",
+      "activeFor": "활성 시간: {{remaining}}",
+      "shortcut": "빠른 루틴",
+      "summaryTitle": "방해 금지 요약",
+      "whileAway": "자리를 비운 동안 알림 {{count}}개가 도착했습니다",
+      "viewAll": "모두 보기",
       "title": "알림 일시중지",
       "active": "알림 일시중지 중: {{remaining}} · {{time}}까지",
       "resume": "알림 다시 시작",

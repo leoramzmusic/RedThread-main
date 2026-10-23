@@ -1213,6 +1213,12 @@
       "4h": "4 horas"
     },
     "pause": {
+      "dnd": "Não perturbar",
+      "activeFor": "Ativo por: {{remaining}}",
+      "shortcut": "Rotina rápida",
+      "summaryTitle": "Resumo de Não perturbar",
+      "whileAway": "Enquanto esteve ausente, chegaram {{count}} notificações",
+      "viewAll": "Ver todas",
       "title": "Pausar notificações",
       "active": "Notificações pausadas: {{remaining}} · até as {{time}}",
       "resume": "Retomar notificações",

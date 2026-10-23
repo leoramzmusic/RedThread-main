@@ -1,41 +1,27 @@
 import React from "react";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import {
-  ListItemIcon,
-  ListItemText,
-  ListSubheader,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import { PlayArrow as ResumeIcon } from "@mui/icons-material";
+  PlayArrow as ResumeIcon,
+  BoltOutlined as ShortcutIcon,
+} from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
-import {
-  formatDayRange,
-  pauseDeadlineLabel,
-  type ActivePause,
-} from "./pauseTime";
+import { formatDayRange, type PauseScheduleRule } from "./pauseTime";
 
 export const PAUSE_OPTIONS = ["15m", "30m", "1h", "2h", "8h"] as const;
 
 export type PauseOption = (typeof PAUSE_OPTIONS)[number];
 
-const PAUSE_LABELS: Record<PauseOption, string> = {
-  "15m": "15 minutos",
-  "30m": "30 minutos",
-  "1h": "1 hora",
-  "2h": "2 horas",
-  "8h": "8 horas",
-};
-
 interface PauseMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   paused: boolean;
-  activePauses: ActivePause[];
+  shortcut: PauseScheduleRule | null;
   locale: string;
   onClose: () => void;
   onPause: (duration: PauseOption) => void;
   onPauseUntil: (until: string) => void;
   onResume: () => void;
+  onApplyShortcut: () => void;
   onOpenSchedule: () => void;
 }
 
@@ -47,12 +33,13 @@ export default function PauseMenu({
   anchorEl,
   open,
   paused,
-  activePauses,
+  shortcut,
   locale,
   onClose,
   onPause,
   onPauseUntil,
   onResume,
+  onApplyShortcut,
   onOpenSchedule,
 }: PauseMenuProps) {
   const { t } = useTranslation("common");
@@ -60,6 +47,21 @@ export default function PauseMenu({
   const choose = (duration: PauseOption) => {
     onClose();
     onPause(duration);
+  };
+
+  const labelForOption = (option: PauseOption) => {
+    switch (option) {
+      case "15m":
+        return t("notifications.snooze.15m", "15 minutos");
+      case "30m":
+        return t("notifications.snooze.30m", "30 minutos");
+      case "1h":
+        return t("notifications.snooze.1h", "1 hora");
+      case "2h":
+        return t("notifications.snooze.2h", "2 horas");
+      case "8h":
+        return t("notifications.snooze.8h", "8 horas");
+    }
   };
 
   return (
@@ -71,49 +73,31 @@ export default function PauseMenu({
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
     >
-      <ListSubheader component="div">
-        {t("notifications.pause.title", "Pausar notificaciones")}
-      </ListSubheader>
-      {activePauses.length > 0 && (
-        <>
-          <ListSubheader component="div">
-            {t("notifications.pause.activePauses.title", "Pausas activas")}
-          </ListSubheader>
-          {activePauses.map((pause, index) => (
-            <MenuItem
-              key={pause.id ?? `single-${index}`}
-              data-testid="notification-active-pause-item"
-              disabled
-              sx={{
-                alignItems: "flex-start",
-                opacity: 1,
-                "&.Mui-disabled": { opacity: 1 },
-              }}
-            >
-              <ListItemText
-                primary={
-                  pause.name ||
-                  t("notifications.pause.mode.single", "Pausa única")
-                }
-                secondary={
-                  pause.kind === "recurring"
-                    ? `${formatDayRange(pause.days ?? [], locale)} · ${pause.start} → ${pause.end}`
-                    : t(
-                        "notifications.pause.activePauses.until",
-                        "Termina a las {{time}}",
-                        {
-                          time: pauseDeadlineLabel(pause.until ?? pause.end),
-                        },
-                      )
-                }
-                slotProps={{
-                  primary: { variant: "body2", color: "text.primary" },
-                  secondary: { variant: "caption", color: "text.secondary" },
-                }}
-              />
-            </MenuItem>
-          ))}
-        </>
+      {shortcut && (
+        <MenuItem
+          data-testid="notification-pause-shortcut"
+          disabled={paused}
+          onClick={() => {
+            onClose();
+            onApplyShortcut();
+          }}
+          sx={{ alignItems: "flex-start" }}
+        >
+          <ListItemIcon sx={{ mt: 0.25 }}>
+            <ShortcutIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              shortcut.name ||
+              t("notifications.pause.shortcut", "Rutina rápida")
+            }
+            secondary={formatDayRange(shortcut.days, locale)}
+            slotProps={{
+              primary: { variant: "body2", color: "text.primary" },
+              secondary: { variant: "caption", color: "text.secondary" },
+            }}
+          />
+        </MenuItem>
       )}
       {paused && (
         <MenuItem
@@ -133,13 +117,15 @@ export default function PauseMenu({
         <MenuItem
           key={option}
           data-testid={`notification-pause-${option}`}
+          disabled={paused}
           onClick={() => choose(option)}
         >
-          {t(`notifications.snooze.${option}`, PAUSE_LABELS[option])}
+          {labelForOption(option)}
         </MenuItem>
       ))}
       <MenuItem
         data-testid="notification-pause-1d"
+        disabled={paused}
         onClick={() => {
           onClose();
           onPauseUntil(tomorrow());
@@ -149,6 +135,7 @@ export default function PauseMenu({
       </MenuItem>
       <MenuItem
         data-testid="notification-pause-custom"
+        disabled={paused}
         onClick={() => {
           onClose();
           onOpenSchedule();

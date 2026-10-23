@@ -97,6 +97,13 @@ const mockCopy: Record<string, string> = {
   "notifications.snooze.4h": "4 horas",
   "notifications.snooze.1d": "Mañana",
   "notifications.pause.title": "Pausar notificaciones",
+  "notifications.pause.dnd": "No molestar",
+  "notifications.pause.activeFor": "Activo durante: {{remaining}}",
+  "notifications.pause.shortcut": "Rutina rápida",
+  "notifications.pause.summaryTitle": "Resumen de No molestar",
+  "notifications.pause.whileAway":
+    "Mientras no molestabas llegaron {{count}} notificaciones",
+  "notifications.pause.viewAll": "Ver todas",
   "notifications.pause.active":
     "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
   "notifications.pause.resume": "Reanudar notificaciones",
@@ -233,9 +240,10 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   pauseSchedule: [],
   pauseAllow: [],
   pauseWindow: null,
-  activePauses: [],
+  pauseShortcutId: null,
   pause: jest.fn(),
   resume: jest.fn(),
+  applyPauseShortcut: jest.fn(),
   savePauseSchedule: jest.fn(),
   savePauseWindow: jest.fn(),
   removePauseSchedule: jest.fn(),
@@ -662,13 +670,16 @@ describe("NotificationPanel", () => {
     expect(await screen.findByText("Sin mensajes nuevos.")).toBeInTheDocument();
   });
 
-  it("shows the CARE pending count in the header", () => {
+  it("keeps the CARE pending count out of the header", () => {
     useCounts({ count: 2, all: 2, system: 2, survey_pending: 2 });
     renderPanel();
 
-    expect(screen.getByTestId("notification-care-pending")).toHaveTextContent(
-      "Te faltan 2 preguntas de CARE",
-    );
+    expect(
+      screen.queryByTestId("notification-care-pending"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("notification-unread-count"),
+    ).not.toBeInTheDocument();
   });
 
   it("groups the inbox into collapsible sections and keeps pinned items first", async () => {
@@ -795,34 +806,46 @@ describe("NotificationPanel", () => {
     expect(hook.markAllRead).toHaveBeenLastCalledWith("messages");
   });
 
-  it("shows the unread count and the pause menu", () => {
+  it("opens the pause menu without a header unread badge", () => {
     useCounts({ count: 12, all: 12, social: 4, system: 8 });
     renderPanel();
 
-    expect(screen.getByTestId("notification-unread-count")).toHaveTextContent(
-      "12",
-    );
+    expect(
+      screen.queryByTestId("notification-unread-count"),
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByTestId("notification-pause"));
-    expect(screen.getByText("Pausar notificaciones")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId("notification-pause-30m"));
 
     expect(hook.pause).toHaveBeenCalledWith("30m");
   });
 
-  it("shows the remaining pause time and allows resuming", () => {
+  it("shows the DND status and allows resuming", () => {
     hook = makeHook({
       pausedUntil: new Date(Date.now() + 90 * 60000).toISOString(),
     });
     mockedUseNotifications.mockImplementation(() => hook);
     renderPanel();
 
+    expect(screen.getByTestId("notification-title")).toHaveTextContent(
+      "No molestar",
+    );
     expect(
       screen.getByTestId("notification-pause-remaining"),
-    ).toHaveTextContent("1 h 30 min");
+    ).toHaveTextContent("Activo durante: 1 h 30 min");
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-resume"));
 
     expect(hook.resume).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides resume when no pause is active", () => {
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+
+    expect(
+      screen.queryByTestId("notification-pause-resume"),
+    ).not.toBeInTheDocument();
   });
 
   it("offers the 15m, 30m, 1h, 2h and 8h presets", () => {
@@ -894,17 +917,41 @@ describe("NotificationPanel", () => {
     expect(hook.removePauseSchedule).toHaveBeenCalledWith("r1");
   });
 
-  it("lists the active pauses inside the pause menu", () => {
+  it("applies the last used routine from the shortcut row", () => {
     hook = makeHook({
-      activePauses: [
+      pauseShortcutId: "r1",
+      pauseSchedule: [
         {
-          kind: "recurring",
           id: "r1",
           name: "Horario laboral",
           days: [0, 1, 2, 3, 4],
           start: "18:00",
           end: "08:00",
-          allow: [],
+        },
+      ],
+    });
+    mockedUseNotifications.mockImplementation(() => hook);
+    renderPanel();
+
+    fireEvent.click(screen.getByTestId("notification-pause"));
+    const shortcut = screen.getByTestId("notification-pause-shortcut");
+    expect(shortcut).toHaveTextContent("Horario laboral");
+    fireEvent.click(shortcut);
+
+    expect(hook.applyPauseShortcut).toHaveBeenCalledWith("r1");
+  });
+
+  it("disables every pause option while DND is active", () => {
+    hook = makeHook({
+      pausedUntil: new Date(Date.now() + 90 * 60000).toISOString(),
+      pauseShortcutId: "r1",
+      pauseSchedule: [
+        {
+          id: "r1",
+          name: "Horario laboral",
+          days: [0, 1, 2, 3, 4],
+          start: "18:00",
+          end: "08:00",
         },
       ],
     });
@@ -914,8 +961,29 @@ describe("NotificationPanel", () => {
     fireEvent.click(screen.getByTestId("notification-pause"));
 
     expect(
-      screen.getByTestId("notification-active-pause-item"),
-    ).toHaveTextContent("Horario laboral");
+      screen.queryByTestId("notification-active-pause-item"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("notification-pause-shortcut")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    ["15m", "30m", "1h", "2h", "8h"].forEach((preset) => {
+      expect(
+        screen.getByTestId(`notification-pause-${preset}`),
+      ).toHaveAttribute("aria-disabled", "true");
+    });
+    expect(screen.getByTestId("notification-pause-1d")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    expect(screen.getByTestId("notification-pause-custom")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    expect(screen.getByTestId("notification-pause-resume")).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 
   it("saves a recurring rule with the selected days", () => {

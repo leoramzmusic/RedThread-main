@@ -1213,6 +1213,12 @@
       "4h": "4 heures"
     },
     "pause": {
+      "dnd": "Ne pas déranger",
+      "activeFor": "Actif pendant : {{remaining}}",
+      "shortcut": "Routine rapide",
+      "summaryTitle": "Résumé de Ne pas déranger",
+      "whileAway": "Pendant votre absence, {{count}} notifications sont arrivées",
+      "viewAll": "Tout voir",
       "title": "Suspendre les notifications",
       "active": "Notifications suspendues : {{remaining}} · jusqu'à {{time}}",
       "resume": "Reprendre les notifications",

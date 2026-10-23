@@ -1204,6 +1204,12 @@
       "4h": "Sa'o'i 4"
     },
     "pause": {
+      "dnd": "Kar a dame",
+      "activeFor": "Yana aiki na: {{remaining}}",
+      "shortcut": "Saurin aiki",
+      "summaryTitle": "Taƙaitaccen Kar a dame",
+      "whileAway": "Yayin da ba ka nan, sanarwa {{count}} sun zo",
+      "viewAll": "Duba duka",
       "title": "Dakatar da sanarwa",
       "active": "An sanarwa ake tsayar: {{remaining}} · har zuwa {{time}}",
       "resume": "Ci gaba da sanarwa",

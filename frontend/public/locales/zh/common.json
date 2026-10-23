@@ -1244,6 +1244,12 @@
       "4h": "4 小时"
     },
     "pause": {
+      "dnd": "请勿打扰",
+      "activeFor": "持续：{{remaining}}",
+      "shortcut": "快捷日程",
+      "summaryTitle": "请勿打扰摘要",
+      "whileAway": "你离开期间收到了 {{count}} 条通知",
+      "viewAll": "查看全部",
       "title": "暂停通知",
       "active": "通知已暂停：{{remaining}} · 直到 {{time}}",
       "resume": "恢复通知",

@@ -1203,6 +1203,12 @@
       "4h": "4 jam"
     },
     "pause": {
+      "dnd": "Jangan ganggu",
+      "activeFor": "Aktif selama: {{remaining}}",
+      "shortcut": "Rutin pantas",
+      "summaryTitle": "Ringkasan Jangan ganggu",
+      "whileAway": "Semasa anda tiada, {{count}} pemberitahuan masuk",
+      "viewAll": "Lihat semua",
       "title": "Jeda pemberitahuan",
       "active": "Pemberitahuan dijeda: {{remaining}} · sehingga {{time}}",
       "resume": "Sambung semula pemberitahuan",

@@ -1243,6 +1243,12 @@
       "4h": "4 時間"
     },
     "pause": {
+      "dnd": "おやすみモード",
+      "activeFor": "有効時間: {{remaining}}",
+      "shortcut": "クイックルーティン",
+      "summaryTitle": "おやすみモードのまとめ",
+      "whileAway": "離席中に{{count}}件の通知が届きました",
+      "viewAll": "すべて表示",
       "title": "通知を一時停止",
       "active": "通知は一時停止中：{{remaining}} · {{time}} まで",
       "resume": "通知を再開",

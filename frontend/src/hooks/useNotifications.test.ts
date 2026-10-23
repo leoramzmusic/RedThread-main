@@ -1,5 +1,5 @@
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { useNotifications } from "./useNotifications";
+import { PAUSE_STATE_EVENT, useNotifications } from "./useNotifications";
 import apiClient from "../services/api";
 
 jest.mock("../services/api", () => ({
@@ -369,6 +369,8 @@ it("unsnoozes a notification and refreshes", async () => {
 it("pauses notifications with a preset and stores the deadline", async () => {
   const until = new Date(Date.now() + 60 * 60 * 1000).toISOString();
   post.mockResolvedValue({ data: { paused_until: until } });
+  const onPauseState = jest.fn();
+  window.addEventListener(PAUSE_STATE_EVENT, onPauseState);
   const { result } = renderHook(() => useNotifications("all"));
   await waitFor(() => expect(result.current.loading).toBe(false));
 
@@ -378,6 +380,10 @@ it("pauses notifications with a preset and stores the deadline", async () => {
     duration: "1h",
   });
   expect(result.current.pausedUntil).toBe(until);
+  expect(onPauseState).toHaveBeenLastCalledWith(
+    expect.objectContaining({ detail: until }),
+  );
+  window.removeEventListener(PAUSE_STATE_EVENT, onPauseState);
 });
 
 it("pauses until an explicit time", async () => {
@@ -433,6 +439,51 @@ it("resumes notifications and rehydrates the inbox", async () => {
   expect(result.current.items.map((item) => item.id)).toEqual(["n1"]);
   expect(result.current.counts.count).toBe(1);
   expect(result.current.pausedUntil).toBeNull();
+});
+
+it("reads the last used shortcut and applies it now", async () => {
+  const until = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  get.mockImplementation((url: string) =>
+    url === "/notifications/unread-count"
+      ? Promise.resolve({
+          data: { ...counts, pause_shortcut_id: "r1" },
+        })
+      : Promise.resolve({ data: { items: [], next_cursor: null } }),
+  );
+  post.mockResolvedValue({
+    data: { paused_until: until, pause_shortcut_id: "r1" },
+  });
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(result.current.pauseShortcutId).toBe("r1");
+
+  await act(() => result.current.applyPauseShortcut("r1"));
+
+  expect(post).toHaveBeenCalledWith("/notifications/pause/schedule/r1/apply");
+  expect(result.current.pausedUntil).toBe(until);
+});
+
+it("emits the grouped summary after resuming", async () => {
+  const summary = {
+    from: "2026-10-19T09:00:00+00:00",
+    to: "2026-10-19T11:00:00+00:00",
+    messages: 1,
+    social: 2,
+    system: 1,
+    total: 4,
+  };
+  del.mockResolvedValue({ data: { paused_until: null, summary } });
+  const listener = jest.fn();
+  window.addEventListener("notifications-pause-summary", listener);
+  const { result } = renderHook(() => useNotifications("all"));
+  await waitFor(() => expect(result.current.loading).toBe(false));
+
+  await act(() => result.current.resume());
+
+  expect(listener).toHaveBeenCalledTimes(1);
+  const event = listener.mock.calls[0][0] as CustomEvent;
+  expect(event.detail).toEqual(summary);
+  window.removeEventListener("notifications-pause-summary", listener);
 });
 
 it("saves a recurring pause schedule", async () => {

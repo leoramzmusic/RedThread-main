@@ -1245,6 +1245,12 @@
       "4h": "4 timmar"
     },
     "pause": {
+      "dnd": "Stör inte",
+      "activeFor": "Aktiv i: {{remaining}}",
+      "shortcut": "Snabb rutin",
+      "summaryTitle": "Sammanfattning av Stör inte",
+      "whileAway": "Medan du var borta kom {{count}} aviseringar",
+      "viewAll": "Visa alla",
       "title": "Pausa aviseringar",
       "active": "Aviseringar pausade: {{remaining}} · till {{time}}",
       "resume": "Återuppta aviseringar",

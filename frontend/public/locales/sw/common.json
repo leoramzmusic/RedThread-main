@@ -1204,6 +1204,12 @@
       "4h": "Saa 4"
     },
     "pause": {
+      "dnd": "Usinisumbue",
+      "activeFor": "Inafanya kazi kwa: {{remaining}}",
+      "shortcut": "Ratiba ya haraka",
+      "summaryTitle": "Muhtasari wa Usinisumbue",
+      "whileAway": "Ulipokuwa mbali, arifa {{count}} zimefika",
+      "viewAll": "Tazama zote",
       "title": "Sitisha arifa",
       "active": "Arifa zimesitishwa: {{remaining}} · hadi {{time}}",
       "resume": "Rejesha arifa",

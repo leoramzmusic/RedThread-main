@@ -1204,6 +1204,12 @@
       "4h": "4 oras"
     },
     "pause": {
+      "dnd": "Huwag abalahin",
+      "activeFor": "Aktibo nang: {{remaining}}",
+      "shortcut": "Mabilis na routine",
+      "summaryTitle": "Buod ng Huwag abalahin",
+      "whileAway": "Habang wala ka, {{count}} notification ang dumating",
+      "viewAll": "Tingnan lahat",
       "title": "I-pause ang mga notification",
       "active": "Naka-pause ang mga notification: {{remaining}} · hanggang {{time}}",
       "resume": "Ipagpatuloy ang mga notification",

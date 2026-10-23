@@ -16,7 +16,7 @@ def _user():
 
 
 def _settings_context(
-    mutes=None, master=True, paused_until=None, schedule=None
+    mutes=None, master=True, paused_until=None, schedule=None, shortcut_id=None
 ) -> dict:
     return {
         "mutes": mutes or {},
@@ -27,6 +27,7 @@ def _settings_context(
         "pause_schedule": schedule or [],
         "pause_window": {"start": None, "end": None},
         "active_pauses": [],
+        "pause_shortcut_id": shortcut_id,
     }
 
 
@@ -431,6 +432,151 @@ async def test_delete_pause_schedule_route_removes_rule():
         out = await api.delete_pause_schedule_route("r1", _user())
     assert out["pause_schedule"] == remaining
     remove.assert_awaited_once_with("u1", "r1")
+
+
+@pytest.mark.asyncio
+async def test_apply_pause_shortcut_tracks_last_used_and_pauses():
+    rule = {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
+    settings = SimpleNamespace(
+        notification_pause_schedule=[rule],
+        notification_pause_last_used_id=None,
+        save=AsyncMock(),
+    )
+    end = datetime(2030, 10, 19, 18, 0)
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(
+        api.ns, "next_pause_rule_end", return_value=end
+    ), patch.object(
+        api.ns, "pause_notifications", new=AsyncMock()
+    ) as pause, patch.object(
+        api,
+        "_pause_state",
+        new=AsyncMock(return_value={"paused_until": "2030-10-19T18:00:00+00:00"}),
+    ):
+        out = await api.apply_pause_schedule_route("r1", _user())
+
+    assert out["paused_until"] == "2030-10-19T18:00:00+00:00"
+    assert settings.notification_pause_last_used_id == "r1"
+    settings.save.assert_awaited_once()
+    pause.assert_awaited_once_with("u1", end)
+
+
+@pytest.mark.asyncio
+async def test_apply_pause_shortcut_unknown_rule_raises_404():
+    settings = SimpleNamespace(
+        notification_pause_schedule=[{"id": "other"}],
+        notification_pause_last_used_id=None,
+        save=AsyncMock(),
+    )
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ):
+        with pytest.raises(HTTPException) as exc:
+            await api.apply_pause_schedule_route("missing", _user())
+    assert exc.value.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_pause_summary_route_consumes_due_summary():
+    start = datetime(2026, 10, 19, 9, 0)
+    end = datetime.utcnow() - timedelta(minutes=1)
+    settings = SimpleNamespace(
+        notification_pause_summary_pending=True,
+        notification_pause_summary_from=start,
+        notification_pause_summary_until=end,
+        save=AsyncMock(),
+    )
+    summary = {
+        "from": "2026-10-19T09:00:00+00:00",
+        "to": end.replace(tzinfo=timezone.utc).isoformat(),
+        "messages": 1,
+        "social": 2,
+        "system": 0,
+        "total": 3,
+    }
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(
+        api, "_pause_summary", new=AsyncMock(return_value=summary)
+    ) as build:
+        out = await api.pause_summary_route(_user())
+
+    assert out == {"summary": summary}
+    assert settings.notification_pause_summary_pending is False
+    assert settings.notification_pause_summary_from is None
+    assert settings.notification_pause_summary_until is None
+    settings.save.assert_awaited_once()
+    build.assert_awaited_once_with("u1", start, end)
+
+
+@pytest.mark.asyncio
+async def test_pause_summary_route_keeps_pending_before_expiry():
+    settings = SimpleNamespace(
+        notification_pause_summary_pending=True,
+        notification_pause_summary_from=datetime.utcnow() - timedelta(minutes=5),
+        notification_pause_summary_until=datetime.utcnow() + timedelta(minutes=5),
+        save=AsyncMock(),
+    )
+    with patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(api, "_pause_summary", new=AsyncMock()) as build:
+        out = await api.pause_summary_route(_user())
+
+    assert out == {"summary": None}
+    assert settings.notification_pause_summary_pending is True
+    settings.save.assert_not_awaited()
+    build.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_resume_returns_summary_and_clears_pending():
+    start = datetime(2026, 10, 19, 9, 0)
+    end = datetime(2026, 10, 19, 18, 0)
+    settings = SimpleNamespace(
+        notification_pause_summary_pending=True,
+        notification_pause_summary_from=start,
+        notification_pause_summary_until=end,
+        save=AsyncMock(),
+    )
+    context = {
+        **_settings_context(),
+        "paused_from": start,
+        "paused_until": end,
+    }
+    summary = {"total": 2, "messages": 0, "social": 2, "system": 0}
+    with patch.object(
+        api, "_notification_settings", new=AsyncMock(return_value=context)
+    ), patch.object(
+        api, "_pause_summary", new=AsyncMock(return_value=summary)
+    ), patch.object(
+        api.ns, "resume_notifications", new=AsyncMock()
+    ), patch.object(
+        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
+    ), patch.object(
+        api, "_pause_state", new=AsyncMock(return_value={"paused_until": None})
+    ):
+        out = await api.resume_notifications_route(_user())
+
+    assert out["summary"] == summary
+    assert out["paused_until"] is None
+    assert settings.notification_pause_summary_pending is False
+    settings.save.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_unread_count_exposes_pause_shortcut():
+    def fake_find(query):
+        return SimpleNamespace(count=AsyncMock(return_value=0))
+
+    with patch.object(api.Notification, "find", side_effect=fake_find), patch.object(
+        api,
+        "_notification_settings",
+        new=AsyncMock(return_value=_settings_context(shortcut_id="r1")),
+    ), patch.object(api, "_survey_pending", new=AsyncMock(return_value=0)):
+        out = await api.get_unread_count(current_user=_user())
+
+    assert out["pause_shortcut_id"] == "r1"
 
 
 @pytest.mark.asyncio

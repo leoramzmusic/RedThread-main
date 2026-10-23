@@ -1204,6 +1204,12 @@
       "4h": "4 ሰዓት"
     },
     "pause": {
+      "dnd": "አትረብሸኝ",
+      "activeFor": "ለ{{remaining}} ንቁ ነው",
+      "shortcut": "ፈጣን ልማድ",
+      "summaryTitle": "የአትረብሸኝ ማጠቃለያ",
+      "whileAway": "በሌለህበት ጊዜ {{count}} ማሳወቂያዎች መጡ",
+      "viewAll": "ሁሉንም ይመልከቱ",
       "title": "ማሳወቂያዎችን ለጊዜው አቁም",
       "active": "ማሳወቂያዎች ቆመዋል: {{remaining}} · እስከ {{time}}",
       "resume": "ማሳወቂያዎችን ቀጥል",

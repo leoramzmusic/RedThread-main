@@ -115,6 +115,9 @@ async def _notification_settings(user_id: str) -> Dict[str, Any]:
     window = ns.effective_pause_window(settings)
     raw_from = getattr(settings, "notifications_paused_from", None)
     raw_until = getattr(settings, "notifications_paused_until", None)
+    pauses = ns.active_pauses(settings)
+    if settings is not None and ns.remember_active_pause(settings, pauses):
+        await settings.save()
     return {
         "mutes": mutes,
         "master": master,
@@ -126,7 +129,10 @@ async def _notification_settings(user_id: str) -> Dict[str, Any]:
             "start": _iso_utc(raw_from) if raw_from else None,
             "end": _iso_utc(raw_until) if raw_until else None,
         },
-        "active_pauses": _serialize_active_pauses(ns.active_pauses(settings)),
+        "active_pauses": _serialize_active_pauses(pauses),
+        "pause_shortcut_id": getattr(
+            settings, "notification_pause_last_used_id", None
+        ),
     }
 
 
@@ -180,6 +186,31 @@ def _compose_counts(
         "messages": messages,
         "system": system,
         "survey_pending": survey_pending,
+    }
+
+
+async def _pause_summary(
+    user_id: str, start: datetime, end: datetime
+) -> Dict[str, Any]:
+    """Grouped counts of notifications received inside a pause window."""
+    base = ns.visible_filter(user_id)
+    base["created_at"] = {"$gte": start, "$lte": end}
+    social = await Notification.find(
+        {**base, "type": {"$in": _bucket_types("social")}}
+    ).count()
+    messages = await Notification.find(
+        {**base, "type": {"$in": ["message"]}}
+    ).count()
+    system = await Notification.find(
+        {**base, "type": {"$in": _bucket_types("system")}}
+    ).count()
+    return {
+        "from": _iso_utc(start),
+        "to": _iso_utc(end),
+        "messages": messages,
+        "social": social,
+        "system": system,
+        "total": messages + social + system,
     }
 
 
@@ -330,6 +361,7 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
         "pause_schedule": context["pause_schedule"],
         "pause_window": context["pause_window"],
         "active_pauses": context["active_pauses"],
+        "pause_shortcut_id": context["pause_shortcut_id"],
     }
 
 
@@ -359,7 +391,31 @@ async def _pause_state(user_id: str) -> Dict[str, Any]:
         "pause_schedule": context["pause_schedule"],
         "pause_window": context["pause_window"],
         "active_pauses": context["active_pauses"],
+        "pause_shortcut_id": context["pause_shortcut_id"],
     }
+
+
+@router.get("/pause/summary")
+async def pause_summary_route(current_user: User = Depends(get_current_user)):
+    """Consume the grouped summary of a pause that has already ended."""
+    uid = str(current_user.id)
+    settings = await UserSettings.find_one({"user_id": uid})
+    if settings is None or not getattr(
+        settings, "notification_pause_summary_pending", False
+    ):
+        return {"summary": None}
+
+    start = getattr(settings, "notification_pause_summary_from", None)
+    end = getattr(settings, "notification_pause_summary_until", None)
+    if start is None or end is None or end > datetime.utcnow():
+        return {"summary": None}
+
+    summary = await _pause_summary(uid, start, end)
+    settings.notification_pause_summary_pending = False
+    settings.notification_pause_summary_from = None
+    settings.notification_pause_summary_until = None
+    await settings.save()
+    return {"summary": summary if summary["total"] else None}
 
 
 @router.post("/pause")
@@ -389,9 +445,22 @@ async def pause_notifications_route(
 async def resume_notifications_route(
     current_user: User = Depends(get_current_user),
 ):
-    """Resume push notifications immediately."""
-    await ns.resume_notifications(str(current_user.id))
-    return await _pause_state(str(current_user.id))
+    """Resume push notifications immediately and return the grouped summary."""
+    uid = str(current_user.id)
+    context = await _notification_settings(uid)
+    start = context.get("paused_from")
+    summary = None
+    if start is not None:
+        summary = await _pause_summary(uid, start, datetime.utcnow())
+        settings = await UserSettings.find_one({"user_id": uid})
+        if settings is not None:
+            settings.notification_pause_summary_pending = False
+            settings.notification_pause_summary_from = None
+            settings.notification_pause_summary_until = None
+            await settings.save()
+    await ns.resume_notifications(uid)
+    state = await _pause_state(uid)
+    return {**state, "summary": summary if summary and summary["total"] else None}
 
 
 @router.post("/pause/schedule")
@@ -438,6 +507,32 @@ async def delete_pause_schedule_route(
     """Remove a scheduled pause by id."""
     uid = str(current_user.id)
     await ns.remove_pause_schedule(uid, rule_id)
+    return await _pause_state(uid)
+
+
+@router.post("/pause/schedule/{rule_id}/apply")
+async def apply_pause_schedule_route(
+    rule_id: str, current_user: User = Depends(get_current_user)
+):
+    """Apply a saved routine now, until its current or next window ends."""
+    uid = str(current_user.id)
+    settings = await UserSettings.find_one({"user_id": uid})
+    schedule = getattr(settings, "notification_pause_schedule", None) or []
+    rule = next((item for item in schedule if item.get("id") == rule_id), None)
+    if rule is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pause schedule not found",
+        )
+    end = ns.next_pause_rule_end(rule)
+    if end is None or end <= datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Pause schedule has no upcoming window",
+        )
+    settings.notification_pause_last_used_id = rule_id
+    await settings.save()
+    await ns.pause_notifications(uid, end)
     return await _pause_state(uid)
 
 

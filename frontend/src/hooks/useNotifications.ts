@@ -1,9 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
-import type {
-  ActivePause,
-  PauseScheduleRule,
-} from "../components/notifications/pauseTime";
+import type { PauseScheduleRule } from "../components/notifications/pauseTime";
+
+export const PAUSE_SUMMARY_EVENT = "notifications-pause-summary";
+export const PAUSE_STATE_EVENT = "notifications-pause-state";
+
+export interface PauseSummary {
+  from: string;
+  to: string;
+  messages: number;
+  social: number;
+  system: number;
+  total: number;
+}
 
 export interface NotificationCounts {
   count: number;
@@ -17,7 +26,7 @@ export interface NotificationCounts {
   pause_allow?: string[];
   pause_schedule?: PauseScheduleRule[];
   pause_window?: { start: string | null; end: string | null } | null;
-  active_pauses?: ActivePause[];
+  pause_shortcut_id?: string | null;
 }
 
 export interface NotificationActor {
@@ -71,7 +80,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     start: string | null;
     end: string | null;
   } | null>(null);
-  const [activePauses, setActivePauses] = useState<ActivePause[]>([]);
+  const [pauseShortcutId, setPauseShortcutId] = useState<string | null>(null);
 
   const filterRef = useRef(filter);
   const unreadRef = useRef(unread);
@@ -83,7 +92,12 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     setPauseSchedule(data.pause_schedule ?? []);
     setPauseAllow(data.pause_allow ?? []);
     setPauseWindow(data.pause_window ?? null);
-    setActivePauses(data.active_pauses ?? []);
+    setPauseShortcutId(data.pause_shortcut_id ?? null);
+    window.dispatchEvent(
+      new CustomEvent(PAUSE_STATE_EVENT, {
+        detail: data.paused_until ?? null,
+      }),
+    );
   }, []);
 
   const fetchAll = useCallback(async () => {
@@ -381,11 +395,32 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     try {
       const response = await apiClient.delete("/notifications/pause");
       applyPauseState(response.data);
+      if (response.data?.summary) {
+        window.dispatchEvent(
+          new CustomEvent(PAUSE_SUMMARY_EVENT, {
+            detail: response.data.summary,
+          }),
+        );
+      }
       await fetchAll();
     } catch {
       setError(true);
     }
   }, [applyPauseState, fetchAll]);
+
+  const applyPauseShortcut = useCallback(
+    async (id: string) => {
+      try {
+        const response = await apiClient.post(
+          `/notifications/pause/schedule/${id}/apply`,
+        );
+        applyPauseState(response.data);
+      } catch {
+        setError(true);
+      }
+    },
+    [applyPauseState],
+  );
 
   const savePauseSchedule = useCallback(
     async (rule: PauseScheduleRule) => {
@@ -451,7 +486,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     pauseSchedule,
     pauseAllow,
     pauseWindow,
-    activePauses,
+    pauseShortcutId,
     refresh: fetchAll,
     markRead,
     markBucket,
@@ -472,6 +507,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     restoreReminder,
     pause,
     resume,
+    applyPauseShortcut,
     savePauseSchedule,
     savePauseWindow,
     removePauseSchedule,

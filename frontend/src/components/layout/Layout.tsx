@@ -20,6 +20,7 @@ import {
   Avatar,
   Tooltip,
   Divider,
+  Button,
   ListItemIcon,
   Drawer,
   useMediaQuery,
@@ -61,6 +62,12 @@ import { isIconStyleId, IconStyleId } from "../motion/iconStyles";
 import { supportedLanguages } from "../../config/languages";
 import { persistLangLocal } from "../../utils/landingLanguage";
 import { applyNotificationSocketEvent } from "../../hooks/notificationSync";
+import { usePauseExpiry } from "../../hooks/usePauseExpiry";
+import {
+  PAUSE_STATE_EVENT,
+  PAUSE_SUMMARY_EVENT,
+  type PauseSummary,
+} from "../../hooks/useNotifications";
 import { orbisLayer } from "../../styles/glass";
 
 const NotificationPanel = lazy(
@@ -90,7 +97,7 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const dispatch = useDispatch();
   const { t } = useTranslation("common");
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   useLanguageFallback(false);
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
@@ -187,6 +194,7 @@ export default function Layout({ children }: LayoutProps) {
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [pausedUntil, setPausedUntil] = useState<string | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -206,6 +214,7 @@ export default function Layout({ children }: LayoutProps) {
     try {
       const response = await apiClient.get("/notifications/unread-count");
       setUnreadCount(response.data.count);
+      setPausedUntil(response.data.paused_until ?? null);
       window.dispatchEvent(new CustomEvent("notifications-sync"));
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -219,6 +228,90 @@ export default function Layout({ children }: LayoutProps) {
       void fetchUnreadCount();
     }, 500);
   }, [fetchUnreadCount]);
+
+  const showPauseSummary = useCallback(
+    (summary: PauseSummary) => {
+      if (!summary.total) return;
+      enqueueSnackbar(
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+            {t("notifications.pause.summaryTitle", "Resumen de No molestar")}
+          </Typography>
+          <Typography variant="body2">
+            {t(
+              "notifications.pause.whileAway",
+              "Mientras no molestabas llegaron {{count}} notificaciones",
+              { count: summary.total },
+            )}
+          </Typography>
+        </Box>,
+        {
+          variant: "info",
+          autoHideDuration: 9000,
+          action: (key) => (
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setNotificationOpen(true);
+                closeSnackbar(key);
+              }}
+            >
+              {t("notifications.pause.viewAll", "Ver todas")}
+            </Button>
+          ),
+        },
+      );
+    },
+    [closeSnackbar, enqueueSnackbar, t],
+  );
+
+  const consumePauseSummary = useCallback(async () => {
+    if (!isAuthenticated) return;
+    try {
+      const response = await apiClient.get("/notifications/pause/summary");
+      const summary = response.data?.summary as PauseSummary | null;
+      if (summary) showPauseSummary(summary);
+    } catch {
+      // The next refresh retries; a missing summary must never block the app.
+    }
+  }, [isAuthenticated, showPauseSummary]);
+
+  const handlePauseExpired = useCallback(async () => {
+    await fetchUnreadCount();
+    await consumePauseSummary();
+  }, [consumePauseSummary, fetchUnreadCount]);
+
+  usePauseExpiry(pausedUntil, handlePauseExpired);
+
+  const consumeSummaryRef = useRef(consumePauseSummary);
+
+  useEffect(() => {
+    consumeSummaryRef.current = consumePauseSummary;
+  }, [consumePauseSummary]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    void consumeSummaryRef.current();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const onSummary = (event: Event) => {
+      const summary = (event as CustomEvent<PauseSummary>).detail;
+      if (summary) showPauseSummary(summary);
+    };
+    window.addEventListener(PAUSE_SUMMARY_EVENT, onSummary);
+    return () => window.removeEventListener(PAUSE_SUMMARY_EVENT, onSummary);
+  }, [showPauseSummary]);
+
+  useEffect(() => {
+    const onPauseState = (event: Event) => {
+      const until = (event as CustomEvent<string | null>).detail;
+      setPausedUntil(until ?? null);
+    };
+    window.addEventListener(PAUSE_STATE_EVENT, onPauseState);
+    return () => window.removeEventListener(PAUSE_STATE_EVENT, onPauseState);
+  }, []);
 
   // Fetch the badge count on mount and whenever auth changes
   useEffect(() => {

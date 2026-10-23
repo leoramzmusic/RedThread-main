@@ -1498,6 +1498,12 @@
       "4h": "4 hours"
     },
     "pause": {
+      "dnd": "Do Not Disturb",
+      "activeFor": "Active for: {{remaining}}",
+      "shortcut": "Quick routine",
+      "summaryTitle": "Do Not Disturb summary",
+      "whileAway": "While you were away, {{count}} notifications arrived",
+      "viewAll": "View all",
       "title": "Pause notifications",
       "active": "Notifications paused: {{remaining}} · until {{time}}",
       "resume": "Resume notifications",

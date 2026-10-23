@@ -1245,6 +1245,12 @@
       "4h": "4 uur"
     },
     "pause": {
+      "dnd": "Niet storen",
+      "activeFor": "Actief voor: {{remaining}}",
+      "shortcut": "Snelle routine",
+      "summaryTitle": "Samenvatting van Niet storen",
+      "whileAway": "Terwijl je weg was, zijn er {{count}} meldingen binnengekomen",
+      "viewAll": "Alles bekijken",
       "title": "Meldingen pauzeren",
       "active": "Meldingen gepauzeerd: {{remaining}} · tot {{time}}",
       "resume": "Meldingen hervatten",

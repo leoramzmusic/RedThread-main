@@ -1203,6 +1203,12 @@
       "4h": "4 haora"
     },
     "pause": {
+      "dnd": "Kaua e whakararu",
+      "activeFor": "Hohe mō: {{remaining}}",
+      "shortcut": "Mahi tere",
+      "summaryTitle": "Whakarāpopototanga Kaua e whakararu",
+      "whileAway": "I a koe e ngaro ana, {{count}} ngā whakamōhio i tae mai",
+      "viewAll": "Tirohia katoa",
       "title": "Whakatāroa ngā whakamōhiotanga",
       "active": "Kua whakatāroa ngā whakamōhiotanga: {{remaining}} · tae noa ki {{time}}",
       "resume": "Whakaara anō ngā whakamōhiotanga",
