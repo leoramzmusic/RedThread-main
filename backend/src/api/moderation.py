@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import datetime
+from typing import Optional
 from src.models.user import User
 from src.models.report import Report
 from src.models.match import Match, MatchStatus
+from src.models.notification import Notification
 from src.api.auth import get_current_user
 from src.services.conversation_service import ensure_match_conversation
 from pydantic import BaseModel
@@ -14,6 +16,7 @@ class ReportCreate(BaseModel):
     reported_user_id: str
     reason: str
     description: str = None
+    report_type: Optional[str] = "other"
 
 
 class BlockRequest(BaseModel):
@@ -27,11 +30,11 @@ async def report_user(
     """Report a user"""
 
     # Check if already reported
-    existing_report = await Report.find_one(
-        Report.reporter_id == str(current_user.id),
-        Report.reported_user_id == report_data.reported_user_id,
-        Report.status == "pending",
-    )
+    existing_report = await Report.find_one({
+        "reporter_id": str(current_user.id),
+        "reported_user_id": report_data.reported_user_id,
+        "status": "pending",
+    })
 
     if existing_report:
         return {"message": "Report already submitted"}
@@ -41,10 +44,22 @@ async def report_user(
         reported_user_id=report_data.reported_user_id,
         reason=report_data.reason,
         description=report_data.description,
+        report_type=report_data.report_type or report_data.reason,
         created_at=datetime.utcnow(),
     )
 
     await report.insert()
+
+    notification = Notification(
+        recipient_type="employee",
+        recipient_id="moderators_group",
+        category="operational",
+        content=f"New report submitted against user {report_data.reported_user_id}",
+        priority="P1",
+        action_url=f"/portal-redthread/denuncias/{str(report.id)}",
+        action_label="Open Report"
+    )
+    await notification.insert()
 
     return {"message": "Report submitted successfully"}
 
