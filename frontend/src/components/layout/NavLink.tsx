@@ -1,72 +1,84 @@
-import { Box, alpha } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box, alpha } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 interface NavLinkProps {
   label: string;
   active: boolean;
   onClick: () => void;
+  icon?: React.ReactElement;
 }
 
-export default function NavLink({ label, active, onClick }: NavLinkProps) {
+export default function NavLink({
+  label,
+  active,
+  onClick,
+  icon,
+}: NavLinkProps) {
   const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const isDark = theme.palette.mode === "dark";
   const primary = theme.palette.primary.main;
 
-  const baseColor = isDark ? 'rgba(255,255,255,0.74)' : 'rgba(33,33,33,0.74)';
-  const hoverColor = isDark ? '#FFFFFF' : '#111111';
+  const baseColor = isDark ? "rgba(255,255,255,0.65)" : "rgba(33,33,33,0.65)";
+  const hoverColor = isDark ? "#FFFFFF" : "#111111";
 
   return (
     <Box
       onClick={onClick}
       sx={{
-        position: 'relative',
-        cursor: 'pointer',
-        userSelect: 'none',
-        whiteSpace: 'nowrap',
+        position: "relative",
+        cursor: "pointer",
+        userSelect: "none",
+        whiteSpace: "nowrap",
         flexShrink: 0,
-        px: 1.4,
-        py: 0.8,
-        borderRadius: '999px',
-        fontSize: '0.875rem',
+        px: active ? 1.5 : 1,
+        py: 0.75,
+        fontSize: "0.875rem",
         fontWeight: active ? 700 : 500,
-        letterSpacing: '0.2px',
+        letterSpacing: "0.2px",
         color: active ? primary : baseColor,
-        background: active
-          ? `linear-gradient(90deg, ${alpha(primary, 0.2)}, ${alpha(primary, 0.04)})`
-          : 'transparent',
-        transition: 'background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease',
-        '&:hover': {
-          background: `linear-gradient(90deg, ${alpha(primary, 0.12)}, ${alpha(primary, 0.02)})`,
+        background: "transparent",
+        borderRadius: 0,
+        transition: "color 0.2s ease, padding 0.2s ease",
+        "&:hover": {
+          background: "transparent",
           color: active ? primary : hoverColor,
-          textShadow: isDark
-            ? `0 0 18px ${alpha(primary, 0.65)}`
-            : `0 0 14px ${alpha(primary, 0.45)}`,
-          transform: 'translateY(-1px)',
-          '&::after': { width: '100%', left: 0 },
+          transform: "none",
+          "&::after": { width: "100%", left: 0 },
         },
-        // Animated thread underline in the accent color of the active theme
-        '&::after': {
+        // Línea inferior estilo Facebook que se expande al hacer hover o está activa
+        "&::after": {
           content: '""',
-          position: 'absolute',
-          left: active ? '18%' : '50%',
-          bottom: '3px',
+          position: "absolute",
+          left: 0,
+          bottom: 0,
           height: 2,
-          width: active ? '64%' : '0%',
-          borderRadius: '999px',
+          width: active ? "100%" : "0%",
+          borderRadius: "1px",
           background: `linear-gradient(90deg, ${primary}, ${alpha(primary, 0.35)})`,
-          boxShadow: `0 0 8px ${alpha(primary, 0.8)}`,
-          transition: 'width 0.3s ease, left 0.3s ease',
-          animation: active ? 'rtNavThread 0.5s ease' : undefined,
+          boxShadow: active ? `0 0 8px ${alpha(primary, 0.8)}` : "none",
+          transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         },
-        '@media (prefers-reduced-motion: no-preference)': {
-          '@keyframes rtNavThread': {
-            from: { width: '0%', left: '50%' },
-            to: { width: '64%', left: '18%' },
-          },
+        "@media (prefers-reduced-motion: no-preference)": {
+          "&:hover::after": { width: "100%", left: 0 },
         },
       }}
     >
-      {label}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        {icon && (
+          <Box
+            sx={{
+              fontSize: active ? "1.1rem" : "1rem",
+              color: active ? primary : baseColor,
+              transition: "color 0.2s ease",
+            }}
+          >
+            {icon}
+          </Box>
+        )}
+        {active && label ? (
+          <Box sx={{ ml: icon ? 0.5 : 0, minWidth: 0 }}>{label}</Box>
+        ) : null}
+      </Box>
     </Box>
   );
 }

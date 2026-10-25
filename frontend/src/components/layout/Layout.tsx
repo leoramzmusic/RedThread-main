@@ -37,6 +37,9 @@ import {
   Favorite as FavoriteBorderIcon,
   ChatBubble as ChatBubbleIcon,
   Language as TranslateIcon,
+  Explore as ExploreIcon,
+  Event as EventIcon,
+  Assignment as AssignmentIcon,
 } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import BottomSheet from "../shared/BottomSheet";
@@ -606,24 +609,28 @@ export default function Layout({ children }: LayoutProps) {
                     label: t("nav.home", "Inicio"),
                     path: "/home",
                     optional: false,
+                    icon: <HomeIcon className="rt-dash" />,
                   },
                   {
                     id: "discover",
                     label: t("nav.discover", "Descubrir"),
                     path: "/discover",
                     optional: false,
+                    icon: <ExploreIcon className="rt-compass" />,
                   },
                   {
                     id: "events",
                     label: t("nav.events", "Eventos"),
                     path: "/events",
                     optional: false,
+                    icon: <EventIcon className="rt-flip" />,
                   },
                   {
                     id: "plans",
                     label: t("nav.plans", "Planes"),
                     path: "/plans",
                     optional: false,
+                    icon: <AssignmentIcon className="rt-gem" />,
                   },
                   {
                     id: "favorites",
@@ -656,6 +663,7 @@ export default function Layout({ children }: LayoutProps) {
                       label={link.label}
                       active={router.pathname === link.path}
                       onClick={() => router.push(link.path)}
+                      icon={link.icon}
                     />
                   ))}
               </Box>
