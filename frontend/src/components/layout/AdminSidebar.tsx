@@ -186,6 +186,12 @@ export default function AdminSidebar({
       path: "/portal-redthread",
     },
     {
+      id: "notificaciones",
+      label: "Notificaciones",
+      icon: <NotificationsIcon className="rt-bell" />,
+      path: "/portal-redthread/notifications",
+    },
+    {
       id: "mi-perfil",
       label: "Mi perfil",
       icon: <AccountBoxIcon />,
