@@ -186,10 +186,102 @@ export default function AdminSidebar({
       path: "/portal-redthread",
     },
     {
-      id: "notificaciones",
-      label: "Notificaciones",
+      id: "usuarios-notifications",
+      label: "🔔 Usuarios",
       icon: <NotificationsIcon className="rt-bell" />,
-      path: "/portal-redthread/notifications",
+      children: [
+        {
+          id: "usuarios-dash",
+          label: "Dashboard",
+          icon: <DashboardIcon />,
+          path: "/portal-redthread/notifications/usuarios",
+        },
+        {
+          id: "usuarios-crear",
+          label: "Crear Notificación",
+          icon: <CampaignIcon />,
+          path: "/portal-redthread/notifications/usuarios/crear",
+        },
+        {
+          id: "usuarios-campanas",
+          label: "Campañas",
+          icon: <CampaignIcon />,
+          path: "/portal-redthread/notifications/usuarios/campanas",
+        },
+        {
+          id: "usuarios-audiencias",
+          label: "Audiencias",
+          icon: <PeopleIcon />,
+          path: "/portal-redthread/notifications/usuarios/audiencias",
+        },
+        {
+          id: "usuarios-plantillas",
+          label: "Plantillas",
+          icon: <DescriptionIcon />,
+          path: "/portal-redthread/notifications/usuarios/plantillas",
+        },
+        {
+          id: "usuarios-historial",
+          label: "Historial",
+          icon: <HistoryIcon />,
+          path: "/portal-redthread/notifications/usuarios/historial",
+        },
+        {
+          id: "usuarios-metricas",
+          label: "Métricas",
+          icon: <BarChartIcon />,
+          path: "/portal-redthread/notifications/usuarios/metricas",
+        },
+      ],
+    },
+    {
+      id: "empleados-notifications",
+      label: "🛡️ Empleados",
+      icon: <SecurityIcon className="rt-shield" />,
+      children: [
+        {
+          id: "empleados-dash",
+          label: "Dashboard",
+          icon: <DashboardIcon />,
+          path: "/portal-redthread/notifications/empleados",
+        },
+        {
+          id: "empleados-crear",
+          label: "Crear Notificación",
+          icon: <CampaignIcon />,
+          path: "/portal-redthread/notifications/empleados/crear",
+        },
+        {
+          id: "empleados-alertas",
+          label: "Alertas Operativas",
+          icon: <WarningIcon />,
+          path: "/portal-redthread/notifications/empleados/alertas",
+        },
+        {
+          id: "empleados-reglas",
+          label: "Reglas Automáticas",
+          icon: <PreferencesIcon />,
+          path: "/portal-redthread/notifications/empleados/reglas",
+        },
+        {
+          id: "empleados-plantillas",
+          label: "Plantillas",
+          icon: <DescriptionIcon />,
+          path: "/portal-redthread/notifications/empleados/plantillas",
+        },
+        {
+          id: "empleados-historial",
+          label: "Historial",
+          icon: <HistoryIcon />,
+          path: "/portal-redthread/notifications/empleados/historial",
+        },
+        {
+          id: "empleados-metricas",
+          label: "Métricas",
+          icon: <BarChartIcon />,
+          path: "/portal-redthread/notifications/empleados/metricas",
+        },
+      ],
     },
     {
       id: "mi-perfil",
@@ -304,7 +396,7 @@ export default function AdminSidebar({
     {
       id: "experiencia",
       label: "Experiencia del Usuario",
-      icon: <VerifiedUserIcon className="rt-shield" />, // Or Psychology if available
+      icon: <VerifiedUserIcon className="rt-shield" />,
       children: [
         {
           id: "experiencia-menus",
