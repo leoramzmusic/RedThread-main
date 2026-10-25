@@ -21,8 +21,15 @@ class CreateCampaignRequest(BaseModel):
     content: str
     media_url: Optional[str] = None
     action_url: Optional[str] = None
+    action_label: Optional[str] = None
     target_audience: Dict[str, Any] = {}
+    target_recipient_type: str = "user"
+    category: str = "announcement"
+    audience_filter: Dict[str, Any] = {}
+    content_i18n: Dict[str, Dict[str, str]] = {}
+    priority: str = "P2"
     scheduled_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
     tags: List[str] = []
 
 
@@ -86,7 +93,14 @@ async def crear_campana(
         content=campaign_data.content,
         media_url=campaign_data.media_url,
         action_url=campaign_data.action_url,
+        action_label=campaign_data.action_label,
         target_audience=campaign_data.target_audience,
+        target_recipient_type=campaign_data.target_recipient_type,
+        category=campaign_data.category,
+        audience_filter=campaign_data.audience_filter,
+        content_i18n=campaign_data.content_i18n,
+        priority=campaign_data.priority,
+        expires_at=campaign_data.expires_at,
         scheduled_at=campaign_data.scheduled_at,
         status=(
             CampaignStatus.SCHEDULED

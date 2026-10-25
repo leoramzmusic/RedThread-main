@@ -1,6 +1,6 @@
 from beanie import Document
 from pydantic import Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
 
@@ -44,25 +44,36 @@ class Campaign(Document):
     action_url: Optional[str] = None  # Deep link or URL
 
     # Targeting
+    target_recipient_type: str = "user"  # "user" | "employee"
+    category: str = "announcement"
+    audience_filter: Dict[str, Any] = Field(default_factory=dict)
     target_audience: dict = Field(
         default_factory=dict
     )  # Filters (e.g., {"is_premium": True, "country": "MX"})
     excluded_audience: dict = Field(default_factory=dict)
+
+    # Content i18n & Priority
+    content_i18n: Dict[str, Dict[str, str]] = Field(default_factory=dict)
+    priority: str = "P2"  # "P0" | "P1" | "P2" | "P3"
+    action_label: Optional[str] = None
+    expires_at: Optional[datetime] = None
 
     # Scheduling
     scheduled_at: Optional[datetime] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
-    # Metrics
+    # Metrics & Stats
     sent_count: int = 0
     delivered_count: int = 0
     opened_count: int = 0
     clicked_count: int = 0
     failed_count: int = 0
+    stats: Dict[str, int] = Field(default_factory=lambda: {"sent": 0, "delivered": 0, "seen": 0, "read": 0, "clicked": 0})
 
     # Metadata
-    created_by: str  # Admin User ID
+    created_by: Optional[str] = None  # Admin User ID
+    executed_by: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     tags: List[str] = Field(default_factory=list)
