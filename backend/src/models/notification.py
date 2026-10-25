@@ -1,23 +1,32 @@
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from typing import Optional, Dict, Any, List
 from beanie import Document
 from pydantic import Field
 
 
 class Notification(Document):
-    user_id: str  # The recipient of the notification
-    type: str  # 'like' | 'match' | 'message' | 'system' | 'survey' | 'promo' (legacy: 'view', 'reward')
+    recipient_type: str = "user"  # "user" | "employee"
+    recipient_id: Optional[str] = None
+    user_id: Optional[str] = None  # Legacy support
+    category: str = "announcement"  # "announcement" | "alert" | "operational" | "security" | "maintenance"
     content: str
-    related_user_id: Optional[str] = None  # Lead actor (compat)
+    seen_at: Optional[datetime] = None
+    read_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
+    priority: str = "P2"  # "P0" | "P1" | "P2" | "P3"
+    action_url: Optional[str] = None
+    action_label: Optional[str] = None
     is_read: bool = False
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    group_key: Optional[str] = (
-        None  # 'like:photo:{id}' | 'like:profile' | 'message:{conv_id}'
-    )
+
+    # Legacy compatibility fields if needed by existing code
+    type: Optional[str] = None
+    related_user_id: Optional[str] = None
+    group_key: Optional[str] = None
     actor_count: int = 1
-    actors: List[Dict[str, Any]] = Field(default_factory=list)  # cap 3
-    target_type: Optional[str] = None  # 'profile' | 'likes' | 'chat' | 'url'
+    actors: List[Dict[str, Any]] = Field(default_factory=list)
+    target_type: Optional[str] = None
     target_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
     archived_at: Optional[datetime] = None
@@ -28,8 +37,9 @@ class Notification(Document):
     class Settings:
         name = "notifications"
         indexes = [
+            [("recipient_type", 1), ("recipient_id", 1), ("is_read", 1), ("created_at", -1)],
+            [("user_id", 1), ("is_read", 1), ("created_at", -1)],
             [("user_id", 1), ("updated_at", -1)],
-            [("user_id", 1), ("is_read", 1)],
             [("user_id", 1), ("group_key", 1), ("updated_at", -1)],
             [("user_id", 1), ("archived_at", 1), ("updated_at", -1)],
             [("user_id", 1), ("pinned_at", -1), ("updated_at", -1)],
