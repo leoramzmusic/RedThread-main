@@ -178,6 +178,7 @@ from src.api import (
     icebreaker,  # New: Icebreaker
     games,  # New: Creative Identity Games
     employee_notifications,  # New: Employee Notification Center
+    admin_notification_kpis,  # New: Admin Notification KPIs
 )
 from src.api.admin import auth as admin_auth, care_analytics  # CARE Analytics
 from src.routers import boost  # Boost System
@@ -367,6 +368,16 @@ app.include_router(
     employee_notifications.router,
     prefix="/portal-redthread",
     tags=["Admin - Notifications"],
+)
+app.include_router(
+    admin_notification_kpis.router,
+    prefix="/api/admin/notifications",
+    tags=["Admin - Notification KPIs"],
+)
+app.include_router(
+    admin_notification_kpis.router,
+    prefix="/portal-redthread/notifications",
+    tags=["Admin - Notification KPIs"],
 )
 
 
