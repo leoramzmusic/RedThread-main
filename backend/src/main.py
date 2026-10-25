@@ -177,6 +177,7 @@ from src.api import (
     golth,  # New: Premium module
     icebreaker,  # New: Icebreaker
     games,  # New: Creative Identity Games
+    employee_notifications,  # New: Employee Notification Center
 )
 from src.api.admin import auth as admin_auth, care_analytics  # CARE Analytics
 from src.routers import boost  # Boost System
@@ -356,6 +357,17 @@ app.include_router(
     prefix="/admin/care-analytics",
     tags=["Admin - CARE Analytics"],
 )  # CARE Engine
+
+app.include_router(
+    employee_notifications.router,
+    prefix="/api",
+    tags=["Employee Notifications"],
+)
+app.include_router(
+    employee_notifications.router,
+    prefix="/portal-redthread",
+    tags=["Admin - Notifications"],
+)
 
 
 # Log request-validation (422) bodies to the console for faster diagnosis
