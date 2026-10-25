@@ -17,6 +17,7 @@ import {
   Skeleton,
   Fade,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   Assignment as SurveyIcon,
   Close as CloseIcon,
@@ -69,6 +70,8 @@ const FILTER_META = [
 export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const router = useRouter();
   const { t, i18n } = useTranslation("common");
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [filter, setFilter] = useState<string>("all");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -842,9 +845,9 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           role="group"
           aria-label={t("notifications.filters", "Filtrar notificaciones")}
           sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-            gap: 0.5,
+            display: "flex",
+            width: "100%",
+            gap: "4px",
             px: { xs: 1.5, sm: 2 },
             py: 1,
             borderBottom: "1px solid",
@@ -855,6 +858,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
             const active = filter === key;
             const count = counts[key];
             const label = t(`notifications.tabs.${key}`);
+            const hasCount = count > 0;
             return (
               <Chip
                 key={key}
@@ -863,55 +867,64 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                 aria-pressed={active}
                 title={label}
                 onClick={() => setFilter(key)}
-                icon={<Icon sx={{ fontSize: 17 }} />}
+                icon={<Icon sx={{ fontSize: active ? 18 : 17 }} />}
                 label={
                   <Box
                     component="span"
                     sx={{
                       display: "inline-flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      maxWidth: "100%",
+                      justifyContent: active ? "center" : "center",
+                      gap: active ? "6px" : "4px",
                       minWidth: 0,
                       whiteSpace: "nowrap",
+                      px: active ? "8px" : "4px",
                     }}
                   >
-                    <Box
-                      component="span"
-                      data-testid={`notification-chip-label-${key}`}
-                      sx={{
-                        display: "inline-block",
-                        maxWidth: active ? 200 : 0,
-                        minWidth: 0,
-                        opacity: active ? 1 : 0,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        transition: prefersReducedMotion
-                          ? "none"
-                          : "max-width 280ms cubic-bezier(0.2, 0, 0, 1), opacity 280ms cubic-bezier(0.2, 0, 0, 1)",
-                      }}
-                    >
-                      {label}
-                    </Box>
-                    {count > 0 && (
+                    {active && (
+                      <Box
+                        component="span"
+                        data-testid={`notification-chip-label-${key}`}
+                        sx={{
+                          display: "inline-block",
+                          maxWidth: "100px",
+                          minWidth: 0,
+                          opacity: 1,
+                          overflow: "hidden",
+                          textOverflow: "clip",
+                          whiteSpace: "nowrap",
+                          pl: "6px",
+                          transition: prefersReducedMotion
+                            ? "none"
+                            : "max-width 220ms cubic-bezier(0.2, 0, 0, 1), opacity 220ms cubic-bezier(0.2, 0, 0, 1)",
+                        }}
+                      >
+                        {label}
+                      </Box>
+                    )}
+                    {hasCount && (
                       <Box
                         component="span"
                         sx={{
-                          flexShrink: 0,
-                          ml: active ? 0.5 : 0,
-                          px: "5px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: "20px",
+                          height: "20px",
+                          ml: active ? "6px" : "4px",
                           borderRadius: "10px",
                           bgcolor: active
-                            ? "rgba(255,255,255,0.22)"
+                            ? "rgba(255,255,255,0.25)"
                             : "action.selected",
                           fontSize: "0.6875rem",
                           fontWeight: 700,
                           fontVariantNumeric: "tabular-nums",
                           lineHeight: "16px",
+                          opacity: 1,
+                          width: "20px",
                           transition: prefersReducedMotion
                             ? "none"
-                            : "margin-left 280ms cubic-bezier(0.2, 0, 0, 1)",
+                            : "opacity 220ms cubic-bezier(0.2, 0, 0, 1)",
                         }}
                       >
                         {count}
@@ -920,34 +933,52 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                   </Box>
                 }
                 sx={{
-                  width: "100%",
-                  maxWidth: "100%",
-                  height: 44,
-                  minWidth: 0,
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
                   justifyContent: "center",
+                  height: 44,
+                  flex: 1,
+                  width: active ? "auto" : "52px",
+                  minWidth: active ? "auto" : "52px",
+                  maxWidth: active ? "none" : "52px",
                   borderRadius: "999px",
                   fontSize: "0.8125rem",
                   fontWeight: active ? 700 : 600,
-                  pl: active ? 0.75 : 0.5,
-                  pr: active ? 0.75 : 0.5,
-                  bgcolor: active ? "primary.main" : "action.hover",
-                  color: active ? "primary.contrastText" : "text.secondary",
+                  pl: active ? "12px" : 0,
+                  pr: active ? "12px" : 0,
+                  bgcolor: active ? "primary.main" : "rgba(255,255,255,0.06)",
+                  color: active
+                    ? "#fff"
+                    : isDark
+                      ? "rgba(255,255,255,0.65)"
+                      : "rgba(0,0,0,0.65)",
                   transition: prefersReducedMotion
                     ? "none"
-                    : "background-color 280ms cubic-bezier(0.2, 0, 0, 1), color 280ms cubic-bezier(0.2, 0, 0, 1), padding 280ms cubic-bezier(0.2, 0, 0, 1)",
+                    : "width 220ms ease, padding 220ms ease, background-color 220ms ease, color 220ms ease",
                   "&:hover": {
-                    bgcolor: active ? "primary.dark" : "action.selected",
+                    bgcolor: active ? "primary.dark" : "rgba(0,0,0,0.04)",
                   },
                   "& .MuiChip-icon": {
                     flexShrink: 0,
-                    ml: active ? 0.25 : 0,
-                    mr: active ? 0.25 : 0,
-                    color: active ? "inherit" : "text.secondary",
+                    color: active
+                      ? "inherit"
+                      : isDark
+                        ? "rgba(255,255,255,0.65)"
+                        : "rgba(0,0,0,0.65)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1,
                   },
                   "& .MuiChip-label": {
                     minWidth: 0,
                     px: 0,
-                    overflow: "hidden",
+                    overflow: active ? "visible" : "hidden",
+                    mr: active ? "6px" : "4px",
+                    display: active ? "inline-flex" : "inline-flex",
+                    alignItems: active ? "center" : "center",
+                    gap: active ? "6px" : "4px",
                   },
                 }}
               />
@@ -1121,9 +1152,14 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                       onClickCapture={surveyClickCapture}
                       {...surveyHandlers}
                       sx={{
-                        borderBottom: "1px solid",
-                        borderColor: "divider",
-                        bgcolor: "action.hover",
+                        borderBottom: "none",
+                        bgcolor: "rgba(255, 255, 255, 0.02)",
+                        borderRadius: "8px",
+                        my: 0.5,
+                        mx: 1,
+                        "&:hover": {
+                          bgcolor: "rgba(255, 255, 255, 0.05)",
+                        },
                       }}
                     >
                       <ListItemIcon>

@@ -167,11 +167,11 @@ export default function Layout({ children }: LayoutProps) {
   const panelSurface: SxProps<Theme> = {
     bgcolor: lowPowerPanel
       ? isDark
-        ? "rgba(26,27,30,0.96)"
-        : "rgba(255,255,255,0.97)"
+        ? "rgba(26,27,30,0.70)"
+        : "rgba(255,255,255,0.70)"
       : isDark
-        ? "rgba(26,27,30,0.55)"
-        : "rgba(255,255,255,0.62)",
+        ? "rgba(26,27,30,0.35)"
+        : "rgba(255,255,255,0.40)",
     ...(lowPowerPanel
       ? {}
       : {
@@ -504,13 +504,12 @@ export default function Layout({ children }: LayoutProps) {
               // Móvil: sticky arriba (z-1200) para que no se encime con el contenido.
               position: { xs: "sticky", md: "fixed" },
               top: 0,
-              bgcolor: glassBg,
+              bgcolor: "transparent",
               backdropFilter: "blur(14px)",
               WebkitBackdropFilter: "blur(14px)",
               color: isDark ? "rgba(255,255,255,0.92)" : "rgba(33,33,33,0.87)",
-              borderBottom: "1px solid",
-              borderColor: dividerColor,
-              boxShadow: `0 1px 24px ${isDark ? "rgba(0,0,0,0.35)" : alpha(primary, 0.06)}`,
+              borderBottom: "none",
+              boxShadow: "none",
               minHeight: { xs: 60, sm: 72 },
               width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
               ml: { xs: 0, md: `${drawerWidth}px` },
@@ -1041,23 +1040,18 @@ export default function Layout({ children }: LayoutProps) {
             onClose={() => setNotificationOpen(false)}
             transitionDuration={{ enter: 280, exit: 280 }}
             elevation={0}
-            // Ensure it's below AppBar if needed, or adjust
-            sx={{ zIndex: (theme) => theme.zIndex.drawer }}
-            slotProps={{
-              backdrop: {
-                sx: { backgroundColor: "transparent" },
-              },
-              paper: {
-                sx: {
-                  width: 400,
-                  mt: { xs: "60px", sm: "72px" },
-                  height: { xs: "calc(100% - 60px)", sm: "calc(100% - 72px)" },
-                  ...panelSurface,
-                  borderTopLeftRadius: 28,
-                  borderBottomLeftRadius: 28,
-                  borderInlineStart: "1px solid",
-                  borderColor: "divider",
-                }, // Match fixed AppBar height + glass
+            sx={{
+              zIndex: (theme) => theme.zIndex.drawer,
+              "& .MuiDrawer-paper": {
+                width: 400,
+                mt: { xs: "60px", sm: "72px" },
+                height: { xs: "calc(100% - 60px)", sm: "calc(100% - 72px)" },
+                bgcolor: "transparent",
+                backdropFilter: "blur(var(--glass-g1-blur))",
+                WebkitBackdropFilter: "blur(var(--glass-g1-blur))",
+                borderRadius: 0,
+                border: "none",
+                boxShadow: "none",
               },
             }}
           >
@@ -1088,7 +1082,7 @@ export default function Layout({ children }: LayoutProps) {
           component="main"
           sx={{
             flexGrow: 1,
-            bgcolor: isAuthenticated ? "background.default" : "transparent",
+            bgcolor: "transparent",
             p: isAuthenticated ? { xs: 0, sm: 3 } : 0,
             pt: isAuthenticated ? { xs: 0, sm: 3 } : 0,
           }}

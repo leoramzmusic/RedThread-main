@@ -187,7 +187,7 @@ export default function AdminSidebar({
     },
     {
       id: "usuarios-notifications",
-      label: "🔔 Usuarios",
+      label: "Notificaciones Usuarios",
       icon: <NotificationsIcon className="rt-bell" />,
       children: [
         {
@@ -236,7 +236,7 @@ export default function AdminSidebar({
     },
     {
       id: "empleados-notifications",
-      label: "🛡️ Empleados",
+      label: "Notificaciones Empleados",
       icon: <SecurityIcon className="rt-shield" />,
       children: [
         {

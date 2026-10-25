@@ -10,6 +10,7 @@ import {
   IconButton,
   TextField,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   ArchiveOutlined,
   AssignmentOutlined,
@@ -134,6 +135,8 @@ export default function NotificationItem({
   onArchive,
 }: NotificationItemProps) {
   const { t, i18n } = useTranslation("common");
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const [reply, setReply] = useState("");
   const [expanded, setExpanded] = useState(false);
   const { anchorRef, handlers, onClickCapture } = useHoldToAct<HTMLLIElement>({
@@ -213,9 +216,11 @@ export default function NotificationItem({
         pl: 1,
         mx: 1,
         mb: isDense ? 0.25 : 0.75,
-        borderRadius: density === "dense" ? 14 : density === "sparse" ? 18 : 16,
+        borderRadius: density === "dense" ? 8 : density === "sparse" ? 12 : 10,
         border: "1px solid",
-        borderColor: selected ? "rgba(230,57,70,0.28)" : "divider",
+        borderColor: selected
+          ? "rgba(255,255,255,0.08)"
+          : "rgba(255,255,255,0.04)",
         borderInlineStart:
           priority === "P0"
             ? `3px solid ${liquidColors.primary}`
@@ -225,19 +230,28 @@ export default function NotificationItem({
         touchAction: "pan-y",
         WebkitTouchCallout: "none",
         transform: raised ? "translateY(-2px) scale(1.005)" : "none",
-        boxShadow: raised ? "0 12px 30px rgba(0,0,0,0.28)" : "none",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
         filter: dimmed ? "blur(1.5px)" : "none",
         opacity: dimmed ? 0.55 : priority === "P3" ? 0.88 : 1,
         pointerEvents: dimmed ? "none" : undefined,
         zIndex: raised ? 2 : "auto",
-        bgcolor: selected
-          ? "rgba(230,57,70,0.14)"
-          : notification.is_read
-            ? "transparent"
-            : "rgba(230,57,70,0.07)",
-        transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}, transform ${motionTokens.durations.micro}ms ${motionTokens.easing}, box-shadow ${motionTokens.durations.micro}ms ${motionTokens.easing}, filter ${motionTokens.durations.micro}ms ${motionTokens.easing}, opacity ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
+        bgcolor: isDark
+          ? selected
+            ? "rgba(255,255,255,0.05)"
+            : notification.is_read
+              ? "transparent"
+              : "rgba(255,255,255,0.025)"
+          : selected
+            ? "rgba(255,255,255,0.45)"
+            : notification.is_read
+              ? "transparent"
+              : "rgba(255,255,255,0.35)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        transition: `background-color ${motionTokens.durations.micro}ms ${motionTokens.easing}, transform ${motionTokens.durations.micro}ms ${motionTokens.easing}, border-color ${motionTokens.durations.micro}ms ${motionTokens.easing}, filter ${motionTokens.durations.micro}ms ${motionTokens.easing}, opacity ${motionTokens.durations.micro}ms ${motionTokens.easing}`,
         "&:hover": {
-          bgcolor: selected ? "rgba(230,57,70,0.18)" : "action.selected",
+          bgcolor: isDark ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.70)",
+          borderColor: "rgba(255,255,255,0.08)",
         },
         "&:hover .notification-hover-actions, &:focus-within .notification-hover-actions":
           {
@@ -308,6 +322,7 @@ export default function NotificationItem({
                 height: size,
                 borderRadius: "50%",
                 bgcolor: iconTint(notification.type),
+                opacity: 0.85,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -369,7 +384,7 @@ export default function NotificationItem({
                 fontWeight: notification.is_read ? 500 : 700,
                 fontSize: isDense ? "0.875rem" : "0.9375rem",
                 lineHeight: 1.35,
-                color: "text.primary",
+                color: isDark ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.95)",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
@@ -416,7 +431,7 @@ export default function NotificationItem({
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                   mt: 0.25,
-                  color: "text.secondary",
+                  color: isDark ? "rgba(255,255,255,0.70)" : "rgba(0,0,0,0.70)",
                   fontSize: isDense ? "0.75rem" : "0.8125rem",
                   lineHeight: 1.45,
                 }}

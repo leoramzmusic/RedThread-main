@@ -1,0 +1,156 @@
+/* ==========================================================================
+   RETH Unified Layout System (One Surface UI) — Master Canvas Edition
+   ========================================================================== */
+
+:root {
+  /* Master Canvas Background & Light Sources */
+  --master-canvas-bg:
+    radial-gradient(
+      circle at top center,
+      rgba(230, 57, 70, 0.08),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(127, 76, 165, 0.1),
+      transparent 40%
+    ),
+    linear-gradient(180deg, #070b1a 0%, #090d1f 50%, #060814 100%);
+
+  /* Surface Tokens (Surface Contrast Rule: Max 1 level difference from canvas) */
+  --surface-layout: transparent;
+  --surface-sidebar: transparent; /* Exactly identical luminance to canvas */
+  --surface-card: rgba(255, 255, 255, 0.03);
+  --surface-modal: rgba(255, 255, 255, 0.08);
+  --surface-overlay: rgba(0, 0, 0, 0.65);
+
+  /* System Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Elevation System (0 to 3) */
+  --elevation-0: none;
+  --elevation-1:
+    0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --elevation-2: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --elevation-3: 0 16px 48px rgba(0, 0, 0, 0.2);
+
+  /* Unified Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Glass Intensity Scale */
+  --glass-g0-bg: transparent;
+  --glass-g1-bg: transparent;
+  --glass-g1-blur: 16px;
+  --glass-g2-bg: rgba(255, 255, 255, 0.03);
+  --glass-g2-blur: 20px;
+  --glass-g3-bg: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.02)
+  );
+  --glass-g3-blur: 22px;
+
+  /* Motion System */
+  --motion-fast: 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-normal: 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-slow: 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-mode="dark"] {
+  --master-canvas-bg:
+    radial-gradient(
+      circle at top center,
+      rgba(230, 57, 70, 0.08),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(127, 76, 165, 0.1),
+      transparent 40%
+    ),
+    linear-gradient(180deg, #070b1a 0%, #090d1f 50%, #060814 100%);
+  --surface-card: rgba(255, 255, 255, 0.025);
+  --surface-modal: rgba(26, 27, 30, 0.85);
+}
+
+/* Master Canvas Root with Subtle Noise Texture Layer */
+.reth-canvas-root {
+  background: var(--master-canvas-bg);
+  min-height: 100vh;
+  color: var(--text-color, #f5f5f5);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.reth-canvas-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* 100% Transparent Layout Elements (Background Ownership Rule) */
+.reth-layout-shell,
+.reth-sidebar,
+.reth-navbar,
+.reth-footer {
+  background: var(--surface-layout) !important;
+  backdrop-filter: blur(var(--glass-g1-blur));
+  -webkit-backdrop-filter: blur(var(--glass-g1-blur));
+  border: none !important;
+  box-shadow: none !important;
+  transition:
+    background var(--motion-normal),
+    backdrop-filter var(--motion-normal);
+}
+
+.reth-sidebar {
+  background: var(--surface-sidebar) !important;
+}
+
+.reth-card {
+  background: var(--surface-card);
+  backdrop-filter: blur(var(--glass-g2-blur));
+  -webkit-backdrop-filter: blur(var(--glass-g2-blur));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition:
+    transform var(--motion-normal),
+    box-shadow var(--motion-normal),
+    background var(--motion-normal);
+}
+
+.reth-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--elevation-2);
+}
+
+.reth-drawer,
+.reth-modal {
+  background: var(--surface-modal);
+  backdrop-filter: blur(var(--glass-g3-blur));
+  -webkit-backdrop-filter: blur(var(--glass-g3-blur));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-3);
+  border: none; /* Removed heavy silhouette outline */
+  transition:
+    transform var(--motion-slow),
+    opacity var(--motion-slow);
+}
