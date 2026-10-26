@@ -1,5 +1,4 @@
 import { ReactNode, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -46,46 +45,6 @@ interface ProfileMenuItem {
   icon: React.ReactElement;
   path: string;
 }
-
-const PROFILE_NAV_KEYFRAMES = {
-  "@keyframes rtPItemIn": {
-    from: { opacity: 0, transform: "translateY(8px)" },
-    to: { opacity: 1, transform: "translateY(0)" },
-  },
-  "@keyframes rtPThreadDraw": {
-    from: { transform: "scaleY(0)" },
-    to: { transform: "scaleY(1)" },
-  },
-  "@keyframes rtPShieldPulse": {
-    "0%, 100%": { transform: "scale(1)" },
-    "50%": { transform: "scale(1.15)" },
-  },
-  "@keyframes rtPDing": {
-    "0%, 92%, 100%": { transform: "rotate(0)" },
-    "94%": { transform: "rotate(-14deg)" },
-    "96%": { transform: "rotate(12deg)" },
-    "98%": { transform: "rotate(-6deg)" },
-  },
-  "@keyframes rtPLockWiggle": {
-    "0%, 100%": { transform: "rotate(0)" },
-    "25%": { transform: "rotate(-12deg)" },
-    "50%": { transform: "rotate(10deg)" },
-    "75%": { transform: "rotate(-6deg)" },
-  },
-  "@keyframes rtPSliders": {
-    "0%, 100%": { transform: "translateY(0) scaleY(1)" },
-    "25%": { transform: "translateY(-1px) scaleY(0.8)" },
-    "75%": { transform: "translateY(1px) scaleY(1.2)" },
-  },
-  "@keyframes rtPDrawerIn": {
-    from: { opacity: 0, transform: "translateX(-14px)" },
-    to: { opacity: 1, transform: "translateX(0)" },
-  },
-};
-
-const PROFILE_NAV_CLASSES = {
-  "& .rt-profile-bell": { animation: "rtPDing 14s ease-in-out infinite" },
-};
 
 export default function ProfileLayout({ children }: ProfileLayoutProps) {
   const router = useRouter();
@@ -168,8 +127,9 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
 
   let navIndex = 0;
 
-  const drawer = (
+  const drawerContent = (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Header */}
       <Box
         sx={{
           p: 2,
@@ -190,9 +150,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
         />
         <Box
           onClick={() => router.push("/home")}
-          aria-label="Logo Reth"
-          role="button"
-          tabIndex={0}
           sx={{
             position: "relative",
             overflow: "hidden",
@@ -210,10 +167,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
               fontWeight: 700,
               fontSize: "24px",
               letterSpacing: "0.5px",
-              "&:hover": {
-                transform: "scale(1.05)",
-                filter: `drop-shadow(0 0 12px ${alpha(primary, 0.5)})`,
-              },
             }}
           >
             <Box component="span" sx={{ color: "primary.main" }}>
@@ -238,10 +191,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
           overflowX: "hidden",
           px: 1.5,
           flexGrow: 1,
-          "@media (prefers-reduced-motion: no-preference)": {
-            ...PROFILE_NAV_KEYFRAMES,
-            ...PROFILE_NAV_CLASSES,
-          },
         }}
       >
         {!collapsed && (
@@ -297,30 +246,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
                       "&.Mui-selected": {
                         bgcolor: alpha(primary, isDark ? 0.04 : 0.03),
                         backgroundImage: "none",
-                        "&:hover": {
-                          bgcolor: alpha(primary, isDark ? 0.06 : 0.05),
-                        },
-                        "&::before": {
-                          content: "none",
-                        },
-                      },
-                      "&:hover .rt-profile-settings": {
-                        transform: "rotate(90deg)",
-                      },
-                      "&:hover .rt-profile-shield": {
-                        animation:
-                          "rtPShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)",
-                      },
-                      "&:hover .rt-profile-bell": {
-                        animationPlayState: "paused",
-                      },
-                      "&:hover .rt-profile-lock": {
-                        animation:
-                          "rtPLockWiggle 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)",
-                      },
-                      "&:hover .rt-profile-sliders": {
-                        animation:
-                          "rtPSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)",
+                        "&::before": { content: "none" },
                       },
                     }}
                   >
@@ -453,9 +379,23 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
   return (
     <Box
       className="reth-canvas-root"
-      sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        position: "relative",
+      }}
     >
-      <Box sx={{ width: "100%", px: { xs: 1.5, sm: 2 }, py: 1, zIndex: 1200 }}>
+      {/* Navbar */}
+      <Box
+        sx={{
+          width: "100%",
+          px: { xs: 1.5, sm: 2 },
+          py: 1,
+          zIndex: 1200,
+          flexShrink: 0,
+        }}
+      >
         <Box sx={{ display: "flex", width: "100%", gap: "4px", minWidth: 0 }}>
           {navLinks.map((link) => (
             <NavLink
@@ -469,7 +409,8 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
         </Box>
       </Box>
 
-      <Box sx={{ display: "flex", flexGrow: 1, minHeight: 0 }}>
+      {/* Cuerpo */}
+      <Box sx={{ flexGrow: 1, minHeight: 0, position: "relative" }}>
         {!isMobile && (
           <Drawer
             variant="permanent"
@@ -493,7 +434,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
               },
             }}
           >
-            {drawer}
+            {drawerContent}
           </Drawer>
         )}
 
@@ -504,12 +445,14 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
             p: 3,
             width: { md: `calc(100% - ${drawerWidth}px)` },
             bgcolor: "transparent",
+            minHeight: 0,
           }}
         >
           {children}
         </Box>
       </Box>
 
+      {/* Footer */}
       <Box
         sx={{
           width: "100%",
@@ -518,7 +461,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
           borderTop: "1px solid",
           borderColor: dividerColor,
           bgcolor: "transparent",
-          marginTop: "auto",
+          flexShrink: 0,
         }}
       >
         <Typography
