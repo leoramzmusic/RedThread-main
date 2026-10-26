@@ -737,35 +737,23 @@ export default function Layout({ children }: LayoutProps) {
                   </Tooltip>
                 )}
 
-                {/* Notifications Button */}
+                {/* Notifications Button — idéntico al estilo Liquid Glass de la vista previa del navbar */}
                 {showIcon("notifications") && (
                   <Suspense fallback={null}>
                     <Tooltip title={t("nav.notifications", "Notificaciones")}>
-                      <Box
-                        sx={{
-                          width: { xs: 40, lg: 48 },
-                          height: { xs: 40, lg: 48 },
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
+                      <QuickActionIcon
+                        styleId="liquid"
+                        motion="bell"
+                        asBox
+                        active={notificationOpen || unreadCount > 0}
+                        badgeContent={unreadCount}
+                        onClick={() => setNotificationOpen((prev) => !prev)}
                       >
-                        <QuickActionIcon
-                          styleId={styleOf("notifications")}
-                          motion="bell"
-                          basicHover="bell"
-                          active={unreadCount > 0}
-                          badgeContent={unreadCount}
-                          onClick={() => setNotificationOpen(true)}
-                        >
-                          <NotificationsIcon
-                            className="rt-bell-icon"
-                            sx={{ fontSize: { xs: "1.2rem", sm: "1.4rem" } }}
-                          />
-                        </QuickActionIcon>
-                      </Box>
+                        <NotificationsIcon
+                          className="rt-bell-icon"
+                          sx={{ fontSize: 22 }}
+                        />
+                      </QuickActionIcon>
                     </Tooltip>
                   </Suspense>
                 )}
