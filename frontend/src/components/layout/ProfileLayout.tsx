@@ -122,8 +122,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
     return router.asPath === item.path;
   };
 
-  let navIndex = 0;
-
   const navLinks = [
     {
       id: "home",
@@ -185,22 +183,13 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
       </Box>
 
       {/* Cuerpo con sidebar + contenido */}
-      <Box
-        sx={{
-          display: "flex",
-          flexGrow: 1,
-          minHeight: 0,
-          position: "relative",
-        }}
-      >
+      <Box sx={{ display: "flex", flexGrow: 1, minHeight: 0 }}>
         {/* Sidebar (solo desktop) */}
         {!isMobile && (
           <Box
             sx={{
               width: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
               flexShrink: 0,
-              display: "flex",
-              flexDirection: "column",
               bgcolor: "transparent",
             }}
           >
@@ -290,13 +279,11 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
                   {t("menu_settings")}
                 </Typography>
               )}
-
+              let navIndex = 0;
               <List disablePadding>
-                {menuItems.map((item) => {
+                {menuItems.map((item, itemIndex) => {
                   const active = isActive(item);
-                  const delay = `${Math.min(navIndex * 45, 540)}ms`;
-                  navIndex += 1;
-
+                  const delay = `${Math.min((itemIndex + 1) * 45, 540)}ms`;
                   return (
                     <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
                       <Tooltip
@@ -328,9 +315,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
                             "&.Mui-selected": {
                               bgcolor: alpha(primary, isDark ? 0.04 : 0.03),
                               backgroundImage: "none",
-                              "&:hover": {
-                                bgcolor: alpha(primary, isDark ? 0.06 : 0.05),
-                              },
                             },
                           }}
                         >
