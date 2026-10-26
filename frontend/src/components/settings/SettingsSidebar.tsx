@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  Divider,
+  Collapse,
 } from "@mui/material";
 import {
   Palette as PaletteIcon,
@@ -26,6 +26,7 @@ interface SettingsSection {
   label: string;
   icon: React.ReactElement;
   path: string;
+  subItems?: SettingsSection[];
 }
 
 export default function SettingsSidebar() {
@@ -36,7 +37,13 @@ export default function SettingsSidebar() {
       id: "appearance",
       label: t("settings.appearance", "Apariencia"),
       icon: <PaletteIcon />,
-      path: "/settings",
+      path: "/settings?section=appearance",
+    },
+    {
+      id: "customize-navbar",
+      label: t("settings.customize-navbar", "Customize Navbar"),
+      icon: <TuneIcon />,
+      path: "/settings?section=navbar",
     },
     {
       id: "notifications",
@@ -45,16 +52,16 @@ export default function SettingsSidebar() {
       path: "/settings?section=notifications",
     },
     {
-      id: "security",
-      label: t("settings.security", "Seguridad"),
-      icon: <SecurityIcon />,
-      path: "/settings?section=security",
-    },
-    {
       id: "accessibility",
       label: t("settings.accessibility", "Accesibilidad"),
       icon: <AccessibilityIcon />,
       path: "/settings?section=accessibility",
+    },
+    {
+      id: "localization",
+      label: t("settings.language", "Idioma"),
+      icon: <LanguageIcon />,
+      path: "/settings?section=localization",
     },
     {
       id: "privacy",
@@ -63,23 +70,23 @@ export default function SettingsSidebar() {
       path: "/settings?section=privacy",
     },
     {
+      id: "security",
+      label: t("settings.security", "Seguridad"),
+      icon: <SecurityIcon />,
+      path: "/settings?section=security",
+    },
+    {
       id: "advanced",
       label: t("settings.advanced", "Avanzado"),
       icon: <TuneIcon />,
       path: "/settings?section=advanced",
-    },
-    {
-      id: "localization",
-      label: t("settings.language", "Idioma"),
-      icon: <LanguageIcon />,
-      path: "/settings?section=localization",
     },
   ];
 
   return (
     <Box
       sx={{
-        width: 280,
+        width: 260,
         flexShrink: 0,
         borderRight: "1px solid",
         borderColor: "divider",
@@ -87,60 +94,39 @@ export default function SettingsSidebar() {
         overflowY: "auto",
       }}
     >
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 1,
-          minHeight: 60,
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 700,
-            letterSpacing: "0.5px",
-            color: "text.primary",
-          }}
-        >
-          Configuración
-        </Typography>
-      </Box>
-      <Divider sx={{ mb: 1, ml: -1, mr: -1 }} />
       <List disablePadding>
         {sections.map((section) => {
           const active = window.location.pathname.includes(section.path);
           return (
-            <ListItem key={section.id} disablePadding sx={{ mb: 0.5 }}>
+            <ListItem key={section.id} disablePadding sx={{ mb: 0.4 }}>
               <ListItemButton
                 selected={active}
                 component={Link}
                 href={section.path}
                 sx={{
-                  borderRadius: "10px",
+                  borderRadius: "8px",
                   justifyContent: "flex-start",
-                  px: 2,
-                  py: 1,
-                  minHeight: 44,
+                  px: 1,
+                  py: 0.75,
+                  minHeight: 36,
                   transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                   "&:hover": {
-                    bgcolor: "rgba(255,255,255,0.08)",
+                    bgcolor: "rgba(255,255,255,0.06)",
                   },
                   "&.Mui-selected": {
-                    bgcolor: "rgba(230,57,70,0.08)",
+                    bgcolor: "rgba(230,57,70,0.06)",
                     color: "primary.main",
                     "&:hover": {
-                      bgcolor: "rgba(230,57,70,0.12)",
+                      bgcolor: "rgba(230,57,70,0.1)",
                     },
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    minWidth: 36,
+                    minWidth: 32,
                     color: "text.secondary",
+                    fontSize: "0.875rem",
                   }}
                 >
                   {section.icon}
@@ -150,8 +136,8 @@ export default function SettingsSidebar() {
                   slotProps={{
                     primary: {
                       sx: {
-                        fontSize: "0.88rem",
-                        fontWeight: active ? 700 : 500,
+                        fontSize: "0.78rem",
+                        fontWeight: active ? 600 : 450,
                         color: active ? "primary.main" : "text.secondary",
                       },
                     },
