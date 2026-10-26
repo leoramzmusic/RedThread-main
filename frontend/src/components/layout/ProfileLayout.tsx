@@ -2,7 +2,6 @@ import { ReactNode, useState } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
-  Drawer,
   List,
   ListItem,
   ListItemButton,
@@ -105,8 +104,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
     setCollapsed(!collapsed);
   };
 
-  const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
-
   const isDark = theme.palette.mode === "dark";
   const primary = theme.palette.primary.main;
   const textActive = isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.87)";
@@ -126,228 +123,6 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
   };
 
   let navIndex = 0;
-
-  const drawerContent = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      {/* Header */}
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          flexDirection: collapsed ? "column" : "row",
-          alignItems: "center",
-          justifyContent: collapsed ? "center" : "flex-start",
-          gap: collapsed ? 1 : 2,
-          minHeight: collapsed ? 100 : 80,
-          bgcolor: "transparent",
-        }}
-      >
-        <MorphToggleIcon
-          open={collapsed}
-          label={t("menu_toggleSidebar")}
-          onClick={handleToggleCollapse}
-          sx={{ p: 1, color: "primary.main" }}
-        />
-        <Box
-          onClick={() => router.push("/home")}
-          sx={{
-            position: "relative",
-            overflow: "hidden",
-            cursor: "pointer",
-            userSelect: "none",
-            display: collapsed ? "none" : "inline-flex",
-          }}
-        >
-          <Typography
-            component="span"
-            sx={{
-              display: "inline-flex",
-              gap: "1px",
-              whiteSpace: "nowrap",
-              fontWeight: 700,
-              fontSize: "24px",
-              letterSpacing: "0.5px",
-            }}
-          >
-            <Box component="span" sx={{ color: "primary.main" }}>
-              RE
-            </Box>
-            <Box component="span" sx={{ color: "text.secondary" }}>
-              D
-            </Box>
-            <Box component="span" sx={{ color: "primary.main" }}>
-              TH
-            </Box>
-            <Box component="span" sx={{ color: "text.secondary" }}>
-              READ
-            </Box>
-          </Typography>
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          overflowY: "auto",
-          overflowX: "hidden",
-          px: 1.5,
-          flexGrow: 1,
-        }}
-      >
-        {!collapsed && (
-          <Typography
-            variant="caption"
-            sx={{
-              px: 2,
-              py: 1,
-              display: "block",
-              color: textSection,
-              fontWeight: 700,
-              letterSpacing: "1px",
-              textTransform: "uppercase",
-              fontSize: "0.7rem",
-            }}
-          >
-            {t("menu_settings")}
-          </Typography>
-        )}
-
-        <List disablePadding>
-          {menuItems.map((item) => {
-            const active = isActive(item);
-            const delay = `${Math.min(navIndex * 45, 540)}ms`;
-            navIndex += 1;
-
-            return (
-              <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
-                <Tooltip title={collapsed ? item.label : ""} placement="right">
-                  <ListItemButton
-                    selected={active}
-                    onClick={() => handleNavigation(item.path)}
-                    sx={{
-                      borderRadius: "10px",
-                      justifyContent: collapsed ? "center" : "flex-start",
-                      px: collapsed ? 0 : 2,
-                      minHeight: 44,
-                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                      animation: `rtPItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both ${delay}`,
-                      "&:hover": {
-                        bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
-                        "& .MuiListItemIcon-root": {
-                          color: primary,
-                          transform: "scale(1.1)",
-                        },
-                        "& .MuiListItemText-primary": {
-                          color: isDark ? textActive : primary,
-                          textShadow: isDark
-                            ? `0 0 10px ${alpha(primary, 0.65)}`
-                            : "none",
-                        },
-                      },
-                      "&.Mui-selected": {
-                        bgcolor: alpha(primary, isDark ? 0.04 : 0.03),
-                        backgroundImage: "none",
-                        "&::before": { content: "none" },
-                      },
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: collapsed ? "auto" : 36,
-                        color: active ? primary : iconInactive,
-                        justifyContent: "center",
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    {!collapsed && (
-                      <ListItemText
-                        primary={item.label}
-                        slotProps={{
-                          primary: {
-                            sx: {
-                              fontSize: "0.88rem",
-                              fontWeight: active ? 600 : 500,
-                              color: active ? textActive : textInactive,
-                              transition: "color 0.2s ease",
-                            },
-                          },
-                        }}
-                      />
-                    )}
-                  </ListItemButton>
-                </Tooltip>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-
-      <Box sx={{ p: 2 }}>
-        <Divider
-          sx={{
-            mb: 2,
-            ml: -3.5,
-            mr: -3.5,
-            borderColor: dividerColor,
-            opacity: 0.6,
-          }}
-        />
-        <ListItem disablePadding>
-          <Tooltip
-            title={collapsed ? t("menu_logout", "Cerrar Sesión") : ""}
-            placement="right"
-          >
-            <ListItemButton
-              onClick={() => {
-                localStorage.removeItem("token");
-                router.push("/auth/login");
-              }}
-              sx={{
-                borderRadius: "10px",
-                justifyContent: collapsed ? "center" : "flex-start",
-                px: collapsed ? 0 : 2,
-                minHeight: 44,
-                bgcolor: "#ff4d4f",
-                color: "white",
-                boxShadow: "0 4px 14px rgba(255, 77, 79, 0.35)",
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                "&:hover": {
-                  bgcolor: "#d9363e",
-                  boxShadow: "0 6px 18px rgba(255, 77, 79, 0.5)",
-                  "& .MuiListItemIcon-root": { transform: "scale(1.1)" },
-                },
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: collapsed ? "auto" : 36,
-                  color: "inherit",
-                  justifyContent: "center",
-                }}
-              >
-                <LogoutIcon className="rt-profile-exit" />
-              </ListItemIcon>
-              {!collapsed && (
-                <ListItemText
-                  primary={t("menu_logout", "Cerrar Sesión")}
-                  slotProps={{
-                    primary: {
-                      sx: {
-                        fontSize: "0.88rem",
-                        fontWeight: 600,
-                        color: "inherit",
-                      },
-                    },
-                  }}
-                />
-              )}
-            </ListItemButton>
-          </Tooltip>
-        </ListItem>
-      </Box>
-    </Box>
-  );
 
   const navLinks = [
     {
@@ -409,41 +184,265 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
         </Box>
       </Box>
 
-      {/* Cuerpo */}
-      <Box sx={{ flexGrow: 1, minHeight: 0, position: "relative" }}>
+      {/* Cuerpo con sidebar + contenido */}
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1,
+          minHeight: 0,
+          position: "relative",
+        }}
+      >
+        {/* Sidebar (solo desktop) */}
         {!isMobile && (
-          <Drawer
-            variant="permanent"
+          <Box
             sx={{
-              width: drawerWidth,
+              width: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
               flexShrink: 0,
-              "& .MuiDrawer-paper": {
-                width: drawerWidth,
-                boxSizing: "border-box",
-                borderRight: "none",
-                transition:
-                  "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease",
-                overflowX: "hidden",
-                bgcolor: "transparent",
-                border: "none",
-                boxShadow: "none",
-                color: textActive,
-                animation:
-                  "rtPDrawerIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both",
-                "--app-font-size": `${sidebarFontSize}px`,
-              },
+              display: "flex",
+              flexDirection: "column",
+              bgcolor: "transparent",
             }}
           >
-            {drawerContent}
-          </Drawer>
+            {/* Header */}
+            <Box
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: collapsed ? "column" : "row",
+                alignItems: "center",
+                justifyContent: collapsed ? "center" : "flex-start",
+                gap: collapsed ? 1 : 2,
+                minHeight: collapsed ? 100 : 80,
+                bgcolor: "transparent",
+              }}
+            >
+              <MorphToggleIcon
+                open={collapsed}
+                label={t("menu_toggleSidebar")}
+                onClick={handleToggleCollapse}
+                sx={{ p: 1, color: "primary.main" }}
+              />
+              <Box
+                onClick={() => router.push("/home")}
+                sx={{
+                  position: "relative",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  userSelect: "none",
+                  display: collapsed ? "none" : "inline-flex",
+                }}
+              >
+                <Typography
+                  component="span"
+                  sx={{
+                    display: "inline-flex",
+                    gap: "1px",
+                    whiteSpace: "nowrap",
+                    fontWeight: 700,
+                    fontSize: "24px",
+                    letterSpacing: "0.5px",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      filter: `drop-shadow(0 0 12px ${alpha(primary, 0.5)})`,
+                    },
+                  }}
+                >
+                  <Box component="span" sx={{ color: "primary.main" }}>
+                    RE
+                  </Box>
+                  <Box component="span" sx={{ color: "text.secondary" }}>
+                    D
+                  </Box>
+                  <Box component="span" sx={{ color: "primary.main" }}>
+                    TH
+                  </Box>
+                  <Box component="span" sx={{ color: "text.secondary" }}>
+                    READ
+                  </Box>
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Nav items */}
+            <Box
+              sx={{
+                overflowY: "auto",
+                overflowX: "hidden",
+                px: 1.5,
+                flexGrow: 1,
+              }}
+            >
+              {!collapsed && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    display: "block",
+                    color: textSection,
+                    fontWeight: 700,
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    fontSize: "0.7rem",
+                  }}
+                >
+                  {t("menu_settings")}
+                </Typography>
+              )}
+
+              <List disablePadding>
+                {menuItems.map((item) => {
+                  const active = isActive(item);
+                  const delay = `${Math.min(navIndex * 45, 540)}ms`;
+                  navIndex += 1;
+
+                  return (
+                    <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
+                      <Tooltip
+                        title={collapsed ? item.label : ""}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          selected={active}
+                          onClick={() => handleNavigation(item.path)}
+                          sx={{
+                            borderRadius: "10px",
+                            justifyContent: collapsed ? "center" : "flex-start",
+                            px: collapsed ? 0 : 2,
+                            minHeight: 44,
+                            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                            "&:hover": {
+                              bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
+                              "& .MuiListItemIcon-root": {
+                                color: primary,
+                                transform: "scale(1.1)",
+                              },
+                              "& .MuiListItemText-primary": {
+                                color: isDark ? textActive : primary,
+                                textShadow: isDark
+                                  ? `0 0 10px ${alpha(primary, 0.65)}`
+                                  : "none",
+                              },
+                            },
+                            "&.Mui-selected": {
+                              bgcolor: alpha(primary, isDark ? 0.04 : 0.03),
+                              backgroundImage: "none",
+                              "&:hover": {
+                                bgcolor: alpha(primary, isDark ? 0.06 : 0.05),
+                              },
+                            },
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: collapsed ? "auto" : 36,
+                              color: active ? primary : iconInactive,
+                              justifyContent: "center",
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          {!collapsed && (
+                            <ListItemText
+                              primary={item.label}
+                              slotProps={{
+                                primary: {
+                                  sx: {
+                                    fontSize: "0.88rem",
+                                    fontWeight: active ? 600 : 500,
+                                    color: active ? textActive : textInactive,
+                                    transition: "color 0.2s ease",
+                                  },
+                                },
+                              }}
+                            />
+                          )}
+                        </ListItemButton>
+                      </Tooltip>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Box>
+
+            {/* Footer del sidebar */}
+            <Box sx={{ p: 2 }}>
+              <Divider
+                sx={{
+                  mb: 2,
+                  ml: -3.5,
+                  mr: -3.5,
+                  borderColor: dividerColor,
+                  opacity: 0.6,
+                }}
+              />
+              <ListItem disablePadding>
+                <Tooltip
+                  title={collapsed ? t("menu_logout", "Cerrar Sesión") : ""}
+                  placement="right"
+                >
+                  <ListItemButton
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      router.push("/auth/login");
+                    }}
+                    sx={{
+                      borderRadius: "10px",
+                      justifyContent: collapsed ? "center" : "flex-start",
+                      px: collapsed ? 0 : 2,
+                      minHeight: 44,
+                      bgcolor: "#ff4d4f",
+                      color: "white",
+                      boxShadow: "0 4px 14px rgba(255, 77, 79, 0.35)",
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      "&:hover": {
+                        bgcolor: "#d9363e",
+                        boxShadow: "0 6px 18px rgba(255, 77, 79, 0.5)",
+                        "& .MuiListItemIcon-root": { transform: "scale(1.1)" },
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: collapsed ? "auto" : 36,
+                        color: "inherit",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <LogoutIcon className="rt-profile-exit" />
+                    </ListItemIcon>
+                    {!collapsed && (
+                      <ListItemText
+                        primary={t("menu_logout", "Cerrar Sesión")}
+                        slotProps={{
+                          primary: {
+                            sx: {
+                              fontSize: "0.88rem",
+                              fontWeight: 600,
+                              color: "inherit",
+                            },
+                          },
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            </Box>
+          </Box>
         )}
 
+        {/* Contenido principal */}
         <Box
           component="main"
           sx={{
             flexGrow: 1,
             p: 3,
-            width: { md: `calc(100% - ${drawerWidth}px)` },
+            width: {
+              md: `calc(100% - ${collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH}px)`,
+            },
             bgcolor: "transparent",
             minHeight: 0,
           }}
