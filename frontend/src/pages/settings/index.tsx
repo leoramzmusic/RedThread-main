@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Box,
   Container,
@@ -8,38 +8,45 @@ import {
   Button,
   CircularProgress,
   Alert,
-} from '@mui/material';
-import {
-  Save as SaveIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'next-i18next/pages';
-import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations';
-import ProfileLayout from '../../components/layout/ProfileLayout';
-import { useSettings } from '../../hooks/useSettings';
-import { useAppTheme } from '../../context/ThemeContext';
+} from "@mui/material";
+import { Save as SaveIcon } from "@mui/icons-material";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
+import Layout from "../../components/layout/Layout";
+import SettingsSidebar from "../../components/settings/SettingsSidebar";
+import { useSettings } from "../../hooks/useSettings";
+import { useAppTheme } from "../../context/ThemeContext";
 
 // Section components
-import AppearanceSection from '../../components/settings/AppearanceSection';
-import NotificationsSection from '../../components/settings/NotificationsSection';
-import SecuritySection from '../../components/settings/SecuritySection';
-import AccessibilitySection from '../../components/settings/AccessibilitySection';
-import PrivacySection from '../../components/settings/PrivacySection';
-import NavbarSection from '../../components/settings/NavbarSection';
-import { useNavbarContext } from '../../context/NavbarContext';
-import LanguageSelector from '../../components/common/LanguageSelector';
-import apiClient from '../../services/api';
-import { useLanguageFallback } from '../../hooks/useLanguageFallback';
-import { useSnackbar } from 'notistack';
+import AppearanceSection from "../../components/settings/AppearanceSection";
+import NotificationsSection from "../../components/settings/NotificationsSection";
+import SecuritySection from "../../components/settings/SecuritySection";
+import AccessibilitySection from "../../components/settings/AccessibilitySection";
+import PrivacySection from "../../components/settings/PrivacySection";
+import NavbarSection from "../../components/settings/NavbarSection";
+import { useNavbarContext } from "../../context/NavbarContext";
+import LanguageSelector from "../../components/common/LanguageSelector";
+import apiClient from "../../services/api";
+import { useLanguageFallback } from "../../hooks/useLanguageFallback";
+import { useSnackbar } from "notistack";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const { enqueueSnackbar } = useSnackbar();
   useLanguageFallback(false);
   const { section } = router.query;
-  const activeSection = (section as string) || 'appearance';
+  const activeSection = (section as string) || "appearance";
 
-  const { settings, loading, saving, updateSettings, saveSettings, suspendAccount, deleteAccount } = useSettings();
+  const {
+    settings,
+    loading,
+    saving,
+    updateSettings,
+    saveSettings,
+    suspendAccount,
+    deleteAccount,
+  } = useSettings();
   const { mode, setMode, setTheme } = useAppTheme();
   const { refresh: refreshNavConfig } = useNavbarContext();
   const [localSettings, setLocalSettings] = useState(settings);
@@ -57,10 +64,9 @@ export default function SettingsPage() {
   };
 
   const handleSave = async (settingsToSave?: any) => {
-    // If called as an event handler (e.g. onClick), settingsToSave will be an event object
-    // We only want to use it if it's a legitimate settings object
-    const isEvent = settingsToSave && (settingsToSave.nativeEvent || settingsToSave.target);
-    const data = (settingsToSave && !isEvent) ? settingsToSave : localSettings;
+    const isEvent =
+      settingsToSave && (settingsToSave.nativeEvent || settingsToSave.target);
+    const data = settingsToSave && !isEvent ? settingsToSave : localSettings;
 
     if (data) {
       await saveSettings(data);
@@ -72,16 +78,16 @@ export default function SettingsPage() {
 
   const getSectionTitle = () => {
     const titles: Record<string, string> = {
-      'appearance': t('settings_appearance_title'),
-      'notifications': t('settings_notifications'),
-      'security': t('menu_security'),
-      'accessibility': t('settings_accessibility'),
-      'privacy': t('menu_privacy'),
-      'localization': t('settings_language'),
-      'advanced': t('settings_advanced'),
-      'navbar': t('menu_navbar', 'Personalizar Navbar'),
+      appearance: t("settings_appearance_title"),
+      notifications: t("settings_notifications"),
+      security: t("menu_security"),
+      accessibility: t("settings_accessibility"),
+      privacy: t("menu_privacy"),
+      localization: t("settings_language"),
+      advanced: t("settings_advanced"),
+      navbar: t("menu_navbar", "Personalizar Navbar"),
     };
-    return titles[activeSection] || t('settings_title');
+    return titles[activeSection] || t("settings_title");
   };
 
   const renderSection = () => {
@@ -92,15 +98,16 @@ export default function SettingsPage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "400px"
-          }}>
+            minHeight: "400px",
+          }}
+        >
           <CircularProgress />
         </Box>
       );
     }
 
     switch (activeSection) {
-      case 'appearance':
+      case "appearance":
         return (
           <AppearanceSection
             settings={localSettings}
@@ -111,14 +118,14 @@ export default function SettingsPage() {
             setTheme={setTheme as any}
           />
         );
-      case 'notifications':
+      case "notifications":
         return (
           <NotificationsSection
             settings={localSettings}
             onSettingsChange={handleSettingsChange}
           />
         );
-      case 'security':
+      case "security":
         return (
           <SecuritySection
             settings={localSettings}
@@ -128,7 +135,7 @@ export default function SettingsPage() {
             saving={saving}
           />
         );
-      case 'accessibility':
+      case "accessibility":
         return (
           <AccessibilitySection
             settings={localSettings}
@@ -137,61 +144,86 @@ export default function SettingsPage() {
             saving={saving}
           />
         );
-      case 'privacy':
+      case "privacy":
         return (
           <PrivacySection
             settings={localSettings}
             onSettingsChange={handleSettingsChange}
           />
         );
-      case 'navbar':
+      case "navbar":
         return (
           <NavbarSection
             settings={localSettings}
             onSettingsChange={handleSettingsChange}
           />
         );
-      case 'localization':
+      case "localization":
         return (
           <Box sx={{ py: 2 }}>
-            <Typography variant="h6" gutterBottom sx={{
-              fontWeight: 700
-            }}>{t('settings_language', 'Idioma')}</Typography>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 700,
+              }}
+            >
+              {t("settings_language", "Idioma")}
+            </Typography>
             <Typography
               variant="body2"
               sx={{
                 color: "text.secondary",
-                mb: 2
-              }}>{t('settings_language_hint', 'Cambia el idioma de la interfaz. Se guardará en tu cuenta y se sincronizará en todos tus dispositivos.')}</Typography>
+                mb: 2,
+              }}
+            >
+              {t(
+                "settings_language_hint",
+                "Cambia el idioma de la interfaz. Se guardará en tu cuenta y se sincronizará en todos tus dispositivos.",
+              )}
+            </Typography>
             <LanguageSelector
               showContinuityHint={false}
               onLanguageChange={async (code) => {
                 try {
-                  await apiClient.patch('/auth/me', { preferred_language: code });
+                  await apiClient.patch("/auth/me", {
+                    preferred_language: code,
+                  });
                 } catch (e: any) {
-                  if (e?.response?.status === 400) enqueueSnackbar('Idioma no disponible', { variant: 'error' });
+                  if (e?.response?.status === 400)
+                    enqueueSnackbar("Idioma no disponible", {
+                      variant: "error",
+                    });
                   throw e;
                 }
               }}
             />
           </Box>
         );
-      case 'advanced':
+      case "advanced":
         return (
           <Box
             sx={{
               textAlign: "center",
-              py: 8
-            }}>
-            <Typography variant="h6" gutterBottom sx={{
-              color: "text.secondary"
-            }}>
-              {t('settings_wip_title')}
+              py: 8,
+            }}
+          >
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              {t("settings_wip_title")}
             </Typography>
-            <Typography variant="body2" sx={{
-              color: "text.secondary"
-            }}>
-              {t('settings_wip_desc')}
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              {t("settings_wip_desc")}
             </Typography>
           </Box>
         );
@@ -200,17 +232,25 @@ export default function SettingsPage() {
           <Box
             sx={{
               textAlign: "center",
-              py: 8
-            }}>
-            <Typography variant="h5" gutterBottom sx={{
-              color: "text.primary"
-            }}>
-              {t('settings_welcome_title')}
+              py: 8,
+            }}
+          >
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                color: "text.primary",
+              }}
+            >
+              {t("settings_welcome_title")}
             </Typography>
-            <Typography variant="body1" sx={{
-              color: "text.secondary"
-            }}>
-              {t('settings_welcome_desc')}
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              {t("settings_welcome_desc")}
             </Typography>
           </Box>
         );
@@ -218,33 +258,49 @@ export default function SettingsPage() {
   };
 
   return (
-    <ProfileLayout>
-      <Container maxWidth="lg">
-        {showSuccessAlert && (
-          <Alert severity="success" onClose={() => setShowSuccessAlert(false)} sx={{ mb: 3 }}>
-            {t('settings_success')}
-          </Alert>
-        )}
-
-        {/* Main Content - NO SIDEBAR */}
-        <Paper
-          elevation={0}
+    <Layout>
+      <Box sx={{ display: "flex", flexGrow: 1, minHeight: 0 }}>
+        {/* Settings Sidebar */}
+        <Box
           sx={{
-            p: { xs: 3, md: 4 },
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-            minHeight: 600,
+            width: 280,
+            flexShrink: 0,
+            borderRight: "1px solid",
+            borderColor: "divider",
           }}
         >
+          <SettingsSidebar />
+        </Box>
+
+        {/* Main Content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: { xs: 3, sm: 4 },
+            bgcolor: "transparent",
+            minHeight: 0,
+          }}
+        >
+          {showSuccessAlert && (
+            <Alert
+              severity="success"
+              onClose={() => setShowSuccessAlert(false)}
+              sx={{ mb: 3 }}
+            >
+              {t("settings_success")}
+            </Alert>
+          )}
+
           {/* Section Title */}
           <Typography
             variant="h3"
             gutterBottom
             sx={{
               fontWeight: 800,
-              mb: 3
-            }}>
+              mb: 3,
+            }}
+          >
             {getSectionTitle()}
           </Typography>
 
@@ -252,37 +308,48 @@ export default function SettingsPage() {
           {renderSection()}
 
           {/* Save Button */}
-          {!loading && ['appearance', 'notifications', 'security', 'accessibility', 'privacy', 'navbar'].includes(activeSection) && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                pt: 4,
-                mt: 4,
-                borderTop: "1px solid",
-                borderColor: "divider"
-              }}>
-              <Button
-                variant="contained"
-                onClick={handleSave}
-                disabled={saving}
-                startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-                size="large"
+          {!loading &&
+            [
+              "appearance",
+              "notifications",
+              "security",
+              "accessibility",
+              "privacy",
+              "navbar",
+            ].includes(activeSection) && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  pt: 4,
+                  mt: 4,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                }}
               >
-                {saving ? t('settings_saving') : t('settings_saveChanges')}
-              </Button>
-            </Box>
-          )}
-        </Paper>
-      </Container>
-    </ProfileLayout>
+                <Button
+                  variant="contained"
+                  onClick={handleSave}
+                  disabled={saving}
+                  startIcon={
+                    saving ? <CircularProgress size={20} /> : <SaveIcon />
+                  }
+                  size="large"
+                >
+                  {saving ? t("settings_saving") : t("settings_saveChanges")}
+                </Button>
+              </Box>
+            )}
+        </Box>
+      </Box>
+    </Layout>
   );
 }
 
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale || 'es', ['common', 'security'])),
+      ...(await serverSideTranslations(locale || "es", ["common", "security"])),
     },
   };
 }
