@@ -13,7 +13,6 @@ import { Save as SaveIcon } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
 import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import Layout from "../../components/layout/Layout";
-import SettingsSidebar from "../../components/settings/SettingsSidebar";
 import { useSettings } from "../../hooks/useSettings";
 import { useAppTheme } from "../../context/ThemeContext";
 
@@ -64,6 +63,8 @@ export default function SettingsPage() {
   };
 
   const handleSave = async (settingsToSave?: any) => {
+    // If called as an event handler (e.g. onClick), settingsToSave will be an event object
+    // We only want to use it if it's a legitimate settings object
     const isEvent =
       settingsToSave && (settingsToSave.nativeEvent || settingsToSave.target);
     const data = settingsToSave && !isEvent ? settingsToSave : localSettings;
@@ -259,29 +260,8 @@ export default function SettingsPage() {
 
   return (
     <Layout>
-      <Box sx={{ display: "flex", flexGrow: 1, minHeight: 0 }}>
-        {/* Settings Sidebar */}
-        <Box
-          sx={{
-            width: 280,
-            flexShrink: 0,
-            borderRight: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <SettingsSidebar />
-        </Box>
-
-        {/* Main Content */}
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            p: { xs: 3, sm: 4 },
-            bgcolor: "transparent",
-            minHeight: 0,
-          }}
-        >
+      <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+        <Container maxWidth="xl">
           {showSuccessAlert && (
             <Alert
               severity="success"
@@ -340,7 +320,7 @@ export default function SettingsPage() {
                 </Button>
               </Box>
             )}
-        </Box>
+        </Container>
       </Box>
     </Layout>
   );
