@@ -29,7 +29,7 @@ import {
   Security as SecurityIcon,
   Notifications as NotificationsIcon,
   Lock as LockIcon,
-  PowerOff as PowerOffIcon,
+  Logout as LogoutIcon,
   Favorite as HeartIcon,
   Palette as PaletteIcon,
   Language as LanguageIcon,
@@ -189,62 +189,80 @@ export default function Sidebar({
             />
           ),
           path: "/settings",
-        },
-        {
-          id: "customize-navbar",
-          label: t("nav.customize-navbar", "Customize Navbar"),
-          icon: (
-            <TuneIcon
-              className="rt-customize-navbar"
-              sx={{
-                transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-              }}
-            />
-          ),
-          path: "/settings?section=navbar",
-        },
-        {
-          id: "notifications-settings",
-          label: t("nav.notifications", "Notificaciones"),
-          icon: <NotificationsIcon className="rt-bell" />,
-          path: "/settings?section=notifications",
-        },
-        {
-          id: "accessibility",
-          label: t("nav.accessibility", "Accesibilidad"),
-          icon: <AccessibilityIcon className="rt-wave" />,
-          path: "/settings?section=accessibility",
-        },
-        {
-          id: "localization",
-          label: t("nav.localization", "Idioma"),
-          icon: <LanguageIcon className="rt-language" />,
-          path: "/settings?section=localization",
-        },
-        {
-          id: "privacy",
-          label: t("nav.privacy", "Privacidad"),
-          icon: <LockIcon className="rt-unlock" />,
-          path: "/settings?section=privacy",
-        },
-        {
-          id: "security-settings",
-          label: t("nav.security", "Seguridad"),
-          icon: <SecurityIcon className="rt-shield" />,
-          path: "/settings?section=security",
-        },
-        {
-          id: "advanced",
-          label: t("nav.advanced", "Avanzado"),
-          icon: (
-            <TuneIcon
-              className="rt-advanced"
-              sx={{
-                transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-              }}
-            />
-          ),
-          path: "/settings?section=advanced",
+          children: [
+            {
+              id: "appearance",
+              label: t("nav.appearance", "Apariencia"),
+              icon: (
+                <PaletteIcon
+                  className="rt-palette"
+                  sx={{
+                    transition:
+                      "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+              ),
+              path: "/settings?section=appearance",
+            },
+            {
+              id: "customize-navbar",
+              label: t("nav.customize-navbar", "Customize Navbar"),
+              icon: (
+                <TuneIcon
+                  className="rt-customize-navbar"
+                  sx={{
+                    transition:
+                      "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+              ),
+              path: "/settings?section=navbar",
+            },
+            {
+              id: "notifications-settings",
+              label: t("nav.notifications", "Notificaciones"),
+              icon: <NotificationsIcon className="rt-bell" />,
+              path: "/settings?section=notifications",
+            },
+            {
+              id: "accessibility",
+              label: t("nav.accessibility", "Accesibilidad"),
+              icon: <AccessibilityIcon className="rt-wave" />,
+              path: "/settings?section=accessibility",
+            },
+            {
+              id: "localization",
+              label: t("nav.localization", "Idioma"),
+              icon: <LanguageIcon className="rt-language" />,
+              path: "/settings?section=localization",
+            },
+            {
+              id: "privacy",
+              label: t("nav.privacy", "Privacidad"),
+              icon: <LockIcon className="rt-unlock" />,
+              path: "/settings?section=privacy",
+            },
+            {
+              id: "security-settings",
+              label: t("nav.security", "Seguridad"),
+              icon: <SecurityIcon className="rt-shield" />,
+              path: "/settings?section=security",
+            },
+            {
+              id: "advanced",
+              label: t("nav.advanced", "Avanzado"),
+              icon: (
+                <TuneIcon
+                  className="rt-advanced"
+                  sx={{
+                    transition:
+                      "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+              ),
+              path: "/settings?section=advanced",
+            },
+          ],
         },
       ],
     },
@@ -257,21 +275,6 @@ export default function Sidebar({
   const handleToggleCollapse = () => {
     setSidebarCollapsed(!collapsed);
   };
-
-  const handleToggleSection = (sectionId: string) => {
-    setExpandedMenus((prev) => {
-      const next = new Set(prev);
-      if (next.has(sectionId)) {
-        next.delete(sectionId);
-      } else {
-        next.add(sectionId);
-      }
-      return next;
-    });
-  };
-
-  const isSectionExpanded = (sectionId: string) =>
-    expandedMenus.has(sectionId) || collapsed;
 
   const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
 
@@ -295,7 +298,6 @@ export default function Sidebar({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      {/* Header */}
       <Box
         sx={{
           p: 2,
@@ -304,7 +306,7 @@ export default function Sidebar({
           alignItems: "center",
           justifyContent: collapsed ? "center" : "flex-start",
           gap: collapsed ? 1 : 2,
-          minHeight: collapsed ? 70 : 56,
+          minHeight: collapsed ? 100 : 80,
           bgcolor: "transparent",
         }}
       >
@@ -357,216 +359,212 @@ export default function Sidebar({
           </Typography>
         </Box>
       </Box>
-
-      {/* Menu Sections */}
-      <Box sx={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}>
-        {menuSections.map((section) => {
-          const isExpanded = isSectionExpanded(section.id);
-          return (
-            <Box key={section.id} sx={{ mb: 0.5 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  p: collapsed ? 0.5 : 1,
-                  borderRadius: "8px",
-                  "&:hover": { bgcolor: alpha(primary, isDark ? 0.05 : 0.03) },
-                }}
-                onClick={() => handleToggleSection(section.id)}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: textSection,
-                    fontWeight: 700,
-                    letterSpacing: "0.08em",
-                    fontSize: "0.7rem",
-                    textTransform: "uppercase",
-                    flex: 1,
-                  }}
-                >
-                  {section.label}
-                </Typography>
-                <Box
-                  sx={{
-                    width: collapsed ? 0 : 16,
-                    height: collapsed ? 0 : 16,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "transform 0.2s ease",
-                    transform: isExpanded ? "rotate(0deg)" : "rotate(-90deg)",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 4,
-                      height: 4,
-                      borderRight: "1px solid",
-                      borderBottom: "1px solid",
-                      transform: "rotate(45deg)",
-                    }}
-                  />
-                </Box>
-              </Box>
-              <Collapse in={isExpanded} timeout={200}>
-                <Box sx={{ pl: collapsed ? 0.5 : 2, pr: collapsed ? 0 : 1 }}>
-                  <List disablePadding>
-                    {section.items.map((item) => {
-                      const active = isActive(item);
-                      return (
-                        <ListItem
-                          key={item.id}
-                          disablePadding
-                          sx={{ mb: 0.25 }}
-                        >
-                          <ListItemButton
-                            selected={active}
-                            onClick={() => handleNavigation(item.path)}
-                            sx={{
-                              borderRadius: "10px",
-                              justifyContent: collapsed
-                                ? "center"
-                                : "flex-start",
-                              px: collapsed ? 0 : 2,
-                              minHeight: collapsed ? 36 : 32,
-                              transition:
-                                "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                              "&:hover": {
-                                bgcolor: alpha(primary, isDark ? 0.08 : 0.04),
-                                "& .MuiListItemIcon-root": {
-                                  color: primary,
-                                  transform: "scale(1.1)",
-                                },
-                                "& .MuiListItemText-primary": {
-                                  color: isDark ? textActive : primary,
-                                  textShadow: isDark
-                                    ? `0 0 10px ${alpha(primary, 0.65)}`
-                                    : "none",
-                                },
-                              },
-                              "&.Mui-selected": {
-                                bgcolor: alpha(primary, isDark ? 0.05 : 0.03),
-                                backgroundImage: "none",
-                                "&:hover": {
-                                  bgcolor: alpha(primary, isDark ? 0.08 : 0.04),
-                                },
-                                "&::before": {
-                                  content: '""',
-                                  position: "absolute",
-                                  left: 0,
-                                  top: "15%",
-                                  height: "70%",
-                                  width: "4px",
-                                  borderRadius: "0 4px 4px 0",
-                                  transformOrigin: "top",
-                                  bgcolor: primary,
-                                  boxShadow: `0 0 10px ${alpha(primary, 0.8)}`,
-                                  animation:
-                                    "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
-                                },
-                              },
-                              "&:hover .rt-profile-settings": {
-                                transform: "rotate(90deg)",
-                              },
-                              "&:hover .rt-profile-shield": {
-                                animation:
-                                  "rtPShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)",
-                              },
-                              "&:hover .rt-profile-bell": {
-                                animationPlayState: "paused",
-                              },
-                              "&:hover .rt-profile-lock": {
-                                animation:
-                                  "rtPLockWiggle 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)",
-                              },
-                              "&:hover .rt-profile-sliders": {
-                                animation:
-                                  "rtPSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)",
-                              },
-                            }}
-                          >
-                            <ListItemIcon
-                              sx={{
-                                minWidth: collapsed ? "auto" : 36,
-                                color: active ? primary : iconInactive,
-                                justifyContent: "center",
-                                transition: "all 0.2s ease",
-                              }}
-                            >
-                              {item.icon}
-                            </ListItemIcon>
-                            {!collapsed && (
-                              <ListItemText
-                                primary={item.label}
-                                slotProps={{
-                                  primary: {
-                                    sx: {
-                                      fontSize: active ? "0.82rem" : "0.78rem",
-                                      fontWeight: active ? 600 : 500,
-                                      color: active ? textActive : textInactive,
-                                      transition: "color 0.2s ease",
-                                    },
-                                  },
-                                }}
-                              />
-                            )}
-                          </ListItemButton>
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                </Box>
-              </Collapse>
-            </Box>
-          );
-        })}
-      </Box>
-
-      {/* Logout */}
-      <Box sx={{ p: 1.5 }}>
-        <ListItem disablePadding sx={{ borderRadius: "8px" }}>
-          <ListItemButton
-            onClick={() => {
-              localStorage.removeItem("token");
-              router.push("/auth/login");
-            }}
+      <Box
+        sx={{ overflowY: "auto", overflowX: "hidden", px: 1.5, flexGrow: 1 }}
+      >
+        {!collapsed && (
+          <Typography
+            variant="caption"
             sx={{
-              borderRadius: "8px",
-              justifyContent: collapsed ? "center" : "flex-start",
-              px: collapsed ? 0 : 2,
-              minHeight: collapsed ? 36 : 32,
-              color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
-              transition: "all 0.2s ease",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.05)", color: primary },
+              px: 2,
+              py: 1,
+              display: "block",
+              color: textSection,
+              fontWeight: 700,
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              fontSize: "0.7rem",
             }}
           >
-            <ListItemIcon
+            {t("menu_settings")}
+          </Typography>
+        )}
+        <List disablePadding>
+          {menuSections.map((section) => (
+            <Box key={section.id} sx={{ mb: 1 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  px: 2,
+                  py: 1,
+                  display: "block",
+                  color: textSection,
+                  fontWeight: 700,
+                  letterSpacing: "1px",
+                  textTransform: "uppercase",
+                  fontSize: "0.7rem",
+                }}
+              >
+                {section.label}
+              </Typography>
+              <List disablePadding>
+                {section.items.map((item) => {
+                  const active = isActive(item);
+                  return (
+                    <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
+                      <Tooltip
+                        title={collapsed ? item.label : ""}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          selected={active}
+                          onClick={() => handleNavigation(item.path)}
+                          sx={{
+                            borderRadius: "10px",
+                            justifyContent: collapsed ? "center" : "flex-start",
+                            px: collapsed ? 0 : 2,
+                            minHeight: 44,
+                            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                            "&:hover": {
+                              bgcolor: alpha(primary, isDark ? 0.1 : 0.06),
+                              "& .MuiListItemIcon-root": {
+                                color: primary,
+                                transform: "scale(1.1)",
+                              },
+                              "& .MuiListItemText-primary": {
+                                color: isDark ? textActive : primary,
+                                textShadow: isDark
+                                  ? `0 0 10px ${alpha(primary, 0.65)}`
+                                  : "none",
+                              },
+                            },
+                            "&.Mui-selected": {
+                              bgcolor: alpha(primary, isDark ? 0.04 : 0.03),
+                              backgroundImage: "none",
+                              "&:hover": {
+                                bgcolor: alpha(primary, isDark ? 0.06 : 0.05),
+                              },
+                              "&::before": {
+                                content: '""',
+                                position: "absolute",
+                                left: 0,
+                                top: "15%",
+                                height: "70%",
+                                width: "4px",
+                                borderRadius: "0 4px 4px 0",
+                                transformOrigin: "top",
+                                bgcolor: primary,
+                                boxShadow: `0 0 10px ${alpha(primary, 0.8)}`,
+                                animation:
+                                  "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
+                              },
+                            },
+                            "&:hover .rt-profile-settings": {
+                              transform: "rotate(90deg)",
+                            },
+                            "&:hover .rt-profile-shield": {
+                              animation:
+                                "rtPShieldPulse 0.7s cubic-bezier(0.36, 0, 0.66, 0.56)",
+                            },
+                            "&:hover .rt-profile-bell": {
+                              animationPlayState: "paused",
+                            },
+                            "&:hover .rt-profile-lock": {
+                              animation:
+                                "rtPLockWiggle 0.5s cubic-bezier(0.36, 0, 0.66, 0.56)",
+                            },
+                            "&:hover .rt-profile-sliders": {
+                              animation:
+                                "rtPSliders 0.6s cubic-bezier(0.36, 0, 0.66, 0.56)",
+                            },
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: collapsed ? "auto" : 36,
+                              color: active ? primary : iconInactive,
+                              justifyContent: "center",
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          {!collapsed && (
+                            <ListItemText
+                              primary={item.label}
+                              slotProps={{
+                                primary: {
+                                  sx: {
+                                    fontSize: "0.88rem",
+                                    fontWeight: active ? 600 : 500,
+                                    color: active ? textActive : textInactive,
+                                    transition: "color 0.2s ease",
+                                  },
+                                },
+                              }}
+                            />
+                          )}
+                        </ListItemButton>
+                      </Tooltip>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Box>
+          ))}
+        </List>
+      </Box>
+      <Box sx={{ p: 2 }}>
+        <Divider
+          sx={{
+            mb: 2,
+            ml: -3.5,
+            mr: -3.5,
+            borderColor: dividerColor,
+            opacity: 0.6,
+          }}
+        />
+        <ListItem disablePadding>
+          <Tooltip
+            title={collapsed ? t("menu_logout", "Cerrar Sesión") : ""}
+            placement="right"
+          >
+            <ListItemButton
+              onClick={() => {
+                localStorage.removeItem("token");
+                router.push("/auth/login");
+              }}
               sx={{
-                minWidth: collapsed ? "auto" : 32,
-                color: "inherit",
-                justifyContent: "center",
-                fontSize: "0.875rem",
+                borderRadius: "10px",
+                justifyContent: collapsed ? "center" : "flex-start",
+                px: collapsed ? 0 : 2,
+                minHeight: 44,
+                bgcolor: "#ff4d4f",
+                color: "white",
+                boxShadow: "0 4px 14px rgba(255, 77, 79, 0.35)",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  bgcolor: "#d9363e",
+                  boxShadow: "0 6px 18px rgba(255, 77, 79, 0.5)",
+                  "& .MuiListItemIcon-root": { transform: "scale(1.1)" },
+                },
               }}
             >
-              <PowerOffIcon />
-            </ListItemIcon>
-            {!collapsed && (
-              <ListItemText
-                primary={t("menu_logout", "Cerrar Sesión")}
-                slotProps={{
-                  primary: {
-                    sx: {
-                      fontSize: "0.78rem",
-                      fontWeight: 500,
-                      color: "text.secondary",
-                    },
-                  },
+              <ListItemIcon
+                sx={{
+                  minWidth: collapsed ? "auto" : 36,
+                  color: "inherit",
+                  justifyContent: "center",
                 }}
-              />
-            )}
-          </ListItemButton>
+              >
+                <LogoutIcon className="rt-profile-exit" />
+              </ListItemIcon>
+              {!collapsed && (
+                <ListItemText
+                  primary={t("menu_logout", "Cerrar Sesión")}
+                  slotProps={{
+                    primary: {
+                      sx: {
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        color: "inherit",
+                      },
+                    },
+                  }}
+                />
+              )}
+            </ListItemButton>
+          </Tooltip>
         </ListItem>
       </Box>
     </Box>
