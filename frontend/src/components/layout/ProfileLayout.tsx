@@ -450,37 +450,24 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
     },
   ];
 
-  function isAuthenticatedLocal(): boolean {
-    try {
-      const token = localStorage.getItem("token");
-      return !!token;
-    } catch {
-      return false;
-    }
-  }
-
   return (
     <Box
       className="reth-canvas-root"
       sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
-      {isAuthenticatedLocal() && (
-        <Box
-          sx={{ width: "100%", px: { xs: 1.5, sm: 2 }, py: 1, zIndex: 1200 }}
-        >
-          <Box sx={{ display: "flex", width: "100%", gap: "4px", minWidth: 0 }}>
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                label={link.label}
-                active={router.pathname === link.path}
-                onClick={() => router.push(link.path)}
-                icon={link.icon}
-              />
-            ))}
-          </Box>
+      <Box sx={{ width: "100%", px: { xs: 1.5, sm: 2 }, py: 1, zIndex: 1200 }}>
+        <Box sx={{ display: "flex", width: "100%", gap: "4px", minWidth: 0 }}>
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.path}
+              label={link.label}
+              active={router.pathname === link.path}
+              onClick={() => router.push(link.path)}
+              icon={link.icon}
+            />
+          ))}
         </Box>
-      )}
+      </Box>
 
       <Box sx={{ display: "flex", flexGrow: 1, minHeight: 0 }}>
         {!isMobile && (
