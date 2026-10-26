@@ -140,7 +140,8 @@
     "language": "言語",
     "plans": "プラン",
     "profile": "プロフィール",
-    "recent": "最近"
+    "recent": "最近",
+    "customize-navbar": "ナビゲーションバーをカスタマイズ"
   },
   "theme": {
     "dark": "ダークモード",

@@ -141,7 +141,8 @@
     "language": "Sprache",
     "plans": "Pläne",
     "profile": "Profil",
-    "recent": "Kürzlich"
+    "recent": "Kürzlich",
+    "customize-navbar": "Navigationsleiste anpassen"
   },
   "theme": {
     "dark": "Dunkler Modus",

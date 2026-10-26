@@ -140,7 +140,8 @@
     "language": "भाषा",
     "plans": "प्लान",
     "profile": "प्रोफ़ाइल",
-    "recent": "हाल के"
+    "recent": "हाल के",
+    "customize-navbar": "नेविगेशन बार को अनुकूलित करें"
   },
   "theme": {
     "dark": "डार्क मोड",

@@ -659,7 +659,8 @@
     "language": "Idioma",
     "plans": "Planos",
     "profile": "Perfil",
-    "recent": "Recentes"
+    "recent": "Recentes",
+    "customize-navbar": "Personalizar Barra de Navegação"
   },
   "theme": {
     "dark": "Modo Escuro",

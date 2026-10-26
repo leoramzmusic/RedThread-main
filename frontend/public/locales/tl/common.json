@@ -140,7 +140,8 @@
     "language": "Wika",
     "plans": "Mga Plano",
     "profile": "Profile",
-    "recent": "Kamakailan"
+    "recent": "Kamakailan",
+    "customize-navbar": "Customize Navbar"
   },
   "theme": {
     "dark": "Dark Mode",

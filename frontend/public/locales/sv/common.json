@@ -141,7 +141,8 @@
     "language": "Språk",
     "plans": "Planer",
     "profile": "Profil",
-    "recent": "Senaste"
+    "recent": "Senaste",
+    "customize-navbar": "Anpassa navigeringsfältet"
   },
   "theme": {
     "dark": "Mörkt läge",

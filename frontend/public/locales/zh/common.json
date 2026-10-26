@@ -141,7 +141,8 @@
     "language": "语言",
     "plans": "套餐",
     "profile": "个人资料",
-    "recent": "最近"
+    "recent": "最近",
+    "customize-navbar": "自定义导航栏"
   },
   "theme": {
     "dark": "深色模式",

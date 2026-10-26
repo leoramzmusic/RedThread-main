@@ -140,7 +140,8 @@
     "language": "언어",
     "plans": "플랜",
     "profile": "프로필",
-    "recent": "최근"
+    "recent": "최근",
+    "customize-navbar": "탐색 모음 사용자 지정"
   },
   "theme": {
     "dark": "다크 모드",
