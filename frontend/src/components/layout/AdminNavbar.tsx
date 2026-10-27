@@ -14,6 +14,7 @@ import {
   ListItemIcon,
   Badge,
   Button,
+  Drawer,
 } from "@mui/material";
 import {
   Logout as LogoutIcon,
@@ -35,6 +36,7 @@ import LanguageSelector from "../common/LanguageSelector";
 import { useLanguageFallback } from "../../hooks/useLanguageFallback";
 import { useSnackbar } from "notistack";
 import NewNotificationWizard from "../notifications/NewNotificationWizard";
+import NotificationPanel from "../notifications/NotificationPanel";
 
 interface AdminNavbarProps {
   sidebarCollapsed?: boolean;
@@ -60,6 +62,7 @@ export default function AdminNavbar({
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -224,10 +227,16 @@ export default function AdminNavbar({
           >
             + Nueva Notificación
           </Button>
-          <Tooltip title="Notificaciones">
+          <Tooltip
+            title={
+              notificationPanelOpen ? "Cerrar notificaciones" : "Notificaciones"
+            }
+          >
             <IconButton
-              onClick={() => router.push("/portal-redthread/notifications")}
-              sx={{ color: iconColor }}
+              onClick={() => setNotificationPanelOpen((prev) => !prev)}
+              sx={{
+                color: notificationPanelOpen ? primary : iconColor,
+              }}
             >
               <Badge badgeContent={unreadCount} color="error" max={99}>
                 <NotificationsIcon />
@@ -411,6 +420,25 @@ export default function AdminNavbar({
         open={wizardOpen}
         onClose={() => setWizardOpen(false)}
       />
+      {notificationPanelOpen && (
+        <Drawer
+          anchor="right"
+          open={notificationPanelOpen}
+          onClose={() => setNotificationPanelOpen(false)}
+          transitionDuration={{ enter: 280, exit: 280 }}
+          elevation={0}
+          sx={{
+            zIndex: (theme) => theme.zIndex.drawer,
+            "& .MuiDrawer-paper": {
+              width: 400,
+              height: "100%",
+              bgcolor: "background.paper",
+            },
+          }}
+        >
+          <NotificationPanel onClose={() => setNotificationPanelOpen(false)} />
+        </Drawer>
+      )}
     </AppBar>
   );
 }
