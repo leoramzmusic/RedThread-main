@@ -408,7 +408,7 @@ export default function Layout({ children }: LayoutProps) {
     setAnchorElUser(null);
   };
 
-  const handleOpenLangMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenLangMenu = (event: React.MouseEvent<HTMLElement>) => {
     setLangAnchorEl(event.currentTarget);
   };
 
