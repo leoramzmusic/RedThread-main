@@ -1,7 +1,9 @@
 import { ReactNode, forwardRef, useState } from "react";
 import { IconButton, Box, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import { getIconStyleSx, IconStyleId, RED_PASSION } from "./iconStyles";
 
 interface QuickActionIconProps {
@@ -11,6 +13,8 @@ interface QuickActionIconProps {
   basicHover?: "bell" | "gear";
   asBox?: boolean;
   active?: boolean;
+  muted?: boolean;
+  selected?: boolean;
   badgeContent?: ReactNode;
   children: ReactNode;
   [key: string]: any;
@@ -612,7 +616,7 @@ function glowGearSx(active: boolean) {
   } as const;
 }
 
-function premiumBellSx(active: boolean, isDark: boolean) {
+function premiumBellSx(isDark: boolean) {
   return {
     position: "relative",
     bgcolor: "transparent",
@@ -651,20 +655,6 @@ function premiumBellSx(active: boolean, isDark: boolean) {
       filter: "drop-shadow(0 0 6px rgba(90,120,230,0.4))",
       transition: "color 0.4s ease, filter 0.4s ease",
     },
-    ...(active
-      ? {
-          ".rt-bell-glass": {
-            animation:
-              "rtPremiumShift 4s linear infinite, rtPremiumAura 3.6s ease-in-out infinite, rtPremiumPulse 1.6s ease-in-out infinite",
-            boxShadow: "0 0 16px rgba(211,47,47,0.55)",
-          },
-          ".rt-bell-icon": {
-            color: "#D32F2F",
-            filter: "drop-shadow(0 0 14px rgba(211,47,47,0.9))",
-            animation: "rtPremiumShake 2.4s ease-in-out infinite",
-          },
-        }
-      : {}),
     "&:active": {
       transform: "scale(0.92)",
     },
@@ -672,20 +662,6 @@ function premiumBellSx(active: boolean, isDark: boolean) {
       "0%, 100%": { boxShadow: "0 0 10px rgba(90,120,230,0.35)" },
       "33%": { boxShadow: "0 0 12px rgba(255,179,0,0.3)" },
       "66%": { boxShadow: "0 0 14px rgba(211,47,47,0.4)" },
-    },
-    "@keyframes rtPremiumPulse": {
-      "0%, 100%": {
-        boxShadow: "0 0 12px rgba(211,47,47,0.5), 0 0 0 0 rgba(211,47,47,0.4)",
-      },
-      "50%": {
-        boxShadow: "0 0 18px rgba(211,47,47,0.75), 0 0 0 9px rgba(211,47,47,0)",
-      },
-    },
-    "@keyframes rtPremiumShake": {
-      "0%, 100%": { transform: "rotate(0deg)" },
-      "25%": { transform: "rotate(-6deg)" },
-      "50%": { transform: "rotate(6deg)" },
-      "75%": { transform: "rotate(-3deg)" },
     },
     "@keyframes rtPremiumBurst": {
       from: {
@@ -702,6 +678,38 @@ function premiumBellSx(active: boolean, isDark: boolean) {
   } as const;
 }
 
+export function getBellBadgeSx(isDark: boolean) {
+  return {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    zIndex: 4,
+    minWidth: 16,
+    height: 16,
+    px: "3px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    bgcolor: isDark ? "#FF5252" : "#C62828",
+    color: "#fff",
+    fontWeight: 700,
+    fontSize: 10,
+    lineHeight: 1,
+    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+    animation: "rtBadgeIn 0.45s ease",
+    "@keyframes rtBadgeIn": {
+      "0%": { transform: "scale(0.6)", opacity: 0 },
+      "50%": { transform: "scale(1.25)", opacity: 1 },
+      "100%": { transform: "scale(1)", opacity: 1 },
+    },
+    "@media (prefers-reduced-motion: reduce)": {
+      animation: "none !important",
+      "& *": { animation: "none !important" },
+    },
+  } as const;
+}
+
 const QuickActionIcon = forwardRef<
   HTMLDivElement | HTMLButtonElement,
   QuickActionIconProps
@@ -713,6 +721,8 @@ const QuickActionIcon = forwardRef<
     basicHover,
     asBox,
     active = false,
+    muted = false,
+    selected = false,
     badgeContent,
     children,
     ...restProps
@@ -775,9 +785,39 @@ const QuickActionIcon = forwardRef<
       : isLiquidBell
         ? liquidBellSx(active, theme.palette.mode === "dark")
         : isPremiumBell
-          ? premiumBellSx(active, theme.palette.mode === "dark")
+          ? premiumBellSx(theme.palette.mode === "dark")
           : {};
   const [burstKey, setBurstKey] = useState(0);
+
+  const mutedSx = muted
+    ? {
+        ...(isGlowBell ? { ".rt-bell-regular": { filter: "none" } } : {}),
+        ...(isPremiumBell
+          ? {
+              ".rt-bell-glass": {
+                background: isDark
+                  ? "linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.05))"
+                  : "linear-gradient(135deg, rgba(0,0,0,0.12), rgba(0,0,0,0.04))",
+                boxShadow: "none",
+              },
+            }
+          : {}),
+      }
+    : {};
+
+  const selectedSx = selected
+    ? {
+        "& .rt-bell-icon, & .rt-bell-regular, & .rt-bell-solid": {
+          color: theme.palette.primary.main,
+          filter: `drop-shadow(0 0 6px ${alpha(theme.palette.primary.main, 0.5)})`,
+          transition: "color 0.3s ease, filter 0.3s ease",
+        },
+        "& .rt-bell-glass": {
+          borderColor: alpha(theme.palette.primary.main, 0.45),
+          boxShadow: `0 0 12px ${alpha(theme.palette.primary.main, 0.35)}`,
+        },
+      }
+    : {};
 
   let content = children;
 
@@ -791,7 +831,12 @@ const QuickActionIcon = forwardRef<
           fontSize: { xs: "1.2rem", sm: "1.4rem" },
         }}
       >
-        {isGlowBell ? (
+        {muted ? (
+          <NotificationsOffIcon
+            className="rt-bell-regular rt-bell-icon"
+            sx={{ fontSize: "inherit" }}
+          />
+        ) : isGlowBell ? (
           <NotificationsIcon
             className="rt-bell-regular"
             sx={{ fontSize: "inherit" }}
@@ -802,10 +847,12 @@ const QuickActionIcon = forwardRef<
             sx={{ fontSize: "inherit" }}
           />
         )}
-        <NotificationsIcon
-          className="rt-bell-solid"
-          sx={{ position: "absolute", inset: 0, fontSize: "inherit" }}
-        />
+        {!muted && (
+          <NotificationsIcon
+            className="rt-bell-solid"
+            sx={{ position: "absolute", inset: 0, fontSize: "inherit" }}
+          />
+        )}
       </Box>
     );
     content = isSubtleBell ? (
@@ -863,52 +910,7 @@ const QuickActionIcon = forwardRef<
     content = (
       <Box sx={{ position: "relative", display: "inline-flex" }}>
         {content}
-        <Box
-          className="rt-bell-badge"
-          sx={{
-            position: "absolute",
-            top: -4,
-            right: -4,
-            zIndex: 4,
-            minWidth: 16,
-            height: 16,
-            px: "3px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: isDark ? "#FF5252" : "#C62828",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 10,
-            lineHeight: 1,
-            boxShadow: isPremiumBell
-              ? "0 0 8px rgba(230,57,70,0.6)"
-              : "0 2px 6px rgba(0,0,0,0.3)",
-            animation: isPremiumBell
-              ? "rtBadgeIn 0.45s ease, rtBadgeHalo 1.4s ease-out 0.15s"
-              : "rtBadgeIn 0.45s ease",
-            "@keyframes rtBadgeIn": {
-              "0%": { transform: "scale(0.6)", opacity: 0 },
-              "50%": { transform: "scale(1.25)", opacity: 1 },
-              "100%": { transform: "scale(1)", opacity: 1 },
-            },
-            "@keyframes rtBadgeHalo": {
-              "0%": {
-                boxShadow:
-                  "0 0 0 2px rgba(211,47,47,0.5), 0 0 10px rgba(211,47,47,0.55)",
-              },
-              "100%": {
-                boxShadow:
-                  "0 0 0 9px rgba(211,47,47,0), 0 0 10px rgba(211,47,47,0)",
-              },
-            },
-            "@media (prefers-reduced-motion: reduce)": {
-              animation: "none !important",
-              "& *": { animation: "none !important" },
-            },
-          }}
-        >
+        <Box className="rt-bell-badge" sx={getBellBadgeSx(isDark)}>
           <Box
             component="span"
             sx={{
@@ -994,6 +996,9 @@ const QuickActionIcon = forwardRef<
       <Box
         ref={ref as React.Ref<HTMLDivElement>}
         {...restProps}
+        data-active={active ? "true" : undefined}
+        data-muted={muted ? "true" : undefined}
+        data-selected={selected ? "true" : undefined}
         onClick={isInteractive ? handleClick : undefined}
         role={isInteractive ? "button" : undefined}
         tabIndex={isInteractive ? 0 : undefined}
@@ -1019,6 +1024,8 @@ const QuickActionIcon = forwardRef<
           ...(gearSx as object),
           ...(globeSx as object),
           ...hoverSx,
+          ...(mutedSx as object),
+          ...(selectedSx as object),
         }}
       >
         {content}
@@ -1033,6 +1040,9 @@ const QuickActionIcon = forwardRef<
       color="inherit"
       ref={ref as React.Ref<HTMLButtonElement>}
       {...restProps}
+      data-active={active ? "true" : undefined}
+      data-muted={muted ? "true" : undefined}
+      data-selected={selected ? "true" : undefined}
       onClick={handleClick}
       sx={[
         {
@@ -1044,6 +1054,8 @@ const QuickActionIcon = forwardRef<
         gearSx,
         globeSx,
         hoverSx,
+        mutedSx as object,
+        selectedSx as object,
       ]}
     >
       {content}

@@ -7,6 +7,7 @@ import NavbarSection from "../settings/NavbarSection";
 
 const pushMock = jest.fn();
 let unreadCountMock = 0;
+let pausedUntilMock: string | null = null;
 let navConfigMock: {
   icon_styles?: Record<string, string>;
   quick_actions?: Record<string, boolean>;
@@ -60,7 +61,7 @@ jest.mock("../../services/api", () => ({
   __esModule: true,
   default: {
     get: jest.fn(async () => ({
-      data: { count: unreadCountMock, paused_until: null },
+      data: { count: unreadCountMock, paused_until: pausedUntilMock },
     })),
     post: jest.fn(async () => ({ data: {} })),
     patch: jest.fn(async () => ({ data: {} })),
@@ -156,6 +157,7 @@ beforeEach(() => {
   pushMock.mockClear();
   navConfigMock = null;
   unreadCountMock = 0;
+  pausedUntilMock = null;
   store.dispatch(
     setCredentials({
       user: {
@@ -204,6 +206,14 @@ const waitForBell = async (container: HTMLElement) => {
   );
   return container.querySelector(BELL_SELECTOR) as HTMLElement;
 };
+
+const bellRoot = (container: HTMLElement) =>
+  container
+    .querySelector(BELL_SELECTOR)
+    ?.closest('button, [role="button"]') as HTMLElement;
+
+const inMinutes = (minutes: number) =>
+  new Date(Date.now() + minutes * 60_000).toISOString();
 
 describe("navbar quick actions", () => {
   it("toggles the notification panel from the bell icon", async () => {
@@ -312,6 +322,85 @@ describe("notification icon parity", () => {
 
     expect(bellSignature(premiumContainer)).not.toEqual(
       bellSignature(liquidContainer),
+    );
+  });
+});
+
+describe("do not disturb", () => {
+  it("hides the badge and the attention state while it is active", async () => {
+    unreadCountMock = 3;
+    pausedUntilMock = inMinutes(15);
+
+    const { container } = renderLayout();
+    await waitForBell(container);
+
+    await waitFor(() =>
+      expect(bellRoot(container).getAttribute("data-muted")).toBe("true"),
+    );
+
+    const root = bellRoot(container);
+
+    expect(root.hasAttribute("data-active")).toBe(false);
+    expect(root.querySelector(".rt-bell-badge")).toBeNull();
+    expect(
+      container.querySelector('[data-testid="NotificationsOffIcon"]'),
+    ).not.toBeNull();
+  });
+
+  it("keeps the notification panel reachable while it is active", async () => {
+    unreadCountMock = 3;
+    pausedUntilMock = inMinutes(15);
+
+    const { container } = renderLayout();
+    await waitForBell(container);
+
+    fireEvent.click(container.querySelector(BELL_SELECTOR) as HTMLElement);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("notification-panel")).toBeInTheDocument(),
+    );
+  });
+
+  it("marks the bell as selected when the panel is open during it", async () => {
+    unreadCountMock = 3;
+    pausedUntilMock = inMinutes(15);
+
+    const { container } = renderLayout();
+    await waitForBell(container);
+
+    fireEvent.click(container.querySelector(BELL_SELECTOR) as HTMLElement);
+
+    await waitFor(() => {
+      const root = bellRoot(container);
+      expect(root.getAttribute("data-muted")).toBe("true");
+      expect(root.getAttribute("data-selected")).toBe("true");
+      expect(root.hasAttribute("data-active")).toBe(false);
+      expect(root.querySelector(".rt-bell-badge")).toBeNull();
+    });
+  });
+
+  it("renders the same bell in the navbar and in the preview while it is active", async () => {
+    unreadCountMock = 3;
+    pausedUntilMock = inMinutes(15);
+    navConfigMock = { icon_styles: { notifications: "liquid" } };
+
+    const { container: navbarContainer } = renderLayout();
+    await waitForBell(navbarContainer);
+
+    const { container: previewContainer } = render(
+      <Provider store={store}>
+        <NavbarSection
+          settings={{
+            navbar_config: { icon_styles: { notifications: "liquid" } },
+          }}
+          onSettingsChange={jest.fn()}
+        />
+      </Provider>,
+    );
+    await waitForBell(previewContainer);
+
+    expect(bellSignature(previewContainer)).toEqual(
+      bellSignature(navbarContainer),
     );
   });
 });

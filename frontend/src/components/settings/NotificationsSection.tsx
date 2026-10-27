@@ -73,7 +73,7 @@ export default function NotificationsSection({
                 color: "text.secondary",
               }}
             >
-              Activa o desactiva todas las notificaciones
+              Activa o desactiva todas las notificaciones push
             </Typography>
           </Box>
         }

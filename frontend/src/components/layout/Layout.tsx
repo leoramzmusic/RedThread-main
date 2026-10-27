@@ -199,8 +199,9 @@ export default function Layout({ children }: LayoutProps) {
 
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const { unreadCount, pausedUntil, fetchUnreadCount, scheduleFetch } =
+  const { unreadCount, pausedUntil, scheduleFetch } =
     useUnreadNotifications(isAuthenticated);
+  const dndActive = pausedUntil !== null;
   const ws = useRef<WebSocket | null>(null);
 
   // Language menu state
@@ -262,9 +263,8 @@ export default function Layout({ children }: LayoutProps) {
   }, [isAuthenticated, showPauseSummary]);
 
   const handlePauseExpired = useCallback(async () => {
-    await fetchUnreadCount();
     await consumePauseSummary();
-  }, [consumePauseSummary, fetchUnreadCount]);
+  }, [consumePauseSummary]);
 
   usePauseExpiry(pausedUntil, handlePauseExpired);
 
@@ -669,7 +669,13 @@ export default function Layout({ children }: LayoutProps) {
                 {/* Notifications Button — mismo componente que la vista previa de Customize Navbar */}
                 {showIcon("notifications") && (
                   <Suspense fallback={null}>
-                    <Tooltip title={t("nav.notifications", "Notificaciones")}>
+                    <Tooltip
+                      title={
+                        dndActive
+                          ? t("notifications.pause.dnd", "No molestar")
+                          : t("nav.notifications", "Notificaciones")
+                      }
+                    >
                       <Box
                         sx={{
                           width: { xs: 40, lg: 48 },
@@ -685,6 +691,7 @@ export default function Layout({ children }: LayoutProps) {
                           styleId={styleOf("notifications")}
                           unreadCount={unreadCount}
                           panelOpen={notificationOpen}
+                          dndActive={dndActive}
                           onClick={() => setNotificationOpen((prev) => !prev)}
                         />
                       </Box>

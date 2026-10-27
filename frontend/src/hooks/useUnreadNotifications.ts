@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
 import { PAUSE_STATE_EVENT } from "./useNotifications";
+import { usePauseExpiry } from "./usePauseExpiry";
 
 export interface UnreadNotificationsState {
   unreadCount: number;
@@ -84,6 +85,10 @@ export function useUnreadNotifications(
     window.addEventListener(PAUSE_STATE_EVENT, onPauseState);
     return () => window.removeEventListener(PAUSE_STATE_EVENT, onPauseState);
   }, []);
+
+  usePauseExpiry(pausedUntil, () => {
+    void fetchUnreadCount();
+  });
 
   return { unreadCount, pausedUntil, fetchUnreadCount, scheduleFetch };
 }
