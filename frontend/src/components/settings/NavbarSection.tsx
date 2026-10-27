@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, Fragment } from "react";
 import {
   Avatar,
   Box,
@@ -13,9 +13,9 @@ import {
   MenuItem,
   useTheme,
   alpha,
-} from '@mui/material';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+} from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 import {
   Home as HomeIcon,
   Explore as ExploreIcon,
@@ -24,27 +24,27 @@ import {
   Favorite as FavoriteIcon,
   History as HistoryIcon,
   HelpOutlined as HelpIcon,
-  Notifications as NotificationsIcon,
   Settings as SettingsIcon,
   Person as PersonIcon,
   Language as TranslateIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'next-i18next/pages';
-import QuickActionIcon from '../motion/QuickActionIcon';
-import ThemeSwitch from '../motion/ThemeSwitch';
-import BasicThemeSwitch from '../motion/BasicThemeSwitch';
-import GlowThemeSwitch from '../motion/GlowThemeSwitch';
-import SubtleThemeSwitch from '../motion/SubtleThemeSwitch';
-import LiquidThemeSwitch from '../motion/LiquidThemeSwitch';
-import { useAppTheme } from '../../context/ThemeContext';
+} from "@mui/icons-material";
+import { useTranslation } from "next-i18next/pages";
+import QuickActionIcon from "../motion/QuickActionIcon";
+import NotificationActionIcon from "../motion/NotificationActionIcon";
+import ThemeSwitch from "../motion/ThemeSwitch";
+import BasicThemeSwitch from "../motion/BasicThemeSwitch";
+import GlowThemeSwitch from "../motion/GlowThemeSwitch";
+import SubtleThemeSwitch from "../motion/SubtleThemeSwitch";
+import LiquidThemeSwitch from "../motion/LiquidThemeSwitch";
+import { useUnreadNotifications } from "../../hooks/useUnreadNotifications";
 import {
   ICON_STYLE_VARIANTS,
   ICON_STYLE_DEFAULTS,
   isIconStyleId,
   IconStyleId,
-} from '../motion/iconStyles';
+} from "../motion/iconStyles";
 
-const RED_THREAD = '#D32F2F';
+const RED_THREAD = "#D32F2F";
 const RING_LEN = 2 * Math.PI * 24;
 
 interface NavbarSectionProps {
@@ -60,7 +60,13 @@ interface ShortcutRowProps {
   onToggle: (next: boolean) => void;
 }
 
-function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRowProps) {
+function ShortcutRow({
+  icon,
+  label,
+  description,
+  enabled,
+  onToggle,
+}: ShortcutRowProps) {
   const [burstKey, setBurstKey] = useState(0);
 
   const handleToggle = (next: boolean) => {
@@ -71,28 +77,28 @@ function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRo
   return (
     <Box
       sx={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
         gap: 2,
         p: 1.5,
         borderRadius: 2,
-        border: '1px solid',
-        borderColor: enabled ? 'rgba(211,47,47,0.28)' : 'rgba(211,47,47,0)',
-        bgcolor: enabled ? 'rgba(211,47,47,0.05)' : 'transparent',
-        transition: 'all 0.3s ease',
+        border: "1px solid",
+        borderColor: enabled ? "rgba(211,47,47,0.28)" : "rgba(211,47,47,0)",
+        bgcolor: enabled ? "rgba(211,47,47,0.05)" : "transparent",
+        transition: "all 0.3s ease",
       }}
     >
       {burstKey > 0 && (
         <Box
           key={`burst-${burstKey}`}
           sx={{
-            position: 'absolute',
+            position: "absolute",
             inset: 0,
             borderRadius: 2,
-            pointerEvents: 'none',
-            boxShadow: '0 0 0 0 rgba(211,47,47,0)',
-            animation: 'rtRedBurst 0.6s ease-out',
+            pointerEvents: "none",
+            boxShadow: "0 0 0 0 rgba(211,47,47,0)",
+            animation: "rtRedBurst 0.6s ease-out",
           }}
         />
       )}
@@ -100,20 +106,21 @@ function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRo
       {/* Icono con hilo rojo que se dibuja al activar */}
       <Box
         sx={{
-          position: 'relative',
+          position: "relative",
           width: 48,
           height: 48,
           flexShrink: 0,
-          display: 'grid',
-          placeItems: 'center',
+          display: "grid",
+          placeItems: "center",
           borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'rgba(211,47,47,0.12)',
-          bgcolor: (theme) => (enabled ? 'rgba(211,47,47,0.1)' : theme.palette.action.hover),
-          color: enabled ? RED_THREAD : 'text.secondary',
-          transition: 'all 0.35s ease',
-          '@media (prefers-reduced-motion: reduce)': {
-            'svg *': { transition: 'none' },
+          border: "1px solid",
+          borderColor: "rgba(211,47,47,0.12)",
+          bgcolor: (theme) =>
+            enabled ? "rgba(211,47,47,0.1)" : theme.palette.action.hover,
+          color: enabled ? RED_THREAD : "text.secondary",
+          transition: "all 0.35s ease",
+          "@media (prefers-reduced-motion: reduce)": {
+            "svg *": { transition: "none" },
           },
         }}
       >
@@ -122,7 +129,11 @@ function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRo
           width="100%"
           height="100%"
           viewBox="0 0 56 56"
-          style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            transform: "rotate(-90deg)",
+          }}
           aria-hidden="true"
         >
           <circle
@@ -137,21 +148,28 @@ function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRo
             strokeDashoffset={enabled ? 0 : RING_LEN}
             opacity={enabled ? 1 : 0}
             style={{
-              transition: 'stroke-dashoffset 0.55s cubic-bezier(0.65,0,0.35,1), opacity 0.4s ease',
+              transition:
+                "stroke-dashoffset 0.55s cubic-bezier(0.65,0,0.35,1), opacity 0.4s ease",
             }}
           />
         </svg>
       </Box>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography variant="body1" sx={{
-          fontWeight: 600
-        }}>
+        <Typography
+          variant="body1"
+          sx={{
+            fontWeight: 600,
+          }}
+        >
           {label}
         </Typography>
-        <Typography variant="caption" sx={{
-          color: "text.secondary"
-        }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           {description}
         </Typography>
       </Box>
@@ -160,11 +178,11 @@ function ShortcutRow({ icon, label, description, enabled, onToggle }: ShortcutRo
         checked={enabled}
         onChange={(e) => handleToggle(e.target.checked)}
         sx={{
-          '&.Mui-checked': {
+          "&.Mui-checked": {
             color: RED_THREAD,
-            '&:hover': { backgroundColor: 'rgba(211,47,47,0.08)' },
+            "&:hover": { backgroundColor: "rgba(211,47,47,0.08)" },
           },
-          '&.Mui-checked + .MuiSwitch-track': {
+          "&.Mui-checked + .MuiSwitch-track": {
             backgroundColor: RED_THREAD,
             opacity: 1,
           },
@@ -183,10 +201,11 @@ function GroupLabel({ children }: { children: ReactNode }) {
         textTransform: "uppercase",
         letterSpacing: "0.08em",
         color: "text.secondary",
-        display: 'block',
+        display: "block",
         px: 1,
-        mb: 1
-      }}>
+        mb: 1,
+      }}
+    >
       {children}
     </Typography>
   );
@@ -214,28 +233,34 @@ function QuickIconRow({
   return (
     <Box
       sx={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         gap: 2,
         p: 1.5,
         borderRadius: 2,
-        border: '1px solid',
-        borderColor: enabled ? 'rgba(211,47,47,0.28)' : 'rgba(211,47,47,0.08)',
-        bgcolor: enabled ? 'rgba(211,47,47,0.04)' : 'transparent',
+        border: "1px solid",
+        borderColor: enabled ? "rgba(211,47,47,0.28)" : "rgba(211,47,47,0.08)",
+        bgcolor: enabled ? "rgba(211,47,47,0.04)" : "transparent",
         opacity: enabled ? 1 : 0.65,
-        transition: 'all 0.3s ease',
+        transition: "all 0.3s ease",
       }}
     >
       {icon}
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography variant="body1" sx={{
-          fontWeight: 600
-        }}>
+        <Typography
+          variant="body1"
+          sx={{
+            fontWeight: 600,
+          }}
+        >
           {label}
         </Typography>
-        <Typography variant="caption" sx={{
-          color: "text.secondary"
-        }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           {description}
         </Typography>
       </Box>
@@ -243,11 +268,11 @@ function QuickIconRow({
         checked={enabled}
         onChange={(e) => onToggle(e.target.checked)}
         sx={{
-          '&.Mui-checked': { color: RED_THREAD },
-          '&.Mui-checked:hover': { backgroundColor: 'rgba(211,47,47,0.08)' },
+          "&.Mui-checked": { color: RED_THREAD },
+          "&.Mui-checked:hover": { backgroundColor: "rgba(211,47,47,0.08)" },
         }}
         slotProps={{
-          input: { 'aria-label': `Mostrar ${label} en el navbar` }
+          input: { "aria-label": `Mostrar ${label} en el navbar` },
         }}
       />
       <Select
@@ -256,8 +281,8 @@ function QuickIconRow({
         onChange={(e) => onStyleChange(e.target.value as IconStyleId)}
         sx={{
           minWidth: 180,
-          fontSize: '0.85rem',
-          '& .MuiSelect-select': { py: 0.8 },
+          fontSize: "0.85rem",
+          "& .MuiSelect-select": { py: 0.8 },
         }}
       >
         {ICON_STYLE_VARIANTS.map((v) => (
@@ -280,9 +305,13 @@ interface SegmentGroupProps {
 function SegmentGroup({ label, value, options, onChange }: SegmentGroupProps) {
   return (
     <Box>
-      <Typography variant="subtitle2" gutterBottom sx={{
-        fontWeight: 600
-      }}>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{
+          fontWeight: 600,
+        }}
+      >
         {label}
       </Typography>
       <ToggleButtonGroup
@@ -322,8 +351,22 @@ const QUICK_ACTION_DEFAULTS: Record<string, boolean> = {
   language: true,
 };
 
-export default function NavbarSection({ settings, onSettingsChange }: NavbarSectionProps) {
-  const { t } = useTranslation('common');
+interface QuickIconDefinition {
+  id: string;
+  label: string;
+  description: string;
+  motion: "bell" | "gear" | "globe" | "switch";
+  basicHover?: "bell" | "gear";
+  asBox?: boolean;
+  badgeContent?: ReactNode;
+  icon?: ReactNode;
+}
+
+export default function NavbarSection({
+  settings,
+  onSettingsChange,
+}: NavbarSectionProps) {
+  const { t } = useTranslation("common");
   const theme = useTheme();
 
   const [basicDemo, setBasicDemo] = useState(false);
@@ -332,14 +375,17 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
   const [liquidDemo, setLiquidDemo] = useState(false);
   const [premiumDemo, setPremiumDemo] = useState(false);
 
-  const isDark = theme.palette.mode === 'dark';
-  const glassBg = isDark ? 'rgba(16,18,32,0.55)' : 'rgba(255,255,255,0.72)';
+  const isDark = theme.palette.mode === "dark";
+  const glassBg = isDark ? "rgba(16,18,32,0.55)" : "rgba(255,255,255,0.72)";
 
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
+  const { unreadCount } = useUnreadNotifications(isAuthenticated);
   const getImageUrl = (url?: string) => {
     if (!url) return null;
-    if (url.startsWith('http')) return url;
-    return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${url}`;
+    if (url.startsWith("http")) return url;
+    return `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${url}`;
   };
   const displayAvatar = getImageUrl(user?.avatar);
 
@@ -353,71 +399,77 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
     ...(current.quick_actions ?? {}),
   };
   const profile = {
-    shape: 'circle' as const,
-    border: 'accent' as const,
-    glow: 'accent' as const,
+    shape: "circle" as const,
+    border: "accent" as const,
+    glow: "accent" as const,
     ...(current.profile ?? {}),
   };
 
   const updateShortcut = (id: string, checked: boolean) => {
-    onSettingsChange('navbar_config', { ...current, shortcuts: { ...shortcuts, [id]: checked } });
+    onSettingsChange("navbar_config", {
+      ...current,
+      shortcuts: { ...shortcuts, [id]: checked },
+    });
   };
 
   const updateQuickAction = (id: string, checked: boolean) => {
-    onSettingsChange('navbar_config', {
+    onSettingsChange("navbar_config", {
       ...current,
       quick_actions: { ...quickActions, [id]: checked },
     });
   };
 
   const updateProfile = (key: string, value: string) => {
-    onSettingsChange('navbar_config', { ...current, profile: { ...profile, [key]: value } });
+    onSettingsChange("navbar_config", {
+      ...current,
+      profile: { ...profile, [key]: value },
+    });
   };
 
   const mainNavRows = [
     {
-      id: 'home',
-      label: t('nav.home', 'Inicio'),
-      description: t('nav_shortcut_home', 'Página de inicio del usuario'),
+      id: "home",
+      label: t("nav.home", "Inicio"),
+      description: t("nav_shortcut_home", "Página de inicio del usuario"),
       icon: <HomeIcon fontSize="small" />,
     },
     {
-      id: 'discover',
-      label: t('nav.discover', 'Descubrir'),
-      description: t('nav_shortcut_discover', 'Explorar perfiles'),
+      id: "discover",
+      label: t("nav.discover", "Descubrir"),
+      description: t("nav_shortcut_discover", "Explorar perfiles"),
       icon: <ExploreIcon fontSize="small" />,
     },
     {
-      id: 'events',
-      label: t('nav.events', 'Eventos'),
-      description: t('nav_shortcut_events', 'Próximos eventos'),
+      id: "events",
+      label: t("nav.events", "Eventos"),
+      description: t("nav_shortcut_events", "Próximos eventos"),
       icon: <EventIcon fontSize="small" />,
     },
     {
-      id: 'plans',
-      label: t('nav.plans', 'Planes'),
-      description: t('nav_shortcut_plans', 'Planes y membresías'),
+      id: "plans",
+      label: t("nav.plans", "Planes"),
+      description: t("nav_shortcut_plans", "Planes y membresías"),
       icon: <PlansIcon fontSize="small" />,
     },
   ];
 
   const optionalNavRows = [
     {
-      id: 'favorites',
-      label: t('nav.favorites', 'Favoritos'),
-      description: t('nav_shortcut_favorites', 'Acceso rápido a tus likes'),
+      id: "favorites",
+      label: t("nav.favorites", "Favoritos"),
+      description: t("nav_shortcut_favorites", "Acceso rápido a tus likes"),
       icon: <FavoriteIcon fontSize="small" />,
     },
     {
-      id: 'recent',
-      label: t('nav.recent', 'Recientes'),
-      description: t('nav_shortcut_recent', 'Perfiles que visitaste'),
+      id: "recent",
+      label: t("nav.recent", "Recientes"),
+      description: t("nav_shortcut_recent", "Perfiles que visitaste"),
       icon: <HistoryIcon fontSize="small" />,
     },
     {
-      id: 'help',
-      label: t('nav.help', 'Ayuda'),
-      description: t('nav_shortcut_help', 'Centro de ayuda y soporte'),
+      id: "help",
+      label: t("nav.help", "Ayuda"),
+      description: t("nav_shortcut_help", "Centro de ayuda y soporte"),
       icon: <HelpIcon fontSize="small" />,
     },
   ];
@@ -425,108 +477,148 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
   const iconStyles: Record<string, IconStyleId> = {
     ...ICON_STYLE_DEFAULTS,
     ...(Object.fromEntries(
-      Object.entries(current.icon_styles ?? {}).filter(([, v]) => isIconStyleId(v)),
+      Object.entries(current.icon_styles ?? {}).filter(([, v]) =>
+        isIconStyleId(v),
+      ),
     ) as Record<string, IconStyleId>),
   };
 
   const updateIconStyle = (id: string, value: IconStyleId) => {
-    onSettingsChange('navbar_config', { ...current, icon_styles: { ...iconStyles, [id]: value } });
+    onSettingsChange("navbar_config", {
+      ...current,
+      icon_styles: { ...iconStyles, [id]: value },
+    });
   };
 
-  const quickIcons: {
-    id: string;
-    label: string;
-    description: string;
-    motion: 'bell' | 'gear' | 'globe' | 'switch';
-    basicHover?: 'bell' | 'gear';
-    asBox?: boolean;
-    badgeContent?: ReactNode;
-    icon: ReactNode;
-  }[] = [
+  const quickIcons: QuickIconDefinition[] = [
     {
-      id: 'theme',
-      label: t('nav.theme', 'Tema claro/oscuro'),
-      description: t('navbar_icon_theme', 'Cambiar el modo del sitio'),
-      motion: 'switch',
+      id: "theme",
+      label: t("nav.theme", "Tema claro/oscuro"),
+      description: t("navbar_icon_theme", "Cambiar el modo del sitio"),
+      motion: "switch",
       asBox: true,
       icon:
-        iconStyles.theme === 'basic' ? (
-          <BasicThemeSwitch checked={basicDemo} onChange={() => setBasicDemo((d) => !d)} />
-        ) : iconStyles.theme === 'glow' ? (
-          <GlowThemeSwitch checked={glowDemo} onChange={() => setGlowDemo((d) => !d)} />
-        ) : iconStyles.theme === 'subtle' ? (
-          <SubtleThemeSwitch checked={subtleDemo} onChange={() => setSubtleDemo((d) => !d)} />
-        ) : iconStyles.theme === 'liquid' ? (
-          <LiquidThemeSwitch checked={liquidDemo} onChange={() => setLiquidDemo((d) => !d)} />
+        iconStyles.theme === "basic" ? (
+          <BasicThemeSwitch
+            checked={basicDemo}
+            onChange={() => setBasicDemo((d) => !d)}
+          />
+        ) : iconStyles.theme === "glow" ? (
+          <GlowThemeSwitch
+            checked={glowDemo}
+            onChange={() => setGlowDemo((d) => !d)}
+          />
+        ) : iconStyles.theme === "subtle" ? (
+          <SubtleThemeSwitch
+            checked={subtleDemo}
+            onChange={() => setSubtleDemo((d) => !d)}
+          />
+        ) : iconStyles.theme === "liquid" ? (
+          <LiquidThemeSwitch
+            checked={liquidDemo}
+            onChange={() => setLiquidDemo((d) => !d)}
+          />
         ) : (
-          <ThemeSwitch checked={premiumDemo} onChange={() => setPremiumDemo((d) => !d)} />
+          <ThemeSwitch
+            checked={premiumDemo}
+            onChange={() => setPremiumDemo((d) => !d)}
+          />
         ),
     },
     {
-      id: 'notifications',
-      label: t('nav.notifications', 'Notificaciones'),
-      description: t('navbar_icon_notifications', 'Campana de notificaciones'),
-      motion: 'bell',
-      basicHover: 'bell',
-      badgeContent: 3,
-      icon: <NotificationsIcon className="rt-bell-icon" sx={{ fontSize: 22 }} />,
+      id: "notifications",
+      label: t("nav.notifications", "Notificaciones"),
+      description: t("navbar_icon_notifications", "Campana de notificaciones"),
+      motion: "bell",
+      basicHover: "bell",
     },
     {
-      id: 'settings',
-      label: t('nav.settings', 'Configuración'),
-      description: t('navbar_icon_settings', 'Acceso directo a ajustes'),
-      motion: 'gear',
-      basicHover: 'gear',
+      id: "settings",
+      label: t("nav.settings", "Configuración"),
+      description: t("navbar_icon_settings", "Acceso directo a ajustes"),
+      motion: "gear",
+      basicHover: "gear",
       icon: <SettingsIcon className="rt-settings-spin" sx={{ fontSize: 22 }} />,
     },
     {
-      id: 'language',
-      label: t('nav.language', 'Idioma'),
-      description: t('navbar_icon_language', 'Selector de idioma del sitio'),
-      motion: 'globe',
+      id: "language",
+      label: t("nav.language", "Idioma"),
+      description: t("navbar_icon_language", "Selector de idioma del sitio"),
+      motion: "globe",
       icon: <TranslateIcon className="rt-globe" sx={{ fontSize: 22 }} />,
     },
   ];
 
-  const enabledQuickIcons = quickIcons.filter((q) => quickActions[q.id] !== false);
+  const enabledQuickIcons = quickIcons.filter(
+    (q) => quickActions[q.id] !== false,
+  );
+
+  const renderQuickIcon = (q: QuickIconDefinition) => {
+    if (q.id === "notifications") {
+      return (
+        <NotificationActionIcon
+          styleId={iconStyles.notifications}
+          unreadCount={unreadCount}
+        />
+      );
+    }
+
+    return (
+      <QuickActionIcon
+        styleId={iconStyles[q.id]}
+        motion={q.motion}
+        basicHover={q.basicHover}
+        asBox={q.asBox}
+        badgeContent={q.badgeContent}
+      >
+        {q.icon}
+      </QuickActionIcon>
+    );
+  };
 
   const glassCard = {
     p: 3,
     pt: 2.5,
     borderRadius: 3,
-    border: '1px solid',
-    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+    border: "1px solid",
+    borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
     bgcolor: glassBg,
-    backdropFilter: 'blur(14px)',
-    WebkitBackdropFilter: 'blur(14px)',
-    boxShadow: '0 8px 28px rgba(0,0,0,0.06)',
+    backdropFilter: "blur(14px)",
+    WebkitBackdropFilter: "blur(14px)",
+    boxShadow: "0 8px 28px rgba(0,0,0,0.06)",
   };
 
-  const isDiamond = profile.shape === 'diamond';
-  const previewRadius = profile.shape === 'circle' ? '50%' : profile.shape === 'square' ? '12px' : '6px';
-  const previewBorderWidth = profile.border === 'none' ? 0 : profile.border === 'thin' ? 1.5 : 2;
+  const isDiamond = profile.shape === "diamond";
+  const previewRadius =
+    profile.shape === "circle"
+      ? "50%"
+      : profile.shape === "square"
+        ? "12px"
+        : "6px";
+  const previewBorderWidth =
+    profile.border === "none" ? 0 : profile.border === "thin" ? 1.5 : 2;
   const previewBorderColor =
-    profile.border === 'none'
-      ? 'transparent'
-      : profile.border === 'thin'
+    profile.border === "none"
+      ? "transparent"
+      : profile.border === "thin"
         ? isDark
-          ? 'rgba(255,255,255,0.35)'
-          : 'rgba(0,0,0,0.25)'
+          ? "rgba(255,255,255,0.35)"
+          : "rgba(0,0,0,0.25)"
         : alpha(theme.palette.primary.main, 0.6);
   const previewGlow =
-    profile.glow === 'none'
-      ? 'none'
-      : profile.glow === 'passion'
-        ? '0 0 0 2px rgba(211,47,47,0.35), 0 0 14px rgba(211,47,47,0.35)'
+    profile.glow === "none"
+      ? "none"
+      : profile.glow === "passion"
+        ? "0 0 0 2px rgba(211,47,47,0.35), 0 0 14px rgba(211,47,47,0.35)"
         : `0 0 0 2px ${alpha(theme.palette.primary.main, 0.35)}, 0 0 14px ${alpha(theme.palette.primary.main, 0.35)}`;
 
   return (
     <Stack
       spacing={3}
       sx={{
-        '@keyframes rtRedBurst': {
-          from: { boxShadow: '0 0 0 0 rgba(211,47,47,0.5)' },
-          to: { boxShadow: '0 0 0 16px rgba(211,47,47,0)' },
+        "@keyframes rtRedBurst": {
+          from: { boxShadow: "0 0 0 0 rgba(211,47,47,0.5)" },
+          to: { boxShadow: "0 0 0 16px rgba(211,47,47,0)" },
         },
       }}
     >
@@ -539,31 +631,39 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
             display: "flex",
             alignItems: "center",
             gap: 1,
-            mb: 0.5
-          }}>
+            mb: 0.5,
+          }}
+        >
           <Typography
             variant="h5"
             sx={{
               fontWeight: 700,
-              fontSize: '1.4rem',
-              mt: 1
-            }}>
-            {t('navbar_nav_title', 'Atajos de navegación')}
+              fontSize: "1.4rem",
+              mt: 1,
+            }}
+          >
+            {t("navbar_nav_title", "Atajos de navegación")}
           </Typography>
         </Box>
         <Typography
           variant="body2"
           sx={{
             color: "text.secondary",
-            mb: 2.5
-          }}>
-          {t('navbar_nav_desc', 'Los menús principales y enlaces opcionales que aparecen en el centro del navbar.')}
+            mb: 2.5,
+          }}
+        >
+          {t(
+            "navbar_nav_desc",
+            "Los menús principales y enlaces opcionales que aparecen en el centro del navbar.",
+          )}
         </Typography>
 
-        <Box sx={{
-          mb: 1
-        }}>
-          <GroupLabel>{t('navbar_nav_main', 'Principales')}</GroupLabel>
+        <Box
+          sx={{
+            mb: 1,
+          }}
+        >
+          <GroupLabel>{t("navbar_nav_main", "Principales")}</GroupLabel>
           <Stack spacing={1.5}>
             {mainNavRows.map((row) => (
               <ShortcutRow
@@ -581,7 +681,7 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
         <Divider sx={{ my: 2.5 }} />
 
         <Box>
-          <GroupLabel>{t('navbar_nav_optional', 'Opcionales')}</GroupLabel>
+          <GroupLabel>{t("navbar_nav_optional", "Opcionales")}</GroupLabel>
           <Stack spacing={1.5}>
             {optionalNavRows.map((row) => (
               <ShortcutRow
@@ -604,18 +704,23 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
           gutterBottom
           sx={{
             fontWeight: 700,
-            fontSize: '1.4rem',
-            mt: 1
-          }}>
-          {t('navbar_actions_title', 'Iconos de acción rápida')}
+            fontSize: "1.4rem",
+            mt: 1,
+          }}
+        >
+          {t("navbar_actions_title", "Iconos de acción rápida")}
         </Typography>
         <Typography
           variant="body2"
           sx={{
             color: "text.secondary",
-            mb: 1.5
-          }}>
-          {t('navbar_actions_desc', 'Activa cada ícono para mostrarlo en el navbar y elige su estilo visual.')}
+            mb: 1.5,
+          }}
+        >
+          {t(
+            "navbar_actions_desc",
+            "Activa cada ícono para mostrarlo en el navbar y elige su estilo visual.",
+          )}
         </Typography>
 
         {/* Barra de vista previa en vivo */}
@@ -626,45 +731,44 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
             textTransform: "uppercase",
             letterSpacing: "0.08em",
             color: "text.secondary",
-            display: 'block',
+            display: "block",
             px: 1,
-            mb: 1
-          }}>
-          {t('navbar_actions_preview', 'Vista previa del navbar')}
+            mb: 1,
+          }}
+        >
+          {t("navbar_actions_preview", "Vista previa del navbar")}
         </Typography>
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 1.25,
             px: 2,
             py: 1.5,
             mb: 2.5,
             borderRadius: 2,
-            border: '1px solid',
-            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+            border: "1px solid",
+            borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)",
             bgcolor: glassBg,
-            backdropFilter: 'blur(14px)',
-            boxShadow: '0 6px 20px rgba(0,0,0,0.06)',
+            backdropFilter: "blur(14px)",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
           }}
         >
-          <Box sx={{ width: 90, mr: 'auto' }} />
+          <Box sx={{ width: 90, mr: "auto" }} />
           {enabledQuickIcons.map((q) => (
-            <QuickActionIcon key={q.id} styleId={iconStyles[q.id]} motion={q.motion} basicHover={q.basicHover} asBox={q.asBox} badgeContent={q.badgeContent}>
-              {q.icon}
-            </QuickActionIcon>
+            <Fragment key={q.id}>{renderQuickIcon(q)}</Fragment>
           ))}
           <Avatar
             src={displayAvatar || undefined}
-            alt={user?.email || 'Perfil'}
+            alt={user?.email || "Perfil"}
             sx={{
               width: 30,
               height: 30,
-              bgcolor: 'primary.main',
-              color: '#fff',
+              bgcolor: "primary.main",
+              color: "#fff",
               fontWeight: 600,
-              fontSize: '0.7rem',
-              border: '1.5px solid',
+              fontSize: "0.7rem",
+              border: "1.5px solid",
               borderColor: alpha(theme.palette.primary.main, 0.45),
             }}
           >
@@ -682,11 +786,7 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
               enabled={quickActions[q.id] !== false}
               onStyleChange={(next) => updateIconStyle(q.id, next)}
               onToggle={(checked) => updateQuickAction(q.id, checked)}
-              icon={
-                <QuickActionIcon styleId={iconStyles[q.id]} motion={q.motion} basicHover={q.basicHover} asBox={q.asBox} badgeContent={q.badgeContent}>
-                  {q.icon}
-                </QuickActionIcon>
-              }
+              icon={renderQuickIcon(q)}
             />
           ))}
         </Stack>
@@ -699,57 +799,67 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
           gutterBottom
           sx={{
             fontWeight: 700,
-            fontSize: '1.4rem',
-            mt: 1
-          }}>
-          {t('navbar_profile_title', 'Estilo de tu perfil')}
+            fontSize: "1.4rem",
+            mt: 1,
+          }}
+        >
+          {t("navbar_profile_title", "Estilo de tu perfil")}
         </Typography>
         <Typography
           variant="body2"
           sx={{
             color: "text.secondary",
-            mb: 2.5
-          }}>
-          {t('navbar_profile_desc', 'Tu avatar es fijo en el navbar; aquí editas su forma, borde y resplandor.')}
+            mb: 2.5,
+          }}
+        >
+          {t(
+            "navbar_profile_desc",
+            "Tu avatar es fijo en el navbar; aquí editas su forma, borde y resplandor.",
+          )}
         </Typography>
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{
-          alignItems: { sm: 'center' }
-        }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={3}
+          sx={{
+            alignItems: { sm: "center" },
+          }}
+        >
           {/* Vista previa */}
           <Box
             sx={{
               width: 76,
               height: 76,
               flexShrink: 0,
-              display: 'grid',
-              placeItems: 'center',
+              display: "grid",
+              placeItems: "center",
               borderRadius: 2,
-              border: '1px dashed',
-              borderColor: 'divider',
-              bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+              border: "1px dashed",
+              borderColor: "divider",
+              bgcolor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
             }}
           >
             <Box
               sx={{
                 width: 44,
                 height: 44,
-                display: 'grid',
-                placeItems: 'center',
+                display: "grid",
+                placeItems: "center",
                 borderRadius: previewRadius,
                 border: `${previewBorderWidth}px solid ${previewBorderColor}`,
                 boxShadow: previewGlow,
-                bgcolor: 'primary.main',
-                color: '#fff',
-                transform: isDiamond ? 'rotate(45deg)' : 'none',
-                transition: 'border-radius 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease',
+                bgcolor: "primary.main",
+                color: "#fff",
+                transform: isDiamond ? "rotate(45deg)" : "none",
+                transition:
+                  "border-radius 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease",
               }}
             >
               <PersonIcon
                 sx={{
-                  transform: isDiamond ? 'rotate(-45deg)' : 'none',
+                  transform: isDiamond ? "rotate(-45deg)" : "none",
                   fontSize: 24,
-                  transition: 'transform 0.35s ease',
+                  transition: "transform 0.35s ease",
                 }}
               />
             </Box>
@@ -758,33 +868,33 @@ export default function NavbarSection({ settings, onSettingsChange }: NavbarSect
           {/* Controles */}
           <Stack spacing={2} sx={{ flex: 1 }}>
             <SegmentGroup
-              label={t('navbar_profile_shape', 'Forma')}
+              label={t("navbar_profile_shape", "Forma")}
               value={profile.shape}
-              onChange={(v) => updateProfile('shape', v)}
+              onChange={(v) => updateProfile("shape", v)}
               options={[
-                { value: 'circle', label: t('shape_circle', 'Circular') },
-                { value: 'square', label: t('shape_square', 'Cuadrada') },
-                { value: 'diamond', label: t('shape_diamond', 'Rombo') },
+                { value: "circle", label: t("shape_circle", "Circular") },
+                { value: "square", label: t("shape_square", "Cuadrada") },
+                { value: "diamond", label: t("shape_diamond", "Rombo") },
               ]}
             />
             <SegmentGroup
-              label={t('navbar_profile_border', 'Borde')}
+              label={t("navbar_profile_border", "Borde")}
               value={profile.border}
-              onChange={(v) => updateProfile('border', v)}
+              onChange={(v) => updateProfile("border", v)}
               options={[
-                { value: 'none', label: t('border_none', 'Sin borde') },
-                { value: 'thin', label: t('border_thin', 'Delgado') },
-                { value: 'accent', label: t('border_accent', 'Anillo acento') },
+                { value: "none", label: t("border_none", "Sin borde") },
+                { value: "thin", label: t("border_thin", "Delgado") },
+                { value: "accent", label: t("border_accent", "Anillo acento") },
               ]}
             />
             <SegmentGroup
-              label={t('navbar_profile_glow', 'Resplandor')}
+              label={t("navbar_profile_glow", "Resplandor")}
               value={profile.glow}
-              onChange={(v) => updateProfile('glow', v)}
+              onChange={(v) => updateProfile("glow", v)}
               options={[
-                { value: 'none', label: t('glow_none', 'Sin glow') },
-                { value: 'accent', label: t('glow_accent', 'Acento') },
-                { value: 'passion', label: t('glow_passion', 'Rojo pasión') },
+                { value: "none", label: t("glow_none", "Sin glow") },
+                { value: "accent", label: t("glow_accent", "Acento") },
+                { value: "passion", label: t("glow_passion", "Rojo pasión") },
               ]}
             />
           </Stack>

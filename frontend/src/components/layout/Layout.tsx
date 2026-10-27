@@ -67,10 +67,10 @@ import { persistLangLocal } from "../../utils/landingLanguage";
 import { applyNotificationSocketEvent } from "../../hooks/notificationSync";
 import { usePauseExpiry } from "../../hooks/usePauseExpiry";
 import {
-  PAUSE_STATE_EVENT,
   PAUSE_SUMMARY_EVENT,
   type PauseSummary,
 } from "../../hooks/useNotifications";
+import { useUnreadNotifications } from "../../hooks/useUnreadNotifications";
 import { orbisLayer } from "../../styles/glass";
 
 const NotificationPanel = lazy(
@@ -84,6 +84,9 @@ const GlowThemeSwitch = lazy(() => import("../motion/GlowThemeSwitch"));
 const SubtleThemeSwitch = lazy(() => import("../motion/SubtleThemeSwitch"));
 const LiquidThemeSwitch = lazy(() => import("../motion/LiquidThemeSwitch"));
 const QuickActionIcon = lazy(() => import("../motion/QuickActionIcon"));
+const NotificationActionIcon = lazy(
+  () => import("../motion/NotificationActionIcon"),
+);
 
 interface LayoutProps {
   children: ReactNode;
@@ -196,10 +199,9 @@ export default function Layout({ children }: LayoutProps) {
 
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [pausedUntil, setPausedUntil] = useState<string | null>(null);
+  const { unreadCount, pausedUntil, fetchUnreadCount, scheduleFetch } =
+    useUnreadNotifications(isAuthenticated);
   const ws = useRef<WebSocket | null>(null);
-  const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Language menu state
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
@@ -210,27 +212,6 @@ export default function Layout({ children }: LayoutProps) {
     if (url.startsWith("http")) return url;
     return `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${url}`;
   };
-
-  const fetchUnreadCount = useCallback(async () => {
-    if (!isAuthenticated) return;
-
-    try {
-      const response = await apiClient.get("/notifications/unread-count");
-      setUnreadCount(response.data.count);
-      setPausedUntil(response.data.paused_until ?? null);
-      window.dispatchEvent(new CustomEvent("notifications-sync"));
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    }
-  }, [isAuthenticated]);
-
-  const scheduleFetch = useCallback(() => {
-    if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
-    fetchTimeoutRef.current = setTimeout(() => {
-      fetchTimeoutRef.current = null;
-      void fetchUnreadCount();
-    }, 500);
-  }, [fetchUnreadCount]);
 
   const showPauseSummary = useCallback(
     (summary: PauseSummary) => {
@@ -306,58 +287,6 @@ export default function Layout({ children }: LayoutProps) {
     window.addEventListener(PAUSE_SUMMARY_EVENT, onSummary);
     return () => window.removeEventListener(PAUSE_SUMMARY_EVENT, onSummary);
   }, [showPauseSummary]);
-
-  useEffect(() => {
-    const onPauseState = (event: Event) => {
-      const until = (event as CustomEvent<string | null>).detail;
-      setPausedUntil(until ?? null);
-    };
-    window.addEventListener(PAUSE_STATE_EVENT, onPauseState);
-    return () => window.removeEventListener(PAUSE_STATE_EVENT, onPauseState);
-  }, []);
-
-  // Fetch the badge count on mount and whenever auth changes
-  useEffect(() => {
-    if (fetchTimeoutRef.current) {
-      clearTimeout(fetchTimeoutRef.current);
-      fetchTimeoutRef.current = null;
-    }
-    void fetchUnreadCount();
-  }, [fetchUnreadCount]);
-
-  // Clear a pending debounce when the layout unmounts
-  useEffect(
-    () => () => {
-      if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
-    },
-    [],
-  );
-
-  // Keep the bell in sync when the survey is answered from the Home bubble
-  useEffect(() => {
-    const handlePreferencesChanged = () => scheduleFetch();
-    window.addEventListener(
-      "care-preferences-changed",
-      handlePreferencesChanged,
-    );
-    return () => {
-      window.removeEventListener(
-        "care-preferences-changed",
-        handlePreferencesChanged,
-      );
-    };
-  }, [scheduleFetch]);
-
-  // Refresh counts when the tab becomes visible again
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") scheduleFetch();
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [scheduleFetch]);
 
   // Refetch navbar config when auth state changes
   useEffect(() => {
@@ -737,23 +666,28 @@ export default function Layout({ children }: LayoutProps) {
                   </Tooltip>
                 )}
 
-                {/* Notifications Button — idéntico al estilo Liquid Glass de la vista previa del navbar */}
+                {/* Notifications Button — mismo componente que la vista previa de Customize Navbar */}
                 {showIcon("notifications") && (
                   <Suspense fallback={null}>
                     <Tooltip title={t("nav.notifications", "Notificaciones")}>
-                      <QuickActionIcon
-                        styleId="liquid"
-                        motion="bell"
-                        asBox
-                        active={notificationOpen || unreadCount > 0}
-                        badgeContent={unreadCount}
-                        onClick={() => setNotificationOpen((prev) => !prev)}
+                      <Box
+                        sx={{
+                          width: { xs: 40, lg: 48 },
+                          height: { xs: 40, lg: 48 },
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
                       >
-                        <NotificationsIcon
-                          className="rt-bell-icon"
-                          sx={{ fontSize: 22 }}
+                        <NotificationActionIcon
+                          styleId={styleOf("notifications")}
+                          unreadCount={unreadCount}
+                          panelOpen={notificationOpen}
+                          onClick={() => setNotificationOpen((prev) => !prev)}
                         />
-                      </QuickActionIcon>
+                      </Box>
                     </Tooltip>
                   </Suspense>
                 )}

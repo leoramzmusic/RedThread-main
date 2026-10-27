@@ -3,8 +3,10 @@ import { Provider } from "react-redux";
 import { store } from "../../store/store";
 import { setCredentials } from "../../store/slices/authSlice";
 import Layout from "./Layout";
+import NavbarSection from "../settings/NavbarSection";
 
 const pushMock = jest.fn();
+let unreadCountMock = 0;
 let navConfigMock: {
   icon_styles?: Record<string, string>;
   quick_actions?: Record<string, boolean>;
@@ -57,7 +59,9 @@ jest.mock("../../hooks/useLanguageFallback", () => ({
 jest.mock("../../services/api", () => ({
   __esModule: true,
   default: {
-    get: jest.fn(async () => ({ data: { count: 0, paused_until: null } })),
+    get: jest.fn(async () => ({
+      data: { count: unreadCountMock, paused_until: null },
+    })),
     post: jest.fn(async () => ({ data: {} })),
     patch: jest.fn(async () => ({ data: {} })),
   },
@@ -151,6 +155,7 @@ afterAll(() => {
 beforeEach(() => {
   pushMock.mockClear();
   navConfigMock = null;
+  unreadCountMock = 0;
   store.dispatch(
     setCredentials({
       user: {
@@ -179,6 +184,26 @@ const waitForIcon = async (selector: string): Promise<HTMLElement> => {
 const BELL_SELECTOR = ".rt-bell-icon, .rt-bell-regular, .rt-bell-solid";
 
 const ICON_STYLES = ["basic", "glow", "subtle", "liquid", "premium"];
+
+const bellSignature = (container: HTMLElement) => {
+  const icon = container.querySelector(BELL_SELECTOR);
+  if (!icon) throw new Error("bell icon not found");
+  const root = icon.closest('button, [role="button"]') as HTMLElement | null;
+  if (!root) throw new Error("bell root not found");
+  return {
+    tag: root.tagName,
+    classes: Array.from(root.classList).sort().join(" "),
+    badge: root.querySelector(".rt-bell-badge")?.textContent ?? null,
+    glass: root.querySelector(".rt-bell-glass") !== null,
+  };
+};
+
+const waitForBell = async (container: HTMLElement) => {
+  await waitFor(() =>
+    expect(container.querySelector(BELL_SELECTOR)).not.toBeNull(),
+  );
+  return container.querySelector(BELL_SELECTOR) as HTMLElement;
+};
 
 describe("navbar quick actions", () => {
   it("toggles the notification panel from the bell icon", async () => {
@@ -244,4 +269,49 @@ describe("navbar quick actions", () => {
       expect(pushMock).toHaveBeenCalledWith("/settings");
     },
   );
+});
+
+describe("notification icon parity", () => {
+  it.each(ICON_STYLES)(
+    "renders the same bell in the navbar and in the navbar preview with the %s style",
+    async (style) => {
+      unreadCountMock = 1;
+      navConfigMock = { icon_styles: { notifications: style } };
+
+      const { container: navbarContainer } = renderLayout();
+      await waitForBell(navbarContainer);
+
+      const { container: previewContainer } = render(
+        <Provider store={store}>
+          <NavbarSection
+            settings={{
+              navbar_config: { icon_styles: { notifications: style } },
+            }}
+            onSettingsChange={jest.fn()}
+          />
+        </Provider>,
+      );
+      await waitForBell(previewContainer);
+
+      expect(bellSignature(previewContainer)).toEqual(
+        bellSignature(navbarContainer),
+      );
+    },
+  );
+
+  it("uses the configured notification style instead of a hardcoded one", async () => {
+    navConfigMock = { icon_styles: { notifications: "premium" } };
+
+    const { container: premiumContainer } = renderLayout();
+    await waitForBell(premiumContainer);
+
+    navConfigMock = { icon_styles: { notifications: "liquid" } };
+
+    const { container: liquidContainer } = renderLayout();
+    await waitForBell(liquidContainer);
+
+    expect(bellSignature(premiumContainer)).not.toEqual(
+      bellSignature(liquidContainer),
+    );
+  });
 });
