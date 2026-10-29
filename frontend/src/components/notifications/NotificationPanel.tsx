@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next/pages";
 import { useSnackbar } from "notistack";
@@ -16,6 +16,13 @@ import {
   MenuItem,
   Skeleton,
   Fade,
+  Alert,
+  AlertTitle,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import {
@@ -43,7 +50,11 @@ import NotificationActionsMenu from "./NotificationActionsMenu";
 import SnoozeMenu, { type SnoozeOption } from "./SnoozeMenu";
 import PauseMenu from "./PauseMenu";
 import PauseScheduleDialog from "./PauseScheduleDialog";
-import { pauseDeadlineLabel, pauseRemaining } from "./pauseTime";
+import {
+  pauseDeadlineLabel,
+  pauseRemaining,
+  type PauseScheduleRule,
+} from "./pauseTime";
 import { useHoldToAct } from "./useHoldToAct";
 import {
   useNotifications,
@@ -77,6 +88,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [pauseAnchor, setPauseAnchor] = useState<null | HTMLElement>(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [editingRule, setEditingRule] = useState<PauseScheduleRule | null>(
+    null,
+  );
+  const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
   const [clock, setClock] = useState(() => Date.now());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
@@ -126,6 +141,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     dismissReminder,
     restoreReminder,
     pausedUntil,
+    dndActive,
     pauseSchedule,
     pauseAllow,
     pauseWindow,
@@ -168,18 +184,19 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     (filter === "all" || filter === "system");
   const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
   const pauseRemainingLabel = pauseRemaining(pausedUntil, clock);
-  const isPaused = Boolean(pauseRemainingLabel);
+  const isPaused = dndActive;
   const pauseTime = isPaused ? pauseDeadlineLabel(pausedUntil as string) : "";
+  const isManuallyPaused = isPaused && pausedUntil !== null;
   const pauseTooltip = isPaused
     ? t(
         "notifications.pause.active",
         "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
         {
-          remaining: pauseRemainingLabel,
+          remaining: isManuallyPaused ? pauseRemainingLabel : "sin límite",
           time: pauseTime,
         },
       )
-    : t("notifications.pause.title", "Pausar notificaciones");
+    : t("notifications.pause.title", "No molestar");
   const pauseShortcut =
     pauseSchedule.find((rule) => rule.id === pauseShortcutId) ?? null;
 
@@ -635,6 +652,14 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     );
   };
 
+  // Refresh pause state (routines, manual pause, force notifications) whenever
+  // the user opens the pause menu, so the UI always reflects the latest backend state.
+  useEffect(() => {
+    if (pauseAnchor) {
+      void refresh();
+    }
+  }, [pauseAnchor, refresh]);
+
   return (
     <Box
       sx={{
@@ -992,15 +1017,37 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         open={Boolean(pauseAnchor)}
         paused={isPaused}
         shortcut={pauseShortcut}
+        routines={pauseSchedule}
         locale={appLocale}
         onClose={() => setPauseAnchor(null)}
-        onPause={(duration) => void pause(duration)}
-        onPauseUntil={(until) => void pause(undefined, until)}
-        onResume={() => void resume()}
+        onPause={(duration) => {
+          void pause(duration).then(() => void refresh());
+        }}
+        onPauseUntil={(until) => {
+          void pause(undefined, until).then(() => void refresh());
+        }}
+        onResume={() => {
+          void resume().then(() => void refresh());
+        }}
         onApplyShortcut={() => {
           if (pauseShortcut?.id) void applyPauseShortcut(pauseShortcut.id);
         }}
         onOpenSchedule={() => setScheduleOpen(true)}
+        onToggleRoutine={(id, enabled) => {
+          const rule = pauseSchedule.find((r) => r.id === id);
+          if (rule) {
+            void savePauseSchedule({ ...rule, enabled });
+          }
+        }}
+        onEditRoutine={(rule) => {
+          setScheduleOpen(true);
+          // El diálogo PauseScheduleDialog ya recibe schedule y precarga al editar
+          // a través de startEditing cuando se pasa una regla existente
+          setEditingRule(rule);
+        }}
+        onDeleteRoutine={(id) => {
+          setDeletingRuleId(id);
+        }}
       />
 
       {scheduleOpen && (
@@ -1010,10 +1057,20 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
           schedule={pauseSchedule}
           singleWindow={pauseWindow}
           allow={pauseAllow}
-          onClose={() => setScheduleOpen(false)}
+          editingRule={editingRule}
+          onClose={() => {
+            setScheduleOpen(false);
+            setEditingRule(null);
+          }}
           onSaveSingle={(payload) => void savePauseWindow(payload)}
           onSaveRule={(payload) => void savePauseSchedule(payload)}
           onDelete={(id) => void removePauseSchedule(id)}
+          onToggle={(id, enabled) => {
+            const rule = pauseSchedule.find((r) => r.id === id);
+            if (rule) {
+              void savePauseSchedule({ ...rule, enabled });
+            }
+          }}
         />
       )}
 
@@ -1312,5 +1369,46 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         )}
       </Box>
     </Box>
+  );
+
+  // Confirmación antes de eliminar una rutina
+  const deletingRule = pauseSchedule.find((r) => r.id === deletingRuleId);
+
+  return (
+    <>
+      {deletingRuleId !== null && (
+        <Dialog open={true} onClose={() => setDeletingRuleId(null)}>
+          <DialogTitle>
+            {t("notifications.pause.rule.deleteTitle", "Eliminar rutina")}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {t(
+                "notifications.pause.rule.deleteConfirm",
+                '¿Seguro que deseas eliminar la rutina "{name}"?',
+                {
+                  name: deletingRule?.name ?? "",
+                },
+              )}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeletingRuleId(null)}>
+              {t("notifications.cancel", "Cancelar")}
+            </Button>
+            <Button
+              onClick={() => {
+                void removePauseSchedule(deletingRuleId ?? "");
+                setDeletingRuleId(null);
+              }}
+              color="error"
+              autoFocus
+            >
+              {t("notifications.delete", "Eliminar")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+    </>
   );
 }

@@ -61,7 +61,11 @@ jest.mock("../../services/api", () => ({
   __esModule: true,
   default: {
     get: jest.fn(async () => ({
-      data: { count: unreadCountMock, paused_until: pausedUntilMock },
+      data: {
+        count: unreadCountMock,
+        paused_until: pausedUntilMock,
+        dnd_active: pausedUntilMock !== null,
+      },
     })),
     post: jest.fn(async () => ({ data: {} })),
     patch: jest.fn(async () => ({ data: {} })),

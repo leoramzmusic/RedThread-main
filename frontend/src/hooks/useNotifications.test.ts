@@ -368,7 +368,7 @@ it("unsnoozes a notification and refreshes", async () => {
 
 it("pauses notifications with a preset and stores the deadline", async () => {
   const until = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-  post.mockResolvedValue({ data: { paused_until: until } });
+  post.mockResolvedValue({ data: { paused_until: until, dnd_active: true } });
   const onPauseState = jest.fn();
   window.addEventListener(PAUSE_STATE_EVENT, onPauseState);
   const { result } = renderHook(() => useNotifications("all"));
@@ -380,8 +380,9 @@ it("pauses notifications with a preset and stores the deadline", async () => {
     duration: "1h",
   });
   expect(result.current.pausedUntil).toBe(until);
+  expect(result.current.dndActive).toBe(true);
   expect(onPauseState).toHaveBeenLastCalledWith(
-    expect.objectContaining({ detail: until }),
+    expect.objectContaining({ detail: true }),
   );
   window.removeEventListener(PAUSE_STATE_EVENT, onPauseState);
 });

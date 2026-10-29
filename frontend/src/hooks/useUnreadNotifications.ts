@@ -6,6 +6,7 @@ import { usePauseExpiry } from "./usePauseExpiry";
 export interface UnreadNotificationsState {
   unreadCount: number;
   pausedUntil: string | null;
+  dndActive: boolean;
   fetchUnreadCount: () => Promise<void>;
   scheduleFetch: () => void;
 }
@@ -15,15 +16,21 @@ export function useUnreadNotifications(
 ): UnreadNotificationsState {
   const [unreadCount, setUnreadCount] = useState(0);
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
+  const [dndActive, setDndActive] = useState(false);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pauseStateVersionRef = useRef(0);
 
   const fetchUnreadCount = useCallback(async () => {
     if (!isAuthenticated) return;
 
+    const pauseVersion = pauseStateVersionRef.current;
     try {
       const response = await apiClient.get("/notifications/unread-count");
       setUnreadCount(response.data.count);
-      setPausedUntil(response.data.paused_until ?? null);
+      setDndActive(Boolean(response.data.dnd_active));
+      if (pauseVersion === pauseStateVersionRef.current) {
+        setPausedUntil(response.data.paused_until ?? null);
+      }
       window.dispatchEvent(new CustomEvent("notifications-sync"));
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -79,8 +86,8 @@ export function useUnreadNotifications(
 
   useEffect(() => {
     const onPauseState = (event: Event) => {
-      const until = (event as CustomEvent<string | null>).detail;
-      setPausedUntil(until ?? null);
+      pauseStateVersionRef.current += 1;
+      setDndActive(Boolean((event as CustomEvent<boolean>).detail));
     };
     window.addEventListener(PAUSE_STATE_EVENT, onPauseState);
     return () => window.removeEventListener(PAUSE_STATE_EVENT, onPauseState);
@@ -90,5 +97,11 @@ export function useUnreadNotifications(
     void fetchUnreadCount();
   });
 
-  return { unreadCount, pausedUntil, fetchUnreadCount, scheduleFetch };
+  return {
+    unreadCount,
+    pausedUntil,
+    dndActive,
+    fetchUnreadCount,
+    scheduleFetch,
+  };
 }

@@ -74,6 +74,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [error, setError] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
+  const [dndActive, setDndActive] = useState(false);
   const [pauseSchedule, setPauseSchedule] = useState<PauseScheduleRule[]>([]);
   const [pauseAllow, setPauseAllow] = useState<string[]>([]);
   const [pauseWindow, setPauseWindow] = useState<{
@@ -89,13 +90,14 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const applyPauseState = useCallback((data: Record<string, any> | null) => {
     if (!data) return;
     setPausedUntil(data.paused_until ?? null);
+    setDndActive(Boolean(data.dnd_active));
     setPauseSchedule(data.pause_schedule ?? []);
     setPauseAllow(data.pause_allow ?? []);
     setPauseWindow(data.pause_window ?? null);
     setPauseShortcutId(data.pause_shortcut_id ?? null);
     window.dispatchEvent(
       new CustomEvent(PAUSE_STATE_EVENT, {
-        detail: data.paused_until ?? null,
+        detail: Boolean(data.dnd_active),
       }),
     );
   }, []);
@@ -435,9 +437,11 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
           timezone: rule.timezone,
           utc_offset_minutes: rule.utc_offset_minutes,
           allow: rule.allow,
+          enabled: rule.enabled,
         });
         applyPauseState(response.data);
-      } catch {
+      } catch (error) {
+        console.error("savePauseSchedule failed:", error);
         setError(true);
       }
     },
@@ -483,6 +487,7 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     error,
     nextCursor,
     pausedUntil,
+    dndActive,
     pauseSchedule,
     pauseAllow,
     pauseWindow,

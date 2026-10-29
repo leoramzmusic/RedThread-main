@@ -7,6 +7,7 @@ export interface PauseScheduleRule {
   timezone?: string;
   utc_offset_minutes?: number;
   allow?: string[];
+  enabled?: boolean;
 }
 
 export interface ActivePause {

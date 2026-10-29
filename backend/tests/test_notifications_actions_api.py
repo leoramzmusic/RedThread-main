@@ -16,18 +16,27 @@ def _user():
 
 
 def _settings_context(
-    mutes=None, master=True, paused_until=None, schedule=None, shortcut_id=None
+    mutes=None,
+    master=True,
+    dnd_active=False,
+    manual_pause_until=None,
+    force_notifications_until=None,
+    schedule=None,
 ) -> dict:
     return {
         "mutes": mutes or {},
         "master": master,
-        "paused_until": paused_until,
+        "dnd_active": dnd_active,
+        "manual_pause_until": manual_pause_until,
+        "force_notifications_until": force_notifications_until,
+        "dnd_routines": schedule or [],
+        "paused_until": manual_pause_until if dnd_active else None,
         "paused_from": None,
         "pause_allow": [],
         "pause_schedule": schedule or [],
         "pause_window": {"start": None, "end": None},
         "active_pauses": [],
-        "pause_shortcut_id": shortcut_id,
+        "pause_shortcut_id": None,
     }
 
 
@@ -254,7 +263,11 @@ async def test_unread_count_uses_scoped_queries():
     with patch.object(api.Notification, "find", side_effect=fake_find), patch.object(
         api,
         "_notification_settings",
-        new=AsyncMock(return_value=_settings_context({}, True, paused_until)),
+        new=AsyncMock(
+            return_value=_settings_context(
+                {}, True, dnd_active=True, manual_pause_until=paused_until
+            )
+        ),
     ), patch.object(api, "_survey_pending", new=AsyncMock(return_value=0)):
         out = await api.get_unread_count(current_user=_user())
 
@@ -283,7 +296,11 @@ async def test_pause_accepts_preset():
     ) as pause, patch.object(
         api,
         "_notification_settings",
-        new=AsyncMock(return_value=_settings_context({}, True, until_sent)),
+        new=AsyncMock(
+            return_value=_settings_context(
+                {}, True, dnd_active=True, manual_pause_until=until_sent
+            )
+        ),
     ):
         before = datetime.utcnow()
         out = await api.pause_notifications_route(
@@ -330,16 +347,17 @@ async def test_pause_rejects_past_time():
 
 
 @pytest.mark.asyncio
-async def test_resume_clears_pause():
+async def test_resume_clears_dnd_state():
     with patch.object(
         api.ns, "resume_notifications", new=AsyncMock()
     ) as resume, patch.object(
         api,
-        "_notification_settings",
-        new=AsyncMock(return_value=_settings_context()),
+        "_pause_state",
+        new=AsyncMock(return_value={"paused_until": None, "dnd_active": False}),
     ):
         out = await api.resume_notifications_route(_user())
     assert out["paused_until"] is None
+    assert out["dnd_active"] is False
     resume.assert_awaited_once_with("u1")
 
 
@@ -351,7 +369,9 @@ async def test_create_pause_schedule_route_normalizes_and_saves():
     ) as upsert, patch.object(
         api,
         "_notification_settings",
-        new=AsyncMock(return_value=_settings_context({}, True, None, [rule])),
+        new=AsyncMock(
+            return_value=_settings_context({}, True, schedule=[rule])
+        ),
     ):
         out = await api.create_pause_schedule_route(
             api.PauseScheduleRequest(
@@ -427,7 +447,9 @@ async def test_delete_pause_schedule_route_removes_rule():
     ) as remove, patch.object(
         api,
         "_notification_settings",
-        new=AsyncMock(return_value=_settings_context({}, True, None, remaining)),
+        new=AsyncMock(
+            return_value=_settings_context({}, True, schedule=remaining)
+        ),
     ):
         out = await api.delete_pause_schedule_route("r1", _user())
     assert out["pause_schedule"] == remaining
@@ -435,11 +457,10 @@ async def test_delete_pause_schedule_route_removes_rule():
 
 
 @pytest.mark.asyncio
-async def test_apply_pause_shortcut_tracks_last_used_and_pauses():
+async def test_apply_pause_shortcut_pauses_until_routine_end():
     rule = {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
     settings = SimpleNamespace(
-        notification_pause_schedule=[rule],
-        notification_pause_last_used_id=None,
+        dnd_routines=[rule],
         save=AsyncMock(),
     )
     end = datetime(2030, 10, 19, 18, 0)
@@ -457,16 +478,13 @@ async def test_apply_pause_shortcut_tracks_last_used_and_pauses():
         out = await api.apply_pause_schedule_route("r1", _user())
 
     assert out["paused_until"] == "2030-10-19T18:00:00+00:00"
-    assert settings.notification_pause_last_used_id == "r1"
-    settings.save.assert_awaited_once()
     pause.assert_awaited_once_with("u1", end)
 
 
 @pytest.mark.asyncio
 async def test_apply_pause_shortcut_unknown_rule_raises_404():
     settings = SimpleNamespace(
-        notification_pause_schedule=[{"id": "other"}],
-        notification_pause_last_used_id=None,
+        dnd_routines=[{"id": "other"}],
         save=AsyncMock(),
     )
     with patch.object(
@@ -478,105 +496,9 @@ async def test_apply_pause_shortcut_unknown_rule_raises_404():
 
 
 @pytest.mark.asyncio
-async def test_pause_summary_route_consumes_due_summary():
-    start = datetime(2026, 10, 19, 9, 0)
-    end = datetime.utcnow() - timedelta(minutes=1)
-    settings = SimpleNamespace(
-        notification_pause_summary_pending=True,
-        notification_pause_summary_from=start,
-        notification_pause_summary_until=end,
-        save=AsyncMock(),
-    )
-    summary = {
-        "from": "2026-10-19T09:00:00+00:00",
-        "to": end.replace(tzinfo=timezone.utc).isoformat(),
-        "messages": 1,
-        "social": 2,
-        "system": 0,
-        "total": 3,
-    }
-    with patch.object(
-        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
-    ), patch.object(
-        api, "_pause_summary", new=AsyncMock(return_value=summary)
-    ) as build:
-        out = await api.pause_summary_route(_user())
-
-    assert out == {"summary": summary}
-    assert settings.notification_pause_summary_pending is False
-    assert settings.notification_pause_summary_from is None
-    assert settings.notification_pause_summary_until is None
-    settings.save.assert_awaited_once()
-    build.assert_awaited_once_with("u1", start, end)
-
-
-@pytest.mark.asyncio
-async def test_pause_summary_route_keeps_pending_before_expiry():
-    settings = SimpleNamespace(
-        notification_pause_summary_pending=True,
-        notification_pause_summary_from=datetime.utcnow() - timedelta(minutes=5),
-        notification_pause_summary_until=datetime.utcnow() + timedelta(minutes=5),
-        save=AsyncMock(),
-    )
-    with patch.object(
-        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
-    ), patch.object(api, "_pause_summary", new=AsyncMock()) as build:
-        out = await api.pause_summary_route(_user())
-
+async def test_pause_summary_route_returns_none():
+    out = await api.pause_summary_route(_user())
     assert out == {"summary": None}
-    assert settings.notification_pause_summary_pending is True
-    settings.save.assert_not_awaited()
-    build.assert_not_awaited()
-
-
-@pytest.mark.asyncio
-async def test_resume_returns_summary_and_clears_pending():
-    start = datetime(2026, 10, 19, 9, 0)
-    end = datetime(2026, 10, 19, 18, 0)
-    settings = SimpleNamespace(
-        notification_pause_summary_pending=True,
-        notification_pause_summary_from=start,
-        notification_pause_summary_until=end,
-        save=AsyncMock(),
-    )
-    context = {
-        **_settings_context(),
-        "paused_from": start,
-        "paused_until": end,
-    }
-    summary = {"total": 2, "messages": 0, "social": 2, "system": 0}
-    with patch.object(
-        api, "_notification_settings", new=AsyncMock(return_value=context)
-    ), patch.object(
-        api, "_pause_summary", new=AsyncMock(return_value=summary)
-    ), patch.object(
-        api.ns, "resume_notifications", new=AsyncMock()
-    ), patch.object(
-        api.UserSettings, "find_one", new=AsyncMock(return_value=settings)
-    ), patch.object(
-        api, "_pause_state", new=AsyncMock(return_value={"paused_until": None})
-    ):
-        out = await api.resume_notifications_route(_user())
-
-    assert out["summary"] == summary
-    assert out["paused_until"] is None
-    assert settings.notification_pause_summary_pending is False
-    settings.save.assert_awaited_once()
-
-
-@pytest.mark.asyncio
-async def test_unread_count_exposes_pause_shortcut():
-    def fake_find(query):
-        return SimpleNamespace(count=AsyncMock(return_value=0))
-
-    with patch.object(api.Notification, "find", side_effect=fake_find), patch.object(
-        api,
-        "_notification_settings",
-        new=AsyncMock(return_value=_settings_context(shortcut_id="r1")),
-    ), patch.object(api, "_survey_pending", new=AsyncMock(return_value=0)):
-        out = await api.get_unread_count(current_user=_user())
-
-    assert out["pause_shortcut_id"] == "r1"
 
 
 @pytest.mark.asyncio
@@ -589,24 +511,11 @@ async def test_unread_count_exposes_pause_schedule():
     with patch.object(api.Notification, "find", side_effect=fake_find), patch.object(
         api,
         "_notification_settings",
-        new=AsyncMock(return_value=_settings_context({}, True, None, schedule)),
+        new=AsyncMock(return_value=_settings_context({}, True, schedule=schedule)),
     ), patch.object(api, "_survey_pending", new=AsyncMock(return_value=0)):
         out = await api.get_unread_count(current_user=_user())
 
     assert out["pause_schedule"] == schedule
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("duration", ["30m", "4h"])
-async def test_snooze_accepts_new_presets(duration):
-    doc = SimpleNamespace(snoozed_until=None)
-    with patch.object(
-        api.ns, "snooze_notification", new=AsyncMock(return_value=doc)
-    ) as svc:
-        await api.snooze_notification_route(
-            _oid(), api.SnoozeRequest(duration=duration), _user()
-        )
-    assert svc.await_args.args[2] == duration
 
 
 @pytest.mark.asyncio
@@ -663,8 +572,12 @@ async def test_read_all_filter_scopes_bucket():
     update = AsyncMock(return_value=SimpleNamespace(modified_count=2))
     find = MagicMock(return_value=SimpleNamespace(update=update))
     with patch.object(api.Notification, "find", find), patch.object(
-        api, "_notification_settings", new=AsyncMock(return_value=_settings_context({}, True))
-    ), patch.object(api.manager, "send_personal_message", new=AsyncMock()):
+        api.manager, "send_personal_message", new=AsyncMock()
+    ), patch.object(
+        api,
+        "_notification_settings",
+        new=AsyncMock(return_value=_settings_context({}, True)),
+    ):
         out = await api.mark_all_as_read(filter="social", current_user=_user())
     assert out == {"updated": 2}
     query = find.call_args.args[0]

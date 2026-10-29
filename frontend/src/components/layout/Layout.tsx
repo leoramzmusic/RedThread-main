@@ -199,9 +199,8 @@ export default function Layout({ children }: LayoutProps) {
 
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const { unreadCount, pausedUntil, scheduleFetch } =
+  const { unreadCount, dndActive, pausedUntil, scheduleFetch } =
     useUnreadNotifications(isAuthenticated);
-  const dndActive = pausedUntil !== null;
   const ws = useRef<WebSocket | null>(null);
 
   // Language menu state

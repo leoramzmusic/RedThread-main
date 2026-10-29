@@ -57,8 +57,7 @@ async def test_like_creates_single_group_doc(db):
 
 @pytest.mark.asyncio
 async def test_like_without_media_uses_profile_group(db):
-    doc = await ns.emit_like_notification(liker_id="liker", recipient_id="me")
-    assert doc.group_key == "like:profile"
+    assert (await ns.emit_like_notification(liker_id="liker", recipient_id="me")).group_key == "like:profile"
 
 
 @pytest.mark.asyncio
@@ -223,11 +222,9 @@ class TestShouldPush:
                 "system": False,
                 "promos": False,
             },
-            do_not_disturb={
-                "enabled": False,
-                "start_time": "22:00",
-                "end_time": "08:00",
-            },
+            dnd_routines=[],
+            manual_pause_until=None,
+            force_notifications_until=None,
         )
         for k, v in over.items():
             setattr(base, k, v)
@@ -282,36 +279,42 @@ class TestShouldPush:
         assert ns.should_push(s1, "promo", None) is False
         assert ns.should_push(s2, "promo", None) is False
 
-    def test_dnd_window_crossing_midnight(self):
+    def test_manual_pause_blocks_push_except_important(self):
         s = self.settings(
-            do_not_disturb={"enabled": True, "start_time": "22:00", "end_time": "08:00"}
-        )
-        assert ns.should_push(s, "like", None, now=time(23, 30)) is False
-        assert ns.should_push(s, "like", None, now=time(12, 0)) is True
-
-    def test_active_pause_blocks_push_except_important(self):
-        s = self.settings(
-            notifications_paused_until=datetime.utcnow() + timedelta(minutes=30)
+            manual_pause_until=datetime.utcnow() + timedelta(minutes=30)
         )
         assert ns.should_push(s, "like", None) is False
         assert ns.should_push(s, "message", None) is False
         assert ns.should_push(s, "system", {"important": True}) is True
 
-    def test_expired_pause_allows_push(self):
+    def test_expired_manual_pause_allows_push(self):
         s = self.settings(
-            notifications_paused_until=datetime.utcnow() - timedelta(minutes=1)
+            manual_pause_until=datetime.utcnow() - timedelta(minutes=1)
         )
         assert ns.should_push(s, "like", None) is True
 
-    def test_aware_pause_blocks_push(self):
+    def test_force_notifications_allows_push_during_routine(self):
         s = self.settings(
-            notifications_paused_until=datetime.now(timezone.utc)
-            + timedelta(minutes=30)
+            dnd_routines=[
+                {"days": [0, 1, 2, 3, 4, 5, 6], "start": "00:00", "end": "00:00"}
+            ],
+            force_notifications_until=datetime.utcnow() + timedelta(hours=1),
         )
-        assert ns.should_push(s, "like", None) is False
+        assert ns.should_push(s, "like", None) is True
 
     def test_no_settings_pushes(self):
         assert ns.should_push(None, "like", None) is True
+
+
+def _fixed_utcnow(moment: datetime) -> type:
+    """Clase datetime con ``utcnow`` fijo para las pausas programadas."""
+
+    class _FixedDatetime(datetime):
+        @classmethod
+        def utcnow(cls):
+            return moment
+
+    return _FixedDatetime
 
 
 class TestPauseSchedule:
@@ -333,7 +336,7 @@ class TestPauseSchedule:
         assert ns.pause_rule_window(self.RULE, now) is None
 
     def test_inactive_on_unselected_day(self):
-        now = datetime(2026, 10, 24, 19, 0)  # sábado
+        now = datetime(2026, 10, 24, 19, 0)  # sabado
         assert ns.pause_rule_window(self.RULE, now) is None
 
     def test_window_from_previous_day(self):
@@ -356,116 +359,71 @@ class TestPauseSchedule:
             "end": "08:00",
             "utc_offset_minutes": 120,
         }
-        # 17:00 UTC son las 19:00 en +02:00 -> dentro de la ventana
         assert ns.pause_rule_window(rule, datetime(2026, 10, 19, 17, 0)) is not None
-        # 15:00 UTC son las 17:00 locales -> fuera
         assert ns.pause_rule_window(rule, datetime(2026, 10, 19, 15, 0)) is None
 
-    def test_schedule_windows_lists_active_rules(self):
-        rules = [
-            {"days": [0], "start": "09:00", "end": "12:00"},
-            {"days": [0], "start": "10:00", "end": "18:00"},
-        ]
+    def test_schedule_windows_lists_active_routines(self):
+        settings = SimpleNamespace(
+            dnd_routines=[
+                {"days": [0], "start": "09:00", "end": "12:00"},
+                {"days": [0], "start": "10:00", "end": "18:00"},
+            ]
+        )
         now = datetime(2026, 10, 19, 10, 30)
-        windows = ns.schedule_pause_windows(rules, now)
+        windows = ns.schedule_pause_windows(settings, now)
         assert len(windows) == 2
         assert max(item[2] for item in windows) == datetime(2026, 10, 19, 18, 0)
-
-    def test_effective_pause_until_combines_one_off_and_schedule(self):
-        settings = SimpleNamespace(
-            notifications_paused_until=datetime(2026, 10, 19, 23, 0),
-            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
-            notification_pause_schedule=[
-                {"days": [0], "start": "09:00", "end": "18:00"}
-            ],
-        )
-        now = datetime(2026, 10, 19, 10, 30)
-        assert ns.effective_pause_until(settings, now) == datetime(2026, 10, 19, 23, 0)
-
-    def test_allowed_types_pass_through_the_pause(self):
-        settings = SimpleNamespace(
-            notifications_enabled=True,
-            notification_mutes={},
-            do_not_disturb={"enabled": False, "start_time": "22:00", "end_time": "08:00"},
-            notifications_paused_until=datetime(2026, 10, 19, 23, 0),
-            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
-            notifications_pause_allow=["message", "system"],
-            notification_pause_schedule=[],
-        )
-        now = datetime.utcnow()
-        settings.notifications_paused_from = now - timedelta(hours=1)
-        settings.notifications_paused_until = now + timedelta(hours=1)
-        assert ns.should_push(settings, "like", None) is False
-        assert ns.should_push(settings, "message", None) is True
-        assert ns.should_push(settings, "system", None) is True
 
     def test_should_push_blocked_by_schedule(self):
         settings = SimpleNamespace(
             notifications_enabled=True,
             notification_mutes={},
-            do_not_disturb={"enabled": False, "start_time": "22:00", "end_time": "08:00"},
-            notifications_paused_until=None,
-            notifications_paused_from=None,
-            notifications_pause_allow=[],
-            # 00:00 -> 00:00 cubre las 24h de los días indicados
-            notification_pause_schedule=[
-                {"days": [0, 1, 2, 3, 4, 5, 6], "start": "00:00", "end": "00:00"}
+            dnd_routines=[
+                # 00:00 -> 00:00 cubre las 24h de los dias indicados
+                {
+                    "days": [0, 1, 2, 3, 4, 5, 6],
+                    "start": "00:00",
+                    "end": "00:00",
+                }
             ],
+            manual_pause_until=None,
+            force_notifications_until=None,
         )
         assert ns.should_push(settings, "like", None) is False
         assert ns.should_push(settings, "system", {"important": True}) is True
 
-    def test_active_pauses_lists_window_and_rule(self):
+    def test_is_dnd_active_false_with_force_override(self):
         settings = SimpleNamespace(
-            notifications_paused_until=datetime(2026, 10, 19, 23, 0),
-            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
-            notifications_pause_allow=["message"],
-            notification_pause_schedule=[
-                {
-                    "id": "r1",
-                    "name": "Horario laboral",
-                    "days": [0],
-                    "start": "09:00",
-                    "end": "18:00",
-                    "allow": [],
-                }
+            dnd_routines=[
+                {"days": [0], "start": "09:00", "end": "18:00"}
             ],
-        )
-        now = datetime(2026, 10, 19, 10, 30)
-        pauses = ns.active_pauses(settings, now)
-        kinds = {item["kind"] for item in pauses}
-        assert kinds == {"single", "recurring"}
-        recurring = [item for item in pauses if item["kind"] == "recurring"][0]
-        assert recurring["name"] == "Horario laboral"
-        assert recurring["id"] == "r1"
-
-    def test_resume_override_hides_active_recurring_window(self):
-        settings = SimpleNamespace(
-            notifications_paused_until=None,
-            notifications_paused_from=None,
-            notifications_pause_allow=[],
-            notification_pause_schedule=[
-                {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
-            ],
-            notifications_pause_resume_until=datetime(2026, 10, 19, 18, 0),
+            manual_pause_until=None,
+            force_notifications_until=datetime(2026, 10, 19, 18, 0),
         )
         now = datetime(2026, 10, 19, 10, 0)
-        assert ns.effective_pause_window(settings, now) is None
-        assert ns.active_pauses(settings, now) == []
+        assert ns.is_dnd_active(settings, now) is False
 
-    def test_resume_override_keeps_one_off_pause(self):
+    def test_is_dnd_active_true_with_active_routine(self):
         settings = SimpleNamespace(
-            notifications_paused_until=datetime(2026, 10, 19, 23, 0),
-            notifications_paused_from=datetime(2026, 10, 19, 9, 0),
-            notifications_pause_allow=[],
-            notification_pause_schedule=[
-                {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
+            dnd_routines=[
+                {"days": [0], "start": "09:00", "end": "18:00"}
             ],
-            notifications_pause_resume_until=datetime(2026, 10, 19, 18, 0),
+            manual_pause_until=None,
+            force_notifications_until=None,
         )
-        window = ns.effective_pause_window(settings, datetime(2026, 10, 19, 10, 0))
-        assert window is not None
-        assert window["kind"] == "single"
+        now = datetime(2026, 10, 19, 10, 0)
+        assert ns.is_dnd_active(settings, now) is True
+
+    def test_is_dnd_active_false_when_nothing_active(self):
+        settings = SimpleNamespace(
+            dnd_routines=[
+                {"days": [0], "start": "09:00", "end": "18:00"}
+            ],
+            manual_pause_until=None,
+            force_notifications_until=None,
+        )
+        now = datetime(2026, 10, 19, 20, 0)
+        assert ns.is_dnd_active(settings, now) is False
 
     def test_next_pause_rule_end_from_before_start(self):
         rule = {"days": [0], "start": "09:00", "end": "18:00"}
@@ -495,79 +453,91 @@ class TestPauseSchedule:
         ) == datetime(2026, 10, 27, 8, 0)
 
     @pytest.mark.asyncio
-    async def test_pause_notifications_sets_pending_summary(self):
+    async def test_pause_notifications_sets_manual_pause_until(self):
+        now = datetime.utcnow()
+        until = now + timedelta(hours=1)
         settings = SimpleNamespace(
-            notifications_paused_from=None,
-            notifications_paused_until=None,
-            notification_pause_summary_pending=False,
-            notification_pause_summary_from=None,
-            notification_pause_summary_until=None,
+            manual_pause_until=None,
+            force_notifications_until=None,
             save=AsyncMock(),
         )
-        until = datetime.utcnow() + timedelta(hours=1)
         with patch(
             "src.models.user_settings.UserSettings.find_one",
             new=AsyncMock(return_value=settings),
         ), patch.object(ns, "_push_action", new=AsyncMock()):
             await ns.pause_notifications("u1", until)
-        assert settings.notification_pause_summary_pending is True
-        assert settings.notification_pause_summary_from is not None
-        assert settings.notification_pause_summary_until == until
+        assert settings.manual_pause_until == until
+        assert settings.force_notifications_until is None
 
     @pytest.mark.asyncio
-    async def test_resume_notifications_overrides_active_schedule(self):
+    async def test_resume_clears_manual_pause_and_sets_force_until(self):
+        now = datetime(2026, 10, 19, 10, 0)
         settings = SimpleNamespace(
-            notifications_paused_from=None,
-            notifications_paused_until=None,
-            notifications_pause_resume_until=None,
+            manual_pause_until=now + timedelta(minutes=30),
+            force_notifications_until=None,
+            dnd_routines=[
+                {"id": "r1", "days": [0], "start": "09:00", "end": "10:15"}
+            ],
             save=AsyncMock(),
         )
-        end = datetime(2026, 10, 19, 18, 0)
         with patch(
             "src.models.user_settings.UserSettings.find_one",
             new=AsyncMock(return_value=settings),
         ), patch.object(ns, "_push_action", new=AsyncMock()), patch.object(
-            ns,
-            "effective_pause_window",
-            return_value={"kind": "recurring", "end": end},
+            ns, "datetime", _fixed_utcnow(now)
         ):
             await ns.resume_notifications("u1")
-        assert settings.notifications_pause_resume_until == end
-        assert settings.notifications_paused_until is None
-
-    def test_remember_active_pause_tracks_shortcut_and_summary(self):
-        start = datetime(2026, 10, 19, 9, 0)
-        end = datetime(2026, 10, 19, 18, 0)
-        settings = SimpleNamespace(
-            notification_pause_last_used_id=None,
-            notification_pause_summary_pending=False,
-            notification_pause_summary_from=None,
-            notification_pause_summary_until=None,
-        )
-        changed = ns.remember_active_pause(
-            settings,
-            [
-                {
-                    "kind": "recurring",
-                    "id": "r1",
-                    "start": "09:00",
-                    "end": "18:00",
-                    "window_start": start,
-                    "window_end": end,
-                }
-            ],
-        )
-        assert changed is True
-        assert settings.notification_pause_last_used_id == "r1"
-        assert settings.notification_pause_summary_pending is True
-        assert settings.notification_pause_summary_from == start
-        assert settings.notification_pause_summary_until == end
+        assert settings.manual_pause_until is None
+        assert settings.force_notifications_until == datetime(2026, 10, 19, 10, 15)
+        assert ns.is_dnd_active(settings, now) is False
 
     @pytest.mark.asyncio
-    async def test_remove_pause_schedule_clears_shortcut(self):
+    async def test_resume_clears_everything_when_no_routine(self):
+        now = datetime(2026, 10, 19, 10, 0)
         settings = SimpleNamespace(
-            notification_pause_schedule=[{"id": "r1"}, {"id": "r2"}],
-            notification_pause_last_used_id="r1",
+            manual_pause_until=now + timedelta(minutes=30),
+            force_notifications_until=None,
+            dnd_routines=[],
+            save=AsyncMock(),
+        )
+        with patch(
+            "src.models.user_settings.UserSettings.find_one",
+            new=AsyncMock(return_value=settings),
+        ), patch.object(ns, "_push_action", new=AsyncMock()), patch.object(
+            ns, "datetime", _fixed_utcnow(now)
+        ):
+            await ns.resume_notifications("u1")
+        assert settings.manual_pause_until is None
+        assert settings.force_notifications_until is None
+        assert ns.is_dnd_active(settings, now) is False
+
+    @pytest.mark.asyncio
+    async def test_resume_sets_force_until_to_active_routine_end(self):
+        now = datetime(2026, 10, 19, 10, 0)
+        end = datetime(2026, 10, 19, 18, 0)
+        settings = SimpleNamespace(
+            manual_pause_until=now,
+            force_notifications_until=None,
+            dnd_routines=[
+                {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
+            ],
+            save=AsyncMock(),
+        )
+        with patch(
+            "src.models.user_settings.UserSettings.find_one",
+            new=AsyncMock(return_value=settings),
+        ), patch.object(ns, "_push_action", new=AsyncMock()), patch.object(
+            ns, "datetime", _fixed_utcnow(now)
+        ):
+            await ns.resume_notifications("u1")
+        assert settings.manual_pause_until is None
+        assert settings.force_notifications_until == end
+        assert ns.is_dnd_active(settings, now) is False
+
+    @pytest.mark.asyncio
+    async def test_remove_pause_schedule_removes_routine(self):
+        settings = SimpleNamespace(
+            dnd_routines=[{"id": "r1"}, {"id": "r2"}],
             save=AsyncMock(),
         )
         with patch(
@@ -576,7 +546,7 @@ class TestPauseSchedule:
         ), patch.object(ns, "_push_action", new=AsyncMock()):
             remaining = await ns.remove_pause_schedule("u1", "r1")
         assert remaining == [{"id": "r2"}]
-        assert settings.notification_pause_last_used_id is None
+        assert settings.dnd_routines == [{"id": "r2"}]
 
     def test_normalize_pause_rule_validates(self):
         rule = ns.normalize_pause_rule(

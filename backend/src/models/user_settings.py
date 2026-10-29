@@ -34,25 +34,14 @@ class UserSettings(Document):
             "matches": True,
         }
     )
-    do_not_disturb: Dict[str, Any] = Field(
-        default_factory=lambda: {
-            "enabled": False,
-            "start_time": "22:00",
-            "end_time": "08:00",
-        }
-    )
     notification_mutes: Dict[str, bool] = Field(default_factory=dict)
     reminder_mutes: List[str] = Field(default_factory=list)
     reminder_snoozes: Dict[str, datetime] = Field(default_factory=dict)
-    notifications_paused_until: Optional[datetime] = None
-    notifications_paused_from: Optional[datetime] = None
-    notifications_pause_resume_until: Optional[datetime] = None
-    notifications_pause_allow: List[str] = Field(default_factory=list)
-    notification_pause_schedule: List[Dict[str, Any]] = Field(default_factory=list)
-    notification_pause_last_used_id: Optional[str] = None
-    notification_pause_summary_pending: bool = False
-    notification_pause_summary_from: Optional[datetime] = None
-    notification_pause_summary_until: Optional[datetime] = None
+    # Configuración de rutinas DND (definida por el usuario; inmutable por acciones manuales)
+    dnd_routines: List[Dict[str, Any]] = Field(default_factory=list)
+    # Overrides temporales del estado efectivo (calculados, nunca derivados persistidos)
+    manual_pause_until: Optional[datetime] = None        # DND forzado ON hasta este instante
+    force_notifications_until: Optional[datetime] = None  # Notificaciones forzadas OFF hasta este instante
     offline_notifications: bool = True
 
     # 🔒 Seguridad

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -22,6 +22,7 @@ import {
   DarkMode as NightIcon,
   DeleteOutlined as DeleteIcon,
   EditOutlined as EditIcon,
+  PowerOutlined as PowerIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
 import {
@@ -42,6 +43,7 @@ interface PauseScheduleDialogProps {
   schedule: PauseScheduleRule[];
   singleWindow: { start: string | null; end: string | null } | null;
   allow: string[];
+  editingRule: PauseScheduleRule | null;
   onClose: () => void;
   onSaveSingle: (payload: {
     from: string;
@@ -57,8 +59,10 @@ interface PauseScheduleDialogProps {
     timezone: string;
     utc_offset_minutes: number;
     allow: string[];
+    enabled: boolean;
   }) => void;
   onDelete: (id: string) => void;
+  onToggle: (id: string, enabled: boolean) => void;
 }
 
 const DEFAULT_DAYS = [0, 1, 2, 3, 4];
@@ -84,10 +88,12 @@ export default function PauseScheduleDialog({
   schedule,
   singleWindow,
   allow,
+  editingRule,
   onClose,
   onSaveSingle,
   onSaveRule,
   onDelete,
+  onToggle,
 }: PauseScheduleDialogProps) {
   const { t } = useTranslation("common");
   const [mode, setMode] = useState<PauseMode>("recurring");
@@ -96,6 +102,7 @@ export default function PauseScheduleDialog({
   const [days, setDays] = useState<number[]>(DEFAULT_DAYS);
   const [start, setStart] = useState("18:00");
   const [end, setEnd] = useState("08:00");
+  const [enabled, setEnabled] = useState(true);
   const [single, setSingle] = useState(() =>
     singleWindow?.start && singleWindow?.end
       ? {
@@ -115,6 +122,13 @@ export default function PauseScheduleDialog({
     }
   }, []);
   const offsetMinutes = useMemo(() => -new Date().getTimezoneOffset(), []);
+
+  // Precargar los datos de la regla al editar desde el menú
+  useEffect(() => {
+    if (editingRule) {
+      startEditing(editingRule);
+    }
+  }, [editingRule]);
 
   const toggleDay = (day: number) => {
     setDays((prev) =>
@@ -141,26 +155,32 @@ export default function PauseScheduleDialog({
     setStart(rule.start);
     setEnd(rule.end);
     setExceptions(rule.allow ?? []);
+    setEnabled(Boolean(rule.enabled ?? true));
   };
 
-  const save = () => {
+  const save = async () => {
     if (mode === "single") {
-      onSaveSingle({
-        from: new Date(single.from).toISOString(),
-        to: new Date(single.to).toISOString(),
-        allow: exceptions,
-      });
+      await Promise.resolve(
+        onSaveSingle({
+          from: new Date(single.from).toISOString(),
+          to: new Date(single.to).toISOString(),
+          allow: exceptions,
+        }),
+      );
     } else {
-      onSaveRule({
-        id: editingId,
-        name: ruleName.trim(),
-        days: [...days].sort(),
-        start,
-        end,
-        timezone,
-        utc_offset_minutes: offsetMinutes,
-        allow: exceptions,
-      });
+      await Promise.resolve(
+        onSaveRule({
+          id: editingId,
+          name: ruleName.trim(),
+          days: [...days].sort(),
+          start,
+          end,
+          timezone,
+          utc_offset_minutes: offsetMinutes,
+          allow: exceptions,
+          enabled,
+        }),
+      );
     }
     onClose();
   };
@@ -456,61 +476,105 @@ export default function PauseScheduleDialog({
           </Typography>
         ) : (
           <Stack spacing={1.5}>
-            {schedule.map((rule) => (
-              <Box
-                key={rule.id ?? `${rule.start}-${rule.end}`}
-                data-testid={`notification-pause-rule-${rule.id}`}
-                sx={{
-                  p: 1.75,
-                  borderRadius: "18px",
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.5,
-                }}
-              >
-                <NightIcon sx={{ color: ACCENT, fontSize: 20 }} />
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="subtitle2" noWrap>
-                    {rule.name ||
-                      t(
-                        "notifications.pause.ruleNamePlaceholder",
-                        "Horario laboral",
+            {schedule.map((rule) => {
+              const ruleEnabled = Boolean(rule.enabled ?? true);
+              return (
+                <Box
+                  key={rule.id ?? `${rule.start}-${rule.end}`}
+                  data-testid={`notification-pause-rule-${rule.id}`}
+                  sx={{
+                    p: 1.75,
+                    borderRadius: "18px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: `1px solid ${
+                      ruleEnabled
+                        ? "rgba(255,255,255,0.12)"
+                        : "rgba(255,255,255,0.04)"
+                    }`,
+                    opacity: ruleEnabled ? 1 : 0.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                  }}
+                >
+                  <NightIcon
+                    sx={{
+                      color: ruleEnabled ? ACCENT : "text.disabled",
+                      fontSize: 20,
+                    }}
+                  />
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="subtitle2"
+                      noWrap
+                      sx={{
+                        color: ruleEnabled ? undefined : "text.disabled",
+                      }}
+                    >
+                      {rule.name ||
+                        t(
+                          "notifications.pause.ruleNamePlaceholder",
+                          "Horario laboral",
+                        )}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      {formatDayRange(rule.days, locale)} ·{rule.start} →{" "}
+                      {rule.end}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ ml: 1 }}>
+                    <IconButton
+                      size="small"
+                      onClick={() => onToggle(rule.id ?? "", !ruleEnabled)}
+                      title={
+                        ruleEnabled
+                          ? t("notifications.pause.rule.disable", "Desactivar")
+                          : t("notifications.pause.rule.enable", "Activar")
+                      }
+                      aria-label={
+                        ruleEnabled
+                          ? t("notifications.pause.rule.disable", "Desactivar")
+                          : t("notifications.pause.rule.enable", "Activar")
+                      }
+                    >
+                      {ruleEnabled ? (
+                        <DeleteIcon
+                          fontSize="small"
+                          sx={{ color: "text.disabled" }}
+                        />
+                      ) : (
+                        <PowerIcon fontSize="small" />
                       )}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "text.secondary" }}
+                    </IconButton>
+                  </Box>
+                  <IconButton
+                    data-testid={`notification-pause-rule-edit-${rule.id}`}
+                    onClick={() => startEditing(rule)}
+                    title={t("notifications.pause.rule.edit", "Editar")}
+                    aria-label={t("notifications.pause.rule.edit", "Editar")}
+                    size="small"
                   >
-                    {formatDayRange(rule.days, locale)} · {rule.start} →{" "}
-                    {rule.end}
-                  </Typography>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    data-testid={`notification-pause-rule-delete-${rule.id}`}
+                    onClick={() => onDelete(rule.id ?? "")}
+                    title={t("notifications.pause.scheduleDelete", "Eliminar")}
+                    aria-label={t(
+                      "notifications.pause.scheduleDelete",
+                      "Eliminar",
+                    )}
+                    size="small"
+                    color="error"
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
                 </Box>
-                <IconButton
-                  data-testid={`notification-pause-rule-edit-${rule.id}`}
-                  onClick={() => startEditing(rule)}
-                  title={t("notifications.pause.rule.edit", "Editar")}
-                  aria-label={t("notifications.pause.rule.edit", "Editar")}
-                  size="small"
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  data-testid={`notification-pause-rule-delete-${rule.id}`}
-                  onClick={() => onDelete(rule.id ?? "")}
-                  title={t("notifications.pause.scheduleDelete", "Eliminar")}
-                  aria-label={t(
-                    "notifications.pause.scheduleDelete",
-                    "Eliminar",
-                  )}
-                  size="small"
-                  color="error"
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            ))}
+              );
+            })}
           </Stack>
         )}
 

@@ -1,8 +1,18 @@
 import React from "react";
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import {
   PlayArrow as ResumeIcon,
   BoltOutlined as ShortcutIcon,
+  PowerOutlined as PowerIcon,
+  EditOutlined as EditIcon,
+  DeleteOutlined as DeleteIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
 import { formatDayRange, type PauseScheduleRule } from "./pauseTime";
@@ -16,6 +26,7 @@ interface PauseMenuProps {
   open: boolean;
   paused: boolean;
   shortcut: PauseScheduleRule | null;
+  routines: PauseScheduleRule[];
   locale: string;
   onClose: () => void;
   onPause: (duration: PauseOption) => void;
@@ -23,6 +34,9 @@ interface PauseMenuProps {
   onResume: () => void;
   onApplyShortcut: () => void;
   onOpenSchedule: () => void;
+  onToggleRoutine: (id: string, enabled: boolean) => void;
+  onEditRoutine: (rule: PauseScheduleRule) => void;
+  onDeleteRoutine: (id: string) => void;
 }
 
 function tomorrow(): string {
@@ -34,6 +48,7 @@ export default function PauseMenu({
   open,
   paused,
   shortcut,
+  routines,
   locale,
   onClose,
   onPause,
@@ -41,6 +56,9 @@ export default function PauseMenu({
   onResume,
   onApplyShortcut,
   onOpenSchedule,
+  onToggleRoutine,
+  onEditRoutine,
+  onDeleteRoutine,
 }: PauseMenuProps) {
   const { t } = useTranslation("common");
 
@@ -112,6 +130,112 @@ export default function PauseMenu({
           </ListItemIcon>
           {t("notifications.pause.resume", "Reanudar notificaciones")}
         </MenuItem>
+      )}
+      {routines.length > 0 && (
+        <>
+          <MenuItem data-testid="notification-pause-routines-section" disabled>
+            <ListItemText
+              primary={t(
+                "notifications.pause.routines",
+                "Rutinas personalizadas",
+              )}
+              slotProps={{
+                primary: { variant: "caption", color: "text.secondary" },
+              }}
+            />
+          </MenuItem>
+          {routines.map((rule) => {
+            const ruleEnabled = Boolean(rule.enabled ?? true);
+            return (
+              <MenuItem
+                key={rule.id ?? `${rule.start}-${rule.end}`}
+                data-testid={`notification-pause-routine-${rule.id}`}
+                onClick={() => {
+                  onClose();
+                  onToggleRoutine(rule.id ?? "", !ruleEnabled);
+                }}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  opacity: ruleEnabled ? 1 : 0.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
+                  <ListItemIcon sx={{ mt: 0.25 }}>
+                    {ruleEnabled ? (
+                      <PowerIcon
+                        fontSize="small"
+                        sx={{ color: "success.main" }}
+                      />
+                    ) : (
+                      <PowerIcon
+                        fontSize="small"
+                        sx={{ color: "text.disabled" }}
+                      />
+                    )}
+                  </ListItemIcon>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <ListItemText
+                      primary={
+                        rule.name ||
+                        t("notifications.pause.ruleNamePlaceholder", "Rutina")
+                      }
+                      secondary={
+                        <>
+                          {formatDayRange(rule.days, locale)} ·{rule.start} →{" "}
+                          {rule.end}
+                        </>
+                      }
+                      slotProps={{
+                        primary: {
+                          variant: "body2",
+                          color: ruleEnabled ? "text.primary" : "text.disabled",
+                        },
+                        secondary: {
+                          variant: "caption",
+                          color: "text.secondary",
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box sx={{ display: "flex", gap: 0.5, ml: 1 }}>
+                  <IconButton
+                    size="small"
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      onClose();
+                      onEditRoutine(rule);
+                    }}
+                    title={t("notifications.pause.rule.edit", "Editar")}
+                    aria-label={t("notifications.pause.rule.edit", "Editar")}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      onClose();
+                      onDeleteRoutine(rule.id ?? "");
+                    }}
+                    title={t("notifications.pause.scheduleDelete", "Eliminar")}
+                    aria-label={t(
+                      "notifications.pause.scheduleDelete",
+                      "Eliminar",
+                    )}
+                    color="error"
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </MenuItem>
+            );
+          })}
+        </>
       )}
       {PAUSE_OPTIONS.map((option) => (
         <MenuItem

@@ -381,7 +381,7 @@ export default function NavbarSection({
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
   );
-  const { unreadCount, pausedUntil } = useUnreadNotifications(isAuthenticated);
+  const { unreadCount, dndActive } = useUnreadNotifications(isAuthenticated);
   const getImageUrl = (url?: string) => {
     if (!url) return null;
     if (url.startsWith("http")) return url;
@@ -559,7 +559,7 @@ export default function NavbarSection({
         <NotificationActionIcon
           styleId={iconStyles.notifications}
           unreadCount={unreadCount}
-          dndActive={pausedUntil !== null}
+          dndActive={dndActive}
         />
       );
     }

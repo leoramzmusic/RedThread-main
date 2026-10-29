@@ -237,6 +237,7 @@ const makeHook = (overrides: Record<string, unknown> = {}) => ({
   dismissReminder: jest.fn(),
   restoreReminder: jest.fn(),
   pausedUntil: null,
+  dndActive: (overrides.dndActive ?? Boolean(overrides.pausedUntil)) as boolean,
   pauseSchedule: [],
   pauseAllow: [],
   pauseWindow: null,
