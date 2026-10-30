@@ -10,12 +10,15 @@ import {
 import {
   PlayArrow as ResumeIcon,
   BoltOutlined as ShortcutIcon,
-  PowerOutlined as PowerIcon,
   EditOutlined as EditIcon,
   DeleteOutlined as DeleteIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "next-i18next/pages";
-import { formatDayRange, type PauseScheduleRule } from "./pauseTime";
+import {
+  formatDayRange,
+  pauseRemaining,
+  type PauseScheduleRule,
+} from "./pauseTime";
 
 export const PAUSE_OPTIONS = ["15m", "30m", "1h", "2h", "8h"] as const;
 
@@ -24,11 +27,12 @@ export type PauseOption = (typeof PAUSE_OPTIONS)[number];
 interface PauseMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
-  paused: boolean;
+  dndActive: boolean;
   dndSource?: string | null;
   activeRoutineId?: string | null;
   activeRoutineName?: string | null;
   windowEnd?: string | null;
+  pausedUntil?: string | null;
   shortcut: PauseScheduleRule | null;
   routines: PauseScheduleRule[];
   locale: string;
@@ -47,14 +51,21 @@ function tomorrow(): string {
   return new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 }
 
+const blockedStyle = {
+  opacity: 0.4,
+  pointerEvents: "none" as const,
+  cursor: "default" as const,
+};
+
 export default function PauseMenu({
   anchorEl,
   open,
-  paused,
+  dndActive,
   dndSource,
   activeRoutineId,
   activeRoutineName,
   windowEnd,
+  pausedUntil,
   shortcut,
   routines,
   locale,
@@ -90,6 +101,10 @@ export default function PauseMenu({
     }
   };
 
+  const isManualActive = dndActive && dndSource === "manual";
+  const isRoutineActive = dndActive && dndSource === "routine";
+  const remainingLabel = pausedUntil ? pauseRemaining(pausedUntil) : null;
+
   return (
     <Menu
       data-testid="notification-pause-menu"
@@ -102,12 +117,15 @@ export default function PauseMenu({
       {shortcut && (
         <MenuItem
           data-testid="notification-pause-shortcut"
-          disabled={paused}
+          disabled={dndActive}
           onClick={() => {
             onClose();
             onApplyShortcut();
           }}
-          sx={{ alignItems: "flex-start" }}
+          sx={{
+            alignItems: "flex-start",
+            ...(dndActive ? blockedStyle : {}),
+          }}
         >
           <ListItemIcon sx={{ mt: 0.25 }}>
             <ShortcutIcon fontSize="small" />
@@ -125,9 +143,10 @@ export default function PauseMenu({
           />
         </MenuItem>
       )}
-      {paused && (
+
+      {dndActive && (
         <>
-          {dndSource === "routine" && activeRoutineName && (
+          {isRoutineActive && activeRoutineName && (
             <MenuItem disabled sx={{ py: 0.5 }}>
               <ListItemText
                 primary={
@@ -158,6 +177,29 @@ export default function PauseMenu({
               />
             </MenuItem>
           )}
+          {isManualActive && remainingLabel && (
+            <MenuItem disabled sx={{ py: 0.5 }}>
+              <ListItemText
+                primary={
+                  <>
+                    <Box component="span" sx={{ mr: 0.5 }}>
+                      ⏱
+                    </Box>
+                    {t("notifications.pause.activeByManual", "Activo durante:")}{" "}
+                    <Box
+                      component="span"
+                      sx={{ fontWeight: 700, color: "text.primary" }}
+                    >
+                      {remainingLabel}
+                    </Box>
+                  </>
+                }
+                slotProps={{
+                  primary: { variant: "caption", color: "text.secondary" },
+                }}
+              />
+            </MenuItem>
+          )}
           <MenuItem
             data-testid="notification-pause-resume"
             onClick={() => {
@@ -172,6 +214,7 @@ export default function PauseMenu({
           </MenuItem>
         </>
       )}
+
       {routines.length > 0 && (
         <>
           <MenuItem data-testid="notification-pause-routines-section" disabled>
@@ -187,10 +230,12 @@ export default function PauseMenu({
           </MenuItem>
           {routines.map((rule) => {
             const ruleEnabled = Boolean(rule.enabled ?? true);
-            const isActiveNow = Boolean(rule.id && rule.id === activeRoutineId);
+            const isActiveNow = Boolean(
+              rule.id && rule.id === activeRoutineId && isRoutineActive,
+            );
             const handleRoutineClick = (e: React.MouseEvent) => {
               e.stopPropagation();
-              if (isActiveNow) return;
+              if (dndActive || isActiveNow) return;
               onClose();
               onSelectRoutine(rule.id ?? "");
             };
@@ -198,95 +243,79 @@ export default function PauseMenu({
               <MenuItem
                 key={rule.id ?? `${rule.start}-${rule.end}`}
                 data-testid={`notification-pause-routine-${rule.id}`}
-                onClick={isActiveNow ? undefined : handleRoutineClick}
+                onClick={
+                  dndActive || isActiveNow ? undefined : handleRoutineClick
+                }
                 sx={{
                   px: 2,
                   py: 1,
-                  opacity: ruleEnabled ? 1 : 0.5,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  cursor: isActiveNow ? "default" : "pointer",
-                  backgroundColor: isActiveNow
-                    ? "rgba(255,255,255,0.06)"
-                    : undefined,
-                  "&:hover": isActiveNow
-                    ? { backgroundColor: "rgba(255,255,255,0.06)" }
-                    : { backgroundColor: "rgba(255,255,255,0.08)" },
+                  ...(dndActive
+                    ? blockedStyle
+                    : {
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        cursor: isActiveNow ? "default" : "pointer",
+                        backgroundColor: isActiveNow
+                          ? "rgba(255,255,255,0.06)"
+                          : undefined,
+                        "&:hover": isActiveNow
+                          ? { backgroundColor: "rgba(255,255,255,0.06)" }
+                          : { backgroundColor: "rgba(255,255,255,0.08)" },
+                      }),
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
-                  <ListItemIcon sx={{ mt: 0.25 }}>
-                    {isActiveNow ? (
-                      <Box
-                        component="span"
-                        sx={{ fontSize: 16, lineHeight: 1 }}
-                      >
-                        🌙
-                      </Box>
-                    ) : ruleEnabled ? (
-                      <PowerIcon
-                        fontSize="small"
-                        sx={{ color: "success.main" }}
-                      />
-                    ) : (
-                      <PowerIcon
-                        fontSize="small"
-                        sx={{ color: "text.disabled" }}
-                      />
-                    )}
-                  </ListItemIcon>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <ListItemText
-                      primary={
-                        <>
-                          {rule.name ||
-                            t(
-                              "notifications.pause.ruleNamePlaceholder",
-                              "Rutina",
-                            )}
-                          {isActiveNow && (
-                            <Box
-                              component="span"
-                              sx={{
-                                ml: 1,
-                                px: 0.75,
-                                py: 0.25,
-                                borderRadius: "999px",
-                                bgcolor: "primary.main",
-                                color: "#fff",
-                                fontSize: "0.6rem",
-                                fontWeight: 700,
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              {t("notifications.pause.activeNow", "ACTIVA")}
-                            </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <ListItemText
+                    primary={
+                      <>
+                        {rule.name ||
+                          t(
+                            "notifications.pause.ruleNamePlaceholder",
+                            "Rutina",
                           )}
-                        </>
-                      }
-                      secondary={
-                        <>
-                          {formatDayRange(rule.days, locale)} ·{rule.start} →{" "}
-                          {rule.end}
-                        </>
-                      }
-                      slotProps={{
-                        primary: {
-                          variant: "body2",
-                          color: ruleEnabled ? "text.primary" : "text.disabled",
-                        },
-                        secondary: {
-                          variant: "caption",
-                          color: "text.secondary",
-                        },
-                      }}
-                    />
-                  </Box>
+                        {isActiveNow && (
+                          <Box
+                            component="span"
+                            sx={{
+                              ml: 1,
+                              px: 0.75,
+                              py: 0.25,
+                              borderRadius: "999px",
+                              bgcolor: "primary.main",
+                              color: "#fff",
+                              fontSize: "0.6rem",
+                              fontWeight: 700,
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {t("notifications.pause.activeNow", "ACTIVA")}
+                          </Box>
+                        )}
+                      </>
+                    }
+                    secondary={
+                      <>
+                        {formatDayRange(rule.days, locale)} ·{rule.start} →{" "}
+                        {rule.end}
+                      </>
+                    }
+                    slotProps={{
+                      primary: {
+                        variant: "body2",
+                        color: ruleEnabled ? "text.primary" : "text.disabled",
+                      },
+                      secondary: {
+                        variant: "caption",
+                        color: "text.secondary",
+                      },
+                    }}
+                  />
                 </Box>
                 <Box sx={{ display: "flex", gap: 0.5, ml: 1 }}>
                   <IconButton
                     size="small"
+                    disabled={dndActive || isActiveNow}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       onClose();
@@ -299,6 +328,7 @@ export default function PauseMenu({
                   </IconButton>
                   <IconButton
                     size="small"
+                    disabled={dndActive || isActiveNow}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       onClose();
@@ -319,32 +349,45 @@ export default function PauseMenu({
           })}
         </>
       )}
-      {PAUSE_OPTIONS.map((option) => (
-        <MenuItem
-          key={option}
-          data-testid={`notification-pause-${option}`}
-          disabled={paused}
-          onClick={() => choose(option)}
-        >
-          {labelForOption(option)}
-        </MenuItem>
-      ))}
+
+      {PAUSE_OPTIONS.map((option) => {
+        const disabled = dndActive;
+        return (
+          <MenuItem
+            key={option}
+            data-testid={`notification-pause-${option}`}
+            disabled={disabled}
+            onClick={() => choose(option)}
+            sx={{
+              ...(disabled ? blockedStyle : {}),
+            }}
+          >
+            {labelForOption(option)}
+          </MenuItem>
+        );
+      })}
       <MenuItem
         data-testid="notification-pause-1d"
-        disabled={paused}
+        disabled={dndActive}
         onClick={() => {
           onClose();
           onPauseUntil(tomorrow());
+        }}
+        sx={{
+          ...(dndActive ? blockedStyle : {}),
         }}
       >
         {t("notifications.pause.tomorrow", "Hasta mañana")}
       </MenuItem>
       <MenuItem
         data-testid="notification-pause-custom"
-        disabled={paused}
+        disabled={dndActive}
         onClick={() => {
           onClose();
           onOpenSchedule();
+        }}
+        sx={{
+          ...(dndActive ? blockedStyle : {}),
         }}
       >
         {t("notifications.pause.custom", "Personalizado")}

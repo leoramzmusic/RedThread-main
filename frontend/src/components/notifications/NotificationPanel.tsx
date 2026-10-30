@@ -1048,11 +1048,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
       <PauseMenu
         anchorEl={pauseAnchor}
         open={Boolean(pauseAnchor)}
-        paused={isPaused}
+        dndActive={dndActive}
         dndSource={dndSource}
         activeRoutineId={activeRoutineId}
         activeRoutineName={activeRoutineName}
         windowEnd={windowEnd}
+        pausedUntil={pausedUntil}
         shortcut={pauseShortcut}
         routines={pauseSchedule}
         locale={appLocale}
