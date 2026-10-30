@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import {
   Box,
   IconButton,
@@ -25,6 +25,10 @@ interface PauseMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   paused: boolean;
+  dndSource?: string | null;
+  activeRoutineId?: string | null;
+  activeRoutineName?: string | null;
+  windowEnd?: string | null;
   shortcut: PauseScheduleRule | null;
   routines: PauseScheduleRule[];
   locale: string;
@@ -34,7 +38,7 @@ interface PauseMenuProps {
   onResume: () => void;
   onApplyShortcut: () => void;
   onOpenSchedule: () => void;
-  onToggleRoutine: (id: string, enabled: boolean) => void;
+  onSelectRoutine: (id: string) => void;
   onEditRoutine: (rule: PauseScheduleRule) => void;
   onDeleteRoutine: (id: string) => void;
 }
@@ -47,6 +51,10 @@ export default function PauseMenu({
   anchorEl,
   open,
   paused,
+  dndSource,
+  activeRoutineId,
+  activeRoutineName,
+  windowEnd,
   shortcut,
   routines,
   locale,
@@ -56,7 +64,7 @@ export default function PauseMenu({
   onResume,
   onApplyShortcut,
   onOpenSchedule,
-  onToggleRoutine,
+  onSelectRoutine,
   onEditRoutine,
   onDeleteRoutine,
 }: PauseMenuProps) {
@@ -118,18 +126,51 @@ export default function PauseMenu({
         </MenuItem>
       )}
       {paused && (
-        <MenuItem
-          data-testid="notification-pause-resume"
-          onClick={() => {
-            onClose();
-            onResume();
-          }}
-        >
-          <ListItemIcon>
-            <ResumeIcon fontSize="small" />
-          </ListItemIcon>
-          {t("notifications.pause.resume", "Reanudar notificaciones")}
-        </MenuItem>
+        <>
+          {dndSource === "routine" && activeRoutineName && (
+            <MenuItem disabled sx={{ py: 0.5 }}>
+              <ListItemText
+                primary={
+                  <>
+                    <Box component="span" sx={{ mr: 0.5 }}>
+                      🌙
+                    </Box>
+                    {t("notifications.pause.activeByRoutine", "Activo por:")}{" "}
+                    <Box
+                      component="span"
+                      sx={{ fontWeight: 700, color: "text.primary" }}
+                    >
+                      {activeRoutineName}
+                    </Box>
+                  </>
+                }
+                secondary={
+                  windowEnd
+                    ? t("notifications.pause.windowEnd", "Finaliza: {{time}}", {
+                        time: windowEnd,
+                      })
+                    : undefined
+                }
+                slotProps={{
+                  primary: { variant: "caption", color: "text.secondary" },
+                  secondary: { variant: "caption", color: "text.secondary" },
+                }}
+              />
+            </MenuItem>
+          )}
+          <MenuItem
+            data-testid="notification-pause-resume"
+            onClick={() => {
+              onClose();
+              onResume();
+            }}
+          >
+            <ListItemIcon>
+              <ResumeIcon fontSize="small" />
+            </ListItemIcon>
+            {t("notifications.pause.resume", "Reanudar notificaciones")}
+          </MenuItem>
+        </>
       )}
       {routines.length > 0 && (
         <>
@@ -146,14 +187,18 @@ export default function PauseMenu({
           </MenuItem>
           {routines.map((rule) => {
             const ruleEnabled = Boolean(rule.enabled ?? true);
+            const isActiveNow = Boolean(rule.id && rule.id === activeRoutineId);
+            const handleRoutineClick = (e: React.MouseEvent) => {
+              e.stopPropagation();
+              if (isActiveNow) return;
+              onClose();
+              onSelectRoutine(rule.id ?? "");
+            };
             return (
               <MenuItem
                 key={rule.id ?? `${rule.start}-${rule.end}`}
                 data-testid={`notification-pause-routine-${rule.id}`}
-                onClick={() => {
-                  onClose();
-                  onToggleRoutine(rule.id ?? "", !ruleEnabled);
-                }}
+                onClick={isActiveNow ? undefined : handleRoutineClick}
                 sx={{
                   px: 2,
                   py: 1,
@@ -161,11 +206,25 @@ export default function PauseMenu({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
+                  cursor: isActiveNow ? "default" : "pointer",
+                  backgroundColor: isActiveNow
+                    ? "rgba(255,255,255,0.06)"
+                    : undefined,
+                  "&:hover": isActiveNow
+                    ? { backgroundColor: "rgba(255,255,255,0.06)" }
+                    : { backgroundColor: "rgba(255,255,255,0.08)" },
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
                   <ListItemIcon sx={{ mt: 0.25 }}>
-                    {ruleEnabled ? (
+                    {isActiveNow ? (
+                      <Box
+                        component="span"
+                        sx={{ fontSize: 16, lineHeight: 1 }}
+                      >
+                        🌙
+                      </Box>
+                    ) : ruleEnabled ? (
                       <PowerIcon
                         fontSize="small"
                         sx={{ color: "success.main" }}
@@ -180,8 +239,31 @@ export default function PauseMenu({
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <ListItemText
                       primary={
-                        rule.name ||
-                        t("notifications.pause.ruleNamePlaceholder", "Rutina")
+                        <>
+                          {rule.name ||
+                            t(
+                              "notifications.pause.ruleNamePlaceholder",
+                              "Rutina",
+                            )}
+                          {isActiveNow && (
+                            <Box
+                              component="span"
+                              sx={{
+                                ml: 1,
+                                px: 0.75,
+                                py: 0.25,
+                                borderRadius: "999px",
+                                bgcolor: "primary.main",
+                                color: "#fff",
+                                fontSize: "0.6rem",
+                                fontWeight: 700,
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              {t("notifications.pause.activeNow", "ACTIVA")}
+                            </Box>
+                          )}
+                        </>
                       }
                       secondary={
                         <>

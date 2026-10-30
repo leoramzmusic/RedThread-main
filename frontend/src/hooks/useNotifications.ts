@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
 import type { PauseScheduleRule } from "../components/notifications/pauseTime";
 
@@ -75,6 +75,12 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
   const [dndActive, setDndActive] = useState(false);
+  const [dndSource, setDndSource] = useState<string | null>(null);
+  const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
+  const [activeRoutineName, setActiveRoutineName] = useState<string | null>(
+    null,
+  );
+  const [windowEnd, setWindowEnd] = useState<string | null>(null);
   const [pauseSchedule, setPauseSchedule] = useState<PauseScheduleRule[]>([]);
   const [pauseAllow, setPauseAllow] = useState<string[]>([]);
   const [pauseWindow, setPauseWindow] = useState<{
@@ -91,6 +97,10 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     if (!data) return;
     setPausedUntil(data.paused_until ?? null);
     setDndActive(Boolean(data.dnd_active));
+    setDndSource(data.dnd_source ?? null);
+    setActiveRoutineId(data.active_routine_id ?? null);
+    setActiveRoutineName(data.active_routine_name ?? null);
+    setWindowEnd(data.window_end ?? null);
     setPauseSchedule(data.pause_schedule ?? []);
     setPauseAllow(data.pause_allow ?? []);
     setPauseWindow(data.pause_window ?? null);
@@ -479,6 +489,20 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     [applyPauseState],
   );
 
+  const selectPauseSchedule = useCallback(
+    async (id: string) => {
+      try {
+        const response = await apiClient.post(
+          `/notifications/pause/schedule/${id}/select`,
+        );
+        applyPauseState(response.data);
+      } catch {
+        setError(true);
+      }
+    },
+    [applyPauseState],
+  );
+
   return {
     items,
     counts,
@@ -488,6 +512,10 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     nextCursor,
     pausedUntil,
     dndActive,
+    dndSource,
+    activeRoutineId,
+    activeRoutineName,
+    windowEnd,
     pauseSchedule,
     pauseAllow,
     pauseWindow,
@@ -516,5 +544,6 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     savePauseSchedule,
     savePauseWindow,
     removePauseSchedule,
+    selectPauseSchedule,
   };
 }

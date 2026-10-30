@@ -379,8 +379,8 @@ class TestPauseSchedule:
             notifications_enabled=True,
             notification_mutes={},
             dnd_routines=[
-                # 00:00 -> 00:00 cubre las 24h de los dias indicados
                 {
+                    "id": "r1",
                     "days": [0, 1, 2, 3, 4, 5, 6],
                     "start": "00:00",
                     "end": "00:00",
@@ -388,6 +388,7 @@ class TestPauseSchedule:
             ],
             manual_pause_until=None,
             force_notifications_until=None,
+            active_routine_id="r1",
         )
         assert ns.should_push(settings, "like", None) is False
         assert ns.should_push(settings, "system", {"important": True}) is True
@@ -406,10 +407,11 @@ class TestPauseSchedule:
     def test_is_dnd_active_true_with_active_routine(self):
         settings = SimpleNamespace(
             dnd_routines=[
-                {"days": [0], "start": "09:00", "end": "18:00"}
+                {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
             ],
             manual_pause_until=None,
             force_notifications_until=None,
+            active_routine_id="r1",
         )
         now = datetime(2026, 10, 19, 10, 0)
         assert ns.is_dnd_active(settings, now) is True
@@ -470,11 +472,12 @@ class TestPauseSchedule:
         assert settings.force_notifications_until is None
 
     @pytest.mark.asyncio
-    async def test_resume_clears_manual_pause_and_sets_force_until(self):
+    async def test_resume_clears_manual_pause_and_active_routine(self):
         now = datetime(2026, 10, 19, 10, 0)
         settings = SimpleNamespace(
             manual_pause_until=now + timedelta(minutes=30),
             force_notifications_until=None,
+            active_routine_id="r1",
             dnd_routines=[
                 {"id": "r1", "days": [0], "start": "09:00", "end": "10:15"}
             ],
@@ -488,7 +491,8 @@ class TestPauseSchedule:
         ):
             await ns.resume_notifications("u1")
         assert settings.manual_pause_until is None
-        assert settings.force_notifications_until == datetime(2026, 10, 19, 10, 15)
+        assert settings.active_routine_id is None
+        assert settings.force_notifications_until is None
         assert ns.is_dnd_active(settings, now) is False
 
     @pytest.mark.asyncio
@@ -512,12 +516,13 @@ class TestPauseSchedule:
         assert ns.is_dnd_active(settings, now) is False
 
     @pytest.mark.asyncio
-    async def test_resume_sets_force_until_to_active_routine_end(self):
+    async def test_resume_clears_active_routine(self):
         now = datetime(2026, 10, 19, 10, 0)
         end = datetime(2026, 10, 19, 18, 0)
         settings = SimpleNamespace(
             manual_pause_until=now,
             force_notifications_until=None,
+            active_routine_id="r1",
             dnd_routines=[
                 {"id": "r1", "days": [0], "start": "09:00", "end": "18:00"}
             ],
@@ -531,13 +536,14 @@ class TestPauseSchedule:
         ):
             await ns.resume_notifications("u1")
         assert settings.manual_pause_until is None
-        assert settings.force_notifications_until == end
-        assert ns.is_dnd_active(settings, now) is False
+        assert settings.active_routine_id is None
+        assert settings.force_notifications_until is None
 
     @pytest.mark.asyncio
     async def test_remove_pause_schedule_removes_routine(self):
         settings = SimpleNamespace(
             dnd_routines=[{"id": "r1"}, {"id": "r2"}],
+            active_routine_id=None,
             save=AsyncMock(),
         )
         with patch(
@@ -547,6 +553,47 @@ class TestPauseSchedule:
             remaining = await ns.remove_pause_schedule("u1", "r1")
         assert remaining == [{"id": "r2"}]
         assert settings.dnd_routines == [{"id": "r2"}]
+
+    @pytest.mark.asyncio
+    async def test_select_pause_routine_activates_and_deactivates_others(self):
+        now = datetime(2026, 10, 19, 10, 0)
+        settings = SimpleNamespace(
+            manual_pause_until=now + timedelta(minutes=30),
+            force_notifications_until=None,
+            active_routine_id=None,
+            dnd_routines=[
+                {"id": "r1", "name": "work", "days": [0], "start": "09:00", "end": "18:00", "enabled": True},
+                {"id": "r2", "name": "work 1", "days": [0], "start": "18:00", "end": "08:00", "enabled": True},
+            ],
+            save=AsyncMock(),
+        )
+        with patch(
+            "src.models.user_settings.UserSettings.find_one",
+            new=AsyncMock(return_value=settings),
+        ), patch.object(ns, "_push_action", new=AsyncMock()), patch.object(
+            ns, "datetime", _fixed_utcnow(now)
+        ):
+            await ns.select_pause_routine("u1", "r2")
+        assert settings.active_routine_id == "r2"
+        assert settings.manual_pause_until is None
+        assert settings.force_notifications_until is None
+        assert settings.dnd_routines[0]["enabled"] is False
+        assert settings.dnd_routines[1]["enabled"] is True
+
+    @pytest.mark.asyncio
+    async def test_select_pause_routine_unknown_rule_is_noop(self):
+        settings = SimpleNamespace(
+            dnd_routines=[{"id": "r1"}],
+            active_routine_id=None,
+            save=AsyncMock(),
+        )
+        with patch(
+            "src.models.user_settings.UserSettings.find_one",
+            new=AsyncMock(return_value=settings),
+        ), patch.object(ns, "_push_action", new=AsyncMock()):
+            await ns.select_pause_routine("u1", "nonexistent")
+        assert settings.active_routine_id is None
+        assert settings.dnd_routines == [{"id": "r1"}]
 
     def test_normalize_pause_rule_validates(self):
         rule = ns.normalize_pause_rule(

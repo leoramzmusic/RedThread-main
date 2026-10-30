@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+﻿from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from bson import ObjectId
@@ -115,15 +115,20 @@ async def _notification_settings(user_id: str) -> Dict[str, Any]:
     manual_until = getattr(settings, "manual_pause_until", None)
     force_until = getattr(settings, "force_notifications_until", None)
     now = datetime.utcnow()
-    dnd_active = ns.is_dnd_active(settings, now)
+    dnd_status = ns.resolve_dnd_status(settings, now)
+
     return {
         "mutes": mutes,
         "master": master,
-        "dnd_active": dnd_active,
+        "dnd_active": dnd_status["dnd_active"],
+        "dnd_source": dnd_status["dnd_source"],
+        "active_routine_id": dnd_status["active_routine_id"],
+        "active_routine_name": dnd_status["active_routine_name"],
+        "window_end": dnd_status["window_end"],
         "manual_pause_until": manual_until,
         "force_notifications_until": force_until,
         "dnd_routines": routines,
-        "paused_until": manual_until if dnd_active else None,
+        "paused_until": manual_until if dnd_status["dnd_source"] == "manual" else None,
         "paused_from": None,
         "pause_allow": [],
         "pause_schedule": routines,
@@ -227,7 +232,7 @@ async def get_notifications(
     limit = max(1, min(limit, MAX_LIMIT))
     uid = str(current_user.id)
 
-    if cursor is None:  # Retención lazy solo en la primera página
+    if cursor is None:  # RetenciÃ³n lazy solo en la primera pÃ¡gina
         await _backfill_updated_at(uid)
         cutoff = datetime.utcnow() - timedelta(days=ns.RETENTION_DAYS)
         await Notification.find(
@@ -312,6 +317,10 @@ async def get_unread_count(current_user: User = Depends(get_current_user)):
             survey_pending=survey_pending,
         ),
         "dnd_active": context["dnd_active"],
+        "dnd_source": context.get("dnd_source"),
+        "active_routine_id": context.get("active_routine_id"),
+        "active_routine_name": context.get("active_routine_name"),
+        "window_end": context.get("window_end"),
         "paused_until": _iso_utc(context["paused_until"]),
         "paused_from": _iso_utc(context["paused_from"]),
         "pause_allow": context["pause_allow"],
@@ -345,6 +354,10 @@ async def _pause_state(user_id: str) -> Dict[str, Any]:
         "paused_until": _iso_utc(context["paused_until"]),
         "paused_from": _iso_utc(context["paused_from"]),
         "dnd_active": context["dnd_active"],
+        "dnd_source": context.get("dnd_source"),
+        "active_routine_id": context.get("active_routine_id"),
+        "active_routine_name": context.get("active_routine_name"),
+        "window_end": context.get("window_end"),
         "manual_pause_until": _iso_utc(context["manual_pause_until"]),
         "force_notifications_until": _iso_utc(context["force_notifications_until"]),
         "pause_allow": context["pause_allow"],
@@ -463,6 +476,16 @@ async def apply_pause_schedule_route(
             detail="Pause schedule has no upcoming window",
         )
     await ns.pause_notifications(uid, end)
+    return await _pause_state(uid)
+
+
+@router.post("/pause/schedule/{rule_id}/select")
+async def select_pause_schedule_route(
+    rule_id: str, current_user: User = Depends(get_current_user)
+):
+    """Selecciona una rutina personalizada como DND activo con exclusividad mutua."""
+    uid = str(current_user.id)
+    await ns.select_pause_routine(uid, rule_id)
     return await _pause_state(uid)
 
 

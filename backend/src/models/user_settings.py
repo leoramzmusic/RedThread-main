@@ -39,6 +39,8 @@ class UserSettings(Document):
     reminder_snoozes: Dict[str, datetime] = Field(default_factory=dict)
     # Configuración de rutinas DND (definida por el usuario; inmutable por acciones manuales)
     dnd_routines: List[Dict[str, Any]] = Field(default_factory=list)
+    # Rutina personalizada seleccionada explícitamente por el usuario (solo una activa a la vez)
+    active_routine_id: Optional[str] = None
     # Overrides temporales del estado efectivo (calculados, nunca derivados persistidos)
     manual_pause_until: Optional[datetime] = None        # DND forzado ON hasta este instante
     force_notifications_until: Optional[datetime] = None  # Notificaciones forzadas OFF hasta este instante

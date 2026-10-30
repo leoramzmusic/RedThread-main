@@ -1,4 +1,4 @@
-"""Emisión directa de notificaciones (Fase A, enfoque 1a + 2a).
+﻿"""Emisión directa de notificaciones (Fase A, enfoque 1a + 2a).
 
 Reglas: agrupación rodante con bump (ventana 24h), cap de 3 actores,
 silencio = filtro al mostrar (el doc se crea igual), DND solo suprime push.
@@ -63,30 +63,86 @@ def is_muted_type(mutes: Optional[Dict[str, bool]], notif_type: str) -> bool:
     return bool(mutes.get(bucket))
 
 
-def _dnd_routine_active(settings, reference: datetime) -> bool:
-    """True si alguna rutina DND recurrente está activa en ``reference``."""
-    return bool(schedule_pause_windows(settings, reference))
+def resolve_dnd_status(settings, now: Optional[datetime] = None) -> Dict[str, Any]:
+    """Calcula el estado efectivo de DND y el origen exacto (manual o routine).
+
+    Algoritmo de exclusividad mutua:
+    1. Si manual_pause_until está vigente → DND manual.
+    2. Si active_routine_id existe → DND por esa rutina (sin comprobar ventanas horarias).
+    3. Si no existe ninguna fuente → DND desactivado.
+
+    Retorna un diccionario completo:
+    {
+        'dnd_active': bool,
+        'dnd_source': 'manual' | 'routine' | None,
+        'active_routine_id': str | None,
+        'active_routine_name': str | None,
+        'window_end': str | None,
+    }
+    """
+    if settings is None:
+        return {
+            "dnd_active": False,
+            "dnd_source": None,
+            "active_routine_id": None,
+            "active_routine_name": None,
+            "window_end": None,
+        }
+
+    reference = _naive_utc(now or datetime.utcnow())
+
+    # 1. Pausa manual activa (tiene prioridad si está vigente)
+    manual_until = getattr(settings, "manual_pause_until", None)
+    if manual_until is not None and _naive_utc(manual_until) > reference:
+        until_iso = (
+            manual_until.isoformat()
+            if hasattr(manual_until, "isoformat")
+            else str(manual_until)
+        )
+        return {
+            "dnd_active": True,
+            "dnd_source": "manual",
+            "active_routine_id": None,
+            "active_routine_name": None,
+            "window_end": until_iso,
+        }
+
+    # 2. Rutina personalizada seleccionada explícitamente (exclusividad mutua)
+    active_routine_id = getattr(settings, "active_routine_id", None)
+    if active_routine_id:
+        routines = getattr(settings, "dnd_routines", None) or []
+        for rule in routines:
+            if rule.get("id") == active_routine_id:
+                end_label = rule.get("end") or "—"
+                return {
+                    "dnd_active": True,
+                    "dnd_source": "routine",
+                    "active_routine_id": rule.get("id"),
+                    "active_routine_name": rule.get("name") or "Rutina",
+                    "window_end": end_label,
+                }
+        # Si el ID ya no existe en las rutinas, limpiarlo
+        return {
+            "dnd_active": False,
+            "dnd_source": None,
+            "active_routine_id": None,
+            "active_routine_name": None,
+            "window_end": None,
+        }
+
+    # 3. Ningún DND activo
+    return {
+        "dnd_active": False,
+        "dnd_source": None,
+        "active_routine_id": None,
+        "active_routine_name": None,
+        "window_end": None,
+    }
 
 
 def is_dnd_active(settings, now: Optional[datetime] = None) -> bool:
-    """Estado efectivo de DND, calculado siempre en caliente.
-
-    Regla (una única fuente de verdad):
-    1. force_notifications_until > now  -> DND OFF (reanudó durante una rutina)
-    2. manual_pause_until > now         -> DND ON  (pausa manual activa)
-    3. routine_active(now)              -> DND ON  (rutina recurrente activa)
-    4.                                  -> DND OFF
-    """
-    if settings is None:
-        return False
-    reference = _naive_utc(now or datetime.utcnow())
-    force_until = getattr(settings, "force_notifications_until", None)
-    if force_until is not None and _naive_utc(force_until) > reference:
-        return False
-    manual_until = getattr(settings, "manual_pause_until", None)
-    if manual_until is not None and _naive_utc(manual_until) > reference:
-        return True
-    return _dnd_routine_active(settings, reference)
+    """Estado efectivo booleano de DND."""
+    return resolve_dnd_status(settings, now)["dnd_active"]
 
 
 def parse_clock(value: str) -> time:
@@ -776,6 +832,7 @@ async def pause_notifications(user_id: str, until: datetime) -> datetime:
     if settings is None:
         settings = UserSettings(user_id=user_id)
     settings.manual_pause_until = until
+    settings.active_routine_id = None
     settings.force_notifications_until = None
     await settings.save()
     await _push_action(user_id, "notifications_paused", until=until.isoformat())
@@ -789,14 +846,39 @@ async def resume_notifications(user_id: str) -> None:
     settings = await UserSettings.find_one({"user_id": user_id})
     if settings is None:
         return
-    now = datetime.utcnow()
-    recurring_ends = [
-        end for _rule, _start, end in schedule_pause_windows(settings, now)
-    ]
     settings.manual_pause_until = None
-    settings.force_notifications_until = (
-        max(recurring_ends) if recurring_ends else None
-    )
+    settings.active_routine_id = None
+    settings.force_notifications_until = None
+    await settings.save()
+    await _push_action(user_id, "notifications_resumed")
+    await _push_action(user_id, "notifications_sync")
+
+
+async def select_pause_routine(user_id: str, routine_id: str) -> None:
+    """Selecciona una rutina como DND activo con exclusividad mutua.
+
+    Desactiva todas las demás rutinas y cualquier pausa manual.
+    Solo una rutina puede estar activa a la vez.
+    """
+    from src.models.user_settings import UserSettings
+
+    settings = await UserSettings.find_one({"user_id": user_id})
+    if settings is None:
+        return
+    routines = list(settings.dnd_routines or [])
+    target = None
+    for rule in routines:
+        if rule.get("id") == routine_id:
+            target = rule
+            break
+    if target is None:
+        return
+    settings.active_routine_id = routine_id
+    settings.manual_pause_until = None
+    settings.force_notifications_until = None
+    for rule in routines:
+        rule["enabled"] = rule.get("id") == routine_id
+    settings.dnd_routines = routines
     await settings.save()
     await _push_action(user_id, "notifications_resumed")
     await _push_action(user_id, "notifications_sync")
@@ -848,6 +930,11 @@ async def upsert_pause_schedule(
             raise ValueError("Maximum custom DND routines reached.")
         routines.append(dict(rule))
     settings.dnd_routines = routines
+    if getattr(settings, "active_routine_id", None) and not any(
+        r.get("id") == getattr(settings, "active_routine_id", None) for r in routines
+    ):
+        settings.active_routine_id = None
+    settings.force_notifications_until = None
     await settings.save()
     await _push_action(user_id, "notifications_sync")
     return routines
@@ -863,6 +950,11 @@ async def remove_pause_schedule(user_id: str, rule_id: str) -> List[Dict[str, An
     routines = [dict(item) for item in (settings.dnd_routines or [])]
     routines = [item for item in routines if item.get("id") != rule_id]
     settings.dnd_routines = routines
+    if getattr(settings, "active_routine_id", None) == rule_id:
+        settings.active_routine_id = None
+    settings.force_notifications_until = None
     await settings.save()
+    await _push_action(user_id, "notifications_sync")
+    return routines
     await _push_action(user_id, "notifications_sync")
     return routines

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next/pages";
 import { useSnackbar } from "notistack";
@@ -142,6 +142,10 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     restoreReminder,
     pausedUntil,
     dndActive,
+    dndSource,
+    activeRoutineId,
+    activeRoutineName,
+    windowEnd,
     pauseSchedule,
     pauseAllow,
     pauseWindow,
@@ -152,6 +156,7 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     savePauseSchedule,
     savePauseWindow,
     removePauseSchedule,
+    selectPauseSchedule,
   } = useNotifications(filter, { unread: filter === "messages" });
   const appLocale = router.locale || i18n?.language || "es";
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -185,17 +190,30 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const systemUnread = counts.system - (counts.survey_pending > 0 ? 1 : 0);
   const pauseRemainingLabel = pauseRemaining(pausedUntil, clock);
   const isPaused = dndActive;
-  const pauseTime = isPaused ? pauseDeadlineLabel(pausedUntil as string) : "";
+  const pauseTime = isPaused
+    ? pausedUntil
+      ? pauseDeadlineLabel(pausedUntil as string)
+      : windowEnd || ""
+    : "";
   const isManuallyPaused = isPaused && pausedUntil !== null;
   const pauseTooltip = isPaused
-    ? t(
-        "notifications.pause.active",
-        "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
-        {
-          remaining: isManuallyPaused ? pauseRemainingLabel : "sin límite",
-          time: pauseTime,
-        },
-      )
+    ? dndSource === "routine"
+      ? t(
+          "notifications.pause.activeRoutineTooltip",
+          "No molestar: Activo por {{name}} · hasta las {{time}}",
+          {
+            name: activeRoutineName || "Rutina",
+            time: windowEnd || "",
+          },
+        )
+      : t(
+          "notifications.pause.active",
+          "Notificaciones pausadas: {{remaining}} · hasta las {{time}}",
+          {
+            remaining: isManuallyPaused ? pauseRemainingLabel : "sin límite",
+            time: pauseTime,
+          },
+        )
     : t("notifications.pause.title", "No molestar");
   const pauseShortcut =
     pauseSchedule.find((rule) => rule.id === pauseShortcutId) ?? null;
@@ -799,10 +817,25 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {t(
-                      "notifications.pause.activeFor",
-                      "Activo durante: {{remaining}}",
-                      { remaining: pauseRemainingLabel },
+                    {dndSource === "routine" ? (
+                      <>
+                        {t("notifications.pause.activeBy", "Activo por:")}{" "}
+                        <strong>
+                          {activeRoutineName ||
+                            t(
+                              "notifications.pause.ruleNamePlaceholder",
+                              "Rutina",
+                            )}
+                        </strong>
+                        {windowEnd &&
+                          ` · ${t("notifications.pause.endsAt", "Finaliza:")} ${windowEnd}`}
+                      </>
+                    ) : (
+                      t(
+                        "notifications.pause.activeFor",
+                        "Activo durante: {{remaining}}",
+                        { remaining: pauseRemainingLabel || "" },
+                      )
                     )}
                   </Typography>
                 )}
@@ -1016,28 +1049,31 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         anchorEl={pauseAnchor}
         open={Boolean(pauseAnchor)}
         paused={isPaused}
+        dndSource={dndSource}
+        activeRoutineId={activeRoutineId}
+        activeRoutineName={activeRoutineName}
+        windowEnd={windowEnd}
         shortcut={pauseShortcut}
         routines={pauseSchedule}
         locale={appLocale}
         onClose={() => setPauseAnchor(null)}
         onPause={(duration) => {
-          void pause(duration).then(() => void refresh());
+          void Promise.resolve(pause(duration)).then(() => void refresh());
         }}
         onPauseUntil={(until) => {
-          void pause(undefined, until).then(() => void refresh());
+          void Promise.resolve(pause(undefined, until)).then(
+            () => void refresh(),
+          );
         }}
         onResume={() => {
-          void resume().then(() => void refresh());
+          void Promise.resolve(resume()).then(() => void refresh());
         }}
         onApplyShortcut={() => {
           if (pauseShortcut?.id) void applyPauseShortcut(pauseShortcut.id);
         }}
         onOpenSchedule={() => setScheduleOpen(true)}
-        onToggleRoutine={(id, enabled) => {
-          const rule = pauseSchedule.find((r) => r.id === id);
-          if (rule) {
-            void savePauseSchedule({ ...rule, enabled });
-          }
+        onSelectRoutine={(id) => {
+          void selectPauseSchedule(id).then(() => void refresh());
         }}
         onEditRoutine={(rule) => {
           setScheduleOpen(true);
