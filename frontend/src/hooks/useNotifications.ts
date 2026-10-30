@@ -41,6 +41,9 @@ export interface AppNotification {
   type: string;
   content?: string | null;
   is_read: boolean;
+  resolved: boolean;
+  required_action: boolean;
+  critical: boolean;
   created_at: string;
   updated_at?: string | null;
   actor_count?: number;

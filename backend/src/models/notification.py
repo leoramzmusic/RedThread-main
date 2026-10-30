@@ -17,6 +17,12 @@ class Notification(Document):
     action_url: Optional[str] = None
     action_label: Optional[str] = None
     is_read: bool = False
+    # Estado de resolución de la tarea asociada (independiente de read)
+    resolved: bool = False
+    # Indica que la notificación requiere una acción del usuario (CARE, encuesta, etc.)
+    required_action: bool = False
+    # Indica que la notificación es crítica y no puede descartarse hasta resolverse
+    critical: bool = False
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
