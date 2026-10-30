@@ -29,9 +29,12 @@ interface PauseMenuProps {
   open: boolean;
   dndActive: boolean;
   dndSource?: string | null;
-  activeRoutineId?: string | null;
+  routineState?: string | null;
+  selectedRoutineId?: string | null;
+  effectiveActiveRoutineId?: string | null;
   activeRoutineName?: string | null;
   windowEnd?: string | null;
+  nextStart?: string | null;
   pausedUntil?: string | null;
   shortcut: PauseScheduleRule | null;
   routines: PauseScheduleRule[];
@@ -57,14 +60,32 @@ const blockedStyle = {
   cursor: "default" as const,
 };
 
+const BADGE_STYLES: Record<string, React.CSSProperties> = {
+  scheduled: {
+    backgroundColor: "rgba(255,167,38,0.12)",
+    color: "#FFB74D",
+  },
+  active: {
+    backgroundColor: "rgba(244,67,54,0.12)",
+    color: "#F44336",
+  },
+  waiting: {
+    backgroundColor: "rgba(255,167,38,0.12)",
+    color: "#FFB74D",
+  },
+};
+
 export default function PauseMenu({
   anchorEl,
   open,
   dndActive,
   dndSource,
-  activeRoutineId,
+  routineState,
+  selectedRoutineId,
+  effectiveActiveRoutineId,
   activeRoutineName,
   windowEnd,
+  nextStart,
   pausedUntil,
   shortcut,
   routines,
@@ -102,8 +123,41 @@ export default function PauseMenu({
   };
 
   const isManualActive = dndActive && dndSource === "manual";
-  const isRoutineActive = dndActive && dndSource === "routine";
+  const routineIsActive = routineState === "active";
+  const routineIsScheduled = routineState === "scheduled";
+  const routineIsWaiting = routineState === "waiting";
+  const allBlocked = dndActive;
   const remainingLabel = pausedUntil ? pauseRemaining(pausedUntil) : null;
+
+  const badgeForState = (state: string | null | undefined) => {
+    if (!state) return null;
+    const style = BADGE_STYLES[state] || BADGE_STYLES.scheduled;
+    const label =
+      state === "scheduled"
+        ? t("notifications.pause.scheduledBadge", "PROGRAMADA")
+        : state === "active"
+          ? t("notifications.pause.activeBadge", "ACTIVA")
+          : t("notifications.pause.waitingBadge", "PRÓXIMA");
+    return (
+      <Box
+        component="span"
+        sx={{
+          ml: 1,
+          px: 0.75,
+          py: 0.2,
+          borderRadius: "999px",
+          backgroundColor: style.backgroundColor,
+          color: style.color,
+          fontSize: "0.6rem",
+          fontWeight: 700,
+          verticalAlign: "middle",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </Box>
+    );
+  };
 
   return (
     <Menu
@@ -117,14 +171,14 @@ export default function PauseMenu({
       {shortcut && (
         <MenuItem
           data-testid="notification-pause-shortcut"
-          disabled={dndActive}
+          disabled={allBlocked}
           onClick={() => {
             onClose();
             onApplyShortcut();
           }}
           sx={{
             alignItems: "flex-start",
-            ...(dndActive ? blockedStyle : {}),
+            ...(allBlocked ? blockedStyle : {}),
           }}
         >
           <ListItemIcon sx={{ mt: 0.25 }}>
@@ -146,7 +200,7 @@ export default function PauseMenu({
 
       {dndActive && (
         <>
-          {isRoutineActive && activeRoutineName && (
+          {routineIsActive && activeRoutineName && (
             <MenuItem disabled sx={{ py: 0.5 }}>
               <ListItemText
                 primary={
@@ -161,6 +215,7 @@ export default function PauseMenu({
                     >
                       {activeRoutineName}
                     </Box>
+                    {badgeForState("active")}
                   </>
                 }
                 secondary={
@@ -200,6 +255,80 @@ export default function PauseMenu({
               />
             </MenuItem>
           )}
+          {!routineIsActive &&
+            !isManualActive &&
+            routineIsScheduled &&
+            activeRoutineName &&
+            nextStart && (
+              <MenuItem disabled sx={{ py: 0.5 }}>
+                <ListItemText
+                  primary={
+                    <>
+                      <Box component="span" sx={{ mr: 0.5 }}>
+                        ⏰
+                      </Box>
+                      {t("notifications.pause.scheduled", "Programada")}{" "}
+                      <Box
+                        component="span"
+                        sx={{ fontWeight: 700, color: "text.primary" }}
+                      >
+                        {activeRoutineName}
+                      </Box>
+                      {badgeForState("scheduled")}
+                    </>
+                  }
+                  secondary={
+                    <>
+                      {t("notifications.pause.starts", "Comienza: {{time}}", {
+                        time: nextStart,
+                      })}
+                      {windowEnd && (
+                        <>
+                          {" · "}
+                          {t("notifications.pause.ends", "Finaliza: {{time}}", {
+                            time: windowEnd,
+                          })}
+                        </>
+                      )}
+                    </>
+                  }
+                  slotProps={{
+                    primary: { variant: "caption", color: "text.secondary" },
+                    secondary: { variant: "caption", color: "text.secondary" },
+                  }}
+                />
+              </MenuItem>
+            )}
+          {!routineIsActive &&
+            !isManualActive &&
+            routineIsWaiting &&
+            activeRoutineName &&
+            nextStart && (
+              <MenuItem disabled sx={{ py: 0.5 }}>
+                <ListItemText
+                  primary={
+                    <>
+                      <Box component="span" sx={{ mr: 0.5 }}>
+                        ⏳
+                      </Box>
+                      {t("notifications.pause.waiting", "Próxima ejecución")}{" "}
+                      <Box
+                        component="span"
+                        sx={{ fontWeight: 700, color: "text.primary" }}
+                      >
+                        {activeRoutineName}
+                      </Box>
+                      {badgeForState("waiting")}
+                    </>
+                  }
+                  secondary={nextStart}
+                  slotProps={{
+                    primary: { variant: "caption", color: "text.secondary" },
+                    secondary: { variant: "caption", color: "text.secondary" },
+                  }}
+                />
+              </MenuItem>
+            )}
           <MenuItem
             data-testid="notification-pause-resume"
             onClick={() => {
@@ -215,7 +344,7 @@ export default function PauseMenu({
         </>
       )}
 
-      {routines.length > 0 && (
+      {!dndActive && routines.length > 0 && (
         <>
           <MenuItem data-testid="notification-pause-routines-section" disabled>
             <ListItemText
@@ -230,12 +359,17 @@ export default function PauseMenu({
           </MenuItem>
           {routines.map((rule) => {
             const ruleEnabled = Boolean(rule.enabled ?? true);
+            const isSelectedNow = Boolean(
+              rule.id && rule.id === selectedRoutineId,
+            );
             const isActiveNow = Boolean(
-              rule.id && rule.id === activeRoutineId && isRoutineActive,
+              rule.id &&
+              rule.id === effectiveActiveRoutineId &&
+              routineIsActive,
             );
             const handleRoutineClick = (e: React.MouseEvent) => {
               e.stopPropagation();
-              if (dndActive || isActiveNow) return;
+              if (allBlocked || isActiveNow) return;
               onClose();
               onSelectRoutine(rule.id ?? "");
             };
@@ -244,12 +378,12 @@ export default function PauseMenu({
                 key={rule.id ?? `${rule.start}-${rule.end}`}
                 data-testid={`notification-pause-routine-${rule.id}`}
                 onClick={
-                  dndActive || isActiveNow ? undefined : handleRoutineClick
+                  allBlocked || isActiveNow ? undefined : handleRoutineClick
                 }
                 sx={{
                   px: 2,
                   py: 1,
-                  ...(dndActive
+                  ...(allBlocked
                     ? blockedStyle
                     : {
                         display: "flex",
@@ -274,24 +408,15 @@ export default function PauseMenu({
                             "notifications.pause.ruleNamePlaceholder",
                             "Rutina",
                           )}
-                        {isActiveNow && (
-                          <Box
-                            component="span"
-                            sx={{
-                              ml: 1,
-                              px: 0.75,
-                              py: 0.25,
-                              borderRadius: "999px",
-                              bgcolor: "primary.main",
-                              color: "#fff",
-                              fontSize: "0.6rem",
-                              fontWeight: 700,
-                              verticalAlign: "middle",
-                            }}
-                          >
-                            {t("notifications.pause.activeNow", "ACTIVA")}
-                          </Box>
-                        )}
+                        {routineIsActive &&
+                          isActiveNow &&
+                          badgeForState("active")}
+                        {routineIsScheduled &&
+                          isSelectedNow &&
+                          badgeForState("scheduled")}
+                        {routineIsWaiting &&
+                          isSelectedNow &&
+                          badgeForState("waiting")}
                       </>
                     }
                     secondary={
@@ -315,7 +440,7 @@ export default function PauseMenu({
                 <Box sx={{ display: "flex", gap: 0.5, ml: 1 }}>
                   <IconButton
                     size="small"
-                    disabled={dndActive || isActiveNow}
+                    disabled={allBlocked || isActiveNow}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       onClose();
@@ -328,7 +453,7 @@ export default function PauseMenu({
                   </IconButton>
                   <IconButton
                     size="small"
-                    disabled={dndActive || isActiveNow}
+                    disabled={allBlocked || isActiveNow}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
                       onClose();
@@ -351,7 +476,7 @@ export default function PauseMenu({
       )}
 
       {PAUSE_OPTIONS.map((option) => {
-        const disabled = dndActive;
+        const disabled = allBlocked;
         return (
           <MenuItem
             key={option}
@@ -368,26 +493,26 @@ export default function PauseMenu({
       })}
       <MenuItem
         data-testid="notification-pause-1d"
-        disabled={dndActive}
+        disabled={allBlocked}
         onClick={() => {
           onClose();
           onPauseUntil(tomorrow());
         }}
         sx={{
-          ...(dndActive ? blockedStyle : {}),
+          ...(allBlocked ? blockedStyle : {}),
         }}
       >
         {t("notifications.pause.tomorrow", "Hasta mañana")}
       </MenuItem>
       <MenuItem
         data-testid="notification-pause-custom"
-        disabled={dndActive}
+        disabled={allBlocked}
         onClick={() => {
           onClose();
           onOpenSchedule();
         }}
         sx={{
-          ...(dndActive ? blockedStyle : {}),
+          ...(allBlocked ? blockedStyle : {}),
         }}
       >
         {t("notifications.pause.custom", "Personalizado")}

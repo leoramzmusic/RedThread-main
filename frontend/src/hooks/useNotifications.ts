@@ -76,11 +76,18 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
   const [dndActive, setDndActive] = useState(false);
   const [dndSource, setDndSource] = useState<string | null>(null);
-  const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
+  const [routineState, setRoutineState] = useState<string | null>(null);
+  const [selectedRoutineId, setSelectedRoutineId] = useState<string | null>(
+    null,
+  );
+  const [effectiveActiveRoutineId, setEffectiveActiveRoutineId] = useState<
+    string | null
+  >(null);
   const [activeRoutineName, setActiveRoutineName] = useState<string | null>(
     null,
   );
   const [windowEnd, setWindowEnd] = useState<string | null>(null);
+  const [nextStart, setNextStart] = useState<string | null>(null);
   const [pauseSchedule, setPauseSchedule] = useState<PauseScheduleRule[]>([]);
   const [pauseAllow, setPauseAllow] = useState<string[]>([]);
   const [pauseWindow, setPauseWindow] = useState<{
@@ -98,9 +105,12 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     setPausedUntil(data.paused_until ?? null);
     setDndActive(Boolean(data.dnd_active));
     setDndSource(data.dnd_source ?? null);
-    setActiveRoutineId(data.active_routine_id ?? null);
+    setRoutineState(data.routine_state ?? null);
+    setSelectedRoutineId(data.selected_routine_id ?? null);
+    setEffectiveActiveRoutineId(data.effective_active_routine_id ?? null);
     setActiveRoutineName(data.active_routine_name ?? null);
     setWindowEnd(data.window_end ?? null);
+    setNextStart(data.next_start ?? null);
     setPauseSchedule(data.pause_schedule ?? []);
     setPauseAllow(data.pause_allow ?? []);
     setPauseWindow(data.pause_window ?? null);
@@ -513,9 +523,12 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     pausedUntil,
     dndActive,
     dndSource,
-    activeRoutineId,
+    routineState,
+    selectedRoutineId,
+    effectiveActiveRoutineId,
     activeRoutineName,
     windowEnd,
+    nextStart,
     pauseSchedule,
     pauseAllow,
     pauseWindow,

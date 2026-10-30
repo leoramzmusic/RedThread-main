@@ -143,9 +143,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
     pausedUntil,
     dndActive,
     dndSource,
-    activeRoutineId,
+    routineState,
+    selectedRoutineId,
+    effectiveActiveRoutineId,
     activeRoutineName,
     windowEnd,
+    nextStart,
     pauseSchedule,
     pauseAllow,
     pauseWindow,
@@ -802,11 +805,26 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                     ? t("notifications.archived.title")
                     : isTrash
                       ? t("notifications.trash.title")
-                      : isPaused
-                        ? t("notifications.pause.dnd", "No molestar")
-                        : t("notifications.title")}
+                      : routineState === "scheduled"
+                        ? t(
+                            "notifications.pause.dndScheduled",
+                            "⏰ No molestar programado",
+                          )
+                        : routineState === "active"
+                          ? t(
+                              "notifications.pause.dndActive",
+                              "🌙 No molestar activo",
+                            )
+                          : routineState === "waiting"
+                            ? t(
+                                "notifications.pause.dndWaiting",
+                                "⏳ Próxima ejecución",
+                              )
+                            : isPaused
+                              ? t("notifications.pause.dnd", "🔕 No molestar")
+                              : t("notifications.title")}
                 </Typography>
-                {!isSpecialView && isPaused && (
+                {!isSpecialView && (dndActive || routineState) && (
                   <Typography
                     data-testid="notification-pause-remaining"
                     variant="caption"
@@ -817,7 +835,54 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {dndSource === "routine" ? (
+                    {routineState === "scheduled" &&
+                    activeRoutineName &&
+                    nextStart ? (
+                      <>
+                        {t("notifications.pause.routineLabel", "Rutina:")}{" "}
+                        <strong>
+                          {activeRoutineName ||
+                            t(
+                              "notifications.pause.ruleNamePlaceholder",
+                              "Rutina",
+                            )}
+                        </strong>{" "}
+                        {t(
+                          "notifications.pause.startsAt",
+                          "Comienza: {{time}}",
+                          { time: nextStart },
+                        )}
+                      </>
+                    ) : routineState === "active" && activeRoutineName ? (
+                      <>
+                        {t("notifications.pause.routineLabel", "Rutina:")}{" "}
+                        <strong>
+                          {activeRoutineName ||
+                            t(
+                              "notifications.pause.ruleNamePlaceholder",
+                              "Rutina",
+                            )}
+                        </strong>
+                        {windowEnd &&
+                          ` · ${t("notifications.pause.endsAt", "Finaliza:")} ${windowEnd}`}
+                      </>
+                    ) : routineState === "waiting" &&
+                      activeRoutineName &&
+                      nextStart ? (
+                      <>
+                        {t("notifications.pause.routineLabel", "Rutina:")}{" "}
+                        <strong>
+                          {activeRoutineName ||
+                            t(
+                              "notifications.pause.ruleNamePlaceholder",
+                              "Rutina",
+                            )}
+                        </strong>{" "}
+                        {t("notifications.pause.nextRun", "Próxima: {{time}}", {
+                          time: nextStart,
+                        })}
+                      </>
+                    ) : dndSource === "routine" ? (
                       <>
                         {t("notifications.pause.activeBy", "Activo por:")}{" "}
                         <strong>
@@ -1050,9 +1115,12 @@ export default function NotificationPanel({ onClose }: NotificationPanelProps) {
         open={Boolean(pauseAnchor)}
         dndActive={dndActive}
         dndSource={dndSource}
-        activeRoutineId={activeRoutineId}
+        routineState={routineState}
+        selectedRoutineId={selectedRoutineId}
+        effectiveActiveRoutineId={effectiveActiveRoutineId}
         activeRoutineName={activeRoutineName}
         windowEnd={windowEnd}
+        nextStart={nextStart}
         pausedUntil={pausedUntil}
         shortcut={pauseShortcut}
         routines={pauseSchedule}

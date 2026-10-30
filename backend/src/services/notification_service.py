@@ -66,27 +66,35 @@ def is_muted_type(mutes: Optional[Dict[str, bool]], notif_type: str) -> bool:
 def resolve_dnd_status(settings, now: Optional[datetime] = None) -> Dict[str, Any]:
     """Calcula el estado efectivo de DND y el origen exacto (manual o routine).
 
-    Algoritmo de exclusividad mutua:
-    1. Si manual_pause_until está vigente → DND manual.
-    2. Si active_routine_id existe → DND por esa rutina (sin comprobar ventanas horarias).
+    Algoritmo con estados explícitos:
+    1. Si manual_pause_until está vigente → DND manual (origen manual).
+    2. Si selected_routine_id existe → comprobar si está dentro de su ventana:
+       - Dentro de ventana → routine_state = "active", dnd_active = True
+       - Fuera de ventana → routine_state = "scheduled" | "waiting", dnd_active = False
     3. Si no existe ninguna fuente → DND desactivado.
 
     Retorna un diccionario completo:
     {
         'dnd_active': bool,
         'dnd_source': 'manual' | 'routine' | None,
-        'active_routine_id': str | None,
+        'selected_routine_id': str | None,
+        'effective_active_routine_id': str | None,
+        'routine_state': 'scheduled' | 'active' | 'waiting' | None,
         'active_routine_name': str | None,
         'window_end': str | None,
+        'next_start': str | None,
     }
     """
     if settings is None:
         return {
             "dnd_active": False,
             "dnd_source": None,
-            "active_routine_id": None,
+            "selected_routine_id": None,
+            "effective_active_routine_id": None,
+            "routine_state": None,
             "active_routine_name": None,
             "window_end": None,
+            "next_start": None,
         }
 
     reference = _naive_utc(now or datetime.utcnow())
@@ -102,41 +110,110 @@ def resolve_dnd_status(settings, now: Optional[datetime] = None) -> Dict[str, An
         return {
             "dnd_active": True,
             "dnd_source": "manual",
-            "active_routine_id": None,
+            "selected_routine_id": None,
+            "effective_active_routine_id": None,
+            "routine_state": "active",
             "active_routine_name": None,
             "window_end": until_iso,
+            "next_start": None,
         }
 
     # 2. Rutina personalizada seleccionada explícitamente (exclusividad mutua)
-    active_routine_id = getattr(settings, "active_routine_id", None)
-    if active_routine_id:
+    selected_routine_id = getattr(settings, "selected_routine_id", None)
+    if selected_routine_id:
         routines = getattr(settings, "dnd_routines", None) or []
+        target_rule = None
         for rule in routines:
-            if rule.get("id") == active_routine_id:
-                end_label = rule.get("end") or "—"
-                return {
-                    "dnd_active": True,
-                    "dnd_source": "routine",
-                    "active_routine_id": rule.get("id"),
-                    "active_routine_name": rule.get("name") or "Rutina",
-                    "window_end": end_label,
-                }
-        # Si el ID ya no existe en las rutinas, limpiarlo
+            if rule.get("id") == selected_routine_id:
+                target_rule = rule
+                break
+
+        if target_rule is None:
+            # El ID ya no existe, limpiarlo
+            return {
+                "dnd_active": False,
+                "dnd_source": None,
+                "selected_routine_id": selected_routine_id,
+                "effective_active_routine_id": None,
+                "routine_state": "waiting",
+                "active_routine_name": None,
+                "window_end": None,
+                "next_start": None,
+            }
+
+        window = pause_rule_window(target_rule, reference)
+        if window is not None:
+            _win_start, win_end = window
+            end_label = target_rule.get("end") or "—"
+            return {
+                "dnd_active": True,
+                "dnd_source": "routine",
+                "selected_routine_id": selected_routine_id,
+                "effective_active_routine_id": selected_routine_id,
+                "routine_state": "active",
+                "active_routine_name": target_rule.get("name") or "Rutina",
+                "window_end": end_label,
+                "next_start": None,
+            }
+
+        # Fuera de ventana: calcular próximo start buscando hacia adelante
+        start_t = parse_clock(target_rule.get("start", "00:00"))
+        end_t = parse_clock(target_rule.get("end", "00:00"))
+        tz = _rule_timezone(target_rule)
+        local_now = reference.replace(tzinfo=timezone.utc).astimezone(tz)
+        days = {int(day) for day in (target_rule.get("days") or []) if int(day) in PAUSE_WEEKDAYS}
+
+        next_start_dt = None
+        next_start_offset = None
+        for offset in range(0, 8):
+            candidate_day = local_now.date() + timedelta(days=offset)
+            if candidate_day.weekday() not in days:
+                continue
+            candidate_start = _to_utc(candidate_day, start_t, tz)
+            if offset == 0 and local_now.time() >= start_t:
+                # Ya pasó el start de hoy, seguir buscando
+                continue
+            next_start_dt = candidate_start
+            next_start_offset = offset
+            break
+
+        next_start_label = None
+        if next_start_dt is not None:
+            weekday_labels = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+            next_start_utc = next_start_dt.replace(tzinfo=timezone.utc)
+            next_start_local = next_start_utc.astimezone(tz)
+            next_start_label = (
+                f"{weekday_labels[next_start_local.weekday()]} "
+                f"{next_start_local.strftime('%H:%M')}"
+            )
+
+        # Determinar routine_state: scheduled = empieza hoy, waiting = empieza otro día
+        if next_start_offset == 0:
+            routine_state = "scheduled"
+        else:
+            routine_state = "waiting"
+
         return {
             "dnd_active": False,
-            "dnd_source": None,
-            "active_routine_id": None,
-            "active_routine_name": None,
+            "dnd_source": "routine",
+            "selected_routine_id": selected_routine_id,
+            "effective_active_routine_id": None,
+            "routine_state": routine_state,
+            "active_routine_name": target_rule.get("name") or "Rutina",
             "window_end": None,
+            "next_start": next_start_label,
         }
 
     # 3. Ningún DND activo
     return {
         "dnd_active": False,
         "dnd_source": None,
-        "active_routine_id": None,
+        "selected_routine_id": None,
+        "effective_active_routine_id": None,
+        "routine_state": None,
         "active_routine_name": None,
         "window_end": None,
+        "next_start": None,
     }
 
 
@@ -832,7 +909,7 @@ async def pause_notifications(user_id: str, until: datetime) -> datetime:
     if settings is None:
         settings = UserSettings(user_id=user_id)
     settings.manual_pause_until = until
-    settings.active_routine_id = None
+    settings.selected_routine_id = None
     settings.force_notifications_until = None
     await settings.save()
     await _push_action(user_id, "notifications_paused", until=until.isoformat())
@@ -847,7 +924,7 @@ async def resume_notifications(user_id: str) -> None:
     if settings is None:
         return
     settings.manual_pause_until = None
-    settings.active_routine_id = None
+    settings.selected_routine_id = None
     settings.force_notifications_until = None
     await settings.save()
     await _push_action(user_id, "notifications_resumed")
@@ -873,7 +950,7 @@ async def select_pause_routine(user_id: str, routine_id: str) -> None:
             break
     if target is None:
         return
-    settings.active_routine_id = routine_id
+    settings.selected_routine_id = routine_id
     settings.manual_pause_until = None
     settings.force_notifications_until = None
     for rule in routines:
@@ -930,10 +1007,10 @@ async def upsert_pause_schedule(
             raise ValueError("Maximum custom DND routines reached.")
         routines.append(dict(rule))
     settings.dnd_routines = routines
-    if getattr(settings, "active_routine_id", None) and not any(
-        r.get("id") == getattr(settings, "active_routine_id", None) for r in routines
+    if getattr(settings, "selected_routine_id", None) and not any(
+        r.get("id") == getattr(settings, "selected_routine_id", None) for r in routines
     ):
-        settings.active_routine_id = None
+        settings.selected_routine_id = None
     settings.force_notifications_until = None
     await settings.save()
     await _push_action(user_id, "notifications_sync")
@@ -950,11 +1027,9 @@ async def remove_pause_schedule(user_id: str, rule_id: str) -> List[Dict[str, An
     routines = [dict(item) for item in (settings.dnd_routines or [])]
     routines = [item for item in routines if item.get("id") != rule_id]
     settings.dnd_routines = routines
-    if getattr(settings, "active_routine_id", None) == rule_id:
-        settings.active_routine_id = None
+    if getattr(settings, "selected_routine_id", None) == rule_id:
+        settings.selected_routine_id = None
     settings.force_notifications_until = None
     await settings.save()
-    await _push_action(user_id, "notifications_sync")
-    return routines
     await _push_action(user_id, "notifications_sync")
     return routines
