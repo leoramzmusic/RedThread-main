@@ -778,13 +778,13 @@ SNOOZE_DURATIONS = {
 
 
 def visible_filter(
-    user_id: str, archived_only: bool = False, now: Optional[datetime] = None
+    user_id: str, in_trash: bool = False, now: Optional[datetime] = None
 ) -> dict:
     now = now or datetime.utcnow()
     return {
         "user_id": user_id,
-        "deleted_at": None,
-        "archived_at": {"$ne": None} if archived_only else None,
+        "status": "trash" if in_trash else "active",
+        "permanently_deleted_at": None,
         "$or": [{"snoozed_until": None}, {"snoozed_until": {"$lte": now}}],
     }
 
@@ -800,39 +800,58 @@ async def _push_action(user_id: str, action: str, **extra: Any) -> None:
     await manager.send_personal_message(user_id, {"action": action, **extra})
 
 
-async def set_archived(
-    notification_id: str, user_id: str, archived: bool
+async def move_to_trash(
+    notification_id: str, user_id: str
 ) -> Optional[Notification]:
+    """Mueve una notificación a la papelera (soft delete).
+
+    La notificación deja de ser visible en el panel principal pero se
+    conserva durante 30 días para posible restauración.
+    """
     doc = await _owned(notification_id, user_id)
     if doc is None:
         return None
-    doc.archived_at = datetime.utcnow() if archived else None
+    if doc.status == "deleted":
+        return None
+    doc.status = "trash"
+    doc.deleted_at = datetime.utcnow()
+    doc.permanently_deleted_at = None
     await doc.save()
-    await _push_action(
-        user_id,
-        "notification_archived" if archived else "notification_unarchived",
-        id=notification_id,
-    )
+    await _push_action(user_id, "notification_trashed", id=notification_id)
     return doc
 
 
-async def set_deleted(notification_id: str, user_id: str) -> Optional[Notification]:
+async def hard_delete(
+    notification_id: str, user_id: str
+) -> Optional[Notification]:
+    """Elimina físicamente una notificación de la papelera.
+
+    Solo puede llamarse sobre notificaciones con status="trash".
+    """
     doc = await _owned(notification_id, user_id)
     if doc is None:
         return None
-    doc.deleted_at = datetime.utcnow()
+    if doc.status != "trash":
+        return None
+    doc.status = "deleted"
+    doc.permanently_deleted_at = datetime.utcnow()
     await doc.save()
     await _push_action(user_id, "notification_deleted", id=notification_id)
     return doc
 
 
-async def restore_notification(
+async def restore_from_trash(
     notification_id: str, user_id: str
 ) -> Optional[Notification]:
+    """Restaura una notificación de la papelera al panel principal."""
     doc = await _owned(notification_id, user_id)
     if doc is None:
         return None
+    if doc.status != "trash":
+        return None
+    doc.status = "active"
     doc.deleted_at = None
+    doc.permanently_deleted_at = None
     await doc.save()
     await _push_action(user_id, "notification_restored", id=notification_id)
     return doc

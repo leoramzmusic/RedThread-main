@@ -18,6 +18,7 @@ const base = {
   resolved: false,
   required_action: false,
   critical: false,
+  status: "active",
   created_at: new Date().toISOString(),
   user: { name: "Ana", photo: "/ana.jpg", nickname: "ana" },
   target_type: "likes",

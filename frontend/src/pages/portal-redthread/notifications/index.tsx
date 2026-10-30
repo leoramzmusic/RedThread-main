@@ -35,7 +35,8 @@ interface NotificationItem {
   is_read: boolean;
   seen_at?: string;
   read_at?: string;
-  archived_at?: string;
+  status?: string;
+  deleted_at?: string;
   expires_at?: string;
   action_url?: string;
   action_label?: string;

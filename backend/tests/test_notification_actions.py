@@ -18,46 +18,51 @@ def test_visible_filter_excludes_archived_deleted_snoozed():
     now = datetime.utcnow()
     q = ns.visible_filter("u1", now=now)
     assert q["user_id"] == "u1"
-    assert q["deleted_at"] is None
-    assert q["archived_at"] is None
+    assert q["status"] == "active"
+    assert q["permanently_deleted_at"] is None
     assert {"snoozed_until": None} in q["$or"]
     assert {"snoozed_until": {"$lte": now}} in q["$or"]
 
 
 def test_visible_filter_archived_only():
-    q = ns.visible_filter("u1", archived_only=True)
-    assert q["archived_at"] == {"$ne": None}
+    q = ns.visible_filter("u1", in_trash=True)
+    assert q["status"] == "trash"
+    assert q["permanently_deleted_at"] is None
 
 
 @pytest.mark.asyncio
-async def test_set_archived_sets_timestamp_and_pushes():
+async def test_move_to_trash_sets_timestamp_and_pushes():
     doc = _doc()
     with patch.object(Notification, "get", new=AsyncMock(return_value=doc)), patch.object(
         Notification, "save", new=AsyncMock()
     ), patch.object(ns.manager, "send_personal_message", new=AsyncMock()) as push:
-        got = await ns.set_archived("n1", "u1", True)
-    assert got is doc and doc.archived_at is not None
+        got = await ns.move_to_trash("n1", "u1")
+    assert got is doc and doc.status == "trash" and doc.deleted_at is not None
     push.assert_awaited_once()
-    assert push.await_args.args[1]["action"] == "notification_archived"
+    assert push.await_args.args[1]["action"] == "notification_trashed"
 
 
 @pytest.mark.asyncio
-async def test_set_archived_rejects_foreign_user():
+async def test_move_to_trash_rejects_foreign_user():
     doc = _doc(user_id="other")
     with patch.object(Notification, "get", new=AsyncMock(return_value=doc)):
-        assert await ns.set_archived("n1", "u1", True) is None
+        assert await ns.move_to_trash("n1", "u1") is None
 
 
 @pytest.mark.asyncio
-async def test_set_deleted_and_restore_round_trip():
-    doc = _doc()
+async def test_hard_delete_and_restore_round_trip():
+    doc = _doc(status="trash")
     with patch.object(Notification, "get", new=AsyncMock(return_value=doc)), patch.object(
         Notification, "save", new=AsyncMock()
     ), patch.object(ns.manager, "send_personal_message", new=AsyncMock()) as push:
-        await ns.set_deleted("n1", "u1")
-        assert doc.deleted_at is not None
-        await ns.restore_notification("n1", "u1")
-        assert doc.deleted_at is None
+        await ns.hard_delete("n1", "u1")
+        assert doc.status == "deleted" and doc.permanently_deleted_at is not None
+        # hard_delete sets status to "deleted", so restore_from_trash won't match
+        # instead test that restore works on a trash doc
+        doc2 = _doc(status="trash")
+        with patch.object(Notification, "get", new=AsyncMock(return_value=doc2)):
+            await ns.restore_from_trash("n1", "u1")
+            assert doc2.status == "active" and doc2.deleted_at is None
     actions = [c.args[1]["action"] for c in push.await_args_list]
     assert actions == ["notification_deleted", "notification_restored"]
 

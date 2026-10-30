@@ -45,6 +45,9 @@ export interface AppNotification {
   resolved: boolean;
   required_action: boolean;
   critical: boolean;
+  status: string;
+  deleted_at?: string | null;
+  permanently_deleted_at?: string | null;
   created_at: string;
   updated_at?: string | null;
   actor_count?: number;

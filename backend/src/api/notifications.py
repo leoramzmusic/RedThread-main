@@ -244,10 +244,10 @@ async def get_notifications(
 
     context = await _notification_settings(uid)
     mutes, master = context["mutes"], context["master"]
-    if filter == "archived":
-        query = ns.visible_filter(uid, archived_only=True)
-    elif filter == "trash":
-        query = {"user_id": uid, "deleted_at": {"$ne": None}}
+    if filter == "trash":
+        query = ns.visible_filter(uid, in_trash=True)
+    elif filter == "archived":
+        query = ns.visible_filter(uid, in_trash=True)
     else:
         query = _scoped_query(uid, filter, mutes, master)
     if unread:
@@ -568,7 +568,6 @@ async def bulk_action(
         return {"updated": 0}
 
     uid = str(current_user.id)
-    now = datetime.utcnow()
     if payload.action == "read":
         updated = await ns.mark_notifications_read(
             [str(o) for o in oids], uid
@@ -576,23 +575,24 @@ async def bulk_action(
         await manager.send_personal_message(uid, {"action": "notifications_sync"})
         return {"updated": updated}
 
-    query: Dict[str, Any] = {"_id": {"$in": oids}, "user_id": uid}
-    if payload.action == "archive":
-        query["deleted_at"] = None
-        changes = {"archived_at": now}
-    elif payload.action == "unarchive":
-        changes = {"archived_at": None}
-    elif payload.action == "delete":
-        query["deleted_at"] = None
-        changes = {"deleted_at": now}
-    else:
-        query["deleted_at"] = {"$ne": None}
-        changes = {"deleted_at": None}
+    if payload.action in ("archive", "unarchive", "delete", "restore"):
+        updated = 0
+        for oid in oids:
+            nid = str(oid)
+            if payload.action == "archive":
+                doc = await ns.move_to_trash(nid, uid)
+            elif payload.action == "unarchive":
+                doc = await ns.restore_from_trash(nid, uid)
+            elif payload.action == "delete":
+                doc = await ns.hard_delete(nid, uid)
+            elif payload.action == "restore":
+                doc = await ns.restore_from_trash(nid, uid)
+            if doc:
+                updated += 1
+        await manager.send_personal_message(uid, {"action": "notifications_sync"})
+        return {"updated": updated}
 
-    result = await Notification.find(query).update({"$set": changes})
-    updated = result.modified_count if result else 0
-    await manager.send_personal_message(uid, {"action": "notifications_sync"})
-    return {"updated": updated}
+    query: Dict[str, Any] = {"_id": {"$in": oids}, "user_id": uid}
 
 
 async def _fan_out_system(
@@ -761,9 +761,9 @@ async def unpin_notification_route(
 async def archive_notification(
     notification_id: str, current_user: User = Depends(get_current_user)
 ):
-    """Archive a notification for the current user."""
+    """Mueve una notificación a la papelera (soft delete)."""
     _validate_notification_id(notification_id)
-    doc = await ns.set_archived(notification_id, str(current_user.id), True)
+    doc = await ns.move_to_trash(notification_id, str(current_user.id))
     _require_item(doc)
     return {"ok": True}
 
@@ -772,9 +772,9 @@ async def archive_notification(
 async def unarchive_notification(
     notification_id: str, current_user: User = Depends(get_current_user)
 ):
-    """Remove a notification from the archive."""
+    """Restaura una notificación de la papelera al panel principal."""
     _validate_notification_id(notification_id)
-    doc = await ns.set_archived(notification_id, str(current_user.id), False)
+    doc = await ns.restore_from_trash(notification_id, str(current_user.id))
     _require_item(doc)
     return {"ok": True}
 
@@ -783,9 +783,9 @@ async def unarchive_notification(
 async def delete_notification(
     notification_id: str, current_user: User = Depends(get_current_user)
 ):
-    """Soft-delete a notification for the current user."""
+    """Elimina físicamente una notificación de la papelera."""
     _validate_notification_id(notification_id)
-    doc = await ns.set_deleted(notification_id, str(current_user.id))
+    doc = await ns.hard_delete(notification_id, str(current_user.id))
     _require_item(doc)
     return {"ok": True}
 
@@ -794,9 +794,9 @@ async def delete_notification(
 async def restore_notification(
     notification_id: str, current_user: User = Depends(get_current_user)
 ):
-    """Restore a soft-deleted notification."""
+    """Restaura una notificación de la papelera."""
     _validate_notification_id(notification_id)
-    doc = await ns.restore_notification(notification_id, str(current_user.id))
+    doc = await ns.restore_from_trash(notification_id, str(current_user.id))
     _require_item(doc)
     return {"ok": True}
 
