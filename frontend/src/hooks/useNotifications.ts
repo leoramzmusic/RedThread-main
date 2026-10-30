@@ -1,6 +1,7 @@
 ﻿import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
 import type { PauseScheduleRule } from "../components/notifications/pauseTime";
+import { usePauseExpiry } from "./usePauseExpiry";
 
 export const PAUSE_SUMMARY_EVENT = "notifications-pause-summary";
 export const PAUSE_STATE_EVENT = "notifications-pause-state";
@@ -69,7 +70,11 @@ const EMPTY_COUNTS: NotificationCounts = {
   survey_pending: 0,
 };
 
-export function useNotifications(filter: string, opts?: { unread?: boolean }) {
+export function useNotifications(
+  filter: string,
+  opts?: { unread?: boolean },
+  enabled: boolean = true,
+) {
   const unread = Boolean(opts?.unread);
   const [items, setItems] = useState<AppNotification[]>([]);
   const [counts, setCounts] = useState<NotificationCounts>(EMPTY_COUNTS);
@@ -160,10 +165,11 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     filterRef.current = filter;
     unreadRef.current = unread;
     void fetchAll();
-  }, [filter, unread, fetchAll]);
+  }, [filter, unread, fetchAll, enabled]);
 
   useEffect(() => {
     const onSync = () => {
@@ -515,6 +521,56 @@ export function useNotifications(filter: string, opts?: { unread?: boolean }) {
     },
     [applyPauseState],
   );
+
+  return {
+    items,
+    counts,
+    unreadCount: counts?.count ?? 0,
+    loading,
+    error,
+    nextCursor,
+    pausedUntil,
+    dndActive,
+    dndSource,
+    routineState,
+    selectedRoutineId,
+    effectiveActiveRoutineId,
+    activeRoutineName,
+    windowEnd,
+    nextStart,
+    pauseSchedule,
+    pauseAllow,
+    pauseWindow,
+    pauseShortcutId,
+    refresh: fetchAll,
+    markRead,
+    markBucket,
+    markAllRead,
+    archive,
+    unarchive,
+    restore,
+    remove,
+    bulkArchive,
+    bulkUnarchive,
+    bulkDelete,
+    bulkRestore,
+    bulkMarkRead,
+    snooze,
+    unsnooze,
+    setPinned,
+    dismissReminder,
+    restoreReminder,
+    pause,
+    resume,
+    applyPauseShortcut,
+    savePauseSchedule,
+    savePauseWindow,
+    removePauseSchedule,
+    selectPauseSchedule,
+  };
+
+  // Re-fetch when a manual pause expires so the navbar/badge stays in sync
+  usePauseExpiry(pausedUntil, fetchAll);
 
   return {
     items,

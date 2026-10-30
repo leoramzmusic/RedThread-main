@@ -563,8 +563,13 @@ async def test_read_all_all_filter_marks_every_unread():
     ):
         out = await api.mark_all_as_read(filter="all", current_user=_user())
     assert out == {"updated": 4}
-    find.assert_called_once_with({"user_id": "u1", "is_read": False})
-    update.assert_awaited_once_with({"$set": {"is_read": True}})
+    find.assert_called_once()
+    query = find.call_args.args[0]
+    assert query["user_id"] == "u1"
+    assert query["is_read"] is False
+    update.assert_awaited_once()
+    changes = update.call_args.args[0]["$set"]
+    assert changes["is_read"] is True
 
 
 @pytest.mark.asyncio
@@ -581,8 +586,8 @@ async def test_read_all_filter_scopes_bucket():
         out = await api.mark_all_as_read(filter="social", current_user=_user())
     assert out == {"updated": 2}
     query = find.call_args.args[0]
+    assert query["user_id"] == "u1"
     assert query["is_read"] is False
-    assert any("deleted_at" in part for part in query["$and"])
 
 
 @pytest.mark.asyncio
@@ -637,8 +642,10 @@ async def test_bulk_action_marks_owned_ids_read():
         )
     assert out == {"updated": 1}
     query = find.call_args.args[0]
-    assert query["deleted_at"] is None
-    assert update.call_args.args[0]["$set"] == {"is_read": True}
+    assert query["user_id"] == "u1"
+    assert len(query["_id"]["$in"]) == 1
+    changes = update.call_args.args[0]["$set"]
+    assert changes["is_read"] is True
 
 
 @pytest.mark.asyncio

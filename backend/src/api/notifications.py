@@ -514,15 +514,19 @@ async def read_bucket(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="bucket must be social or system",
         )
-
     uid = str(current_user.id)
-    result = await Notification.find(
-        {"user_id": uid, "type": {"$in": types}, "is_read": False}
-    ).update({"$set": {"is_read": True}})
+    try:
+        context = await _notification_settings(uid)
+        mutes = context["mutes"]
+        master = context["master"]
+    except Exception:
+        mutes = {}
+        master = True
+    updated = await ns.mark_bucket_read(uid, payload.bucket, mutes, master)
     await manager.send_personal_message(
         uid, {"action": "notifications_bucket_read", "bucket": payload.bucket}
     )
-    return {"updated": result.modified_count if result else 0}
+    return {"updated": updated}
 
 
 @router.post("/read-all")
@@ -536,15 +540,14 @@ async def mark_all_as_read(
             detail="Invalid filter",
         )
     uid = str(current_user.id)
-    if filter == "all":
-        query = {"user_id": uid, "is_read": False}
-    else:
+    try:
         context = await _notification_settings(uid)
-        mutes, master = context["mutes"], context["master"]
-        query = _scoped_query(uid, filter, mutes, master)
-        query["is_read"] = False
-    result = await Notification.find(query).update({"$set": {"is_read": True}})
-    updated = result.modified_count if result else 0
+        mutes = context["mutes"]
+        master = context["master"]
+    except Exception:
+        mutes = {}
+        master = True
+    updated = await ns.mark_all_read(uid, filter, mutes, master)
     await manager.send_personal_message(uid, {"action": "notifications_read_all"})
     return {"updated": updated}
 
@@ -566,6 +569,13 @@ async def bulk_action(
 
     uid = str(current_user.id)
     now = datetime.utcnow()
+    if payload.action == "read":
+        updated = await ns.mark_notifications_read(
+            [str(o) for o in oids], uid
+        )
+        await manager.send_personal_message(uid, {"action": "notifications_sync"})
+        return {"updated": updated}
+
     query: Dict[str, Any] = {"_id": {"$in": oids}, "user_id": uid}
     if payload.action == "archive":
         query["deleted_at"] = None
@@ -575,9 +585,6 @@ async def bulk_action(
     elif payload.action == "delete":
         query["deleted_at"] = None
         changes = {"deleted_at": now}
-    elif payload.action == "read":
-        query["deleted_at"] = None
-        changes = {"is_read": True}
     else:
         query["deleted_at"] = {"$ne": None}
         changes = {"deleted_at": None}

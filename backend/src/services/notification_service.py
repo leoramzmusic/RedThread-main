@@ -8,6 +8,8 @@ from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
+from bson import ObjectId
+
 try:  # tzdata no está garantizada en Windows; el offset del cliente hace de fallback
     from zoneinfo import ZoneInfo
 except ImportError:  # pragma: no cover - Python < 3.9
@@ -24,6 +26,7 @@ GROUP_WINDOW_HOURS = 24
 MAX_ACTORS = 3
 PREVIEW_MAX = 80
 RETENTION_DAYS = 30
+MAX_BULK = 100
 PAUSE_SCHEDULE_MAX_RULES = 3
 PAUSE_WEEKDAYS = (0, 1, 2, 3, 4, 5, 6)
 PAUSE_ALLOWED_TYPES = (
@@ -1033,3 +1036,82 @@ async def remove_pause_schedule(user_id: str, rule_id: str) -> List[Dict[str, An
     await settings.save()
     await _push_action(user_id, "notifications_sync")
     return routines
+
+
+# ---------------------------------------------------------------------------
+# Lectura de notificaciones (única fuente de verdad)
+# ---------------------------------------------------------------------------
+
+async def mark_notification_read(
+    notification_id: str, user_id: str
+) -> Optional[Notification]:
+    """Marca una notificación individual como leída (is_read=True, read_at=ahora).
+
+    Nunca toca resolved, required_action ni critical.
+    """
+    doc = await _owned(notification_id, user_id)
+    if doc is None:
+        return None
+    doc.is_read = True
+    doc.read_at = datetime.utcnow()
+    doc.updated_at = datetime.utcnow()
+    await doc.save()
+    return doc
+
+
+async def mark_all_read(
+    user_id: str,
+    filter: str = "all",
+    mutes: Optional[Dict[str, bool]] = None,
+    master_enabled: bool = True,
+) -> int:
+    """Marca todas las notificaciones visibles como leídas según el filtro.
+
+    Aplica visibility_query para respetar bucket/mutes/master y visible_filter
+    para excluir borradas/archivadas/snoozadas activas.
+    Solo establece is_read=True y read_at=ahora.
+    """
+    now = datetime.utcnow()
+    base = visible_filter(user_id, now=now)
+    q = visibility_query(user_id, filter, mutes, master_enabled)
+    # Combinar filtros de visibilidad y bucket
+    query: Dict[str, Any] = {**base, **q}
+    query["is_read"] = False
+
+    result = await Notification.find(query).update(
+        {"$set": {"is_read": True, "read_at": now, "updated_at": now}}
+    )
+    return result.modified_count if result else 0
+
+
+async def mark_bucket_read(
+    user_id: str,
+    bucket: str,
+    mutes: Optional[Dict[str, bool]] = None,
+    master_enabled: bool = True,
+) -> int:
+    """Marca todas las notificaciones de un bucket como leídas."""
+    return await mark_all_read(user_id, bucket, mutes, master_enabled)
+
+
+async def mark_notifications_read(
+    notification_ids: List[str], user_id: str
+) -> int:
+    """Marca varias notificaciones específicas como leídas (bulk read)."""
+    now = datetime.utcnow()
+    oids = [ObjectId(nid) for nid in notification_ids if ObjectId.is_valid(nid)]
+    oids = oids[:MAX_BULK]
+    if not oids:
+        return 0
+
+    query: Dict[str, Any] = {
+        **visible_filter(user_id, now=now),
+        "_id": {"$in": oids},
+        "user_id": user_id,
+        "is_read": False,
+    }
+
+    result = await Notification.find(query).update(
+        {"$set": {"is_read": True, "read_at": now, "updated_at": now}}
+    )
+    return result.modified_count if result else 0
