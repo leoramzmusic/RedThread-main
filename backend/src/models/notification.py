@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from beanie import Document
+from beanie import Document, PydanticObjectId
 from pydantic import Field
 
 
 class Notification(Document):
-    recipient_type: str = "user"  # "user" | "employee"
+    recipient_type: str = "user"  # "user" | "employee" | "brand"
     recipient_id: Optional[str] = None
     user_id: Optional[str] = None  # Legacy support
     category: str = "announcement"  # "announcement" | "alert" | "operational" | "security" | "maintenance"
@@ -16,6 +16,8 @@ class Notification(Document):
     priority: str = "P2"  # "P0" | "P1" | "P2" | "P3"
     action_url: Optional[str] = None
     action_label: Optional[str] = None
+    created_by: Optional[PydanticObjectId] = None
+    executed_by: Optional[PydanticObjectId] = None
     is_read: bool = False
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = Field(default_factory=datetime.utcnow)
