@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional
 from beanie import Document, PydanticObjectId
-from pydantic import Field
 
 
 class NotificationSchedule(Document):
@@ -13,6 +12,8 @@ class NotificationSchedule(Document):
     is_active: bool = True
     last_run: Optional[datetime] = None
     next_run: Optional[datetime] = None
+    deleted_at: Optional[datetime] = None
+    deleted_by: Optional[PydanticObjectId] = None
 
     class Settings:
         name = "notification_schedules"

@@ -17,6 +17,8 @@ class NotificationTemplate(Document):
     created_by: PydanticObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    deleted_at: Optional[datetime] = None
+    deleted_by: Optional[PydanticObjectId] = None
 
     class Settings:
         name = "notification_templates"

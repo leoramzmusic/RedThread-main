@@ -840,3 +840,10 @@ async def mark_as_read(
     )
 
     return {"message": "Marked as read"}
+
+
+# Sub-router: Módulo Usuarios (Gestor de Notificaciones)
+# Endpoints bajo /notifications/users/ (auth: require_employee_permission(SEND_NOTIFICATIONS))
+from .users import router as users_router  # noqa: E402
+
+router.include_router(users_router, prefix="/users", tags=["Users Notifications"])

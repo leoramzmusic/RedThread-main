@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Optional
 from beanie import Document, PydanticObjectId
 from pydantic import Field
 
@@ -14,6 +14,8 @@ class NotificationCampaign(Document):
     created_by: PydanticObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
     stats: Dict[str, int] = Field(default_factory=lambda: {"sent": 0, "delivered": 0, "read": 0, "failed": 0})
+    deleted_at: Optional[datetime] = None
+    deleted_by: Optional[PydanticObjectId] = None
 
     class Settings:
         name = "notification_campaigns"
