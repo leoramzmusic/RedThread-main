@@ -1,11 +1,9 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useTranslation } from "next-i18next/pages";
 import { APP_VERSION } from "../../../config/version";
 
 export default function AdminFooter() {
-  const { t } = useTranslation("common");
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const textMuted = isDark ? "rgba(255,255,255,0.5)" : "rgba(33,33,33,0.5)";
@@ -27,8 +25,7 @@ export default function AdminFooter() {
     >
       <Container maxWidth="xl">
         <Typography variant="caption" sx={{ color: textMuted }}>
-          © {currentYear} RETH Admin.{" "}
-          {t("footer.rights", "Todos los derechos reservados.")}
+          © {currentYear} RETH Admin. Todos los derechos reservados.
         </Typography>
         <Typography
           variant="caption"

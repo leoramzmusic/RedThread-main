@@ -3,15 +3,15 @@ import { Box, CircularProgress } from "@mui/material";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import AdminSidebar from "./admin/Sidebar";
-import AdminNavbar from "./admin/Navbar";
-import AdminFooter from "./admin/Footer";
-
-import { useAdminSessionHydration } from "../../hooks/useAdminSessionHydration";
+import AdminSidebar from "./AdminSidebar";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
+
+import AdminNavbar from "./AdminNavbar";
+
+import { useAdminSessionHydration } from "../../hooks/useAdminSessionHydration";
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
@@ -65,7 +65,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       >
         <AdminNavbar sidebarCollapsed={sidebarCollapsed} />
         <Box sx={{ p: 3, flexGrow: 1 }}>{children}</Box>
-        <AdminFooter />
       </Box>
     </Box>
   );
