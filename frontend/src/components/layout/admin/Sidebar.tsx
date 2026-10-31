@@ -927,32 +927,38 @@ export default function AdminSidebar({
     (item: MenuItem) => {
       if (item.children) {
         if (!collapsed) {
-          setExpandedMenus((prev) => {
-            const next = new Set(prev);
-            const isOpen = next.has(item.id);
+          // Si el padre tiene submenús con path, navegar al primero
+          const firstChild = item.children.find((c) => c.path);
+          if (firstChild && firstChild.path) {
+            router.push(firstChild.path);
+          } else {
+            setExpandedMenus((prev) => {
+              const next = new Set(prev);
+              const isOpen = next.has(item.id);
 
-            // Si se hace clic en una audiencia del Gestor, cerrar las otras audiencias
-            // pero mantener el padre "Gestor de Notificaciones" abierto
-            const isNotificationAudience =
-              item.id === "usuarios-notifications" ||
-              item.id === "empleados-notifications" ||
-              item.id === "marcas-notifications";
+              // Si se hace clic en una audiencia del Gestor, cerrar las otras audiencias
+              // pero mantener el padre "Gestor de Notificaciones" abierto
+              const isNotificationAudience =
+                item.id === "usuarios-notifications" ||
+                item.id === "empleados-notifications" ||
+                item.id === "marcas-notifications";
 
-            if (isNotificationAudience) {
-              [
-                "usuarios-notifications",
-                "empleados-notifications",
-                "marcas-notifications",
-              ].forEach((audienceId) => next.delete(audienceId));
-            }
+              if (isNotificationAudience) {
+                [
+                  "usuarios-notifications",
+                  "empleados-notifications",
+                  "marcas-notifications",
+                ].forEach((audienceId) => next.delete(audienceId));
+              }
 
-            if (isOpen) {
-              next.delete(item.id);
-            } else {
-              next.add(item.id);
-            }
-            return next;
-          });
+              if (isOpen) {
+                next.delete(item.id);
+              } else {
+                next.add(item.id);
+              }
+              return next;
+            });
+          }
         }
       } else if (item.path) {
         router.push(item.path);
