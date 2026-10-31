@@ -211,10 +211,7 @@ async def test_read_all_uses_dict_query_and_emits():
     ) as push:
         out = await api.mark_all_as_read("all", SimpleNamespace(id="u1"))
     assert out == {"updated": 2}
-    find.assert_called_once()
-    call_args = find.call_args[0][0]
-    assert call_args["user_id"] == "u1"
-    assert call_args["is_read"] is False
+    find.assert_called_once_with({"user_id": "u1", "is_read": False})
     push.assert_awaited_once_with("u1", {"action": "notifications_read_all"})
 
 

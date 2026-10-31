@@ -17,12 +17,6 @@ class Notification(Document):
     action_url: Optional[str] = None
     action_label: Optional[str] = None
     is_read: bool = False
-    # Estado de resolución de la tarea asociada (independiente de read)
-    resolved: bool = False
-    # Indica que la notificación requiere una acción del usuario (CARE, encuesta, etc.)
-    required_action: bool = False
-    # Indica que la notificación es crítica y no puede descartarse hasta resolverse
-    critical: bool = False
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -35,15 +29,8 @@ class Notification(Document):
     target_type: Optional[str] = None
     target_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
-    # Estado del ciclo de vida: "active" | "trash" | "deleted"
-    # active  = visible en el panel principal
-    # trash   = movida a la papelera (soft delete, retención 30 días)
-    # deleted = eliminada físicamente de la BD (job programado)
-    status: str = "active"
-    # Momento en que entró a la papelera (null si no está en ella)
+    archived_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
-    # Momento en que se eliminó definitivamente (job de retención)
-    permanently_deleted_at: Optional[datetime] = None
     snoozed_until: Optional[datetime] = None
     pinned_at: Optional[datetime] = None
 
@@ -54,6 +41,6 @@ class Notification(Document):
             [("user_id", 1), ("is_read", 1), ("created_at", -1)],
             [("user_id", 1), ("updated_at", -1)],
             [("user_id", 1), ("group_key", 1), ("updated_at", -1)],
-            [("user_id", 1), ("status", 1), ("updated_at", -1)],
+            [("user_id", 1), ("archived_at", 1), ("updated_at", -1)],
             [("user_id", 1), ("pinned_at", -1), ("updated_at", -1)],
         ]

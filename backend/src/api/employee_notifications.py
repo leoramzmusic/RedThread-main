@@ -4,10 +4,8 @@ from datetime import datetime, timedelta
 from src.models.notification import Notification
 from src.models.employee import Employee
 from src.core.middleware.employee_rbac import get_current_employee
-from src.services import notification_service as ns
 
 router = APIRouter(prefix="/employee/notifications", tags=["Employee Notifications"])
-
 
 @router.get("/inbox")
 async def get_employee_inbox(
@@ -33,9 +31,9 @@ async def get_employee_inbox(
         query["category"] = category
     if archived is not None:
         if archived:
-            query["status"] = "trash"
+            query["archived_at"] = {"$ne": None}
         else:
-            query["status"] = "active"
+            query["archived_at"] = None
 
     notifications = await Notification.find(query).sort("-created_at").skip(offset).limit(limit).to_list()
     
@@ -51,8 +49,7 @@ async def get_employee_inbox(
             "is_read": n.is_read,
             "seen_at": n.seen_at,
             "read_at": n.read_at,
-            "status": n.status,
-            "deleted_at": n.deleted_at,
+            "archived_at": getattr(n, "archived_at", None),
             "snoozed_until": getattr(n, "snoozed_until", None),
             "expires_at": n.expires_at,
             "action_url": n.action_url,
@@ -61,13 +58,11 @@ async def get_employee_inbox(
         })
     return {"notifications": result}
 
-
 async def _get_employee_notification(notification_id: str, employee: Employee) -> Notification:
     notif = await Notification.get(notification_id)
     if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
     return notif
-
 
 @router.post("/{notification_id}/seen")
 @router.post("/inbox/{notification_id}/seen")
@@ -81,7 +76,6 @@ async def mark_notification_seen(
         notif.updated_at = datetime.utcnow()
         await notif.save()
     return {"success": True, "message": "Notification marked as seen"}
-
 
 @router.post("/seen")
 async def mark_seen_body(
@@ -98,7 +92,6 @@ async def mark_seen_body(
         await notif.save()
     return {"success": True}
 
-
 @router.post("/{notification_id}/read")
 @router.post("/inbox/{notification_id}/read")
 async def mark_notification_read(
@@ -113,7 +106,6 @@ async def mark_notification_read(
     notif.updated_at = datetime.utcnow()
     await notif.save()
     return {"success": True, "message": "Notification marked as read"}
-
 
 @router.post("/read")
 async def mark_read_body(
@@ -132,19 +124,17 @@ async def mark_read_body(
     await notif.save()
     return {"success": True}
 
-
 @router.post("/{notification_id}/archive")
 @router.post("/inbox/{notification_id}/archive")
 async def archive_notification(
     notification_id: str,
     employee: Employee = Depends(get_current_employee)
 ):
-    """Mueve una notificación a la papelera (soft delete)."""
-    doc = await ns.move_to_trash(notification_id, str(employee.id))
-    if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    return {"success": True, "message": "Notification moved to trash"}
-
+    notif = await _get_employee_notification(notification_id, employee)
+    notif.archived_at = datetime.utcnow()
+    notif.updated_at = datetime.utcnow()
+    await notif.save()
+    return {"success": True, "message": "Notification archived"}
 
 @router.post("/archive")
 async def archive_body(
@@ -154,11 +144,11 @@ async def archive_body(
     notif_id = payload.get("notification_id") or payload.get("id")
     if not notif_id:
         raise HTTPException(status_code=400, detail="notification_id is required")
-    doc = await ns.move_to_trash(notif_id, str(employee.id))
-    if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found")
+    notif = await _get_employee_notification(notif_id, employee)
+    notif.archived_at = datetime.utcnow()
+    notif.updated_at = datetime.utcnow()
+    await notif.save()
     return {"success": True}
-
 
 @router.post("/{notification_id}/snooze")
 @router.post("/inbox/{notification_id}/snooze")
@@ -182,7 +172,6 @@ async def snooze_notification(
     await notif.save()
     return {"success": True, "snoozed_until": notif.snoozed_until}
 
-
 @router.post("/snooze")
 async def snooze_body(
     payload: Dict[str, Any] = Body(...),
@@ -205,57 +194,3 @@ async def snooze_body(
     notif.updated_at = datetime.utcnow()
     await notif.save()
     return {"success": True, "snoozed_until": notif.snoozed_until}
-
-
-@router.post("/{notification_id}/delete")
-@router.post("/inbox/{notification_id}/delete")
-async def delete_notification(
-    notification_id: str,
-    employee: Employee = Depends(get_current_employee)
-):
-    """Elimina físicamente una notificación de la papelera."""
-    doc = await ns.hard_delete(notification_id, str(employee.id))
-    if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found or not in trash")
-    return {"success": True, "message": "Notification permanently deleted"}
-
-
-@router.post("/delete")
-async def delete_body(
-    payload: Dict[str, Any] = Body(...),
-    employee: Employee = Depends(get_current_employee)
-):
-    notif_id = payload.get("notification_id") or payload.get("id")
-    if not notif_id:
-        raise HTTPException(status_code=400, detail="notification_id is required")
-    doc = await ns.hard_delete(notif_id, str(employee.id))
-    if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found or not in trash")
-    return {"success": True}
-
-
-@router.post("/{notification_id}/restore")
-@router.post("/inbox/{notification_id}/restore")
-async def restore_notification(
-    notification_id: str,
-    employee: Employee = Depends(get_current_employee)
-):
-    """Restaura una notificación de la papelera."""
-    doc = await ns.restore_from_trash(notification_id, str(employee.id))
-    if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found or not in trash")
-    return {"success": True, "message": "Notification restored"}
-
-
-@router.post("/restore")
-async def restore_body(
-    payload: Dict[str, Any] = Body(...),
-    employee: Employee = Depends(get_current_employee)
-):
-    notif_id = payload.get("notification_id") or payload.get("id")
-    if not notif_id:
-        raise HTTPException(status_code=400, detail="notification_id is required")
-    doc = await ns.restore_from_trash(notif_id, str(employee.id))
-    if not doc:
-        raise HTTPException(status_code=404, detail="Notification not found or not in trash")
-    return {"success": True}

@@ -48,17 +48,17 @@ def _oid():
 async def test_archive_calls_service():
     nid = _oid()
     with patch.object(
-        api.ns, "move_to_trash", new=AsyncMock(return_value=object())
+        api.ns, "set_archived", new=AsyncMock(return_value=object())
     ) as svc:
         out = await api.archive_notification(nid, _user())
     assert out == {"ok": True}
-    svc.assert_awaited_once_with(nid, "u1")
+    svc.assert_awaited_once_with(nid, "u1", True)
 
 
 @pytest.mark.asyncio
 async def test_archive_missing_raises_404():
     nid = _oid()
-    with patch.object(api.ns, "move_to_trash", new=AsyncMock(return_value=None)):
+    with patch.object(api.ns, "set_archived", new=AsyncMock(return_value=None)):
         with pytest.raises(HTTPException) as exc:
             await api.archive_notification(nid, _user())
     assert exc.value.status_code == 404
@@ -68,18 +68,18 @@ async def test_archive_missing_raises_404():
 async def test_unarchive_calls_service():
     nid = _oid()
     with patch.object(
-        api.ns, "restore_from_trash", new=AsyncMock(return_value=object())
+        api.ns, "set_archived", new=AsyncMock(return_value=object())
     ) as svc:
         out = await api.unarchive_notification(nid, _user())
     assert out == {"ok": True}
-    svc.assert_awaited_once_with(nid, "u1")
+    svc.assert_awaited_once_with(nid, "u1", False)
 
 
 @pytest.mark.asyncio
 async def test_delete_calls_service():
     nid = _oid()
     with patch.object(
-        api.ns, "hard_delete", new=AsyncMock(return_value=object())
+        api.ns, "set_deleted", new=AsyncMock(return_value=object())
     ) as svc:
         out = await api.delete_notification(nid, _user())
     assert out == {"ok": True}
@@ -90,7 +90,7 @@ async def test_delete_calls_service():
 async def test_restore_calls_service():
     nid = _oid()
     with patch.object(
-        api.ns, "restore_from_trash", new=AsyncMock(return_value=object())
+        api.ns, "restore_notification", new=AsyncMock(return_value=object())
     ) as svc:
         out = await api.restore_notification(nid, _user())
     assert out == {"ok": True}
@@ -193,22 +193,22 @@ async def test_archived_filter_uses_archived_only_query():
         api, "_notification_settings", new=AsyncMock(return_value=_settings_context({}, False))
     ), patch.object(api, "_backfill_updated_at", new=AsyncMock()):
         out = await api.get_notifications(
-            filter="trash",
+            filter="archived",
             cursor=None,
             limit=20,
             unread=False,
             current_user=_user(),
         )
     assert out == {"items": [], "next_cursor": None}
-    assert captured["query"]["status"] == "trash"
-    assert captured["query"]["permanently_deleted_at"] is None
+    assert captured["query"]["archived_at"] == {"$ne": None}
+    assert captured["query"]["deleted_at"] is None
     assert "metadata.important" not in captured["query"]
 
 
 def test_scoped_query_ands_visibility():
     q = api._scoped_query("u1", "all", {}, True)
     assert "$and" in q
-    assert any("status" in part for part in q["$and"])
+    assert any("deleted_at" in part for part in q["$and"])
 
 
 @pytest.mark.asyncio
@@ -243,7 +243,7 @@ async def test_cursor_keeps_visibility_constraints():
 
     assert out == {"items": [], "next_cursor": None}
     parts = captured["query"]["$and"]
-    assert any("status" in part for part in parts)
+    assert any("deleted_at" in part for part in parts)
     assert any(
         "$or" in part
         and any("updated_at" in cond for cond in part["$or"])
@@ -277,7 +277,7 @@ async def test_unread_count_uses_scoped_queries():
     for q in queries:
         assert q["is_read"] is False
         parts = q["$and"]
-        assert any("status" in part for part in parts)
+        assert any("deleted_at" in part for part in parts)
         assert any(
             "$or" in part
             and any("snoozed_until" in cond for cond in part["$or"])
@@ -551,8 +551,7 @@ async def test_trash_filter_lists_deleted_only():
             current_user=_user(),
         )
     assert out == {"items": [], "next_cursor": None}
-    assert captured["query"]["status"] == "trash"
-    assert captured["query"]["permanently_deleted_at"] is None
+    assert captured["query"] == {"user_id": "u1", "deleted_at": {"$ne": None}}
 
 
 @pytest.mark.asyncio
@@ -564,13 +563,8 @@ async def test_read_all_all_filter_marks_every_unread():
     ):
         out = await api.mark_all_as_read(filter="all", current_user=_user())
     assert out == {"updated": 4}
-    find.assert_called_once()
-    query = find.call_args.args[0]
-    assert query["user_id"] == "u1"
-    assert query["is_read"] is False
-    update.assert_awaited_once()
-    changes = update.call_args.args[0]["$set"]
-    assert changes["is_read"] is True
+    find.assert_called_once_with({"user_id": "u1", "is_read": False})
+    update.assert_awaited_once_with({"$set": {"is_read": True}})
 
 
 @pytest.mark.asyncio
@@ -587,8 +581,8 @@ async def test_read_all_filter_scopes_bucket():
         out = await api.mark_all_as_read(filter="social", current_user=_user())
     assert out == {"updated": 2}
     query = find.call_args.args[0]
-    assert query["user_id"] == "u1"
     assert query["is_read"] is False
+    assert any("deleted_at" in part for part in query["$and"])
 
 
 @pytest.mark.asyncio
@@ -600,26 +594,33 @@ async def test_read_all_rejects_unknown_filter():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "action,svc_fn,field,value",
+    "action,field,value",
     [
-        ("archive", "move_to_trash", "status", "trash"),
-        ("unarchive", "restore_from_trash", "status", "active"),
-        ("delete", "hard_delete", "status", "deleted"),
-        ("restore", "restore_from_trash", "status", "active"),
+        ("archive", "archived_at", "now"),
+        ("unarchive", "archived_at", None),
+        ("delete", "deleted_at", "now"),
+        ("restore", "deleted_at", None),
     ],
 )
-async def test_bulk_action_updates_owned_ids(action, svc_fn, field, value):
+async def test_bulk_action_updates_owned_ids(action, field, value):
     ids = [str(ObjectId()), str(ObjectId())]
-    with patch.object(
-        api.ns, svc_fn, new=AsyncMock(return_value=object())
-    ) as svc, patch.object(
+    update = AsyncMock(return_value=SimpleNamespace(modified_count=2))
+    find = MagicMock(return_value=SimpleNamespace(update=update))
+    with patch.object(api.Notification, "find", find), patch.object(
         api.manager, "send_personal_message", new=AsyncMock()
     ) as push:
         out = await api.bulk_action(
             api.BulkRequest(ids=ids, action=action), _user()
         )
     assert out == {"updated": 2}
-    assert svc.await_count == 2
+    query = find.call_args.args[0]
+    assert query["user_id"] == "u1"
+    assert len(query["_id"]["$in"]) == 2
+    changes = update.call_args.args[0]["$set"]
+    if value == "now":
+        assert isinstance(changes[field], datetime)
+    else:
+        assert changes[field] is None
     assert push.await_args.args[1]["action"] == "notifications_sync"
 
 
@@ -636,10 +637,8 @@ async def test_bulk_action_marks_owned_ids_read():
         )
     assert out == {"updated": 1}
     query = find.call_args.args[0]
-    assert query["user_id"] == "u1"
-    assert len(query["_id"]["$in"]) == 1
-    changes = update.call_args.args[0]["$set"]
-    assert changes["is_read"] is True
+    assert query["deleted_at"] is None
+    assert update.call_args.args[0]["$set"] == {"is_read": True}
 
 
 @pytest.mark.asyncio
@@ -665,13 +664,13 @@ async def test_bulk_action_ignores_invalid_ids():
 @pytest.mark.asyncio
 async def test_bulk_action_caps_ids():
     ids = [str(ObjectId()) for _ in range(150)]
-    with patch.object(
-        api.ns, "move_to_trash", new=AsyncMock(return_value=object())
-    ) as svc, patch.object(
+    update = AsyncMock(return_value=SimpleNamespace(modified_count=100))
+    find = MagicMock(return_value=SimpleNamespace(update=update))
+    with patch.object(api.Notification, "find", find), patch.object(
         api.manager, "send_personal_message", new=AsyncMock()
     ):
         await api.bulk_action(api.BulkRequest(ids=ids, action="archive"), _user())
-    assert svc.await_count == 100  # MAX_BULK cap
+    assert len(find.call_args.args[0]["_id"]["$in"]) == 100
 
 
 def _reminder_settings(mutes=None, snoozes=None):

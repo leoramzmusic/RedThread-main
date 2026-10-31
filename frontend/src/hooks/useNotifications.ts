@@ -1,7 +1,6 @@
 ﻿import { useCallback, useEffect, useRef, useState } from "react";
 import apiClient from "../services/api";
 import type { PauseScheduleRule } from "../components/notifications/pauseTime";
-import { usePauseExpiry } from "./usePauseExpiry";
 
 export const PAUSE_SUMMARY_EVENT = "notifications-pause-summary";
 export const PAUSE_STATE_EVENT = "notifications-pause-state";
@@ -42,12 +41,6 @@ export interface AppNotification {
   type: string;
   content?: string | null;
   is_read: boolean;
-  resolved: boolean;
-  required_action: boolean;
-  critical: boolean;
-  status: string;
-  deleted_at?: string | null;
-  permanently_deleted_at?: string | null;
   created_at: string;
   updated_at?: string | null;
   actor_count?: number;
@@ -73,11 +66,7 @@ const EMPTY_COUNTS: NotificationCounts = {
   survey_pending: 0,
 };
 
-export function useNotifications(
-  filter: string,
-  opts?: { unread?: boolean },
-  enabled: boolean = true,
-) {
+export function useNotifications(filter: string, opts?: { unread?: boolean }) {
   const unread = Boolean(opts?.unread);
   const [items, setItems] = useState<AppNotification[]>([]);
   const [counts, setCounts] = useState<NotificationCounts>(EMPTY_COUNTS);
@@ -87,18 +76,11 @@ export function useNotifications(
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
   const [dndActive, setDndActive] = useState(false);
   const [dndSource, setDndSource] = useState<string | null>(null);
-  const [routineState, setRoutineState] = useState<string | null>(null);
-  const [selectedRoutineId, setSelectedRoutineId] = useState<string | null>(
-    null,
-  );
-  const [effectiveActiveRoutineId, setEffectiveActiveRoutineId] = useState<
-    string | null
-  >(null);
+  const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
   const [activeRoutineName, setActiveRoutineName] = useState<string | null>(
     null,
   );
   const [windowEnd, setWindowEnd] = useState<string | null>(null);
-  const [nextStart, setNextStart] = useState<string | null>(null);
   const [pauseSchedule, setPauseSchedule] = useState<PauseScheduleRule[]>([]);
   const [pauseAllow, setPauseAllow] = useState<string[]>([]);
   const [pauseWindow, setPauseWindow] = useState<{
@@ -116,12 +98,9 @@ export function useNotifications(
     setPausedUntil(data.paused_until ?? null);
     setDndActive(Boolean(data.dnd_active));
     setDndSource(data.dnd_source ?? null);
-    setRoutineState(data.routine_state ?? null);
-    setSelectedRoutineId(data.selected_routine_id ?? null);
-    setEffectiveActiveRoutineId(data.effective_active_routine_id ?? null);
+    setActiveRoutineId(data.active_routine_id ?? null);
     setActiveRoutineName(data.active_routine_name ?? null);
     setWindowEnd(data.window_end ?? null);
-    setNextStart(data.next_start ?? null);
     setPauseSchedule(data.pause_schedule ?? []);
     setPauseAllow(data.pause_allow ?? []);
     setPauseWindow(data.pause_window ?? null);
@@ -168,11 +147,10 @@ export function useNotifications(
   }, []);
 
   useEffect(() => {
-    if (!enabled) return;
     filterRef.current = filter;
     unreadRef.current = unread;
     void fetchAll();
-  }, [filter, unread, fetchAll, enabled]);
+  }, [filter, unread, fetchAll]);
 
   useEffect(() => {
     const onSync = () => {
@@ -535,62 +513,9 @@ export function useNotifications(
     pausedUntil,
     dndActive,
     dndSource,
-    routineState,
-    selectedRoutineId,
-    effectiveActiveRoutineId,
+    activeRoutineId,
     activeRoutineName,
     windowEnd,
-    nextStart,
-    pauseSchedule,
-    pauseAllow,
-    pauseWindow,
-    pauseShortcutId,
-    refresh: fetchAll,
-    markRead,
-    markBucket,
-    markAllRead,
-    archive,
-    unarchive,
-    restore,
-    remove,
-    bulkArchive,
-    bulkUnarchive,
-    bulkDelete,
-    bulkRestore,
-    bulkMarkRead,
-    snooze,
-    unsnooze,
-    setPinned,
-    dismissReminder,
-    restoreReminder,
-    pause,
-    resume,
-    applyPauseShortcut,
-    savePauseSchedule,
-    savePauseWindow,
-    removePauseSchedule,
-    selectPauseSchedule,
-  };
-
-  // Re-fetch when a manual pause expires so the navbar/badge stays in sync
-  usePauseExpiry(pausedUntil, fetchAll);
-
-  return {
-    items,
-    counts,
-    unreadCount: counts?.count ?? 0,
-    loading,
-    error,
-    nextCursor,
-    pausedUntil,
-    dndActive,
-    dndSource,
-    routineState,
-    selectedRoutineId,
-    effectiveActiveRoutineId,
-    activeRoutineName,
-    windowEnd,
-    nextStart,
     pauseSchedule,
     pauseAllow,
     pauseWindow,

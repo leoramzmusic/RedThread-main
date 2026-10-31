@@ -69,8 +69,8 @@ import { usePauseExpiry } from "../../hooks/usePauseExpiry";
 import {
   PAUSE_SUMMARY_EVENT,
   type PauseSummary,
-  useNotifications,
 } from "../../hooks/useNotifications";
+import { useUnreadNotifications } from "../../hooks/useUnreadNotifications";
 import { orbisLayer } from "../../styles/glass";
 
 const NotificationPanel = lazy(
@@ -199,12 +199,8 @@ export default function Layout({ children }: LayoutProps) {
 
   // Notification state
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const {
-    unreadCount,
-    dndActive,
-    pausedUntil,
-    refresh: scheduleFetch,
-  } = useNotifications("all", { unread: true }, isAuthenticated);
+  const { unreadCount, dndActive, pausedUntil, scheduleFetch } =
+    useUnreadNotifications(isAuthenticated);
   const ws = useRef<WebSocket | null>(null);
 
   // Language menu state
