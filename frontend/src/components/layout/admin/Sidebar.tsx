@@ -923,6 +923,35 @@ export default function AdminSidebar({
     }
   };
 
+  const toggleSubmenu = useCallback((itemId: string) => {
+    setExpandedMenus((prev) => {
+      const next = new Set(prev);
+      const isOpen = next.has(itemId);
+
+      // Si se hace clic en una audiencia del Gestor, cerrar las otras audiencias
+      // pero mantener el padre "Gestor de Notificaciones" abierto
+      const isNotificationAudience =
+        itemId === "usuarios-notifications" ||
+        itemId === "empleados-notifications" ||
+        itemId === "marcas-notifications";
+
+      if (isNotificationAudience) {
+        [
+          "usuarios-notifications",
+          "empleados-notifications",
+          "marcas-notifications",
+        ].forEach((audienceId) => next.delete(audienceId));
+      }
+
+      if (isOpen) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  }, []);
+
   const handleMenuClick = useCallback(
     (item: MenuItem) => {
       if (item.children) {
@@ -931,33 +960,6 @@ export default function AdminSidebar({
           const firstChild = item.children.find((c) => c.path);
           if (firstChild && firstChild.path) {
             router.push(firstChild.path);
-          } else {
-            setExpandedMenus((prev) => {
-              const next = new Set(prev);
-              const isOpen = next.has(item.id);
-
-              // Si se hace clic en una audiencia del Gestor, cerrar las otras audiencias
-              // pero mantener el padre "Gestor de Notificaciones" abierto
-              const isNotificationAudience =
-                item.id === "usuarios-notifications" ||
-                item.id === "empleados-notifications" ||
-                item.id === "marcas-notifications";
-
-              if (isNotificationAudience) {
-                [
-                  "usuarios-notifications",
-                  "empleados-notifications",
-                  "marcas-notifications",
-                ].forEach((audienceId) => next.delete(audienceId));
-              }
-
-              if (isOpen) {
-                next.delete(item.id);
-              } else {
-                next.add(item.id);
-              }
-              return next;
-            });
           }
         }
       } else if (item.path) {
@@ -1258,19 +1260,35 @@ export default function AdminSidebar({
                       />
                       {item.children &&
                         (expandedMenus.has(item.id) ? (
-                          <ExpandLess
-                            sx={{
-                              fontSize: "1.2rem",
-                              color: collapseIconColor,
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSubmenu(item.id);
                             }}
-                          />
+                            sx={{
+                              p: 0.5,
+                              color: collapseIconColor,
+                              fontSize: "1.2rem",
+                            }}
+                          >
+                            <ExpandLess />
+                          </IconButton>
                         ) : (
-                          <ExpandMore
-                            sx={{
-                              fontSize: "1.2rem",
-                              color: collapseIconColor,
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSubmenu(item.id);
                             }}
-                          />
+                            sx={{
+                              p: 0.5,
+                              color: collapseIconColor,
+                              fontSize: "1.2rem",
+                            }}
+                          >
+                            <ExpandMore />
+                          </IconButton>
                         ))}
                     </>
                   )}
