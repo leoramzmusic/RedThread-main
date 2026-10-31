@@ -847,3 +847,15 @@ async def mark_as_read(
 from .users import router as users_router  # noqa: E402
 
 router.include_router(users_router, prefix="/users", tags=["Users Notifications"])
+
+# Sub-router: Módulo Empleados (Gestor de Notificaciones)
+# Endpoints bajo /notifications/employees/ (auth: require_employee_permission(SEND_NOTIFICATIONS), recipient_type="employee")
+from .employees import router as employees_router  # noqa: E402
+
+router.include_router(employees_router, prefix="/employees", tags=["Employees Notifications"])
+
+# Sub-router: Módulo Marcas (Gestor de Notificaciones)
+# Endpoints bajo /notifications/brands/ (auth: require_employee_permission(SEND_NOTIFICATIONS), recipient_type="brand")
+from .brands import router as brands_router  # noqa: E402
+
+router.include_router(brands_router, prefix="/brands", tags=["Brands Notifications"])
