@@ -13,7 +13,6 @@ import {
   IconButton,
   Typography,
   Divider,
-  Collapse,
   Tooltip,
   useTheme,
 } from "@mui/material";
@@ -1213,78 +1212,76 @@ export default function AdminSidebar({
                 </ListItemButton>
               </ListItem>
 
-              {/* Submenu */}
-              {item.children && !collapsed && (
-                <Collapse in={expandedMenus.has(item.id)} timeout="auto">
-                  <List component="div" disablePadding>
-                    {item.children.map((child, childIndex) => (
-                      <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
-                        <ListItemButton
-                          selected={isActive(child.path)}
-                          onClick={() => child.path && router.push(child.path)}
-                          sx={{
-                            pl: 4,
-                            borderRadius: "8px",
-                            position: "relative",
-                            transition: "all 0.2s ease",
-                            animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
-                            "&:hover": {
-                              bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
-                              "& .MuiListItemText-primary": {
-                                color: isDark ? textActive : primary,
-                              },
-                              "& .MuiListItemIcon-root": { color: primary },
+              {/* Submenu: rendered when parent is open and item is expanded (no nested Collapse to avoid MUI nested-Transition issues) */}
+              {item.children && !collapsed && expandedMenus.has(item.id) && (
+                <List component="div" disablePadding>
+                  {item.children.map((child, childIndex) => (
+                    <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
+                      <ListItemButton
+                        selected={isActive(child.path)}
+                        onClick={() => child.path && router.push(child.path)}
+                        sx={{
+                          pl: 4,
+                          borderRadius: "8px",
+                          position: "relative",
+                          transition: "all 0.2s ease",
+                          animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
+                          "&:hover": {
+                            bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
+                            "& .MuiListItemText-primary": {
+                              color: isDark ? textActive : primary,
                             },
-                            "&.Mui-selected": {
-                              bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
-                              "&::before": {
-                                content: '""',
-                                position: "absolute",
-                                left: 0,
-                                top: "15%",
-                                height: "70%",
-                                width: 3,
-                                borderRadius: "0 3px 3px 0",
-                                transformOrigin: "top",
-                                bgcolor: primary,
-                                boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
-                                animation:
-                                  "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
+                            "& .MuiListItemIcon-root": { color: primary },
+                          },
+                          "&.Mui-selected": {
+                            bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
+                            "&::before": {
+                              content: '""',
+                              position: "absolute",
+                              left: 0,
+                              top: "15%",
+                              height: "70%",
+                              width: 3,
+                              borderRadius: "0 3px 3px 0",
+                              transformOrigin: "top",
+                              bgcolor: primary,
+                              boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
+                              animation:
+                                "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
+                            },
+                          },
+                        }}
+                      >
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 34,
+                            color: isActive(child.path)
+                              ? primary
+                              : iconInactive,
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          {child.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={child.label}
+                          slotProps={{
+                            primary: {
+                              sx: {
+                                fontSize: "0.875rem",
+                                fontWeight: isActive(child.path) ? 600 : 400,
+                                color: isActive(child.path)
+                                  ? textActive
+                                  : textInactive,
+                                transition: "color 0.2s ease",
                               },
                             },
                           }}
-                        >
-                          <ListItemIcon
-                            sx={{
-                              minWidth: 34,
-                              color: isActive(child.path)
-                                ? primary
-                                : iconInactive,
-                              transition: "all 0.2s ease",
-                            }}
-                          >
-                            {child.icon}
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={child.label}
-                            slotProps={{
-                              primary: {
-                                sx: {
-                                  fontSize: "0.875rem",
-                                  fontWeight: isActive(child.path) ? 600 : 400,
-                                  color: isActive(child.path)
-                                    ? textActive
-                                    : textInactive,
-                                  transition: "color 0.2s ease",
-                                },
-                              },
-                            }}
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
               )}
             </Box>
           );
