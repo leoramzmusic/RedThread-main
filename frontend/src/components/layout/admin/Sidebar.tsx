@@ -882,31 +882,29 @@ export default function AdminSidebar({
     (item: MenuItem) => {
       if (item.children) {
         if (!collapsed) {
-          // Acordeón dentro de "Gestor de Notificaciones": solo un submenú abierto a la vez
-          const isNotificationAudience =
-            item.id === "usuarios-notifications" ||
-            item.id === "empleados-notifications" ||
-            item.id === "marcas-notifications";
-
           setExpandedMenus((prev) => {
             const next = new Set(prev);
             const isOpen = next.has(item.id);
 
+            // Si se hace clic en una audiencia del Gestor, cerrar las otras audiencias
+            // pero mantener el padre "Gestor de Notificaciones" abierto
+            const isNotificationAudience =
+              item.id === "usuarios-notifications" ||
+              item.id === "empleados-notifications" ||
+              item.id === "marcas-notifications";
+
             if (isNotificationAudience) {
-              // Cerrar todas las audiencias del gestor
               [
                 "usuarios-notifications",
                 "empleados-notifications",
                 "marcas-notifications",
               ].forEach((audienceId) => next.delete(audienceId));
-              // Abrir la clickeada si estaba cerrada
-              if (!isOpen) next.add(item.id);
+            }
+
+            if (isOpen) {
+              next.delete(item.id);
             } else {
-              if (isOpen) {
-                next.delete(item.id);
-              } else {
-                next.add(item.id);
-              }
+              next.add(item.id);
             }
             return next;
           });
@@ -1217,11 +1215,7 @@ export default function AdminSidebar({
 
               {/* Submenu */}
               {item.children && !collapsed && (
-                <Collapse
-                  in={expandedMenus.has(item.id)}
-                  timeout="auto"
-                  unmountOnExit
-                >
+                <Collapse in={expandedMenus.has(item.id)} timeout="auto">
                   <List component="div" disablePadding>
                     {item.children.map((child, childIndex) => (
                       <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
