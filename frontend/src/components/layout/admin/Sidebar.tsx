@@ -190,6 +190,12 @@ export default function AdminSidebar({
       icon: <NotificationsIcon className="rt-bell" />,
       children: [
         {
+          id: "gestor-dash",
+          label: "Dashboard General",
+          icon: <DashboardIcon />,
+          path: "/portal-redthread/notifications/dashboard",
+        },
+        {
           id: "usuarios-notifications",
           label: "Usuarios",
           icon: <NotificationsIcon className="rt-bell" />,
@@ -1153,7 +1159,7 @@ export default function AdminSidebar({
                         left: 0,
                         top: "15%",
                         height: "70%",
-                        width: "4px",
+                        width: 4,
                         borderRadius: "0 4px 4px 0",
                         transformOrigin: "top",
                         bgcolor: primary,
@@ -1162,6 +1168,19 @@ export default function AdminSidebar({
                           "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
                       },
                     },
+                    // Nivel padre (Gestor de Notificaciones): color más destacado y borde izquierdo sutil
+                    ...(item.id === "gestor-notificaciones"
+                      ? {
+                          color: textActive,
+                          fontWeight: 700,
+                          borderLeft: "4px solid",
+                          borderColor: primary,
+                          "&:hover": {
+                            bgcolor: alpha(primary, isDark ? 0.12 : 0.08),
+                            color: textActive,
+                          },
+                        }
+                      : {}),
                   }}
                 >
                   <ListItemIcon
@@ -1215,72 +1234,100 @@ export default function AdminSidebar({
               {/* Submenu: rendered when parent is open and item is expanded (no nested Collapse to avoid MUI nested-Transition issues) */}
               {item.children && !collapsed && expandedMenus.has(item.id) && (
                 <List component="div" disablePadding>
-                  {item.children.map((child, childIndex) => (
-                    <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
-                      <ListItemButton
-                        selected={isActive(child.path)}
-                        onClick={() => child.path && router.push(child.path)}
-                        sx={{
-                          pl: 4,
-                          borderRadius: "8px",
-                          position: "relative",
-                          transition: "all 0.2s ease",
-                          animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
-                          "&:hover": {
-                            bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
-                            "& .MuiListItemText-primary": {
-                              color: isDark ? textActive : primary,
-                            },
-                            "& .MuiListItemIcon-root": { color: primary },
-                          },
-                          "&.Mui-selected": {
-                            bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
-                            "&::before": {
-                              content: '""',
-                              position: "absolute",
-                              left: 0,
-                              top: "15%",
-                              height: "70%",
-                              width: 3,
-                              borderRadius: "0 3px 3px 0",
-                              transformOrigin: "top",
-                              bgcolor: primary,
-                              boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
-                              animation:
-                                "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
-                            },
-                          },
-                        }}
-                      >
-                        <ListItemIcon
+                  {item.children.map((child, childIndex) => {
+                    // Diferenciar niveles para indentación visual
+                    const isLevel2 = item.id === "gestor-notificaciones";
+                    const isLevel3 = [
+                      "usuarios-notifications",
+                      "empleados-notifications",
+                      "marcas-notifications",
+                    ].includes(item.id);
+                    const childPl = isLevel3 ? 8 : isLevel2 ? 6 : 4;
+                    return (
+                      <ListItem key={child.id} disablePadding sx={{ mb: 0.5 }}>
+                        <ListItemButton
+                          selected={isActive(child.path)}
+                          onClick={() => child.path && router.push(child.path)}
                           sx={{
-                            minWidth: 34,
-                            color: isActive(child.path)
-                              ? primary
-                              : iconInactive,
+                            pl: childPl,
+                            borderRadius: "8px",
+                            position: "relative",
                             transition: "all 0.2s ease",
-                          }}
-                        >
-                          {child.icon}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={child.label}
-                          slotProps={{
-                            primary: {
-                              sx: {
-                                fontSize: "0.875rem",
-                                fontWeight: isActive(child.path) ? 600 : 400,
-                                color: isActive(child.path)
-                                  ? textActive
-                                  : textInactive,
-                                transition: "color 0.2s ease",
+                            animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
+                            // Nivel 2 (hijos directos del Gestor): color más suave
+                            ...(isLevel2
+                              ? {
+                                  color: textInactive,
+                                  "&:hover": {
+                                    bgcolor: alpha(
+                                      primary,
+                                      isDark ? 0.06 : 0.04,
+                                    ),
+                                    color: textActive,
+                                    "& .MuiListItemIcon-root": {
+                                      color: primary,
+                                    },
+                                  },
+                                }
+                              : {}),
+                            "&:hover": {
+                              bgcolor: alpha(primary, isDark ? 0.08 : 0.05),
+                              "& .MuiListItemText-primary": {
+                                color: isDark ? textActive : primary,
+                              },
+                              "& .MuiListItemIcon-root": { color: primary },
+                            },
+                            "&.Mui-selected": {
+                              bgcolor: alpha(primary, isDark ? 0.12 : 0.07),
+                              "&::before": {
+                                content: '""',
+                                position: "absolute",
+                                left: 0,
+                                top: "15%",
+                                height: "70%",
+                                width: 3,
+                                borderRadius: "0 3px 3px 0",
+                                transformOrigin: "top",
+                                bgcolor: primary,
+                                boxShadow: `0 0 8px ${alpha(primary, 0.7)}`,
+                                animation:
+                                  "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
                               },
                             },
                           }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 34,
+                              color: isActive(child.path)
+                                ? primary
+                                : isLevel2
+                                  ? iconInactive
+                                  : iconInactive,
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            {child.icon}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={child.label}
+                            slotProps={{
+                              primary: {
+                                sx: {
+                                  fontSize: "0.875rem",
+                                  fontWeight: isActive(child.path) ? 600 : 400,
+                                  color: isActive(child.path)
+                                    ? textActive
+                                    : textInactive,
+                                  transition: "color 0.2s ease",
+                                },
+                              },
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
                 </List>
               )}
             </Box>
