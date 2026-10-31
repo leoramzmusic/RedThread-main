@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/router";
-import { APP_VERSION } from "../../config/version";
-import MorphToggleIcon from "../motion/MorphToggleIcon";
+import { APP_VERSION } from "../../../config/version";
+import MorphToggleIcon from "../../motion/MorphToggleIcon";
 import {
   Box,
   Drawer,

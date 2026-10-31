@@ -25,18 +25,18 @@ import {
   Add as AddIcon,
 } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/store";
-import { logoutAdmin } from "../../store/slices/adminAuthSlice";
-import adminApiClient from "../../services/adminApi";
-import { useAppTheme } from "../../context/ThemeContext";
+import { RootState } from "../../../store/store";
+import { logoutAdmin } from "../../../store/slices/adminAuthSlice";
+import adminApiClient from "../../../services/adminApi";
+import { useAppTheme } from "../../../context/ThemeContext";
 import { useTheme, alpha } from "@mui/material/styles";
-import NavLink from "./NavLink";
-import ThemeSwitch from "../motion/ThemeSwitch";
-import LanguageSelector from "../common/LanguageSelector";
-import { useLanguageFallback } from "../../hooks/useLanguageFallback";
+import NavLink from "../NavLink";
+import ThemeSwitch from "../../motion/ThemeSwitch";
+import LanguageSelector from "../../common/LanguageSelector";
+import { useLanguageFallback } from "../../../hooks/useLanguageFallback";
 import { useSnackbar } from "notistack";
-import NewNotificationWizard from "../notifications/NewNotificationWizard";
-import NotificationPanel from "../notifications/NotificationPanel";
+import NewNotificationWizard from "../../notifications/NewNotificationWizard";
+import NotificationPanel from "../../notifications/NotificationPanel";
 
 interface AdminNavbarProps {
   sidebarCollapsed?: boolean;

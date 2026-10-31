@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Container, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next/pages";
-import { APP_VERSION } from "../../config/version";
+import { APP_VERSION } from "../../../config/version";
 
 export default function AdminFooter() {
   const { t } = useTranslation("common");

@@ -9,6 +9,10 @@ import AdminFooter from "./admin/Footer";
 
 import { useAdminSessionHydration } from "../../hooks/useAdminSessionHydration";
 
+interface AdminLayoutProps {
+  children: ReactNode;
+}
+
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
