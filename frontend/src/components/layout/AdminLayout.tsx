@@ -3,13 +3,13 @@ import { Box, CircularProgress } from "@mui/material";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import AdminSidebar from "./AdminSidebar";
+import AdminSidebar from "./admin/Sidebar";
+import AdminNavbar from "./admin/Navbar";
+import AdminFooter from "./admin/Footer";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
-
-import AdminNavbar from "./AdminNavbar";
 
 import { useAdminSessionHydration } from "../../hooks/useAdminSessionHydration";
 
