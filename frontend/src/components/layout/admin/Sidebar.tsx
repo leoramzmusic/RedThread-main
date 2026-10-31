@@ -55,6 +55,9 @@ import {
   Psychology as PsychologyIcon,
   Functions as FunctionsIcon,
   Science as ScienceIcon,
+  BugReport as BugIcon,
+  ScheduleOutlined as ScheduleOutlinedIcon,
+  SendOutlined as SendOutlinedIcon,
 } from "@mui/icons-material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutlined";
 
@@ -214,16 +217,34 @@ export default function AdminSidebar({
               path: "/portal-redthread/notifications/dashboard?audience=users",
             },
             {
+              id: "usuarios-test-center",
+              label: "Centro de Pruebas",
+              icon: <BugIcon />,
+              path: "/portal-redthread/notifications/test-center?audience=users",
+            },
+            {
+              id: "usuarios-programaciones",
+              label: "Programaciones",
+              icon: <ScheduleOutlinedIcon />,
+              path: "/portal-redthread/notifications/schedules?audience=users",
+            },
+            {
+              id: "usuarios-entregas",
+              label: "Entregas",
+              icon: <SendOutlinedIcon />,
+              path: "/portal-redthread/notifications/activity?audience=users",
+            },
+            {
               id: "usuarios-crear",
               label: "Crear Notificación",
               icon: <CampaignIcon />,
               path: "/portal-redthread/notifications/create?audience=users",
             },
             {
-              id: "usuarios-campanas",
-              label: "Campañas",
-              icon: <CampaignIcon />,
-              path: "/portal-redthread/notifications/campaigns?audience=users",
+              id: "usuarios-plantillas",
+              label: "Plantillas",
+              icon: <DescriptionIcon />,
+              path: "/portal-redthread/notifications/templates?audience=users",
             },
             {
               id: "usuarios-audiencias",
@@ -232,10 +253,22 @@ export default function AdminSidebar({
               path: "/portal-redthread/notifications/audiences?audience=users",
             },
             {
-              id: "usuarios-plantillas",
-              label: "Plantillas",
-              icon: <DescriptionIcon />,
-              path: "/portal-redthread/notifications/templates?audience=users",
+              id: "usuarios-campanas",
+              label: "Campañas",
+              icon: <CampaignIcon />,
+              path: "/portal-redthread/notifications/campaigns?audience=users",
+            },
+            {
+              id: "usuarios-programaciones",
+              label: "Programaciones",
+              icon: <ScheduleOutlinedIcon />,
+              path: "/portal-redthread/notifications/schedules?audience=users",
+            },
+            {
+              id: "usuarios-entregas",
+              label: "Entregas",
+              icon: <SendOutlinedIcon />,
+              path: "/portal-redthread/notifications/activity?audience=users",
             },
             {
               id: "usuarios-historial",
