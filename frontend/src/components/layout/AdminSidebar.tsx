@@ -186,100 +186,107 @@ export default function AdminSidebar({
       path: "/portal-redthread",
     },
     {
-      id: "usuarios-notifications",
-      label: "Notificaciones Usuarios",
+      id: "gestor-notificaciones",
+      label: "Gestor de Notificaciones",
       icon: <NotificationsIcon className="rt-bell" />,
       children: [
         {
-          id: "usuarios-dash",
-          label: "Dashboard",
-          icon: <DashboardIcon />,
-          path: "/portal-redthread/notifications/usuarios",
+          id: "usuarios-notifications",
+          label: "Usuarios",
+          icon: <NotificationsIcon className="rt-bell" />,
+          children: [
+            {
+              id: "usuarios-dash",
+              label: "Dashboard",
+              icon: <DashboardIcon />,
+              path: "/portal-redthread/notifications/usuarios",
+            },
+            {
+              id: "usuarios-crear",
+              label: "Crear Notificación",
+              icon: <CampaignIcon />,
+              path: "/portal-redthread/notifications/usuarios/crear",
+            },
+            {
+              id: "usuarios-campanas",
+              label: "Campañas",
+              icon: <CampaignIcon />,
+              path: "/portal-redthread/notifications/usuarios/campanas",
+            },
+            {
+              id: "usuarios-audiencias",
+              label: "Audiencias",
+              icon: <PeopleIcon />,
+              path: "/portal-redthread/notifications/usuarios/audiencias",
+            },
+            {
+              id: "usuarios-plantillas",
+              label: "Plantillas",
+              icon: <DescriptionIcon />,
+              path: "/portal-redthread/notifications/usuarios/plantillas",
+            },
+            {
+              id: "usuarios-historial",
+              label: "Historial",
+              icon: <HistoryIcon />,
+              path: "/portal-redthread/notifications/usuarios/historial",
+            },
+            {
+              id: "usuarios-metricas",
+              label: "Métricas",
+              icon: <BarChartIcon />,
+              path: "/portal-redthread/notifications/usuarios/metricas",
+            },
+          ],
         },
         {
-          id: "usuarios-crear",
-          label: "Crear Notificación",
-          icon: <CampaignIcon />,
-          path: "/portal-redthread/notifications/usuarios/crear",
-        },
-        {
-          id: "usuarios-campanas",
-          label: "Campañas",
-          icon: <CampaignIcon />,
-          path: "/portal-redthread/notifications/usuarios/campanas",
-        },
-        {
-          id: "usuarios-audiencias",
-          label: "Audiencias",
-          icon: <PeopleIcon />,
-          path: "/portal-redthread/notifications/usuarios/audiencias",
-        },
-        {
-          id: "usuarios-plantillas",
-          label: "Plantillas",
-          icon: <DescriptionIcon />,
-          path: "/portal-redthread/notifications/usuarios/plantillas",
-        },
-        {
-          id: "usuarios-historial",
-          label: "Historial",
-          icon: <HistoryIcon />,
-          path: "/portal-redthread/notifications/usuarios/historial",
-        },
-        {
-          id: "usuarios-metricas",
-          label: "Métricas",
-          icon: <BarChartIcon />,
-          path: "/portal-redthread/notifications/usuarios/metricas",
-        },
-      ],
-    },
-    {
-      id: "empleados-notifications",
-      label: "Notificaciones Empleados",
-      icon: <SecurityIcon className="rt-shield" />,
-      children: [
-        {
-          id: "empleados-dash",
-          label: "Dashboard",
-          icon: <DashboardIcon />,
-          path: "/portal-redthread/notifications/empleados",
-        },
-        {
-          id: "empleados-crear",
-          label: "Crear Notificación",
-          icon: <CampaignIcon />,
-          path: "/portal-redthread/notifications/empleados/crear",
-        },
-        {
-          id: "empleados-alertas",
-          label: "Alertas Operativas",
-          icon: <WarningIcon />,
-          path: "/portal-redthread/notifications/empleados/alertas",
-        },
-        {
-          id: "empleados-reglas",
-          label: "Reglas Automáticas",
-          icon: <PreferencesIcon />,
-          path: "/portal-redthread/notifications/empleados/reglas",
-        },
-        {
-          id: "empleados-plantillas",
-          label: "Plantillas",
-          icon: <DescriptionIcon />,
-          path: "/portal-redthread/notifications/empleados/plantillas",
-        },
-        {
-          id: "empleados-historial",
-          label: "Historial",
-          icon: <HistoryIcon />,
-          path: "/portal-redthread/notifications/empleados/historial",
-        },
-        {
-          id: "empleados-metricas",
-          label: "Métricas",
-          icon: <BarChartIcon />,
-          path: "/portal-redthread/notifications/empleados/metricas",
+          id: "empleados-notifications",
+          label: "Empleados",
+          icon: <SecurityIcon className="rt-shield" />,
+          children: [
+            {
+              id: "empleados-dash",
+              label: "Dashboard",
+              icon: <DashboardIcon />,
+              path: "/portal-redthread/notifications/empleados",
+            },
+            {
+              id: "empleados-crear",
+              label: "Crear Notificación",
+              icon: <CampaignIcon />,
+              path: "/portal-redthread/notifications/empleados/crear",
+            },
+            {
+              id: "empleados-alertas",
+              label: "Alertas Operativas",
+              icon: <WarningIcon />,
+              path: "/portal-redthread/notifications/empleados/alertas",
+            },
+            {
+              id: "empleados-reglas",
+              label: "Reglas Automáticas",
+              icon: <PreferencesIcon />,
+              path: "/portal-redthread/notifications/empleados/reglas",
+            },
+            {
+              id: "empleados-plantillas",
+              label: "Plantillas",
+              icon: <DescriptionIcon />,
+              path: "/portal-redthread/notifications/empleados/plantillas",
+            },
+            {
+              id: "empleados-historial",
+              label: "Historial",
+              icon: <HistoryIcon />,
+              path: "/portal-redthread/notifications/empleados/historial",
+            },
+            {
+              id: "empleados-metricas",
+              label: "Métricas",
+              icon: <BarChartIcon />,
+              path: "/portal-redthread/notifications/empleados/metricas",
+            },
+          ],
         },
       ],
     },
@@ -826,12 +833,31 @@ export default function AdminSidebar({
     (item: MenuItem) => {
       if (item.children) {
         if (!collapsed) {
+          // Acordeón dentro de "Gestor de Notificaciones": solo un submenú abierto a la vez
+          const isNotificationAudience =
+            item.id === "usuarios-notifications" ||
+            item.id === "empleados-notifications" ||
+            item.id === "marcas-notifications";
+
           setExpandedMenus((prev) => {
             const next = new Set(prev);
-            if (next.has(item.id)) {
-              next.delete(item.id);
+            const isOpen = next.has(item.id);
+
+            if (isNotificationAudience) {
+              // Cerrar todas las audiencias del gestor
+              [
+                "usuarios-notifications",
+                "empleados-notifications",
+                "marcas-notifications",
+              ].forEach((audienceId) => next.delete(audienceId));
+              // Abrir la clickeada si estaba cerrada
+              if (!isOpen) next.add(item.id);
             } else {
-              next.add(item.id);
+              if (isOpen) {
+                next.delete(item.id);
+              } else {
+                next.add(item.id);
+              }
             }
             return next;
           });
