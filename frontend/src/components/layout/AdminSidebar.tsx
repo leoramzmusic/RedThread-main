@@ -288,6 +288,55 @@ export default function AdminSidebar({
             },
           ],
         },
+        {
+          id: "marcas-notifications",
+          label: "Marcas",
+          icon: <CampaignIcon />,
+          children: [
+            {
+              id: "marcas-dash",
+              label: "Dashboard",
+              icon: <DashboardIcon />,
+              path: "/portal-redthread/notifications/marcas",
+            },
+            {
+              id: "marcas-crear",
+              label: "Crear Notificación",
+              icon: <CampaignIcon />,
+              path: "/portal-redthread/notifications/marcas/crear",
+            },
+            {
+              id: "marcas-campanas",
+              label: "Campañas",
+              icon: <CampaignIcon />,
+              path: "/portal-redthread/notifications/marcas/campanas",
+            },
+            {
+              id: "marcas-audiencias",
+              label: "Audiencias",
+              icon: <PeopleIcon />,
+              path: "/portal-redthread/notifications/marcas/audiencias",
+            },
+            {
+              id: "marcas-plantillas",
+              label: "Plantillas",
+              icon: <DescriptionIcon />,
+              path: "/portal-redthread/notifications/marcas/plantillas",
+            },
+            {
+              id: "marcas-historial",
+              label: "Historial",
+              icon: <HistoryIcon />,
+              path: "/portal-redthread/notifications/marcas/historial",
+            },
+            {
+              id: "marcas-metricas",
+              label: "Métricas",
+              icon: <BarChartIcon />,
+              path: "/portal-redthread/notifications/marcas/metricas",
+            },
+          ],
+        },
       ],
     },
     {
