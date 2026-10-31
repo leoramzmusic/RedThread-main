@@ -35,6 +35,7 @@ import {
   ExpandMore,
   VerifiedUser as VerifiedUserIcon,
   Block as BlockIcon,
+  DeleteOutlined as DeleteOutlineIcon,
   History as HistoryIcon,
   Warning as WarningIcon,
   Palette as PaletteIcon,
@@ -194,6 +195,12 @@ export default function AdminSidebar({
           label: "Dashboard General",
           icon: <DashboardIcon />,
           path: "/portal-redthread/notifications/dashboard",
+        },
+        {
+          id: "gestor-trash",
+          label: "Papelera Global",
+          icon: <DeleteOutlineIcon />,
+          path: "/portal-redthread/notifications/trash",
         },
         {
           id: "usuarios-notifications",
