@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+﻿import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/router";
 import { APP_VERSION } from "../../../config/version";
 import MorphToggleIcon from "../../motion/MorphToggleIcon";
@@ -236,7 +236,7 @@ export default function AdminSidebar({
             },
             {
               id: "usuarios-crear",
-              label: "Crear Notificación",
+              label: "Crear NotificaciÃ³n",
               icon: <CampaignIcon />,
               path: "/portal-redthread/notifications/create?audience=users",
             },
@@ -254,7 +254,7 @@ export default function AdminSidebar({
             },
             {
               id: "usuarios-campanas",
-              label: "Campañas",
+              label: "CampaÃ±as",
               icon: <CampaignIcon />,
               path: "/portal-redthread/notifications/campaigns?audience=users",
             },
@@ -278,7 +278,7 @@ export default function AdminSidebar({
             },
             {
               id: "usuarios-metricas",
-              label: "Métricas",
+              label: "MÃ©tricas",
               icon: <BarChartIcon />,
               path: "/portal-redthread/notifications/metrics?audience=users",
             },
@@ -297,7 +297,7 @@ export default function AdminSidebar({
             },
             {
               id: "empleados-crear",
-              label: "Crear Notificación",
+              label: "Crear NotificaciÃ³n",
               icon: <CampaignIcon />,
               path: "/portal-redthread/notifications/create?audience=employees",
             },
@@ -309,7 +309,7 @@ export default function AdminSidebar({
             },
             {
               id: "empleados-reglas",
-              label: "Reglas Automáticas",
+              label: "Reglas AutomÃ¡ticas",
               icon: <PreferencesIcon />,
               path: "/portal-redthread/notifications/rules?audience=employees",
             },
@@ -327,7 +327,7 @@ export default function AdminSidebar({
             },
             {
               id: "empleados-metricas",
-              label: "Métricas",
+              label: "MÃ©tricas",
               icon: <BarChartIcon />,
               path: "/portal-redthread/notifications/metrics?audience=employees",
             },
@@ -346,13 +346,13 @@ export default function AdminSidebar({
             },
             {
               id: "marcas-crear",
-              label: "Crear Notificación",
+              label: "Crear NotificaciÃ³n",
               icon: <CampaignIcon />,
               path: "/portal-redthread/notifications/create?audience=brands",
             },
             {
               id: "marcas-campanas",
-              label: "Campañas",
+              label: "CampaÃ±as",
               icon: <CampaignIcon />,
               path: "/portal-redthread/notifications/campaigns?audience=brands",
             },
@@ -376,7 +376,7 @@ export default function AdminSidebar({
             },
             {
               id: "marcas-metricas",
-              label: "Métricas",
+              label: "MÃ©tricas",
               icon: <BarChartIcon />,
               path: "/portal-redthread/notifications/metrics?audience=brands",
             },
@@ -451,7 +451,7 @@ export default function AdminSidebar({
         },
         {
           id: "mi-perfil-auditoria",
-          label: "Auditoría personal",
+          label: "AuditorÃ­a personal",
           icon: <HistoryIcon />,
           path: "/portal-redthread/mi-perfil?tab=auditoria",
         },
@@ -488,7 +488,7 @@ export default function AdminSidebar({
         },
         {
           id: "eventos-estadisticas",
-          label: "Estadísticas",
+          label: "EstadÃ­sticas",
           icon: <BarChartIcon />,
           path: "/portal-redthread/eventos/estadisticas",
         },
@@ -501,7 +501,7 @@ export default function AdminSidebar({
       children: [
         {
           id: "experiencia-menus",
-          label: "Menús del Portal",
+          label: "MenÃºs del Portal",
           icon: <MenuIcon />,
           path: "/portal-redthread/experiencia/menus",
         },
@@ -526,7 +526,7 @@ export default function AdminSidebar({
       children: [
         {
           id: "care-equation",
-          label: "Editor de Fórmula",
+          label: "Editor de FÃ³rmula",
           icon: <FunctionsIcon />,
           path: "/portal-redthread/care/equation",
         },
@@ -544,7 +544,7 @@ export default function AdminSidebar({
         },
         {
           id: "care-audit",
-          label: "Historial & Auditoría",
+          label: "Historial & AuditorÃ­a",
           icon: <HistoryIcon />,
           path: "/portal-redthread/care/audit",
         },
@@ -552,7 +552,7 @@ export default function AdminSidebar({
     },
     {
       id: "metricas",
-      label: "Métricas",
+      label: "MÃ©tricas",
       icon: <BarChartIcon className="rt-sliders" />,
       children: [
         {
@@ -563,7 +563,7 @@ export default function AdminSidebar({
         },
         {
           id: "metricas-pais",
-          label: "Por país",
+          label: "Por paÃ­s",
           icon: <BarChartIcon />,
           path: "/portal-redthread/metricas/pais",
         },
@@ -581,7 +581,7 @@ export default function AdminSidebar({
         },
         {
           id: "metricas-retencion",
-          label: "Retención",
+          label: "RetenciÃ³n",
           icon: <BarChartIcon />,
           path: "/portal-redthread/metricas/retencion",
         },
@@ -630,7 +630,7 @@ export default function AdminSidebar({
         },
         {
           id: "denuncias-config",
-          label: "Configuración",
+          label: "ConfiguraciÃ³n",
           icon: <SettingsIcon />,
           path: "/portal-redthread/denuncias/configuracion",
         },
@@ -686,7 +686,7 @@ export default function AdminSidebar({
         },
         {
           id: "usuarios-verificaciones",
-          label: "Solicitudes de verificación",
+          label: "Solicitudes de verificaciÃ³n",
           icon: <VerifiedUserIcon />,
           path: "/portal-redthread/usuarios/verificaciones",
         },
@@ -712,12 +712,12 @@ export default function AdminSidebar({
     },
     {
       id: "perfiles",
-      label: "Módulos Perfiles",
+      label: "MÃ³dulos Perfiles",
       icon: <UserIcon className="rt-pulse" />,
       children: [
         {
           id: "perfiles-modulos",
-          label: "Módulos",
+          label: "MÃ³dulos",
           icon: <PreferencesIcon />,
           path: "/portal-redthread/perfiles/modulos",
         },
@@ -762,12 +762,12 @@ export default function AdminSidebar({
     },
     {
       id: "campanas",
-      label: "Campañas",
+      label: "CampaÃ±as",
       icon: <CampaignIcon className="rt-ping" />,
       children: [
         {
           id: "campanas-crear",
-          label: "Crear campaña",
+          label: "Crear campaÃ±a",
           icon: <CampaignIcon />,
           path: "/portal-redthread/campanas/crear",
         },
@@ -785,7 +785,7 @@ export default function AdminSidebar({
         },
         {
           id: "campanas-metricas",
-          label: "Métricas",
+          label: "MÃ©tricas",
           icon: <BarChartIcon />,
           path: "/portal-redthread/campanas/metricas",
         },
@@ -855,7 +855,7 @@ export default function AdminSidebar({
     },
     {
       id: "soporte",
-      label: "Soporte Técnico",
+      label: "Soporte TÃ©cnico",
       icon: <SupportIcon className="rt-pulse" />,
       children: [
         {
@@ -880,7 +880,7 @@ export default function AdminSidebar({
     },
     {
       id: "configuracion",
-      label: "Configuración",
+      label: "ConfiguraciÃ³n",
       icon: (
         <SettingsIcon
           className="rt-settings-icon"
@@ -956,12 +956,12 @@ export default function AdminSidebar({
     (item: MenuItem) => {
       if (item.children) {
         if (!collapsed) {
-          // Si el padre tiene submenús con path, navegar al primero Y expandir el submenú
+          // Si el padre tiene submenÃºs con path, navegar al primero Y expandir el submenÃº
           const firstChild = item.children.find((c) => c.path);
           if (firstChild && firstChild.path) {
             router.push(firstChild.path);
           }
-          // También expandir/contraer el submenú del padre
+          // TambiÃ©n expandir/contraer el submenÃº del padre
           setExpandedMenus((prev) => {
             const next = new Set(prev);
             const isOpen = next.has(item.id);
@@ -1242,7 +1242,7 @@ export default function AdminSidebar({
                           "rtThreadDraw 0.35s cubic-bezier(0.22, 1, 0.36, 1) both",
                       },
                     },
-                    // Nivel padre (Gestor de Notificaciones): color más destacado y borde izquierdo sutil
+                    // Nivel padre (Gestor de Notificaciones): color mÃ¡s destacado y borde izquierdo sutil
                     ...(item.id === "gestor-notificaciones"
                       ? {
                           color: textActive,
@@ -1325,7 +1325,7 @@ export default function AdminSidebar({
               {item.children && !collapsed && expandedMenus.has(item.id) && (
                 <List component="div" disablePadding>
                   {item.children.map((child, childIndex) => {
-                    // Diferenciar niveles para indentación visual
+                    // Diferenciar niveles para indentaciÃ³n visual
                     const isLevel2 = item.id === "gestor-notificaciones";
                     const isLevel3 = [
                       "usuarios-notifications",
@@ -1344,7 +1344,7 @@ export default function AdminSidebar({
                             position: "relative",
                             transition: "all 0.2s ease",
                             animation: `rtItemIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both ${Math.min(80 + childIndex * 30, 420)}ms`,
-                            // Nivel 2 (hijos directos del Gestor): color más suave
+                            // Nivel 2 (hijos directos del Gestor): color mÃ¡s suave
                             ...(isLevel2
                               ? {
                                   color: textInactive,
@@ -1449,7 +1449,7 @@ export default function AdminSidebar({
               letterSpacing: "0.5px",
             }}
           >
-            Portal de Administración
+            Portal de AdministraciÃ³n
           </Typography>
           <Typography
             variant="caption"
