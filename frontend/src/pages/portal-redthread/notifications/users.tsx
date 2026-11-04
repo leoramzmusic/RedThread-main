@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -9,7 +8,6 @@ import {
   Card,
   CardContent,
   Button,
-  CircularProgress,
   IconButton,
   Chip,
 } from "@mui/material";
@@ -24,16 +22,6 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import AdminLayout from "../../../components/layout/AdminLayout";
-import adminApiClient from "../../../services/adminApi";
-import { useSnackbar } from "notistack";
-
-interface KPIResponse {
-  enviadas_hoy: number;
-  no_leidas: number;
-  alertas_p0: number;
-  ctr_promedio: number;
-  acciones_pendientes: number;
-}
 
 interface ManagerStat {
   label: string;
@@ -48,7 +36,7 @@ interface SectionCard {
   icon: React.ReactElement;
   stat?: ManagerStat;
   path?: string;
-  color: string;
+  color?: string;
 }
 
 interface Section {
@@ -59,7 +47,6 @@ interface Section {
 
 export default function UsersNotificationDashboard() {
   const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
 
   const sectionColors: Record<string, string> = {
     comunicacion: "#3b82f6",
@@ -69,9 +56,17 @@ export default function UsersNotificationDashboard() {
     monitoreo: "#06b6d4",
   };
 
+  const kpiColors: Record<string, string> = {
+    plantillas: "#3b82f6",
+    audiencias: "#8b5cf6",
+    campanas: "#10b981",
+    programaciones: "#f59e0b",
+    push_fallidas: "#ef4444",
+  };
+
   const sections: Section[] = [
     {
-      area: "COMUNICACIÓN",
+      area: "Comunicación",
       color: sectionColors.comunicacion,
       cards: [
         {
@@ -113,7 +108,7 @@ export default function UsersNotificationDashboard() {
       ],
     },
     {
-      area: "DISEÑO",
+      area: "Diseño",
       color: sectionColors.diseno,
       cards: [
         {
@@ -127,7 +122,7 @@ export default function UsersNotificationDashboard() {
       ],
     },
     {
-      area: "SEGMENTACIÓN",
+      area: "Segmentación",
       color: sectionColors.segmentacion,
       cards: [
         {
@@ -145,7 +140,7 @@ export default function UsersNotificationDashboard() {
       ],
     },
     {
-      area: "AUTOMATIZACIÓN",
+      area: "Automatización",
       color: sectionColors.automatizacion,
       cards: [
         {
@@ -175,7 +170,7 @@ export default function UsersNotificationDashboard() {
       ],
     },
     {
-      area: "MONITOREO",
+      area: "Monitoreo",
       color: sectionColors.monitoreo,
       cards: [
         {
@@ -206,23 +201,6 @@ export default function UsersNotificationDashboard() {
     },
   ];
 
-  if (loading) {
-    return (
-      <AdminLayout>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "80vh",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      </AdminLayout>
-    );
-  }
-
   const flowSteps = [
     "Diseño",
     "Pruebas",
@@ -233,6 +211,14 @@ export default function UsersNotificationDashboard() {
     "Métricas",
   ];
 
+  const kpis = [
+    { label: "Plantillas", value: 0, color: kpiColors.plantillas },
+    { label: "Audiencias", value: 0, color: kpiColors.audiencias },
+    { label: "Campañas", value: 0, color: kpiColors.campanas },
+    { label: "Programaciones", value: 0, color: kpiColors.programaciones },
+    { label: "Push Fallidas", value: 0, color: kpiColors.push_fallidas },
+  ];
+
   return (
     <AdminLayout>
       <Container maxWidth="xl">
@@ -241,7 +227,7 @@ export default function UsersNotificationDashboard() {
           <Paper
             sx={{
               p: 3,
-              borderRadius: 12,
+              borderRadius: "10px !important",
               border: "1px solid",
               borderColor: "divider",
               mb: 4,
@@ -257,7 +243,7 @@ export default function UsersNotificationDashboard() {
                   <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  🔔 Notificaciones Usuarios
+                  Notificaciones Usuarios
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
@@ -277,7 +263,7 @@ export default function UsersNotificationDashboard() {
                 variant="contained"
                 size="large"
                 startIcon={<SendIcon />}
-                sx={{ borderRadius: 8, px: 3, minHeight: 44 }}
+                sx={{ borderRadius: "6px !important", px: 3, minHeight: 44 }}
                 onClick={() =>
                   router.push("/portal-redthread/notifications/users/create")
                 }
@@ -288,7 +274,7 @@ export default function UsersNotificationDashboard() {
                 variant="outlined"
                 size="large"
                 startIcon={<CampaignIcon />}
-                sx={{ borderRadius: 8, px: 3, minHeight: 44 }}
+                sx={{ borderRadius: "6px !important", px: 3, minHeight: 44 }}
                 onClick={() =>
                   router.push("/portal-redthread/notifications/users/campaigns")
                 }
@@ -299,7 +285,7 @@ export default function UsersNotificationDashboard() {
                 variant="outlined"
                 size="large"
                 startIcon={<DescriptionIcon />}
-                sx={{ borderRadius: 8, px: 3, minHeight: 44 }}
+                sx={{ borderRadius: "6px !important", px: 3, minHeight: 44 }}
                 onClick={() =>
                   router.push("/portal-redthread/notifications/users/templates")
                 }
@@ -313,7 +299,7 @@ export default function UsersNotificationDashboard() {
           <Paper
             sx={{
               p: 2,
-              borderRadius: 12,
+              borderRadius: "10px !important",
               border: "1px solid",
               borderColor: "divider",
               mb: 4,
@@ -361,7 +347,7 @@ export default function UsersNotificationDashboard() {
                         width: 14,
                         height: 2,
                         bgcolor: "divider",
-                        borderRadius: 1,
+                        borderRadius: "1px !important",
                         mx: 0.5,
                       }}
                     />
@@ -371,40 +357,53 @@ export default function UsersNotificationDashboard() {
             </Box>
           </Paper>
 
-          {/* KPIs del gestor */}
+          {/* KPIs del gestor con colores */}
           <Grid container spacing={2} sx={{ mb: 4 }}>
-            {[
-              { label: "Plantillas", value: 0 },
-              { label: "Audiencias", value: 0 },
-              { label: "Campañas", value: 0 },
-              { label: "Programaciones", value: 0 },
-              { label: "Push Fallidas", value: 0 },
-            ].map((item, i) => (
+            {kpis.map((item, i) => (
               <Grid key={i} size={{ xs: 12, sm: 6, md: 2.4 }}>
                 <Card
                   sx={{
                     height: "100%",
-                    borderRadius: 10,
+                    borderRadius: "10px !important",
                     border: "1px solid",
                     borderColor: "divider",
                     boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
                   }}
                 >
                   <CardContent sx={{ p: 2.5 }}>
-                    <Typography
-                      variant="body2"
+                    <Box
                       sx={{
-                        opacity: 0.7,
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.5px",
-                        fontSize: "0.75rem",
-                        mb: 0.5,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
                       }}
                     >
-                      {item.label}
-                    </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 0 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "2px !important",
+                          bgcolor: item.color,
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          opacity: 0.7,
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        {item.label}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 700, mb: 0, color: item.color }}
+                    >
                       {item.value}
                     </Typography>
                   </CardContent>
@@ -419,7 +418,7 @@ export default function UsersNotificationDashboard() {
               key={section.area}
               sx={{
                 p: 2,
-                borderRadius: 12,
+                borderRadius: "10px !important",
                 border: `1px solid`,
                 borderColor: "divider",
                 mb: 4,
@@ -431,13 +430,16 @@ export default function UsersNotificationDashboard() {
                   alignItems: "center",
                   gap: 1,
                   mb: 2,
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
+                  pb: 2,
                 }}
               >
                 <Box
                   sx={{
                     width: 8,
                     height: 8,
-                    borderRadius: 2,
+                    borderRadius: "2px !important",
                     bgcolor: section.color,
                   }}
                 />
@@ -459,7 +461,7 @@ export default function UsersNotificationDashboard() {
                     <Card
                       sx={{
                         height: "100%",
-                        borderRadius: 10,
+                        borderRadius: "8px !important",
                         border: "1px solid",
                         borderColor: "divider",
                         boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
@@ -497,7 +499,7 @@ export default function UsersNotificationDashboard() {
                               sx={{
                                 width: 36,
                                 height: 36,
-                                borderRadius: 8,
+                                borderRadius: "8px !important",
                                 bgcolor: `${section.color}12`,
                                 display: "flex",
                                 alignItems: "center",
@@ -517,7 +519,7 @@ export default function UsersNotificationDashboard() {
                                   fontWeight: 700,
                                   ml: 1,
                                   borderColor: "divider",
-                                  borderRadius: 6,
+                                  borderRadius: "6px !important",
                                 }}
                               />
                             )}
@@ -559,7 +561,7 @@ export default function UsersNotificationDashboard() {
                           size="small"
                           variant="outlined"
                           sx={{
-                            borderRadius: 8,
+                            borderRadius: "6px !important",
                             color: section.color,
                             borderColor: section.color,
                             width: "100%",

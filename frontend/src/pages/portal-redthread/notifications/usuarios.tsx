@@ -102,7 +102,7 @@ export default function UsuariosNotificationDashboard() {
               </IconButton>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  🔔 Notificaciones Usuarios - Dashboard
+                  Notificaciones Usuarios - Dashboard
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   Panel ejecutivo de comunicaciones orientadas a usuarios de la

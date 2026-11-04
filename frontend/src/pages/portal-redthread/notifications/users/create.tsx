@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -54,8 +54,8 @@ export default function CreateNotificationPage() {
     setLoading(true);
     try {
       const [tplRes, userRes] = await Promise.all([
-        adminApiClient.get("/portal-redthread/notifications/users/templates"),
-        adminApiClient.get("/portal-redthread/users/listado"),
+        adminApiClient.get("/notifications/users/templates"),
+        adminApiClient.get("/portal-redthread/usuarios/listado"),
       ]);
       setTemplates(tplRes.data || []);
       setUsers(userRes.data || []);
@@ -83,7 +83,7 @@ export default function CreateNotificationPage() {
     e.preventDefault();
     setSending(true);
     try {
-      await adminApiClient.post("/portal-redthread/notifications/users/send", {
+      await adminApiClient.post("/notifications/users/send", {
         user_id: form.user_id,
         template_id: form.template_id || undefined,
         title: form.title,
@@ -105,6 +105,10 @@ export default function CreateNotificationPage() {
       setSending(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   if (loading) {
     return (
@@ -142,7 +146,7 @@ export default function CreateNotificationPage() {
               </IconButton>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  ✉️ Nueva Notificación
+                  Nueva Notificación
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   Envía una notificación individual a un usuario
