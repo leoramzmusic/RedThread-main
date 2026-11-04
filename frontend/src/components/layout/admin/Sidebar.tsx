@@ -956,11 +956,37 @@ export default function AdminSidebar({
     (item: MenuItem) => {
       if (item.children) {
         if (!collapsed) {
-          // Si el padre tiene submenús con path, navegar al primero
+          // Si el padre tiene submenús con path, navegar al primero Y expandir el submenú
           const firstChild = item.children.find((c) => c.path);
           if (firstChild && firstChild.path) {
             router.push(firstChild.path);
           }
+          // También expandir/contraer el submenú del padre
+          setExpandedMenus((prev) => {
+            const next = new Set(prev);
+            const isOpen = next.has(item.id);
+
+            // Si se hace clic en una audiencia del Gestor, cerrar las otras audiencias
+            const isNotificationAudience =
+              item.id === "usuarios-notifications" ||
+              item.id === "empleados-notifications" ||
+              item.id === "marcas-notifications";
+
+            if (isNotificationAudience) {
+              [
+                "usuarios-notifications",
+                "empleados-notifications",
+                "marcas-notifications",
+              ].forEach((audienceId) => next.delete(audienceId));
+            }
+
+            if (isOpen) {
+              next.delete(item.id);
+            } else {
+              next.add(item.id);
+            }
+            return next;
+          });
         }
       } else if (item.path) {
         router.push(item.path);
