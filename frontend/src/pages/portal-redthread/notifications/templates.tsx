@@ -309,7 +309,7 @@ export default function TemplatesPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(templates || []).map((tpl) => {
+                  {(Array.isArray(templates) ? templates : []).map((tpl) => {
                     const style = getStyle(tpl.category);
                     return (
                       <TableRow
