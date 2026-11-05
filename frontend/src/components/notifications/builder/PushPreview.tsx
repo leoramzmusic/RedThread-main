@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Chip, Paper, Typography, useTheme } from "@mui/material";
-import { ArrowRight } from "@mui/icons-material";
+import { ArrowRight, MoreVert } from "@mui/icons-material";
 
 const DEVICE_SPECS: Record<
   string,
@@ -17,28 +17,28 @@ const DEVICE_SPECS: Record<
     accent: "#3DDC84",
     width: 340,
     minHeight: 140,
-    radius: 8,
+    radius: 24,
   },
   ios: {
     label: "iPhone",
     accent: "#007AFF",
     width: 330,
     minHeight: 150,
-    radius: 10,
+    radius: 28,
   },
   tablet: {
     label: "Tablet",
     accent: "#7C3AED",
     width: 420,
     minHeight: 150,
-    radius: 8,
+    radius: 24,
   },
   desktop: {
     label: "Desktop",
     accent: "#2563eb",
     width: 380,
-    minHeight: 140,
-    radius: 4,
+    minHeight: 120,
+    radius: 10,
   },
 };
 
@@ -86,12 +86,171 @@ function PushFrame({
   const isDark = theme === "dark";
   const desktop = device === "desktop";
 
-  const cardBg = isDark ? "#0b0b0b" : "#ffffff";
+  const cardBg = isDark ? (desktop ? "#202124" : "#0b0b0b") : "#ffffff";
   const text = isDark ? "#f9fafb" : "#111827";
   const sub = isDark ? "#9ca3af" : "#6b7280";
   const border = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.10)";
-  const osBg = isDark ? "#1f2937" : "#f3f4f6";
 
+  const accentColor = ident.color;
+
+  if (desktop) {
+    return (
+      <Paper
+        className={animate ? animationClass : undefined}
+        elevation={0}
+        sx={{
+          bgcolor: cardBg,
+          color: text,
+          border: `1px solid ${border}`,
+          borderRadius: 0,
+          width: spec.width,
+          minHeight: spec.minHeight,
+          flexShrink: 0,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: isDark
+            ? "0 12px 32px rgba(0,0,0,0.35)"
+            : "0 6px 20px rgba(0,0,0,0.08)",
+        }}
+      >
+        {/* Windows header: RETH • ⋯ × */}
+        <Box
+          sx={{
+            px: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: `1px solid ${border}`,
+            flexShrink: 0,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box
+              sx={{
+                width: 16,
+                height: 16,
+                borderRadius: 0,
+                bgcolor: accentColor,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span style={{ fontSize: 10 }}>{ident.emoji}</span>
+            </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                color: text,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              RETH
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <MoreVert
+              fontSize="small"
+              sx={{ color: sub, cursor: "pointer", mr: 0.5 }}
+            />
+            <Box
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: 0,
+                cursor: "pointer",
+                color: sub,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 8,
+              }}
+            >
+              ×
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Contenido de la notificación */}
+        <Box
+          sx={{
+            p: 1.5,
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            borderBottom: `1px solid ${border}`,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: 0,
+                bgcolor: ident.bg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontSize: 14 }}>{ident.emoji}</span>
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: "0.875rem",
+                  lineHeight: 1.25,
+                  color: text,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {title}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: "0.8125rem",
+                  lineHeight: 1.4,
+                  color: sub,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  mt: 0.25,
+                  minWidth: 0,
+                }}
+              >
+                {body}
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ mt: "auto", mb: 0 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: sub, fontSize: "0.6875rem" }}
+            >
+              hace 1 min
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+    );
+  }
+
+  // Mobile / Tablet: tarjeta con área de sistema operativo
   return (
     <Paper
       className={animate ? animationClass : undefined}
@@ -100,7 +259,7 @@ function PushFrame({
         bgcolor: cardBg,
         color: text,
         border: `1px solid ${border}`,
-        borderRadius: spec.radius,
+        borderRadius: 0,
         width: spec.width,
         minHeight: spec.minHeight,
         flexShrink: 0,
@@ -112,101 +271,51 @@ function PushFrame({
           : "0 6px 20px rgba(0,0,0,0.08)",
       }}
     >
-      {/* Área de sistema operativo */}
+      {/* Área de sistema operativo (barra de estado / lock screen) */}
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          minHeight: desktop ? 10 : 0,
-          backgroundColor: desktop ? undefined : osBg,
-          borderBottom: desktop
-            ? `1px solid ${border}`
-            : `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}`,
+          minHeight: 0,
+          backgroundColor: isDark ? "#1f2937" : "#f3f4f6",
+          borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}`,
         }}
       >
-        {desktop && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 1,
+            py: 0.75,
+            bgcolor: isDark ? "#1f2937" : "#f3f4f6",
+          }}
+        >
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: 1.5,
-              py: 1,
-              bgcolor: headerBg(isDark),
-              borderBottom: `1px solid ${border}`,
+              width: 4,
+              height: 4,
+              borderRadius: 0,
+              bgcolor: sub,
+              opacity: 0.4,
             }}
+          />
+          <Typography
+            variant="caption"
+            sx={{ color: sub, fontSize: "0.625rem" }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <Box
-                sx={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 4,
-                  bgcolor: ident.color,
-                }}
-              />
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 700, fontSize: "0.6875rem", color: text }}
-              >
-                Notificaciones
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  bgcolor: "#10b981",
-                }}
-              />
-              <Typography
-                variant="caption"
-                sx={{ color: sub, fontSize: "0.6875rem" }}
-              >
-                12:00
-              </Typography>
-            </Box>
-          </Box>
-        )}
-        {!desktop && (
+            12:00
+          </Typography>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: 1,
-              py: 0.5,
-              bgcolor: osBg,
+              width: 4,
+              height: 4,
+              borderRadius: 0,
+              bgcolor: sub,
+              opacity: 0.4,
             }}
-          >
-            <Box
-              sx={{
-                width: 4,
-                height: 4,
-                borderRadius: "50%",
-                bgcolor: sub,
-                opacity: 0.4,
-              }}
-            />
-            <Typography
-              variant="caption"
-              sx={{ color: sub, fontSize: "0.625rem" }}
-            >
-              12:00
-            </Typography>
-            <Box
-              sx={{
-                width: 4,
-                height: 4,
-                borderRadius: "50%",
-                bgcolor: sub,
-                opacity: 0.4,
-              }}
-            />
-          </Box>
-        )}
+          />
+        </Box>
       </Box>
 
       {/* Notificación */}
@@ -227,15 +336,15 @@ function PushFrame({
             display: "flex",
             alignItems: "center",
             gap: 1.5,
-            px: desktop ? 2 : 2,
-            py: desktop ? 1.5 : 2,
+            px: 2,
+            py: 2,
           }}
         >
           <Box
             sx={{
-              width: desktop ? 28 : 40,
-              height: desktop ? 28 : 40,
-              borderRadius: desktop ? 6 : 12,
+              width: 40,
+              height: 40,
+              borderRadius: 0,
               bgcolor: ident.bg,
               display: "flex",
               alignItems: "center",
@@ -243,14 +352,14 @@ function PushFrame({
               flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: desktop ? 14 : 20 }}>{ident.emoji}</span>
+            <span style={{ fontSize: 20 }}>{ident.emoji}</span>
           </Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
               variant="body2"
               sx={{
                 fontWeight: 700,
-                fontSize: desktop ? "0.875rem" : "0.9375rem",
+                fontSize: "0.9375rem",
                 lineHeight: 1.25,
                 color: text,
                 whiteSpace: "nowrap",
@@ -269,10 +378,10 @@ function PushFrame({
           </Box>
           <Box
             sx={{
-              width: desktop ? 12 : 20,
-              height: desktop ? 12 : 20,
-              borderRadius: desktop ? 4 : "50%",
-              bgcolor: ident.color,
+              width: 20,
+              height: 20,
+              borderRadius: 0,
+              bgcolor: accentColor,
               flexShrink: 0,
             }}
           />
@@ -280,7 +389,7 @@ function PushFrame({
 
         <Box
           sx={{
-            p: desktop ? 2 : 2.5,
+            p: 2.5,
             flex: 1,
             minHeight: 0,
             display: "flex",
@@ -292,9 +401,9 @@ function PushFrame({
           <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
             <Box
               sx={{
-                width: desktop ? 32 : 40,
-                height: desktop ? 32 : 40,
-                borderRadius: desktop ? 8 : 12,
+                width: 40,
+                height: 40,
+                borderRadius: 0,
                 bgcolor: ident.bg,
                 display: "flex",
                 alignItems: "center",
@@ -302,14 +411,14 @@ function PushFrame({
                 flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: desktop ? 16 : 24 }}>{ident.emoji}</span>
+              <span style={{ fontSize: 24 }}>{ident.emoji}</span>
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 variant="subtitle2"
                 sx={{
                   fontWeight: 700,
-                  fontSize: desktop ? "0.875rem" : "0.9375rem",
+                  fontSize: "0.9375rem",
                   lineHeight: 1.35,
                   color: text,
                   display: "-webkit-box",
@@ -324,7 +433,7 @@ function PushFrame({
               <Typography
                 variant="body2"
                 sx={{
-                  fontSize: desktop ? "0.8125rem" : "0.8125rem",
+                  fontSize: "0.8125rem",
                   lineHeight: 1.45,
                   color: sub,
                   display: "-webkit-box",
@@ -372,7 +481,7 @@ function PushFrame({
               }}
             />
           )}
-          <Box sx={{ mt: "auto", mb: desktop ? 0.5 : 0 }}>
+          <Box sx={{ mt: "auto", mb: 0 }}>
             <Typography
               variant="caption"
               sx={{ color: sub, fontSize: "0.6875rem" }}
@@ -386,8 +495,8 @@ function PushFrame({
   );
 }
 
-function headerBg(isDark: boolean) {
-  return isDark ? "#111827" : "#f9fafb";
+function osBg(isDark: boolean) {
+  return isDark ? "#1f2937" : "#f3f4f6";
 }
 
 interface PushPreviewProps {
@@ -429,6 +538,7 @@ export default function PushPreview({
       }}
     >
       <PushFrame
+        animationClass={animate ? animationClass : undefined}
         device={device}
         title={title}
         body={body}

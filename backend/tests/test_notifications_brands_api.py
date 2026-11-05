@@ -21,6 +21,7 @@ def _doc(**attrs):
         title="Item",
         body="",
         icon="i",
+        icon_type="system_icon",
         action_url=None,
         category="system",
         priority="P2",

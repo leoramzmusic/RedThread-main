@@ -21,6 +21,7 @@ class TemplateCreate(BaseModel):
     title: str
     body: str
     icon: str
+    icon_type: str = "system_icon"  # "system_icon" | "dynamic_avatar"
     action_url: Optional[str] = None
     category: str
     priority: str = "P2"
@@ -42,6 +43,7 @@ class TemplateUpdate(BaseModel):
     title: Optional[str] = None
     body: Optional[str] = None
     icon: Optional[str] = None
+    icon_type: Optional[str] = None
     action_url: Optional[str] = None
     category: Optional[str] = None
     priority: Optional[str] = None
@@ -64,6 +66,7 @@ class TemplateOut(BaseModel):
     title: str
     body: str
     icon: str
+    icon_type: str
     action_url: Optional[str] = None
     category: str
     priority: str
@@ -91,6 +94,7 @@ def _template_out(doc: NotificationTemplate) -> TemplateOut:
         title=doc.title,
         body=doc.body,
         icon=doc.icon,
+        icon_type=doc.icon_type,
         action_url=doc.action_url,
         category=doc.category,
         priority=doc.priority,
@@ -151,6 +155,7 @@ async def create_template(
         title=payload.title,
         body=payload.body,
         icon=payload.icon,
+        icon_type=payload.icon_type,
         action_url=payload.action_url,
         category=payload.category,
         priority=payload.priority,

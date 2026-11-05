@@ -42,7 +42,7 @@ export default function PanelPreview({
         flexDirection: "column",
         width: "100%",
         minHeight: 0,
-        borderRadius: 6,
+        borderRadius: 0,
         border: "1px solid",
         borderColor: "divider",
         overflow: "hidden",

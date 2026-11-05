@@ -8,6 +8,7 @@ class NotificationTemplate(Document):
     title: str
     body: str  # con variables {{variable}}
     icon: str
+    icon_type: str = "system_icon"  # "system_icon" | "dynamic_avatar"
     action_url: Optional[str] = None
     category: str  # "match" | "like" | "message" | "survey" | "reminder" | "promo" | "system" | "security"
     priority: str  # "P0" | "P1" | "P2" | "P3"
