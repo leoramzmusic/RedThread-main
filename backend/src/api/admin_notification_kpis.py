@@ -1,12 +1,13 @@
 from fastapi import APIRouter, HTTPException, Path
-from typing import Dict, Any, List
-from datetime import datetime, timezone
+from typing import Dict, Any
+from datetime import datetime
 from src.models.notification import Notification
 from src.models.campaign import Campaign
 from src.models.support_ticket import SupportTicket
 from src.models.report import Report
 
 router = APIRouter()
+
 
 @router.get("/kpis")
 @router.get("")
@@ -130,7 +131,6 @@ async def get_notification_system_health() -> Dict[str, Any]:
     """Get system health status for notifications."""
     try:
         now = datetime.utcnow()
-        start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
         critical_alerts = await Notification.find({"priority": "P0"}).count()
         pending_actions = await SupportTicket.find({"status": "open"}).count() + await Report.find({"status": "pending"}).count()

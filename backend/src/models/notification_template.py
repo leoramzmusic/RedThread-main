@@ -14,6 +14,17 @@ class NotificationTemplate(Document):
     required_action: bool = False
     critical: bool = False
     variables: List[Dict[str, Any]] = Field(default_factory=list)  # [{name, type}]
+    # ── Fase 2: identidad extendida ──
+    color: Optional[str] = None  # color hex de la categoría
+    # ── Fase 2: canales ──
+    channels: List[str] = Field(default_factory=lambda: ["push", "panel"])  # push, panel, email, sms
+    # ── Fase 2: acción ──
+    action_type: Optional[str] = None  # url | screen | chat | profile | survey | none
+    action_destination: Optional[str] = None  # destino de la acción
+    # ── Fase 2: comportamiento ──
+    persistent: bool = False  # permanece en el panel hasta leerla
+    programmable: bool = False  # se puede programar
+    silencable: bool = False  # el usuario puede silenciarla
     created_by: PydanticObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

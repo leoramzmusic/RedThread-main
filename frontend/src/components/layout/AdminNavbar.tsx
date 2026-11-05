@@ -209,24 +209,6 @@ export default function AdminNavbar({
               }
             }}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setWizardOpen(true)}
-            sx={{
-              borderRadius: 50,
-              textTransform: "none",
-              fontWeight: "bold",
-              px: 2,
-              py: 0.8,
-              boxShadow: `0 4px 14px ${alpha(primary, 0.35)}`,
-              "&:hover": { boxShadow: `0 6px 20px ${alpha(primary, 0.5)}` },
-              display: { xs: "none", sm: "flex" },
-            }}
-          >
-            + Nueva Notificación
-          </Button>
           <Tooltip
             title={
               notificationPanelOpen ? "Cerrar notificaciones" : "Notificaciones"

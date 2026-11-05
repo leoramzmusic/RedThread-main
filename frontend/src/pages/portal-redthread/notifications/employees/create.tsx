@@ -142,7 +142,7 @@ export default function CreateNotificationPage() {
               </IconButton>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  ✉️ Nueva Notificación
+                  Nueva Notificación
                 </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   Envía una notificación individual a un empleado

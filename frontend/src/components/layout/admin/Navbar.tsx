@@ -13,7 +13,6 @@ import {
   Divider,
   ListItemIcon,
   Badge,
-  Button,
   Drawer,
 } from "@mui/material";
 import {
@@ -22,7 +21,6 @@ import {
   Settings as SettingsIcon,
   Tune as TuneIcon,
   Notifications as NotificationsIcon,
-  Add as AddIcon,
 } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store/store";
@@ -35,7 +33,6 @@ import ThemeSwitch from "../../motion/ThemeSwitch";
 import LanguageSelector from "../../common/LanguageSelector";
 import { useLanguageFallback } from "../../../hooks/useLanguageFallback";
 import { useSnackbar } from "notistack";
-import NewNotificationWizard from "../../notifications/NewNotificationWizard";
 import NotificationPanel from "../../notifications/NotificationPanel";
 
 interface AdminNavbarProps {
@@ -61,7 +58,6 @@ export default function AdminNavbar({
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [wizardOpen, setWizardOpen] = useState(false);
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
 
   useEffect(() => {
@@ -209,24 +205,6 @@ export default function AdminNavbar({
               }
             }}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setWizardOpen(true)}
-            sx={{
-              borderRadius: 50,
-              textTransform: "none",
-              fontWeight: "bold",
-              px: 2,
-              py: 0.8,
-              boxShadow: `0 4px 14px ${alpha(primary, 0.35)}`,
-              "&:hover": { boxShadow: `0 6px 20px ${alpha(primary, 0.5)}` },
-              display: { xs: "none", sm: "flex" },
-            }}
-          >
-            + Nueva Notificación
-          </Button>
           <Tooltip
             title={
               notificationPanelOpen ? "Cerrar notificaciones" : "Notificaciones"
@@ -416,10 +394,6 @@ export default function AdminNavbar({
           </MenuItem>
         </Menu>
       </Toolbar>
-      <NewNotificationWizard
-        open={wizardOpen}
-        onClose={() => setWizardOpen(false)}
-      />
       {notificationPanelOpen && (
         <Drawer
           anchor="right"

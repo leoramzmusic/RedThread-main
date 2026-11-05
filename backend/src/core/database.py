@@ -14,6 +14,7 @@ from src.models.instagram_photo import InstagramPhoto
 from src.models.system_options import SystemOption
 from src.models.event import Event
 from src.models.notification import Notification
+from src.models.notification_template import NotificationTemplate
 from src.models.admin_rbac import AdminUser, AdminAction
 from src.models.employee import Employee
 from src.models.subscription import Subscription
@@ -82,6 +83,7 @@ async def init_db():
             EmployeeAudit,
             ReportRule,
             AuditLog,  # Data privacy audit logging
+            NotificationTemplate,
             AlgorithmFactor,
             AlgorithmHistory,
             ABTest,
@@ -112,12 +114,14 @@ async def init_db():
         ensure_profile_modules_seeded,
         ensure_integration_defaults,
         ensure_care_dimension_map_seeded,
+        ensure_notification_templates_seeded,
     )
 
     await seed_system_data()
     await ensure_profile_modules_seeded()
     await ensure_integration_defaults()
     await ensure_care_dimension_map_seeded()
+    await ensure_notification_templates_seeded()
 
 
 async def close_db():

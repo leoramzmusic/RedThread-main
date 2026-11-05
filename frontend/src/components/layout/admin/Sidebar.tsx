@@ -195,6 +195,12 @@ export default function AdminSidebar({
           icon: <DashboardIcon />,
           path: "/portal-redthread/notifications/dashboard",
         },
+        {
+          id: "gestor-plantillas",
+          label: "Plantillas",
+          icon: <DescriptionIcon />,
+          path: "/portal-redthread/notifications/templates",
+        },
 
         {
           id: "usuarios-notifications",

@@ -10,11 +10,13 @@ manual `src/seed_employees.py` que solo debe correr una vez por entorno.
 
 from datetime import datetime
 from typing import Optional
+from bson import ObjectId
 from src.core.config import settings
 from src.models.admin_rbac import Permission
 from src.models.role import Role
 from src.models.department import Department
 from src.models.profile_module import ProfileModule
+from src.models.notification_template import NotificationTemplate
 from src.care.models.care_dimension_map import CareDimensionMap
 
 
@@ -762,6 +764,201 @@ async def ensure_care_dimension_map_seeded() -> int:
         created += 1
     if created:
         print(f"[seed] Mapa de dimensiones CARE creado: {created}")
+    return created
+
+
+# ─── Seed de plantillas de notificación ────────────────────────────────────────
+
+SYSTEM_USER_ID = "000000000000000000000001"
+
+NOTIFICATION_TEMPLATES_SEED: list[dict] = [
+    # ── Sistema ────────────────────────────────────────────────────────────────
+    {
+        "title": "Bienvenida a RETH",
+        "body": "Hola {{first_name}}, bienvenido a RETH. ¡Descubre quién te está esperando!",
+        "icon": "wave",
+        "category": "system",
+        "priority": "P1",
+        "required_action": False,
+        "critical": False,
+        "variables": [{"name": "first_name", "type": "string"}],
+    },
+    {
+        "title": "Anuncio General",
+        "body": "{{titulo_anuncio}}\n\n{{mensaje}}",
+        "icon": "announcement",
+        "category": "system",
+        "priority": "P0",
+        "required_action": False,
+        "critical": True,
+        "variables": [
+            {"name": "titulo_anuncio", "type": "string"},
+            {"name": "mensaje", "type": "string"},
+        ],
+    },
+    {
+        "title": "Mantenimiento Programado",
+        "body": "Hola {{first_name}}, tendremos mantenimiento programado el {fecha_mantenimiento} de {hora_inicio} a {hora_fin}.",
+        "icon": "build",
+        "category": "system",
+        "priority": "P1",
+        "required_action": False,
+        "critical": False,
+        "variables": [
+            {"name": "first_name", "type": "string"},
+            {"name": "fecha_mantenimiento", "type": "string"},
+            {"name": "hora_inicio", "type": "string"},
+            {"name": "hora_fin", "type": "string"},
+        ],
+    },
+    # ── Social ─────────────────────────────────────────────────────────────────
+    {
+        "title": "Nuevo Match",
+        "body": "¡Tienes un nuevo match con {{nombre_match}}!",
+        "icon": "favorite",
+        "category": "match",
+        "priority": "P1",
+        "required_action": True,
+        "critical": False,
+        "variables": [{"name": "nombre_match", "type": "string"}],
+    },
+    {
+        "title": "Nuevo Like",
+        "body": "{{nombre_usuario}} te ha dado like.",
+        "icon": "thumb_up",
+        "category": "like",
+        "priority": "P2",
+        "required_action": False,
+        "critical": False,
+        "variables": [{"name": "nombre_usuario", "type": "string"}],
+    },
+    {
+        "title": "Nuevo Mensaje",
+        "body": "{{nombre_usuario}} te envió un mensaje.",
+        "icon": "message",
+        "category": "message",
+        "priority": "P1",
+        "required_action": True,
+        "critical": False,
+        "variables": [{"name": "nombre_usuario", "type": "string"}],
+    },
+    # ── CARE ───────────────────────────────────────────────────────────────────
+    {
+        "title": "Encuesta CARE Pendiente",
+        "body": "Hola {{first_name}}, tienes {{cuestionarios_pendientes}} preguntas restantes de tu encuesta CARE.",
+        "icon": "question_answer",
+        "category": "survey",
+        "priority": "P2",
+        "required_action": True,
+        "critical": False,
+        "variables": [
+            {"name": "first_name", "type": "string"},
+            {"name": "cuestionarios_pendientes", "type": "integer"},
+        ],
+    },
+    {
+        "title": "Encuesta CARE Completada",
+        "body": "¡Gracias por completar tu encuesta CARE, {{first_name}}!",
+        "icon": "check_circle",
+        "category": "survey",
+        "priority": "P3",
+        "required_action": False,
+        "critical": False,
+        "variables": [{"name": "first_name", "type": "string"}],
+    },
+    # ── Perfil ─────────────────────────────────────────────────────────────────
+    {
+        "title": "Completa Tu Perfil",
+        "body": "Hola {{first_name}}, tu perfil está incompleto. Añade más información para encontrar mejores matches.",
+        "icon": "person",
+        "category": "reminder",
+        "priority": "P2",
+        "required_action": False,
+        "critical": False,
+        "variables": [{"name": "first_name", "type": "string"}],
+    },
+    {
+        "title": "Sube Tu Primera Foto",
+        "body": "Hola {{first_name}}, subir una foto aumenta tus posibilidades de match.",
+        "icon": "add_a_photo",
+        "category": "reminder",
+        "priority": "P2",
+        "required_action": False,
+        "critical": False,
+        "variables": [{"name": "first_name", "type": "string"}],
+    },
+    # ── Premium ────────────────────────────────────────────────────────────────
+    {
+        "title": "Oferta Premium",
+        "body": "¡Descubre los beneficios de RETH Premium para ti, {{first_name}}!",
+        "icon": "star",
+        "category": "promo",
+        "priority": "P2",
+        "required_action": False,
+        "critical": False,
+        "variables": [{"name": "first_name", "type": "string"}],
+    },
+    {
+        "title": "Beneficios VIP",
+        "body": "Accede a beneficios exclusivos con RETH VIP.",
+        "icon": "diamond",
+        "category": "promo",
+        "priority": "P3",
+        "required_action": False,
+        "critical": False,
+        "variables": [],
+    },
+    # ── Seguridad ──────────────────────────────────────────────────────────────
+    {
+        "title": "Inicio de Sesión Sospechoso",
+        "body": "Se detectó un inicio de sesión desde un dispositivo nuevo en {{ciudad}}.",
+        "icon": "security",
+        "category": "security",
+        "priority": "P0",
+        "required_action": True,
+        "critical": True,
+        "variables": [{"name": "ciudad", "type": "string"}],
+    },
+    {
+        "title": "Cambio de Contraseña",
+        "body": "Tu contraseña ha sido cambiada correctamente.",
+        "icon": "lock",
+        "category": "security",
+        "priority": "P1",
+        "required_action": False,
+        "critical": False,
+        "variables": [],
+    },
+]
+
+
+async def ensure_notification_templates_seeded() -> int:
+    """
+    Crea las plantillas de notificación iniciales si no existen.
+    Idempotente: nunca duplica, usa upsert por título + categoría.
+    """
+    created = 0
+    for t_data in NOTIFICATION_TEMPLATES_SEED:
+        existing = await NotificationTemplate.find_one(
+            NotificationTemplate.title == t_data["title"],
+            NotificationTemplate.category == t_data["category"],
+        )
+        if existing:
+            continue
+        await NotificationTemplate(
+            title=t_data["title"],
+            body=t_data["body"],
+            icon=t_data["icon"],
+            category=t_data["category"],
+            priority=t_data["priority"],
+            required_action=t_data["required_action"],
+            critical=t_data["critical"],
+            variables=t_data["variables"],
+            created_by=ObjectId(SYSTEM_USER_ID),
+        ).insert()
+        created += 1
+    if created:
+        print(f"[seed] ✅ Plantillas de notificación creadas: {created}")
     return created
 
 

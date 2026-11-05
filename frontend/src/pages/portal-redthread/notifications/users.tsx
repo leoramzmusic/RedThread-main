@@ -227,7 +227,7 @@ export default function UsersNotificationDashboard() {
           <Paper
             sx={{
               p: 3,
-              borderRadius: "10px !important",
+              borderRadius: 1,
               border: "1px solid",
               borderColor: "divider",
               mb: 4,
@@ -263,7 +263,7 @@ export default function UsersNotificationDashboard() {
                 variant="contained"
                 size="large"
                 startIcon={<SendIcon />}
-                sx={{ borderRadius: "6px !important", px: 3, minHeight: 44 }}
+                sx={{ borderRadius: 0.5, px: 3, minHeight: 44 }}
                 onClick={() =>
                   router.push("/portal-redthread/notifications/users/create")
                 }
@@ -274,7 +274,7 @@ export default function UsersNotificationDashboard() {
                 variant="outlined"
                 size="large"
                 startIcon={<CampaignIcon />}
-                sx={{ borderRadius: "6px !important", px: 3, minHeight: 44 }}
+                sx={{ borderRadius: 0.5, px: 3, minHeight: 44 }}
                 onClick={() =>
                   router.push("/portal-redthread/notifications/users/campaigns")
                 }
@@ -285,7 +285,7 @@ export default function UsersNotificationDashboard() {
                 variant="outlined"
                 size="large"
                 startIcon={<DescriptionIcon />}
-                sx={{ borderRadius: "6px !important", px: 3, minHeight: 44 }}
+                sx={{ borderRadius: 0.5, px: 3, minHeight: 44 }}
                 onClick={() =>
                   router.push("/portal-redthread/notifications/users/templates")
                 }
@@ -299,7 +299,7 @@ export default function UsersNotificationDashboard() {
           <Paper
             sx={{
               p: 2,
-              borderRadius: "10px !important",
+              borderRadius: 1,
               border: "1px solid",
               borderColor: "divider",
               mb: 4,
@@ -347,7 +347,7 @@ export default function UsersNotificationDashboard() {
                         width: 14,
                         height: 2,
                         bgcolor: "divider",
-                        borderRadius: "1px !important",
+                        borderRadius: 0.5,
                         mx: 0.5,
                       }}
                     />
@@ -364,7 +364,7 @@ export default function UsersNotificationDashboard() {
                 <Card
                   sx={{
                     height: "100%",
-                    borderRadius: "10px !important",
+                    borderRadius: 1,
                     border: "1px solid",
                     borderColor: "divider",
                     boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
@@ -383,7 +383,7 @@ export default function UsersNotificationDashboard() {
                         sx={{
                           width: 8,
                           height: 8,
-                          borderRadius: "2px !important",
+                          borderRadius: 0.5,
                           bgcolor: item.color,
                         }}
                       />
@@ -418,7 +418,7 @@ export default function UsersNotificationDashboard() {
               key={section.area}
               sx={{
                 p: 2,
-                borderRadius: "10px !important",
+                borderRadius: 1,
                 border: `1px solid`,
                 borderColor: "divider",
                 mb: 4,
@@ -439,7 +439,7 @@ export default function UsersNotificationDashboard() {
                   sx={{
                     width: 8,
                     height: 8,
-                    borderRadius: "2px !important",
+                    borderRadius: 0.5,
                     bgcolor: section.color,
                   }}
                 />
@@ -461,7 +461,7 @@ export default function UsersNotificationDashboard() {
                     <Card
                       sx={{
                         height: "100%",
-                        borderRadius: "8px !important",
+                        borderRadius: 1,
                         border: "1px solid",
                         borderColor: "divider",
                         boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
@@ -499,7 +499,7 @@ export default function UsersNotificationDashboard() {
                               sx={{
                                 width: 36,
                                 height: 36,
-                                borderRadius: "8px !important",
+                                borderRadius: 1,
                                 bgcolor: `${section.color}12`,
                                 display: "flex",
                                 alignItems: "center",
@@ -519,7 +519,7 @@ export default function UsersNotificationDashboard() {
                                   fontWeight: 700,
                                   ml: 1,
                                   borderColor: "divider",
-                                  borderRadius: "6px !important",
+                                  borderRadius: 0.5,
                                 }}
                               />
                             )}
@@ -561,7 +561,7 @@ export default function UsersNotificationDashboard() {
                           size="small"
                           variant="outlined"
                           sx={{
-                            borderRadius: "6px !important",
+                            borderRadius: 0.5,
                             color: section.color,
                             borderColor: section.color,
                             width: "100%",

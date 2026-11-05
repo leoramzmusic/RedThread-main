@@ -27,6 +27,13 @@ class TemplateCreate(BaseModel):
     required_action: bool = False
     critical: bool = False
     variables: List[TemplateVariable] = Field(default_factory=list)
+    color: Optional[str] = None
+    channels: List[str] = Field(default_factory=lambda: ["push", "panel"])
+    action_type: Optional[str] = None
+    action_destination: Optional[str] = None
+    persistent: bool = False
+    programmable: bool = False
+    silencable: bool = False
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -41,6 +48,13 @@ class TemplateUpdate(BaseModel):
     required_action: Optional[bool] = None
     critical: Optional[bool] = None
     variables: Optional[List[TemplateVariable]] = None
+    color: Optional[str] = None
+    channels: Optional[List[str]] = None
+    action_type: Optional[str] = None
+    action_destination: Optional[str] = None
+    persistent: Optional[bool] = None
+    programmable: Optional[bool] = None
+    silencable: Optional[bool] = None
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -56,6 +70,13 @@ class TemplateOut(BaseModel):
     required_action: bool
     critical: bool
     variables: List[TemplateVariable] = Field(default_factory=list)
+    color: Optional[str] = None
+    channels: List[str] = Field(default_factory=list)
+    action_type: Optional[str] = None
+    action_destination: Optional[str] = None
+    persistent: bool
+    programmable: bool
+    silencable: bool
     created_by: str
     created_at: datetime
     updated_at: datetime
@@ -76,6 +97,13 @@ def _template_out(doc: NotificationTemplate) -> TemplateOut:
         required_action=doc.required_action,
         critical=doc.critical,
         variables=[TemplateVariable(name=v.get("name", ""), type=v.get("type", "string")) for v in (doc.variables or [])],
+        color=doc.color,
+        channels=doc.channels or [],
+        action_type=doc.action_type,
+        action_destination=doc.action_destination,
+        persistent=doc.persistent,
+        programmable=doc.programmable,
+        silencable=doc.silencable,
         created_by=str(doc.created_by),
         created_at=doc.created_at,
         updated_at=doc.updated_at,
@@ -129,10 +157,27 @@ async def create_template(
         required_action=payload.required_action,
         critical=payload.critical,
         variables=[v.model_dump() for v in payload.variables],
+        color=payload.color,
+        channels=payload.channels,
+        action_type=payload.action_type,
+        action_destination=payload.action_destination,
+        persistent=payload.persistent,
+        programmable=payload.programmable,
+        silencable=payload.silencable,
         created_by=employee.id,
     )
     await doc.insert()
     return _template_out(doc)
+
+
+@router.post("/seed-defaults", status_code=status.HTTP_200_OK)
+async def seed_default_templates(
+    employee: Employee = Depends(require_employee_permission(Permission.SEND_NOTIFICATIONS)),
+):
+    from src.core.seed import ensure_notification_templates_seeded
+
+    created = await ensure_notification_templates_seeded()
+    return {"ok": True, "created": created}
 
 
 @router.get("/{template_id}", response_model=TemplateOut)

@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Body
-from typing import List, Optional, Dict, Any
+from fastapi import APIRouter, Depends, HTTPException, Query, Body
+from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 from src.models.notification import Notification
 from src.models.employee import Employee
 from src.core.middleware.employee_rbac import get_current_employee
 
 router = APIRouter(prefix="/employee/notifications", tags=["Employee Notifications"])
+
 
 @router.get("/inbox")
 async def get_employee_inbox(
@@ -36,7 +37,7 @@ async def get_employee_inbox(
             query["archived_at"] = None
 
     notifications = await Notification.find(query).sort("-created_at").skip(offset).limit(limit).to_list()
-    
+
     result = []
     for n in notifications:
         result.append({
@@ -58,11 +59,13 @@ async def get_employee_inbox(
         })
     return {"notifications": result}
 
+
 async def _get_employee_notification(notification_id: str, employee: Employee) -> Notification:
     notif = await Notification.get(notification_id)
     if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
     return notif
+
 
 @router.post("/{notification_id}/seen")
 @router.post("/inbox/{notification_id}/seen")
@@ -76,6 +79,7 @@ async def mark_notification_seen(
         notif.updated_at = datetime.utcnow()
         await notif.save()
     return {"success": True, "message": "Notification marked as seen"}
+
 
 @router.post("/seen")
 async def mark_seen_body(
@@ -92,6 +96,7 @@ async def mark_seen_body(
         await notif.save()
     return {"success": True}
 
+
 @router.post("/{notification_id}/read")
 @router.post("/inbox/{notification_id}/read")
 async def mark_notification_read(
@@ -106,6 +111,7 @@ async def mark_notification_read(
     notif.updated_at = datetime.utcnow()
     await notif.save()
     return {"success": True, "message": "Notification marked as read"}
+
 
 @router.post("/read")
 async def mark_read_body(
@@ -124,6 +130,7 @@ async def mark_read_body(
     await notif.save()
     return {"success": True}
 
+
 @router.post("/{notification_id}/archive")
 @router.post("/inbox/{notification_id}/archive")
 async def archive_notification(
@@ -135,6 +142,7 @@ async def archive_notification(
     notif.updated_at = datetime.utcnow()
     await notif.save()
     return {"success": True, "message": "Notification archived"}
+
 
 @router.post("/archive")
 async def archive_body(
@@ -149,6 +157,7 @@ async def archive_body(
     notif.updated_at = datetime.utcnow()
     await notif.save()
     return {"success": True}
+
 
 @router.post("/{notification_id}/snooze")
 @router.post("/inbox/{notification_id}/snooze")
@@ -166,11 +175,12 @@ async def snooze_notification(
         delta = timedelta(hours=int(duration[:-1]))
     elif duration.endswith("d"):
         delta = timedelta(days=int(duration[:-1]))
-    
+
     notif.snoozed_until = datetime.utcnow() + delta
     notif.updated_at = datetime.utcnow()
     await notif.save()
     return {"success": True, "snoozed_until": notif.snoozed_until}
+
 
 @router.post("/snooze")
 async def snooze_body(
@@ -189,7 +199,7 @@ async def snooze_body(
         delta = timedelta(hours=int(duration[:-1]))
     elif duration.endswith("d"):
         delta = timedelta(days=int(duration[:-1]))
-    
+
     notif.snoozed_until = datetime.utcnow() + delta
     notif.updated_at = datetime.utcnow()
     await notif.save()

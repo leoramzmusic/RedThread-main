@@ -311,10 +311,6 @@ def schedule_pause_windows(
     return windows
 
 
-
-
-
-
 def should_push(
     settings, notif_type: str, metadata: Optional[dict], now: Optional[datetime] = None
 ) -> bool:
