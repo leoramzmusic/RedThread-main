@@ -1,62 +1,78 @@
-# Tasks — Plantillas de Notificación
+# Tasks — Reestructuración UX — Diálogo Crear/Editar Plantilla
 
-## Phase 1: P0 — Destinatarios múltiples + Idioma base
+## Phase 1: Estructura de 4 bloques
 
-- [ ] Task 1: Cambiar destinatarios de radio a checkboxes (Usuarios, Empleados, Marcas) en el diálogo crear/editar
-  - Acceptance: Se pueden seleccionar múltiples destinatarios; el estado se guarda en `destinatarios` array
-  - Verify: Typecheck pasa; abrir diálogo y marcar 2+ checkboxes
-  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
-- [ ] Task 2: Mostrar "Ámbito" en la tabla (Usuarios / Empleados / Marcas / Global)
-  - Acceptance: La columna Ámbito muestra "Global" cuando están los 3 seleccionados, o los nombres individuales
-  - Verify: Typecheck pasa; tabla refleja combinación correcta
-  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
-- [ ] Task 3: Agregar selector de "Idioma base" en el diálogo (Español, English, Français, etc.)
-  - Acceptance: Select de idioma base visible y funcional; cambia el valor de `baseLocale`
-  - Verify: Typecheck pasa; select renderiza y selecciona
+- [ ] Task 1: Reorganizar DialogContent en 4 bloques (CONTENIDO, APARIENCIA, ENTREGA, CONFIGURACIÓN AVANZADA)
+  - Acceptance: Las 4 secciones aparecen en ese orden; todas las subsecciones están dentro del bloque correcto
+  - Verify: Typecheck pasa; abrir diálogo y verificar orden visual
   - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
 
 ### Checkpoint: Phase 1
 - [ ] Typecheck pasa
-- [ ] Destinatarios múltiples funcionan en diálogo y tabla
-- [ ] Selector de idioma base presente
+- [ ] 4 bloques en el orden correcto
 
-## Phase 2: P0 — Traducciones + P1 — Nombre interno / Slug
+## Phase 2: CONTENIDO (GENERAL + VARIABLES)
 
-- [ ] Task 4: Agregar sección "Traducciones" con estado por idioma (✅ / ⚠ pendiente)
-  - Acceptance: Se muestra lista de idiomas con estado de traducción; se puede editar título/cuerpo por idioma
-  - Verify: Typecheck pasa; editar título en inglés y ver reflejado
+- [ ] Task 2: Mejorar GENERAL — Título 1 línea, Cuerpo 4-5 líneas, Idioma actual arriba
+  - Acceptance: Título es TextField de 1 línea; Cuerpo es multiline con 4-5 filas; select de idioma arriba de ambos
+  - Verify: Typecheck pasa; campos tienen tamaños correctos
   - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
-- [ ] Task 5: Agregar campos "Nombre interno" y "Clave única (slug)"
-  - Acceptance: Dos campos nuevos en el diálogo; slug se genera/edita libremente
-  - Verify: Typecheck pasa; campos guardan y leen correctamente
+- [ ] Task 3: Mejorar VARIABLES DISPONIBLES — Agrupar por categoría, más grandes, "Disponible en", buscador
+  - Acceptance: Variables agrupadas (USUARIO, INTERACCIONES, CARE); font-size/padding/height aumentados ~20%; labels "Disponible en Título/Cuerpo"; buscador de variables
+  - Verify: Typecheck pasa; buscador filtra variables; grupos visibles
   - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
 
 ### Checkpoint: Phase 2
 - [ ] Typecheck pasa
-- [ ] Traducciones por idioma editables
-- [ ] Nombre interno y slug presentes
+- [ ] GENERAL y VARIABLES funcionan en CONTENIDO
 
-## Phase 3: P2 — Tipo de plantilla + Reglas de variables
+## Phase 3: APARIENCIA (VISUAL + VISTA PREVIA)
 
-- [ ] Task 6: Agregar campo "Tipo de plantilla" (Sistema / Evento automático / Campaña manual)
-  - Acceptance: Select de tipo de plantilla en el diálogo; se guarda en `templateType`
-  - Verify: Typecheck pasa; select renderiza con 3 opciones
+- [ ] Task 4: Mejorar VISUAL — Iconos 32px clicables, ocultar selector si Avatar usuario
+  - Acceptance: Iconos de 32px; al seleccionar "Avatar usuario", selector de iconos desaparece
+  - Verify: Typecheck pasa; selector se oculta/muestra correctamente
   - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
-- [ ] Task 7: Mostrar reglas de variables (qué variables aplican a Título vs Cuerpo)
-  - Acceptance: Lista de variables con indicadores ✅/❌ para Título y Cuerpo
-  - Verify: Typecheck pasa; indicadores visibles
+- [ ] Task 5: Mejorar VISTA PREVIA — 350-400px, datos de prueba
+  - Acceptance: Preview más grande; muestra datos de prueba (first_name=Carlos, etc.)
+  - Verify: Typecheck pasa; preview renderiza con datos de prueba
   - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
 
 ### Checkpoint: Phase 3
 - [ ] Typecheck pasa
-- [ ] Tipo de plantilla seleccionable
-- [ ] Reglas de variables visibles
+- [ ] APARIENCIA completa
 
-## Phase 4: P3 — Auditoría
+## Phase 4: ENTREGA (LOCALIZACIÓN, TRADUCCIONES, DESTINATARIOS)
 
-- [ ] Task 8: Mostrar auditoría solo en modo edición (creado por, fechas)
-  - Acceptance: En modo edición, sección de auditoría visible; en modo creación, oculto
-  - Verify: Typecheck pasa; auditoría no aparece al crear, sí al editar
+- [ ] Task 6: Mejorar LOCALIZACIÓN — Idioma base + idioma fallback
+  - Acceptance: Select de idioma base + select de idioma fallback
+  - Verify: Typecheck pasa; ambos selects funcionan
+  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
+- [ ] Task 7: Mejorar TRADUCCIONES — Resumen + modal "Ver traducciones"
+  - Acceptance: Muestra "✅ X, ⚠ Y pendientes"; botón abre modal con lista completa
+  - Verify: Typecheck pasa; modal se abre y cierra
+  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
+- [ ] Task 8: Mejorar DESTINATARIOS — Checkboxes + Ámbito resultante
+  - Acceptance: Checkboxes Usuarios/Empleados/Marcas; texto "Ámbito resultante: Global" o individuales
+  - Verify: Typecheck pasa; ámbito se calcula correctamente
+  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
+
+### Checkpoint: Phase 4
+- [ ] Typecheck pasa
+- [ ] ENTREGA completa
+
+## Phase 5: CONFIGURACIÓN AVANZADA (COMPORTAMIENTO, OPCIONES, METADATOS)
+
+- [ ] Task 9: Mejorar COMPORTAMIENTO — Nombres claros (QUÉ OCURRE AL HACER CLIC, AUTOMATIZACIÓN, ÁREA)
+  - Acceptance: Secciones renombradas con nombres descriptivos
+  - Verify: Typecheck pasa; labels claros
+  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
+- [ ] Task 10: Mejorar OPCIONES — Con tooltips explicativos
+  - Acceptance: Cada opción (Persistente, Crítica, Programable, Silenciable) tiene tooltip con descripción
+  - Verify: Typecheck pasa; tooltips visibles al hover
+  - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
+- [ ] Task 11: Mejorar METADATOS — Con tooltips explicativos
+  - Acceptance: Nombre interno y slug tienen tooltip explicativo
+  - Verify: Typecheck pasa; tooltips visibles al hover
   - Files: `frontend/src/components/notifications/TemplatesManager.tsx`
 
 ### Checkpoint: Complete
