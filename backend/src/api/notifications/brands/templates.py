@@ -35,6 +35,9 @@ class TemplateCreate(BaseModel):
     persistent: bool = False
     programmable: bool = False
     silencable: bool = False
+    destinatarios: List[str] = Field(default_factory=lambda: ["usuarios"])  # usuarios, empleados, marcas
+    evento_disparador: Optional[str] = None  # like_received, match_created, new_message, etc.
+    uso_principal: Optional[str] = None  # portal_usuarios | portal_empleados | portal_marcas | global
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -57,8 +60,9 @@ class TemplateUpdate(BaseModel):
     persistent: Optional[bool] = None
     programmable: Optional[bool] = None
     silencable: Optional[bool] = None
-
-    model_config = ConfigDict(populate_by_name=True)
+    destinatarios: Optional[List[str]] = None
+    evento_disparador: Optional[str] = None
+    uso_principal: Optional[str] = None
 
 
 class TemplateOut(BaseModel):
@@ -80,6 +84,9 @@ class TemplateOut(BaseModel):
     persistent: bool
     programmable: bool
     silencable: bool
+    destinatarios: List[str]
+    evento_disparador: Optional[str] = None
+    uso_principal: Optional[str] = None
     created_by: str
     created_at: datetime
     updated_at: datetime
@@ -108,6 +115,9 @@ def _template_out(doc: NotificationTemplate) -> TemplateOut:
         persistent=doc.persistent,
         programmable=doc.programmable,
         silencable=doc.silencable,
+        destinatarios=doc.destinatarios or ["usuarios"],
+        evento_disparador=doc.evento_disparador,
+        uso_principal=doc.uso_principal,
         created_by=str(doc.created_by),
         created_at=doc.created_at,
         updated_at=doc.updated_at,
@@ -169,6 +179,8 @@ async def create_template(
         persistent=payload.persistent,
         programmable=payload.programmable,
         silencable=payload.silencable,
+        destinatarios=payload.destinatarios,
+        evento_disparador=payload.evento_disparador,
         created_by=employee.id,
     )
     await doc.insert()

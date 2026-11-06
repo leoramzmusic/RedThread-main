@@ -26,6 +26,10 @@ class NotificationTemplate(Document):
     persistent: bool = False  # permanece en el panel hasta leerla
     programmable: bool = False  # se puede programar
     silencable: bool = False  # el usuario puede silenciarla
+    # ── Fase 3: ámbito de uso ──
+    destinatarios: List[str] = Field(default_factory=lambda: ["usuarios"])  # usuarios, empleados, marcas
+    evento_disparador: Optional[str] = None  # like_received, match_created, new_message, payment_successful, survey_completed, etc.
+    uso_principal: Optional[str] = None  # portal_usuarios | portal_empleados | portal_marcas | global
     created_by: PydanticObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

@@ -18,6 +18,7 @@ import {
   TableRow,
   Icon,
   IconButton,
+  InputAdornment,
   Chip,
   Dialog,
   DialogActions,
@@ -31,6 +32,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
@@ -66,11 +68,47 @@ export interface Template {
   persistent?: boolean;
   programmable?: boolean;
   silencable?: boolean;
+  destinatarios?: string[];
+  evento_disparador?: string;
+  uso_principal?: string; // portal_usuarios | portal_empleados | portal_marcas | global
+  baseLocale?: string; // idioma base (es, en, fr, etc.)
+  translations?: Record<string, { title: string; body: string }>; // traducciones por idioma
+  internalName?: string; // nombre interno para el backend
+  slug?: string; // clave única (new_match, campaign_rejected, etc.)
+  templateType?: string; // sistema | evento_automatico | campaña_manual
   created_by: string;
   created_at: string;
   updated_at: string;
   deleted_at?: string;
   deleted_by?: string;
+}
+
+interface TemplateFormData {
+  title: string;
+  body: string;
+  icon: string;
+  icon_type: string;
+  category: string;
+  priority: string;
+  action_url: string;
+  required_action: boolean;
+  critical: boolean;
+  variables: string;
+  color: string;
+  channels: string[];
+  action_type: string;
+  action_destination: string;
+  persistent: boolean;
+  programmable: boolean;
+  silencable: boolean;
+  destinatarios: string[];
+  evento_disparador: string;
+  uso_principal: string;
+  baseLocale: string;
+  translations: Record<string, { title: string; body: string }>;
+  internalName: string;
+  slug: string;
+  templateType: string;
 }
 
 interface CategoryPriority {
@@ -154,6 +192,50 @@ const PREVIEW_DATA: Record<string, string> = {
   mensaje: "Tenemos grandes noticias para ti",
 };
 
+const VARIABLE_DESCS: Record<string, string> = {
+  first_name: "Primer nombre del usuario receptor",
+  city: "Ciudad del usuario",
+  nombre_match: "Usuario que realizó el match",
+  nombre_usuario: "Usuario que interactuó",
+  ciudad: "Ciudad donde ocurrió el evento",
+  cuestionarios_pendientes: "Preguntas restantes de tu encuesta CARE",
+  matches_count: "Número de coincidencias disponibles",
+};
+
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  es: "Español",
+  pt: "Português",
+  fr: "Français",
+  de: "Deutsch",
+  it: "Italiano",
+  ru: "Русский",
+  sv: "Svenska",
+  nl: "Nederlands",
+  zh: "中文 (Mandarín)",
+  hi: "हिन्दी (Hindi)",
+  bn: "বাংলা (Bengalí)",
+  ja: "日本語 (Japanese)",
+  ko: "한국어 (Korean)",
+  ar: "العربية (Árabe)",
+  sw: "Kiswahili (Swahili)",
+  ha: "Hausa",
+  am: "አማርኛ (Amhárico)",
+  fil: "Filipino/Tagalog",
+  ms: "Bahasa Melayu (Malay)",
+  mi: "Māori",
+};
+
+const VARIABLE_SCOPE: Record<string, { title: boolean; body: boolean }> = {
+  first_name: { title: true, body: true },
+  city: { title: false, body: true },
+  nombre_match: { title: true, body: true },
+  nombre_usuario: { title: false, body: true },
+  ciudad: { title: false, body: true },
+  cuestionarios_pendientes: { title: false, body: true },
+  matches_count: { title: true, body: true },
+};
+
 function resolvePreview(text: string): string {
   if (!text) return text;
   return text.replace(/\{\{([^}]+)\}\}/g, (_match, key) => {
@@ -202,7 +284,7 @@ export default function TemplatesManager({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Template | null>(null);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<TemplateFormData>({
     title: "",
     body: "",
     icon: "description",
@@ -220,7 +302,17 @@ export default function TemplatesManager({
     persistent: false,
     programmable: false,
     silencable: false,
+    destinatarios: ["usuarios"],
+    evento_disparador: "",
+    uso_principal: "",
+    baseLocale: "es",
+    translations: {},
+    internalName: "",
+    slug: "",
+    templateType: "sistema",
   });
+  const [activeField, setActiveField] = useState<"title" | "body">("body");
+  const [editingLocale, setEditingLocale] = useState<string>("es");
   const [seeding, setSeeding] = useState(false);
   const [previewMode, setPreviewMode] = useState<"push" | "panel">("push");
   const [pushDevice, setPushDevice] = useState<string>("android");
@@ -230,6 +322,7 @@ export default function TemplatesManager({
   const [anchorRef, setAnchorRef] = useState<HTMLElement | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedAudience, setSelectedAudience] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | "none">(
     "none",
@@ -244,7 +337,34 @@ export default function TemplatesManager({
         (tpl.body || "").toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory =
         !selectedCategory || tpl.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      const matchesAudience =
+        !selectedAudience ||
+        (() => {
+          const d = tpl.destinatarios ?? [];
+          switch (selectedAudience) {
+            case "usuarios":
+              return d.includes("usuarios");
+            case "empleados":
+              return d.includes("empleados");
+            case "marcas":
+              return d.includes("marcas");
+            case "global":
+              return (
+                d.includes("usuarios") &&
+                d.includes("empleados") &&
+                d.includes("marcas")
+              );
+            case "usuarios_empleados":
+              return d.includes("usuarios") && d.includes("empleados");
+            case "usuarios_marcas":
+              return d.includes("usuarios") && d.includes("marcas");
+            case "empleados_marcas":
+              return d.includes("empleados") && d.includes("marcas");
+            default:
+              return true;
+          }
+        })();
+      return matchesSearch && matchesCategory && matchesAudience;
     })
     .slice();
 
@@ -258,6 +378,14 @@ export default function TemplatesManager({
     if (sortBy === "category") {
       return list.sort((a, b) => {
         const cmp = (a.category || "").localeCompare(b.category || "");
+        return sortDirection === "asc" ? cmp : -cmp;
+      });
+    }
+    if (sortBy === "audience") {
+      return list.sort((a, b) => {
+        const aDest = (a.destinatarios ?? []).slice().sort().join(",") || "";
+        const bDest = (b.destinatarios ?? []).slice().sort().join(",") || "";
+        const cmp = aDest.localeCompare(bDest);
         return sortDirection === "asc" ? cmp : -cmp;
       });
     }
@@ -319,7 +447,16 @@ export default function TemplatesManager({
       persistent: false,
       programmable: false,
       silencable: false,
+      destinatarios: ["usuarios"],
+      evento_disparador: "",
+      uso_principal: "",
+      baseLocale: "es",
+      translations: { es: { title: "", body: "" } },
+      internalName: "",
+      slug: "",
+      templateType: "sistema",
     });
+    setEditingLocale("es");
     setOpen(true);
   };
 
@@ -343,7 +480,18 @@ export default function TemplatesManager({
       persistent: tpl.persistent || false,
       programmable: tpl.programmable || false,
       silencable: tpl.silencable || false,
+      destinatarios: tpl.destinatarios || ["usuarios"],
+      evento_disparador: tpl.evento_disparador || "",
+      uso_principal: tpl.uso_principal || "",
+      baseLocale: tpl.baseLocale || "es",
+      translations: tpl.translations || {
+        [tpl.baseLocale || "es"]: { title: tpl.title, body: tpl.body },
+      },
+      internalName: tpl.internalName || "",
+      slug: tpl.slug || "",
+      templateType: tpl.templateType || "sistema",
     });
+    setEditingLocale(tpl.baseLocale || "es");
     setOpen(true);
   };
 
@@ -383,6 +531,19 @@ export default function TemplatesManager({
         ? prev.channels.filter((c) => c !== channel)
         : [...(prev.channels ?? []), channel];
       return { ...prev, channels };
+    });
+  };
+
+  const toggleDestinatario = (destinatario: string) => {
+    setForm((prev) => {
+      const current = prev.destinatarios ?? [];
+      if (current.includes(destinatario)) {
+        return {
+          ...prev,
+          destinatarios: current.filter((d) => d !== destinatario),
+        };
+      }
+      return { ...prev, destinatarios: [...current, destinatario] };
     });
   };
 
@@ -427,8 +588,12 @@ export default function TemplatesManager({
         .map((name) => ({ name, type: "string" }));
 
       const payload = {
-        title: form.title,
-        body: form.body,
+        title:
+          form.translations?.[form.baseLocale ?? "es"]?.title ??
+          form.title ??
+          "",
+        body:
+          form.translations?.[form.baseLocale ?? "es"]?.body ?? form.body ?? "",
         icon: form.icon,
         icon_type: form.icon_type,
         category: form.category,
@@ -444,6 +609,14 @@ export default function TemplatesManager({
         persistent: form.persistent,
         programmable: form.programmable,
         silencable: form.silencable,
+        destinatarios: form.destinatarios || ["usuarios"],
+        evento_disparador: form.evento_disparador,
+        uso_principal: form.uso_principal,
+        baseLocale: form.baseLocale,
+        translations: form.translations,
+        internalName: form.internalName,
+        slug: form.slug,
+        templateType: form.templateType,
       };
 
       if (editing) {
@@ -536,35 +709,67 @@ export default function TemplatesManager({
               mb: 2,
               display: "flex",
               flexDirection: "column",
-              gap: 1.5,
+              gap: 1,
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                flexWrap: "wrap",
-              }}
-            >
-              <IconButton
-                size="small"
-                onClick={() => (backTo ? router.push(backTo) : router.back())}
-                sx={{ color: "text.secondary" }}
+            <Box sx={{ width: "100%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  width: "100%",
+                }}
               >
-                <ArrowBackIcon />
-              </IconButton>
-              <Box>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
-                  {title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "text.secondary", mb: 0 }}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    flexWrap: "wrap",
+                  }}
                 >
-                  {subtitle}
-                </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() =>
+                      backTo ? router.push(backTo) : router.back()
+                    }
+                    sx={{ color: "text.secondary" }}
+                  >
+                    <ArrowBackIcon />
+                  </IconButton>
+                  <Box>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontSize: "30px", fontWeight: 700, mb: 0.25 }}
+                    >
+                      {title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary", mb: 0 }}
+                    >
+                      {subtitle}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    textAlign: "right",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", fontWeight: 600, mb: 0 }}
+                  >
+                    {templates.length} plantillas registradas
+                  </Typography>
+                </Box>
               </Box>
+              <Divider sx={{ my: 0.5 }} />
             </Box>
             <Box
               sx={{
@@ -572,85 +777,116 @@ export default function TemplatesManager({
                 alignItems: "center",
                 gap: 1,
                 flexWrap: "wrap",
-                justifyContent: "space-between",
+                width: "100%",
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <TextField
-                  size="small"
-                  placeholder="Buscar plantilla..."
-                  sx={{ width: 200 }}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Box sx={{ display: "flex", gap: 0.5 }}>
-                  <Button
+              <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Box sx={{ width: 420, flexShrink: 0 }}>
+                  <TextField
                     size="small"
-                    variant={
-                      selectedCategory === null ? "contained" : "outlined"
-                    }
-                    sx={{
-                      px: 1,
-                      py: 0.5,
-                      fontSize: "0.68rem",
-                      borderRadius: 0,
-                      color:
-                        selectedCategory === null ? "#fff" : "text.secondary",
+                    placeholder="Buscar plantilla por nombre..."
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                        sx: { px: 2 },
+                      },
                     }}
-                    onClick={() => setSelectedCategory(null)}
+                    sx={{
+                      width: "100%",
+                      height: 42,
+                      borderRadius: 12,
+                      fontSize: 16,
+                      fontWeight: 400,
+                      lineHeight: "normal",
+                    }}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </Box>
+                <Box sx={{ width: 200, flexShrink: 0 }}>
+                  <TextField
+                    select
+                    size="small"
+                    label="Ámbito"
+                    value={selectedAudience ?? ""}
+                    onChange={(e) =>
+                      setSelectedAudience(e.target.value || null)
+                    }
+                    margin="dense"
+                    sx={{
+                      width: "100%",
+                      height: 48,
+                      borderRadius: 12,
+                      fontSize: 16,
+                      fontWeight: 400,
+                      lineHeight: "normal",
+                    }}
+                    slotProps={{
+                      select: { sx: { px: 2 } },
+                    }}
                   >
-                    Todas
-                  </Button>
-                  {Object.entries(CATEGORY_PRIORITY_STYLES).map(
-                    ([key, style]) => (
-                      <Button
-                        key={key}
-                        size="small"
-                        variant={
-                          selectedCategory === key ? "contained" : "outlined"
-                        }
-                        sx={{
-                          px: 1,
-                          py: 0.5,
-                          fontSize: "0.68rem",
-                          borderRadius: 0,
-                          color:
-                            selectedCategory === key ? "#fff" : style.color,
-                          borderColor:
-                            selectedCategory === key
-                              ? style.color
-                              : `${style.color}40`,
-                          backgroundColor:
-                            selectedCategory === key
-                              ? style.color
-                              : "transparent",
-                        }}
-                        onClick={() =>
-                          setSelectedCategory(
-                            selectedCategory === key ? null : key,
-                          )
-                        }
-                      >
-                        {style.category}
-                      </Button>
-                    ),
-                  )}
+                    <MenuItem value="">Todas</MenuItem>
+                    <MenuItem value="usuarios">Usuarios</MenuItem>
+                    <MenuItem value="empleados">Empleados</MenuItem>
+                    <MenuItem value="marcas">Marcas</MenuItem>
+                    <MenuItem value="global">Global</MenuItem>
+                  </TextField>
+                </Box>
+                <Box sx={{ width: 200, flexShrink: 0 }}>
+                  <TextField
+                    select
+                    size="small"
+                    label="Categoría"
+                    value={selectedCategory ?? ""}
+                    onChange={(e) =>
+                      setSelectedCategory(e.target.value || null)
+                    }
+                    margin="dense"
+                    sx={{
+                      width: "100%",
+                      height: 48,
+                      borderRadius: 12,
+                      fontSize: 16,
+                      fontWeight: 400,
+                      lineHeight: "normal",
+                    }}
+                    slotProps={{
+                      select: { sx: { px: 2 } },
+                    }}
+                  >
+                    <MenuItem value="">Todas</MenuItem>
+                    {Object.entries(CATEGORY_PRIORITY_STYLES).map(
+                      ([key, style]) => (
+                        <MenuItem key={key} value={key}>
+                          {style.category}
+                        </MenuItem>
+                      ),
+                    )}
+                  </TextField>
                 </Box>
               </Box>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                sx={{
-                  borderRadius: 10,
-                  px: 1.5,
-                  py: 0.5,
-                  minHeight: 40,
-                  fontSize: "0.875rem",
-                  height: 40,
-                }}
-                onClick={handleOpenCreate}
-              >
-                Nueva Plantilla
-              </Button>
+              <Box sx={{ ml: "auto" }}>
+                <Tooltip title="Crear una nueva plantilla reutilizable">
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    sx={{
+                      borderRadius: 12,
+                      px: 2,
+                      minHeight: 48,
+                      height: 48,
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                    }}
+                    onClick={handleOpenCreate}
+                  >
+                    Nueva Plantilla
+                  </Button>
+                </Tooltip>
+              </Box>
             </Box>
           </Paper>
 
@@ -744,6 +980,15 @@ export default function TemplatesManager({
                             colWidth="15%"
                           />
                           <SortableHeader
+                            label="Audiencia"
+                            sortKey="audience"
+                            sortBy={sortBy}
+                            sortDirection={sortDirection}
+                            setSortBy={setSortBy}
+                            setSortDirection={setSortDirection}
+                            colWidth="12%"
+                          />
+                          <SortableHeader
                             label="Prioridad"
                             sortKey="priority"
                             sortBy={sortBy}
@@ -754,15 +999,6 @@ export default function TemplatesManager({
                           />
                           <TableCell sx={{ fontWeight: 700, width: "10%" }}>
                             Icono
-                          </TableCell>
-                          <TableCell
-                            sx={{
-                              fontWeight: 700,
-                              width: "10%",
-                              textAlign: "center",
-                            }}
-                          >
-                            Canales
                           </TableCell>
                           <TableCell
                             sx={{
@@ -829,6 +1065,77 @@ export default function TemplatesManager({
                                   }}
                                 />
                               </TableCell>
+                              <TableCell sx={{ width: "12%" }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: 0.5,
+                                  }}
+                                >
+                                  {(tpl.destinatarios ?? ["usuarios"])
+                                    .length === 3 &&
+                                  (tpl.destinatarios ?? []).includes(
+                                    "usuarios",
+                                  ) &&
+                                  (tpl.destinatarios ?? []).includes(
+                                    "empleados",
+                                  ) &&
+                                  (tpl.destinatarios ?? []).includes(
+                                    "marcas",
+                                  ) ? (
+                                    <Chip
+                                      key="global"
+                                      label="🌐 Global"
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: "0.62rem",
+                                        fontWeight: 700,
+                                        borderRadius: 6,
+                                        color: "#6b7280",
+                                        borderColor: "#6b728040",
+                                      }}
+                                    />
+                                  ) : (
+                                    (tpl.destinatarios ?? ["usuarios"]).map(
+                                      (d) => (
+                                        <Chip
+                                          key={d}
+                                          label={
+                                            d === "usuarios"
+                                              ? "👤 Usuarios"
+                                              : d === "empleados"
+                                                ? "👔 Empleados"
+                                                : d === "marcas"
+                                                  ? "🏢 Marcas"
+                                                  : d
+                                          }
+                                          size="small"
+                                          variant="outlined"
+                                          sx={{
+                                            fontSize: "0.62rem",
+                                            fontWeight: 600,
+                                            borderRadius: 6,
+                                            color:
+                                              d === "usuarios"
+                                                ? "#3b82f6"
+                                                : d === "empleados"
+                                                  ? "#8b5cf6"
+                                                  : "#f59e0b",
+                                            borderColor:
+                                              d === "usuarios"
+                                                ? "#3b82f640"
+                                                : d === "empleados"
+                                                  ? "#8b5cf640"
+                                                  : "#f59e0b40",
+                                          }}
+                                        />
+                                      ),
+                                    )
+                                  )}
+                                </Box>
+                              </TableCell>
                               <TableCell>
                                 <Chip
                                   label={tpl.priority}
@@ -855,63 +1162,6 @@ export default function TemplatesManager({
                               </TableCell>
                               <TableCell
                                 sx={{
-                                  textAlign: "center",
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    gap: 0.25,
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <CheckboxIcon
-                                    checked={(tpl.channels ?? []).includes(
-                                      "push",
-                                    )}
-                                    onChange={() =>
-                                      handleChangeChannelForTemplate(
-                                        tpl.id,
-                                        "push",
-                                      )
-                                    }
-                                    sx={{
-                                      p: 0,
-                                      borderRadius: 0,
-                                      border: "none",
-                                      color: (tpl.channels ?? []).includes(
-                                        "push",
-                                      )
-                                        ? "#16a34a"
-                                        : "text.secondary",
-                                    }}
-                                  />
-                                  <CheckboxIcon
-                                    checked={(tpl.channels ?? []).includes(
-                                      "panel",
-                                    )}
-                                    onChange={() =>
-                                      handleChangeChannelForTemplate(
-                                        tpl.id,
-                                        "panel",
-                                      )
-                                    }
-                                    sx={{
-                                      p: 0,
-                                      borderRadius: 0,
-                                      border: "none",
-                                      color: (tpl.channels ?? []).includes(
-                                        "panel",
-                                      )
-                                        ? "#16a34a"
-                                        : "text.secondary",
-                                    }}
-                                  />
-                                </Box>
-                              </TableCell>
-                              <TableCell
-                                sx={{
                                   textAlign: "right",
                                   whiteSpace: "nowrap",
                                 }}
@@ -930,54 +1180,7 @@ export default function TemplatesManager({
                                     vertical: "top",
                                     horizontal: "right",
                                   }}
-                                >
-                                  <MenuItem
-                                    onClick={() => {
-                                      setOpenMenu(null);
-                                      setSelectedId(tpl.id);
-                                    }}
-                                  >
-                                    <VisibilityIcon
-                                      fontSize="small"
-                                      sx={{ mr: 1 }}
-                                    />
-                                    Ver
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setOpenMenu(null);
-                                      handleOpenEdit(tpl);
-                                    }}
-                                  >
-                                    <EditIcon fontSize="small" sx={{ mr: 1 }} />
-                                    Editar
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setOpenMenu(null);
-                                      handleDuplicateTemplate(tpl);
-                                    }}
-                                  >
-                                    <ContentCopy
-                                      fontSize="small"
-                                      sx={{ mr: 1 }}
-                                    />
-                                    Duplicar
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setOpenMenu(null);
-                                      handleDelete(tpl.id);
-                                    }}
-                                    sx={{ color: "#ef4444" }}
-                                  >
-                                    <DeleteIcon
-                                      fontSize="small"
-                                      sx={{ mr: 1 }}
-                                    />
-                                    Eliminar
-                                  </MenuItem>
-                                </Menu>
+                                ></Menu>
                                 <IconButton
                                   size="small"
                                   onClick={(e) => {
@@ -1003,332 +1206,304 @@ export default function TemplatesManager({
                 </Paper>
               </Box>
 
-              {/* ── Preview Studio (derecha, ~45%) ── */}
+              {/* ── Columna derecha: Vista previa + Opciones + Variables (45%) ── */}
               <Box
                 sx={{
-                  width: "45%",
-                  maxWidth: 700,
-                  flexShrink: 0,
+                  flex: 1,
                   minWidth: 0,
+                  borderRadius: 1,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  overflow: "hidden",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 1,
-                  overflow: "hidden",
+                  height: "100%",
                 }}
               >
-                <Paper
+                <Box
                   sx={{
-                    p: 0,
-                    borderRadius: 1,
-                    border: "1px solid",
+                    px: 1.5,
+                    py: 1,
+                    borderBottom: "1px solid",
                     borderColor: "divider",
-                    overflow: "hidden",
+                    backgroundColor: "action.hover",
                     display: "flex",
-                    flexDirection: "column",
-                    minHeight: 0,
-                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  {/* Título reducido + controles */}
-                  <Box
+                  <Typography
+                    variant="overline"
                     sx={{
-                      p: 2,
-                      borderBottom: "1px solid",
-                      borderColor: "divider",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      fontSize: "0.6875rem",
+                      color: "text.secondary",
                     }}
                   >
-                    <Typography
-                      variant="overline"
-                      sx={{
-                        fontWeight: 700,
-                        letterSpacing: "0.05em",
-                        color: "text.secondary",
-                        flex: 1,
-                      }}
-                    >
-                      Vista previa
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                          px: 0.5,
-                          py: 0.25,
-                          borderRadius: 6,
-                          bgcolor:
-                            previewTheme === "dark"
-                              ? "rgba(255,255,255,0.08)"
-                              : "rgba(0,0,0,0.08)",
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontWeight: 700,
-                            fontSize: "0.65rem",
-                            color: "text.secondary",
-                          }}
-                        >
-                          {previewTheme === "dark" ? "🌙" : "☀"}
-                        </Typography>
-                        <Button
-                          size="small"
-                          onClick={() =>
-                            setPreviewTheme((p) =>
-                              p === "dark" ? "light" : "dark",
-                            )
-                          }
-                          sx={{
-                            p: 0,
-                            ml: 0.5,
-                            borderRadius: 4,
-                            fontSize: "0.68rem",
-                            textTransform: "none",
-                            color: "text.secondary",
-                          }}
-                          variant="text"
-                        >
-                          {previewTheme === "dark" ? "Claro" : "Oscuro"}
-                        </Button>
-                      </Box>
-                      <Box
-                        sx={{
-                          ml: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                          px: 0.5,
-                          py: 0.25,
-                          borderRadius: 6,
-                          bgcolor: multiView
-                            ? "rgba(37,99,235,0.12)"
-                            : "rgba(255,255,255,0.04)",
-                          border: multiView ? "1px solid #2563eb40" : "none",
-                        }}
-                      >
-                        <Button
-                          size="small"
-                          onClick={() => setMultiView(!multiView)}
-                          sx={{
-                            p: 0,
-                            ml: 0.5,
-                            borderRadius: 4,
-                            fontSize: "0.68rem",
-                            textTransform: "none",
-                            color: multiView ? "#2563eb" : "text.secondary",
-                            fontWeight: multiView ? 700 : 500,
-                          }}
-                          variant="text"
-                        >
-                          Vista múltiple:{" "}
-                          {multiView ? "Activada" : "Desactivada"}
-                        </Button>
-                      </Box>
-                    </Box>
-                  </Box>
-
-                  {/* Separador PUSH */}
-                  <Box
-                    sx={{
-                      py: 0.5,
-                      px: 1,
-                      borderBottom: "1px solid",
-                      borderColor: "divider",
-                      flexShrink: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: "0.08em",
-                        color: "text.secondary",
-                        textTransform: "uppercase",
-                        fontSize: "0.6875rem",
-                        flexShrink: 0,
-                      }}
-                    ></Typography>
+                    VISTA PREVIA
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Box
                       sx={{
                         display: "flex",
+                        alignItems: "center",
                         gap: 0.5,
-                        overflowX: "auto",
-                        flexShrink: 0,
+                        px: 0.5,
+                        py: 0.25,
+                        borderRadius: 6,
+                        bgcolor:
+                          previewTheme === "dark"
+                            ? "rgba(255,255,255,0.08)"
+                            : "rgba(0,0,0,0.08)",
                       }}
                     >
-                      {PUSH_DEVICES.map((d) => {
-                        const active =
-                          previewMode === "push" && pushDevice === d.key;
-                        const accent = deviceAccent(d.label);
-                        return (
-                          <Button
-                            key={d.key}
-                            onClick={() => {
-                              setPreviewMode("push");
-                              setPushDevice(d.key);
-                            }}
-                            sx={{
-                              border: active
-                                ? `1px solid ${accent}`
-                                : "1px solid transparent",
-                              color: active ? accent : "text.secondary",
-                              backgroundColor: active
-                                ? `${accent}10`
-                                : "transparent",
-                              fontWeight: 700,
-                              fontSize: "0.7rem",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.05em",
-                              px: 0.75,
-                              py: 0.5,
-                              borderRadius: 6,
-                              "&:hover": {
-                                bgcolor: active
-                                  ? "transparent"
-                                  : "action.hover",
-                              },
-                            }}
-                          >
-                            {d.label}
-                          </Button>
-                        );
-                      })}
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: "0.65rem",
+                          color: "text.secondary",
+                        }}
+                      >
+                        {previewTheme === "dark" ? "🌙" : "☀"}
+                      </Typography>
+                      <Button
+                        size="small"
+                        onClick={() =>
+                          setPreviewTheme((p) =>
+                            p === "dark" ? "light" : "dark",
+                          )
+                        }
+                        sx={{
+                          p: 0,
+                          ml: 0.5,
+                          borderRadius: 4,
+                          fontSize: "0.68rem",
+                          textTransform: "none",
+                          color: "text.secondary",
+                        }}
+                        variant="text"
+                      >
+                        {previewTheme === "dark" ? "Claro" : "Oscuro"}
+                      </Button>
+                    </Box>
+                    <Box
+                      sx={{
+                        ml: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        px: 0.5,
+                        py: 0.25,
+                        borderRadius: 6,
+                        bgcolor: multiView
+                          ? "rgba(37,99,235,0.12)"
+                          : "rgba(255,255,255,0.04)",
+                        border: multiView ? "1px solid #2563eb40" : "none",
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        onClick={() => setMultiView(!multiView)}
+                        sx={{
+                          p: 0,
+                          ml: 0.5,
+                          borderRadius: 4,
+                          fontSize: "0.68rem",
+                          textTransform: "none",
+                          color: multiView ? "#2563eb" : "text.secondary",
+                          fontWeight: multiView ? 700 : 500,
+                        }}
+                        variant="text"
+                      >
+                        Vista múltiple: {multiView ? "Activada" : "Desactivada"}
+                      </Button>
                     </Box>
                   </Box>
+                </Box>
 
-                  {/* Separador Panel RETH */}
-                  <Box
+                {/* Separador PUSH */}
+                <Box
+                  sx={{
+                    py: 0.5,
+                    px: 1,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <Typography
+                    variant="caption"
                     sx={{
-                      py: 0.5,
-                      px: 1,
-                      borderBottom: "1px solid",
-                      borderColor: "divider",
+                      fontWeight: 800,
+                      letterSpacing: "0.08em",
+                      color: "text.secondary",
+                      textTransform: "uppercase",
+                      fontSize: "0.6875rem",
                       flexShrink: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
                     }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: "0.08em",
-                        color: "text.secondary",
-                        textTransform: "uppercase",
-                        fontSize: "0.6875rem",
-                        flexShrink: 0,
-                      }}
-                    >
-                      EN RETH
-                    </Typography>
-                    <Button
-                      onClick={() => setPreviewMode("panel")}
-                      sx={{
-                        border:
-                          previewMode === "panel"
-                            ? "1px solid #ef4444"
-                            : "1px solid transparent",
-                        color:
-                          previewMode === "panel"
-                            ? "#ef4444"
-                            : "text.secondary",
-                        backgroundColor:
-                          previewMode === "panel" ? "#fef2f2" : "transparent",
-                        fontWeight: 700,
-                        fontSize: "0.7rem",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        px: 0.75,
-                        py: 0.5,
-                        borderRadius: 6,
-                        ml: 0.5,
-                      }}
-                    >
-                      Panel de notificaciones
-                    </Button>
-                  </Box>
-
-                  {/* Contenido de vista previa */}
+                  ></Typography>
                   <Box
                     sx={{
-                      p: 2,
-                      flex: 1,
-                      minHeight: 0,
-                      overflow: "hidden",
                       display: "flex",
-                      flexDirection: "column",
-                      gap: 1,
+                      gap: 0.5,
+                      overflowX: "auto",
+                      flexShrink: 0,
                     }}
                   >
-                    {selectedTemplate ? (
-                      multiView ? (
-                        <Box
+                    {PUSH_DEVICES.map((d) => {
+                      const active =
+                        previewMode === "push" && pushDevice === d.key;
+                      const accent = deviceAccent(d.label);
+                      return (
+                        <Button
+                          key={d.key}
+                          onClick={() => {
+                            setPreviewMode("push");
+                            setPushDevice(d.key);
+                          }}
                           sx={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: 1,
-                            width: "100%",
-                            height: "100%",
+                            border: active
+                              ? `1px solid ${accent}`
+                              : "1px solid transparent",
+                            color: active ? accent : "text.secondary",
+                            backgroundColor: active
+                              ? `${accent}10`
+                              : "transparent",
+                            fontWeight: 700,
+                            fontSize: "0.7rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                            px: 0.75,
+                            py: 0.5,
+                            borderRadius: 6,
+                            "&:hover": {
+                              bgcolor: active ? "transparent" : "action.hover",
+                            },
                           }}
                         >
-                          <PushPreview
-                            device="android"
-                            title={selectedTemplate.title}
-                            body={selectedTemplate.body}
-                            icon={selectedTemplate.icon}
-                            category={selectedTemplate.category}
-                            priority={selectedTemplate.priority}
-                            actionUrl={selectedTemplate.action_url}
-                            theme={previewTheme}
-                            animate={true}
-                            animationClass={animStyles.slideIn}
-                          />
-                          <PushPreview
-                            device="ios"
-                            title={selectedTemplate.title}
-                            body={selectedTemplate.body}
-                            icon={selectedTemplate.icon}
-                            category={selectedTemplate.category}
-                            priority={selectedTemplate.priority}
-                            actionUrl={selectedTemplate.action_url}
-                            theme={previewTheme}
-                            animate={true}
-                            animationClass={animStyles.slideIn}
-                          />
-                          <PushPreview
-                            device="desktop"
-                            title={selectedTemplate.title}
-                            body={selectedTemplate.body}
-                            icon={selectedTemplate.icon}
-                            category={selectedTemplate.category}
-                            priority={selectedTemplate.priority}
-                            actionUrl={selectedTemplate.action_url}
-                            theme={previewTheme}
-                            animate={true}
-                            animationClass={animStyles.slideIn}
-                          />
-                          <PanelPreview
-                            title={selectedTemplate.title}
-                            body={selectedTemplate.body}
-                            icon={selectedTemplate.icon}
-                            category={selectedTemplate.category}
-                            priority={selectedTemplate.priority}
-                            actionUrl={selectedTemplate.action_url}
-                            theme={previewTheme}
-                            animate={true}
-                            animationClass={animStyles.slideIn}
-                          />
-                        </Box>
-                      ) : previewMode === "panel" ? (
+                          {d.label}
+                        </Button>
+                      );
+                    })}
+                  </Box>
+                </Box>
+
+                {/* Separador Panel RETH */}
+                <Box
+                  sx={{
+                    py: 0.5,
+                    px: 1,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 800,
+                      letterSpacing: "0.08em",
+                      color: "text.secondary",
+                      textTransform: "uppercase",
+                      fontSize: "0.6875rem",
+                      flexShrink: 0,
+                    }}
+                  >
+                    EN RETH
+                  </Typography>
+                  <Button
+                    onClick={() => setPreviewMode("panel")}
+                    sx={{
+                      border:
+                        previewMode === "panel"
+                          ? "1px solid #ef4444"
+                          : "1px solid transparent",
+                      color:
+                        previewMode === "panel" ? "#ef4444" : "text.secondary",
+                      backgroundColor:
+                        previewMode === "panel" ? "#fef2f2" : "transparent",
+                      fontWeight: 700,
+                      fontSize: "0.7rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      px: 0.75,
+                      py: 0.5,
+                      borderRadius: 6,
+                      ml: 0.5,
+                    }}
+                  >
+                    Panel de notificaciones
+                  </Button>
+                </Box>
+
+                {/* Contenido de vista previa */}
+                <Box
+                  sx={{
+                    p: 2,
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  {selectedTemplate ? (
+                    multiView ? (
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 1,
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <PushPreview
+                          device="android"
+                          title={selectedTemplate.title}
+                          body={selectedTemplate.body}
+                          icon={selectedTemplate.icon}
+                          category={selectedTemplate.category}
+                          priority={selectedTemplate.priority}
+                          actionUrl={selectedTemplate.action_url}
+                          theme={previewTheme}
+                          animate={true}
+                          animationClass={animStyles.slideIn}
+                        />
+                        <PushPreview
+                          device="ios"
+                          title={selectedTemplate.title}
+                          body={selectedTemplate.body}
+                          icon={selectedTemplate.icon}
+                          category={selectedTemplate.category}
+                          priority={selectedTemplate.priority}
+                          actionUrl={selectedTemplate.action_url}
+                          theme={previewTheme}
+                          animate={true}
+                          animationClass={animStyles.slideIn}
+                        />
+                        <PushPreview
+                          device="desktop"
+                          title={selectedTemplate.title}
+                          body={selectedTemplate.body}
+                          icon={selectedTemplate.icon}
+                          category={selectedTemplate.category}
+                          priority={selectedTemplate.priority}
+                          actionUrl={selectedTemplate.action_url}
+                          theme={previewTheme}
+                          animate={true}
+                          animationClass={animStyles.slideIn}
+                        />
                         <PanelPreview
                           title={selectedTemplate.title}
                           body={selectedTemplate.body}
@@ -1340,144 +1515,150 @@ export default function TemplatesManager({
                           animate={true}
                           animationClass={animStyles.slideIn}
                         />
-                      ) : (
-                        <PushPreview
-                          device={pushDevice}
-                          title={selectedTemplate.title}
-                          body={selectedTemplate.body}
-                          icon={selectedTemplate.icon}
-                          category={selectedTemplate.category}
-                          priority={selectedTemplate.priority}
-                          actionUrl={selectedTemplate.action_url}
-                          theme={previewTheme}
-                          animate={true}
-                          animationClass={animStyles.slideIn}
-                        />
-                      )
-                    ) : (
-                      <Box
-                        sx={{
-                          flex: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          color: "text.disabled",
-                        }}
-                      >
-                        <VisibilityIcon
-                          sx={{ fontSize: 56, mb: 1, opacity: 0.3 }}
-                        />
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ fontWeight: 600 }}
-                        >
-                          Selecciona una plantilla
-                        </Typography>
-                        <Typography variant="caption">
-                          Su vista previa de Push y Panel aparecerá aquí.
-                        </Typography>
                       </Box>
-                    )}
-                    {/* Métricas en tiempo real */}
-                    {selectedTemplate && (
+                    ) : previewMode === "panel" ? (
+                      <PanelPreview
+                        title={selectedTemplate.title}
+                        body={selectedTemplate.body}
+                        icon={selectedTemplate.icon}
+                        category={selectedTemplate.category}
+                        priority={selectedTemplate.priority}
+                        actionUrl={selectedTemplate.action_url}
+                        theme={previewTheme}
+                        animate={true}
+                        animationClass={animStyles.slideIn}
+                      />
+                    ) : (
+                      <PushPreview
+                        device={pushDevice}
+                        title={selectedTemplate.title}
+                        body={selectedTemplate.body}
+                        icon={selectedTemplate.icon}
+                        category={selectedTemplate.category}
+                        priority={selectedTemplate.priority}
+                        actionUrl={selectedTemplate.action_url}
+                        theme={previewTheme}
+                        animate={true}
+                        animationClass={animStyles.slideIn}
+                      />
+                    )
+                  ) : (
+                    <Box
+                      sx={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        color: "text.disabled",
+                      }}
+                    >
+                      <VisibilityIcon
+                        sx={{ fontSize: 56, mb: 1, opacity: 0.3 }}
+                      />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                        Selecciona una plantilla
+                      </Typography>
+                      <Typography variant="caption">
+                        Su vista previa de Push y Panel aparecerá aquí.
+                      </Typography>
+                    </Box>
+                  )}
+                  {/* Métricas en tiempo real */}
+                  {selectedTemplate && (
+                    <Box
+                      sx={{
+                        pt: 1,
+                        px: 0.5,
+                        borderTop: "1px solid",
+                        borderColor: "divider",
+                        backgroundColor:
+                          previewTheme === "dark"
+                            ? "rgba(0,0,0,0.03)"
+                            : "rgba(0,0,0,0.03)",
+                        borderRadius: 4,
+                      }}
+                    >
+                      {computeTemplateMetrics(selectedTemplate).warnings.map(
+                        (w, i) => (
+                          <Typography
+                            key={i}
+                            variant="caption"
+                            sx={{
+                              color: "#ef4444",
+                              fontWeight: 700,
+                              fontSize: "0.6875rem",
+                              mb: 0.25,
+                              display: "block",
+                            }}
+                          >
+                            {w}
+                          </Typography>
+                        ),
+                      )}
                       <Box
                         sx={{
-                          pt: 1,
-                          px: 0.5,
-                          borderTop: "1px solid",
-                          borderColor: "divider",
-                          backgroundColor:
-                            previewTheme === "dark"
-                              ? "rgba(0,0,0,0.03)"
-                              : "rgba(0,0,0,0.03)",
-                          borderRadius: 4,
+                          display: "flex",
+                          gap: 2,
+                          fontSize: "0.6875rem",
+                          color: "text.secondary",
+                          fontWeight: 600,
                         }}
                       >
-                        {computeTemplateMetrics(selectedTemplate).warnings.map(
-                          (w, i) => (
-                            <Typography
-                              key={i}
-                              variant="caption"
-                              sx={{
-                                color: "#ef4444",
-                                fontWeight: 700,
-                                fontSize: "0.6875rem",
-                                mb: 0.25,
-                                display: "block",
-                              }}
-                            >
-                              {w}
-                            </Typography>
-                          ),
-                        )}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: 2,
-                            fontSize: "0.6875rem",
-                            color: "text.secondary",
-                            fontWeight: 600,
-                          }}
-                        >
-                          <Box sx={{ minWidth: 0 }}>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "text.disabled",
-                                display: "block",
-                                mb: 0.1,
-                              }}
-                            >
-                              Título
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                display: "block",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {selectedTemplate.title} (
-                              {
-                                computeTemplateMetrics(selectedTemplate)
-                                  .titleLen
-                              }{" "}
-                              / 40)
-                            </Typography>
-                          </Box>
-                          <Box sx={{ minWidth: 0 }}>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "text.disabled",
-                                display: "block",
-                                mb: 0.1,
-                              }}
-                            >
-                              Cuerpo
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                display: "block",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {selectedTemplate.body} (
-                              {computeTemplateMetrics(selectedTemplate).bodyLen}{" "}
-                              / 120)
-                            </Typography>
-                          </Box>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.disabled",
+                              display: "block",
+                              mb: 0.1,
+                            }}
+                          >
+                            Título
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              display: "block",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {selectedTemplate.title} (
+                            {computeTemplateMetrics(selectedTemplate).titleLen}{" "}
+                            / 40)
+                          </Typography>
+                        </Box>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.disabled",
+                              display: "block",
+                              mb: 0.1,
+                            }}
+                          >
+                            Cuerpo
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              display: "block",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {selectedTemplate.body} (
+                            {computeTemplateMetrics(selectedTemplate).bodyLen} /
+                            120)
+                          </Typography>
                         </Box>
                       </Box>
-                    )}
-                  </Box>
-                </Paper>
+                    </Box>
+                  )}
+                </Box>
               </Box>
             </Box>
           )}
@@ -1489,146 +1670,267 @@ export default function TemplatesManager({
             maxWidth="xl"
             fullWidth
           >
-            <DialogTitle
-              sx={{
-                fontWeight: 700,
-                fontSize: "1.125rem",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              {editing ? "Editar Plantilla" : "Nueva Plantilla"}
-            </DialogTitle>
-            <DialogContent
-              sx={{
+            <Box
+              sx={(theme) => ({
+                bgcolor: theme.palette.mode === "dark" ? "#232428" : "#FFFFFF",
+                p: 0,
+                width: "100%",
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                gap: 0,
-                p: 2,
-                maxHeight: "85vh",
-                overflow: "hidden",
-              }}
+              })}
             >
-              <Box
+              <DialogTitle
                 sx={{
+                  fontWeight: 700,
+                  fontSize: "1.125rem",
                   display: "flex",
-                  flexDirection: { xs: "column", sm: "row" },
-                  gap: 2,
-                  height: "100%",
-                  minHeight: 0,
+                  alignItems: "center",
+                  gap: 1,
                 }}
               >
-                {/* ── Columna izquierda: Formulario ── */}
+                {editing ? "Editar Plantilla" : "Nueva Plantilla"}
+              </DialogTitle>
+              <DialogContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0,
+                  p: 2,
+                  maxHeight: "85vh",
+                  overflow: "hidden",
+                }}
+              >
                 <Box
                   sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    overflowY: "auto",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 1.5,
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: 2,
+                    height: "100%",
+                    minHeight: 0,
                   }}
                 >
-                  {/* GENERAL */}
+                  {/* ── Columna izquierda: Formulario (55%) ── */}
                   <Box
                     sx={{
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
+                      flex: 1,
+                      minWidth: 0,
+                      overflowY: "auto",
                       display: "flex",
                       flexDirection: "column",
+                      gap: 1.5,
                     }}
                   >
+                    {/* GENERAL */}
                     <Box
                       sx={{
-                        px: 1.5,
-                        py: 1,
-                        borderBottom: "1px solid",
+                        borderRadius: 1,
+                        border: "1px solid",
                         borderColor: "divider",
-                        backgroundColor: "action.hover",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                       }}
                     >
-                      <Typography
-                        variant="overline"
+                      <Box
                         sx={{
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          fontSize: "0.6875rem",
-                          color: "text.secondary",
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
                         }}
                       >
-                        GENERAL
-                      </Typography>
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          GENERAL
+                        </Typography>
+                      </Box>
+                      <Box sx={{ p: 1.5 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: "text.secondary",
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            Título
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: "text.secondary",
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            {
+                              (
+                                form.translations?.[form.baseLocale ?? "es"]
+                                  ?.title ?? ""
+                              ).length
+                            }
+                            /40
+                          </Typography>
+                        </Box>
+                        <TextField
+                          fullWidth
+                          label="Título *"
+                          value={
+                            form.translations?.[form.baseLocale ?? "es"]
+                              ?.title ?? ""
+                          }
+                          onChange={(e) =>
+                            setForm((prev) => {
+                              const loc = prev.baseLocale ?? "es";
+                              const cur = prev.translations?.[loc] ?? {
+                                title: "",
+                                body: "",
+                              };
+                              return {
+                                ...prev,
+                                translations: {
+                                  ...prev.translations,
+                                  [loc]: { ...cur, title: e.target.value },
+                                },
+                              };
+                            })
+                          }
+                          required
+                          margin="dense"
+                          size="small"
+                          sx={{ mb: 1 }}
+                          onFocus={() => setActiveField("title")}
+                        />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: "text.secondary",
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            Cuerpo
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: "text.secondary",
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            {
+                              (
+                                form.translations?.[form.baseLocale ?? "es"]
+                                  ?.body ?? ""
+                              ).length
+                            }
+                            /120
+                          </Typography>
+                        </Box>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={5}
+                          value={
+                            form.translations?.[form.baseLocale ?? "es"]
+                              ?.body ?? ""
+                          }
+                          onChange={(e) =>
+                            setForm((prev) => {
+                              const loc = prev.baseLocale ?? "es";
+                              const cur = prev.translations?.[loc] ?? {
+                                title: "",
+                                body: "",
+                              };
+                              return {
+                                ...prev,
+                                translations: {
+                                  ...prev.translations,
+                                  [loc]: { ...cur, body: e.target.value },
+                                },
+                              };
+                            })
+                          }
+                          required
+                          margin="dense"
+                          size="small"
+                          sx={{ mb: 1 }}
+                          label={
+                            "Cuerpo (usa variable para variables dinámicas)"
+                          }
+                          onFocus={() => setActiveField("body")}
+                        />
+                      </Box>
                     </Box>
-                    <Box sx={{ p: 1.5 }}>
-                      <TextField
-                        fullWidth
-                        label="Título *"
-                        value={form.title}
-                        onChange={handleChange("title")}
-                        required
-                        margin="dense"
-                        size="small"
-                      />
-                      <TextField
-                        fullWidth
-                        label="Cuerpo (usa {{variable}} para variables dinámicas)"
-                        multiline
-                        rows={5}
-                        value={form.body}
-                        onChange={handleChange("body")}
-                        required
-                        margin="dense"
-                        size="small"
-                      />
-                    </Box>
-                  </Box>
 
-                  {/* VISUAL */}
-                  <Box
-                    sx={{
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
+                    {/* VISUAL */}
                     <Box
                       sx={{
-                        px: 1.5,
-                        py: 1,
-                        borderBottom: "1px solid",
+                        borderRadius: 1,
+                        border: "1px solid",
                         borderColor: "divider",
-                        backgroundColor: "action.hover",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                       }}
                     >
-                      <Typography
-                        variant="overline"
+                      <Box
                         sx={{
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          fontSize: "0.6875rem",
-                          color: "text.secondary",
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
                         }}
                       >
-                        VISUAL
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 1.5,
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: 1.5,
-                      }}
-                    >
-                      <Tooltip title="Define la familia de notificación: Social (match, like, message), Mensajes, CARE, Perfil, Premium, Sistema o Seguridad.">
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          VISUAL
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 1.5,
+                        }}
+                      >
                         <Box>
                           <TextField
                             fullWidth
@@ -1650,8 +1952,6 @@ export default function TemplatesManager({
                             <MenuItem value="security">Seguridad</MenuItem>
                           </TextField>
                         </Box>
-                      </Tooltip>
-                      <Tooltip title="P0 Crítica: sobrepasa No Molestar. P1 Alta: prioritaria. P2 Normal: estándar. P3 Baja: informativa.">
                         <Box>
                           <TextField
                             fullWidth
@@ -1669,11 +1969,1189 @@ export default function TemplatesManager({
                             <MenuItem value="P3">P3 Baja</MenuItem>
                           </TextField>
                         </Box>
-                      </Tooltip>
+                        <Box
+                          sx={{
+                            gridColumn: "1 / -1",
+                            mt: 0.5,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1.5,
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontWeight: 600,
+                                color: "text.secondary",
+                                minWidth: 100,
+                              }}
+                            >
+                              Origen visual
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Switch
+                                checked={form.icon_type === "dynamic_avatar"}
+                                onChange={(_e, v) =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    icon_type: v
+                                      ? "dynamic_avatar"
+                                      : "system_icon",
+                                  }))
+                                }
+                                size="small"
+                                sx={{
+                                  color:
+                                    form.icon_type === "dynamic_avatar"
+                                      ? "primary.main"
+                                      : "text.secondary",
+                                }}
+                              />
+                              <Typography
+                                variant="caption"
+                                sx={{ fontWeight: 600 }}
+                              >
+                                Avatar del usuario
+                              </Typography>
+                            </Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <Switch
+                                checked={form.icon_type === "system_icon"}
+                                onChange={(_e, v) =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    icon_type: v
+                                      ? "system_icon"
+                                      : "dynamic_avatar",
+                                  }))
+                                }
+                                size="small"
+                                sx={{
+                                  color:
+                                    form.icon_type === "system_icon"
+                                      ? "primary.main"
+                                      : "text.secondary",
+                                }}
+                              />
+                              <Typography
+                                variant="caption"
+                                sx={{ fontWeight: 600 }}
+                              >
+                                Ícono del sistema
+                              </Typography>
+                            </Box>
+                          </Box>
+                          {form.icon_type === "system_icon" ? (
+                            <Box
+                              sx={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(6, 36px)",
+                                gap: 0.75,
+                                mt: 0.5,
+                              }}
+                            >
+                              {ICON_EMOJI_GRID.map((emoji) => (
+                                <Box
+                                  key={emoji}
+                                  onClick={() =>
+                                    setForm((prev) => ({
+                                      ...prev,
+                                      icon: emoji,
+                                    }))
+                                  }
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: 36,
+                                    height: 36,
+                                    borderRadius: "50%",
+                                    cursor: "pointer",
+                                    fontSize: 20,
+                                    border: `1px solid ${
+                                      form.icon === emoji
+                                        ? "primary.main"
+                                        : "divider"
+                                    }`,
+                                    bgcolor:
+                                      form.icon === emoji
+                                        ? "rgba(37,99,235,0.12)"
+                                        : "background.paper",
+                                    "&:hover": {
+                                      borderColor: "primary.main",
+                                    },
+                                  }}
+                                >
+                                  <span role="img" aria-label={emoji}>
+                                    {emoji}
+                                  </span>
+                                </Box>
+                              ))}
+                            </Box>
+                          ) : (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mt: 0.5,
+                                paddingLeft: 1,
+                                color: "text.secondary",
+                              }}
+                            >
+                              <span style={{ fontSize: 22 }}>👤</span>
+                              <Typography
+                                variant="caption"
+                                sx={{ fontWeight: 600 }}
+                              >
+                                Usará la foto del usuario que originó la
+                                interacción
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* COMPORTAMIENTO */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
                       <Box
                         sx={{
-                          gridColumn: "1 / -1",
-                          mt: 0.5,
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          COMPORTAMIENTO
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 1.5,
+                        }}
+                      >
+                        <Box>
+                          <TextField
+                            fullWidth
+                            label="Tipo de acción"
+                            select
+                            value={form.action_type}
+                            onChange={handleChange("action_type")}
+                            margin="dense"
+                            size="small"
+                            slotProps={{ select: {} }}
+                          >
+                            <MenuItem value="">Ninguna</MenuItem>
+                            <MenuItem value="url">Abrir URL</MenuItem>
+                            <MenuItem value="screen">
+                              Abrir pantalla interna
+                            </MenuItem>
+                            <MenuItem value="chat">Abrir chat</MenuItem>
+                            <MenuItem value="profile">Abrir perfil</MenuItem>
+                            <MenuItem value="survey">Abrir encuesta</MenuItem>
+                          </TextField>
+                        </Box>
+                        <Box>
+                          <TextField
+                            fullWidth
+                            label="Destino"
+                            value={form.action_destination}
+                            onChange={handleChange("action_destination")}
+                            placeholder="/profile/{id} o https://..."
+                            margin="dense"
+                            size="small"
+                          />
+                        </Box>
+                        <Box>
+                          <TextField
+                            fullWidth
+                            label="Evento disparador"
+                            select
+                            value={form.evento_disparador}
+                            onChange={handleChange("evento_disparador")}
+                            margin="dense"
+                            size="small"
+                            slotProps={{ select: {} }}
+                          >
+                            <MenuItem value="">Ninguno</MenuItem>
+                            <MenuItem value="like_received">
+                              like_received
+                            </MenuItem>
+                            <MenuItem value="match_created">
+                              match_created
+                            </MenuItem>
+                            <MenuItem value="new_message">new_message</MenuItem>
+                            <MenuItem value="payment_successful">
+                              payment_successful
+                            </MenuItem>
+                            <MenuItem value="survey_completed">
+                              survey_completed
+                            </MenuItem>
+                          </TextField>
+                        </Box>
+                        <Box sx={{ gridColumn: "1 / -1", mt: 0.5 }}>
+                          <TextField
+                            fullWidth
+                            label="Uso principal"
+                            select
+                            value={form.uso_principal}
+                            onChange={handleChange("uso_principal")}
+                            margin="dense"
+                            size="small"
+                            slotProps={{ select: {} }}
+                          >
+                            <MenuItem value="portal_usuarios">
+                              Portal Usuarios
+                            </MenuItem>
+                            <MenuItem value="portal_empleados">
+                              Portal Empleados
+                            </MenuItem>
+                            <MenuItem value="portal_marcas">
+                              Portal Marcas
+                            </MenuItem>
+                            <MenuItem value="global">Global</MenuItem>
+                          </TextField>
+                        </Box>
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  {/* ── Columna derecha: Vista previa + Opciones + Variables (45%) ── */}
+                  <Box
+                    sx={{
+                      flex: 1,
+                      minWidth: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
+                    }}
+                  >
+                    {/* VISTA PREVIA */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        minHeight: 300,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          VISTA PREVIA
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 0.5,
+                          }}
+                        >
+                          <Button
+                            size="small"
+                            onClick={() => setPreviewTheme("light")}
+                            sx={{
+                              fontSize: "0.68rem",
+                              px: 0.75,
+                              py: 0.25,
+                              borderRadius: 4,
+                              border: `1px solid ${
+                                previewTheme === "light"
+                                  ? "primary.main"
+                                  : "divider"
+                              }`,
+                              color:
+                                previewTheme === "light"
+                                  ? "primary.main"
+                                  : "text.secondary",
+                            }}
+                          >
+                            Claro
+                          </Button>
+                          <Button
+                            size="small"
+                            onClick={() => setPreviewTheme("dark")}
+                            sx={{
+                              fontSize: "0.68rem",
+                              px: 0.75,
+                              py: 0.25,
+                              borderRadius: 4,
+                              border: `1px solid ${
+                                previewTheme === "dark"
+                                  ? "primary.main"
+                                  : "divider"
+                              }`,
+                              color:
+                                previewTheme === "dark"
+                                  ? "primary.main"
+                                  : "text.secondary",
+                            }}
+                          >
+                            Oscuro
+                          </Button>
+                        </Box>
+                      </Box>
+                      <Box
+                        sx={{
+                          flex: 1,
+                          minHeight: 0,
+                          overflowY: "auto",
+                          p: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                          justifyContent: "center",
+                        }}
+                      >
+                        {selectedTemplate ? (
+                          <PushPreview
+                            device="android"
+                            title={resolvePreview(selectedTemplate.title)}
+                            body={resolvePreview(selectedTemplate.body)}
+                            icon={selectedTemplate.icon}
+                            category={selectedTemplate.category}
+                            priority={selectedTemplate.priority}
+                            actionUrl={selectedTemplate.action_url}
+                            theme={previewTheme}
+                            animate={true}
+                            animationClass={animStyles.slideIn}
+                          />
+                        ) : (
+                          <Box
+                            sx={{
+                              flex: 1,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "column",
+                              color: "text.disabled",
+                            }}
+                          >
+                            <VisibilityIcon
+                              sx={{ fontSize: 48, mb: 1, opacity: 0.3 }}
+                            />
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Selecciona una plantilla
+                            </Typography>
+                            <Typography variant="caption">
+                              La vista previa se actualizará al editar.
+                            </Typography>
+                          </Box>
+                        )}
+                      </Box>
+                    </Box>
+
+                    {/* LOCALIZACIÓN */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            color: "text.secondary",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                          }}
+                        >
+                          LOCALIZACIÓN
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                        }}
+                      >
+                        <TextField
+                          select
+                          size="small"
+                          label="Idioma base"
+                          value={form.baseLocale ?? "es"}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              baseLocale: e.target.value,
+                            }))
+                          }
+                          margin="dense"
+                          slotProps={{ select: {} }}
+                        >
+                          <MenuItem value="en">English</MenuItem>
+                          <MenuItem value="es">Español</MenuItem>
+                          <MenuItem value="pt">Português</MenuItem>
+                          <MenuItem value="fr">Français</MenuItem>
+                          <MenuItem value="de">Deutsch</MenuItem>
+                          <MenuItem value="it">Italiano</MenuItem>
+                          <MenuItem value="ru">Русский</MenuItem>
+                          <MenuItem value="sv">Svenska</MenuItem>
+                          <MenuItem value="nl">Nederlands</MenuItem>
+                          <MenuItem value="zh">中文 (Mandarín)</MenuItem>
+                          <MenuItem value="hi">हिन्दी (Hindi)</MenuItem>
+                          <MenuItem value="bn">বাংলা (Bengalí)</MenuItem>
+                          <MenuItem value="ja">日本語 (Japanese)</MenuItem>
+                          <MenuItem value="ko">한국어 (Korean)</MenuItem>
+                          <MenuItem value="ar">العربية (Árabe)</MenuItem>
+                          <MenuItem value="sw">Kiswahili (Swahili)</MenuItem>
+                          <MenuItem value="ha">Hausa</MenuItem>
+                          <MenuItem value="am">አማርኛ (Amhárico)</MenuItem>
+                          <MenuItem value="fil">Filipino/Tagalog</MenuItem>
+                          <MenuItem value="ms">Bahasa Melayu (Malay)</MenuItem>
+                          <MenuItem value="mi">Māori</MenuItem>
+                        </TextField>
+                        <TextField
+                          select
+                          size="small"
+                          label="Tipo de plantilla"
+                          value={form.templateType ?? "sistema"}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              templateType: e.target.value,
+                            }))
+                          }
+                          margin="dense"
+                          slotProps={{ select: {} }}
+                        >
+                          <MenuItem value="sistema">Sistema</MenuItem>
+                          <MenuItem value="evento_automatico">
+                            Evento automático
+                          </MenuItem>
+                          <MenuItem value="campaña_manual">
+                            Campaña manual
+                          </MenuItem>
+                        </TextField>
+                      </Box>
+                    </Box>
+
+                    {/* TRADUCCIONES */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            color: "text.secondary",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                          }}
+                        >
+                          TRADUCCIONES
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 0.75,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Idioma base:{" "}
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: 700, color: "primary.main" }}
+                            >
+                              {form.baseLocale === "es"
+                                ? "Español"
+                                : form.baseLocale === "en"
+                                  ? "English"
+                                  : form.baseLocale}
+                            </Typography>
+                          </Typography>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => {
+                              const loc = form.baseLocale ?? "es";
+                              setForm((prev) => ({
+                                ...prev,
+                                translations: {
+                                  ...prev.translations,
+                                  [loc]: {
+                                    ...(prev.translations?.[loc] ?? {
+                                      title: "",
+                                      body: "",
+                                    }),
+                                  },
+                                },
+                              }));
+                            }}
+                          >
+                            + Agregar traducción
+                          </Button>
+                        </Box>
+                        {["es", "en", "fr", "de", "it", "pt"].map((loc) => {
+                          const t = form.translations?.[loc];
+                          const hasTranslation = Boolean(t?.title || t?.body);
+                          const isBase = loc === form.baseLocale;
+                          return (
+                            <Box
+                              key={loc}
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                px: 0.5,
+                                py: 0.5,
+                                borderRadius: 4,
+                                bgcolor: isBase
+                                  ? "action.hover"
+                                  : "transparent",
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 0.75,
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: 600, minWidth: 100 }}
+                                >
+                                  {loc === "es"
+                                    ? "Español"
+                                    : loc === "en"
+                                      ? "English"
+                                      : loc === "fr"
+                                        ? "Français"
+                                        : loc === "de"
+                                          ? "Deutsch"
+                                          : loc === "it"
+                                            ? "Italiano"
+                                            : "Português"}
+                                </Typography>
+                                {isBase && (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: "primary.main",
+                                      fontSize: "0.65rem",
+                                    }}
+                                  >
+                                    Base
+                                  </Typography>
+                                )}
+                                {hasTranslation ? (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: "success.main",
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    ✅
+                                  </Typography>
+                                ) : (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: "warning.main",
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    ⚠ Pendiente
+                                  </Typography>
+                                )}
+                              </Box>
+                              <Button
+                                size="small"
+                                variant="text"
+                                onClick={() => setEditingLocale(loc)}
+                                sx={{
+                                  color:
+                                    editingLocale === loc
+                                      ? "primary.main"
+                                      : "text.secondary",
+                                }}
+                              >
+                                Editar
+                              </Button>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+
+                    {/* DESTINATARIOS */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          DESTINATARIOS
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 0.75,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <CheckboxIcon
+                            checked={(form.destinatarios ?? []).includes(
+                              "usuarios",
+                            )}
+                            onChange={() => toggleDestinatario("usuarios")}
+                            sx={{
+                              color: (form.destinatarios ?? []).includes(
+                                "usuarios",
+                              )
+                                ? "primary.main"
+                                : "text.secondary",
+                            }}
+                          />
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Usuarios
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <CheckboxIcon
+                            checked={(form.destinatarios ?? []).includes(
+                              "empleados",
+                            )}
+                            onChange={() => toggleDestinatario("empleados")}
+                            sx={{
+                              color: (form.destinatarios ?? []).includes(
+                                "empleados",
+                              )
+                                ? "primary.main"
+                                : "text.secondary",
+                            }}
+                          />
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Empleados
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <CheckboxIcon
+                            checked={(form.destinatarios ?? []).includes(
+                              "marcas",
+                            )}
+                            onChange={() => toggleDestinatario("marcas")}
+                            sx={{
+                              color: (form.destinatarios ?? []).includes(
+                                "marcas",
+                              )
+                                ? "primary.main"
+                                : "text.secondary",
+                            }}
+                          />
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Marcas
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* COMPORTAMIENTO */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          OPCIONES
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 0.75,
+                        }}
+                      >
+                        <Tooltip title="La notificación permanecerá visible hasta que el usuario interactúe con ella.">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Switch
+                              checked={form.required_action}
+                              onChange={handleChangeCheckbox("required_action")}
+                              size="small"
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Requiere acción del usuario
+                            </Typography>
+                          </Box>
+                        </Tooltip>
+                        <Tooltip title="Ignora el modo No Molestar en dispositivos compatibles.">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Switch
+                              checked={form.critical}
+                              onChange={handleChangeCheckbox("critical")}
+                              size="small"
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Crítica (sobrepasa No Molestar)
+                            </Typography>
+                          </Box>
+                        </Tooltip>
+                        <Tooltip title="La notificación no desaparecerá automáticamente del panel.">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Switch
+                              checked={form.persistent}
+                              onChange={handleChangeCheckbox("persistent")}
+                              size="small"
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Persistente
+                            </Typography>
+                          </Box>
+                        </Tooltip>
+                        <Tooltip title="Permite programar el envío para una fecha y hora específicas.">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Switch
+                              checked={form.programmable}
+                              onChange={handleChangeCheckbox("programmable")}
+                              size="small"
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Programable
+                            </Typography>
+                          </Box>
+                        </Tooltip>
+                        <Tooltip title="El usuario puede silenciar este tipo de notificaciones.">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Switch
+                              checked={form.silencable}
+                              onChange={handleChangeCheckbox("silencable")}
+                              size="small"
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Silenciable
+                            </Typography>
+                          </Box>
+                        </Tooltip>
+                      </Box>
+                    </Box>
+
+                    {/* VARIABLES DISPONIBLES */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        mt: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                            color: "text.secondary",
+                          }}
+                        >
+                          VARIABLES DISPONIBLES
+                        </Typography>
+                      </Box>
+                      <Box sx={{ p: 1.5 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 600,
+                            color: "text.secondary",
+                            mb: 0.75,
+                            fontSize: "0.6875rem",
+                          }}
+                        >
+                          Pulsa una variable para insertarla en la posición del
+                          cursor.
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(200px, 1fr))",
+                            gap: 1,
+                            mb: 1.5,
+                          }}
+                        >
+                          {VARIABLE_PRESETS.map((v) => {
+                            const desc = VARIABLE_DESCS[v] ?? "";
+                            const scope = VARIABLE_SCOPE[v] ?? {
+                              title: false,
+                              body: false,
+                            };
+                            return (
+                              <Box
+                                key={v}
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 0.25,
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                    mb: 0.25,
+                                  }}
+                                >
+                                  <Button
+                                    size="small"
+                                    variant="outlined"
+                                    onClick={() => {
+                                      const field = activeField;
+                                      const loc = form.baseLocale ?? "es";
+                                      const current = form.translations?.[
+                                        loc
+                                      ] ?? {
+                                        title: "",
+                                        body: "",
+                                      };
+                                      setForm((prev) => ({
+                                        ...prev,
+                                        translations: {
+                                          ...prev.translations,
+                                          [loc]: {
+                                            ...current,
+                                            [field]:
+                                              current[field] + `{{${v}}}`,
+                                          },
+                                        },
+                                      }));
+                                    }}
+                                    sx={{
+                                      px: 0.75,
+                                      py: 0.5,
+                                      fontSize: "0.68rem",
+                                      borderRadius: 6,
+                                      textAlign: "left",
+                                      justifyContent: "flex-start",
+                                      flex: 1,
+                                    }}
+                                  >
+                                    {`{{${v}}`}
+                                  </Button>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      fontSize: "0.6rem",
+                                      fontWeight: 700,
+                                      color: scope.title
+                                        ? "success.main"
+                                        : "text.disabled",
+                                    }}
+                                  >
+                                    {scope.title ? "✅ T" : "❌ T"}
+                                  </Typography>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      fontSize: "0.6rem",
+                                      fontWeight: 700,
+                                      color: scope.body
+                                        ? "success.main"
+                                        : "text.disabled",
+                                    }}
+                                  >
+                                    {scope.body ? "✅ C" : "❌ C"}
+                                  </Typography>
+                                </Box>
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    color: "text.secondary",
+                                    fontSize: "0.62rem",
+                                    fontStyle: "italic",
+                                  }}
+                                >
+                                  {desc}
+                                </Typography>
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* METADATOS */}
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          px: 1.5,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            color: "text.secondary",
+                            textTransform: "uppercase",
+                            fontSize: "0.6875rem",
+                          }}
+                        >
+                          METADATOS
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          p: 1.5,
                           display: "flex",
                           flexDirection: "column",
                           gap: 1,
@@ -1683,7 +3161,7 @@ export default function TemplatesManager({
                           sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 1.5,
+                            justifyContent: "space-between",
                             mb: 0.5,
                           }}
                         >
@@ -1692,147 +3170,38 @@ export default function TemplatesManager({
                             sx={{
                               fontWeight: 600,
                               color: "text.secondary",
-                              minWidth: 100,
+                              fontSize: "0.6875rem",
                             }}
                           >
-                            Origen visual
+                            Nombre interno
                           </Typography>
-                          <Box
+                          <Typography
+                            variant="caption"
                             sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <Switch
-                              checked={form.icon_type === "dynamic_avatar"}
-                              onChange={(_e, v) =>
-                                setForm((prev) => ({
-                                  ...prev,
-                                  icon_type: v
-                                    ? "dynamic_avatar"
-                                    : "system_icon",
-                                }))
-                              }
-                              size="small"
-                              sx={{
-                                color:
-                                  form.icon_type === "dynamic_avatar"
-                                    ? "primary.main"
-                                    : "text.secondary",
-                              }}
-                            />
-                            <Typography
-                              variant="caption"
-                              sx={{ fontWeight: 600 }}
-                            >
-                              Avatar del usuario
-                            </Typography>
-                          </Box>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <Switch
-                              checked={form.icon_type === "system_icon"}
-                              onChange={(_e, v) =>
-                                setForm((prev) => ({
-                                  ...prev,
-                                  icon_type: v
-                                    ? "system_icon"
-                                    : "dynamic_avatar",
-                                }))
-                              }
-                              size="small"
-                              sx={{
-                                color:
-                                  form.icon_type === "system_icon"
-                                    ? "primary.main"
-                                    : "text.secondary",
-                              }}
-                            />
-                            <Typography
-                              variant="caption"
-                              sx={{ fontWeight: 600 }}
-                            >
-                              Ícono del sistema
-                            </Typography>
-                          </Box>
-                        </Box>
-                        {form.icon_type === "system_icon" ? (
-                          <Box
-                            sx={{
-                              display: "grid",
-                              gridTemplateColumns: "repeat(6, 36px)",
-                              gap: 0.75,
-                              mt: 0.5,
-                            }}
-                          >
-                            {ICON_EMOJI_GRID.map((emoji) => (
-                              <Box
-                                key={emoji}
-                                onClick={() =>
-                                  setForm((prev) => ({ ...prev, icon: emoji }))
-                                }
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: 36,
-                                  height: 36,
-                                  borderRadius: "50%",
-                                  cursor: "pointer",
-                                  fontSize: 20,
-                                  border: `1px solid ${
-                                    form.icon === emoji
-                                      ? "primary.main"
-                                      : "divider"
-                                  }`,
-                                  bgcolor:
-                                    form.icon === emoji
-                                      ? "rgba(37,99,235,0.12)"
-                                      : "background.paper",
-                                  "&:hover": {
-                                    borderColor: "primary.main",
-                                  },
-                                }}
-                              >
-                                <span role="img" aria-label={emoji}>
-                                  {emoji}
-                                </span>
-                              </Box>
-                            ))}
-                          </Box>
-                        ) : (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              mt: 0.5,
-                              paddingLeft: 1,
+                              fontWeight: 600,
                               color: "text.secondary",
+                              fontSize: "0.6875rem",
                             }}
                           >
-                            <span style={{ fontSize: 22 }}>👤</span>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontWeight: 600 }}
-                            >
-                              Usará la foto del usuario que originó la
-                              interacción
-                            </Typography>
-                          </Box>
-                        )}
+                            {form.internalName?.length ?? 0}/100
+                          </Typography>
+                        </Box>
+                        <TextField
+                          fullWidth
+                          label="Nombre interno"
+                          value={form.internalName}
+                          onChange={handleChange("internalName")}
+                          margin="dense"
+                          size="small"
+                          sx={{ mb: 1 }}
+                          placeholder="Ej: Nuevo Match"
+                        />
                         <Box
                           sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 1,
-                            mt: 0.5,
+                            justifyContent: "space-between",
+                            mb: 0.5,
                           }}
                         >
                           <Typography
@@ -1840,568 +3209,176 @@ export default function TemplatesManager({
                             sx={{
                               fontWeight: 600,
                               color: "text.secondary",
-                              minWidth: 80,
+                              fontSize: "0.6875rem",
                             }}
                           >
-                            Color
+                            Clave única (slug)
                           </Typography>
-                          <TextField
-                            fullWidth
-                            label="Color hex"
-                            value={form.color || "#3b82f6"}
-                            onChange={handleChange("color")}
-                            size="small"
-                            margin="dense"
-                            sx={{ flex: 1 }}
-                          />
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: "text.secondary",
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            {form.slug?.length ?? 0}/100
+                          </Typography>
                         </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-
-                  {/* COMPORTAMIENTO */}
-                  <Box
-                    sx={{
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        px: 1.5,
-                        py: 1,
-                        borderBottom: "1px solid",
-                        borderColor: "divider",
-                        backgroundColor: "action.hover",
-                      }}
-                    >
-                      <Typography
-                        variant="overline"
-                        sx={{
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          fontSize: "0.6875rem",
-                          color: "text.secondary",
-                        }}
-                      >
-                        COMPORTAMIENTO
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 1.5,
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: 1.5,
-                      }}
-                    >
-                      <Box>
                         <TextField
                           fullWidth
-                          label="Tipo de acción"
-                          select
-                          value={form.action_type}
-                          onChange={handleChange("action_type")}
+                          label="Clave única (slug)"
+                          value={form.slug}
+                          onChange={handleChange("slug")}
                           margin="dense"
                           size="small"
-                          slotProps={{ select: {} }}
-                        >
-                          <MenuItem value="">Ninguna</MenuItem>
-                          <MenuItem value="url">Abrir URL</MenuItem>
-                          <MenuItem value="screen">
-                            Abrir pantalla interna
-                          </MenuItem>
-                          <MenuItem value="chat">Abrir chat</MenuItem>
-                          <MenuItem value="profile">Abrir perfil</MenuItem>
-                          <MenuItem value="survey">Abrir encuesta</MenuItem>
-                        </TextField>
-                      </Box>
-                      <Box>
-                        <TextField
-                          fullWidth
-                          label="Destino"
-                          value={form.action_destination}
-                          onChange={handleChange("action_destination")}
-                          placeholder="/profile/{id} o https://..."
-                          margin="dense"
-                          size="small"
+                          sx={{ mb: 1 }}
+                          placeholder="Ej: new_match"
                         />
                       </Box>
                     </Box>
-                  </Box>
 
-                  {/* OPCIONES */}
-                  <Box
-                    sx={{
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        px: 1.5,
-                        py: 1,
-                        borderBottom: "1px solid",
-                        borderColor: "divider",
-                        backgroundColor: "action.hover",
-                      }}
-                    >
-                      <Typography
-                        variant="overline"
-                        sx={{
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          fontSize: "0.6875rem",
-                          color: "text.secondary",
-                        }}
-                      >
-                        OPCIONES
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 1.5,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                      }}
-                    >
-                      <Tooltip title="La notificación permanecerá visible hasta que el usuario interactúe con ella.">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                          }}
-                        >
-                          <Switch
-                            checked={form.required_action}
-                            onChange={handleChangeCheckbox("required_action")}
-                            size="small"
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Requiere acción del usuario
-                          </Typography>
-                        </Box>
-                      </Tooltip>
-                      <Tooltip title="Ignora el modo No Molestar en dispositivos compatibles.">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                          }}
-                        >
-                          <Switch
-                            checked={form.critical}
-                            onChange={handleChangeCheckbox("critical")}
-                            size="small"
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Crítica (sobrepasa No Molestar)
-                          </Typography>
-                        </Box>
-                      </Tooltip>
-                      <Tooltip title="La notificación no desaparecerá automáticamente del panel.">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                          }}
-                        >
-                          <Switch
-                            checked={form.persistent}
-                            onChange={handleChangeCheckbox("persistent")}
-                            size="small"
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Persistente
-                          </Typography>
-                        </Box>
-                      </Tooltip>
-                      <Tooltip title="Permite programar el envío para una fecha y hora específicas.">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                          }}
-                        >
-                          <Switch
-                            checked={form.programmable}
-                            onChange={handleChangeCheckbox("programmable")}
-                            size="small"
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Programable
-                          </Typography>
-                        </Box>
-                      </Tooltip>
-                      <Tooltip title="El usuario puede silenciar este tipo de notificaciones.">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                          }}
-                        >
-                          <Switch
-                            checked={form.silencable}
-                            onChange={handleChangeCheckbox("silencable")}
-                            size="small"
-                          />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Silenciable
-                          </Typography>
-                        </Box>
-                      </Tooltip>
-                    </Box>
-                  </Box>
-
-                  {/* VARIABLES */}
-                  <Box
-                    sx={{
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        px: 1.5,
-                        py: 1,
-                        borderBottom: "1px solid",
-                        borderColor: "divider",
-                        backgroundColor: "action.hover",
-                      }}
-                    >
-                      <Typography
-                        variant="overline"
-                        sx={{
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          fontSize: "0.6875rem",
-                          color: "text.secondary",
-                        }}
-                      >
-                        VARIABLES
-                      </Typography>
-                    </Box>
-                    <Box sx={{ p: 1.5 }}>
+                    {editing && (
                       <Box
                         sx={{
+                          borderRadius: 1,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          overflow: "hidden",
                           display: "flex",
-                          alignItems: "center",
-                          gap: 1,
+                          flexDirection: "column",
                           mb: 1,
-                          flexWrap: "wrap",
+                          mt: 1,
                         }}
                       >
-                        {VARIABLE_PRESETS.map((v) => (
-                          <Button
-                            key={v}
-                            size="small"
-                            variant="outlined"
-                            onClick={() =>
-                              setForm((prev) => ({
-                                ...prev,
-                                body: prev.body + `{{${v}}}`,
-                              }))
-                            }
+                        <Box
+                          sx={{
+                            px: 1.5,
+                            py: 1,
+                            borderBottom: "1px solid",
+                            borderColor: "divider",
+                            backgroundColor: "action.hover",
+                          }}
+                        >
+                          <Typography
+                            variant="overline"
                             sx={{
-                              px: 0.75,
-                              py: 0.375,
-                              fontSize: "0.68rem",
-                              borderRadius: 6,
+                              fontWeight: 700,
+                              letterSpacing: "0.08em",
+                              color: "text.secondary",
+                              textTransform: "uppercase",
+                              fontSize: "0.6875rem",
                             }}
-                          >{`{{${v}}`}</Button>
-                        ))}
+                          >
+                            AUDITORÍA
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            p: 1.5,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 0.75,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: "text.secondary",
+                                fontSize: "0.6875rem",
+                              }}
+                            >
+                              Creado por
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              {editing.created_by}
+                            </Typography>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: "text.secondary",
+                                fontSize: "0.6875rem",
+                              }}
+                            >
+                              Fecha creación
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              {editing.created_at}
+                            </Typography>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: "text.secondary",
+                                fontSize: "0.6875rem",
+                              }}
+                            >
+                              Última modificación
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              {editing.updated_at}
+                            </Typography>
+                          </Box>
+                        </Box>
                       </Box>
-                      <TextField
-                        fullWidth
-                        label="Variables actuales (separadas por coma)"
-                        value={form.variables}
-                        onChange={handleChange("variables")}
-                        placeholder="Ej: first_name, matches_count, city"
-                        margin="dense"
-                        size="small"
-                      />
-                    </Box>
+                    )}
                   </Box>
                 </Box>
-
-                {/* ── Columna derecha: Vista previa ── */}
-                <Box
+              </DialogContent>
+              <DialogActions sx={{ pt: 0, px: 2, pb: 1, gap: 1 }}>
+                <Button
+                  onClick={() => setOpen(false)}
+                  startIcon={<CancelIcon />}
+                  size="medium"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSave}
+                  startIcon={<SaveIcon />}
+                  size="large"
                   sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    borderRadius: 1,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
+                    px: 2,
+                    fontWeight: 700,
+                    minHeight: 44,
                   }}
                 >
-                  <Box
-                    sx={{
-                      px: 1.5,
-                      py: 1,
-                      borderBottom: "1px solid",
-                      borderColor: "divider",
-                      backgroundColor: "action.hover",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Typography
-                      variant="overline"
-                      sx={{
-                        fontWeight: 700,
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        fontSize: "0.6875rem",
-                        color: "text.secondary",
-                      }}
-                    >
-                      VISTA PREVIA
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: 0.5,
-                      }}
-                    >
-                      <Button
-                        size="small"
-                        onClick={() => setPreviewTheme("light")}
-                        sx={{
-                          fontSize: "0.68rem",
-                          px: 0.75,
-                          py: 0.25,
-                          borderRadius: 4,
-                          border: `1px solid ${
-                            previewTheme === "light"
-                              ? "primary.main"
-                              : "divider"
-                          }`,
-                          color:
-                            previewTheme === "light"
-                              ? "primary.main"
-                              : "text.secondary",
-                        }}
-                      >
-                        Claro
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setPreviewTheme("dark")}
-                        sx={{
-                          fontSize: "0.68rem",
-                          px: 0.75,
-                          py: 0.25,
-                          borderRadius: 4,
-                          border: `1px solid ${
-                            previewTheme === "dark" ? "primary.main" : "divider"
-                          }`,
-                          color:
-                            previewTheme === "dark"
-                              ? "primary.main"
-                              : "text.secondary",
-                        }}
-                      >
-                        Oscuro
-                      </Button>
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      minHeight: 0,
-                      overflowY: "auto",
-                      p: 1.5,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 1,
-                    }}
-                  >
-                    {selectedTemplate ? (
-                      <PushPreview
-                        device="android"
-                        title={resolvePreview(selectedTemplate.title)}
-                        body={resolvePreview(selectedTemplate.body)}
-                        icon={selectedTemplate.icon}
-                        category={selectedTemplate.category}
-                        priority={selectedTemplate.priority}
-                        actionUrl={selectedTemplate.action_url}
-                        theme={previewTheme}
-                        animate={true}
-                        animationClass={animStyles.slideIn}
-                      />
-                    ) : (
-                      <Box
-                        sx={{
-                          flex: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          color: "text.disabled",
-                        }}
-                      >
-                        <VisibilityIcon
-                          sx={{ fontSize: 48, mb: 1, opacity: 0.3 }}
-                        />
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ fontWeight: 600 }}
-                        >
-                          Selecciona una plantilla
-                        </Typography>
-                        <Typography variant="caption">
-                          La vista previa se actualizará al editar.
-                        </Typography>
-                      </Box>
-                    )}
-                    {selectedTemplate && (
-                      <Box
-                        sx={{
-                          pt: 1,
-                          px: 0.5,
-                          borderTop: "1px solid",
-                          borderColor: "divider",
-                          backgroundColor:
-                            previewTheme === "dark"
-                              ? "rgba(0,0,0,0.03)"
-                              : "rgba(0,0,0,0.03)",
-                          borderRadius: 4,
-                        }}
-                      >
-                        {computeTemplateMetrics(selectedTemplate).warnings.map(
-                          (w, i) => (
-                            <Typography
-                              key={i}
-                              variant="caption"
-                              sx={{
-                                color: "#ef4444",
-                                fontWeight: 700,
-                                fontSize: "0.6875rem",
-                                mb: 0.25,
-                                display: "block",
-                              }}
-                            >
-                              {w}
-                            </Typography>
-                          ),
-                        )}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: 2,
-                            fontSize: "0.6875rem",
-                            color: "text.secondary",
-                            fontWeight: 600,
-                          }}
-                        >
-                          <Box sx={{ minWidth: 0 }}>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "text.disabled",
-                                display: "block",
-                                mb: 0.1,
-                              }}
-                            >
-                              Título
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                display: "block",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {selectedTemplate.title} (
-                              {
-                                computeTemplateMetrics(selectedTemplate)
-                                  .titleLen
-                              }{" "}
-                              / 40)
-                            </Typography>
-                          </Box>
-                          <Box sx={{ minWidth: 0 }}>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "text.disabled",
-                                display: "block",
-                                mb: 0.1,
-                              }}
-                            >
-                              Cuerpo
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                display: "block",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {selectedTemplate.body} (
-                              {computeTemplateMetrics(selectedTemplate).bodyLen}{" "}
-                              / 120)
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-            </DialogContent>
-            <DialogActions sx={{ pt: 0, px: 2, pb: 1, gap: 1 }}>
-              <Button
-                onClick={() => setOpen(false)}
-                startIcon={<CancelIcon />}
-                size="medium"
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleSave}
-                startIcon={<SaveIcon />}
-                size="large"
-                sx={{
-                  px: 2,
-                  fontWeight: 700,
-                  minHeight: 44,
-                }}
-              >
-                Guardar plantilla
-              </Button>
-            </DialogActions>
+                  Guardar plantilla
+                </Button>
+              </DialogActions>
+            </Box>
           </Dialog>
         </Box>
       </Container>

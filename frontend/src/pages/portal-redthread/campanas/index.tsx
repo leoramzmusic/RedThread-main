@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Box,
   Container,
@@ -22,14 +22,14 @@ import {
   MenuItem,
   Grid,
   CircularProgress,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import AdminLayout from '../../../components/layout/AdminLayout';
-import apiClient from '../../../services/api';
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import AdminLayout from "../../../components/layout/AdminLayout";
+import apiClient from "../../../services/api";
 
 interface Campaign {
   id: string;
@@ -47,14 +47,14 @@ export default function AdminCampanas() {
   const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
-  
+
   // Form State
   const [formData, setFormData] = useState({
-    name: '',
-    type: 'email',
-    subject: '',
-    content: '',
-    scheduled_at: '',
+    name: "",
+    type: "email",
+    subject: "",
+    content: "",
+    scheduled_at: "",
   });
 
   useEffect(() => {
@@ -64,10 +64,12 @@ export default function AdminCampanas() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/portal-redthread/campanas/listado');
+      const response = await apiClient.get(
+        "/portal-redthread/campanas/listado",
+      );
       setCampaigns(response.data);
     } catch (err) {
-      console.error('Error fetching campaigns:', err);
+      console.error("Error fetching campaigns:", err);
     } finally {
       setLoading(false);
     }
@@ -75,33 +77,33 @@ export default function AdminCampanas() {
 
   const handleCreate = async () => {
     try {
-      await apiClient.post('/portal-redthread/campanas/crear', {
+      await apiClient.post("/portal-redthread/campanas/crear", {
         ...formData,
-        scheduled_at: formData.scheduled_at || null
+        scheduled_at: formData.scheduled_at || null,
       });
       setOpenDialog(false);
       fetchData();
       // Reset form
       setFormData({
-        name: '',
-        type: 'email',
-        subject: '',
-        content: '',
-        scheduled_at: '',
+        name: "",
+        type: "email",
+        subject: "",
+        content: "",
+        scheduled_at: "",
       });
     } catch (err) {
-      alert('Error al crear campaña');
+      alert("Error al crear campaña");
     }
   };
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       await apiClient.put(`/portal-redthread/campanas/${id}/estado`, {
-        status_update: newStatus
+        status_update: newStatus,
       });
       fetchData();
     } catch (err) {
-      alert('Error al actualizar estado');
+      alert("Error al actualizar estado");
     }
   };
 
@@ -113,8 +115,9 @@ export default function AdminCampanas() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "80vh"
-          }}>
+            minHeight: "80vh",
+          }}
+        >
           <CircularProgress />
         </Box>
       </AdminLayout>
@@ -131,27 +134,34 @@ export default function AdminCampanas() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              mb: 4
-            }}>
+              mb: 4,
+            }}
+          >
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 2
-              }}>
-              <IconButton onClick={() => router.push('/portal-redthread')}>
+                gap: 2,
+              }}
+            >
+              <IconButton onClick={() => router.push("/portal-redthread")}>
                 <ArrowBackIcon />
               </IconButton>
-              <Typography variant="h4" sx={{
-                fontWeight: 700
-              }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 Campañas de Marketing
               </Typography>
             </Box>
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setOpenDialog(true)}
+              onClick={() =>
+                router.push("/portal-redthread/notifications/templates")
+              }
             >
               Nueva Campaña
             </Button>
@@ -176,24 +186,29 @@ export default function AdminCampanas() {
                   <TableRow key={campaign.id}>
                     <TableCell>{campaign.name}</TableCell>
                     <TableCell>
-                      <Chip 
-                        label={campaign.type.toUpperCase()} 
-                        size="small" 
+                      <Chip
+                        label={campaign.type.toUpperCase()}
+                        size="small"
                         variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
-                      <Chip 
-                        label={campaign.status} 
-                        size="small" 
+                      <Chip
+                        label={campaign.status}
+                        size="small"
                         color={
-                          campaign.status === 'active' ? 'success' : 
-                          campaign.status === 'completed' ? 'primary' : 'default'
-                        } 
+                          campaign.status === "active"
+                            ? "success"
+                            : campaign.status === "completed"
+                              ? "primary"
+                              : "default"
+                        }
                       />
                     </TableCell>
                     <TableCell>
-                      {campaign.scheduled_at ? new Date(campaign.scheduled_at).toLocaleString() : '-'}
+                      {campaign.scheduled_at
+                        ? new Date(campaign.scheduled_at).toLocaleString()
+                        : "-"}
                     </TableCell>
                     <TableCell align="center">{campaign.sent_count}</TableCell>
                     <TableCell align="center">{campaign.open_rate}%</TableCell>
@@ -201,30 +216,38 @@ export default function AdminCampanas() {
                       <Box
                         sx={{
                           display: "flex",
-                          justifyContent: "flex-end"
-                        }}>
-                        {campaign.status === 'active' ? (
-                          <IconButton 
-                            size="small" 
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        {campaign.status === "active" ? (
+                          <IconButton
+                            size="small"
                             color="warning"
-                            onClick={() => handleStatusChange(campaign.id, 'paused')}
+                            onClick={() =>
+                              handleStatusChange(campaign.id, "paused")
+                            }
                             title="Pausar"
                           >
                             <PauseIcon />
                           </IconButton>
-                        ) : campaign.status === 'paused' || campaign.status === 'draft' ? (
-                          <IconButton 
-                            size="small" 
+                        ) : campaign.status === "paused" ||
+                          campaign.status === "draft" ? (
+                          <IconButton
+                            size="small"
                             color="success"
-                            onClick={() => handleStatusChange(campaign.id, 'active')}
+                            onClick={() =>
+                              handleStatusChange(campaign.id, "active")
+                            }
                             title="Activar"
                           >
                             <PlayArrowIcon />
                           </IconButton>
                         ) : null}
-                        <IconButton 
+                        <IconButton
                           size="small"
-                          onClick={() => alert(`Ver estadísticas de ${campaign.name}`)}
+                          onClick={() =>
+                            alert(`Ver estadísticas de ${campaign.name}`)
+                          }
                           title="Estadísticas"
                         >
                           <BarChartIcon />
@@ -245,7 +268,12 @@ export default function AdminCampanas() {
           </TableContainer>
 
           {/* Create Dialog */}
-          <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+          <Dialog
+            open={openDialog}
+            onClose={() => setOpenDialog(false)}
+            maxWidth="sm"
+            fullWidth
+          >
             <DialogTitle>Nueva Campaña</DialogTitle>
             <DialogContent>
               <Box
@@ -253,20 +281,25 @@ export default function AdminCampanas() {
                   display: "flex",
                   flexDirection: "column",
                   gap: 2,
-                  pt: 2
-                }}>
+                  pt: 2,
+                }}
+              >
                 <TextField
                   label="Nombre de la campaña"
                   fullWidth
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
                 <TextField
                   select
                   label="Tipo"
                   fullWidth
                   value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
                 >
                   <MenuItem value="email">Email</MenuItem>
                   <MenuItem value="push">Push Notification</MenuItem>
@@ -276,7 +309,9 @@ export default function AdminCampanas() {
                   label="Asunto / Título"
                   fullWidth
                   value={formData.subject}
-                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, subject: e.target.value })
+                  }
                 />
                 <TextField
                   label="Contenido"
@@ -284,23 +319,29 @@ export default function AdminCampanas() {
                   multiline
                   rows={4}
                   value={formData.content}
-                  onChange={(e) => setFormData({...formData, content: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
                 />
                 <TextField
                   label="Programar envío (Opcional)"
                   type="datetime-local"
                   fullWidth
                   value={formData.scheduled_at}
-                  onChange={(e) => setFormData({...formData, scheduled_at: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, scheduled_at: e.target.value })
+                  }
                   slotProps={{
-                    inputLabel: { shrink: true }
+                    inputLabel: { shrink: true },
                   }}
                 />
               </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-              <Button variant="contained" onClick={handleCreate}>Crear</Button>
+              <Button variant="contained" onClick={handleCreate}>
+                Crear
+              </Button>
             </DialogActions>
           </Dialog>
         </Box>

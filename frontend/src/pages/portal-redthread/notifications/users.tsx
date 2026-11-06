@@ -243,12 +243,12 @@ export default function UsersNotificationDashboard() {
                   <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  Notificaciones Usuarios
+                  Centro de Comunicaciones
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Diseña, prueba, segmenta y automatiza las comunicaciones para
-                los usuarios de la plataforma.
+                usuarios, empleados y marcas de la plataforma.
               </Typography>
             </Box>
             <Box
@@ -265,7 +265,7 @@ export default function UsersNotificationDashboard() {
                 startIcon={<SendIcon />}
                 sx={{ borderRadius: 0.5, px: 3, minHeight: 44 }}
                 onClick={() =>
-                  router.push("/portal-redthread/notifications/users/create")
+                  router.push("/portal-redthread/notifications/templates")
                 }
               >
                 + Nueva Notificación
@@ -411,6 +411,198 @@ export default function UsersNotificationDashboard() {
               </Grid>
             ))}
           </Grid>
+
+          {/* Plantillas por audiencia */}
+          <Paper
+            sx={{
+              p: 2,
+              borderRadius: 1,
+              border: `1px solid`,
+              borderColor: "divider",
+              mb: 4,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                mb: 2,
+                borderBottom: "1px solid",
+                borderColor: "divider",
+                pb: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 0.5,
+                  bgcolor: "#3b82f6",
+                }}
+              />
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                  color: "#3b82f6",
+                }}
+              >
+                Plantillas por audiencia
+              </Typography>
+            </Box>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 0.5,
+                          bgcolor: "#3b82f6",
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          opacity: 0.7,
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Usuarios
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 700, color: "#3b82f6" }}
+                    >
+                      124 plantillas
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 0.5,
+                          bgcolor: "#8b5cf6",
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          opacity: 0.7,
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Empleados
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 700, color: "#8b5cf6" }}
+                    >
+                      38 plantillas
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 0.5,
+                          bgcolor: "#f59e0b",
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          opacity: 0.7,
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Marcas
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 700, color: "#f59e0b" }}
+                    >
+                      21 plantillas
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </Paper>
 
           {/* Áreas funcionales */}
           {sections.map((section) => (

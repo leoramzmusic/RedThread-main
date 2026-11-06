@@ -1,10 +1,10 @@
 import TemplatesManager from "../../../components/notifications/TemplatesManager";
 
-export default function TemplatesPage() {
+export default function NotificationsTemplatesPage() {
   return (
     <TemplatesManager
       apiBase="/notifications/users/templates"
-      backTo="/portal-redthread"
+      subtitle="Centro de Plantillas Global para usuarios, empleados y marcas."
     />
   );
 }
