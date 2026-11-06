@@ -2570,11 +2570,8 @@ export default function TemplatesManager({
                               variant="caption"
                               sx={{ fontWeight: 700, color: "primary.main" }}
                             >
-                              {form.baseLocale === "es"
-                                ? "Español"
-                                : form.baseLocale === "en"
-                                  ? "English"
-                                  : form.baseLocale}
+                              {LANGUAGE_NAMES[form.baseLocale] ??
+                                form.baseLocale}
                             </Typography>
                           </Typography>
                           <Button
@@ -2629,17 +2626,7 @@ export default function TemplatesManager({
                                   variant="body2"
                                   sx={{ fontWeight: 600, minWidth: 100 }}
                                 >
-                                  {loc === "es"
-                                    ? "Español"
-                                    : loc === "en"
-                                      ? "English"
-                                      : loc === "fr"
-                                        ? "Français"
-                                        : loc === "de"
-                                          ? "Deutsch"
-                                          : loc === "it"
-                                            ? "Italiano"
-                                            : "Português"}
+                                  {LANGUAGE_NAMES[loc] ?? loc}
                                 </Typography>
                                 {isBase && (
                                   <Typography
