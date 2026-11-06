@@ -1698,7 +1698,7 @@ export default function TemplatesManager({
                   gap: 0,
                   p: 2,
                   maxHeight: "85vh",
-                  overflow: "hidden",
+                  overflowY: "auto",
                 }}
               >
                 <Box
