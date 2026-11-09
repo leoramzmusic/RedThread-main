@@ -93,6 +93,8 @@ function PushFrame({
 
   const accentColor = ident.color;
 
+  const displayIcon = icon && icon.trim() ? icon : ident.emoji;
+
   if (desktop) {
     return (
       <Paper
@@ -138,7 +140,7 @@ function PushFrame({
                 justifyContent: "center",
               }}
             >
-              <span style={{ fontSize: 10 }}>{ident.emoji}</span>
+              <span style={{ fontSize: 10 }}>{displayIcon}</span>
             </Box>
             <Typography
               variant="body2"
@@ -202,7 +204,7 @@ function PushFrame({
                 flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: 14 }}>{ident.emoji}</span>
+              <span style={{ fontSize: 14 }}>{displayIcon}</span>
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
@@ -352,7 +354,7 @@ function PushFrame({
               flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: 20 }}>{ident.emoji}</span>
+            <span style={{ fontSize: 20 }}>{displayIcon}</span>
           </Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
@@ -411,7 +413,7 @@ function PushFrame({
                 flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: 24 }}>{ident.emoji}</span>
+              <span style={{ fontSize: 24 }}>{displayIcon}</span>
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography

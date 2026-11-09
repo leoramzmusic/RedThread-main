@@ -401,6 +401,188 @@ const VARIABLE_SCOPE: Record<string, { title: boolean; body: boolean }> = {
   matches_count: { title: true, body: true },
 };
 
+const VARIABLE_CATEGORIES: Record<
+  string,
+  { label: string; variables: string[] }
+> = {
+  USUARIO: {
+    label: "USUARIO",
+    variables: [
+      "first_name",
+      "last_name",
+      "full_name",
+      "username",
+      "email",
+      "city",
+      "country",
+      "language",
+      "age",
+      "birth_date",
+    ],
+  },
+  SOCIAL: {
+    label: "SOCIAL",
+    variables: [
+      "nombre_match",
+      "usuario_match",
+      "match_count",
+      "like_count",
+      "nombre_usuario",
+      "perfil_visitado_por",
+      "mensaje_remitente",
+    ],
+  },
+  MENSAJES: {
+    label: "MENSAJES",
+    variables: [
+      "sender_name",
+      "message_preview",
+      "conversation_title",
+      "unread_messages",
+      "last_message_time",
+    ],
+  },
+  CARE: {
+    label: "CARE",
+    variables: [
+      "cuestionarios_pendientes",
+      "encuestas_pendientes",
+      "ultima_puntuacion",
+      "nivel_riesgo",
+      "fecha_siguiente_revision",
+      "especialista_asignado",
+    ],
+  },
+  PREMIUM: {
+    label: "PREMIUM",
+    variables: [
+      "plan_name",
+      "days_remaining",
+      "renewal_date",
+      "benefit_name",
+      "discount_percent",
+    ],
+  },
+  EVENTOS: {
+    label: "EVENTOS",
+    variables: [
+      "event_name",
+      "event_date",
+      "event_time",
+      "event_location",
+      "event_host",
+    ],
+  },
+  MARCAS: {
+    label: "MARCAS",
+    variables: [
+      "brand_name",
+      "campaign_name",
+      "campaign_id",
+      "lead_name",
+      "leads_count",
+      "budget_remaining",
+      "invoice_number",
+    ],
+  },
+  EMPLEADOS: {
+    label: "EMPLEADOS",
+    variables: [
+      "employee_name",
+      "ticket_id",
+      "ticket_title",
+      "task_name",
+      "department",
+      "assigned_by",
+      "case_id",
+    ],
+  },
+  SISTEMA: {
+    label: "SISTEMA",
+    variables: [
+      "current_date",
+      "current_time",
+      "platform_name",
+      "app_version",
+      "environment",
+    ],
+  },
+  SMART: {
+    label: "SMART",
+    variables: [
+      "days_since_last_login",
+      "days_as_member",
+      "profile_completion_percent",
+      "compatibility_score",
+      "new_matches_today",
+    ],
+  },
+};
+
+const VARIABLE_EXAMPLES: Record<string, string> = {
+  first_name: "Juan Pérez",
+  last_name: "García",
+  full_name: "Juan Pérez García",
+  username: "juanp2024",
+  email: "juan.perez@email.com",
+  city: "Madrid",
+  country: "España",
+  language: "Español",
+  age: "28",
+  birth_date: "15/03/1996",
+  nombre_match: "María López",
+  usuario_match: "mlp2024",
+  match_count: "5",
+  like_count: "12",
+  nombre_usuario: "Lucía Martínez",
+  perfil_visitado_por: "Carlos Ruiz",
+  mensaje_remitente: "Laura Gómez",
+  sender_name: "Lucía Gómez",
+  message_preview: "Hola, tenemos una novedad para ti",
+  conversation_title: "Conversación con Lucía",
+  unread_messages: "3",
+  last_message_time: "hace 2 min",
+  cuestionarios_pendientes: "3",
+  encuestas_pendientes: "2",
+  ultima_puntuacion: "4.8",
+  nivel_riesgo: "Bajo",
+  fecha_siguiente_revision: "20/01/2025",
+  especialista_asignado: "Dr. Rodríguez",
+  plan_name: "Premium Anual",
+  days_remaining: "15",
+  renewal_date: "15/02/2025",
+  benefit_name: "Envío gratuito",
+  discount_percent: "20",
+  event_name: "Webinar de Producto",
+  event_date: "20/01/2025",
+  event_time: "19:00",
+  event_location: "Online",
+  event_host: "Equipo RETH",
+  brand_name: "RETH",
+  campaign_name: "Campaña de Verano",
+  campaign_id: "CMP-2025-001",
+  lead_name: "Juan Pérez",
+  leads_count: "45",
+  budget_remaining: "$5.000",
+  invoice_number: "FAC-2025-001",
+  employee_name: "María López",
+  ticket_id: "TK-1234",
+  ticket_title: "Error de inicio de sesión",
+  task_name: "Revisar reporte mensual",
+  department: "Soporte Técnico",
+  assigned_by: "Jefa de Equipo",
+  case_id: "CASE-5678",
+  current_date: "20/01/2025",
+  current_time: "14:30",
+  platform_name: "RETH",
+  app_version: "2.1.0",
+  environment: "Producción",
+  days_since_last_login: "2",
+  days_as_member: "365",
+  profile_completion_percent: "85",
+  compatibility_score: "92",
+  new_matches_today: "3",
+};
 function resolvePreview(text: string): string {
   if (!text) return text;
 
@@ -544,6 +726,8 @@ export default function TemplatesManager({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [selectedAudience, setSelectedAudience] = useState<string | null>(null);
+
+  const [variableCategory, setVariableCategory] = useState<string>("");
 
   const [sortBy, setSortBy] = useState<string | null>(null);
 
@@ -2869,8 +3053,7 @@ export default function TemplatesManager({
                             fontSize: "0.6875rem",
                           }}
                         >
-                          Pulsa una variable para insertarla en la posición del
-                          cursor.
+                          Categoría de variables
                         </Typography>
 
                         <Box
@@ -2885,140 +3068,93 @@ export default function TemplatesManager({
                             mb: 1.5,
                           }}
                         >
-                          {VARIABLE_PRESETS.map((v) => {
-                            const desc = VARIABLE_DESCS[v] ?? "";
-
-                            const scope = VARIABLE_SCOPE[v] ?? {
-                              title: false,
-
-                              body: false,
-                            };
-
-                            return (
-                              <Box
-                                key={v}
-
-                                sx={{
-                                  display: "flex",
-
-                                  flexDirection: "column",
-
-                                  gap: 0.25,
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: "flex",
-
-                                    alignItems: "center",
-
-                                    gap: 0.5,
-
-                                    mb: 0.25,
-                                  }}
-                                >
-                                  <Button
-                                    size="small"
-
-                                    variant="outlined"
-
-                                    onClick={() => {
-                                      const field = activeField;
-
-                                      const loc = form.baseLocale ?? "es";
-
-                                      const current = form.translations?.[
-                                        loc
-                                      ] ?? {
-                                        title: "",
-
-                                        body: "",
-                                      };
-
-                                      setForm((prev) => ({
-                                        ...prev,
-
-                                        translations: {
-                                          ...prev.translations,
-
-                                          [loc]: {
-                                            ...current,
-
-                                            [field]:
-                                              current[field] + `{{${v}}}`,
-                                          },
-                                        },
-                                      }));
-                                    }}
-
-                                    sx={{
-                                      px: 0.75,
-
-                                      py: 0.5,
-
-                                      fontSize: "0.68rem",
-
-                                      borderRadius: 6,
-
-                                      textAlign: "left",
-
-                                      justifyContent: "flex-start",
-
-                                      flex: 1,
-                                    }}
-                                  >
-                                    {`{{${v}}`}
-                                  </Button>
-
-                                  <Typography
-                                    variant="caption"
-
-                                    sx={{
-                                      fontSize: "0.6rem",
-
-                                      fontWeight: 700,
-
-                                      color: scope.title
-                                        ? "success.main"
-                                        : "text.disabled",
-                                    }}
-                                  >
-                                    {scope.title ? "✅ T" : "❌ T"}
-                                  </Typography>
-
-                                  <Typography
-                                    variant="caption"
-
-                                    sx={{
-                                      fontSize: "0.6rem",
-
-                                      fontWeight: 700,
-
-                                      color: scope.body
-                                        ? "success.main"
-                                        : "text.disabled",
-                                    }}
-                                  >
-                                    {scope.body ? "✅ C" : "❌ C"}
-                                  </Typography>
-                                </Box>
-
-                                <Typography
-                                  variant="caption"
-
-                                  sx={{
-                                    color: "text.secondary",
-
-                                    fontSize: "0.62rem",
-
-                                    fontStyle: "italic",
-                                  }}
-                                >
-                                  {desc}
-                                </Typography>
-                              </Box>
-                            );
-                          })}
+                          {Object.entries(VARIABLE_CATEGORIES).flatMap(
+                            ([catKey, cat]) =>
+                              cat.variables
+                                .filter((v) => VARIABLE_PRESETS.includes(v))
+                                .filter(
+                                  (v) =>
+                                    !variableCategory ||
+                                    variableCategory === catKey,
+                                )
+                                .map((v) => {
+                                  const desc = VARIABLE_DESCS[v] ?? "";
+                                  return (
+                                    <Box
+                                      key={v}
+                                      sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: 0.25,
+                                        mb: 0.75,
+                                      }}
+                                    >
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 0.5,
+                                          mb: 0.25,
+                                        }}
+                                      >
+                                        <Button
+                                          size="small"
+                                          variant="outlined"
+                                          onClick={() => {
+                                            const field = activeField;
+                                            const loc = form.baseLocale ?? "es";
+                                            const current = form.translations?.[
+                                              loc
+                                            ] ?? {
+                                              title: "",
+                                              body: "",
+                                            };
+                                            setForm((prev) => ({
+                                              ...prev,
+                                              translations: {
+                                                ...prev.translations,
+                                                [loc]: {
+                                                  ...current,
+                                                  [field]:
+                                                    current[field] + `{{${v}}}`,
+                                                },
+                                              },
+                                            }));
+                                          }}
+                                          sx={{
+                                            px: 0.5,
+                                            py: 0.3,
+                                            fontSize: "0.68rem",
+                                            borderRadius: 6,
+                                            textAlign: "left",
+                                            justifyContent: "flex-start",
+                                            width: "100%",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            borderColor: "divider",
+                                            "&:hover": {
+                                              borderColor: "primary.main",
+                                            },
+                                          }}
+                                        >
+                                          {`{{${v}}`}
+                                        </Button>
+                                      </Box>
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          color: "text.secondary",
+                                          fontSize: "0.62rem",
+                                          fontStyle: "italic",
+                                        }}
+                                      >
+                                        {desc}
+                                      </Typography>
+                                    </Box>
+                                  );
+                                }),
+                          )}
                         </Box>
                       </Box>
                     </Box>
