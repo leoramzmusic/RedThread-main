@@ -328,17 +328,127 @@ const PREVIEW_DATA: Record<string, string> = {
 const VARIABLE_DESCS: Record<string, string> = {
   first_name: "Primer nombre del usuario receptor",
 
+  last_name: "Apellido del usuario receptor",
+
+  full_name: "Nombre completo del usuario",
+
+  username: "Nombre de usuario",
+
+  email: "Correo electrónico del usuario",
+
   city: "Ciudad del usuario",
+
+  country: "País del usuario",
+
+  language: "Idioma configurado por el usuario",
+
+  age: "Edad actual del usuario",
+
+  birth_date: "Fecha de nacimiento del usuario",
 
   nombre_match: "Usuario que realizó el match",
 
+  usuario_match: "Usuario del match",
+
+  match_count: "Número de coincidencias disponibles",
+
+  like_count: "Número de likes recibidos",
+
   nombre_usuario: "Usuario que interactuó",
 
-  ciudad: "Ciudad donde ocurrió el evento",
+  perfil_visitado_por: "Usuario que visitó tu perfil",
+
+  mensaje_remitente: "Remitente del mensaje",
+
+  sender_name: "Nombre del remitente",
+
+  message_preview: "Vista previa del mensaje",
+
+  conversation_title: "Título de la conversación",
+
+  unread_messages: "Mensajes no leídos",
+
+  last_message_time: "Hora del último mensaje",
 
   cuestionarios_pendientes: "Preguntas restantes de tu encuesta CARE",
 
-  matches_count: "Número de coincidencias disponibles",
+  encuestas_pendientes: "Encuestas pendientes por completar",
+
+  ultima_puntuacion: "Última puntuación obtenida",
+
+  nivel_riesgo: "Nivel de riesgo del usuario",
+
+  fecha_siguiente_revision: "Fecha de la siguiente revisión",
+
+  especialista_asignado: "Especialista asignado",
+
+  plan_name: "Nombre del plan premium",
+
+  days_remaining: "Días restantes del plan",
+
+  renewal_date: "Fecha de renovación",
+
+  benefit_name: "Nombre del beneficio",
+
+  discount_percent: "Porcentaje de descuento",
+
+  event_name: "Nombre del evento",
+
+  event_date: "Fecha del evento",
+
+  event_time: "Hora del evento",
+
+  event_location: "Ubicación del evento",
+
+  event_host: "Anfitrión del evento",
+
+  brand_name: "Nombre de la marca",
+
+  campaign_name: "Nombre de la campaña",
+
+  campaign_id: "ID de la campaña",
+
+  lead_name: "Nombre del lead",
+
+  leads_count: "Cantidad de leads",
+
+  budget_remaining: "Presupuesto restante",
+
+  invoice_number: "Número de factura",
+
+  employee_name: "Nombre del empleado",
+
+  ticket_id: "ID del ticket",
+
+  ticket_title: "Título del ticket",
+
+  task_name: "Nombre de la tarea",
+
+  department: "Departamento",
+
+  assigned_by: "Asignado por",
+
+  case_id: "ID del caso",
+
+  current_date: "Fecha actual",
+
+  current_time: "Hora actual",
+
+  platform_name: "Nombre de la plataforma",
+
+  app_version: "Versión de la aplicación",
+
+  environment: "Entorno",
+
+  days_since_last_login: "Días desde el último inicio de sesión",
+
+  days_as_member: "Días como miembro",
+
+  profile_completion_percent: "Porcentaje de completitud del perfil",
+
+  compatibility_score: "Puntuación de compatibilidad",
+
+  new_matches_today: "Nuevos matches hoy",
 };
 
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -508,7 +618,7 @@ const VARIABLE_CATEGORIES: Record<
     ],
   },
   SMART: {
-    label: "SMART",
+    label: "INTELIGENTES",
     variables: [
       "days_since_last_login",
       "days_as_member",
@@ -727,7 +837,7 @@ export default function TemplatesManager({
 
   const [selectedAudience, setSelectedAudience] = useState<string | null>(null);
 
-  const [variableCategory, setVariableCategory] = useState<string>("");
+  const [variableCategory, setVariableCategory] = useState<string>("USUARIO");
 
   const [sortBy, setSortBy] = useState<string | null>(null);
 
@@ -3056,6 +3166,39 @@ export default function TemplatesManager({
                           Categoría de variables
                         </Typography>
 
+                        <TextField
+                          select
+
+                          value={variableCategory}
+
+                          onChange={(e) =>
+                            setVariableCategory(e.target.value || "USUARIO")
+                          }
+
+                          margin="dense"
+
+                          size="small"
+
+                          fullWidth
+
+                          variant="outlined"
+
+                          slotProps={{ select: {} }}
+                          sx={{ mb: 1, minWidth: 240 }}
+                        >
+                          {Object.entries(VARIABLE_CATEGORIES).map(
+                            ([catKey, cat]) => {
+                              const count = cat.variables.length;
+
+                              return (
+                                <MenuItem key={catKey} value={catKey}>
+                                  {cat.label} ({count})
+                                </MenuItem>
+                              );
+                            },
+                          )}
+                        </TextField>
+
                         <Box
                           sx={{
                             display: "grid",
@@ -3071,12 +3214,7 @@ export default function TemplatesManager({
                           {Object.entries(VARIABLE_CATEGORIES).flatMap(
                             ([catKey, cat]) =>
                               cat.variables
-                                .filter((v) => VARIABLE_PRESETS.includes(v))
-                                .filter(
-                                  (v) =>
-                                    !variableCategory ||
-                                    variableCategory === catKey,
-                                )
+                                .filter((v) => variableCategory === catKey)
                                 .map((v) => {
                                   const desc = VARIABLE_DESCS[v] ?? "";
                                   return (
