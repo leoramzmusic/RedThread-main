@@ -1,7 +1,3 @@
-from datetime import datetime
-from typing import List, Dict, Any, Optional
-from beanie import Document, PydanticObjectId
-from pydantic import Field
 from bson import ObjectId
 
 from src.models.notification_template import NotificationTemplate
@@ -450,7 +446,6 @@ NOTIFICATION_TEMPLATES_SEED: list[dict] = [
         ],
     },
 ]
-
 
 
 async def ensure_notification_templates_seeded() -> int:
