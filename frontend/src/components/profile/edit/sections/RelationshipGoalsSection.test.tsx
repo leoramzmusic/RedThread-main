@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 import RelationshipGoalsSection from "./RelationshipGoalsSection";
 
@@ -54,7 +54,9 @@ describe("RelationshipGoalsSection (relationship goals)", () => {
     // Native <button> => browser handles Enter/Space activation; simply assert it is focusable.
     expect(option.tagName).toBe("BUTTON");
     expect(option).toBeEnabled();
-    option.focus();
+    act(() => {
+      option.focus();
+    });
     expect(option).toHaveFocus();
   });
 });

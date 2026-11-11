@@ -59,12 +59,11 @@ export const getModulePoints = (moduleKey: string): number => {
 const normalizeHidden = (
   hidden?: Set<string> | string[] | null,
 ): Set<string> => {
-  const base: Set<string> =
-    !hidden
-      ? new Set()
-      : hidden instanceof Set
-        ? new Set(hidden)
-        : new Set(hidden);
+  const base: Set<string> = !hidden
+    ? new Set()
+    : hidden instanceof Set
+      ? new Set(hidden)
+      : new Set(hidden);
   // Expande padres a hijos (ocultar section-music oculta spotify+genres)
   for (const modKey of [...base]) {
     const prefix = modKey + "-";
@@ -160,7 +159,9 @@ export const MAX_PROFILE_SCORE = Object.values(PROFILE_WEIGHTS).reduce(
   0,
 );
 
-export const getMaxScore = (hiddenSections?: Set<string> | string[] | null): number => {
+export const getMaxScore = (
+  hiddenSections?: Set<string> | string[] | null,
+): number => {
   const hidden = hiddenFieldsOf(normalizeHidden(hiddenSections));
   return Object.entries(PROFILE_WEIGHTS)
     .filter(([field]) => !hidden.has(field))
@@ -349,8 +350,10 @@ export const calculateProfileScore = (
     PROFILE_WEIGHTS.health_conditions,
   );
 
-  console.log("Profile Score:", score, "/", MAX_PROFILE_SCORE);
-  console.log("Missing Fields:", missingFields);
+  if (process.env.NODE_ENV === "development") {
+    console.log("Profile Score:", score, "/", MAX_PROFILE_SCORE);
+    console.log("Missing Fields:", missingFields);
+  }
 
   return score;
 };
@@ -606,7 +609,9 @@ export const getProfileSuggestions = (
   });
 
   // Sort by weight (descending)
-  const sortedSuggestions = visibleSuggestions.sort((a, b) => b.weight - a.weight);
+  const sortedSuggestions = visibleSuggestions.sort(
+    (a, b) => b.weight - a.weight,
+  );
 
   // Filter to keep only one suggestion per sectionId
   const seenSections = new Set<string>();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import { useRouter } from "next/router";
 
@@ -106,17 +106,15 @@ export interface Template {
 
   action_destination?: string;
 
+  destinatarios?: string[];
+
   persistent?: boolean;
 
   programmable?: boolean;
 
   silencable?: boolean;
 
-  destinatarios?: string[];
-
   evento_disparador?: string;
-
-  uso_principal?: string; // portal_usuarios | portal_empleados | portal_marcas | global
 
   baseLocale?: string; // idioma base (es, en, fr, etc.)
 
@@ -177,8 +175,6 @@ interface TemplateFormData {
   destinatarios: string[];
 
   evento_disparador: string;
-
-  uso_principal: string;
 
   baseLocale: string;
 
@@ -288,6 +284,72 @@ const ICON_EMOJI_GRID: string[] = [
 
   "💰",
 ];
+
+const AUTO_INDICATOR_BY_CATEGORY: Record<string, string> = {
+  system: "⚙️",
+
+  match: "❤️",
+
+  like: "👍",
+
+  message: "💬",
+
+  survey: "📋",
+
+  reminder: "⏰",
+
+  promo: "🎁",
+
+  security: "🔒",
+};
+
+const TYPE_EVENTS: Array<{ emoji: string; label: string; category: string }> = [
+  { emoji: "❤️", label: "Match", category: "match" },
+
+  { emoji: "👍", label: "Like", category: "like" },
+
+  { emoji: "💬", label: "Mensaje", category: "message" },
+
+  { emoji: "🔒", label: "Seguridad", category: "security" },
+
+  { emoji: "💳", label: "Pago", category: "payment" },
+
+  { emoji: "🎁", label: "Beneficio", category: "promo" },
+
+  { emoji: "📋", label: "Encuesta", category: "survey" },
+
+  { emoji: "🏢", label: "Marca", category: "brand" },
+
+  { emoji: "⚙️", label: "Sistema", category: "system" },
+];
+
+const TRIGGER_EVENTS: Array<{ key: string; label: string; emoji: string }> = [
+  { key: "match_created", label: "Nuevo Match", emoji: "💘" },
+
+  { key: "like_received", label: "Nuevo Like", emoji: "👍" },
+
+  { key: "new_message", label: "Nuevo Mensaje", emoji: "💬" },
+
+  { key: "payment_successful", label: "Pago exitoso", emoji: "💳" },
+
+  { key: "survey_completed", label: "Encuesta completada", emoji: "📋" },
+
+  { key: "lead_received", label: "Lead recibido", emoji: "🏢" },
+
+  { key: "profile_visit", label: "Visita de perfil", emoji: "👁" },
+];
+
+const INDICATOR_EMOJIS: string[] = TYPE_EVENTS.map((t) => t.emoji);
+
+const getEffectiveIcon = (f: { icon: string; category: string }): string => {
+  const manual = f.icon;
+
+  if (manual && manual !== "automatic" && INDICATOR_EMOJIS.includes(manual)) {
+    return manual;
+  }
+
+  return AUTO_INDICATOR_BY_CATEGORY[f.category] ?? "⚙️";
+};
 
 const VARIABLE_PRESETS: string[] = [
   "first_name",
@@ -494,6 +556,506 @@ const LANGUAGE_NAMES: Record<string, string> = {
 
   mi: "Māori",
 };
+
+const TEMPLATE_TYPES: Array<{
+  key: string;
+
+  label: string;
+
+  group: string;
+
+  category: string;
+
+  priority: string;
+
+  icon_type: "dynamic_avatar" | "system_icon" | "brand_image";
+
+  icon: string;
+
+  action_type: string;
+
+  action_destination: string;
+
+  evento_disparador: string;
+
+  destinatarios: string[];
+}> = [
+  // USUARIOS - SOCIAL
+
+  {
+    key: "nuevo_match",
+    label: "Nuevo Match",
+    group: "USUARIOS - SOCIAL",
+    category: "match",
+    priority: "P1",
+    icon_type: "dynamic_avatar",
+    icon: "❤️",
+    action_type: "profile",
+    action_destination: "profile",
+    evento_disparador: "match_created",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "nuevo_like",
+    label: "Nuevo Like",
+    group: "USUARIOS - SOCIAL",
+    category: "like",
+    priority: "P1",
+    icon_type: "dynamic_avatar",
+    icon: "👍",
+    action_type: "profile",
+    action_destination: "profile",
+    evento_disparador: "like_received",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "nueva_visita_perfil",
+    label: "Nueva Visita de Perfil",
+    group: "USUARIOS - SOCIAL",
+    category: "match",
+    priority: "P2",
+    icon_type: "dynamic_avatar",
+    icon: "👁",
+    action_type: "profile",
+    action_destination: "profile",
+    evento_disparador: "profile_visit",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "nuevo_seguidor",
+    label: "Nuevo Seguidor",
+    group: "USUARIOS - SOCIAL",
+    category: "match",
+    priority: "P2",
+    icon_type: "dynamic_avatar",
+    icon: "👤",
+    action_type: "profile",
+    action_destination: "profile",
+    evento_disparador: "new_follower",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "persona_compatible",
+    label: "Persona Compatible Encontrada",
+    group: "USUARIOS - SOCIAL",
+    category: "match",
+    priority: "P1",
+    icon_type: "dynamic_avatar",
+    icon: "✨",
+    action_type: "profile",
+    action_destination: "profile",
+    evento_disparador: "compatible_person",
+    destinatarios: ["usuarios"],
+  },
+
+  // USUARIOS - MENSAJES
+
+  {
+    key: "nuevo_mensaje",
+    label: "Nuevo Mensaje",
+    group: "USUARIOS - MENSAJES",
+    category: "message",
+    priority: "P1",
+    icon_type: "dynamic_avatar",
+    icon: "💬",
+    action_type: "chat",
+    action_destination: "chat",
+    evento_disparador: "new_message",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "mensaje_sin_leer",
+    label: "Mensaje Sin Leer",
+    group: "USUARIOS - MENSAJES",
+    category: "message",
+    priority: "P2",
+    icon_type: "dynamic_avatar",
+    icon: "💬",
+    action_type: "chat",
+    action_destination: "chat",
+    evento_disparador: "unread_message",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "respuesta_recibida",
+    label: "Respuesta Recibida",
+    group: "USUARIOS - MENSAJES",
+    category: "message",
+    priority: "P1",
+    icon_type: "dynamic_avatar",
+    icon: "💬",
+    action_type: "chat",
+    action_destination: "chat",
+    evento_disparador: "message_reply",
+    destinatarios: ["usuarios"],
+  },
+
+  // USUARIOS - CARE
+
+  {
+    key: "encuesta_pendiente",
+    label: "Encuesta Pendiente",
+    group: "USUARIOS - CARE",
+    category: "survey",
+    priority: "P2",
+    icon_type: "system_icon",
+    icon: "📋",
+    action_type: "survey",
+    action_destination: "survey",
+    evento_disparador: "survey_pending",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "encuesta_completada",
+    label: "Encuesta Completada",
+    group: "USUARIOS - CARE",
+    category: "survey",
+    priority: "P2",
+    icon_type: "system_icon",
+    icon: "📋",
+    action_type: "survey",
+    action_destination: "survey",
+    evento_disparador: "survey_completed",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "evaluacion_disponible",
+    label: "Evaluación Disponible",
+    group: "USUARIOS - CARE",
+    category: "survey",
+    priority: "P2",
+    icon_type: "system_icon",
+    icon: "📋",
+    action_type: "survey",
+    action_destination: "survey",
+    evento_disparador: "evaluation_available",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "seguimiento_requerido",
+    label: "Seguimiento Requerido",
+    group: "USUARIOS - CARE",
+    category: "survey",
+    priority: "P1",
+    icon_type: "system_icon",
+    icon: "📋",
+    action_type: "survey",
+    action_destination: "survey",
+    evento_disparador: "followup_required",
+    destinatarios: ["usuarios"],
+  },
+
+  // USUARIOS - PREMIUM
+
+  {
+    key: "suscripcion_venciendo",
+    label: "Suscripción Próxima a Vencer",
+    group: "USUARIOS - PREMIUM",
+    category: "promo",
+    priority: "P1",
+    icon_type: "brand_image",
+    icon: "💎",
+    action_type: "screen",
+    action_destination: "premium",
+    evento_disparador: "subscription_expiring",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "beneficio_disponible",
+    label: "Beneficio Disponible",
+    group: "USUARIOS - PREMIUM",
+    category: "promo",
+    priority: "P2",
+    icon_type: "brand_image",
+    icon: "🎁",
+    action_type: "screen",
+    action_destination: "benefits",
+    evento_disparador: "benefit_available",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "oferta_premium",
+    label: "Oferta Premium",
+    group: "USUARIOS - PREMIUM",
+    category: "promo",
+    priority: "P1",
+    icon_type: "brand_image",
+    icon: "💎",
+    action_type: "screen",
+    action_destination: "premium",
+    evento_disparador: "premium_offer",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "premium_activado",
+    label: "Premium Activado",
+    group: "USUARIOS - PREMIUM",
+    category: "promo",
+    priority: "P0",
+    icon_type: "brand_image",
+    icon: "💎",
+    action_type: "screen",
+    action_destination: "premium",
+    evento_disparador: "premium_activated",
+    destinatarios: ["usuarios"],
+  },
+
+  // EMPLEADOS
+
+  {
+    key: "nueva_tarea",
+    label: "Nueva Tarea",
+    group: "EMPLEADOS",
+    category: "system",
+    priority: "P1",
+    icon_type: "system_icon",
+    icon: "✅",
+    action_type: "screen",
+    action_destination: "tasks",
+    evento_disparador: "new_task",
+    destinatarios: ["empleados"],
+  },
+
+  {
+    key: "tarea_vencida",
+    label: "Tarea Vencida",
+    group: "EMPLEADOS",
+    category: "system",
+    priority: "P0",
+    icon_type: "system_icon",
+    icon: "⏰",
+    action_type: "screen",
+    action_destination: "tasks",
+    evento_disparador: "task_overdue",
+    destinatarios: ["empleados"],
+  },
+
+  {
+    key: "caso_care_asignado",
+    label: "Caso CARE Asignado",
+    group: "EMPLEADOS",
+    category: "system",
+    priority: "P1",
+    icon_type: "system_icon",
+    icon: "📋",
+    action_type: "screen",
+    action_destination: "care",
+    evento_disparador: "care_case_assigned",
+    destinatarios: ["empleados"],
+  },
+
+  {
+    key: "nuevo_ticket",
+    label: "Nuevo Ticket",
+    group: "EMPLEADOS",
+    category: "system",
+    priority: "P1",
+    icon_type: "system_icon",
+    icon: "🎫",
+    action_type: "screen",
+    action_destination: "tickets",
+    evento_disparador: "new_ticket",
+    destinatarios: ["empleados"],
+  },
+
+  {
+    key: "ticket_escalado",
+    label: "Ticket Escalado",
+    group: "EMPLEADOS",
+    category: "system",
+    priority: "P0",
+    icon_type: "system_icon",
+    icon: "🚨",
+    action_type: "screen",
+    action_destination: "tickets",
+    evento_disparador: "ticket_escalated",
+    destinatarios: ["empleados"],
+  },
+
+  {
+    key: "perfil_reportado",
+    label: "Perfil Reportado",
+    group: "EMPLEADOS",
+    category: "security",
+    priority: "P0",
+    icon_type: "system_icon",
+    icon: "🚨",
+    action_type: "screen",
+    action_destination: "moderation",
+    evento_disparador: "profile_reported",
+    destinatarios: ["empleados"],
+  },
+
+  // MARCAS
+
+  {
+    key: "nuevo_lead",
+    label: "Nuevo Lead",
+    group: "MARCAS",
+    category: "promo",
+    priority: "P1",
+    icon_type: "brand_image",
+    icon: "🏢",
+    action_type: "screen",
+    action_destination: "leads",
+    evento_disparador: "new_lead",
+    destinatarios: ["marcas"],
+  },
+
+  {
+    key: "campana_aprobada",
+    label: "Campaña Aprobada",
+    group: "MARCAS",
+    category: "promo",
+    priority: "P2",
+    icon_type: "brand_image",
+    icon: "✅",
+    action_type: "screen",
+    action_destination: "campaigns",
+    evento_disparador: "campaign_approved",
+    destinatarios: ["marcas"],
+  },
+
+  {
+    key: "campana_rechazada",
+    label: "Campaña Rechazada",
+    group: "MARCAS",
+    category: "promo",
+    priority: "P1",
+    icon_type: "brand_image",
+    icon: "❌",
+    action_type: "screen",
+    action_destination: "campaigns",
+    evento_disparador: "campaign_rejected",
+    destinatarios: ["marcas"],
+  },
+
+  {
+    key: "pago_recibido",
+    label: "Pago Recibido",
+    group: "MARCAS",
+    category: "promo",
+    priority: "P0",
+    icon_type: "brand_image",
+    icon: "💳",
+    action_type: "screen",
+    action_destination: "billing",
+    evento_disparador: "payment_received",
+    destinatarios: ["marcas"],
+  },
+
+  {
+    key: "factura_disponible",
+    label: "Factura Disponible",
+    group: "MARCAS",
+    category: "promo",
+    priority: "P2",
+    icon_type: "brand_image",
+    icon: "📄",
+    action_type: "screen",
+    action_destination: "billing",
+    evento_disparador: "invoice_available",
+    destinatarios: ["marcas"],
+  },
+
+  {
+    key: "presupuesto_bajo",
+    label: "Presupuesto Bajo",
+    group: "MARCAS",
+    category: "system",
+    priority: "P1",
+    icon_type: "system_icon",
+    icon: "⚠️",
+    action_type: "screen",
+    action_destination: "budget",
+    evento_disparador: "budget_low",
+    destinatarios: ["marcas"],
+  },
+
+  // SISTEMA
+
+  {
+    key: "mantenimiento_programado",
+    label: "Mantenimiento Programado",
+    group: "SISTEMA",
+    category: "system",
+    priority: "P0",
+    icon_type: "system_icon",
+    icon: "⚙️",
+    action_type: "screen",
+    action_destination: "system",
+    evento_disparador: "maintenance_scheduled",
+    destinatarios: ["usuarios", "empleados", "marcas"],
+  },
+
+  {
+    key: "cambio_contraseña",
+    label: "Cambio de Contraseña",
+    group: "SISTEMA",
+    category: "security",
+    priority: "P1",
+    icon_type: "system_icon",
+    icon: "🔒",
+    action_type: "screen",
+    action_destination: "security",
+    evento_disparador: "password_changed",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "inicio_sesion_sospechoso",
+    label: "Inicio de Sesión Sospechoso",
+    group: "SISTEMA",
+    category: "security",
+    priority: "P0",
+    icon_type: "system_icon",
+    icon: "🚨",
+    action_type: "screen",
+    action_destination: "security",
+    evento_disparador: "suspicious_login",
+    destinatarios: ["usuarios"],
+  },
+
+  {
+    key: "actualizacion_disponible",
+    label: "Actualización Disponible",
+    group: "SISTEMA",
+    category: "system",
+    priority: "P2",
+    icon_type: "system_icon",
+    icon: "📱",
+    action_type: "screen",
+    action_destination: "updates",
+    evento_disparador: "update_available",
+    destinatarios: ["usuarios", "empleados", "marcas"],
+  },
+
+  {
+    key: "error_critico",
+    label: "Error Crítico",
+    group: "SISTEMA",
+    category: "system",
+    priority: "P0",
+    icon_type: "system_icon",
+    icon: "🚨",
+    action_type: "screen",
+    action_destination: "errors",
+    evento_disparador: "critical_error",
+    destinatarios: ["usuarios", "empleados", "marcas"],
+  },
+];
 
 const VARIABLE_SCOPE: Record<string, { title: boolean; body: boolean }> = {
   first_name: { title: true, body: true },
@@ -766,7 +1328,7 @@ export default function TemplatesManager({
 
     body: "",
 
-    icon: "description",
+    icon: "automatic",
 
     icon_type: "system_icon",
 
@@ -800,8 +1362,6 @@ export default function TemplatesManager({
 
     evento_disparador: "",
 
-    uso_principal: "",
-
     baseLocale: "es",
 
     translations: {},
@@ -810,7 +1370,7 @@ export default function TemplatesManager({
 
     slug: "",
 
-    templateType: "sistema",
+    templateType: "",
   });
 
   const [activeField, setActiveField] = useState<"title" | "body">("body");
@@ -846,6 +1406,27 @@ export default function TemplatesManager({
   );
 
   const PRIORITY_ORDER: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  const totalLangs = () => Object.keys(LANGUAGE_NAMES).length;
+
+  const completedCount = () => {
+    let count = 0;
+
+    for (const code of Object.keys(LANGUAGE_NAMES)) {
+      const t = form.translations?.[code];
+
+      if (Boolean(t?.title) && Boolean(t?.body)) count += 1;
+    }
+
+    return count;
+  };
+
+  const progressPercent = () => {
+    const total = totalLangs();
+
+    if (total === 0) return 0;
+
+    return Math.round((completedCount() / total) * 100);
+  };
 
   const list = templates
 
@@ -980,7 +1561,7 @@ export default function TemplatesManager({
 
       body: "",
 
-      icon: "description",
+      icon: "automatic",
 
       icon_type: "system_icon",
 
@@ -1013,8 +1594,6 @@ export default function TemplatesManager({
       destinatarios: ["usuarios"],
 
       evento_disparador: "",
-
-      uso_principal: "",
 
       baseLocale: "es",
 
@@ -1074,8 +1653,6 @@ export default function TemplatesManager({
 
       evento_disparador: tpl.evento_disparador || "",
 
-      uso_principal: tpl.uso_principal || "",
-
       baseLocale: tpl.baseLocale || "es",
 
       translations: tpl.translations || {
@@ -1100,8 +1677,41 @@ export default function TemplatesManager({
       e: React.ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
       >,
+      value?: any,
     ) => {
-      setForm((prev) => ({ ...prev, [key]: e.target.value }));
+      const val = value !== undefined ? value : e?.target?.value;
+
+      if (key === "templateType" && val) {
+        const selected = TEMPLATE_TYPES.find((t) => t.key === val);
+
+        if (selected) {
+          setForm((prev) => ({
+            ...prev,
+
+            category: selected.category,
+
+            priority: selected.priority,
+
+            icon_type: selected.icon_type,
+
+            icon: selected.icon,
+
+            action_type: selected.action_type,
+
+            action_destination: selected.action_destination,
+
+            evento_disparador: selected.evento_disparador,
+
+            destinatarios: selected.destinatarios,
+
+            templateType: selected.key,
+          }));
+
+          return;
+        }
+      }
+
+      setForm((prev) => ({ ...prev, [key]: val }));
     };
 
   const handleChangeCheckbox =
@@ -1134,22 +1744,6 @@ export default function TemplatesManager({
         : [...(prev.channels ?? []), channel];
 
       return { ...prev, channels };
-    });
-  };
-
-  const toggleDestinatario = (destinatario: string) => {
-    setForm((prev) => {
-      const current = prev.destinatarios ?? [];
-
-      if (current.includes(destinatario)) {
-        return {
-          ...prev,
-
-          destinatarios: current.filter((d) => d !== destinatario),
-        };
-      }
-
-      return { ...prev, destinatarios: [...current, destinatario] };
     });
   };
 
@@ -1252,8 +1846,6 @@ export default function TemplatesManager({
         destinatarios: form.destinatarios || ["usuarios"],
 
         evento_disparador: form.evento_disparador,
-
-        uso_principal: form.uso_principal,
 
         baseLocale: form.baseLocale,
 
@@ -2912,6 +3504,228 @@ export default function TemplatesManager({
                       </Box>
 
                       <Box sx={{ p: 1.5 }}>
+                        {/* 1. Tipo de plantilla */}
+                        <TextField
+                          select
+
+                          fullWidth
+
+                          label="Tipo de plantilla"
+
+                          value={form.templateType ?? ""}
+
+                          onChange={handleChange("templateType")}
+
+                          margin="dense"
+
+                          variant="outlined"
+
+                          slotProps={{ select: {} }}
+                        >
+                          <MenuItem value="">Seleccionar tipo...</MenuItem>
+
+                          {[
+                            ...new Set(TEMPLATE_TYPES.map((t) => t.group)),
+                          ].flatMap((group) => [
+                            <MenuItem
+                              key={`${group}-header`}
+                              value=""
+
+                              disabled
+
+                              sx={{ pt: 1, fontWeight: 700 }}
+                            >
+                              {group}
+                            </MenuItem>,
+
+                            ...TEMPLATE_TYPES.filter(
+                              (t) => t.group === group,
+                            ).map((t) => (
+                              <MenuItem key={t.key} value={t.key}>
+                                {t.label}
+                              </MenuItem>
+                            )),
+                          ])}
+                        </TextField>
+
+                        {form.templateType && (
+                          <>
+                            <Typography
+                              variant="caption"
+
+                              sx={{
+                                color: "text.secondary",
+
+                                fontSize: "0.6875rem",
+
+                                mt: 0.75,
+
+                                mb: 0.5,
+                              }}
+                            >
+                              {
+                                TEMPLATE_TYPES.find(
+                                  (t) => t.key === form.templateType,
+                                )?.label
+                              }
+                            </Typography>
+
+                            {/* Configuración generada automáticamente */}
+                            <Box
+                              sx={{
+                                display: "flex",
+
+                                flexWrap: "wrap",
+
+                                gap: 0.75,
+
+                                mt: 0.5,
+
+                                p: 1,
+
+                                borderRadius: 1,
+
+                                border: "1px solid",
+
+                                borderColor: "divider",
+
+                                bgcolor: "background.paper",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+
+                                sx={{
+                                  fontWeight: 700,
+
+                                  color: "text.secondary",
+
+                                  mb: 0.5,
+
+                                  width: "100%",
+
+                                  fontSize: "0.6875rem",
+
+                                  textTransform: "uppercase",
+
+                                  letterSpacing: "0.05em",
+                                }}
+                              >
+                                Configuración generada automáticamente
+                              </Typography>
+
+                              <Box
+                                sx={{
+                                  display: "flex",
+
+                                  alignItems: "center",
+
+                                  gap: 0.5,
+
+                                  mb: 0.25,
+
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                <Chip
+                                  label={`✓ ${
+                                    TEMPLATE_TYPES.find(
+                                      (t) => t.key === form.templateType,
+                                    )?.category
+                                  }`}
+
+                                  size="small"
+
+                                  color="primary"
+
+                                  variant="outlined"
+
+                                  sx={{ fontSize: "0.65rem" }}
+                                />
+
+                                <Chip
+                                  label={`✓ ${
+                                    form.priority === "P0"
+                                      ? "Crítica"
+                                      : form.priority === "P1"
+                                        ? "Alta"
+                                        : form.priority === "P2"
+                                          ? "Normal"
+                                          : "Baja"
+                                  }`}
+
+                                  size="small"
+
+                                  color="secondary"
+
+                                  variant="outlined"
+
+                                  sx={{ fontSize: "0.65rem" }}
+                                />
+
+                                <Chip
+                                  label={`✓ ${
+                                    form.icon_type === "dynamic_avatar"
+                                      ? "Avatar de usuario"
+                                      : form.icon_type === "system_icon"
+                                        ? "Ícono del sistema"
+                                        : "Imagen de marca"
+                                  }`}
+
+                                  size="small"
+
+                                  color="info"
+
+                                  variant="outlined"
+
+                                  sx={{ fontSize: "0.65rem" }}
+                                />
+
+                                <Chip
+                                  label={`✓ ${
+                                    form.action_type === "profile"
+                                      ? "Abrir perfil"
+                                      : form.action_type === "chat"
+                                        ? "Abrir chat"
+                                        : form.action_type === "url"
+                                          ? "Abrir URL"
+                                          : form.action_type === "screen"
+                                            ? "Abrir pantalla"
+                                            : form.action_type === "survey"
+                                              ? "Abrir encuesta"
+                                              : "Sin acción adicional"
+                                  }`}
+
+                                  size="small"
+
+                                  color="success"
+
+                                  variant="outlined"
+
+                                  sx={{ fontSize: "0.65rem" }}
+                                />
+
+                                <Chip
+                                  label={`✓ ${
+                                    TEMPLATE_TYPES.find(
+                                      (t) => t.key === form.templateType,
+                                    )?.icon
+                                  }`}
+
+                                  size="small"
+
+                                  color="warning"
+
+                                  variant="outlined"
+
+                                  sx={{ fontSize: "0.65rem" }}
+                                />
+                              </Box>
+                            </Box>
+                          </>
+                        )}
+
+                        {/* 2. Título */}
                         <Box
                           sx={{
                             display: "flex",
@@ -2921,6 +3735,8 @@ export default function TemplatesManager({
                             justifyContent: "space-between",
 
                             mb: 0.5,
+
+                            mt: form.templateType ? 1 : 0,
                           }}
                         >
                           <Typography
@@ -2970,7 +3786,7 @@ export default function TemplatesManager({
 
                           onChange={(e) =>
                             setForm((prev) => {
-                              const loc = prev.baseLocale ?? "es";
+                              const loc = editingLocale;
 
                               const cur = prev.translations?.[loc] ?? {
                                 title: "",
@@ -3001,6 +3817,7 @@ export default function TemplatesManager({
                           onFocus={() => setActiveField("title")}
                         />
 
+                        {/* 3. Cuerpo */}
                         <Box
                           sx={{
                             display: "flex",
@@ -3061,7 +3878,7 @@ export default function TemplatesManager({
 
                           onChange={(e) =>
                             setForm((prev) => {
-                              const loc = prev.baseLocale ?? "es";
+                              const loc = editingLocale;
 
                               const cur = prev.translations?.[loc] ?? {
                                 title: "",
@@ -3419,6 +4236,21 @@ export default function TemplatesManager({
 
                             <MenuItem value="P3">P3 Baja</MenuItem>
                           </TextField>
+
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              color: "text.secondary",
+
+                              fontSize: "0.62rem",
+
+                              mt: 0.25,
+                            }}
+                          >
+                            P0: siempre mostrar inmediatamente. P1: muy
+                            importante. P2: normal. P3: informativa.
+                          </Typography>
                         </Box>
 
                         <Box
@@ -3456,183 +4288,208 @@ export default function TemplatesManager({
                                 minWidth: 100,
                               }}
                             >
-                              Origen visual
+                              Tipo visual
                             </Typography>
-
-                            <Box
-                              sx={{
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                gap: 1,
-                              }}
-                            >
-                              <Switch
-                                checked={form.icon_type === "dynamic_avatar"}
-
-                                onChange={(_e, v) =>
-                                  setForm((prev) => ({
-                                    ...prev,
-
-                                    icon_type: v
-                                      ? "dynamic_avatar"
-                                      : "system_icon",
-                                  }))
-                                }
-
-                                size="small"
-
-                                sx={{
-                                  color:
-                                    form.icon_type === "dynamic_avatar"
-                                      ? "primary.main"
-                                      : "text.secondary",
-                                }}
-                              />
-
-                              <Typography
-                                variant="caption"
-
-                                sx={{ fontWeight: 600 }}
-                              >
-                                Avatar del usuario
-                              </Typography>
-                            </Box>
-
-                            <Box
-                              sx={{
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                gap: 1,
-                              }}
-                            >
-                              <Switch
-                                checked={form.icon_type === "system_icon"}
-
-                                onChange={(_e, v) =>
-                                  setForm((prev) => ({
-                                    ...prev,
-
-                                    icon_type: v
-                                      ? "system_icon"
-                                      : "dynamic_avatar",
-                                  }))
-                                }
-
-                                size="small"
-
-                                sx={{
-                                  color:
-                                    form.icon_type === "system_icon"
-                                      ? "primary.main"
-                                      : "text.secondary",
-                                }}
-                              />
-
-                              <Typography
-                                variant="caption"
-
-                                sx={{ fontWeight: 600 }}
-                              >
-                                Ícono del sistema
-                              </Typography>
-                            </Box>
                           </Box>
 
-                          {form.icon_type === "system_icon" ? (
-                            <Box
-                              sx={{
-                                display: "grid",
+                          <Box
+                            sx={{
+                              display: "flex",
 
-                                gridTemplateColumns: "repeat(6, 36px)",
+                              alignItems: "center",
 
-                                gap: 0.75,
+                              gap: 0,
 
-                                mt: 0.5,
-                              }}
-                            >
-                              {ICON_EMOJI_GRID.map((emoji) => (
-                                <Box
-                                  key={emoji}
+                              borderRadius: 1,
 
-                                  onClick={() =>
-                                    setForm((prev) => ({
-                                      ...prev,
+                              border: "1px solid",
 
-                                      icon: emoji,
-                                    }))
-                                  }
+                              borderColor: "divider",
 
-                                  sx={{
-                                    display: "flex",
+                              p: 0.125,
 
-                                    alignItems: "center",
+                              width: "100%",
+                            }}
+                          >
+                            {[
+                              {
+                                value: "dynamic_avatar",
 
-                                    justifyContent: "center",
+                                label: "Avatar",
 
-                                    width: 36,
+                                emoji: "👤",
 
-                                    height: 36,
+                                hint: "Usará la foto del usuario que originó la interacción",
+                              },
 
-                                    borderRadius: "50%",
+                              {
+                                value: "system_icon",
 
-                                    cursor: "pointer",
+                                label: "Sistema",
 
-                                    fontSize: 20,
+                                emoji: "🔒",
 
-                                    border: `1px solid ${
-                                      form.icon === emoji
-                                        ? "primary.main"
-                                        : "divider"
-                                    }`,
+                                hint: "Usará el ícono del sistema definido por la categoría",
+                              },
 
+                              {
+                                value: "brand_image",
+
+                                label: "Marca",
+
+                                emoji: "🏢",
+
+                                hint: "Usará el logo de la marca o empresa",
+                              },
+                            ].map((opt) => (
+                              <Button
+                                key={opt.value}
+
+                                size="small"
+
+                                variant="outlined"
+
+                                onClick={() =>
+                                  setForm((prev) => ({
+                                    ...prev,
+
+                                    icon_type: opt.value,
+                                  }))
+                                }
+
+                                sx={{
+                                  width: "33.33%",
+
+                                  borderRadius: 0,
+
+                                  border: "none",
+
+                                  py: 0.6,
+
+                                  px: 0.75,
+
+                                  textTransform: "none",
+
+                                  fontSize: "0.65rem",
+
+                                  fontWeight: 600,
+
+                                  color:
+                                    form.icon_type === opt.value
+                                      ? "common.white"
+                                      : "text.secondary",
+
+                                  bgcolor:
+                                    form.icon_type === opt.value
+                                      ? "primary.main"
+                                      : "transparent",
+
+                                  "&:hover": {
                                     bgcolor:
-                                      form.icon === emoji
-                                        ? "rgba(37,99,235,0.12)"
-                                        : "background.paper",
-
-                                    "&:hover": {
-                                      borderColor: "primary.main",
-                                    },
+                                      form.icon_type === opt.value
+                                        ? "primary.main"
+                                        : "action.hover",
+                                  },
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    mr: 0.5,
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
                                 >
-                                  <span role="img" aria-label={emoji}>
-                                    {emoji}
+                                  <span style={{ fontSize: 18 }}>
+                                    {opt.emoji}
                                   </span>
                                 </Box>
-                              ))}
-                            </Box>
-                          ) : (
-                            <Box
+
+                                {opt.label}
+                              </Button>
+                            ))}
+                          </Box>
+
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              color: "text.secondary",
+
+                              fontSize: "0.62rem",
+
+                              mt: 0.25,
+                            }}
+                          >
+                            {[
+                              "Usará la foto del usuario que originó la interacción",
+                              "Usará el ícono del sistema definido por la categoría",
+                              "Usará el logo de la marca o empresa",
+                            ][
+                              [
+                                "dynamic_avatar",
+                                "system_icon",
+                                "brand_image",
+                              ].indexOf(form.icon_type)
+                            ] ?? ""}
+                          </Typography>
+
+                          <Box
+                            sx={{
+                              display: "flex",
+
+                              alignItems: "center",
+
+                              gap: 1.5,
+
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+
                               sx={{
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                gap: 1,
-
-                                mt: 0.5,
-
-                                paddingLeft: 1,
+                                fontWeight: 600,
 
                                 color: "text.secondary",
+
+                                minWidth: 100,
                               }}
                             >
-                              <span style={{ fontSize: 22 }}>👤</span>
+                              Tipo de evento
+                            </Typography>
+                          </Box>
 
-                              <Typography
-                                variant="caption"
+                          <TextField
+                            select
 
-                                sx={{ fontWeight: 600 }}
-                              >
-                                Usará la foto del usuario que originó la
-                                interacción
-                              </Typography>
-                            </Box>
-                          )}
+                            value={form.icon ?? "automatic"}
+
+                            onChange={(e) =>
+                              setForm((prev) => ({
+                                ...prev,
+
+                                icon: e.target.value,
+                              }))
+                            }
+
+                            margin="dense"
+
+                            size="small"
+
+                            fullWidth
+
+                            variant="outlined"
+
+                            slotProps={{ select: {} }}
+                          >
+                            <MenuItem value="automatic">Automático</MenuItem>
+
+                            {TYPE_EVENTS.map((t) => (
+                              <MenuItem key={t.emoji} value={t.emoji}>
+                                {t.emoji} {t.label}
+                              </MenuItem>
+                            ))}
+                          </TextField>
                         </Box>
                       </Box>
                     </Box>
@@ -3690,70 +4547,33 @@ export default function TemplatesManager({
                         sx={{
                           p: 1.5,
 
-                          display: "grid",
+                          display: "flex",
 
-                          gridTemplateColumns: "1fr 1fr",
+                          flexDirection: "column",
 
                           gap: 1.5,
                         }}
                       >
+                        {/* 1. SE GENERA CUANDO */}
                         <Box>
-                          <TextField
-                            fullWidth
+                          <Typography
+                            variant="caption"
 
-                            label="Tipo de acción"
+                            sx={{
+                              fontWeight: 600,
 
-                            select
+                              color: "text.secondary",
 
-                            value={form.action_type}
+                              mb: 0.75,
 
-                            onChange={handleChange("action_type")}
-
-                            margin="dense"
-
-                            size="small"
-
-                            slotProps={{ select: {} }}
+                              fontSize: "0.6875rem",
+                            }}
                           >
-                            <MenuItem value="">Ninguna</MenuItem>
+                            SE GENERA CUANDO
+                          </Typography>
 
-                            <MenuItem value="url">Abrir URL</MenuItem>
-
-                            <MenuItem value="screen">
-                              Abrir pantalla interna
-                            </MenuItem>
-
-                            <MenuItem value="chat">Abrir chat</MenuItem>
-
-                            <MenuItem value="profile">Abrir perfil</MenuItem>
-
-                            <MenuItem value="survey">Abrir encuesta</MenuItem>
-                          </TextField>
-                        </Box>
-
-                        <Box>
                           <TextField
                             fullWidth
-
-                            label="Destino"
-
-                            value={form.action_destination}
-
-                            onChange={handleChange("action_destination")}
-
-                            placeholder="/profile/{id} o https://..."
-
-                            margin="dense"
-
-                            size="small"
-                          />
-                        </Box>
-
-                        <Box>
-                          <TextField
-                            fullWidth
-
-                            label="Evento disparador"
 
                             select
 
@@ -3769,37 +4589,68 @@ export default function TemplatesManager({
                           >
                             <MenuItem value="">Ninguno</MenuItem>
 
-                            <MenuItem value="like_received">
-                              like_received
-                            </MenuItem>
-
-                            <MenuItem value="match_created">
-                              match_created
-                            </MenuItem>
-
-                            <MenuItem value="new_message">new_message</MenuItem>
-
-                            <MenuItem value="payment_successful">
-                              payment_successful
-                            </MenuItem>
-
-                            <MenuItem value="survey_completed">
-                              survey_completed
-                            </MenuItem>
+                            {TRIGGER_EVENTS.map((t) => (
+                              <MenuItem key={t.key} value={t.key}>
+                                {t.emoji} {t.label}
+                              </MenuItem>
+                            ))}
                           </TextField>
+
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              color: "text.secondary",
+
+                              fontSize: "0.62rem",
+
+                              mt: 0.25,
+                              fontStyle: "italic",
+                            }}
+                          >
+                            Evento que activa la notificación.
+                          </Typography>
                         </Box>
 
-                        <Box sx={{ gridColumn: "1 / -1", mt: 0.5 }}>
+                        {/* DIVIDER */}
+                        <Box
+                          sx={{
+                            borderBottom: "1px solid",
+
+                            borderColor: "divider",
+
+                            mx: -1.5,
+
+                            mb: 0.5,
+                          }}
+                        />
+
+                        {/* 2. AL PULSAR LA NOTIFICACIÓN */}
+                        <Box>
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              fontWeight: 600,
+
+                              color: "text.secondary",
+
+                              mb: 0.75,
+
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            AL PULSAR LA NOTIFICACIÓN
+                          </Typography>
+
                           <TextField
                             fullWidth
 
-                            label="Uso principal"
-
                             select
 
-                            value={form.uso_principal}
+                            value={form.action_type}
 
-                            onChange={handleChange("uso_principal")}
+                            onChange={handleChange("action_type")}
 
                             margin="dense"
 
@@ -3807,21 +4658,169 @@ export default function TemplatesManager({
 
                             slotProps={{ select: {} }}
                           >
-                            <MenuItem value="portal_usuarios">
-                              Portal Usuarios
+                            <MenuItem value="">No hacer nada</MenuItem>
+
+                            <MenuItem value="url">Abrir URL</MenuItem>
+
+                            <MenuItem value="screen">
+                              Abrir pantalla interna
                             </MenuItem>
 
-                            <MenuItem value="portal_empleados">
-                              Portal Empleados
-                            </MenuItem>
+                            <MenuItem value="chat">Abrir chat</MenuItem>
 
-                            <MenuItem value="portal_marcas">
-                              Portal Marcas
-                            </MenuItem>
+                            <MenuItem value="profile">Abrir perfil</MenuItem>
 
-                            <MenuItem value="global">Global</MenuItem>
+                            <MenuItem value="survey">Abrir encuesta</MenuItem>
                           </TextField>
+
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              color: "text.secondary",
+
+                              fontSize: "0.62rem",
+
+                              mt: 0.25,
+                              fontStyle: "italic",
+                            }}
+                          >
+                            Qué ocurre cuando el usuario toca la notificación.
+                          </Typography>
                         </Box>
+
+                        {/* 3. DESTINO (condicional) */}
+                        {form.action_type && (
+                          <Box>
+                            <Typography
+                              variant="caption"
+
+                              sx={{
+                                fontWeight: 600,
+
+                                color: "text.secondary",
+
+                                mb: 0.75,
+
+                                fontSize: "0.6875rem",
+                              }}
+                            >
+                              DESTINO
+                            </Typography>
+
+                            {form.action_type === "url" ? (
+                              <TextField
+                                fullWidth
+
+                                label="URL de destino"
+
+                                value={form.action_destination}
+
+                                onChange={handleChange("action_destination")}
+
+                                placeholder="https://..."
+
+                                margin="dense"
+
+                                size="small"
+                              />
+                            ) : form.action_type === "screen" ? (
+                              <TextField
+                                fullWidth
+
+                                select
+
+                                value={form.action_destination}
+
+                                onChange={handleChange("action_destination")}
+
+                                margin="dense"
+
+                                size="small"
+
+                                slotProps={{ select: {} }}
+                              >
+                                <MenuItem value="matches">Matches</MenuItem>
+
+                                <MenuItem value="messages">Mensajes</MenuItem>
+
+                                <MenuItem value="surveys">Encuestas</MenuItem>
+
+                                <MenuItem value="premium">Premium</MenuItem>
+
+                                <MenuItem value="settings">
+                                  Configuración
+                                </MenuItem>
+                              </TextField>
+                            ) : form.action_type === "profile" ? (
+                              <TextField
+                                fullWidth
+
+                                select
+
+                                value={form.action_destination}
+
+                                onChange={handleChange("action_destination")}
+
+                                margin="dense"
+
+                                size="small"
+
+                                slotProps={{ select: {} }}
+                              >
+                                <MenuItem value="profile">
+                                  Perfil relacionado
+                                </MenuItem>
+                              </TextField>
+                            ) : form.action_type === "chat" ? (
+                              <Box
+                                sx={{
+                                  p: 1,
+
+                                  borderRadius: 1,
+
+                                  border: "1px solid",
+
+                                  borderColor: "divider",
+
+                                  bgcolor: "background.paper",
+
+                                  display: "flex",
+
+                                  alignItems: "center",
+
+                                  gap: 1,
+                                }}
+                              >
+                                <span style={{ fontSize: 24 }}>💬</span>
+
+                                <Typography variant="body2">
+                                  Ir al chat asociado
+                                </Typography>
+                              </Box>
+                            ) : form.action_type === "survey" ? (
+                              <TextField
+                                fullWidth
+
+                                select
+
+                                value={form.action_destination}
+
+                                onChange={handleChange("action_destination")}
+
+                                margin="dense"
+
+                                size="small"
+
+                                slotProps={{ select: {} }}
+                              >
+                                <MenuItem value="survey">
+                                  Encuesta relacionada
+                                </MenuItem>
+                              </TextField>
+                            ) : null}
+                          </Box>
+                        )}
                       </Box>
                     </Box>
                   </Box>
@@ -3996,7 +4995,7 @@ export default function TemplatesManager({
                               ?.body ?? "",
                           )}
 
-                          icon={form.icon}
+                          icon={getEffectiveIcon(form)}
 
                           category={form.category}
 
@@ -4013,7 +5012,7 @@ export default function TemplatesManager({
                       </Box>
                     </Box>
 
-                    {/* LOCALIZACIÓN */}
+                    {/* IDIOMAS Y TRADUCCIONES */}
 
                     <Box
                       sx={{
@@ -4060,181 +5059,19 @@ export default function TemplatesManager({
                             fontSize: "0.6875rem",
                           }}
                         >
-                          LOCALIZACIÓN
+                          IDIOMAS
                         </Typography>
                       </Box>
 
                       <Box
                         sx={{
                           p: 1.5,
-
                           display: "flex",
-
                           flexDirection: "column",
-
-                          gap: 1,
+                          gap: 1.5,
                         }}
                       >
-                        <TextField
-                          select
-
-                          size="small"
-
-                          label="Idioma base"
-
-                          value={form.baseLocale ?? "es"}
-
-                          onChange={(e) =>
-                            setForm((prev) => ({
-                              ...prev,
-
-                              baseLocale: e.target.value,
-                            }))
-                          }
-
-                          margin="dense"
-
-                          slotProps={{ select: {} }}
-                        >
-                          <MenuItem value="en">English</MenuItem>
-
-                          <MenuItem value="es">Español</MenuItem>
-
-                          <MenuItem value="pt">Português</MenuItem>
-
-                          <MenuItem value="fr">Français</MenuItem>
-
-                          <MenuItem value="de">Deutsch</MenuItem>
-
-                          <MenuItem value="it">Italiano</MenuItem>
-
-                          <MenuItem value="ru">Русский</MenuItem>
-
-                          <MenuItem value="sv">Svenska</MenuItem>
-
-                          <MenuItem value="nl">Nederlands</MenuItem>
-
-                          <MenuItem value="zh">中文 (Mandarín)</MenuItem>
-
-                          <MenuItem value="hi">हिन्दी (Hindi)</MenuItem>
-
-                          <MenuItem value="bn">বাংলা (Bengalí)</MenuItem>
-
-                          <MenuItem value="ja">日本語 (Japanese)</MenuItem>
-
-                          <MenuItem value="ko">한국어 (Korean)</MenuItem>
-
-                          <MenuItem value="ar">العربية (Árabe)</MenuItem>
-
-                          <MenuItem value="sw">Kiswahili (Swahili)</MenuItem>
-
-                          <MenuItem value="ha">Hausa</MenuItem>
-
-                          <MenuItem value="am">አማርኛ (Amhárico)</MenuItem>
-
-                          <MenuItem value="fil">Filipino/Tagalog</MenuItem>
-
-                          <MenuItem value="ms">Bahasa Melayu (Malay)</MenuItem>
-
-                          <MenuItem value="mi">Māori</MenuItem>
-                        </TextField>
-
-                        <TextField
-                          select
-
-                          size="small"
-
-                          label="Tipo de plantilla"
-
-                          value={form.templateType ?? "sistema"}
-
-                          onChange={(e) =>
-                            setForm((prev) => ({
-                              ...prev,
-
-                              templateType: e.target.value,
-                            }))
-                          }
-
-                          margin="dense"
-
-                          slotProps={{ select: {} }}
-                        >
-                          <MenuItem value="sistema">Sistema</MenuItem>
-
-                          <MenuItem value="evento_automatico">
-                            Evento automático
-                          </MenuItem>
-
-                          <MenuItem value="campaña_manual">
-                            Campaña manual
-                          </MenuItem>
-                        </TextField>
-                      </Box>
-                    </Box>
-
-                    {/* TRADUCCIONES */}
-
-                    <Box
-                      sx={{
-                        borderRadius: 1,
-
-                        border: "1px solid",
-
-                        borderColor: "divider",
-
-                        overflow: "hidden",
-
-                        display: "flex",
-
-                        flexDirection: "column",
-
-                        mb: 1,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          px: 1.5,
-
-                          py: 1,
-
-                          borderBottom: "1px solid",
-
-                          borderColor: "divider",
-
-                          backgroundColor: "action.hover",
-                        }}
-                      >
-                        <Typography
-                          variant="overline"
-
-                          sx={{
-                            fontWeight: 700,
-
-                            letterSpacing: "0.08em",
-
-                            color: "text.secondary",
-
-                            textTransform: "uppercase",
-
-                            fontSize: "0.6875rem",
-                          }}
-                        >
-                          TRADUCCIONES
-                        </Typography>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          p: 1.5,
-
-                          display: "flex",
-
-                          flexDirection: "column",
-
-                          gap: 0.75,
-                        }}
-                      >
+                        {/* Idioma base (solo lectura) */}
                         <Box
                           sx={{
                             display: "flex",
@@ -4242,310 +5079,282 @@ export default function TemplatesManager({
                             alignItems: "center",
 
                             justifyContent: "space-between",
+
+                            mb: 0.5,
                           }}
                         >
                           <Typography
                             variant="caption"
 
-                            sx={{ color: "text.secondary" }}
+                            sx={{
+                              fontWeight: 600,
+
+                              color: "text.secondary",
+
+                              fontSize: "0.6875rem",
+                            }}
                           >
-                            Idioma base:{" "}
+                            Idioma base
+                          </Typography>
+
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              fontWeight: 700,
+
+                              color: "primary.main",
+                            }}
+                          >
+                            {LANGUAGE_NAMES[form.baseLocale ?? "es"] ??
+                              form.baseLocale ??
+                              "es"}
+                          </Typography>
+                        </Box>
+
+                        {/* Idioma actual */}
+                        <TextField
+                          select
+
+                          size="small"
+
+                          label="Idioma actual"
+
+                          value={editingLocale}
+
+                          onChange={(e) => setEditingLocale(e.target.value)}
+
+                          margin="dense"
+
+                          slotProps={{ select: {} }}
+                        >
+                          {Object.entries(LANGUAGE_NAMES).map(
+                            ([code, name]) => (
+                              <MenuItem key={code} value={code}>
+                                {name}
+                              </MenuItem>
+                            ),
+                          )}
+                        </TextField>
+
+                        {/* Estado del idioma actual */}
+                        <Box
+                          sx={{
+                            display: "flex",
+
+                            alignItems: "center",
+
+                            gap: 1,
+
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+
+                            sx={{
+                              fontWeight: 600,
+
+                              color: "text.secondary",
+
+                              fontSize: "0.6875rem",
+                            }}
+                          >
+                            Estado
+                          </Typography>
+
+                          {(() => {
+                            const t = form.translations?.[editingLocale];
+
+                            const hasTitle = Boolean(t?.title);
+
+                            const hasBody = Boolean(t?.body);
+
+                            const isBase = editingLocale === form.baseLocale;
+
+                            if (isBase) {
+                              return (
+                                <Typography
+                                  variant="caption"
+
+                                  sx={{
+                                    fontWeight: 700,
+
+                                    color: "primary.main",
+                                  }}
+                                >
+                                  Base (no traducir)
+                                </Typography>
+                              );
+                            }
+
+                            if (hasTitle && hasBody) {
+                              return (
+                                <Typography
+                                  variant="caption"
+
+                                  sx={{
+                                    fontWeight: 700,
+
+                                    color: "success.main",
+                                  }}
+                                >
+                                  ✅ Traducido
+                                </Typography>
+                              );
+                            }
+
+                            if (hasTitle || hasBody) {
+                              return (
+                                <Typography
+                                  variant="caption"
+
+                                  sx={{
+                                    fontWeight: 700,
+
+                                    color: "warning.main",
+                                  }}
+                                >
+                                  🟡 En progreso
+                                </Typography>
+                              );
+                            }
+
+                            return (
+                              <Typography
+                                variant="caption"
+
+                                sx={{
+                                  fontWeight: 700,
+
+                                  color: "text.secondary",
+                                }}
+                              >
+                                ⚠ Sin traducir
+                              </Typography>
+                            );
+                          })()}
+                        </Box>
+
+                        {/* Progreso global */}
+                        <Box
+                          sx={{
+                            display: "flex",
+
+                            flexDirection: "column",
+
+                            gap: 0.5,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+
+                              alignItems: "center",
+
+                              justifyContent: "space-between",
+
+                              mb: 0.5,
+                            }}
+                          >
                             <Typography
                               variant="caption"
 
-                              sx={{ fontWeight: 700, color: "primary.main" }}
-                            >
-                              {LANGUAGE_NAMES[form.baseLocale] ??
-                                form.baseLocale}
-                            </Typography>
-                          </Typography>
-
-                          <Button
-                            size="small"
-
-                            variant="outlined"
-
-                            onClick={() => {
-                              const loc = form.baseLocale ?? "es";
-
-                              setForm((prev) => ({
-                                ...prev,
-
-                                translations: {
-                                  ...prev.translations,
-
-                                  [loc]: {
-                                    ...(prev.translations?.[loc] ?? {
-                                      title: "",
-
-                                      body: "",
-                                    }),
-                                  },
-                                },
-                              }));
-                            }}
-                          >
-                            + Agregar traducción
-                          </Button>
-                        </Box>
-
-                        {["es", "en", "fr", "de", "it", "pt"].map((loc) => {
-                          const t = form.translations?.[loc];
-
-                          const hasTranslation = Boolean(t?.title || t?.body);
-
-                          const isBase = loc === form.baseLocale;
-
-                          return (
-                            <Box
-                              key={loc}
-
                               sx={{
-                                display: "flex",
+                                fontWeight: 600,
 
-                                alignItems: "center",
-
-                                justifyContent: "space-between",
-
-                                px: 0.5,
-
-                                py: 0.5,
-
-                                borderRadius: 4,
-
-                                bgcolor: isBase
-                                  ? "action.hover"
-                                  : "transparent",
+                                color: "text.secondary",
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
+                              Progreso de traducciones
+                            </Typography>
 
-                                  alignItems: "center",
+                            <Typography
+                              variant="caption"
 
-                                  gap: 0.75,
-                                }}
-                              >
-                                <Typography
-                                  variant="body2"
+                              sx={{
+                                fontWeight: 700,
 
-                                  sx={{ fontWeight: 600, minWidth: 100 }}
-                                >
-                                  {LANGUAGE_NAMES[loc] ?? loc}
-                                </Typography>
+                                color: "primary.main",
+                              }}
+                            >
+                              {completedCount()} / {totalLangs()} idiomas
+                              completados
+                            </Typography>
+                          </Box>
 
-                                {isBase && (
-                                  <Typography
-                                    variant="caption"
-
-                                    sx={{
-                                      color: "primary.main",
-
-                                      fontSize: "0.65rem",
-                                    }}
-                                  >
-                                    Base
-                                  </Typography>
-                                )}
-
-                                {hasTranslation ? (
-                                  <Typography
-                                    variant="caption"
-
-                                    sx={{
-                                      color: "success.main",
-
-                                      fontWeight: 700,
-                                    }}
-                                  >
-                                    ✅
-                                  </Typography>
-                                ) : (
-                                  <Typography
-                                    variant="caption"
-
-                                    sx={{
-                                      color: "warning.main",
-
-                                      fontWeight: 700,
-                                    }}
-                                  >
-                                    ⚠ Pendiente
-                                  </Typography>
-                                )}
-                              </Box>
-
-                              <Button
-                                size="small"
-
-                                variant="text"
-
-                                onClick={() => setEditingLocale(loc)}
-
-                                sx={{
-                                  color:
-                                    editingLocale === loc
-                                      ? "primary.main"
-                                      : "text.secondary",
-                                }}
-                              >
-                                Editar
-                              </Button>
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    </Box>
-
-                    {/* DESTINATARIOS */}
-
-                    <Box
-                      sx={{
-                        borderRadius: 1,
-
-                        border: "1px solid",
-
-                        borderColor: "divider",
-
-                        overflow: "hidden",
-
-                        display: "flex",
-
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          px: 1.5,
-
-                          py: 1,
-
-                          borderBottom: "1px solid",
-
-                          borderColor: "divider",
-
-                          backgroundColor: "action.hover",
-                        }}
-                      >
-                        <Typography
-                          variant="overline"
-
-                          sx={{
-                            fontWeight: 700,
-
-                            letterSpacing: "0.08em",
-
-                            textTransform: "uppercase",
-
-                            fontSize: "0.6875rem",
-
-                            color: "text.secondary",
-                          }}
-                        >
-                          DESTINATARIOS
-                        </Typography>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          p: 1.5,
-
-                          display: "flex",
-
-                          flexDirection: "column",
-
-                          gap: 0.75,
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-
-                            alignItems: "center",
-
-                            gap: 1,
-                          }}
-                        >
-                          <CheckboxIcon
-                            checked={(form.destinatarios ?? []).includes(
-                              "usuarios",
-                            )}
-
-                            onChange={() => toggleDestinatario("usuarios")}
-
+                          <Box
                             sx={{
-                              color: (form.destinatarios ?? []).includes(
-                                "usuarios",
-                              )
-                                ? "primary.main"
-                                : "text.secondary",
-                            }}
-                          />
+                              width: "100%",
 
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Usuarios
-                          </Typography>
+                              height: 6,
+
+                              borderRadius: 3,
+
+                              bgcolor: "background.paper",
+
+                              overflow: "hidden",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                height: "100%",
+
+                                width: `${progressPercent()}%`,
+
+                                bgcolor: "primary.main",
+                              }}
+                            />
+                          </Box>
                         </Box>
 
+                        {/* Idiomas pendientes */}
                         <Box
                           sx={{
                             display: "flex",
 
-                            alignItems: "center",
+                            flexDirection: "column",
 
-                            gap: 1,
+                            gap: 0.5,
                           }}
                         >
-                          <CheckboxIcon
-                            checked={(form.destinatarios ?? []).includes(
-                              "empleados",
-                            )}
-
-                            onChange={() => toggleDestinatario("empleados")}
+                          <Typography
+                            variant="caption"
 
                             sx={{
-                              color: (form.destinatarios ?? []).includes(
-                                "empleados",
-                              )
-                                ? "primary.main"
-                                : "text.secondary",
+                              fontWeight: 600,
+
+                              color: "text.secondary",
+
+                              mb: 0.5,
+                              fontSize: "0.6875rem",
                             }}
-                          />
-
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Empleados
+                          >
+                            Pendientes
                           </Typography>
-                        </Box>
 
-                        <Box
-                          sx={{
-                            display: "flex",
+                          {Object.keys(LANGUAGE_NAMES)
+                            .filter((code) => code !== form.baseLocale)
+                            .filter((code) => {
+                              const t = form.translations?.[code];
 
-                            alignItems: "center",
+                              return !Boolean(t?.title) || !Boolean(t?.body);
+                            })
+                            .map((code) => (
+                              <Typography
+                                key={code}
 
-                            gap: 1,
-                          }}
-                        >
-                          <CheckboxIcon
-                            checked={(form.destinatarios ?? []).includes(
-                              "marcas",
-                            )}
+                                variant="caption"
 
-                            onChange={() => toggleDestinatario("marcas")}
+                                sx={{
+                                  color: "warning.main",
 
-                            sx={{
-                              color: (form.destinatarios ?? []).includes(
-                                "marcas",
-                              )
-                                ? "primary.main"
-                                : "text.secondary",
-                            }}
-                          />
-
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Marcas
-                          </Typography>
+                                  fontSize: "0.6875rem",
+                                }}
+                              >
+                                ⚠ {LANGUAGE_NAMES[code] ?? code}
+                              </Typography>
+                            ))}
                         </Box>
                       </Box>
                     </Box>
@@ -5329,31 +6138,3 @@ function SortableHeader({
 }
 
 // Componente interno para checkbox sin importar Checkbox (evita conflictos de estilo)
-
-function CheckboxIcon({ checked, onChange, sx }: any) {
-  return (
-    <IconButton
-      size="small"
-
-      onClick={() => onChange(!checked)}
-
-      sx={{
-        px: 0,
-
-        borderRadius: 0.5,
-
-        border: "1px solid",
-
-        borderColor: "divider",
-
-        ...sx,
-      }}
-    >
-      {checked ? (
-        <CheckCircleIcon style={{ fontSize: 20 }} />
-      ) : (
-        <RadioButtonUncheckedIcon style={{ fontSize: 20 }} />
-      )}
-    </IconButton>
-  );
-}

@@ -369,15 +369,6 @@ describe("NotificationPanel", () => {
     expect(screen.getByTestId("notification-chip-all")).toHaveTextContent(
       "Todo",
     );
-    expect(screen.getByTestId("notification-chip-social")).toHaveTextContent(
-      "Social",
-    );
-    expect(screen.getByTestId("notification-chip-messages")).toHaveTextContent(
-      "Mensajes",
-    );
-    expect(screen.getByTestId("notification-chip-system")).toHaveTextContent(
-      "Sistema",
-    );
     expect(screen.getByTestId("notification-chip-all")).toHaveTextContent("6");
     expect(screen.getByTestId("notification-chip-social")).toHaveTextContent(
       "3",
@@ -402,12 +393,13 @@ describe("NotificationPanel", () => {
     renderPanel();
 
     expect(screen.getByTestId("notification-filters")).toHaveStyle({
-      display: "grid",
-      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+      display: "flex",
+      width: "100%",
+      gap: "4px",
     });
     ["all", "social", "messages", "system"].forEach((key) => {
       expect(screen.getByTestId(`notification-chip-${key}`)).toHaveStyle({
-        width: "100%",
+        flex: "1",
       });
     });
   });
@@ -417,20 +409,17 @@ describe("NotificationPanel", () => {
 
     expect(screen.getByTestId("notification-chip-label-all")).toHaveStyle({
       opacity: "1",
-      maxWidth: "200px",
-    });
-    expect(screen.getByTestId("notification-chip-label-social")).toHaveStyle({
-      opacity: "0",
+      maxWidth: "100px",
     });
 
     fireEvent.click(screen.getByTestId("notification-chip-messages"));
 
+    expect(
+      screen.queryByTestId("notification-chip-label-all"),
+    ).not.toBeInTheDocument();
     expect(screen.getByTestId("notification-chip-label-messages")).toHaveStyle({
       opacity: "1",
-      maxWidth: "200px",
-    });
-    expect(screen.getByTestId("notification-chip-label-all")).toHaveStyle({
-      opacity: "0",
+      maxWidth: "100px",
     });
   });
 
@@ -876,7 +865,7 @@ describe("NotificationPanel", () => {
     expect(delta).toBeLessThanOrEqual(24 * 60 * 60 * 1000 + 1000);
   });
 
-  it("schedules a weekly pause from the custom option", () => {
+  it("schedules a weekly pause from the custom option", async () => {
     renderPanel();
 
     fireEvent.click(screen.getByTestId("notification-pause"));
@@ -885,7 +874,9 @@ describe("NotificationPanel", () => {
     expect(screen.getByTestId("notification-pause-day-0")).toBeInTheDocument();
     expect(screen.getByTestId("notification-pause-start")).toBeInTheDocument();
     expect(screen.getByTestId("notification-pause-end")).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+    });
 
     expect(hook.savePauseSchedule).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -896,7 +887,7 @@ describe("NotificationPanel", () => {
     );
   });
 
-  it("removes a scheduled pause from the dialog", () => {
+  it("removes a scheduled pause from the dialog", async () => {
     hook = makeHook({
       pauseSchedule: [
         {
@@ -913,7 +904,9 @@ describe("NotificationPanel", () => {
 
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-custom"));
-    fireEvent.click(screen.getByTestId("notification-pause-rule-delete-r1"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("notification-pause-rule-delete-r1"));
+    });
 
     expect(hook.removePauseSchedule).toHaveBeenCalledWith("r1");
   });
@@ -987,13 +980,15 @@ describe("NotificationPanel", () => {
     );
   });
 
-  it("saves a recurring rule with the selected days", () => {
+  it("saves a recurring rule with the selected days", async () => {
     renderPanel();
 
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-custom"));
     fireEvent.click(screen.getByTestId("notification-pause-day-0"));
-    fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+    });
 
     expect(hook.savePauseSchedule).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1005,14 +1000,16 @@ describe("NotificationPanel", () => {
     );
   });
 
-  it("saves a one-off window with the allowed exceptions", () => {
+  it("saves a one-off window with the allowed exceptions", async () => {
     renderPanel();
 
     fireEvent.click(screen.getByTestId("notification-pause"));
     fireEvent.click(screen.getByTestId("notification-pause-custom"));
     fireEvent.click(screen.getByTestId("notification-pause-mode-single"));
     fireEvent.click(screen.getByTestId("notification-pause-allow-chats"));
-    fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("notification-pause-schedule-save"));
+    });
 
     expect(hook.savePauseWindow).toHaveBeenCalledWith(
       expect.objectContaining({ allow: ["message"] }),

@@ -27,3 +27,14 @@ jest.mock("next/router", () => ({
     };
   },
 }));
+
+jest.mock("./src/services/adminApi", () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn().mockResolvedValue({ data: {} }),
+    post: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    put: jest.fn(),
+  },
+}));

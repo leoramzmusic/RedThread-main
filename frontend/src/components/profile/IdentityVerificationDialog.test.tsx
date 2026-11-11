@@ -15,6 +15,19 @@ beforeAll(() => {
   window.URL.revokeObjectURL = jest.fn();
 });
 
+beforeEach(() => {
+  Object.defineProperty(navigator, "mediaDevices", {
+    writable: true,
+    configurable: true,
+    value: {
+      getUserMedia: jest
+        .fn()
+        .mockRejectedValue(new Error("Camera unavailable")),
+    },
+  });
+  jest.spyOn(console, "error").mockImplementation(() => {});
+});
+
 const renderDialog = (props: Record<string, unknown> = {}) =>
   render(
     <UIProvider>
@@ -47,9 +60,7 @@ describe("IdentityVerificationDialog (paginated wizard)", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/Toma una selfie/)).not.toBeInTheDocument();
     expect(screen.getByText("Siguiente")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Anterior" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Anterior" })).toBeDisabled();
     expect(
       screen.queryByText("Enviar para Verificación"),
     ).not.toBeInTheDocument();
@@ -58,7 +69,9 @@ describe("IdentityVerificationDialog (paginated wizard)", () => {
   it("navigates freely between pages without completing them", async () => {
     renderDialog();
     fireEvent.click(screen.getByText("Siguiente"));
-    expect(await screen.findByText(/Tómate una selfie con tu cámara/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Tómate una selfie con tu cámara/),
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Tipo de Documento" }),
     ).not.toBeInTheDocument();
@@ -71,9 +84,7 @@ describe("IdentityVerificationDialog (paginated wizard)", () => {
   it("keeps Enviar disabled on the last page until the document is complete", async () => {
     renderDialog();
     fireEvent.click(screen.getByText("Siguiente"));
-    expect(
-      await screen.findByText("Enviar para Verificación"),
-    ).toBeDisabled();
+    expect(await screen.findByText("Enviar para Verificación")).toBeDisabled();
   });
 
   it("enables Enviar once the document is complete (selfie optional)", async () => {
@@ -104,15 +115,20 @@ describe("IdentityVerificationDialog (paginated wizard)", () => {
     expect(
       await screen.findByText(/No se pudo acceder a la cámara/),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "2 Selfie" }),
-    ).toHaveAttribute("data-state", "error");
+    expect(screen.getByRole("button", { name: "2 Selfie" })).toHaveAttribute(
+      "data-state",
+      "error",
+    );
   });
 
   it("captures a selfie through the camera and shows the ready badge", async () => {
     const stop = jest.fn();
     Object.defineProperty(window.navigator, "mediaDevices", {
-      value: { getUserMedia: jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] }) },
+      value: {
+        getUserMedia: jest
+          .fn()
+          .mockResolvedValue({ getTracks: () => [{ stop }] }),
+      },
       configurable: true,
     });
     Object.defineProperty(window.HTMLMediaElement.prototype, "srcObject", {
@@ -134,13 +150,12 @@ describe("IdentityVerificationDialog (paginated wizard)", () => {
     });
     jest
       .spyOn(window.HTMLCanvasElement.prototype, "getContext")
-      .mockReturnValue({ drawImage: jest.fn() } as unknown as CanvasRenderingContext2D);
+      .mockReturnValue({
+        drawImage: jest.fn(),
+      } as unknown as CanvasRenderingContext2D);
     jest
       .spyOn(window.HTMLCanvasElement.prototype, "toBlob")
-      .mockImplementation(function (
-        this: HTMLCanvasElement,
-        cb: BlobCallback,
-      ) {
+      .mockImplementation(function (this: HTMLCanvasElement, cb: BlobCallback) {
         cb(new Blob(["selfie"], { type: "image/jpeg" }));
       } as unknown as typeof HTMLCanvasElement.prototype.toBlob);
     renderDialog();
@@ -160,13 +175,17 @@ describe("IdentityVerificationDialog (paginated wizard)", () => {
       { target: { files: [bad] } },
     );
     expect(
-      await screen.findByText(/Por favor sube una imagen \(JPG, PNG, WEBP\) o PDF/),
+      await screen.findByText(
+        /Por favor sube una imagen \(JPG, PNG, WEBP\) o PDF/,
+      ),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "1 Documento" }),
-    ).toHaveAttribute("data-state", "error");
-    expect(
-      screen.getByRole("button", { name: "2 Selfie" }),
-    ).toHaveAttribute("data-state", "pending");
+    expect(screen.getByRole("button", { name: "1 Documento" })).toHaveAttribute(
+      "data-state",
+      "error",
+    );
+    expect(screen.getByRole("button", { name: "2 Selfie" })).toHaveAttribute(
+      "data-state",
+      "pending",
+    );
   });
 });

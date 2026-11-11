@@ -113,8 +113,9 @@ export function createApiClient(
   return client;
 }
 
-// User API client
-console.log("API Client initialized with URL:", API_URL);
+if (process.env.NODE_ENV === "development") {
+  console.log("API Client initialized with URL:", API_URL);
+}
 const apiClient = createApiClient();
 export default apiClient;
 

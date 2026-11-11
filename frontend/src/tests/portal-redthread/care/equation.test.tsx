@@ -4,6 +4,7 @@ import {
   fireEvent,
   waitFor,
   within,
+  act,
 } from "@testing-library/react";
 import CareEquationPage from "../../../pages/portal-redthread/care/equation";
 import {
@@ -24,8 +25,11 @@ import {
 import { CANONICAL_BLOCK_WEIGHTS } from "../../../constants/careDimensions";
 import { AppThemeProvider } from "../../../context/ThemeContext";
 
-const renderWithTheme = (ui: React.ReactElement) => {
-  return render(<AppThemeProvider>{ui}</AppThemeProvider>);
+const renderWithTheme = async (ui: React.ReactElement) => {
+  await act(async () => {
+    render(<AppThemeProvider>{ui}</AppThemeProvider>);
+    await Promise.resolve();
+  });
 };
 
 let mockQuery: Record<string, string> = {};
@@ -411,9 +415,9 @@ const headerBlocks = (): Record<string, number> =>
   );
 
 describe("CareEquationPage / load + draft", () => {
-  it("shows a loading indicator before the active formula resolves", () => {
+  it("shows a loading indicator before the active formula resolves", async () => {
     mockGetActive.mockReturnValue(new Promise(() => {}));
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     expect(screen.getByTestId("equation-loading")).toBeInTheDocument();
   });
 
@@ -423,7 +427,7 @@ describe("CareEquationPage / load + draft", () => {
       focus: "music",
       w: JSON.stringify(draftBlocks),
     };
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("header-stub");
     expect(screen.getByTestId("header-stub")).toHaveAttribute(
       "data-focus",
@@ -433,7 +437,7 @@ describe("CareEquationPage / load + draft", () => {
   });
 
   it("uses the active blocks when no draft is present", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("header-stub");
     expect(headerBlocks()).toEqual(active.blocks);
     expect(screen.getByTestId("header-stub")).toHaveAttribute("data-focus", "");
@@ -441,7 +445,7 @@ describe("CareEquationPage / load + draft", () => {
 
   it("renders an error when the active formula fails to load", async () => {
     mockGetActive.mockRejectedValueOnce(new Error("boom"));
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     expect(await screen.findByTestId("equation-error")).toHaveTextContent(
       "No se pudo cargar la fórmula activa.",
     );
@@ -450,7 +454,7 @@ describe("CareEquationPage / load + draft", () => {
 
 describe("CareEquationPage / KPIs de cabecera", () => {
   it("renders the criteria KPIs from the active formula", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("kpi-total");
     expect(screen.getByTestId("kpi-total")).toHaveTextContent("100%");
     expect(screen.getByTestId("kpi-total-badge")).toHaveTextContent("Válido");
@@ -464,7 +468,7 @@ describe("CareEquationPage / KPIs de cabecera", () => {
   });
 
   it("flags the total as invalid and blocks Guardar when the sum breaks (JSON)", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("json-stub");
     fireEvent.click(screen.getByTestId("stub-json-unbalanced"));
     expect(screen.getByTestId("kpi-total")).toHaveTextContent("104%");
@@ -476,7 +480,7 @@ describe("CareEquationPage / KPIs de cabecera", () => {
 
 describe("CareEquationPage / bidirectional JSON", () => {
   it("regenerates the JSON when a block slider changes", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-slide-values-30"));
     expect(
@@ -485,7 +489,7 @@ describe("CareEquationPage / bidirectional JSON", () => {
   });
 
   it("regenerates the JSON when the chaos slider changes", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("chaos-stub");
     fireEvent.click(screen.getByTestId("stub-chaos"));
     expect(
@@ -494,7 +498,7 @@ describe("CareEquationPage / bidirectional JSON", () => {
   });
 
   it("applies valid JSON back to the draft", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("json-stub");
     fireEvent.click(screen.getByTestId("stub-json-valid"));
     expect(headerBlocks()).toEqual(draftBlocks);
@@ -505,7 +509,7 @@ describe("CareEquationPage / bidirectional JSON", () => {
   });
 
   it("flags invalid JSON and keeps the last valid draft", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("json-stub");
     fireEvent.click(screen.getByTestId("stub-json-invalid"));
     expect(screen.getByTestId("json-stub")).toHaveAttribute(
@@ -518,7 +522,7 @@ describe("CareEquationPage / bidirectional JSON", () => {
 
 describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   it("ignores slider changes on locked dimensions", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-lock-values"));
     fireEvent.click(screen.getByTestId("stub-slide-values"));
@@ -530,7 +534,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   });
 
   it("normalizes on slider commit with the current blocks and locks", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-lock-values"));
     fireEvent.click(screen.getByTestId("stub-commit-values"));
@@ -545,7 +549,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
     mockQuery = {
       w: JSON.stringify({ ...active.blocks, values: 0.44, music: 0.07 }),
     };
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("action-reestablecer"));
     expect(headerBlocks()).toEqual(active.blocks);
@@ -557,7 +561,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   });
 
   it("per-row Probar focuses the dimension", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("header-stub");
     fireEvent.click(screen.getByTestId("stub-probar-values"));
     expect(screen.getByTestId("header-stub")).toHaveAttribute(
@@ -567,7 +571,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   });
 
   it("hovering a criteria row focuses it in the diagram and the table", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("header-stub");
     fireEvent.click(screen.getByTestId("stub-hover-values"));
     expect(screen.getByTestId("header-stub")).toHaveAttribute(
@@ -581,7 +585,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   });
 
   it("hovering a diagram node focuses the matching table row", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("header-stub");
     fireEvent.click(screen.getByTestId("stub-node-hover-values"));
     expect(screen.getByTestId("header-stub")).toHaveAttribute(
@@ -595,7 +599,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   });
 
   it("flashes the changed dimension in the diagram on a slider change", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     expect(screen.getByTestId("canvas-stub")).toHaveAttribute("data-glow", "");
     fireEvent.click(screen.getByTestId("stub-slide-values"));
@@ -606,7 +610,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
   });
 
   it("does not flash a locked dimension on a slider change", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-lock-values"));
     fireEvent.click(screen.getByTestId("stub-slide-values"));
@@ -616,7 +620,7 @@ describe("CareEquationPage / pesos: locks + normalizar + focus", () => {
 
 describe("CareEquationPage / clamp 100%", () => {
   it("clamps a raise that would exceed 100% and shows the limit hint", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-slide-values")); // request 40, no headroom
     expect(screen.getByTestId("weights-total")).toHaveTextContent("100%");
@@ -626,7 +630,7 @@ describe("CareEquationPage / clamp 100%", () => {
   });
 
   it("allows raising up to the exact 100% headroom", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-slide-values-30")); // 36 -> 30, sum 94
     fireEvent.click(screen.getByTestId("stub-slide-values")); // request 40 -> clamped to 36
@@ -636,7 +640,7 @@ describe("CareEquationPage / clamp 100%", () => {
   });
 
   it("lowers without clamping and without the hint", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     fireEvent.click(screen.getByTestId("stub-slide-values-30"));
     expect(screen.getByTestId("weights-total")).toHaveTextContent("94%");
@@ -647,7 +651,7 @@ describe("CareEquationPage / clamp 100%", () => {
 
 describe("CareEquationPage / glosario de símbolos", () => {
   it("renders the compact glossary with the Ψ/M notation", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     const glossary = await screen.findByTestId("glossary");
     for (const symbol of ["wᵢ", "fᵢ", "Σ", "χ(t)"]) {
       expect(within(glossary).getByText(symbol)).toBeInTheDocument();
@@ -662,9 +666,12 @@ describe("CareEquationPage / Probar fórmula", () => {
       valid: false,
       errors: ["La suma de pesos debe ser exactamente 1.0"],
     });
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("action-probar"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("action-probar"));
+      await Promise.resolve();
+    });
     await waitFor(() => expect(mockValidate).toHaveBeenCalledTimes(1));
     expect(mockValidate).toHaveBeenCalledWith(
       expect.objectContaining({ blocks: active.blocks, chaos_factor: 5 }),
@@ -676,9 +683,12 @@ describe("CareEquationPage / Probar fórmula", () => {
   });
 
   it("simulates when valid and feeds the table + chaos Δ", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("action-probar"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("action-probar"));
+      await Promise.resolve();
+    });
     await waitFor(() => expect(mockSimulate).toHaveBeenCalledTimes(1));
     expect(mockSimulate).toHaveBeenCalledWith({
       formula: expect.objectContaining({ blocks: active.blocks }),
@@ -694,13 +704,16 @@ describe("CareEquationPage / Probar fórmula", () => {
   });
 
   it("pulses the Ψ diagram when Probar runs", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     expect(screen.getByTestId("canvas-stub")).toHaveAttribute(
       "data-pulse",
       "0",
     );
-    fireEvent.click(screen.getByTestId("action-probar"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("action-probar"));
+      await Promise.resolve();
+    });
     expect(screen.getByTestId("canvas-stub")).toHaveAttribute(
       "data-pulse",
       "1",
@@ -741,19 +754,25 @@ describe("CareEquationPage / Probar fórmula", () => {
       ],
       mean_delta: 0,
     });
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
-    fireEvent.click(screen.getByTestId("action-probar"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("action-probar"));
+      await Promise.resolve();
+    });
     const alerts = await screen.findByTestId("validate-alerts");
     expect(alerts).toHaveTextContent("0%");
     expect(alerts).toHaveTextContent("idénticos");
   });
 
   it("short-circuits to client validation for an unbalanced sum", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("json-stub");
     fireEvent.click(screen.getByTestId("stub-json-unbalanced"));
-    fireEvent.click(screen.getByTestId("action-probar"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("action-probar"));
+      await Promise.resolve();
+    });
     expect(await screen.findByTestId("validate-errors")).toHaveTextContent(
       "100%",
     );
@@ -764,7 +783,7 @@ describe("CareEquationPage / Probar fórmula", () => {
 
 describe("CareEquationPage / Aplicar Cambios + Versiones", () => {
   const openModal = async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("kpi-total");
     fireEvent.click(screen.getByTestId("open-save-modal"));
     return screen.findByTestId("save-modal");
@@ -855,7 +874,7 @@ describe("CareEquationPage / Aplicar Cambios + Versiones", () => {
       { ...active, version: 2, status: "archived" },
     ]);
     mockRollback.mockResolvedValueOnce(rolled);
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("criteria-table");
     expect(headerBlocks()).toEqual(active.blocks);
     fireEvent.click(await screen.findByTestId("stub-rollback-2"));
@@ -884,21 +903,21 @@ describe("CareEquationPage / perfiles", () => {
 
   it("loads saved profiles on mount", async () => {
     mockListProfiles.mockResolvedValueOnce([savedProfile]);
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     const stub = await screen.findByTestId("profiles-stub");
     await waitFor(() => expect(stub).toHaveAttribute("data-count", "1"));
   });
 
   it("falls back to builtins when listing fails", async () => {
     mockListProfiles.mockRejectedValueOnce(new Error("boom"));
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     const stub = await screen.findByTestId("profiles-stub");
     await waitFor(() => expect(stub).toHaveAttribute("data-count", "0"));
     expect(stub).toHaveAttribute("data-selected", "");
   });
 
   it("applies the selected profile to the draft", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("profiles-stub");
     fireEvent.click(screen.getByTestId("stub-profile-select-lowchaos"));
     expect(headerBlocks()).toEqual(CANONICAL_BLOCK_WEIGHTS);
@@ -912,7 +931,7 @@ describe("CareEquationPage / perfiles", () => {
   });
 
   it("marks the selection as modified after a manual edit", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("profiles-stub");
     fireEvent.click(screen.getByTestId("stub-profile-select-lowchaos"));
     expect(screen.getByTestId("profiles-stub")).toHaveAttribute(
@@ -929,7 +948,7 @@ describe("CareEquationPage / perfiles", () => {
   it("creates a profile from the save-as flow", async () => {
     const created = { ...savedProfile, id: "p2", name: "Nuevo" };
     mockCreateProfile.mockResolvedValueOnce(created);
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("profiles-stub");
     fireEvent.click(screen.getByTestId("stub-profile-save-as"));
     const input = screen
@@ -964,7 +983,7 @@ describe("CareEquationPage / perfiles", () => {
         data: { detail: "Ya existe un perfil con ese nombre." },
       },
     });
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("profiles-stub");
     fireEvent.click(screen.getByTestId("stub-profile-save-as"));
     const input = screen
@@ -983,7 +1002,7 @@ describe("CareEquationPage / perfiles", () => {
       ...savedProfile,
       chaos_factor: 5,
     });
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("profiles-stub");
     fireEvent.click(screen.getByTestId("stub-profile-select-saved"));
     fireEvent.click(screen.getByTestId("stub-profile-update"));
@@ -1002,7 +1021,7 @@ describe("CareEquationPage / perfiles", () => {
   it("deletes a saved profile after confirmation and clears selection", async () => {
     mockListProfiles.mockResolvedValueOnce([savedProfile]);
     mockDeleteProfile.mockResolvedValueOnce(undefined);
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("profiles-stub");
     fireEvent.click(screen.getByTestId("stub-profile-select-saved"));
     fireEvent.click(screen.getByTestId("stub-profile-delete"));
@@ -1023,7 +1042,7 @@ describe("CareEquationPage / perfiles", () => {
 
 describe("CareEquationPage / preview removal", () => {
   it("does not render the old A/B preview anymore", async () => {
-    renderWithTheme(<CareEquationPage />);
+    await renderWithTheme(<CareEquationPage />);
     await screen.findByTestId("header-stub");
     expect(screen.queryByTestId("preview-run")).not.toBeInTheDocument();
     expect(screen.queryByText("Interpretar par")).not.toBeInTheDocument();

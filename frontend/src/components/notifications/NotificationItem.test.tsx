@@ -161,7 +161,7 @@ describe("NotificationItem", () => {
     render(<NotificationItem notification={base} onRead={jest.fn()} />);
 
     expect(screen.getByTestId("notification-item-n1")).toHaveStyle({
-      backgroundColor: "rgba(230,57,70,0.07)",
+      backgroundColor: "rgba(255,255,255,0.35)",
     });
   });
 

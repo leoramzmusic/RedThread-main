@@ -82,7 +82,7 @@
     "@typescript/native": "npm:typescript@^7.0.2",
     "aria-query": "^5.3.2",
     "baseline-browser-mapping": "^2.9.4",
-    "eslint": "^10.12.0",
+    "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.8",
     "eslint-plugin-security": "^4.0.1",
     "i18next-scanner": "^4.6.0",

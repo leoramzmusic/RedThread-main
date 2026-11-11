@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import AdminLogin from "../../../pages/portal-redthread/auth/login";
 import adminApiClient from "../../../services/adminApi";
 
@@ -43,7 +49,9 @@ const fillAndSubmit = async () => {
   fireEvent.change(screen.getByLabelText(/^contraseña/i), {
     target: { value: "secret" },
   });
-  fireEvent.click(screen.getByRole("button", { name: /acceder al portal/i }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: /acceder al portal/i }));
+  });
 };
 
 beforeEach(() => {
