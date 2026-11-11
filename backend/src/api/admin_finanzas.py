@@ -57,7 +57,7 @@ async def listar_suscripciones(
 
 @router.get("/ingresos")
 async def get_revenue_stats(
-    period: str = Query("month", regex="^(day|week|month|year)$"),
+    period: str = Query("month", pattern="^(day|week|month|year)$"),
     admin_user: AdminUser = Depends(
         require_employee_permission(Permission.VIEW_FINANCES)
     ),

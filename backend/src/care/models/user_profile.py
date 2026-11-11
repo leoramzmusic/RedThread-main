@@ -6,7 +6,7 @@ Represents a user's profile attributes and preferences for matching.
 
 from datetime import datetime
 from typing import List, Optional, Dict, Tuple
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 
 
 class UserProfile(BaseModel):
@@ -94,8 +94,8 @@ class UserProfile(BaseModel):
     visibility_preferences: dict = Field(default_factory=dict)
     safety_preferences: dict = Field(default_factory=dict)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": "123e4567-e89b-12d3-a456-426614174000",
                 "age": 28,
@@ -108,3 +108,5 @@ class UserProfile(BaseModel):
                 "narrative_style": "poetic",
             }
         }
+
+    )

@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -87,8 +87,8 @@ class Match(Document):
             [("user_id_1", 1), ("user_id_2", 1)],  # Compound index
         ]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id_1": "507f1f77bcf86cd799439011",
                 "user_id_2": "507f1f77bcf86cd799439012",
@@ -99,3 +99,5 @@ class Match(Document):
                 "is_superlike": False,
             }
         }
+
+    )

@@ -1,4 +1,5 @@
 from beanie import Document, Indexed
+from pydantic import ConfigDict
 
 
 class SystemOption(Document):
@@ -39,8 +40,8 @@ class SystemOption(Document):
         name = "system_options"
         indexes = ["category", "value", ("category", "order")]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "category": "gender",
                 "value": "non_binary",
@@ -69,3 +70,5 @@ class SystemOption(Document):
                 "order": 3,
             }
         }
+
+    )

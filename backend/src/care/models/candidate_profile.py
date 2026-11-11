@@ -5,7 +5,7 @@ Represents a candidate's profile with computed signals for ranking.
 """
 
 from typing import List, Optional, Tuple, Dict
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 from datetime import datetime
 
 
@@ -100,8 +100,8 @@ class CandidateProfile(BaseModel):
     last_active: Optional[datetime] = None
     signals_updated_at: Optional[datetime] = None
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": "987e6543-e21b-12d3-a456-426614174000",
                 "age": 30,
@@ -116,3 +116,5 @@ class CandidateProfile(BaseModel):
                 "responsiveness_score": 0.85,
             }
         }
+
+    )

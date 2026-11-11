@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import EmailStr, Field
+from pydantic import ConfigDict, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -146,8 +146,8 @@ class User(Document):
             "subscription_tier",
         ]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "real_name": "John Doe",
                 "display_name": "Johnny",
@@ -159,3 +159,5 @@ class User(Document):
                 "subscription_tier": "free",
             }
         }
+
+    )

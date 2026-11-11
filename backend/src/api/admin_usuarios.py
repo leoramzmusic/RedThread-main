@@ -301,7 +301,7 @@ async def get_admin_dashboard_stats(
 
 @router.get("/exportar")
 async def export_users(
-    format: str = Query("json", regex="^(json|csv)$"),
+    format: str = Query("json", pattern="^(json|csv)$"),
     admin_user: AdminUser = Depends(
         require_employee_permission(Permission.EXPORT_METRICS)
     ),

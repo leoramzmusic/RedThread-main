@@ -5,7 +5,7 @@ Tracks user actions and derived features for dynamic scoring.
 """
 
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 from datetime import datetime
 from enum import Enum
 
@@ -48,8 +48,8 @@ class InteractionLog(BaseModel):
     # Derived features (computed periodically)
     aggregate_features: Optional[AggregateFeatures] = None
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "123e4567-e89b-12d3-a456-426614174000",
                 "candidate_id": "987e6543-e21b-12d3-a456-426614174000",
@@ -63,3 +63,5 @@ class InteractionLog(BaseModel):
                 ],
             }
         }
+
+    )

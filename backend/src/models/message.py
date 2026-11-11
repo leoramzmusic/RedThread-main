@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import Field, HttpUrl
+from pydantic import ConfigDict, Field, HttpUrl
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -79,8 +79,8 @@ class Message(Document):
             ],  # For conversation history (new)
         ]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "match_id": "507f1f77bcf86cd799439013",
                 "sender_id": "507f1f77bcf86cd799439011",
@@ -90,3 +90,5 @@ class Message(Document):
                 "is_read": False,
             }
         }
+
+    )

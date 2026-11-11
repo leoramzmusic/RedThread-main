@@ -1,5 +1,6 @@
 from bson import ObjectId
-
+from src.models.role import Role
+from src.models.department import Department
 from src.models.notification_template import NotificationTemplate
 
 # SYSTEM_USER_ID se define aquí para evitar importaciones circulares
@@ -448,6 +449,43 @@ NOTIFICATION_TEMPLATES_SEED: list[dict] = [
 ]
 
 
+def evaluate_seed_condition(
+    env: str,
+    role_count: int,
+    dept_count: int,
+    force: bool = False,
+) -> tuple[bool, str]:
+    """
+    Decide si el seed debe ejecutarse según el ambiente y los datos existentes.
+
+    Retorna (should_run, reason).
+    """
+    if force:
+        return True, "forced"
+
+    has_data = role_count > 0 or dept_count > 0
+
+    if env == "local":
+        if has_data:
+            return False, "local_has_data"
+        return True, "local_empty"
+
+    if env in ("dev", "qa"):
+        return True, f"deploy_consistency: {env}"
+
+    if env == "prod":
+        if has_data:
+            return False, "prod_has_data"
+        return True, "prod_empty"
+
+    return False, f"unknown_env: {env}"
+
+
+async def _perform_seed(env: str) -> dict:
+    """Stub: ejecuta el seed real para el ambiente dado."""
+    return {"status": "executed", "env": env}
+
+
 async def ensure_notification_templates_seeded() -> int:
     """
     Crea las plantillas de notificación iniciales si no existen.
@@ -490,9 +528,24 @@ async def ensure_notification_templates_seeded() -> int:
 # database.py. Se dejan como no-op para evitar importaciones rotas.
 
 
-async def seed_system_data() -> None:
-    """Stub: seed de datos del sistema (roles, departamentos, etc.)."""
-    return None
+async def seed_system_data(env: str) -> dict:
+    """
+    Ejecuta el seed de datos del sistema según el ambiente y los datos existentes.
+
+    Retorna un dict con el estado y la razón.
+    """
+    role_count = await Role.find_all().count()
+    dept_count = await Department.find_all().count()
+
+    should_run, reason = evaluate_seed_condition(
+        env, role_count=role_count, dept_count=dept_count
+    )
+
+    if not should_run:
+        return {"status": "skipped", "reason": reason}
+
+    result = await _perform_seed(env)
+    return result
 
 
 async def ensure_profile_modules_seeded() -> None:

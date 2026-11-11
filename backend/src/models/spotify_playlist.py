@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import Field, HttpUrl
+from pydantic import ConfigDict, Field, HttpUrl
 from typing import List, Optional
 from datetime import datetime
 
@@ -36,8 +36,8 @@ class SpotifyPlaylist(Document):
             "spotify_playlist_id",
         ]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "507f1f77bcf86cd799439011",
                 "spotify_playlist_id": "37i9dQZF1DXcBWIGoYBM5M",
@@ -47,3 +47,5 @@ class SpotifyPlaylist(Document):
                 "is_favorite": True,
             }
         }
+
+    )

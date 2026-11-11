@@ -4,7 +4,7 @@ Tracks access to sensitive user data for security and compliance.
 """
 
 from beanie import Document
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import List
 from datetime import datetime
 
@@ -31,8 +31,8 @@ class AuditLog(Document):
         name = "audit_logs"
         indexes = ["user_id", "accessed_by", "timestamp", "action"]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "507f1f77bcf86cd799439011",
                 "accessed_by": "507f1f77bcf86cd799439012",
@@ -43,3 +43,5 @@ class AuditLog(Document):
                 "timestamp": "2024-01-11T12:00:00Z",
             }
         }
+
+    )

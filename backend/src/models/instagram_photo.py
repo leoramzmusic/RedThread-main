@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import Field, HttpUrl
+from pydantic import ConfigDict, Field, HttpUrl
 from typing import Optional
 from datetime import datetime
 
@@ -31,8 +31,8 @@ class InstagramPhoto(Document):
             "instagram_photo_id",
         ]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "507f1f77bcf86cd799439011",
                 "instagram_photo_id": "CXyZ123456",
@@ -42,3 +42,5 @@ class InstagramPhoto(Document):
                 "is_profile_photo": True,
             }
         }
+
+    )

@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -33,8 +33,8 @@ class MediaItem(Document):
         name = "media_items"
         indexes = ["user_id", "type", "order_index"]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "507f1f77bcf86cd799439011",
                 "type": "photo",
@@ -42,3 +42,5 @@ class MediaItem(Document):
                 "order_index": 0,
             }
         }
+
+    )

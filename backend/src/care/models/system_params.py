@@ -4,7 +4,7 @@ SystemParams data model for CARE Engine.
 Configurable weights, thresholds, and rules for the recommendation system.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 
 
 class ScoringWeights(BaseModel):
@@ -69,8 +69,8 @@ class SystemParams(BaseModel):
     # Cold start defaults
     cold_start_recommendation_count: int = 20
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "weights": {"compat": 0.6, "dynamic": 0.3, "human": 0.1},
                 "diversity": {
@@ -78,3 +78,5 @@ class SystemParams(BaseModel):
                 },
             }
         }
+
+    )

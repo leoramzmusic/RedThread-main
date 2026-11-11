@@ -1,5 +1,5 @@
 from beanie import Document
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import Optional
 from datetime import datetime
 
@@ -48,8 +48,8 @@ class Session(Document):
             [("user_id", 1), ("is_active", 1)],  # Compound index for queries
         ]
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "507f1f77bcf86cd799439011",
                 "refresh_token_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
@@ -62,3 +62,5 @@ class Session(Document):
                 "is_active": True,
             }
         }
+
+    )
