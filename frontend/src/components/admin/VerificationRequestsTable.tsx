@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Paper,
@@ -26,13 +26,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from '@mui/material';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import adminApiClient from '../../services/adminApi';
-import { format } from 'date-fns';
+} from "@mui/material";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import adminApiClient from "../../services/adminApi";
+import { format } from "date-fns";
 
 const REJECTION_REASONS = [
   "Nombre/Fecha no coinciden",
@@ -42,7 +42,7 @@ const REJECTION_REASONS = [
   "Documento no válido",
   "Datos inconsistentes",
   "Fraude evidente",
-  "Otro"
+  "Otro",
 ];
 
 interface PendingVerification {
@@ -60,49 +60,56 @@ interface PendingVerification {
 export default function VerificationRequestsTable() {
   const [verifications, setVerifications] = useState<PendingVerification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedVerification, setSelectedVerification] = useState<PendingVerification | null>(null);
+  const [selectedVerification, setSelectedVerification] =
+    useState<PendingVerification | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  
+
   // Manual review form
-  const [manualName, setManualName] = useState('');
-  const [manualBirthDate, setManualBirthDate] = useState('');
-  const [rejectReason, setRejectReason] = useState('');
-  const [rejectDetails, setRejectDetails] = useState('');
+  const [manualName, setManualName] = useState("");
+  const [manualBirthDate, setManualBirthDate] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectDetails, setRejectDetails] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
   // Selfie (protected media, fetched with credentials and shown as blob URL)
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
   const [selfieLoading, setSelfieLoading] = useState(false);
   const [selfieError, setSelfieError] = useState(false);
-  
-  // Snackbar state
-  const [snackbar, setSnackbar] = useState<{open: boolean; message: string; severity: 'success' | 'error' | 'warning'}>({open: false, message: '', severity: 'success'});
 
-  const fetchVerifications = async () => {
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error" | "warning";
+  }>({ open: false, message: "", severity: "success" });
+
+  const fetchVerifications = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await adminApiClient.get('/portal-redthread/verificaciones/pendientes');
-      console.log('Admin verification response:', response.data);
+      const response = await adminApiClient.get(
+        "/portal-redthread/verificaciones/pendientes",
+      );
+      console.log("Admin verification response:", response.data);
       setVerifications(response.data); // Backend returns array directly, not {items: [...]}
     } catch (error) {
-      console.error('Error fetching verifications:', error);
+      console.error("Error fetching verifications:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchVerifications();
     const interval = setInterval(fetchVerifications, 60000); // Auto-reload every minute
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchVerifications]);
 
   const handleReview = (verification: PendingVerification) => {
     setSelectedVerification(verification);
-    setManualName(verification.current_real_name || '');
-    setManualBirthDate(verification.birth_date || '');
-    setRejectReason('');
-    setRejectDetails('');
+    setManualName(verification.current_real_name || "");
+    setManualBirthDate(verification.birth_date || "");
+    setRejectReason("");
+    setRejectDetails("");
     setDialogOpen(true);
 
     // Load protected selfie (if any)
@@ -112,14 +119,17 @@ export default function VerificationRequestsTable() {
     if (verification.has_selfie) {
       setSelfieLoading(true);
       adminApiClient
-        .get(`/portal-redthread/verificaciones/${verification.user_id}/selfie`, {
-          responseType: 'blob',
-        })
+        .get(
+          `/portal-redthread/verificaciones/${verification.user_id}/selfie`,
+          {
+            responseType: "blob",
+          },
+        )
         .then((response) => {
           setSelfieUrl(URL.createObjectURL(response.data as Blob));
         })
         .catch((error) => {
-          console.error('Error loading selfie:', error);
+          console.error("Error loading selfie:", error);
           setSelfieError(true);
         })
         .finally(() => setSelfieLoading(false));
@@ -134,20 +144,28 @@ export default function VerificationRequestsTable() {
 
   const handleApprove = async () => {
     if (!selectedVerification) return;
-    
+
     setActionLoading(true);
     try {
-      await adminApiClient.post(`/portal-redthread/verificaciones/${selectedVerification.user_id}/aprobar`, {
-        real_name: manualName,
-        birth_date: manualBirthDate || null,
+      await adminApiClient.post(
+        `/portal-redthread/verificaciones/${selectedVerification.user_id}/aprobar`,
+        {
+          real_name: manualName,
+          birth_date: manualBirthDate || null,
+        },
+      );
+      setSnackbar({
+        open: true,
+        message: "Verificación aprobada exitosamente",
+        severity: "success",
       });
-      setSnackbar({open: true, message: 'Verificación aprobada exitosamente', severity: 'success'});
       setDialogOpen(false);
       fetchVerifications();
     } catch (error: any) {
-      console.error('Error approving verification:', error);
-      const errorMsg = error.response?.data?.detail || 'Error al aprobar la verificación';
-      setSnackbar({open: true, message: errorMsg, severity: 'error'});
+      console.error("Error approving verification:", error);
+      const errorMsg =
+        error.response?.data?.detail || "Error al aprobar la verificación";
+      setSnackbar({ open: true, message: errorMsg, severity: "error" });
     } finally {
       setActionLoading(false);
     }
@@ -156,27 +174,43 @@ export default function VerificationRequestsTable() {
   const handleReject = async () => {
     if (!selectedVerification) return;
     if (!rejectReason) {
-      setSnackbar({open: true, message: 'Por favor selecciona un motivo', severity: 'warning'});
+      setSnackbar({
+        open: true,
+        message: "Por favor selecciona un motivo",
+        severity: "warning",
+      });
       return;
     }
-    if (rejectReason === 'Otro' && !rejectDetails) {
-        setSnackbar({open: true, message: 'Por favor especifica el motivo', severity: 'warning'});
-        return;
+    if (rejectReason === "Otro" && !rejectDetails) {
+      setSnackbar({
+        open: true,
+        message: "Por favor especifica el motivo",
+        severity: "warning",
+      });
+      return;
     }
 
     setActionLoading(true);
     try {
-      await adminApiClient.post(`/portal-redthread/verificaciones/${selectedVerification.user_id}/rechazar`, {
-        reason: rejectReason,
-        details: rejectDetails
+      await adminApiClient.post(
+        `/portal-redthread/verificaciones/${selectedVerification.user_id}/rechazar`,
+        {
+          reason: rejectReason,
+          details: rejectDetails,
+        },
+      );
+      setSnackbar({
+        open: true,
+        message: "Verificación rechazada",
+        severity: "success",
       });
-      setSnackbar({open: true, message: 'Verificación rechazada', severity: 'success'});
       setDialogOpen(false);
       fetchVerifications();
     } catch (error: any) {
-      console.error('Error rejecting verification:', error);
-      const errorMsg = error.response?.data?.detail || 'Error al rechazar la verificación';
-      setSnackbar({open: true, message: errorMsg, severity: 'error'});
+      console.error("Error rejecting verification:", error);
+      const errorMsg =
+        error.response?.data?.detail || "Error al rechazar la verificación";
+      setSnackbar({ open: true, message: errorMsg, severity: "error" });
     } finally {
       setActionLoading(false);
     }
@@ -189,11 +223,12 @@ export default function VerificationRequestsTable() {
           display: "flex",
           alignItems: "center",
           justifyContent: "flex-end",
-          mb: 2
-        }}>
+          mb: 2,
+        }}
+      >
         <Tooltip title="Recargar solicitudes">
-          <IconButton 
-            onClick={fetchVerifications} 
+          <IconButton
+            onClick={fetchVerifications}
             disabled={loading}
             color="primary"
           >
@@ -202,7 +237,7 @@ export default function VerificationRequestsTable() {
         </Tooltip>
       </Box>
 
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <TableContainer>
           <Table>
             <TableHead>
@@ -239,8 +274,8 @@ export default function VerificationRequestsTable() {
                       {new Date(row.submitted_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="contained" 
+                      <Button
+                        variant="contained"
                         size="small"
                         onClick={() => handleReview(row)}
                       >
@@ -256,12 +291,7 @@ export default function VerificationRequestsTable() {
       </Paper>
 
       {/* Review Dialog */}
-      <Dialog 
-        open={dialogOpen} 
-        onClose={closeReview}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={dialogOpen} onClose={closeReview} maxWidth="md" fullWidth>
         <DialogTitle>Revisar Documento</DialogTitle>
         <DialogContent dividers>
           {selectedVerification && (
@@ -269,58 +299,82 @@ export default function VerificationRequestsTable() {
               <Grid
                 size={{
                   xs: 12,
-                  md: 6
-                }}>
-                <Typography variant="subtitle1" gutterBottom>Documento:</Typography>
-                <Box 
-                  sx={{ 
-                    width: '100%', 
-                    height: 400, 
-                    bgcolor: '#f5f5f5',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    border: '1px solid #ddd'
+                  md: 6,
+                }}
+              >
+                <Typography variant="subtitle1" gutterBottom>
+                  Documento:
+                </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: 400,
+                    bgcolor: "#f5f5f5",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                    border: "1px solid #ddd",
                   }}
                 >
                   {selectedVerification.document_url ? (
-                    <img 
-                      src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${selectedVerification.document_url}`} 
-                      alt="Documento" 
-                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${selectedVerification.document_url}`}
+                      alt="Documento"
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                      }}
                       onError={(e) => {
-                        console.error('Error loading image:', selectedVerification.document_url);
-                        e.currentTarget.style.display = 'none';
+                        console.error(
+                          "Error loading image:",
+                          selectedVerification.document_url,
+                        );
+                        e.currentTarget.style.display = "none";
                       }}
                     />
                   ) : (
-                    <Typography sx={{
-                      color: "text.secondary"
-                    }}>No imagen disponible</Typography>
+                    <Typography
+                      sx={{
+                        color: "text.secondary",
+                      }}
+                    >
+                      No imagen disponible
+                    </Typography>
                   )}
                 </Box>
                 <Typography
                   variant="caption"
                   sx={{
                     display: "block",
-                    mt: 1
-                  }}>
+                    mt: 1,
+                  }}
+                >
                   Tipo: {selectedVerification.document_type}
                 </Typography>
 
-                <Typography variant="subtitle2" gutterBottom sx={{
-                  mt: 2
-                }}>
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  sx={{
+                    mt: 2,
+                  }}
+                >
                   Selfie (foto de identidad):
                 </Typography>
-                <Box sx={{
-                  mt: 1
-                }}>
+                <Box
+                  sx={{
+                    mt: 1,
+                  }}
+                >
                   {!selectedVerification.has_selfie ? (
-                    <Typography variant="caption" sx={{
-                      color: "text.secondary"
-                    }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                      }}
+                    >
                       Sin selfie adjunta
                     </Typography>
                   ) : selfieLoading ? (
@@ -328,10 +382,13 @@ export default function VerificationRequestsTable() {
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 1
-                      }}>
+                        gap: 1,
+                      }}
+                    >
                       <CircularProgress size={18} />
-                      <Typography variant="caption">Cargando selfie...</Typography>
+                      <Typography variant="caption">
+                        Cargando selfie...
+                      </Typography>
                     </Box>
                   ) : selfieError || !selfieUrl ? (
                     <Typography variant="caption" color="error">
@@ -340,21 +397,25 @@ export default function VerificationRequestsTable() {
                   ) : (
                     <Box
                       sx={{
-                        width: '100%',
+                        width: "100%",
                         maxHeight: 300,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        border: '1px solid #ddd',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        overflow: "hidden",
+                        border: "1px solid #ddd",
                         borderRadius: 1,
-                        bgcolor: '#000',
+                        bgcolor: "#000",
                       }}
                     >
                       <img
                         src={selfieUrl}
                         alt="Selfie del usuario"
-                        style={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain' }}
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: 300,
+                          objectFit: "contain",
+                        }}
                       />
                     </Box>
                   )}
@@ -364,19 +425,23 @@ export default function VerificationRequestsTable() {
                   sx={{
                     color: "text.secondary",
                     display: "block",
-                    mt: 1
-                  }}>
+                    mt: 1,
+                  }}
+                >
                   Privada — solo visible para revisores
                 </Typography>
               </Grid>
-              
+
               <Grid
                 size={{
                   xs: 12,
-                  md: 6
-                }}>
-                <Typography variant="subtitle1" gutterBottom>Datos Extraídos / Manuales:</Typography>
-                
+                  md: 6,
+                }}
+              >
+                <Typography variant="subtitle1" gutterBottom>
+                  Datos Extraídos / Manuales:
+                </Typography>
+
                 <TextField
                   fullWidth
                   label="Nombre Real (del documento)"
@@ -385,7 +450,7 @@ export default function VerificationRequestsTable() {
                   margin="normal"
                   helperText="Corrige si el OCR falló"
                 />
-                
+
                 <TextField
                   fullWidth
                   label="Fecha de Nacimiento (YYYY-MM-DD)"
@@ -394,18 +459,22 @@ export default function VerificationRequestsTable() {
                   onChange={(e) => setManualBirthDate(e.target.value)}
                   margin="normal"
                   slotProps={{
-                    inputLabel: { shrink: true }
+                    inputLabel: { shrink: true },
                   }}
                 />
-                
-                <Box sx={{
-                  mt: 4
-                }}>
+
+                <Box
+                  sx={{
+                    mt: 4,
+                  }}
+                >
                   <Typography variant="subtitle2" color="error" gutterBottom>
                     Rechazar Solicitud:
                   </Typography>
                   <FormControl fullWidth margin="normal" size="small">
-                    <InputLabel id="rejection-reason-label">Motivo del rechazo</InputLabel>
+                    <InputLabel id="rejection-reason-label">
+                      Motivo del rechazo
+                    </InputLabel>
                     <Select
                       labelId="rejection-reason-label"
                       value={rejectReason}
@@ -419,8 +488,8 @@ export default function VerificationRequestsTable() {
                       ))}
                     </Select>
                   </FormControl>
-                  
-                  {rejectReason === 'Otro' && (
+
+                  {rejectReason === "Otro" && (
                     <TextField
                       fullWidth
                       label="Especificar motivo"
@@ -442,17 +511,21 @@ export default function VerificationRequestsTable() {
           <Button onClick={closeReview} color="inherit">
             Cancelar
           </Button>
-          <Button 
-            onClick={handleReject} 
-            color="error" 
+          <Button
+            onClick={handleReject}
+            color="error"
             startIcon={<CancelIcon />}
-            disabled={actionLoading || !rejectReason || (rejectReason === 'Otro' && !rejectDetails)}
+            disabled={
+              actionLoading ||
+              !rejectReason ||
+              (rejectReason === "Otro" && !rejectDetails)
+            }
           >
             Rechazar
           </Button>
-          <Button 
-            onClick={handleApprove} 
-            color="success" 
+          <Button
+            onClick={handleApprove}
+            color="success"
             variant="contained"
             startIcon={<CheckCircleIcon />}
             disabled={actionLoading || !manualName}
@@ -466,13 +539,13 @@ export default function VerificationRequestsTable() {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
-        onClose={() => setSnackbar({...snackbar, open: false})}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert 
-          onClose={() => setSnackbar({...snackbar, open: false})} 
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {snackbar.message}
         </Alert>

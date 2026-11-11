@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Paper,
@@ -14,12 +14,12 @@ import {
   CircularProgress,
   IconButton,
   Tooltip,
-} from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import adminApiClient from '../../services/adminApi';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+} from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import adminApiClient from "../../services/adminApi";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface HistoryItem {
   user_id: string;
@@ -35,24 +35,26 @@ export default function VerificationHistoryTable() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await adminApiClient.get(`/portal-redthread/verificaciones/historial/aprobados?page=${page}&limit=20`);
+      const response = await adminApiClient.get(
+        `/portal-redthread/verificaciones/historial/aprobados?page=${page}&limit=20`,
+      );
       setHistory(response.data.items);
       setTotalPages(response.data.pages);
     } catch (error) {
-      console.error('Error fetching history:', error);
+      console.error("Error fetching history:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchHistory();
     const interval = setInterval(fetchHistory, 60000); // Auto-reload every minute
     return () => clearInterval(interval);
-  }, [page]);
+  }, [fetchHistory]);
 
   return (
     <Box>
@@ -61,11 +63,15 @@ export default function VerificationHistoryTable() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 2
-        }}>
-        <Typography variant="h6" sx={{
-          fontWeight: 600
-        }}>
+          mb: 2,
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 600,
+          }}
+        >
           Historial de Aprobaciones Recientes
         </Typography>
         <Tooltip title="Recargar historial">
@@ -75,7 +81,7 @@ export default function VerificationHistoryTable() {
         </Tooltip>
       </Box>
 
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <TableContainer>
           <Table size="small">
             <TableHead>
@@ -88,7 +94,7 @@ export default function VerificationHistoryTable() {
             </TableHead>
             <TableBody>
               {loading && history.length === 0 ? (
-                 <TableRow>
+                <TableRow>
                   <TableCell colSpan={4} align="center">
                     <CircularProgress size={30} sx={{ my: 2 }} />
                   </TableCell>
@@ -103,37 +109,63 @@ export default function VerificationHistoryTable() {
                 history.map((row) => (
                   <TableRow key={row.user_id} hover>
                     <TableCell>
-                        <Box
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Avatar
                           sx={{
-                            display: "flex",
-                            alignItems: "center"
-                          }}>
-                            <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>
-                                {row.display_name.charAt(0).toUpperCase()}
-                            </Avatar>
-                            <Box>
-                                <Typography variant="body2" sx={{
-                                  fontWeight: 500
-                                }}>
-                                    {row.display_name}
-                                </Typography>
-                                <Typography variant="caption" sx={{
-                                  color: "text.secondary"
-                                }}>
-                                    ID: {row.user_id.substring(0, 8)}...
-                                </Typography>
-                            </Box>
-                             <CheckCircleIcon sx={{ ml: 1, fontSize: 16, color: 'primary.main' }} />
+                            width: 24,
+                            height: 24,
+                            mr: 1,
+                            bgcolor: "primary.main",
+                          }}
+                        >
+                          {row.display_name.charAt(0).toUpperCase()}
+                        </Avatar>
+                        <Box>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 500,
+                            }}
+                          >
+                            {row.display_name}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                            }}
+                          >
+                            ID: {row.user_id.substring(0, 8)}...
+                          </Typography>
                         </Box>
+                        <CheckCircleIcon
+                          sx={{ ml: 1, fontSize: 16, color: "primary.main" }}
+                        />
+                      </Box>
                     </TableCell>
                     <TableCell>
-                      <Chip label={row.document_type || 'N/A'} size="small" variant="outlined" />
+                      <Chip
+                        label={row.document_type || "N/A"}
+                        size="small"
+                        variant="outlined"
+                      />
                     </TableCell>
                     <TableCell>
-                      {row.verified_at ? format(new Date(row.verified_at), 'dd MMM yyyy HH:mm', { locale: es }) : '-'}
+                      {row.verified_at
+                        ? format(
+                            new Date(row.verified_at),
+                            "dd MMM yyyy HH:mm",
+                            { locale: es },
+                          )
+                        : "-"}
                     </TableCell>
                     <TableCell>
-                        <Typography variant="body2">{row.admin_name}</Typography>
+                      <Typography variant="body2">{row.admin_name}</Typography>
                     </TableCell>
                   </TableRow>
                 ))
